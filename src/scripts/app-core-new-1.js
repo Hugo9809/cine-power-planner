@@ -203,47 +203,191 @@ const RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule(
   './modules/app-core/runtime-tool-inline-fallbacks.js'
 );
 
-const CORE_RUNTIME_SHARED_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppRuntimeShared',
-  './modules/app-core/runtime-shared.js'
+const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppRuntimeSharedNamespace',
+  './modules/app-core/runtime-shared-namespace.js'
 );
 
-const CORE_RUNTIME_SHARED_RESOLVER =
-  (CORE_RUNTIME_SHARED_TOOLS &&
-  typeof CORE_RUNTIME_SHARED_TOOLS.resolveRuntimeShared === 'function'
-    ? CORE_RUNTIME_SHARED_TOOLS.resolveRuntimeShared
-    : null) ||
-  (function attemptRequireRuntimeSharedResolver() {
-    if (typeof require === 'function') {
+function attemptResolveRuntimeSharedNamespaceFromScope(scope, namespaceOptions) {
+  if (!scope || typeof scope !== 'object') {
+    return null;
+  }
+
+  try {
+    const namespace = scope.cineCoreAppRuntimeSharedNamespace;
+    if (
+      namespace &&
+      typeof namespace === 'object' &&
+      typeof namespace.createRuntimeSharedNamespace === 'function'
+    ) {
+      return namespace.createRuntimeSharedNamespace(namespaceOptions);
+    }
+  } catch (runtimeSharedNamespaceLookupError) {
+    void runtimeSharedNamespaceLookupError;
+  }
+
+  return null;
+}
+
+function createInlineRuntimeSharedNamespace(namespaceOptions) {
+  const requireFn = typeof require === 'function' ? require : null;
+
+  if (requireFn) {
+    try {
+      const requiredNamespace = requireFn(
+        './modules/app-core/runtime-shared-namespace.js'
+      );
+      if (
+        requiredNamespace &&
+        typeof requiredNamespace.createRuntimeSharedNamespace === 'function'
+      ) {
+        return requiredNamespace.createRuntimeSharedNamespace(namespaceOptions);
+      }
+    } catch (runtimeSharedNamespaceRequireError) {
+      void runtimeSharedNamespaceRequireError;
+    }
+  }
+
+  const fallbackScopes = [
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const namespace = attemptResolveRuntimeSharedNamespaceFromScope(
+      fallbackScopes[index],
+      namespaceOptions
+    );
+    if (namespace) {
+      return namespace;
+    }
+  }
+
+  function minimalFallbackResolveRuntimeSharedFromGlobal() {
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!scope || typeof scope !== 'object') {
+        continue;
+      }
+
       try {
-        const requiredRuntimeSharedTools = require('./modules/app-core/runtime-shared.js');
-        if (
-          requiredRuntimeSharedTools &&
-          typeof requiredRuntimeSharedTools.resolveRuntimeShared === 'function'
-        ) {
-          return requiredRuntimeSharedTools.resolveRuntimeShared;
+        const candidate = scope.cineCoreRuntimeShared;
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
         }
-      } catch (runtimeSharedToolsError) {
-        void runtimeSharedToolsError;
+      } catch (runtimeSharedLookupError) {
+        void runtimeSharedLookupError;
       }
     }
 
     return null;
-  })();
+  }
+
+  const existingRuntimeShared =
+    namespaceOptions && namespaceOptions.currentRuntimeShared
+      ? namespaceOptions.currentRuntimeShared
+      : null;
+
+  const resolvedRuntimeShared =
+    existingRuntimeShared || minimalFallbackResolveRuntimeSharedFromGlobal();
+
+  return {
+    runtimeShared:
+      resolvedRuntimeShared && typeof resolvedRuntimeShared === 'object'
+        ? resolvedRuntimeShared
+        : Object.create(null),
+    existingRuntimeShared:
+      resolvedRuntimeShared && typeof resolvedRuntimeShared === 'object'
+        ? resolvedRuntimeShared
+        : existingRuntimeShared,
+    runtimeSharedResolver: null,
+    fallbackResolveRuntimeSharedFromGlobal: minimalFallbackResolveRuntimeSharedFromGlobal,
+  };
+}
+
+const RUNTIME_SHARED_NAMESPACE_OPTIONS = {
+  resolveCoreSupportModule,
+  requireFn: typeof require === 'function' ? require : null,
+  runtimeScope:
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+  currentRuntimeShared:
+    typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED
+      ? CORE_RUNTIME_SHARED
+      : null,
+};
+
+let CORE_RUNTIME_SHARED_NAMESPACE =
+  CORE_RUNTIME_SHARED_NAMESPACE_TOOLS &&
+  typeof CORE_RUNTIME_SHARED_NAMESPACE_TOOLS.createRuntimeSharedNamespace === 'function'
+    ? CORE_RUNTIME_SHARED_NAMESPACE_TOOLS.createRuntimeSharedNamespace(
+        RUNTIME_SHARED_NAMESPACE_OPTIONS
+      )
+    : null;
+
+if (!CORE_RUNTIME_SHARED_NAMESPACE) {
+  CORE_RUNTIME_SHARED_NAMESPACE = createInlineRuntimeSharedNamespace(
+    RUNTIME_SHARED_NAMESPACE_OPTIONS
+  );
+}
+
+const CORE_RUNTIME_SHARED_RESOLVER =
+  CORE_RUNTIME_SHARED_NAMESPACE &&
+  typeof CORE_RUNTIME_SHARED_NAMESPACE.runtimeSharedResolver === 'function'
+    ? CORE_RUNTIME_SHARED_NAMESPACE.runtimeSharedResolver
+    : null;
+
+const EXISTING_CORE_RUNTIME_SHARED =
+  CORE_RUNTIME_SHARED_NAMESPACE &&
+  CORE_RUNTIME_SHARED_NAMESPACE.existingRuntimeShared
+    ? CORE_RUNTIME_SHARED_NAMESPACE.existingRuntimeShared
+    : typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED
+    ? CORE_RUNTIME_SHARED
+    : null;
+
+var CORE_RUNTIME_SHARED =
+  (CORE_RUNTIME_SHARED_NAMESPACE &&
+  CORE_RUNTIME_SHARED_NAMESPACE.runtimeShared &&
+  typeof CORE_RUNTIME_SHARED_NAMESPACE.runtimeShared === 'object'
+    ? CORE_RUNTIME_SHARED_NAMESPACE.runtimeShared
+    : null) ||
+  (EXISTING_CORE_RUNTIME_SHARED && typeof EXISTING_CORE_RUNTIME_SHARED === 'object'
+    ? EXISTING_CORE_RUNTIME_SHARED
+    : null) ||
+  (CORE_RUNTIME_SHARED_RESOLVER
+    ? CORE_RUNTIME_SHARED_RESOLVER({
+        currentShared: EXISTING_CORE_RUNTIME_SHARED,
+        resolveCoreSupportModule,
+        requireFn: typeof require === 'function' ? require : null,
+        runtimeScope:
+          typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+        coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      })
+    : fallbackResolveRuntimeSharedFromGlobal());
 
 function fallbackResolveRuntimeSharedFromGlobal() {
+  if (
+    CORE_RUNTIME_SHARED_NAMESPACE &&
+    typeof CORE_RUNTIME_SHARED_NAMESPACE.fallbackResolveRuntimeSharedFromGlobal === 'function'
+  ) {
+    try {
+      return CORE_RUNTIME_SHARED_NAMESPACE.fallbackResolveRuntimeSharedFromGlobal();
+    } catch (runtimeSharedFallbackError) {
+      void runtimeSharedFallbackError;
+    }
+  }
+
   const fallbackScopes = [
-    typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
-    CORE_GLOBAL_SCOPE &&
-    typeof CORE_GLOBAL_SCOPE === 'object'
-      ? CORE_GLOBAL_SCOPE
-      : null,
-    typeof globalThis !== 'undefined' && typeof globalThis === 'object'
-      ? globalThis
-      : null,
-    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
-    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
-    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
   ];
 
   for (let index = 0; index < fallbackScopes.length; index += 1) {
@@ -264,24 +408,6 @@ function fallbackResolveRuntimeSharedFromGlobal() {
 
   return null;
 }
-
-const EXISTING_CORE_RUNTIME_SHARED =
-  typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED
-    ? CORE_RUNTIME_SHARED
-    : null;
-
-var CORE_RUNTIME_SHARED =
-  EXISTING_CORE_RUNTIME_SHARED ||
-  (CORE_RUNTIME_SHARED_RESOLVER
-    ? CORE_RUNTIME_SHARED_RESOLVER({
-        currentShared: EXISTING_CORE_RUNTIME_SHARED,
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
-        runtimeScope:
-          typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-        coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-      })
-    : fallbackResolveRuntimeSharedFromGlobal());
 
 const PINK_MODE_SUPPORT_BRIDGE_TOOLS = resolveCoreSupportModule(
   'cineCoreAppPinkModeSupportBridge',
