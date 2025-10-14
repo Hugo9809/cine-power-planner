@@ -697,8 +697,10 @@
     if (typeof path !== 'string' || !path) {
       return '';
     }
+
     const safePath = escapeHtml(path);
-    return `<img src="${safePath}" alt="" loading="lazy" decoding="async" aria-hidden="true" class="pink-mode-icon-image">`;
+
+    return `<img src="${safePath}" alt="" decoding="async" aria-hidden="true" class="pink-mode-icon-image">`;
   }
 
   const PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(
