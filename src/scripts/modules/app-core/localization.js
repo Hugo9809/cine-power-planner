@@ -9,6 +9,73 @@
  * concatenates the previous modules verbatim so behaviour stays identical while
  * reducing the number of moving parts we need to keep in sync.
  */
+
+const CINE_CORE_APP_LOCALIZATION_EXPORT_NAMESPACE_KEY =
+  '__cineCoreAppLocalizationNamespaces';
+
+function registerAppCoreLocalizationNamespace(namespaceName, namespace) {
+  if (typeof namespaceName !== 'string' || !namespaceName) {
+    return;
+  }
+
+  if (!namespace || typeof namespace !== 'object') {
+    return;
+  }
+
+  if (typeof module !== 'object' || !module || !module.exports) {
+    return;
+  }
+
+  let exportsTarget = module.exports;
+
+  if (!exportsTarget || typeof exportsTarget !== 'object') {
+    exportsTarget = {};
+  }
+
+  if (module.exports !== exportsTarget) {
+    module.exports = exportsTarget;
+  }
+
+  let namespaceBucket = exportsTarget[CINE_CORE_APP_LOCALIZATION_EXPORT_NAMESPACE_KEY];
+
+  if (!namespaceBucket || typeof namespaceBucket !== 'object') {
+    namespaceBucket = {};
+
+    try {
+      Object.defineProperty(exportsTarget, CINE_CORE_APP_LOCALIZATION_EXPORT_NAMESPACE_KEY, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespaceBucket,
+      });
+    } catch (defineBucketError) {
+      void defineBucketError;
+      exportsTarget[CINE_CORE_APP_LOCALIZATION_EXPORT_NAMESPACE_KEY] = namespaceBucket;
+    }
+  }
+
+  namespaceBucket[namespaceName] = namespace;
+
+  if (!Object.prototype.hasOwnProperty.call(exportsTarget, namespaceName)) {
+    try {
+      Object.defineProperty(exportsTarget, namespaceName, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespace,
+      });
+    } catch (defineNamespaceError) {
+      void defineNamespaceError;
+      exportsTarget[namespaceName] = namespace;
+    }
+  } else {
+    exportsTarget[namespaceName] = namespace;
+  }
+
+  for (const key of Object.keys(namespace)) {
+    exportsTarget[key] = namespace[key];
+  }
+}
 /*
  * Centralises the localisation bootstrap logic used by the modern runtime.
  *
@@ -271,9 +338,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Centralises the localisation bootstrap wiring for the modern runtime. The
@@ -631,9 +696,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Provides localisation helper accessors for the modern Cine Power Planner runtime.
@@ -1144,9 +1207,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Exposes a bridge that bundles all localisation helpers required by the app
@@ -1440,9 +1501,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Provides a high level factory that resolves the localisation runtime bridge
@@ -1861,9 +1920,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Resolves the localisation runtime helpers for the modern app core.
@@ -2188,9 +2245,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();
 /*
  * Centralises the logic that resolves the localisation runtime used by the
@@ -2599,7 +2654,5 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreLocalizationNamespace(namespaceName, existing);
 })();

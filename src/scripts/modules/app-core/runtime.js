@@ -7,6 +7,73 @@
  * identical. Each previous runtime helper is appended verbatim to preserve every
  * safeguard around backups, autosave, offline usage and global scope detection.
  */
+
+const CINE_CORE_APP_RUNTIME_EXPORT_NAMESPACE_KEY =
+  '__cineCoreAppRuntimeNamespaces';
+
+function registerAppCoreRuntimeNamespace(namespaceName, namespace) {
+  if (typeof namespaceName !== 'string' || !namespaceName) {
+    return;
+  }
+
+  if (!namespace || typeof namespace !== 'object') {
+    return;
+  }
+
+  if (typeof module !== 'object' || !module || !module.exports) {
+    return;
+  }
+
+  let exportsTarget = module.exports;
+
+  if (!exportsTarget || typeof exportsTarget !== 'object') {
+    exportsTarget = {};
+  }
+
+  if (module.exports !== exportsTarget) {
+    module.exports = exportsTarget;
+  }
+
+  let namespaceBucket = exportsTarget[CINE_CORE_APP_RUNTIME_EXPORT_NAMESPACE_KEY];
+
+  if (!namespaceBucket || typeof namespaceBucket !== 'object') {
+    namespaceBucket = {};
+
+    try {
+      Object.defineProperty(exportsTarget, CINE_CORE_APP_RUNTIME_EXPORT_NAMESPACE_KEY, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespaceBucket,
+      });
+    } catch (defineBucketError) {
+      void defineBucketError;
+      exportsTarget[CINE_CORE_APP_RUNTIME_EXPORT_NAMESPACE_KEY] = namespaceBucket;
+    }
+  }
+
+  namespaceBucket[namespaceName] = namespace;
+
+  if (!Object.prototype.hasOwnProperty.call(exportsTarget, namespaceName)) {
+    try {
+      Object.defineProperty(exportsTarget, namespaceName, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespace,
+      });
+    } catch (defineNamespaceError) {
+      void defineNamespaceError;
+      exportsTarget[namespaceName] = namespace;
+    }
+  } else {
+    exportsTarget[namespaceName] = namespace;
+  }
+
+  for (const key of Object.keys(namespace)) {
+    exportsTarget[key] = namespace[key];
+  }
+}
 /*
  * Consolidates the logic that resolves the shared runtime helpers used by the
  * modern app core. Moving this resolver into its own module keeps the main
@@ -226,9 +293,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Provides runtime shared bootstrap helpers for the modern Cine Power Planner app core.
@@ -565,9 +630,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Extracts the runtime shared bootstrap orchestration into a standalone
@@ -871,9 +934,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Encapsulates the inline runtime shared bootstrap logic that previously lived
@@ -1134,9 +1195,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Centralises the logic that resolves the runtime shared bootstrap result used
@@ -1406,9 +1465,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Runtime shared bootstrap manager for the Cine Power Planner modern core.
@@ -1825,9 +1882,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Resolves the runtime shared bootstrap payload for the modern Cine Power Planner app core.
@@ -2115,9 +2170,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Provides a dedicated module for resolving the runtime shared bootstrap
@@ -2335,9 +2388,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /* global CORE_GLOBAL_SCOPE */
 
@@ -3310,9 +3361,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Provides light-weight wrappers that coordinate the runtime candidate scope
@@ -3453,9 +3502,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 /*
  * Exposes the runtime candidate scope fallback helpers that previously lived
@@ -3737,9 +3784,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
 
 /*
@@ -4234,7 +4279,5 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCoreRuntimeNamespace(namespaceName, existing);
 })();
