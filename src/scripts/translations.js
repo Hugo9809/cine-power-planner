@@ -1866,9 +1866,10 @@ const texts = {
           body: "",
           hero: {
             heading: "",
-            subheading: "Crew-first power, gear, and handoff planning — fully offline.",
+            subheading:
+              "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
             summary:
-              "Plan safe power loads, generate AutoGear kits, and capture handoffs while every save stays local. Follow the checkpoints to see how we protect your data before the first shoot day.",
+              "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline forever",
             badgeDescription:
@@ -4050,9 +4051,10 @@ const texts = {
             "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
           hero: {
             heading: "Benvenuto in Cine Power Planner",
-            subheading: "Pianificazione di energia, gear e handoff centrata sulla troupe — completamente offline.",
+            subheading:
+              "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
             summary:
-              "Pianifica carichi sicuri, genera kit AutoGear e prepara le consegne mentre ogni salvataggio resta locale. Segui i checkpoint per vedere come proteggiamo i dati prima del primo ciak.",
+              "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline per sempre",
             badgeDescription:
@@ -6247,9 +6249,10 @@ const texts = {
             "Este recorrido guiado explica las defensas sin conexión, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           hero: {
             heading: "Bienvenida a Cine Power Planner",
-            subheading: "Planificación de energía, gear y handoff centrada en el equipo — totalmente sin conexión.",
+            subheading:
+              "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
             summary:
-              "Planifica consumos seguros, genera kits AutoGear y documenta las entregas mientras cada guardado permanece local. Sigue los hitos para comprobar cómo protegemos tus datos antes del primer día de rodaje.",
+              "Planifica setups de cámara seguros, verifica límites de potencia, genera automáticamente listas de equipo desde los requisitos del proyecto y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Siempre sin conexión",
             badgeDescription:
@@ -8457,9 +8460,10 @@ const texts = {
             "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
           hero: {
             heading: "Bienvenue dans Cine Power Planner",
-            subheading: "Planification de puissance, de matériel et de handoff centrée équipe — entièrement hors ligne.",
+            subheading:
+              "Sécurisez chaque setup caméra avec des contrôles d’alimentation, des kits AutoGear et des handoffs prêts pour la location—le tout reste hors ligne.",
             summary:
-              "Planifiez des charges sûres, générez des kits AutoGear et préparez les handoffs pendant que chaque sauvegarde reste locale. Suivez les jalons pour découvrir comment nous protégeons vos données avant le premier tournage.",
+              "Planifiez des setups caméra sûrs, vérifiez les limites de puissance, générez automatiquement des listes de matériel à partir des exigences projet et exportez des PDF prêts pour la location—chaque sauvegarde reste locale avant l’appel.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Hors ligne pour toujours",
             badgeDescription:
@@ -10670,9 +10674,10 @@ const texts = {
           body: "",
           hero: {
             heading: "Willkommen bei Cine Power Planner",
-            subheading: "Crew-orientierte Strom-, Gear- und Übergabeplanung – komplett offline.",
+            subheading:
+              "Schütze jedes Kamera-Setup mit Leistungschecks, AutoGear-Kits und übergabefertigen Unterlagen—alles bleibt offline.",
             summary:
-              "Plane sichere Lasten, baue AutoGear-Kits und sichere Übergaben, während jeder Speicherstand lokal bleibt. Folge den Checkpoints, um zu sehen, wie wir deine Daten vor dem ersten Drehtag absichern.",
+              "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Gear-Listen automatisch aus Projektanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Dauerhaft offline",
             badgeDescription:
