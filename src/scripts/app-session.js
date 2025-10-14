@@ -5684,6 +5684,88 @@ function scheduleAppearanceModuleUnavailableWarning() {
   }, 1500);
 }
 
+const fallbackEnsurePinkModeSvgHidden =
+  typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null;
+const fallbackStartPinkModeAnimatedIcons =
+  typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null;
+const fallbackStopPinkModeAnimatedIcons =
+  typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null;
+const fallbackTriggerPinkModeIconRain =
+  typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null;
+const fallbackPinkModeIcons =
+  typeof pinkModeIcons === 'object' && pinkModeIcons ? pinkModeIcons : null;
+let cachedPinkModeIcons = fallbackPinkModeIcons;
+
+function resolveGlobalScope() {
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    return window;
+  }
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    return self;
+  }
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    return global;
+  }
+  return null;
+}
+
+function resolvePinkModeAnimationsNamespace() {
+  const scope = resolveGlobalScope();
+  if (scope && scope.cineCorePinkModeAnimations && typeof scope.cineCorePinkModeAnimations === 'object') {
+    return scope.cineCorePinkModeAnimations;
+  }
+  return null;
+}
+
+function resolvePinkModeSupportFunction(name, fallback) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+  const namespace = resolvePinkModeAnimationsNamespace();
+  if (namespace && typeof namespace[name] === 'function') {
+    return namespace[name];
+  }
+  if (typeof fallback === 'function') {
+    return fallback;
+  }
+  const scope = resolveGlobalScope();
+  if (scope && typeof scope[name] === 'function') {
+    return scope[name];
+  }
+  return null;
+}
+
+function invokePinkModeSupportFunction(name, fallback, args) {
+  const fn = resolvePinkModeSupportFunction(name, fallback);
+  if (typeof fn !== 'function') {
+    return null;
+  }
+  try {
+    return fn.apply(null, Array.isArray(args) ? args : []);
+  } catch (error) {
+    void error;
+    return null;
+  }
+}
+
+function resolvePinkModeIcons() {
+  const namespace = resolvePinkModeAnimationsNamespace();
+  if (namespace && namespace.pinkModeIcons && typeof namespace.pinkModeIcons === 'object') {
+    cachedPinkModeIcons = namespace.pinkModeIcons;
+    return cachedPinkModeIcons;
+  }
+  const scope = resolveGlobalScope();
+  if (scope && scope.pinkModeIcons && typeof scope.pinkModeIcons === 'object') {
+    cachedPinkModeIcons = scope.pinkModeIcons;
+    return cachedPinkModeIcons;
+  }
+  cachedPinkModeIcons = fallbackPinkModeIcons;
+  return cachedPinkModeIcons;
+}
+
 const appearanceContext = {
   document: typeof document !== 'undefined' ? document : null,
   window: typeof window !== 'undefined' ? window : null,
@@ -5741,12 +5823,40 @@ const appearanceContext = {
   },
   icons: {
     registry: typeof ICON_GLYPHS === 'object' ? ICON_GLYPHS : null,
-    applyIconGlyph: typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
-    ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
-    pinkModeIcons: typeof pinkModeIcons === 'object' ? pinkModeIcons : null,
-    startPinkModeAnimatedIcons: typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null,
-    stopPinkModeAnimatedIcons: typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null,
-    triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null,
+    applyIconGlyph:
+      typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
+    ensureSvgHasAriaHidden(markup) {
+      const fn = resolvePinkModeSupportFunction('ensureSvgHasAriaHidden', fallbackEnsurePinkModeSvgHidden);
+      if (typeof fn === 'function') {
+        return fn(markup);
+      }
+      return typeof markup === 'string' ? markup : '';
+    },
+    getPinkModeIcons() {
+      return resolvePinkModeIcons();
+    },
+    pinkModeIcons: cachedPinkModeIcons,
+    startPinkModeAnimatedIcons(...args) {
+      return invokePinkModeSupportFunction(
+        'startPinkModeAnimatedIcons',
+        fallbackStartPinkModeAnimatedIcons,
+        args,
+      );
+    },
+    stopPinkModeAnimatedIcons(...args) {
+      return invokePinkModeSupportFunction(
+        'stopPinkModeAnimatedIcons',
+        fallbackStopPinkModeAnimatedIcons,
+        args,
+      );
+    },
+    triggerPinkModeIconRain(...args) {
+      return invokePinkModeSupportFunction(
+        'triggerPinkModeIconRain',
+        fallbackTriggerPinkModeIconRain,
+        args,
+      );
+    },
   },
   storage: {
     getLocalStorage: () => {

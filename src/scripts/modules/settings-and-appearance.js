@@ -569,6 +569,23 @@
     void win;
     void helpers;
 
+    function resolvePinkModeIconSupport() {
+      const resolved = callOptional(icons.getPinkModeIcons, []);
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+      if (icons.pinkModeIcons && typeof icons.pinkModeIcons === 'object') {
+        return icons.pinkModeIcons;
+      }
+      const scope = (typeof window !== 'undefined' && window && window.cineCorePinkModeAnimations)
+        ? window.cineCorePinkModeAnimations
+        : null;
+      if (scope && typeof scope.pinkModeIcons === 'object') {
+        return scope.pinkModeIcons;
+      }
+      return null;
+    }
+
     const themeMemoryStorage = (function createThemeMemoryStorage() {
       const memory = Object.create(null);
       return {
@@ -1325,11 +1342,12 @@
     }
 
     function startPinkModeIconRotation() {
-      const sequence = Array.isArray(icons.pinkModeIcons && icons.pinkModeIcons.onSequence)
-        ? icons.pinkModeIcons.onSequence
+      const pinkModeIconSet = resolvePinkModeIconSupport();
+      const sequence = Array.isArray(pinkModeIconSet && pinkModeIconSet.onSequence)
+        ? pinkModeIconSet.onSequence
         : [];
       if (!sequence.length) {
-        applyPinkModeIcon(icons.pinkModeIcons ? icons.pinkModeIcons.off : null, { animate: false });
+        applyPinkModeIcon(pinkModeIconSet ? pinkModeIconSet.off : null, { animate: false });
         return;
       }
 
@@ -1424,8 +1442,9 @@
           accent.accentColorInput.disabled = false;
         }
         applyAccentColor(getAccentColor());
-        if (icons.pinkModeIcons && icons.pinkModeIcons.off) {
-          applyPinkModeIcon(icons.pinkModeIcons.off, { animate: false });
+        const pinkModeIconSet = resolvePinkModeIconSupport();
+        if (pinkModeIconSet && pinkModeIconSet.off) {
+          applyPinkModeIcon(pinkModeIconSet.off, { animate: false });
         }
         if (elements.pinkModeToggle) {
           elements.pinkModeToggle.setAttribute('aria-pressed', 'false');
