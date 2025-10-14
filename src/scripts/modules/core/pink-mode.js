@@ -84,7 +84,7 @@
       "",
       "      let baseAdjusted = false;",
       "      if (path) {",
-      "        const stripSegments = Object.freeze(['/src/scripts/', '/scripts/', '/legacy/scripts/']);",
+      "        const stripSegments = Object.freeze(['/legacy/scripts/', '/src/scripts/', '/scripts/']);",
       "        for (let index = 0; index < stripSegments.length; index += 1) {",
       "          const marker = stripSegments[index];",
       "          const markerIndex = path.indexOf(marker);",
