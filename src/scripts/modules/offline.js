@@ -940,7 +940,7 @@
       return null;
     }
 
-    const requestMode = 'same-origin';
+    const requestMode = 'cors';
 
     const nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
