@@ -146,6 +146,229 @@ const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
   'project-switch',
 ]);
 
+const AUTO_BACKUP_LOG_META = { feature: 'auto-backup' };
+
+function resolveConsoleMethodForLevel(level) {
+  if (typeof level !== 'string') {
+    return 'log';
+  }
+  const normalized = level.toLowerCase();
+  if (normalized === 'warn' || normalized === 'error' || normalized === 'info' || normalized === 'debug') {
+    return normalized === 'debug' && typeof console !== 'undefined' && console && typeof console.debug !== 'function'
+      ? 'log'
+      : normalized;
+  }
+  return 'log';
+}
+
+function logAutoBackupEvent(level, message, detail, metaOverrides) {
+  const resolvedLevel = typeof level === 'string' && level ? level : 'info';
+  const resolvedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
+  const meta = metaOverrides && typeof metaOverrides === 'object'
+    ? { ...AUTO_BACKUP_LOG_META, ...metaOverrides }
+    : AUTO_BACKUP_LOG_META;
+
+  let handledByLogger = false;
+  if (eventsLogger && typeof eventsLogger[resolvedLevel] === 'function') {
+    try {
+      eventsLogger[resolvedLevel](resolvedMessage, detail, meta);
+      handledByLogger = true;
+    } catch (loggerError) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        try {
+          eventsLogger.warn('Auto backup logger invocation failed', loggerError, {
+            ...meta,
+            originalLevel: resolvedLevel,
+            originalMessage: resolvedMessage,
+          });
+        } catch (fallbackLogError) {
+          void fallbackLogError;
+        }
+      }
+    }
+  }
+
+  if (!handledByLogger && typeof console !== 'undefined' && console) {
+    const consoleMethod = resolveConsoleMethodForLevel(resolvedLevel);
+    const fallback = typeof console[consoleMethod] === 'function' ? console[consoleMethod] : console.log;
+    if (typeof fallback === 'function') {
+      try {
+        if (typeof detail !== 'undefined') {
+          fallback.call(console, `[auto-backup] ${resolvedMessage}`, detail);
+        } else {
+          fallback.call(console, `[auto-backup] ${resolvedMessage}`);
+        }
+      } catch (consoleError) {
+        void consoleError;
+      }
+    }
+  }
+}
+
+function summarizeAutoBackupPayloadForLog(payload) {
+  if (!payload || typeof payload !== 'object') {
+    return { hasContent: false };
+  }
+
+  const summary = {
+    hasContent: false,
+    projectInfoKeys: 0,
+    gearListLength: 0,
+    gearListAndProjectRequirementsGenerated: Boolean(payload.gearListAndProjectRequirementsGenerated),
+    powerSelectionKeys: 0,
+    gearSelectorGroups: 0,
+    diagramPositionCount: 0,
+    autoGearRuleCount: 0,
+  };
+
+  const projectInfo = payload.projectInfo && typeof payload.projectInfo === 'object'
+    ? payload.projectInfo
+    : null;
+  if (projectInfo) {
+    try {
+      summary.projectInfoKeys = Object.keys(projectInfo).length;
+    } catch (projectInfoError) {
+      summary.projectInfoKeys = 0;
+    }
+  }
+
+  if (typeof payload.gearList === 'string') {
+    summary.gearListLength = payload.gearList.length;
+  }
+
+  const powerSelection = payload.powerSelection && typeof payload.powerSelection === 'object'
+    ? payload.powerSelection
+    : null;
+  if (powerSelection) {
+    try {
+      summary.powerSelectionKeys = Object.keys(powerSelection).length;
+    } catch (powerSelectionError) {
+      summary.powerSelectionKeys = 0;
+    }
+  }
+
+  const gearSelectors = payload.gearSelectors && typeof payload.gearSelectors === 'object'
+    ? payload.gearSelectors
+    : null;
+  if (gearSelectors) {
+    try {
+      summary.gearSelectorGroups = Object.keys(gearSelectors).length;
+    } catch (gearSelectorsError) {
+      summary.gearSelectorGroups = 0;
+    }
+  }
+
+  const diagramPositions = payload.diagramPositions && typeof payload.diagramPositions === 'object'
+    ? payload.diagramPositions
+    : null;
+  if (diagramPositions) {
+    try {
+      summary.diagramPositionCount = Object.keys(diagramPositions).length;
+    } catch (diagramPositionsError) {
+      summary.diagramPositionCount = 0;
+    }
+  }
+
+  if (Array.isArray(payload.autoGearRules)) {
+    summary.autoGearRuleCount = payload.autoGearRules.length;
+  }
+
+  summary.hasContent = Boolean(
+    summary.projectInfoKeys
+    || summary.gearListLength
+    || summary.gearListAndProjectRequirementsGenerated
+    || summary.powerSelectionKeys
+    || summary.gearSelectorGroups
+    || summary.diagramPositionCount
+    || summary.autoGearRuleCount,
+  );
+
+  return summary;
+}
+
+function resolveAutoBackupLogLevel(status, reason) {
+  const normalizedStatus = typeof status === 'string' ? status : '';
+  const normalizedReason = typeof reason === 'string' ? reason : '';
+  if (normalizedStatus === 'error') {
+    return 'error';
+  }
+  if (normalizedStatus === 'success') {
+    return 'info';
+  }
+  if (normalizedStatus === 'skipped') {
+    if (normalizedReason === 'disallowed' || normalizedReason === 'auto-backup-selected') {
+      return 'warn';
+    }
+    return 'info';
+  }
+  return 'debug';
+}
+
+function resolveAutoBackupLogMessage(status, reason) {
+  const normalizedStatus = typeof status === 'string' ? status : '';
+  const normalizedReason = typeof reason === 'string' ? reason : '';
+  if (normalizedStatus === 'success') {
+    return 'Auto backup completed successfully';
+  }
+  if (normalizedStatus === 'error') {
+    return normalizedReason
+      ? `Auto backup failed (${normalizedReason})`
+      : 'Auto backup failed';
+  }
+  if (normalizedStatus === 'skipped') {
+    return normalizedReason
+      ? `Auto backup skipped (${normalizedReason})`
+      : 'Auto backup skipped';
+  }
+  return 'Auto backup run recorded';
+}
+
+function createDefaultAutoBackupLogDetail(result) {
+  if (!result || typeof result !== 'object') {
+    return { status: 'unknown' };
+  }
+
+  const detail = {
+    status: typeof result.status === 'string' ? result.status : 'unknown',
+  };
+
+  if (typeof result.reason === 'string' && result.reason) {
+    detail.reason = result.reason;
+  }
+  if (typeof result.context === 'string' && result.context) {
+    detail.context = result.context;
+  }
+  if (typeof result.elapsedSinceLastAutoBackupMs === 'number' && Number.isFinite(result.elapsedSinceLastAutoBackupMs)) {
+    detail.elapsedSinceLastAutoBackupMs = Math.max(0, result.elapsedSinceLastAutoBackupMs);
+  }
+  if (typeof result.remainingIntervalMs === 'number' && Number.isFinite(result.remainingIntervalMs)) {
+    detail.remainingIntervalMs = Math.max(0, result.remainingIntervalMs);
+  }
+  if (typeof result.changesSinceSnapshot === 'number' && Number.isFinite(result.changesSinceSnapshot)) {
+    detail.changesSinceSnapshot = Math.max(0, result.changesSinceSnapshot);
+  }
+  if (typeof result.requiredChangeThreshold === 'number' && Number.isFinite(result.requiredChangeThreshold)) {
+    detail.requiredChangeThreshold = Math.max(0, result.requiredChangeThreshold);
+  }
+  if (typeof result.remainingChanges === 'number' && Number.isFinite(result.remainingChanges)) {
+    detail.remainingChanges = Math.max(0, result.remainingChanges);
+  }
+  if (typeof result.requiredIntervalMs === 'number' && Number.isFinite(result.requiredIntervalMs)) {
+    detail.requiredIntervalMs = Math.max(0, result.requiredIntervalMs);
+  }
+  if (typeof result.name === 'string') {
+    const trimmedName = result.name.trim();
+    detail.hasName = trimmedName.length > 0;
+    detail.nameLength = trimmedName.length;
+    detail.nameWasAutoGenerated = trimmedName.startsWith('auto-backup-');
+  }
+  if (typeof result.createdAt === 'string' && result.createdAt) {
+    detail.createdAt = result.createdAt;
+  }
+
+  return detail;
+}
+
 const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 const lastAutoBackupReasonState = new Map();
 const AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS = 800;
@@ -160,13 +383,21 @@ function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
 }
 
-function recordAutoBackupRun(result) {
+function recordAutoBackupRun(result, logDetailOverride) {
   autoBackupThresholdInProgress = false;
   if (!result || typeof result !== 'object') {
+    logAutoBackupEvent('warn', 'Auto backup run recorded without result metadata', { status: 'unknown' });
     return;
   }
   const status = typeof result.status === 'string' ? result.status : null;
   const reason = typeof result.reason === 'string' ? result.reason : null;
+  const detail = logDetailOverride && typeof logDetailOverride === 'object'
+    ? { ...logDetailOverride }
+    : createDefaultAutoBackupLogDetail(result);
+  const level = resolveAutoBackupLogLevel(status, reason);
+  const message = resolveAutoBackupLogMessage(status, reason);
+  logAutoBackupEvent(level, message, detail);
+
   if (status === 'skipped') {
     if (reason === 'unchanged') {
       resetAutoBackupChangeCounter();
@@ -221,6 +452,12 @@ function triggerAutoBackupForChangeThreshold(details) {
     } catch (error) {
       console.warn('Failed to run auto backup after change threshold', error);
       autoBackupThresholdInProgress = false;
+      logAutoBackupEvent('error', 'Auto backup change-threshold execution failed', {
+        status: 'error',
+        reason: 'change-threshold-run',
+        errorName: error && typeof error.name === 'string' ? error.name : null,
+        errorMessage: error && typeof error.message === 'string' ? error.message : null,
+      });
     }
   };
   if (typeof queueMicrotask === 'function') {
@@ -229,6 +466,12 @@ function triggerAutoBackupForChangeThreshold(details) {
       return;
     } catch (queueError) {
       console.warn('Failed to queue auto backup microtask', queueError);
+      logAutoBackupEvent('warn', 'Auto backup microtask scheduling failed', {
+        status: 'skipped',
+        reason: 'microtask-scheduling',
+        errorName: queueError && typeof queueError.name === 'string' ? queueError.name : null,
+        errorMessage: queueError && typeof queueError.message === 'string' ? queueError.message : null,
+      });
     }
   }
   const timer = setTimeout(run, 0);
@@ -2021,6 +2264,7 @@ function autoBackup(options = {}) {
     }
     const currentGearListHtml = getCurrentGearListHtml();
     const gearListGenerated = Boolean(currentGearListHtml);
+    let payloadSummaryForLog = null;
     currentSetup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     const gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], { defaultValue: {} }) || {};
     const gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], { defaultValue: {} }) || {};
@@ -2217,6 +2461,9 @@ function autoBackup(options = {}) {
       if (hasPayloadContent) {
         attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
+        payloadSummaryForLog = summarizeAutoBackupPayloadForLog(payload);
+      } else {
+        payloadSummaryForLog = summarizeAutoBackupPayloadForLog(payload);
       }
     }
     const prevValue = setupSelectElement.value;
@@ -2233,12 +2480,27 @@ function autoBackup(options = {}) {
     lastAutoBackupSignature = currentSignature;
     lastAutoBackupName = backupName;
     lastAutoBackupCreatedAtIso = timestamp;
+    const successLogDetail = {
+      status: 'success',
+      reason,
+      context: reason,
+      snapshotType: resolvedPlan.snapshotType,
+      hasPlanBase: Boolean(resolvedPlan.base),
+      sequence: resolvedPlan.sequence,
+      appendedProjectName: Boolean(nameForBackup),
+      backupNameLength: typeof backupName === 'string' ? backupName.length : 0,
+      changesSinceSnapshot: autoBackupChangesSinceSnapshot,
+      elapsedSinceLastAutoBackupMs,
+      force,
+      gearListGenerated,
+      payloadSummary: payloadSummaryForLog || null,
+    };
     recordAutoBackupRun({
       status: 'success',
       name: backupName,
       createdAt: timestamp,
       context: reason,
-    });
+    }, successLogDetail);
     lastAutoBackupReasonState.set(reason, {
       timestamp: now.valueOf(),
       signature: currentSignature,
@@ -2249,7 +2511,18 @@ function autoBackup(options = {}) {
     if (!suppressError) {
       showNotification('error', errorMessage);
     }
-    recordAutoBackupRun({ status: 'error', reason: 'exception', context: reason });
+    const errorDetail = {
+      status: 'error',
+      reason: 'exception',
+      context: reason,
+      errorName: e && typeof e.name === 'string' ? e.name : null,
+      errorMessage: e && typeof e.message === 'string' ? e.message : null,
+    };
+    if (e && typeof e.stack === 'string' && e.stack) {
+      const stackPreview = e.stack.split('\n').slice(0, 5).join('\n');
+      errorDetail.errorStackPreview = stackPreview;
+    }
+    recordAutoBackupRun({ status: 'error', reason: 'exception', context: reason }, errorDetail);
     return null;
   } finally {
     if (typeof hideIndicator === 'function') {

@@ -535,6 +535,7 @@
     try {
       sideMenu = DOCUMENT.getElementById('sideMenu');
     } catch (error) {
+      void error;
       sideMenu = null;
     }
 
@@ -551,6 +552,7 @@
     try {
       menuToggle = DOCUMENT.getElementById('menuToggle');
     } catch (error) {
+      void error;
       menuToggle = null;
     }
 
