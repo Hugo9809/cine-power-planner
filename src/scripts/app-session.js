@@ -5625,8 +5625,21 @@ let rememberSettingsMountVoltagesBaseline = () => {};
 let revertSettingsMountVoltagesIfNeeded = () => {};
 let handlePinkModeIconPress = () => {};
 let triggerPinkModeIconAnimation = () => {};
+const FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = () => {};
+let sessionTriggerPinkModeIconRain =
+  typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function'
+    ? window.triggerPinkModeIconRain
+    : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
 let startPinkModeIconRotation = () => {};
 let stopPinkModeIconRotation = () => {};
+let sessionStartPinkModeAnimatedIcons =
+  typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function'
+    ? window.startPinkModeAnimatedIcons
+    : () => {};
+let sessionStopPinkModeAnimatedIcons =
+  typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function'
+    ? window.stopPinkModeAnimatedIcons
+    : () => {};
 let startPinkModeAnimatedIconRotation = () => {};
 let stopPinkModeAnimatedIconRotation = () => {};
 let applyPinkModeIcon = () => {};
@@ -5744,9 +5757,27 @@ const appearanceContext = {
     applyIconGlyph: typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
     ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
     pinkModeIcons: typeof pinkModeIcons === 'object' ? pinkModeIcons : null,
-    startPinkModeAnimatedIcons: typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null,
-    stopPinkModeAnimatedIcons: typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null,
-    triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null,
+    startPinkModeAnimatedIcons: (...args) => {
+      const impl =
+        (typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function'
+          ? window.startPinkModeAnimatedIcons
+          : null) || sessionStartPinkModeAnimatedIcons;
+      return typeof impl === 'function' ? impl(...args) : undefined;
+    },
+    stopPinkModeAnimatedIcons: (...args) => {
+      const impl =
+        (typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function'
+          ? window.stopPinkModeAnimatedIcons
+          : null) || sessionStopPinkModeAnimatedIcons;
+      return typeof impl === 'function' ? impl(...args) : undefined;
+    },
+    triggerPinkModeIconRain: (...args) => {
+      const impl =
+        (typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function'
+          ? window.triggerPinkModeIconRain
+          : null) || sessionTriggerPinkModeIconRain;
+      return typeof impl === 'function' ? impl(...args) : undefined;
+    },
   },
   storage: {
     getLocalStorage: () => {
@@ -5899,12 +5930,29 @@ function applyAppearanceModuleBindings(module) {
   revertSettingsMountVoltagesIfNeeded = module.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
   handlePinkModeIconPress = module.handlePinkModeIconPress || handlePinkModeIconPress;
   triggerPinkModeIconAnimation = module.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
+  sessionTriggerPinkModeIconRain = module.triggerPinkModeIconRain || sessionTriggerPinkModeIconRain;
   startPinkModeIconRotation = module.startPinkModeIconRotation || startPinkModeIconRotation;
   stopPinkModeIconRotation = module.stopPinkModeIconRotation || stopPinkModeIconRotation;
+  sessionStartPinkModeAnimatedIcons =
+    module.startPinkModeAnimatedIcons || sessionStartPinkModeAnimatedIcons;
+  sessionStopPinkModeAnimatedIcons =
+    module.stopPinkModeAnimatedIcons || sessionStopPinkModeAnimatedIcons;
   startPinkModeAnimatedIconRotation = module.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
   stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
   applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
   isPinkModeActive = module.isPinkModeActive || isPinkModeActive;
+
+  if (typeof window !== 'undefined') {
+    window.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+    window.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+    window.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
+  }
+
+  if (appearanceContext && appearanceContext.icons) {
+    appearanceContext.icons.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+    appearanceContext.icons.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
+    appearanceContext.icons.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+  }
 
   const controller = buildThemePreferenceController(module);
   if (controller) {
@@ -6372,6 +6420,9 @@ applyHighContrast(highContrastEnabled);
 
 if (typeof window !== 'undefined') {
   window.handlePinkModeIconPress = handlePinkModeIconPress;
+  window.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+  window.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+  window.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
 }
 
 let pinkModeEnabled = false;
