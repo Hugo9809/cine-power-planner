@@ -1069,7 +1069,55 @@
 
   const LZString = resolveLzString();
 
-  const APP_VERSION = '1.0.24';
+  function extractVersionCandidate(candidate) {
+    if (!candidate) {
+      return null;
+    }
+
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+
+    if (typeof candidate.APP_VERSION === 'string') {
+      return candidate.APP_VERSION;
+    }
+
+    if (typeof candidate.default === 'string') {
+      return candidate.default;
+    }
+
+    if (typeof candidate.version === 'string') {
+      return candidate.version;
+    }
+
+    return null;
+  }
+
+  function resolveAppVersion() {
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CPP_APP_VERSION === 'string' && GLOBAL_SCOPE.CPP_APP_VERSION) {
+      return GLOBAL_SCOPE.CPP_APP_VERSION;
+    }
+
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.APP_VERSION === 'string' && GLOBAL_SCOPE.APP_VERSION) {
+      return GLOBAL_SCOPE.APP_VERSION;
+    }
+
+    if (typeof require === 'function') {
+      try {
+        const moduleCandidate = require('../../../app-version.js');
+        const resolvedCandidate = extractVersionCandidate(moduleCandidate);
+        if (resolvedCandidate) {
+          return resolvedCandidate;
+        }
+      } catch (versionError) {
+        void versionError;
+      }
+    }
+
+    return null;
+  }
+
+  const APP_VERSION = resolveAppVersion() || '0.0.0';
 
   const shared = freezeDeep({
     APP_VERSION,

@@ -6,14 +6,6 @@ const rootDir = path.join(__dirname, '..', '..');
 
 const read = relativePath => fs.readFileSync(path.join(rootDir, relativePath), 'utf8');
 
-function extractVersion(regex, contents, source) {
-  const match = contents.match(regex);
-  if (!match) {
-    throw new Error(`Unable to find version in ${source}`);
-  }
-  return match[1];
-}
-
 function evaluateServiceWorkerCacheName(rootDirectory) {
   const serviceWorkerSource = read('service-worker.js');
   const context = {
@@ -61,26 +53,27 @@ describe('application version consistency', () => {
   test('package version matches user-facing and cache versions', () => {
     const { version } = require(path.join(rootDir, 'package.json'));
 
-    const appScriptVersion = extractVersion(
-      /const APP_VERSION = "([^"]+)";/,
-      read('src/scripts/script.js'),
-      'src/scripts/script.js',
-    );
-    expect(appScriptVersion).toBe(version);
+    const appVersionModule = require(path.join(rootDir, 'app-version.js'));
+    const resolvedAppVersion =
+      typeof appVersionModule === 'string'
+        ? appVersionModule
+        : appVersionModule && typeof appVersionModule.APP_VERSION === 'string'
+        ? appVersionModule.APP_VERSION
+        : appVersionModule && typeof appVersionModule.default === 'string'
+        ? appVersionModule.default
+        : null;
 
-    const legacyScriptVersion = extractVersion(
-      /var APP_VERSION = "([^"]+)";/,
-      read('legacy/scripts/script.js'),
-      'legacy/scripts/script.js',
-    );
-    expect(legacyScriptVersion).toBe(version);
+    expect(resolvedAppVersion).toBe(version);
 
-    const htmlVersion = extractVersion(
-      /<p id="aboutVersion">Version ([^<]+)<\/p>/,
-      read('index.html'),
-      'index.html',
-    );
-    expect(htmlVersion).toBe(version);
+    const scriptSource = read('src/scripts/script.js');
+    expect(scriptSource.includes("require('../../app-version.js')")).toBe(true);
+
+    const legacySource = read('legacy/scripts/script.js');
+    expect(legacySource.includes("require('../../app-version.js')")).toBe(true);
+
+    const html = read('index.html');
+    expect(html.includes('<script src="app-version.js"></script>')).toBe(true);
+    expect(html).toMatch(/<p id="aboutVersion">Version<\/p>/);
 
     const cacheName = evaluateServiceWorkerCacheName(rootDir);
     expect(cacheName).toBe(`cine-power-planner-v${version}`);

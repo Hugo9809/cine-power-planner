@@ -147,7 +147,77 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
 
   const aggregatedExports = module.exports;
   const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  const APP_VERSION = "1.0.24"; // Version marker for consistency checks
+
+  function resolveGlobalScope() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  }
+
+  function extractAppVersion(candidate) {
+    if (!candidate) {
+      return null;
+    }
+
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+
+    if (typeof candidate.APP_VERSION === 'string') {
+      return candidate.APP_VERSION;
+    }
+
+    if (typeof candidate.default === 'string') {
+      return candidate.default;
+    }
+
+    if (typeof candidate.version === 'string') {
+      return candidate.version;
+    }
+
+    return null;
+  }
+
+  function resolveAppVersion() {
+    const scope = resolveGlobalScope();
+    if (scope && typeof scope.CPP_APP_VERSION === 'string' && scope.CPP_APP_VERSION) {
+      return scope.CPP_APP_VERSION;
+    }
+
+    if (scope && typeof scope.APP_VERSION === 'string' && scope.APP_VERSION) {
+      return scope.APP_VERSION;
+    }
+
+    if (typeof require === 'function') {
+      try {
+        const moduleCandidate = require('../../app-version.js');
+        const resolvedCandidate = extractAppVersion(moduleCandidate);
+        if (resolvedCandidate) {
+          return resolvedCandidate;
+        }
+      } catch (appVersionError) {
+        void appVersionError;
+      }
+    }
+
+    return null;
+  }
+
+  const moduleAppVersion = resolveAppVersion();
+  const APP_VERSION =
+    (moduleAppVersion && typeof moduleAppVersion === 'string' && moduleAppVersion)
+      || (combinedAppVersion && typeof combinedAppVersion === 'string' && combinedAppVersion)
+      || '0.0.0';
 
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error(
@@ -155,8 +225,12 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     );
   }
 
-  if (aggregatedExports && !aggregatedExports.APP_VERSION) {
-    aggregatedExports.APP_VERSION = APP_VERSION;
+  if (aggregatedExports) {
+    if (moduleAppVersion && typeof moduleAppVersion === 'string') {
+      aggregatedExports.APP_VERSION = moduleAppVersion;
+    } else if (!aggregatedExports.APP_VERSION) {
+      aggregatedExports.APP_VERSION = APP_VERSION;
+    }
   }
 }
 
