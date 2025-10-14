@@ -809,6 +809,49 @@
       .catch(() => false);
   }
 
+  function isAccessControlReloadWarmupError(error) {
+    if (!error) {
+      return false;
+    }
+
+    let message = '';
+    try {
+      message = typeof error.message === 'string' ? error.message : '';
+    } catch (readError) {
+      void readError;
+      message = '';
+    }
+
+    let name = '';
+    try {
+      name = typeof error.name === 'string' ? error.name : '';
+    } catch (readError) {
+      void readError;
+      name = '';
+    }
+
+    const normalisedMessage = message.toLowerCase();
+    const normalisedName = name.toLowerCase();
+
+    if (normalisedName.includes('cors') || normalisedName.includes('accesscontrol')) {
+      return true;
+    }
+
+    if (!normalisedMessage) {
+      return false;
+    }
+
+    if (normalisedMessage.includes('access control')) {
+      return true;
+    }
+
+    if (normalisedMessage.includes('cors') || normalisedMessage.includes('cross-origin')) {
+      return true;
+    }
+
+    return false;
+  }
+
   function shouldSuppressReloadWarmupFailure(error, href) {
     if (!error) {
       return false;
@@ -832,6 +875,10 @@
 
     const normalisedMessage = message.toLowerCase();
     const normalisedName = name.toLowerCase();
+
+    if (isAccessControlReloadWarmupError(error)) {
+      return true;
+    }
 
     if (normalisedName === 'aborted' || normalisedName === 'aborterror') {
       return true;
@@ -923,6 +970,17 @@
 
     const shouldAllowCache = options.allowCache === true;
 
+    const includeCredentials = (() => {
+      const referenceHref = readLocationHrefSafe(locationLike);
+      const expectedOrigin = readLocationOriginSafe(locationLike);
+      if (!expectedOrigin) {
+        return false;
+      }
+
+      const targetOrigin = resolveHrefOrigin(nextHref, referenceHref);
+      return !!targetOrigin && targetOrigin === expectedOrigin;
+    })();
+
     const executeWarmup = async () => {
       try {
         await Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
@@ -941,7 +999,7 @@
       const buildRequestInit = (overrides = {}) => {
         const requestInit = {
           cache: allowCachePopulation ? 'reload' : 'no-store',
-          credentials: 'same-origin',
+          credentials: includeCredentials ? 'same-origin' : 'omit',
           redirect: 'follow',
         };
 
@@ -970,6 +1028,10 @@
 
       if (!response) {
         if (isAborted()) {
+          return false;
+        }
+
+        if (isAccessControlReloadWarmupError(firstError)) {
           return false;
         }
 

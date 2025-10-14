@@ -638,6 +638,55 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     });
   }
+  function resolveWarmupTargetOrigin(targetHref, referenceHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return '';
+    }
+    var reference = typeof referenceHref === 'string' && referenceHref ? referenceHref : undefined;
+    if (typeof URL === 'function') {
+      try {
+        return new URL(targetHref, reference).origin || '';
+      } catch (error) {
+        void error;
+      }
+    }
+    var match = targetHref.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
+    return match && match[1] ? match[1] : '';
+  }
+  function isAccessControlReloadWarmupError(error) {
+    if (!error) {
+      return false;
+    }
+    var message = '';
+    try {
+      message = typeof error.message === 'string' ? error.message : '';
+    } catch (readError) {
+      void readError;
+      message = '';
+    }
+    var name = '';
+    try {
+      name = typeof error.name === 'string' ? error.name : '';
+    } catch (readError) {
+      void readError;
+      name = '';
+    }
+    var normalisedMessage = message.toLowerCase();
+    var normalisedName = name.toLowerCase();
+    if (normalisedName.indexOf('cors') !== -1 || normalisedName.indexOf('accesscontrol') !== -1) {
+      return true;
+    }
+    if (!normalisedMessage) {
+      return false;
+    }
+    if (normalisedMessage.indexOf('access control') !== -1) {
+      return true;
+    }
+    if (normalisedMessage.indexOf('cors') !== -1 || normalisedMessage.indexOf('cross-origin') !== -1) {
+      return true;
+    }
+    return false;
+  }
   function scheduleReloadWarmup() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
@@ -647,6 +696,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var win = resolveWindow(options.window);
     var fetchFn = resolveFetch(options.fetch, win);
     if (typeof fetchFn !== 'function') {
+      return null;
+    }
+    var locationLike = options.location && _typeof(options.location) === 'object' ? options.location : win && win.location ? win.location : null;
+    var referenceHref = locationLike ? readLocationHrefSafe(locationLike) : win && win.location ? readLocationHrefSafe(win.location) : '';
+    var expectedOrigin = locationLike ? readLocationOriginSafe(locationLike) : win && win.location ? readLocationOriginSafe(win.location) : '';
+    var targetOrigin = resolveWarmupTargetOrigin(nextHref, referenceHref);
+    if (targetOrigin && expectedOrigin && targetOrigin !== expectedOrigin) {
       return null;
     }
     var nav = resolveNavigator(options.navigator);
@@ -673,6 +729,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return result;
     });
     var shouldAllowCache = options.allowCache === true;
+    var includeCredentials = !!expectedOrigin && (!targetOrigin || targetOrigin === expectedOrigin);
     var executeWarmup = function () {
       var _ref = _asyncToGenerator(_regenerator().m(function _callee() {
         var allowCachePopulation, requestInit, response, aborted, body, _t, _t2, _t3, _t4;
@@ -704,7 +761,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
               requestInit = {
                 cache: allowCachePopulation ? 'reload' : 'no-store',
-                credentials: 'same-origin',
+                credentials: includeCredentials ? 'same-origin' : 'omit',
                 redirect: 'follow'
               };
               if (controller && controller.signal) {
@@ -722,7 +779,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               _context.p = 9;
               _t3 = _context.v;
               aborted = controller && controller.signal && controller.signal.aborted;
-              if (!aborted && !reloadWarmupFailureLogged) {
+              if (!aborted && !isAccessControlReloadWarmupError(_t3) && !reloadWarmupFailureLogged) {
                 reloadWarmupFailureLogged = true;
                 safeWarn('Reload warmup fetch failed', _t3);
               }
