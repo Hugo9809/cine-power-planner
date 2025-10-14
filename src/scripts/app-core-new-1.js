@@ -87,32 +87,32 @@
 
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. We resolve the
-// localisation runtime through a dedicated helper which keeps this file focused
-// on orchestration while smaller modules handle the heavy lifting.
-const LOCALIZATION_RUNTIME_SETUP_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppLocalizationRuntimeSetup',
-  './modules/app-core/localization-runtime-setup.js'
+// localisation runtime through a dedicated helper module which keeps this file
+// focused on orchestration while smaller modules handle the heavy lifting.
+const RUNTIME_LOCALIZATION_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppRuntimeLocalization',
+  './modules/app-core/runtime-localization.js'
 );
 
-const createLocalizationRuntimeSetup =
-  (LOCALIZATION_RUNTIME_SETUP_TOOLS &&
-  typeof LOCALIZATION_RUNTIME_SETUP_TOOLS.createLocalizationRuntimeSetup === 'function'
-    ? LOCALIZATION_RUNTIME_SETUP_TOOLS.createLocalizationRuntimeSetup
+const resolveRuntimeLocalizationSetup =
+  (RUNTIME_LOCALIZATION_TOOLS &&
+  typeof RUNTIME_LOCALIZATION_TOOLS.resolveRuntimeLocalization === 'function'
+    ? RUNTIME_LOCALIZATION_TOOLS.resolveRuntimeLocalization
     : null) ||
-  (function attemptResolveLocalizationRuntimeSetup() {
+  (function attemptResolveRuntimeLocalizationSetup() {
     if (typeof require === 'function') {
       try {
-        const requiredLocalizationRuntimeSetup = require(
-          './modules/app-core/localization-runtime-setup.js'
+        const requiredRuntimeLocalization = require(
+          './modules/app-core/runtime-localization.js'
         );
         if (
-          requiredLocalizationRuntimeSetup &&
-          typeof requiredLocalizationRuntimeSetup.createLocalizationRuntimeSetup === 'function'
+          requiredRuntimeLocalization &&
+          typeof requiredRuntimeLocalization.resolveRuntimeLocalization === 'function'
         ) {
-          return requiredLocalizationRuntimeSetup.createLocalizationRuntimeSetup;
+          return requiredRuntimeLocalization.resolveRuntimeLocalization;
         }
-      } catch (localizationRuntimeSetupRequireError) {
-        void localizationRuntimeSetupRequireError;
+      } catch (runtimeLocalizationRequireError) {
+        void runtimeLocalizationRequireError;
       }
     }
 
@@ -132,15 +132,68 @@ const createLocalizationRuntimeSetup =
       }
 
       try {
-        const candidate = scope.cineCoreAppLocalizationRuntimeSetup;
+        const candidate = scope.cineCoreAppRuntimeLocalization;
         if (
           candidate &&
-          typeof candidate.createLocalizationRuntimeSetup === 'function'
+          typeof candidate.resolveRuntimeLocalization === 'function'
         ) {
-          return candidate.createLocalizationRuntimeSetup;
+          return candidate.resolveRuntimeLocalization;
         }
-      } catch (localizationRuntimeSetupLookupError) {
-        void localizationRuntimeSetupLookupError;
+      } catch (runtimeLocalizationLookupError) {
+        void runtimeLocalizationLookupError;
+      }
+    }
+
+    return null;
+  })();
+
+const createFallbackLocalizationRuntimeSetup =
+  (RUNTIME_LOCALIZATION_TOOLS &&
+  typeof RUNTIME_LOCALIZATION_TOOLS.createFallbackLocalizationRuntimeSetup === 'function'
+    ? RUNTIME_LOCALIZATION_TOOLS.createFallbackLocalizationRuntimeSetup
+    : null) ||
+  (function attemptResolveFallbackLocalizationRuntimeSetup() {
+    if (typeof require === 'function') {
+      try {
+        const requiredRuntimeLocalization = require(
+          './modules/app-core/runtime-localization.js'
+        );
+        if (
+          requiredRuntimeLocalization &&
+          typeof requiredRuntimeLocalization.createFallbackLocalizationRuntimeSetup === 'function'
+        ) {
+          return requiredRuntimeLocalization.createFallbackLocalizationRuntimeSetup;
+        }
+      } catch (fallbackLocalizationRequireError) {
+        void fallbackLocalizationRequireError;
+      }
+    }
+
+    const fallbackScopes = [
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!scope || typeof scope !== 'object') {
+        continue;
+      }
+
+      try {
+        const candidate = scope.cineCoreAppRuntimeLocalization;
+        if (
+          candidate &&
+          typeof candidate.createFallbackLocalizationRuntimeSetup === 'function'
+        ) {
+          return candidate.createFallbackLocalizationRuntimeSetup;
+        }
+      } catch (fallbackLocalizationLookupError) {
+        void fallbackLocalizationLookupError;
       }
     }
 
@@ -172,37 +225,16 @@ const createLocalizationRuntimeSetup =
   })();
 
 const LOCALIZATION_RUNTIME_SETUP =
-  typeof createLocalizationRuntimeSetup === 'function'
-    ? createLocalizationRuntimeSetup({
+  (typeof resolveRuntimeLocalizationSetup === 'function'
+    ? resolveRuntimeLocalizationSetup({
         resolveCoreSupportModule,
         requireFn: typeof require === 'function' ? require : null,
         runtimeScope:
           typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
         coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
       })
-    : {
-        localizationRuntimeEnvironment: null,
-        localizationBridge: null,
-        localizationFallbacks: null,
-        inlineLocalizationFallbacks: null,
-        localizationFallbackSupport: null,
-        createBasicLocalizationFallbackResolvers() {
-          return null;
-        },
-        localizationFallbackRegistry: {
-          createFallbackResolvers() {
-            return null;
-          },
-        },
-        localizationFallbackResolvers: null,
-        localizationFallbackNamespace: null,
-        fallbackResolveLocaleModule() {
-          return null;
-        },
-        createLocaleFallbacks() {
-          return null;
-        },
-      };
+    : null) ||
+  createFallbackLocalizationRuntimeSetup();
 
 const localizationRuntimeEnvironment =
   LOCALIZATION_RUNTIME_SETUP.localizationRuntimeEnvironment;
