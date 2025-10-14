@@ -192,7 +192,78 @@
     return null;
   }
 
-  function createFallbackLocalizationBridge() {
+  function callCreateAppLocalizationSupport(tools, options) {
+    if (isObject(tools) && typeof tools.createAppLocalizationSupport === 'function') {
+      try {
+        return tools.createAppLocalizationSupport(options);
+      } catch (createAppLocalizationSupportError) {
+        void createAppLocalizationSupportError;
+      }
+    }
+
+    return null;
+  }
+
+  function createFallbackLocalizationBridge(options) {
+    const resolveCoreSupportModule = options && options.resolveCoreSupportModule;
+    const requireFn = options && options.requireFn;
+    const runtimeScope = options && options.runtimeScope;
+    const coreGlobalScope = options && options.coreGlobalScope;
+
+    let localizationSupportTools = null;
+
+    if (typeof resolveCoreSupportModule === 'function') {
+      try {
+        localizationSupportTools = resolveCoreSupportModule(
+          'cineCoreAppLocalizationSupport',
+          '../app-core/localization-support.js'
+        );
+      } catch (localizationSupportResolveError) {
+        void localizationSupportResolveError;
+        localizationSupportTools = null;
+      }
+    }
+
+    if (!isObject(localizationSupportTools) && typeof requireFn === 'function') {
+      try {
+        const requiredLocalizationSupport = requireFn('../app-core/localization-support.js');
+        if (isObject(requiredLocalizationSupport)) {
+          localizationSupportTools = requiredLocalizationSupport;
+        }
+      } catch (localizationSupportRequireError) {
+        void localizationSupportRequireError;
+      }
+    }
+
+    if (!isObject(localizationSupportTools)) {
+      const fallbackScopes = collectCandidateScopes(runtimeScope, coreGlobalScope);
+
+      for (let index = 0; index < fallbackScopes.length; index += 1) {
+        const scope = fallbackScopes[index];
+
+        try {
+          const candidate = scope && scope.cineCoreAppLocalizationSupport;
+          if (isObject(candidate)) {
+            localizationSupportTools = candidate;
+            break;
+          }
+        } catch (localizationSupportLookupError) {
+          void localizationSupportLookupError;
+        }
+      }
+    }
+
+    const localizationBridge = callCreateAppLocalizationSupport(localizationSupportTools, {
+      resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+    });
+
+    if (isObject(localizationBridge)) {
+      return localizationBridge;
+    }
+
     function createBasicLocalizationFallbackResolversProxy() {
       return null;
     }
@@ -269,13 +340,15 @@
       }
     }
 
-    return function fallbackCreateLocalizationRuntimeBridge() {
-      return createFallbackLocalizationBridge();
+    return function fallbackCreateLocalizationRuntimeBridge(fallbackOptions) {
+      return createFallbackLocalizationBridge(fallbackOptions);
     };
   }
 
-  function normalizeLocalizationRuntimeBridge(bridge) {
-    const resolvedBridge = isObject(bridge) ? bridge : createFallbackLocalizationBridge();
+  function normalizeLocalizationRuntimeBridge(bridge, fallbackOptions) {
+    const resolvedBridge = isObject(bridge)
+      ? bridge
+      : createFallbackLocalizationBridge(fallbackOptions);
 
     const localizationRuntimeEnvironment = isObject(
       resolvedBridge.localizationRuntimeEnvironment
@@ -390,7 +463,12 @@
       coreGlobalScope,
     });
 
-    return normalizeLocalizationRuntimeBridge(localizationRuntimeBridge);
+    return normalizeLocalizationRuntimeBridge(localizationRuntimeBridge, {
+      resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+    });
   }
 
   const namespace = {
