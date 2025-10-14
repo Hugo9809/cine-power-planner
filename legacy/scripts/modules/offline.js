@@ -1544,13 +1544,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (isSameOriginReloadTarget(locationLike, nextHref)) {
       return nextHref;
     }
-    var fallbackHref = typeof originalHref === 'string' && originalHref ? originalHref : '';
-    var baseHref = readLocationHrefSafe(locationLike) || fallbackHref;
+    var locationHref = readLocationHrefSafe(locationLike);
+    var fallbackCandidate = typeof originalHref === 'string' && originalHref ? originalHref : '';
+    var sameOriginCandidates = [];
+    if (locationHref && isSameOriginReloadTarget(locationLike, locationHref)) {
+      sameOriginCandidates.push(locationHref);
+    }
+    if (fallbackCandidate && isSameOriginReloadTarget(locationLike, fallbackCandidate)) {
+      sameOriginCandidates.push(fallbackCandidate);
+    }
+    var baseHref = sameOriginCandidates.length ? sameOriginCandidates[0] : locationHref;
+    var origin = readLocationOriginSafe(locationLike);
     if (typeof URL === 'function' && baseHref) {
       try {
-        var base = new URL(baseHref, fallbackHref || undefined);
         var candidate = new URL(nextHref, baseHref);
-        var rebuilt = "".concat(base.origin || '').concat(candidate.pathname || '').concat(candidate.search || '').concat(candidate.hash || '');
+        var rebuilt = "".concat(candidate.origin || '').concat(candidate.pathname || '').concat(candidate.search || '').concat(candidate.hash || '');
         if (rebuilt && isSameOriginReloadTarget(locationLike, rebuilt)) {
           return rebuilt;
         }
@@ -1558,18 +1566,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void rebuildError;
       }
     }
-    if (typeof nextHref === 'string') {
+    if (typeof nextHref === 'string' && origin) {
       var originPattern = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+(.*)$/;
       var match = nextHref.match(originPattern);
-      var origin = readLocationOriginSafe(locationLike);
-      if (match && match[1] && origin) {
+      if (match && match[1]) {
         var rebuiltWithOrigin = "".concat(origin).concat(match[1]);
         if (isSameOriginReloadTarget(locationLike, rebuiltWithOrigin)) {
           return rebuiltWithOrigin;
         }
       }
     }
-    return fallbackHref || baseHref || '';
+    if (sameOriginCandidates.length) {
+      return sameOriginCandidates[0];
+    }
+    if (origin) {
+      return origin;
+    }
+    return '';
   }
   function coerceForceReloadUrlDescriptor(locationLike, descriptor) {
     var defaultParam = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'forceReload';

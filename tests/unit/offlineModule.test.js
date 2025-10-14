@@ -236,6 +236,39 @@ describe('cineOffline module', () => {
     }
   });
 
+  test('coerceForceReloadUrlDescriptor normalises cross-origin descriptors to the current origin', () => {
+    const locationLike = {
+      href: 'https://example.test/app/index.html',
+      origin: 'https://example.test',
+      pathname: '/app/index.html',
+    };
+
+    const descriptor = {
+      originalHref: 'https://remote.example/app/index.html',
+      nextHref: 'https://remote.example/app/index.html?forceReload=abc',
+      param: 'forceReload',
+      timestamp: 'abc',
+    };
+
+    const result = internal.coerceForceReloadUrlDescriptor(locationLike, descriptor, 'forceReload');
+
+    expect(result.nextHref).toBe('https://example.test/app/index.html?forceReload=abc');
+
+    const noNextHrefDescriptor = {
+      originalHref: 'https://remote.example/app/index.html',
+      param: 'forceReload',
+      timestamp: 'xyz',
+    };
+
+    const resultWithoutNext = internal.coerceForceReloadUrlDescriptor(
+      locationLike,
+      noNextHrefDescriptor,
+      'forceReload',
+    );
+
+    expect(resultWithoutNext.nextHref).toBe('https://example.test/app/index.html');
+  });
+
   test('reload warmup suppresses warning when both fetch attempts fail with load failure', async () => {
     jest.useFakeTimers();
 
