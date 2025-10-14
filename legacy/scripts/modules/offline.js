@@ -1442,6 +1442,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var originMatch = href.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
     return originMatch && originMatch[1] ? originMatch[1] : '';
   }
+  function resolveHrefOrigin(targetHref, referenceHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return '';
+    }
+    var reference = typeof referenceHref === 'string' && referenceHref ? referenceHref : undefined;
+    if (typeof URL === 'function') {
+      try {
+        var url = new URL(targetHref, reference);
+        if (url && typeof url.origin === 'string') {
+          return url.origin;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var originPattern = /^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/;
+    var match = targetHref.match(originPattern);
+    return match && match[1] ? match[1] : '';
+  }
+  function isSameOriginReloadTarget(locationLike, targetHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return false;
+    }
+    var fallbackLocation = locationLike && _typeof(locationLike) === 'object' ? locationLike : typeof window !== 'undefined' && window && window.location ? window.location : null;
+    var referenceHref = readLocationHrefSafe(locationLike) || readLocationHrefSafe(fallbackLocation);
+    var targetOrigin = resolveHrefOrigin(targetHref, referenceHref);
+    if (!targetOrigin) {
+      return true;
+    }
+    var expectedOrigin = readLocationOriginSafe(locationLike) || readLocationOriginSafe(fallbackLocation);
+    if (!expectedOrigin) {
+      return false;
+    }
+    return targetOrigin === expectedOrigin;
+  }
   function getForceReloadBaseCandidates(locationLike, originalHref) {
     var candidates = [];
     var unique = new Set();
@@ -1503,6 +1538,52 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return trimmed;
   }
+  function enforceSameOriginNextHref(locationLike, originalHref, nextHref) {
+    if (isSameOriginReloadTarget(locationLike, nextHref)) {
+      return nextHref;
+    }
+    var fallbackHref = typeof originalHref === 'string' && originalHref ? originalHref : '';
+    var baseHref = readLocationHrefSafe(locationLike) || fallbackHref;
+    if (typeof URL === 'function' && baseHref) {
+      try {
+        var base = new URL(baseHref, fallbackHref || undefined);
+        var candidate = new URL(nextHref, baseHref);
+        var rebuilt = "".concat(base.origin || '').concat(candidate.pathname || '').concat(candidate.search || '').concat(candidate.hash || '');
+        if (rebuilt && isSameOriginReloadTarget(locationLike, rebuilt)) {
+          return rebuilt;
+        }
+      } catch (rebuildError) {
+        void rebuildError;
+      }
+    }
+    if (typeof nextHref === 'string') {
+      var originPattern = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+(.*)$/;
+      var match = nextHref.match(originPattern);
+      var origin = readLocationOriginSafe(locationLike);
+      if (match && match[1] && origin) {
+        var rebuiltWithOrigin = "".concat(origin).concat(match[1]);
+        if (isSameOriginReloadTarget(locationLike, rebuiltWithOrigin)) {
+          return rebuiltWithOrigin;
+        }
+      }
+    }
+    return fallbackHref || baseHref || '';
+  }
+  function coerceForceReloadUrlDescriptor(locationLike, descriptor) {
+    var defaultParam = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'forceReload';
+    var param = descriptor && typeof descriptor.param === 'string' && descriptor.param ? descriptor.param : defaultParam;
+    var timestamp = descriptor && typeof descriptor.timestamp === 'string' && descriptor.timestamp ? descriptor.timestamp : Date.now().toString(36);
+    var resolvedOriginalHref = descriptor && typeof descriptor.originalHref === 'string' && descriptor.originalHref ? descriptor.originalHref : readLocationHrefSafe(locationLike);
+    var originalHref = resolvedOriginalHref || readLocationHrefSafe(locationLike);
+    var nextHrefCandidate = descriptor && typeof descriptor.nextHref === 'string' && descriptor.nextHref ? descriptor.nextHref : originalHref;
+    var nextHref = enforceSameOriginNextHref(locationLike, originalHref, nextHrefCandidate);
+    return {
+      originalHref: originalHref,
+      nextHref: nextHref,
+      param: param,
+      timestamp: timestamp
+    };
+  }
   function buildForceReloadUrl(locationLike, paramName) {
     var param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
     var timestamp = Date.now().toString(36);
@@ -1525,7 +1606,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           url.searchParams.set(param, timestamp);
           return {
             originalHref: originalHref,
-            nextHref: url.toString(),
+            nextHref: enforceSameOriginNextHref(locationLike, originalHref, url.toString()),
             param: param,
             timestamp: timestamp
           };
@@ -1557,7 +1638,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var absolute = new URL(href + hash, _candidate).toString();
           return {
             originalHref: originalHref,
-            nextHref: absolute,
+            nextHref: enforceSameOriginNextHref(locationLike, originalHref, absolute),
             param: param,
             timestamp: timestamp
           };
@@ -1566,9 +1647,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
+    var candidateHref = href ? href + hash : originalHref;
     return {
       originalHref: originalHref,
-      nextHref: href ? href + hash : originalHref,
+      nextHref: enforceSameOriginNextHref(locationLike, originalHref, candidateHref),
       param: param,
       timestamp: timestamp
     };
@@ -1973,7 +2055,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hasAssign = location && typeof location.assign === 'function';
     var hasReload = location && typeof location.reload === 'function';
     var navigationTriggered = false;
-    var forceReloadUrl = precomputedForceReloadUrl && _typeof(precomputedForceReloadUrl) === 'object' ? precomputedForceReloadUrl : buildForceReloadUrl(location, 'forceReload');
+    var forceReloadDescriptor = precomputedForceReloadUrl && _typeof(precomputedForceReloadUrl) === 'object' ? precomputedForceReloadUrl : buildForceReloadUrl(location, 'forceReload');
+    var forceReloadUrl = coerceForceReloadUrlDescriptor(location, forceReloadDescriptor, 'forceReload');
     var originalHrefCandidate = typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref ? forceReloadUrl.originalHref : readLocationHrefSafe(location);
     var originalHref = originalHrefCandidate || readLocationHrefSafe(location);
     var nextHref = typeof forceReloadUrl.nextHref === 'string' ? forceReloadUrl.nextHref : '';
@@ -2057,7 +2140,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             options = _args6.length > 0 && _args6[0] !== undefined ? _args6[0] : {};
             win = resolveWindow(options.window);
             location = resolveLocation(options.location || win && win.location);
-            forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
+            forceReloadUrl = coerceForceReloadUrlDescriptor(location, buildForceReloadUrl(location, 'forceReload'), 'forceReload');
             uiCacheCleared = false;
             clearUiCacheStorageEntriesFn = typeof options.clearUiCacheStorageEntries === 'function' ? options.clearUiCacheStorageEntries : typeof resolveGlobal('clearUiCacheStorageEntries') === 'function' ? resolveGlobal('clearUiCacheStorageEntries') : null;
             if (clearUiCacheStorageEntriesFn) {
@@ -2336,7 +2419,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       unregisterServiceWorkers: unregisterServiceWorkers,
       clearCacheStorage: clearCacheStorage,
       triggerReload: triggerReload,
-      cleanupForceReloadArtifacts: cleanupForceReloadArtifacts
+      cleanupForceReloadArtifacts: cleanupForceReloadArtifacts,
+      coerceForceReloadUrlDescriptor: coerceForceReloadUrlDescriptor,
+      scheduleReloadWarmup: scheduleReloadWarmup
     }
   };
   cleanupForceReloadArtifacts();

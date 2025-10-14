@@ -1869,6 +1869,39 @@
     return fallbackHref || baseHref || '';
   }
 
+  function coerceForceReloadUrlDescriptor(locationLike, descriptor, defaultParam = 'forceReload') {
+    const param =
+      descriptor && typeof descriptor.param === 'string' && descriptor.param
+        ? descriptor.param
+        : defaultParam;
+
+    const timestamp =
+      descriptor && typeof descriptor.timestamp === 'string' && descriptor.timestamp
+        ? descriptor.timestamp
+        : Date.now().toString(36);
+
+    const resolvedOriginalHref =
+      descriptor && typeof descriptor.originalHref === 'string' && descriptor.originalHref
+        ? descriptor.originalHref
+        : readLocationHrefSafe(locationLike);
+
+    const originalHref = resolvedOriginalHref || readLocationHrefSafe(locationLike);
+
+    const nextHrefCandidate =
+      descriptor && typeof descriptor.nextHref === 'string' && descriptor.nextHref
+        ? descriptor.nextHref
+        : originalHref;
+
+    const nextHref = enforceSameOriginNextHref(locationLike, originalHref, nextHrefCandidate);
+
+    return {
+      originalHref,
+      nextHref,
+      param,
+      timestamp,
+    };
+  }
+
   function buildForceReloadUrl(locationLike, paramName) {
     const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
     const timestamp = Date.now().toString(36);
@@ -2456,10 +2489,11 @@
     const hasReload = location && typeof location.reload === 'function';
     let navigationTriggered = false;
 
-    const forceReloadUrl =
+    const forceReloadDescriptor =
       precomputedForceReloadUrl && typeof precomputedForceReloadUrl === 'object'
         ? precomputedForceReloadUrl
         : buildForceReloadUrl(location, 'forceReload');
+    const forceReloadUrl = coerceForceReloadUrlDescriptor(location, forceReloadDescriptor, 'forceReload');
 
     const originalHrefCandidate =
       typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref
@@ -2537,7 +2571,11 @@
   async function reloadApp(options = {}) {
     const win = resolveWindow(options.window);
     const location = resolveLocation(options.location || (win && win.location));
-    const forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
+    const forceReloadUrl = coerceForceReloadUrlDescriptor(
+      location,
+      buildForceReloadUrl(location, 'forceReload'),
+      'forceReload',
+    );
 
     let uiCacheCleared = false;
     const clearUiCacheStorageEntriesFn =
@@ -2824,6 +2862,7 @@
       clearCacheStorage,
       triggerReload,
       cleanupForceReloadArtifacts,
+      coerceForceReloadUrlDescriptor,
       scheduleReloadWarmup,
     },
   };
