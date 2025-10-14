@@ -18,6 +18,8 @@ instructions.
 - [ ] Sync README translations and note pending language reviews.
 - [ ] Confirm UI button screenshots/text reference the Project Overview save/delete style.
 - [ ] Capture new screenshots or diagrams using local assets only.
+- [ ] Cross-check the [Backup Rotation Guide](backup-rotation-guide.md) for any
+      cadence or storage updates needed to match the new behaviour.
 - [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
       payloads changed.
 - [ ] Record interim notes in `review-findings.md`.
