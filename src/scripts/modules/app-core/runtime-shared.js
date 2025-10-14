@@ -155,7 +155,7 @@
       try {
         shared = resolveCoreSupportModule(
           'cineCoreRuntimeShared',
-          './modules/core/runtime-shared.js'
+          '../core/runtime-shared.js'
         );
       } catch (runtimeSharedResolveError) {
         void runtimeSharedResolveError;
@@ -165,7 +165,7 @@
 
     if (!isObject(shared) && typeof requireFn === 'function') {
       try {
-        const requiredShared = requireFn('./modules/core/runtime-shared.js');
+        const requiredShared = requireFn('../core/runtime-shared.js');
         if (isObject(requiredShared)) {
           shared = requiredShared;
         }

@@ -205,7 +205,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     if (resolveCoreSupportModule) {
       try {
-        support = resolveCoreSupportModule('cineCorePinkModeSupport', './modules/core/pink-mode-support.js');
+        support = resolveCoreSupportModule('cineCorePinkModeSupport', '../core/pink-mode-support.js');
       } catch (pinkModeSupportResolveError) {
         void pinkModeSupportResolveError;
         support = null;
@@ -214,7 +214,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     if (!isObject(support) && typeof requireFn === 'function') {
       try {
-        var requiredSupport = requireFn('./modules/core/pink-mode-support.js');
+        var requiredSupport = requireFn('../core/pink-mode-support.js');
         if (isObject(requiredSupport)) {
           support = requiredSupport;
         }

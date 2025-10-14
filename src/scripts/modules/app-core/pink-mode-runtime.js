@@ -220,7 +220,7 @@
       try {
         support = resolveCoreSupportModule(
           'cineCorePinkModeSupport',
-          './modules/core/pink-mode-support.js'
+          '../core/pink-mode-support.js'
         );
       } catch (pinkModeSupportResolveError) {
         void pinkModeSupportResolveError;
@@ -230,7 +230,7 @@
 
     if (!isObject(support) && typeof requireFn === 'function') {
       try {
-        const requiredSupport = requireFn('./modules/core/pink-mode-support.js');
+        const requiredSupport = requireFn('../core/pink-mode-support.js');
         if (isObject(requiredSupport)) {
           support = requiredSupport;
         }
