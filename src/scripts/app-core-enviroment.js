@@ -233,7 +233,7 @@ var CORE_RUNTIME_SHARED =
         return null;
       })();
 
-function collectCoreRuntimeCandidateScopes(primaryScope) {
+function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
   if (
     CORE_RUNTIME_SHARED &&
     typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function'
@@ -355,7 +355,7 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopesP
   }
 
   if (!resolvedScopes) {
-    resolvedScopes = collectCoreRuntimeCandidateScopes(
+    resolvedScopes = collectEnvironmentRuntimeCandidateScopes(
       typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
         CORE_GLOBAL_SCOPE &&
         typeof CORE_GLOBAL_SCOPE === 'object'
