@@ -123,7 +123,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return "".concat(label, " ").concat(formattedValue, " g");
     };
     function createFallbackRuntimeScopeCandidates() {
-      return [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2) === 'object' ? CORE_SHARED_SCOPE_PART2 : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+      return [CORE_PART2_RUNTIME_SCOPE && (typeof CORE_PART2_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART2_RUNTIME_SCOPE)) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2) === 'object' ? CORE_SHARED_SCOPE_PART2 : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
     }
     var runtimeScopeCandidatesRef = createFallbackRuntimeScopeCandidates();
     function fallbackReadCoreScopeValue(name) {
@@ -179,7 +179,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       fallbackWriteCoreScopeValue(name, fallbackValue);
       return fallbackValue;
     }
-    var CORE_RUNTIME_SCOPE_BRIDGE_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeScopeBridge', './modules/app-core/runtime-scope-bridge.js');
+    var CORE_RUNTIME_SCOPE_BRIDGE_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeScopeBridge', './modules/app-core/runtime.js');
     var runtimeScopeBridge = CORE_RUNTIME_SCOPE_BRIDGE_TOOLS && typeof CORE_RUNTIME_SCOPE_BRIDGE_TOOLS.createRuntimeScopeBridge === 'function' ? CORE_RUNTIME_SCOPE_BRIDGE_TOOLS.createRuntimeScopeBridge({
       primaryScope: CORE_PART2_RUNTIME_SCOPE,
       additionalScopes: [CORE_SHARED_SCOPE_PART2, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null]
@@ -431,8 +431,32 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
     }
-    function refreshAutoGearCrewOptions(selectElement, selected, key) {
-      if (!selectElement) return;
+    var AUTO_GEAR_CREW_OPTION_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeAutoGearCrew', './modules/app-core/runtime.js');
+    var AUTO_GEAR_CREW_OPTION_NAMESPACE = AUTO_GEAR_CREW_OPTION_TOOLS || typeof globalThis !== 'undefined' && globalThis.cineCoreAppRuntimeAutoGearCrew || typeof window !== 'undefined' && window.cineCoreAppRuntimeAutoGearCrew || typeof self !== 'undefined' && self.cineCoreAppRuntimeAutoGearCrew || typeof global !== 'undefined' && global.cineCoreAppRuntimeAutoGearCrew || (typeof require === 'function' ? function requireAutoGearCrewHelpers() {
+      try {
+        return require('./modules/app-core/runtime.js');
+      } catch (autoGearCrewRequireError) {
+        void autoGearCrewRequireError;
+        return null;
+      }
+    }() : null);
+    var AUTO_GEAR_CREW_HELPERS = AUTO_GEAR_CREW_OPTION_NAMESPACE && typeof AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers === 'function' ? AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers({
+      documentRef: typeof document !== 'undefined' ? document : null,
+      collectSelectedValues: collectAutoGearSelectedValues,
+      computeMultiSelectSize: computeAutoGearMultiSelectSize,
+      getCrewRoleEntries: getCrewRoleEntries,
+      autoGearFlexMinRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+      getLocalizedTexts: function getLocalizedTexts() {
+        return texts[currentLang] || texts.en || {};
+      },
+      getDefaultLanguageTexts: function getDefaultLanguageTexts() {
+        return texts.en || {};
+      }
+    }) : null;
+    var refreshAutoGearCrewOptions = AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.refreshCrewOptions === 'function' ? AUTO_GEAR_CREW_HELPERS.refreshCrewOptions : function refreshAutoGearCrewOptionsFallback(selectElement, selected, key) {
+      if (!selectElement || typeof document === 'undefined') {
+        return;
+      }
       var selectedValues = collectAutoGearSelectedValues(selected, key);
       selectElement.innerHTML = '';
       selectElement.multiple = true;
@@ -463,8 +487,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       selectElement.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
         minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
       });
-    }
-    function getCrewRoleLabel(value) {
+    };
+    var getCrewRoleLabel = AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel === 'function' ? AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel : function getCrewRoleLabelFallback(value) {
       var _texts$en;
       if (typeof value !== 'string') return '';
       var trimmed = value.trim();
@@ -472,7 +496,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var langTexts = texts[currentLang] || texts.en || {};
       var crewRoleMap = langTexts.crewRoles || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.crewRoles) || {};
       return (crewRoleMap === null || crewRoleMap === void 0 ? void 0 : crewRoleMap[trimmed]) || trimmed;
-    }
+    };
     function refreshAutoGearCameraOptions(selected) {
       if (!autoGearCameraSelect) return;
       var selectedValues = collectAutoGearSelectedValues(selected, 'camera');
@@ -1036,18 +1060,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var autoGearBackupDateFormatter = null;
     var autoGearBackupDateFormatterLocale = '';
-
     function ensureAutoGearBackupDateFormatter() {
       var resolvedLocale = resolveLanguageCode(currentLang);
       if (autoGearBackupDateFormatter && autoGearBackupDateFormatterLocale === resolvedLocale) {
         return autoGearBackupDateFormatter;
       }
-
       if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
         try {
           autoGearBackupDateFormatter = new Intl.DateTimeFormat(resolvedLocale, {
             dateStyle: 'medium',
-            timeStyle: 'short',
+            timeStyle: 'short'
           });
           autoGearBackupDateFormatterLocale = resolvedLocale;
           return autoGearBackupDateFormatter;
@@ -1055,12 +1077,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           console.warn('Failed to create automatic gear backup date formatter', formatterError);
         }
       }
-
       autoGearBackupDateFormatter = null;
       autoGearBackupDateFormatterLocale = '';
       return null;
     }
-
     function formatAutoGearBackupCount(count) {
       var langTexts = texts[currentLang] || texts.en || {};
       var fallbackTexts = texts.en || {};
@@ -16047,6 +16067,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return getLensDeviceMountOptions;
     }], ['clearLensDeviceMountOptions', function () {
       return clearLensDeviceMountOptions;
+    }], ['updateMountTypeOptions', function () {
+      return updateMountTypeOptions;
     }], ['clearPowerDistribution', function () {
       return clearPowerDistribution;
     }], ['clearVideoOutputs', function () {

@@ -860,40 +860,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return resolved;
   }
   var LZString = resolveLzString();
-
   function extractVersionCandidate(candidate) {
     if (!candidate) {
       return null;
     }
-
     if (typeof candidate === 'string') {
       return candidate;
     }
-
-    if (candidate && typeof candidate.APP_VERSION === 'string') {
+    if (typeof candidate.APP_VERSION === 'string') {
       return candidate.APP_VERSION;
     }
-
-    if (candidate && typeof candidate.default === 'string') {
+    if (typeof candidate.default === 'string') {
       return candidate.default;
     }
-
-    if (candidate && typeof candidate.version === 'string') {
+    if (typeof candidate.version === 'string') {
       return candidate.version;
     }
-
     return null;
   }
-
   function resolveAppVersion() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CPP_APP_VERSION === 'string' && GLOBAL_SCOPE.CPP_APP_VERSION) {
       return GLOBAL_SCOPE.CPP_APP_VERSION;
     }
-
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.APP_VERSION === 'string' && GLOBAL_SCOPE.APP_VERSION) {
       return GLOBAL_SCOPE.APP_VERSION;
     }
-
     if (typeof require === 'function') {
       try {
         var moduleCandidate = require('../../../app-version.js');
@@ -905,10 +896,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void versionError;
       }
     }
-
     return null;
   }
-
   var APP_VERSION = resolveAppVersion() || '0.0.0';
   var shared = freezeDeep({
     APP_VERSION: APP_VERSION,

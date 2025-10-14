@@ -1,112 +1,73 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  function isScopeCandidate(value) {
-    return !!value && (_typeof(value) === 'object' || typeof value === 'function');
-  }
-  function getRuntimeScopeCandidates(primaryScope) {
-    var candidates = [];
-    if (isScopeCandidate(primaryScope)) {
-      candidates.push(primaryScope);
-    }
+  var MODULE_ID = 'modules/core/runtime-support-defaults.js';
+  var GLOBAL_KEY = 'cineCoreRuntimeModules';
+  var HAS = Object.prototype.hasOwnProperty;
+  function detectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
-      candidates.push(globalThis);
+      return globalThis;
     }
     if (typeof window !== 'undefined') {
-      candidates.push(window);
+      return window;
     }
     if (typeof self !== 'undefined') {
-      candidates.push(self);
+      return self;
     }
     if (typeof global !== 'undefined') {
-      candidates.push(global);
-    }
-    var resolved = [];
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (isScopeCandidate(candidate)) {
-        var alreadyPresent = false;
-        for (var compareIndex = 0; compareIndex < resolved.length; compareIndex += 1) {
-          if (resolved[compareIndex] === candidate) {
-            alreadyPresent = true;
-            break;
-          }
-        }
-        if (!alreadyPresent) {
-          resolved.push(candidate);
-        }
-      }
-    }
-    return resolved;
-  }
-  function fallbackDetectRuntimeScope(primaryScope) {
-    var candidates = getRuntimeScopeCandidates(primaryScope);
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (isScopeCandidate(candidate)) {
-        return candidate;
-      }
+      return global;
     }
     return null;
   }
-  function fallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
-    if (typeof namespaceName !== 'string' || !namespaceName) {
+  var globalScope = detectGlobalScope();
+  function resolveNamespace() {
+    if (typeof require === 'function') {
+      var candidates = ['./runtime.js', '../runtime.js'];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        try {
+          var _namespace = require(candidate);
+          if (_namespace && _typeof(_namespace) === 'object') {
+            return _namespace;
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    if (globalScope && _typeof(globalScope[GLOBAL_KEY]) === 'object' && globalScope[GLOBAL_KEY]) {
+      return globalScope[GLOBAL_KEY];
+    }
+    return null;
+  }
+  var namespace = resolveNamespace();
+  function ensureGlobalTarget() {
+    if (!globalScope) {
       return null;
     }
-    var runtimeScope = fallbackDetectRuntimeScope(primaryScope);
-    if (runtimeScope && runtimeScope[namespaceName] && _typeof(runtimeScope[namespaceName]) === 'object') {
-      return runtimeScope[namespaceName];
+    var current = globalScope[GLOBAL_KEY];
+    if (current && _typeof(current) === 'object') {
+      return current;
     }
-    if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
-      try {
-        var required = require(requirePath);
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-      } catch (supportModuleError) {
-        void supportModuleError;
-      }
+    try {
+      var created = {};
+      globalScope[GLOBAL_KEY] = created;
+      return created;
+    } catch (error) {
+      void error;
     }
     return null;
   }
-  function readRuntimeSupportResolver(primaryScope) {
-    var runtimeScope = fallbackDetectRuntimeScope(primaryScope);
-    function detectRuntimeScope(scopeCandidate) {
-      return fallbackDetectRuntimeScope(isScopeCandidate(scopeCandidate) ? scopeCandidate : runtimeScope);
-    }
-    function resolveCoreSupportModule(namespaceName, requirePath, scopeCandidate) {
-      var candidateScope = isScopeCandidate(scopeCandidate) ? scopeCandidate : runtimeScope;
-      return fallbackResolveCoreSupportModule(namespaceName, requirePath, candidateScope);
-    }
-    return Object.freeze({
-      detectRuntimeScope: detectRuntimeScope,
-      resolveCoreSupportModule: resolveCoreSupportModule
-    });
-  }
-  var namespace = {
-    fallbackDetectRuntimeScope: fallbackDetectRuntimeScope,
-    fallbackResolveCoreSupportModule: fallbackResolveCoreSupportModule,
-    readRuntimeSupportResolver: readRuntimeSupportResolver,
-    getRuntimeScopeCandidates: getRuntimeScopeCandidates
-  };
-  var namespaceName = 'cineCoreRuntimeSupportDefaults';
-  var attachmentCandidates = getRuntimeScopeCandidates();
-  for (var index = 0; index < attachmentCandidates.length; index += 1) {
-    var scope = attachmentCandidates[index];
-    if (!isScopeCandidate(scope)) {
-      continue;
-    }
-    var existing = scope[namespaceName] && _typeof(scope[namespaceName]) === 'object' ? scope[namespaceName] : {};
-    for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
-      var key = _Object$keys[_i];
-      existing[key] = namespace[key];
-    }
-    try {
-      scope[namespaceName] = existing;
-    } catch (assignError) {
-      void assignError;
-    }
-  }
+  var existingExport = globalScope && globalScope[GLOBAL_KEY] && _typeof(globalScope[GLOBAL_KEY]) === 'object' && HAS.call(globalScope[GLOBAL_KEY], MODULE_ID) ? globalScope[GLOBAL_KEY][MODULE_ID] : undefined;
+  var moduleExport = namespace && HAS.call(namespace, MODULE_ID) ? namespace[MODULE_ID] : existingExport;
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
-    module.exports = namespace;
+    module.exports = moduleExport;
+    return;
+  }
+  var target = ensureGlobalTarget();
+  if (!target) {
+    return;
+  }
+  if (typeof moduleExport !== 'undefined') {
+    target[MODULE_ID] = moduleExport;
   }
 })();

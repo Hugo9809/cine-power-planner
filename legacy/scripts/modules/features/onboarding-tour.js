@@ -429,6 +429,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return value;
   }
   var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
+  function resolveOwnGearAccessHighlightSelectors() {
+    if (!DOCUMENT) {
+      return [];
+    }
+    var sideMenu = null;
+    try {
+      sideMenu = DOCUMENT.getElementById('sideMenu');
+    } catch (error) {
+      void error;
+      sideMenu = null;
+    }
+    var ownGearButton = null;
+    if (sideMenu && typeof sideMenu.querySelector === 'function') {
+      ownGearButton = sideMenu.querySelector('[data-sidebar-action="open-own-gear"]');
+    }
+    if (!ownGearButton && typeof DOCUMENT.querySelector === 'function') {
+      ownGearButton = DOCUMENT.querySelector('#sideMenu [data-sidebar-action="open-own-gear"]') || DOCUMENT.querySelector('[data-sidebar-action="open-own-gear"]');
+    }
+    var menuToggle = null;
+    try {
+      menuToggle = DOCUMENT.getElementById('menuToggle');
+    } catch (error) {
+      void error;
+      menuToggle = null;
+    }
+    var menuOpen = Boolean(sideMenu && _typeof(sideMenu.classList) === 'object' && typeof sideMenu.classList.contains === 'function' && sideMenu.classList.contains('open'));
+    if (menuOpen && ownGearButton) {
+      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+    }
+    if (!menuOpen && menuToggle) {
+      return ['#menuToggle'];
+    }
+    if (ownGearButton) {
+      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+    }
+    if (menuToggle) {
+      return ['#menuToggle'];
+    }
+    return [];
+  }
   var DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
@@ -440,19 +480,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         badgeIcon: "\uE9C3",
         badgeLabel: 'Offline-first & private',
         badgeDescription: 'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
-          highlights: [{
-            icon: "\uE1A6",
-            title: 'Lock in power, safety, and backups',
-            body: 'Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.'
-          }, {
-            icon: "\uE8AF",
-            title: 'AutoGear builds reusable kits',
-            body: 'Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.'
-          }, {
-            icon: "\uE7AB",
-            title: 'Project requirements ready to hand off',
-            body: 'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.'
-          }],
+        highlights: [{
+          icon: "\uE1A6",
+          title: 'Lock in power, safety, and backups',
+          body: 'Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.'
+        }, {
+          icon: "\uE8AF",
+          title: 'AutoGear builds reusable kits',
+          body: 'Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.'
+        }, {
+          icon: "\uE7AB",
+          title: 'Project requirements ready to hand off',
+          body: 'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.'
+        }],
         languageLabel: 'Choose your language',
         languageHint: 'Switch languages now—the tutorial, help and exports update instantly across offline saves.',
         offlineSummary: 'Install the Cine Power Planner PWA to mirror safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.'
@@ -1598,7 +1638,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: ['#resultsTotalPowerRow', '#resultsTotalCurrent144Row', '#resultsTotalCurrent12Row']
     }, {
       key: 'resultsBatteryPacks',
-      highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryCountLabel', '#batteryCount']
+      highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryLifeUnit', '#runtimeAverageNote', '#batteryCountLabel', '#batteryCount']
     }, {
       key: 'resultsChangeover',
       highlight: '#breakdownList'
@@ -1634,7 +1674,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       ensureDeviceManager: true
     }, {
       key: 'ownGearAccess',
-      highlight: '[data-sidebar-action="open-own-gear"]',
+      highlight: '#sideMenu [data-sidebar-action="open-own-gear"]',
+      alternateHighlight: '#menuToggle',
+      resolveHighlight: resolveOwnGearAccessHighlightSelectors,
       focus: '[data-sidebar-action="open-own-gear"]'
     }, {
       key: 'ownGearAddDevice',
@@ -2333,6 +2375,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return [];
   }
+  function callSelectorResolver(resolver, label) {
+    if (typeof resolver !== 'function') {
+      return null;
+    }
+    try {
+      return resolver();
+    } catch (error) {
+      safeWarn("cine.features.onboardingTour could not resolve ".concat(label, "."), error);
+      return null;
+    }
+  }
   function resolveSelectorElements(selectors) {
     if (!Array.isArray(selectors) || selectors.length === 0) {
       return [];
@@ -2350,15 +2403,104 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return elements;
   }
+  function isHighlightElementUsable(element) {
+    if (!element) {
+      return false;
+    }
+    if (typeof element.isConnected === 'boolean' && !element.isConnected) {
+      return false;
+    }
+    if (typeof element.getBoundingClientRect !== 'function') {
+      return true;
+    }
+    var rect = null;
+    try {
+      rect = element.getBoundingClientRect();
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not measure highlight target.', error);
+      return false;
+    }
+    if (!rect) {
+      return false;
+    }
+    var width = Number.isFinite(rect.width) ? rect.width : rect.right - rect.left;
+    var height = Number.isFinite(rect.height) ? rect.height : rect.bottom - rect.top;
+    if (Number.isFinite(width) && width > 0 || Number.isFinite(height) && height > 0) {
+      return true;
+    }
+    if (typeof element.getClientRects === 'function') {
+      try {
+        var rectList = element.getClientRects();
+        if (rectList && rectList.length > 0) {
+          for (var index = 0; index < rectList.length; index += 1) {
+            var entry = rectList[index];
+            var entryWidth = Number.isFinite(entry.width) ? entry.width : entry.right - entry.left;
+            var entryHeight = Number.isFinite(entry.height) ? entry.height : entry.bottom - entry.top;
+            if (Number.isFinite(entryWidth) && entryWidth > 0 || Number.isFinite(entryHeight) && entryHeight > 0) {
+              return true;
+            }
+          }
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not inspect highlight target rects.', error);
+      }
+    }
+    return false;
+  }
+  function filterUsableHighlightElements(elements) {
+    if (!Array.isArray(elements) || elements.length === 0) {
+      return [];
+    }
+    var filtered = [];
+    for (var index = 0; index < elements.length; index += 1) {
+      var element = elements[index];
+      if (!element) {
+        continue;
+      }
+      if (isHighlightElementUsable(element)) {
+        filtered.push(element);
+      }
+    }
+    return filtered;
+  }
   function getHighlightElements(step) {
     if (!step) {
       return [];
     }
-    var elements = resolveSelectorElements(toSelectorArray(step.highlight));
-    if (elements.length === 0) {
-      elements = resolveSelectorElements(toSelectorArray(step.alternateHighlight));
+    var sources = [{
+      value: step.resolveHighlight,
+      label: 'highlight resolver'
+    }, {
+      value: step.highlight,
+      label: 'highlight'
+    }, {
+      value: step.resolveAlternateHighlight,
+      label: 'alternate highlight resolver'
+    }, {
+      value: step.alternateHighlight,
+      label: 'alternate highlight'
+    }];
+    var fallbackElements = [];
+    for (var index = 0; index < sources.length; index += 1) {
+      var source = sources[index];
+      if (!source.value) {
+        continue;
+      }
+      var resolvedSelectors = typeof source.value === 'function' ? callSelectorResolver(source.value, source.label) : source.value;
+      var selectors = toSelectorArray(resolvedSelectors);
+      if (!selectors.length) {
+        continue;
+      }
+      var resolvedElements = resolveSelectorElements(selectors);
+      var usableElements = filterUsableHighlightElements(resolvedElements);
+      if (usableElements.length > 0) {
+        return usableElements;
+      }
+      if (!fallbackElements.length && resolvedElements.length > 0) {
+        fallbackElements = resolvedElements;
+      }
     }
-    return elements;
+    return fallbackElements;
   }
   function resolveOverlayAnchorForElements(elements) {
     if (!DOCUMENT) {
@@ -2622,6 +2764,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         margin = Math.min(margin, responsiveMargin);
       }
     }
+    var topPlacementMargin = margin + Math.max(8, margin * 0.5);
     var viewportRight = scrollX + viewportWidth;
     var viewportBottom = scrollY + viewportHeight;
     var minLeft = scrollX + margin;
@@ -2652,6 +2795,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var rightOverlapOffset = rect.width * overlapRightFraction;
       var bottomOverlapOffset = rect.height * overlapBottomFraction;
       var leftOverlapOffset = rect.width * overlapLeftFraction;
+      var effectiveTopMargin = overlapTopFraction > 0 ? margin : topPlacementMargin;
       var topMarginOffset = overlapTopFraction > 0 ? margin : 0;
       var rightMarginOffset = overlapRightFraction > 0 ? margin : 0;
       var bottomMarginOffset = overlapBottomFraction > 0 ? margin : 0;
@@ -2663,9 +2807,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         fits: targetTop + rect.height + margin + cardRect.height - bottomOverlapOffset - bottomMarginOffset <= viewportBottom - margin
       }, {
         name: 'top',
-        top: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset,
+        top: targetTop - cardRect.height - effectiveTopMargin + topOverlapOffset + topMarginOffset,
         left: targetCenterX - cardRect.width / 2,
-        fits: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset >= minTop
+        fits: targetTop - cardRect.height - effectiveTopMargin + topOverlapOffset + topMarginOffset >= minTop
       }, {
         name: 'right',
         top: targetCenterY - cardRect.height / 2,
@@ -3433,7 +3577,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var languageGroup = DOCUMENT.createElement('div');
     languageGroup.className = 'onboarding-hero-language';
     var languageTargets = [];
-    var registeredLanguageTargets = [];
+    var registeredLanguageTargets = new Set();
     var languageControlId = getProxyControlId('intro-language');
     var labelEl = DOCUMENT.createElement('label');
     labelEl.className = 'onboarding-hero-language-label';
@@ -3451,8 +3595,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sourceOptions = source && source.options ? Array.from(source.options) : [];
       if (sourceOptions.length) {
-        for (var _index2 = 0; _index2 < sourceOptions.length; _index2 += 1) {
-          languageProxy.appendChild(sourceOptions[_index2].cloneNode(true));
+        for (var _index8 = 0; _index8 < sourceOptions.length; _index8 += 1) {
+          languageProxy.appendChild(sourceOptions[_index8].cloneNode(true));
         }
       } else if (typeof source.value === 'string') {
         var option = DOCUMENT.createElement('option');
@@ -3465,8 +3609,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var getActiveLanguageValue = function getActiveLanguageValue() {
-      for (var _index3 = 0; _index3 < languageTargets.length; _index3 += 1) {
-        var target = languageTargets[_index3];
+      for (var _index9 = 0; _index9 < languageTargets.length; _index9 += 1) {
+        var target = languageTargets[_index9];
         if (target && typeof target.value === 'string' && target.value) {
           return target.value;
         }
@@ -3495,13 +3639,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         it: 'Italiano'
       };
       var options = [];
-      var seen = [];
+      var seen = new Set();
       var addOption = function addOption(code) {
         var normalized = typeof code === 'string' ? code.trim() : '';
-        if (!normalized || seen.indexOf(normalized) !== -1) {
+        if (!normalized || seen.has(normalized)) {
           return;
         }
-        seen.push(normalized);
+        seen.add(normalized);
         options.push({
           value: normalized,
           label: fallbackLabels[normalized] || normalized
@@ -3524,11 +3668,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var preserveValue = languageProxy.value;
       languageProxy.textContent = '';
       var options = resolveFallbackLanguageOptions();
-      for (var _index4 = 0; _index4 < options.length; _index4 += 1) {
-        var currentOption = DOCUMENT.createElement('option');
-        currentOption.value = options[_index4].value;
-        currentOption.textContent = options[_index4].label;
-        languageProxy.appendChild(currentOption);
+      for (var _index0 = 0; _index0 < options.length; _index0 += 1) {
+        var option = DOCUMENT.createElement('option');
+        option.value = options[_index0].value;
+        option.textContent = options[_index0].label;
+        languageProxy.appendChild(option);
       }
       var active = preserveValue || resolveLanguage();
       if (active) {
@@ -3538,8 +3682,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var handleLanguageProxyChange = function handleLanguageProxyChange() {
       var value = languageProxy.value;
       var applied = applyLanguagePreference(value);
-      for (var _index0 = 0; _index0 < languageTargets.length; _index0 += 1) {
-        var target = languageTargets[_index0];
+      for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
+        var target = languageTargets[_index1];
         if (!target) {
           continue;
         }
@@ -3607,10 +3751,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var registerLanguageTarget = function registerLanguageTarget(target) {
-      if (!target || registeredLanguageTargets.indexOf(target) !== -1) {
+      if (!target || registeredLanguageTargets.has(target)) {
         return;
       }
-      registeredLanguageTargets.push(target);
+      registeredLanguageTargets.add(target);
       languageTargets.push(target);
       var targetChangeListener = function targetChangeListener() {
         handleTargetChange();
@@ -3641,13 +3785,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void observerError;
           }
         }
-        var registryIndex = registeredLanguageTargets.indexOf(target);
-        if (registryIndex !== -1) {
-          registeredLanguageTargets.splice(registryIndex, 1);
-        }
-        var listIndex = languageTargets.indexOf(target);
-        if (listIndex !== -1) {
-          languageTargets.splice(listIndex, 1);
+        registeredLanguageTargets.delete(target);
+        var index = languageTargets.indexOf(target);
+        if (index !== -1) {
+          languageTargets.splice(index, 1);
         }
       });
       syncLanguageProxyFromTargets();

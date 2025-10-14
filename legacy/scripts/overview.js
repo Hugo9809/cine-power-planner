@@ -44,12 +44,44 @@ var triggerOverviewPrintWorkflowModule = null;
     }
   }
 })();
-var overviewLogger = function () {
+function collectOverviewLoggingScopes() {
   var scopes = [];
-  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  if (typeof globalThis !== 'undefined' && globalThis && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
   if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
   if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
   if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+  return scopes;
+}
+function resolveOverviewLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  var scopes = collectOverviewLoggingScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      var resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+function resolveLegacyOverviewLogger() {
+  var scopes = collectOverviewLoggingScopes();
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -83,6 +115,24 @@ var overviewLogger = function () {
     }
   }
   return null;
+}
+var overviewLogger = function () {
+  var resolver = resolveOverviewLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      var logger = resolver.resolveLogger('overview', {
+        meta: {
+          source: 'overview-dialog'
+        }
+      });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+  return resolveLegacyOverviewLogger();
 }();
 var overviewConsoleFallback = (typeof console === "undefined" ? "undefined" : _typeof(console)) === 'object' && console ? console : null;
 var OVERVIEW_LOG_META_DEFAULTS = Object.freeze({

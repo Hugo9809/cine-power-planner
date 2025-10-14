@@ -755,7 +755,7 @@ var texts = {
     storageStatusLastAutoBackupLabel: "Latest auto backup",
     autoBackupInProgressNotice: "Auto backup running. Performance may pause briefly.",
     storageStatusLastFullBackupLabel: "Latest full app backup",
-    loggingSectionHelp: "Review runtime diagnostics without leaving Settings.",
+    loggingSectionHelp: "Review runtime diagnostics without leaving Settings. Service worker entries stream in automatically so offline cache and activation events stay visible.",
     loggingHeading: "Diagnostics log",
     loggingHeadingHelp: "Review runtime diagnostics without leaving Settings.",
     loggingIntro: "The log updates live while Settings stay open. Console capture runs by default so transcripts stay local; adjust the toggles below if you need to change diagnostics behavior. Nothing leaves this device.",
@@ -1607,8 +1607,7 @@ var texts = {
           body: "",
           hero: {
             heading: "",
-            subheading:
-              "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
+            subheading: "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
             summary: "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline forever",
@@ -3219,7 +3218,7 @@ var texts = {
     storageStatusLastAutoBackupLabel: "Ultimo backup automatico",
     autoBackupInProgressNotice: "Backup automatico in esecuzione. Le prestazioni potrebbero rallentare per un momento.",
     storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
-    loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
+    loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni. Le voci del Service Worker arrivano automaticamente così cache offline e attivazioni differite restano visibili.",
     loggingHeading: "Registro diagnostico",
     loggingHeadingHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingIntro: "Il registro si aggiorna in tempo reale finché Impostazioni resta aperto. La cattura della console è attiva per impostazione predefinita così le trascrizioni restano locali; usa i controlli qui sotto solo se devi modificare il comportamento diagnostico. I dati non lasciano questo dispositivo.",
@@ -3451,10 +3450,8 @@ var texts = {
           body: "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
           hero: {
             heading: "Benvenuto in Cine Power Planner",
-            subheading:
-              "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
-            summary:
-              "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
+            subheading: "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
+            summary: "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline per sempre",
             badgeDescription: "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
@@ -5064,7 +5061,7 @@ var texts = {
     storageStatusLastAutoBackupLabel: "Último respaldo automático",
     autoBackupInProgressNotice: "Copia de seguridad automática en ejecución. El rendimiento puede pausarse brevemente.",
     storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
-    loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
+    loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes. Las entradas del Service Worker llegan automáticamente para que los incidentes de caché sin conexión y las reclamaciones diferidas sigan visibles.",
     loggingHeading: "Registro de diagnósticos",
     loggingHeadingHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingIntro: "El registro se actualiza en vivo mientras Ajustes permanece abierto. La captura de la consola está activa de forma predeterminada para que las transcripciones permanezcan locales; ajusta los controles siguientes solo si necesitas cambiar el comportamiento del diagnóstico. Nada sale de este dispositivo.",
@@ -5296,10 +5293,8 @@ var texts = {
           body: "Este recorrido guiado explica las defensas sin conexión, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           hero: {
             heading: "Bienvenida a Cine Power Planner",
-            subheading:
-              "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
-            summary:
-              "Planifica setups de cámara seguros, verifica límites de potencia, genera automáticamente listas de equipo desde los requisitos del proyecto y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
+            subheading: "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
+            summary: "Planifica setups de cámara seguros, verifica límites de potencia, genera automáticamente listas de equipo desde los requisitos del proyecto y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Siempre sin conexión",
             badgeDescription: "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, copia de seguridad, restauración, compartición e importación permanece en este dispositivo.",
@@ -6909,7 +6904,7 @@ var texts = {
     storageStatusLastAutoBackupLabel: "Dernière sauvegarde automatique",
     autoBackupInProgressNotice: "Sauvegarde automatique en cours d’exécution. Les performances peuvent se mettre en pause un instant.",
     storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
-    loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
+    loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres. Les journaux du Service Worker arrivent automatiquement pour que les soucis de cache hors ligne et les reprises différées restent visibles.",
     loggingHeading: "Journal de diagnostics",
     loggingHeadingHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingIntro: "Le journal se met à jour en direct tant que la fenêtre Paramètres reste ouverte. La capture de la console est active par défaut pour que les transcriptions restent locales ; ajustez les commandes ci-dessous uniquement si vous devez modifier le comportement du diagnostic. Rien ne quitte cet appareil.",
@@ -7141,10 +7136,8 @@ var texts = {
           body: "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
           hero: {
             heading: "Bienvenue dans Cine Power Planner",
-            subheading:
-              "Sécurisez chaque setup caméra avec des contrôles d’alimentation, des kits AutoGear et des handoffs prêts pour la location—le tout reste hors ligne.",
-            summary:
-              "Planifiez des setups caméra sûrs, vérifiez les limites de puissance, générez automatiquement des listes de matériel à partir des exigences projet et exportez des PDF prêts pour la location—chaque sauvegarde reste locale avant l’appel.",
+            subheading: "Sécurisez chaque setup caméra avec des contrôles d’alimentation, des kits AutoGear et des handoffs prêts pour la location—le tout reste hors ligne.",
+            summary: "Planifiez des setups caméra sûrs, vérifiez les limites de puissance, générez automatiquement des listes de matériel à partir des exigences projet et exportez des PDF prêts pour la location—chaque sauvegarde reste locale avant l’appel.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Hors ligne pour toujours",
             badgeDescription: "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
@@ -8754,7 +8747,7 @@ var texts = {
     storageStatusLastAutoBackupLabel: "Letztes Auto-Backup",
     autoBackupInProgressNotice: "Automatische Sicherung läuft gerade. Die Leistung kann kurzzeitig beeinträchtigt sein.",
     storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
-    loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
+    loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen. Service-Worker-Protokolle werden automatisch gespiegelt, damit Offline-Caches und verschobene Aktivierungen sichtbar bleiben.",
     loggingHeading: "Diagnoseprotokoll",
     loggingHeadingHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingIntro: "Das Protokoll aktualisiert sich live, solange die Einstellungen geöffnet bleiben. Die Konsolenerfassung ist standardmäßig aktiv, damit Transkripte lokal bleiben; passen Sie die folgenden Schalter nur an, wenn Sie das Diagnoseverhalten ändern müssen. Es verlässt nie dieses Gerät.",
@@ -8986,10 +8979,8 @@ var texts = {
           body: "",
           hero: {
             heading: "Willkommen bei Cine Power Planner",
-            subheading:
-              "Schütze jedes Kamera-Setup mit Leistungschecks, AutoGear-Kits und übergabefertigen Unterlagen—alles bleibt offline.",
-            summary:
-              "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Gear-Listen automatisch aus Projektanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
+            subheading: "Schütze jedes Kamera-Setup mit Leistungschecks, AutoGear-Kits und übergabefertigen Unterlagen—alles bleibt offline.",
+            summary: "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Gear-Listen automatisch aus Projektanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Dauerhaft offline",
             badgeDescription: "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",

@@ -11,12 +11,56 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var eventsLogger = function resolveEventsLogger() {
+function collectLoggingResolverScopes() {
   var scopes = [];
-  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
-  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
-  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
-  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+  var primary = getGlobalScope();
+  if (primary && scopes.indexOf(primary) === -1) {
+    scopes.push(primary);
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && scopes.indexOf(globalThis) === -1) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) {
+    scopes.push(global);
+  }
+  return scopes;
+}
+function resolveLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  var scopes = collectLoggingResolverScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      var resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+function resolveLegacyEventsLogger() {
+  var scopes = collectLoggingResolverScopes();
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -49,6 +93,24 @@ var eventsLogger = function resolveEventsLogger() {
     }
   }
   return null;
+}
+var eventsLogger = function resolveEventsLogger() {
+  var resolver = resolveLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      var logger = resolver.resolveLogger('events', {
+        meta: {
+          source: 'app-events'
+        }
+      });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+  return resolveLegacyEventsLogger();
 }();
 var APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
 if (typeof viewfinderTypeOptions === 'undefined' || !Array.isArray(viewfinderTypeOptions)) {
@@ -102,6 +164,189 @@ var AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold'];
 var AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
 var AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'before-reload', 'project-switch']);
+var AUTO_BACKUP_LOG_META = {
+  feature: 'auto-backup'
+};
+function resolveConsoleMethodForLevel(level) {
+  if (typeof level !== 'string') {
+    return 'log';
+  }
+  var normalized = level.toLowerCase();
+  if (normalized === 'warn' || normalized === 'error' || normalized === 'info' || normalized === 'debug') {
+    return normalized === 'debug' && typeof console !== 'undefined' && console && typeof console.debug !== 'function' ? 'log' : normalized;
+  }
+  return 'log';
+}
+function logAutoBackupEvent(level, message, detail, metaOverrides) {
+  var resolvedLevel = typeof level === 'string' && level ? level : 'info';
+  var resolvedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
+  var meta = metaOverrides && _typeof(metaOverrides) === 'object' ? _objectSpread(_objectSpread({}, AUTO_BACKUP_LOG_META), metaOverrides) : AUTO_BACKUP_LOG_META;
+  var handledByLogger = false;
+  if (eventsLogger && typeof eventsLogger[resolvedLevel] === 'function') {
+    try {
+      eventsLogger[resolvedLevel](resolvedMessage, detail, meta);
+      handledByLogger = true;
+    } catch (loggerError) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        try {
+          eventsLogger.warn('Auto backup logger invocation failed', loggerError, _objectSpread(_objectSpread({}, meta), {}, {
+            originalLevel: resolvedLevel,
+            originalMessage: resolvedMessage
+          }));
+        } catch (fallbackLogError) {
+          void fallbackLogError;
+        }
+      }
+    }
+  }
+  if (!handledByLogger && typeof console !== 'undefined' && console) {
+    var consoleMethod = resolveConsoleMethodForLevel(resolvedLevel);
+    var fallback = typeof console[consoleMethod] === 'function' ? console[consoleMethod] : console.log;
+    if (typeof fallback === 'function') {
+      try {
+        if (typeof detail !== 'undefined') {
+          fallback.call(console, "[auto-backup] ".concat(resolvedMessage), detail);
+        } else {
+          fallback.call(console, "[auto-backup] ".concat(resolvedMessage));
+        }
+      } catch (consoleError) {
+        void consoleError;
+      }
+    }
+  }
+}
+function summarizeAutoBackupPayloadForLog(payload) {
+  if (!payload || _typeof(payload) !== 'object') {
+    return {
+      hasContent: false
+    };
+  }
+  var summary = {
+    hasContent: false,
+    projectInfoKeys: 0,
+    gearListLength: 0,
+    gearListAndProjectRequirementsGenerated: Boolean(payload.gearListAndProjectRequirementsGenerated),
+    powerSelectionKeys: 0,
+    gearSelectorGroups: 0,
+    diagramPositionCount: 0,
+    autoGearRuleCount: 0
+  };
+  var projectInfo = payload.projectInfo && _typeof(payload.projectInfo) === 'object' ? payload.projectInfo : null;
+  if (projectInfo) {
+    try {
+      summary.projectInfoKeys = Object.keys(projectInfo).length;
+    } catch (projectInfoError) {
+      summary.projectInfoKeys = 0;
+    }
+  }
+  if (typeof payload.gearList === 'string') {
+    summary.gearListLength = payload.gearList.length;
+  }
+  var powerSelection = payload.powerSelection && _typeof(payload.powerSelection) === 'object' ? payload.powerSelection : null;
+  if (powerSelection) {
+    try {
+      summary.powerSelectionKeys = Object.keys(powerSelection).length;
+    } catch (powerSelectionError) {
+      summary.powerSelectionKeys = 0;
+    }
+  }
+  var gearSelectors = payload.gearSelectors && _typeof(payload.gearSelectors) === 'object' ? payload.gearSelectors : null;
+  if (gearSelectors) {
+    try {
+      summary.gearSelectorGroups = Object.keys(gearSelectors).length;
+    } catch (gearSelectorsError) {
+      summary.gearSelectorGroups = 0;
+    }
+  }
+  var diagramPositions = payload.diagramPositions && _typeof(payload.diagramPositions) === 'object' ? payload.diagramPositions : null;
+  if (diagramPositions) {
+    try {
+      summary.diagramPositionCount = Object.keys(diagramPositions).length;
+    } catch (diagramPositionsError) {
+      summary.diagramPositionCount = 0;
+    }
+  }
+  if (Array.isArray(payload.autoGearRules)) {
+    summary.autoGearRuleCount = payload.autoGearRules.length;
+  }
+  summary.hasContent = Boolean(summary.projectInfoKeys || summary.gearListLength || summary.gearListAndProjectRequirementsGenerated || summary.powerSelectionKeys || summary.gearSelectorGroups || summary.diagramPositionCount || summary.autoGearRuleCount);
+  return summary;
+}
+function resolveAutoBackupLogLevel(status, reason) {
+  var normalizedStatus = typeof status === 'string' ? status : '';
+  var normalizedReason = typeof reason === 'string' ? reason : '';
+  if (normalizedStatus === 'error') {
+    return 'error';
+  }
+  if (normalizedStatus === 'success') {
+    return 'info';
+  }
+  if (normalizedStatus === 'skipped') {
+    if (normalizedReason === 'disallowed' || normalizedReason === 'auto-backup-selected') {
+      return 'warn';
+    }
+    return 'info';
+  }
+  return 'debug';
+}
+function resolveAutoBackupLogMessage(status, reason) {
+  var normalizedStatus = typeof status === 'string' ? status : '';
+  var normalizedReason = typeof reason === 'string' ? reason : '';
+  if (normalizedStatus === 'success') {
+    return 'Auto backup completed successfully';
+  }
+  if (normalizedStatus === 'error') {
+    return normalizedReason ? "Auto backup failed (".concat(normalizedReason, ")") : 'Auto backup failed';
+  }
+  if (normalizedStatus === 'skipped') {
+    return normalizedReason ? "Auto backup skipped (".concat(normalizedReason, ")") : 'Auto backup skipped';
+  }
+  return 'Auto backup run recorded';
+}
+function createDefaultAutoBackupLogDetail(result) {
+  if (!result || _typeof(result) !== 'object') {
+    return {
+      status: 'unknown'
+    };
+  }
+  var detail = {
+    status: typeof result.status === 'string' ? result.status : 'unknown'
+  };
+  if (typeof result.reason === 'string' && result.reason) {
+    detail.reason = result.reason;
+  }
+  if (typeof result.context === 'string' && result.context) {
+    detail.context = result.context;
+  }
+  if (typeof result.elapsedSinceLastAutoBackupMs === 'number' && Number.isFinite(result.elapsedSinceLastAutoBackupMs)) {
+    detail.elapsedSinceLastAutoBackupMs = Math.max(0, result.elapsedSinceLastAutoBackupMs);
+  }
+  if (typeof result.remainingIntervalMs === 'number' && Number.isFinite(result.remainingIntervalMs)) {
+    detail.remainingIntervalMs = Math.max(0, result.remainingIntervalMs);
+  }
+  if (typeof result.changesSinceSnapshot === 'number' && Number.isFinite(result.changesSinceSnapshot)) {
+    detail.changesSinceSnapshot = Math.max(0, result.changesSinceSnapshot);
+  }
+  if (typeof result.requiredChangeThreshold === 'number' && Number.isFinite(result.requiredChangeThreshold)) {
+    detail.requiredChangeThreshold = Math.max(0, result.requiredChangeThreshold);
+  }
+  if (typeof result.remainingChanges === 'number' && Number.isFinite(result.remainingChanges)) {
+    detail.remainingChanges = Math.max(0, result.remainingChanges);
+  }
+  if (typeof result.requiredIntervalMs === 'number' && Number.isFinite(result.requiredIntervalMs)) {
+    detail.requiredIntervalMs = Math.max(0, result.requiredIntervalMs);
+  }
+  if (typeof result.name === 'string') {
+    var trimmedName = result.name.trim();
+    detail.hasName = trimmedName.length > 0;
+    detail.nameLength = trimmedName.length;
+    detail.nameWasAutoGenerated = trimmedName.startsWith('auto-backup-');
+  }
+  if (typeof result.createdAt === 'string' && result.createdAt) {
+    detail.createdAt = result.createdAt;
+  }
+  return detail;
+}
 var AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 var lastAutoBackupReasonState = new Map();
 var AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS = 800;
@@ -113,13 +358,20 @@ var lastImmediateAutoBackupCommitAtMs = 0;
 function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
 }
-function recordAutoBackupRun(result) {
+function recordAutoBackupRun(result, logDetailOverride) {
   autoBackupThresholdInProgress = false;
   if (!result || _typeof(result) !== 'object') {
+    logAutoBackupEvent('warn', 'Auto backup run recorded without result metadata', {
+      status: 'unknown'
+    });
     return;
   }
   var status = typeof result.status === 'string' ? result.status : null;
   var reason = typeof result.reason === 'string' ? result.reason : null;
+  var detail = logDetailOverride && _typeof(logDetailOverride) === 'object' ? _objectSpread({}, logDetailOverride) : createDefaultAutoBackupLogDetail(result);
+  var level = resolveAutoBackupLogLevel(status, reason);
+  var message = resolveAutoBackupLogMessage(status, reason);
+  logAutoBackupEvent(level, message, detail);
   if (status === 'skipped') {
     if (reason === 'unchanged') {
       resetAutoBackupChangeCounter();
@@ -169,6 +421,12 @@ function triggerAutoBackupForChangeThreshold(details) {
     } catch (error) {
       console.warn('Failed to run auto backup after change threshold', error);
       autoBackupThresholdInProgress = false;
+      logAutoBackupEvent('error', 'Auto backup change-threshold execution failed', {
+        status: 'error',
+        reason: 'change-threshold-run',
+        errorName: error && typeof error.name === 'string' ? error.name : null,
+        errorMessage: error && typeof error.message === 'string' ? error.message : null
+      });
     }
   };
   if (typeof queueMicrotask === 'function') {
@@ -177,6 +435,12 @@ function triggerAutoBackupForChangeThreshold(details) {
       return;
     } catch (queueError) {
       console.warn('Failed to queue auto backup microtask', queueError);
+      logAutoBackupEvent('warn', 'Auto backup microtask scheduling failed', {
+        status: 'skipped',
+        reason: 'microtask-scheduling',
+        errorName: queueError && typeof queueError.name === 'string' ? queueError.name : null,
+        errorMessage: queueError && typeof queueError.message === 'string' ? queueError.message : null
+      });
     }
   }
   var timer = setTimeout(run, 0);
@@ -1688,6 +1952,7 @@ function autoBackup() {
     }
     var currentGearListHtml = getCurrentGearListHtml();
     var gearListGenerated = Boolean(currentGearListHtml);
+    var payloadSummaryForLog = null;
     currentSetup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     var gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], {
       defaultValue: {}
@@ -1849,6 +2114,9 @@ function autoBackup() {
       if (hasPayloadContent) {
         attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
+        payloadSummaryForLog = summarizeAutoBackupPayloadForLog(payload);
+      } else {
+        payloadSummaryForLog = summarizeAutoBackupPayloadForLog(payload);
       }
     }
     var prevValue = setupSelectElement.value;
@@ -1865,12 +2133,27 @@ function autoBackup() {
     lastAutoBackupSignature = currentSignature;
     lastAutoBackupName = backupName;
     lastAutoBackupCreatedAtIso = timestamp;
+    var successLogDetail = {
+      status: 'success',
+      reason: reason,
+      context: reason,
+      snapshotType: resolvedPlan.snapshotType,
+      hasPlanBase: Boolean(resolvedPlan.base),
+      sequence: resolvedPlan.sequence,
+      appendedProjectName: Boolean(nameForBackup),
+      backupNameLength: typeof backupName === 'string' ? backupName.length : 0,
+      changesSinceSnapshot: autoBackupChangesSinceSnapshot,
+      elapsedSinceLastAutoBackupMs: elapsedSinceLastAutoBackupMs,
+      force: force,
+      gearListGenerated: gearListGenerated,
+      payloadSummary: payloadSummaryForLog || null
+    };
     recordAutoBackupRun({
       status: 'success',
       name: backupName,
       createdAt: timestamp,
       context: reason
-    });
+    }, successLogDetail);
     lastAutoBackupReasonState.set(reason, {
       timestamp: now.valueOf(),
       signature: currentSignature
@@ -1881,11 +2164,22 @@ function autoBackup() {
     if (!suppressError) {
       showNotification('error', errorMessage);
     }
+    var errorDetail = {
+      status: 'error',
+      reason: 'exception',
+      context: reason,
+      errorName: e && typeof e.name === 'string' ? e.name : null,
+      errorMessage: e && typeof e.message === 'string' ? e.message : null
+    };
+    if (e && typeof e.stack === 'string' && e.stack) {
+      var stackPreview = e.stack.split('\n').slice(0, 5).join('\n');
+      errorDetail.errorStackPreview = stackPreview;
+    }
     recordAutoBackupRun({
       status: 'error',
       reason: 'exception',
       context: reason
-    });
+    }, errorDetail);
     return null;
   } finally {
     if (typeof hideIndicator === 'function') {
@@ -2545,7 +2839,9 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
-      updateMountTypeOptions();
+      callCoreFunctionIfAvailable('updateMountTypeOptions', [], {
+        defer: true
+      });
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video, true);
@@ -2771,7 +3067,7 @@ function resetDeviceForm() {
   }
 }
 function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttributes) {
-  if (!container || typeof container !== 'object' || !key) {
+  if (!container || _typeof(container) !== 'object' || !key) {
     applyDynamicFieldValues(undefined, categoryKey, excludedAttributes);
     return;
   }
@@ -2781,7 +3077,6 @@ function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttribu
     container[key] = updatedEntry;
   }
 }
-
 addSafeEventListener(addDeviceBtn, "click", function () {
   var name = newNameInput.value.trim();
   var categorySelect = resolveNewCategorySelect();
@@ -2881,7 +3176,9 @@ addSafeEventListener(addDeviceBtn, "click", function () {
       timecode: timecode
     };
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
-    updateMountTypeOptions();
+    callCoreFunctionIfAvailable('updateMountTypeOptions', [], {
+      defer: true
+    });
   } else if (category === "lenses") {
     var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
     var mountOptions = getLensDeviceMountOptions();
@@ -2902,7 +3199,9 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     }
     targetCategory[name] = _existing2;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
-    updateMountTypeOptions();
+    callCoreFunctionIfAvailable('updateMountTypeOptions', [], {
+      defer: true
+    });
   } else if (category === "monitors" || category === "directorMonitors") {
     var _watt = parseFloat(monitorWattInput.value);
     if (isNaN(_watt) || _watt <= 0) {

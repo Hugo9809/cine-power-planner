@@ -1,209 +1,73 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  function isValidScope(scope) {
-    return !!scope && (_typeof(scope) === 'object' || typeof scope === 'function');
-  }
-  function detectScope(primary) {
-    if (isValidScope(primary)) {
-      return primary;
-    }
-    if (typeof globalThis !== 'undefined' && isValidScope(globalThis)) {
+  var MODULE_ID = 'modules/core/runtime-tool-fallbacks.js';
+  var GLOBAL_KEY = 'cineCoreRuntimeModules';
+  var HAS = Object.prototype.hasOwnProperty;
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
-    if (typeof window !== 'undefined' && isValidScope(window)) {
+    if (typeof window !== 'undefined') {
       return window;
     }
-    if (typeof self !== 'undefined' && isValidScope(self)) {
+    if (typeof self !== 'undefined') {
       return self;
     }
-    if (typeof global !== 'undefined' && isValidScope(global)) {
+    if (typeof global !== 'undefined') {
       return global;
     }
     return null;
   }
-  function ensureGlobalValue(name, fallbackValue, primary) {
-    var provider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
-      return fallbackValue;
-    };
-    if (typeof name !== 'string' || !name) {
-      try {
-        return provider();
-      } catch (fallbackError) {
-        void fallbackError;
-        return undefined;
-      }
-    }
-    var scope = detectScope(primary);
-    if (!isValidScope(scope)) {
-      return provider();
-    }
-    var existing;
-    try {
-      existing = scope[name];
-    } catch (readError) {
-      existing = undefined;
-      void readError;
-    }
-    if (typeof existing !== 'undefined') {
-      return existing;
-    }
-    var value = provider();
-    try {
-      scope[name] = value;
-      return scope[name];
-    } catch (assignError) {
-      void assignError;
-    }
-    try {
-      Object.defineProperty(scope, name, {
-        configurable: true,
-        writable: true,
-        value: value
-      });
-    } catch (defineError) {
-      void defineError;
-    }
-    try {
-      return scope[name];
-    } catch (finalReadError) {
-      void finalReadError;
-    }
-    return value;
-  }
-  function jsonDeepClone(value) {
-    if (value === null || _typeof(value) !== 'object') {
-      return value;
-    }
-    try {
-      return JSON.parse(JSON.stringify(value));
-    } catch (jsonCloneError) {
-      void jsonCloneError;
-    }
-    return value;
-  }
-  function resolveStructuredClone(primary) {
-    if (typeof structuredClone === 'function') {
-      return structuredClone;
-    }
-    var scope = detectScope(primary);
-    if (scope && typeof scope.structuredClone === 'function') {
-      try {
-        return scope.structuredClone.bind(scope);
-      } catch (bindError) {
-        void bindError;
-      }
-    }
+  var globalScope = detectGlobalScope();
+  function resolveNamespace() {
     if (typeof require === 'function') {
-      try {
-        var nodeUtil = require('node:util');
-        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
-          return nodeUtil.structuredClone.bind(nodeUtil);
+      var candidates = ['./runtime.js', '../runtime.js'];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        try {
+          var _namespace = require(candidate);
+          if (_namespace && _typeof(_namespace) === 'object') {
+            return _namespace;
+          }
+        } catch (error) {
+          void error;
         }
-      } catch (nodeUtilError) {
-        void nodeUtilError;
       }
-      try {
-        var legacyUtil = require('util');
-        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
-          return legacyUtil.structuredClone.bind(legacyUtil);
-        }
-      } catch (legacyUtilError) {
-        void legacyUtilError;
-      }
+    }
+    if (globalScope && _typeof(globalScope[GLOBAL_KEY]) === 'object' && globalScope[GLOBAL_KEY]) {
+      return globalScope[GLOBAL_KEY];
     }
     return null;
   }
-  function createResilientDeepClone(primary) {
-    var structuredCloneImpl = resolveStructuredClone(primary);
-    if (!structuredCloneImpl) {
-      return jsonDeepClone;
+  var namespace = resolveNamespace();
+  function ensureGlobalTarget() {
+    if (!globalScope) {
+      return null;
     }
-    return function resilientDeepClone(value) {
-      if (value === null || _typeof(value) !== 'object') {
-        return value;
-      }
-      try {
-        return structuredCloneImpl(value);
-      } catch (structuredCloneError) {
-        void structuredCloneError;
-      }
-      return jsonDeepClone(value);
-    };
-  }
-  function ensureDeepClone(primary) {
-    var scope = detectScope(primary);
-    if (scope && typeof scope.__cineDeepClone === 'function') {
-      return scope.__cineDeepClone;
+    var current = globalScope[GLOBAL_KEY];
+    if (current && _typeof(current) === 'object') {
+      return current;
     }
-    var clone = createResilientDeepClone(scope);
-    if (isValidScope(scope)) {
-      try {
-        Object.defineProperty(scope, '__cineDeepClone', {
-          configurable: true,
-          writable: true,
-          value: clone
-        });
-      } catch (defineError) {
-        void defineError;
-        try {
-          scope.__cineDeepClone = clone;
-        } catch (assignError) {
-          void assignError;
-        }
-      }
-    }
-    return clone;
-  }
-  function createRuntimeToolFallbacks(primary) {
-    var resolvedScope = detectScope(primary);
-    function getCoreGlobalObject() {
-      return detectScope(resolvedScope);
-    }
-    function ensureCoreGlobalValue(name, fallbackValue) {
-      return ensureGlobalValue(name, fallbackValue, resolvedScope);
-    }
-    function resolveStructuredCloneForScope(scope) {
-      return resolveStructuredClone(scope || resolvedScope);
-    }
-    function createResilientDeepCloneForScope(scope) {
-      return createResilientDeepClone(scope || resolvedScope);
-    }
-    function ensureDeepCloneForScope(scope) {
-      return ensureDeepClone(scope || resolvedScope);
-    }
-    return {
-      getCoreGlobalObject: getCoreGlobalObject,
-      ensureCoreGlobalValue: ensureCoreGlobalValue,
-      jsonDeepClone: jsonDeepClone,
-      resolveStructuredClone: resolveStructuredCloneForScope,
-      createResilientDeepClone: createResilientDeepCloneForScope,
-      ensureDeepClone: ensureDeepCloneForScope
-    };
-  }
-  var namespace = {
-    detectScope: detectScope,
-    ensureGlobalValue: ensureGlobalValue,
-    jsonDeepClone: jsonDeepClone,
-    resolveStructuredClone: resolveStructuredClone,
-    createResilientDeepClone: createResilientDeepClone,
-    ensureDeepClone: ensureDeepClone,
-    createRuntimeToolFallbacks: createRuntimeToolFallbacks
-  };
-  var globalScope = detectScope();
-  var targetName = 'cineCoreRuntimeToolFallbacks';
-  var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
-  for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
-    var key = _Object$keys[_i];
-    existing[key] = namespace[key];
-  }
-  if (globalScope && _typeof(globalScope) === 'object') {
     try {
-      globalScope[targetName] = existing;
-    } catch (assignError) {
-      void assignError;
+      var created = {};
+      globalScope[GLOBAL_KEY] = created;
+      return created;
+    } catch (error) {
+      void error;
     }
+    return null;
   }
+  var existingExport = globalScope && globalScope[GLOBAL_KEY] && _typeof(globalScope[GLOBAL_KEY]) === 'object' && HAS.call(globalScope[GLOBAL_KEY], MODULE_ID) ? globalScope[GLOBAL_KEY][MODULE_ID] : undefined;
+  var moduleExport = namespace && HAS.call(namespace, MODULE_ID) ? namespace[MODULE_ID] : existingExport;
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
-    module.exports = existing;
+    module.exports = moduleExport;
+    return;
+  }
+  var target = ensureGlobalTarget();
+  if (!target) {
+    return;
+  }
+  if (typeof moduleExport !== 'undefined') {
+    target[MODULE_ID] = moduleExport;
   }
 })();

@@ -6,7 +6,7 @@
 // ensures a safe global variable is available while preserving any existing
 // implementations provided by bundlers or polyfills.
 
-/* eslint-disable no-var, no-unused-vars */
+/* eslint-disable no-unused-vars, no-redeclare */
 
 var require;
 var module;
@@ -46,4 +46,4 @@ var exports;
   ensureNonEnumerable('exports');
 })();
 
-/* eslint-enable no-var, no-unused-vars */
+/* eslint-enable no-unused-vars, no-redeclare */
