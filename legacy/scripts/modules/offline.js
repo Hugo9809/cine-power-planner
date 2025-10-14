@@ -705,7 +705,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (targetOrigin && expectedOrigin && targetOrigin !== expectedOrigin) {
       return null;
     }
-    var requestMode = 'cors';
+    var requestMode = 'same-origin';
     var nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
