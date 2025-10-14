@@ -36,7 +36,8 @@
           markProjectFormDataDirty, loadAutoGearMonitorDefaults, loadDocumentationTracker,
           enhanceGearItemElement,
           settingsFocusScale, focusScalePreference, normalizeFocusScale,
-          applyFocusScalePreference: true, updateLensWorkflowCatalog */
+          applyFocusScalePreference: true, applyTemperatureUnitPreference: true,
+          updateLensWorkflowCatalog */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
@@ -2307,6 +2308,89 @@ function resolveInitialTemperatureUnit() {
 }
 
 let localTemperatureUnit = resolveInitialTemperatureUnit();
+
+function resolveTemperatureUnitPreferenceController() {
+  if (typeof applyTemperatureUnitPreference === 'function') {
+    return applyTemperatureUnitPreference;
+  }
+
+  if (
+    sessionGlobalScope
+    && typeof sessionGlobalScope.applyTemperatureUnitPreference === 'function'
+  ) {
+    return sessionGlobalScope.applyTemperatureUnitPreference;
+  }
+
+  if (typeof globalThis !== 'undefined') {
+    try {
+      const candidate = globalThis.applyTemperatureUnitPreference;
+      if (typeof candidate === 'function') {
+        return candidate;
+      }
+    } catch (globalReadError) {
+      void globalReadError;
+    }
+  }
+
+  return null;
+}
+
+function applyTemperatureUnitPreferenceWithFallback(preferredUnit, options = {}) {
+  const normalized = normalizeTemperatureUnitValue(preferredUnit);
+  const shouldPersist = !(
+    options
+    && typeof options === 'object'
+    && Object.prototype.hasOwnProperty.call(options, 'persist')
+    && options.persist === false
+  );
+
+  const controller = resolveTemperatureUnitPreferenceController();
+  if (controller) {
+    try {
+      controller(preferredUnit, options);
+    } catch (controllerError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(
+          'Could not apply temperature unit preference via controller',
+          controllerError,
+        );
+      }
+    }
+  }
+
+  try {
+    localTemperatureUnit = normalized;
+  } catch (assignError) {
+    void assignError;
+  }
+
+  if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
+    try {
+      sessionGlobalScope.temperatureUnit = normalized;
+    } catch (temperatureScopeError) {
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug(
+          'Unable to propagate temperature unit preference to session scope',
+          temperatureScopeError,
+        );
+      }
+    }
+  }
+
+  if (shouldPersist) {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem(temperaturePreferenceStorageKey, normalized);
+      }
+    } catch (temperaturePersistError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not save temperature unit preference', temperaturePersistError);
+      }
+    }
+  }
+
+  return normalized;
+}
 
 if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
   try {
@@ -5862,7 +5946,7 @@ const appearanceContext = {
     setTemperatureUnit: value => {
       localTemperatureUnit = normalizeTemperatureUnitValue(value);
     },
-    applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    applyTemperatureUnitPreference: applyTemperatureUnitPreferenceWithFallback,
     getFocusScale: () => {
       const globalScale = typeof focusScalePreference === 'string'
         ? focusScalePreference
@@ -6509,11 +6593,9 @@ if (settingsShowAutoBackups) {
 
 if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', () => {
-    if (typeof applyTemperatureUnitPreference === 'function') {
-      applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
-        persist: false
-      });
-    }
+    applyTemperatureUnitPreferenceWithFallback(settingsTemperatureUnit.value, {
+      persist: false,
+    });
   });
 }
 
@@ -6820,33 +6902,7 @@ const mountVoltageResetButtonRef = (() => {
             ? settingsTemperatureUnit.value
             : 'celsius';
 
-        if (typeof applyTemperatureUnitPreference === 'function') {
-          applyTemperatureUnitPreference(selectedTemperatureUnit);
-        } else {
-          const normalizedTemperatureUnit = normalizeTemperatureUnitValue(selectedTemperatureUnit);
-
-          try {
-            localTemperatureUnit = normalizedTemperatureUnit;
-          } catch (temperatureAssignError) {
-            void temperatureAssignError;
-          }
-
-          if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
-            try {
-              sessionGlobalScope.temperatureUnit = normalizedTemperatureUnit;
-            } catch (temperatureScopeError) {
-              void temperatureScopeError;
-            }
-          }
-
-          try {
-            if (typeof localStorage !== 'undefined' && localStorage) {
-              localStorage.setItem(temperaturePreferenceStorageKey, normalizedTemperatureUnit);
-            }
-          } catch (temperaturePersistError) {
-            console.warn('Could not save temperature unit preference', temperaturePersistError);
-          }
-        }
+        applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
 
         rememberSettingsTemperatureUnitBaseline();
       }
@@ -9074,7 +9130,7 @@ function applyPreferencesFromStorage(safeGetItem) {
   const restoredTemperatureUnit = safeGetItem(temperaturePreferenceStorageKey);
   if (restoredTemperatureUnit) {
     try {
-      applyTemperatureUnitPreference(restoredTemperatureUnit, { persist: false });
+      applyTemperatureUnitPreferenceWithFallback(restoredTemperatureUnit, { persist: false });
     } catch (error) {
       console.warn('Failed to apply restored temperature unit preference', error);
     }
