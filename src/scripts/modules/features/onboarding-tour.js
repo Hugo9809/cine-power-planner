@@ -3053,6 +3053,8 @@
   }
 
   const DEFAULT_HIGHLIGHT_PADDING = 12;
+  const EXTRA_ONBOARDING_CARD_VIEWPORT_TOP_MARGIN = 20;
+  const EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP = 12;
 
   function normalizeHighlightPaddingValue(value, fallback) {
     if (typeof value === 'number' && Number.isFinite(value)) {
@@ -3233,16 +3235,17 @@
       }
     }
 
-    const topPlacementMargin = margin + Math.max(8, margin * 0.5);
+    const viewportTopMargin = margin + EXTRA_ONBOARDING_CARD_VIEWPORT_TOP_MARGIN;
+    const topPlacementMargin = margin + Math.max(8, margin * 0.5) + EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP;
 
     const viewportRight = scrollX + viewportWidth;
     const viewportBottom = scrollY + viewportHeight;
     const minLeft = scrollX + margin;
-    const minTop = scrollY + margin;
+    const minTop = scrollY + viewportTopMargin;
     const maxLeft = Math.max(minLeft, viewportRight - cardRect.width - margin);
     const maxTop = Math.max(minTop, viewportBottom - cardRect.height - margin);
 
-    let top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
+    let top = scrollY + Math.max(viewportTopMargin, (viewportHeight - cardRect.height) / 2);
     let left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     let placement = 'floating';
 
