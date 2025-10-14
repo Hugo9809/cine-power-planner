@@ -487,19 +487,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       body: 'Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.'
     },
     resultsTotalDraw: {
-      title: 'Power Summary pass: Total draw',
+      title: 'Power Summary: Total draw',
       body: 'Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks.'
     },
     resultsBatteryPacks: {
-      title: 'Power Summary pass: Battery runtimes',
+      title: 'Power Summary: Battery runtimes',
       body: 'Review each battery pack\'s projected runtime, reserve margin highlights and device notes while autosave keeps the latest selections ready for offline safety.'
     },
     resultsChangeover: {
-      title: 'Power Summary pass: Changeovers',
+      title: 'Power Summary: Changeovers',
       body: 'Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan.'
     },
     resultsWarnings: {
-      title: 'Power Summary pass: Warnings and backups',
+      title: 'Power Summary: Warnings and backups',
       body: 'Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the battery feed is near its limit, and red means the camera rig is pulling more power than the battery can supply.'
     },
     batteryComparison: {
