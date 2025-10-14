@@ -545,52 +545,95 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : undefined;
     }
     
-    function refreshAutoGearCrewOptions(selectElement, selected, key) {
-      if (!selectElement) return;
-    
-      const selectedValues = collectAutoGearSelectedValues(selected, key);
-    
-      selectElement.innerHTML = '';
-      selectElement.multiple = true;
-    
-      const entries = getCrewRoleEntries();
-      const seen = new Set();
-    
-      const appendOption = (value, label) => {
-        if (!value || seen.has(value)) return;
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = label;
-        if (selectedValues.includes(value)) {
-          option.selected = true;
-        }
-        selectElement.appendChild(option);
-        seen.add(value);
-      };
-    
-      entries.forEach(entry => appendOption(entry.value, entry.label));
-    
-      selectedValues.forEach(value => {
-        if (!seen.has(value)) {
-          appendOption(value, value);
-        }
-      });
-    
-      const selectableOptions = Array.from(selectElement.options || []).filter(option => !option.disabled);
-      selectElement.size = computeAutoGearMultiSelectSize(
-        selectableOptions.length,
-        { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-      );
-    }
-    
-    function getCrewRoleLabel(value) {
-      if (typeof value !== 'string') return '';
-      const trimmed = value.trim();
-      if (!trimmed) return '';
-      const langTexts = texts[currentLang] || texts.en || {};
-      const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
-      return crewRoleMap?.[trimmed] || trimmed;
-    }
+    const AUTO_GEAR_CREW_OPTION_TOOLS = resolveCoreSupportModule(
+      'cineCoreAppRuntimeAutoGearCrew',
+      './modules/app-core/runtime-auto-gear-crew.js'
+    );
+
+    const AUTO_GEAR_CREW_OPTION_NAMESPACE =
+      AUTO_GEAR_CREW_OPTION_TOOLS ||
+      (typeof globalThis !== 'undefined' && globalThis.cineCoreAppRuntimeAutoGearCrew)
+        || (typeof window !== 'undefined' && window.cineCoreAppRuntimeAutoGearCrew)
+        || (typeof self !== 'undefined' && self.cineCoreAppRuntimeAutoGearCrew)
+        || (typeof global !== 'undefined' && global.cineCoreAppRuntimeAutoGearCrew)
+        || (typeof require === 'function'
+          ? (function requireAutoGearCrewHelpers() {
+              try {
+                return require('./modules/app-core/runtime-auto-gear-crew.js');
+              } catch (autoGearCrewRequireError) {
+                void autoGearCrewRequireError;
+                return null;
+              }
+            })()
+          : null);
+
+    const AUTO_GEAR_CREW_HELPERS =
+      AUTO_GEAR_CREW_OPTION_NAMESPACE &&
+      typeof AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers === 'function'
+        ? AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers({
+            documentRef: typeof document !== 'undefined' ? document : null,
+            collectSelectedValues: collectAutoGearSelectedValues,
+            computeMultiSelectSize: computeAutoGearMultiSelectSize,
+            getCrewRoleEntries,
+            autoGearFlexMinRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+            getLocalizedTexts: () => texts[currentLang] || texts.en || {},
+            getDefaultLanguageTexts: () => texts.en || {},
+          })
+        : null;
+
+    const refreshAutoGearCrewOptions =
+      AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.refreshCrewOptions === 'function'
+        ? AUTO_GEAR_CREW_HELPERS.refreshCrewOptions
+        : function refreshAutoGearCrewOptionsFallback(selectElement, selected, key) {
+            if (!selectElement || typeof document === 'undefined') {
+              return;
+            }
+
+            const selectedValues = collectAutoGearSelectedValues(selected, key);
+
+            selectElement.innerHTML = '';
+            selectElement.multiple = true;
+
+            const entries = getCrewRoleEntries();
+            const seen = new Set();
+
+            const appendOption = (value, label) => {
+              if (!value || seen.has(value)) return;
+              const option = document.createElement('option');
+              option.value = value;
+              option.textContent = label;
+              if (selectedValues.includes(value)) {
+                option.selected = true;
+              }
+              selectElement.appendChild(option);
+              seen.add(value);
+            };
+
+            entries.forEach(entry => appendOption(entry.value, entry.label));
+
+            selectedValues.forEach(value => {
+              if (!seen.has(value)) {
+                appendOption(value, value);
+              }
+            });
+
+            const selectableOptions = Array.from(selectElement.options || []).filter(option => !option.disabled);
+            selectElement.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
+              minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+            });
+          };
+
+    const getCrewRoleLabel =
+      AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel === 'function'
+        ? AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel
+        : function getCrewRoleLabelFallback(value) {
+            if (typeof value !== 'string') return '';
+            const trimmed = value.trim();
+            if (!trimmed) return '';
+            const langTexts = texts[currentLang] || texts.en || {};
+            const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
+            return crewRoleMap?.[trimmed] || trimmed;
+          };
     
     function refreshAutoGearCameraOptions(selected) {
       if (!autoGearCameraSelect) return;
