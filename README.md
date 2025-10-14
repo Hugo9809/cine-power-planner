@@ -867,6 +867,12 @@ Use Cine Power Planner end-to-end with the following routine:
   three timestamps. They highlight when manual saves, automatic snapshots or
   full-app archives grow stale and include the captured time so you know exactly
   which safeguard to refresh before trusting an offline session.
+- The **Backup guardian** status row surfaces the critical storage guard’s
+  report. It mirrors every essential storage key into a redundant backup slot
+  before edits and summarises whether new copies were created, the first save is
+  still pending or an issue needs a console review. Checking the row before
+  travel confirms that mirrored safeguards exist for every project, gear list
+  and preference stored on the device.【F:src/scripts/app-core-new-2.js†L8640-L8740】【F:src/scripts/storage.js†L2800-L2995】
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.
