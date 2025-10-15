@@ -665,7 +665,7 @@
     resultsBatteryPacks: {
       title: 'Power Summary: Battery runtimes',
       body:
-        'Review each battery pack\'s projected runtime, reserve margin highlights and device notes while autosave keeps the latest selections ready for offline safety.',
+        'Review each battery pack\'s projected runtime, all framed around a worst-case draw so most kits run longer—helping you know how many packs to bring, feel confident the rig won\'t demand constant swaps, and automatically pair the right batteries with each camera.',
     },
     resultsChangeover: {
       title: 'Power Summary: Changeovers',
