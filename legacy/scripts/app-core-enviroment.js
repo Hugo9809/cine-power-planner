@@ -1,4 +1,55 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+
+function resolveRuntimeModuleLoader() {
+  if (typeof require === 'function') {
+    try {
+      var requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && _typeof(requiredLoader) === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+
+  if (
+    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+    cineCoreRuntimeModuleLoader &&
+    _typeof(cineCoreRuntimeModuleLoader) === 'object'
+  ) {
+    return cineCoreRuntimeModuleLoader;
+  }
+
+  var scope =
+    typeof globalThis !== 'undefined' && globalThis ?
+      globalThis :
+    typeof window !== 'undefined' && window ?
+      window :
+    typeof self !== 'undefined' && self ?
+      self :
+    typeof global !== 'undefined' && global ?
+      global :
+      null;
+
+  if (scope && _typeof(scope.cineCoreRuntimeModuleLoader) === 'object') {
+    return scope.cineCoreRuntimeModuleLoader;
+  }
+
+  return null;
+}
+
+function requireCoreRuntimeModule(moduleId, options) {
+  var loader = resolveRuntimeModuleLoader();
+  if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
+    try {
+      return loader.resolveCoreRuntimeModule(moduleId, options);
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+
+  return null;
+}
 if (typeof CORE_TEMPERATURE_QUEUE_KEY === 'undefined') {
   try {
     CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
@@ -111,16 +162,22 @@ var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUN
   if (typeof resolveCoreSupportModule === 'function') {
     shared = resolveCoreSupportModule('cineCoreRuntimeShared', './modules/core/runtime-shared.js');
   }
-  if (!shared && typeof require === 'function') {
-    try {
-      var requiredShared = require('./modules/core/runtime-shared.js');
-      if (requiredShared && _typeof(requiredShared) === 'object') {
-        shared = requiredShared;
-      }
-    } catch (runtimeSharedRequireError) {
-      void runtimeSharedRequireError;
-    }
-  }
+        if (!shared) {
+          var loaderShared = requireCoreRuntimeModule(
+            'modules/core/runtime-shared.js',
+            {
+              primaryScope:
+                typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+                CORE_GLOBAL_SCOPE &&
+                _typeof(CORE_GLOBAL_SCOPE) === 'object'
+                  ? CORE_GLOBAL_SCOPE
+                  : null,
+            }
+          );
+          if (loaderShared && _typeof(loaderShared) === 'object') {
+            shared = loaderShared;
+          }
+        }
   if (shared) {
     return shared;
   }
@@ -240,14 +297,10 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPa
   if (typeof resolveCoreSupportModule === 'function') {
     resolvedSupport = resolveCoreSupportModule('cineCoreRuntimeState', './modules/core/runtime-state.js');
   }
-  if (!resolvedSupport && typeof require === 'function') {
-    try {
-      var requiredRuntimeState = require('./modules/core/runtime-state.js');
-      if (requiredRuntimeState && _typeof(requiredRuntimeState) === 'object') {
-        resolvedSupport = requiredRuntimeState;
-      }
-    } catch (runtimeStateRequireError) {
-      void runtimeStateRequireError;
+  if (!resolvedSupport) {
+    var loaderRuntimeState = requireCoreRuntimeModule('modules/core/runtime-state.js');
+    if (loaderRuntimeState && _typeof(loaderRuntimeState) === 'object') {
+      resolvedSupport = loaderRuntimeState;
     }
   }
   if (resolvedSupport) {

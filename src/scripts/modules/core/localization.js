@@ -1,3 +1,4 @@
+/* global cineCoreRuntimeModuleLoader */
 (function () {
   function getModuleDirectory(moduleId) {
     const segments = moduleId.split('/');
@@ -1270,6 +1271,61 @@
         return null;
       }
 
+      function resolveRuntimeModuleLoader(scopeCandidate) {
+        if (typeof require === 'function') {
+          const candidates = ['./runtime-module-loader.js'];
+
+          for (let index = 0; index < candidates.length; index += 1) {
+            const candidate = candidates[index];
+            try {
+              const requiredLoader = require(candidate);
+              if (requiredLoader && typeof requiredLoader === 'object') {
+                return requiredLoader;
+              }
+            } catch (runtimeLoaderError) {
+              void runtimeLoaderError;
+            }
+          }
+        }
+
+        if (
+          typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+          cineCoreRuntimeModuleLoader &&
+          typeof cineCoreRuntimeModuleLoader === 'object'
+        ) {
+          return cineCoreRuntimeModuleLoader;
+        }
+
+        const scope = detectRuntimeScope(scopeCandidate);
+
+        if (
+          scope &&
+          scope.cineCoreRuntimeModuleLoader &&
+          typeof scope.cineCoreRuntimeModuleLoader === 'object'
+        ) {
+          return scope.cineCoreRuntimeModuleLoader;
+        }
+
+        return null;
+      }
+
+      function requireCoreRuntimeModule(moduleId, options) {
+        const loader = resolveRuntimeModuleLoader(options && options.runtimeScope);
+
+        if (
+          loader &&
+          typeof loader.resolveCoreRuntimeModule === 'function'
+        ) {
+          try {
+            return loader.resolveCoreRuntimeModule(moduleId, options);
+          } catch (moduleResolutionError) {
+            void moduleResolutionError;
+          }
+        }
+
+        return null;
+      }
+
       function resolveSupportResolver(primaryScope) {
         const runtimeScope = detectRuntimeScope(primaryScope);
 
@@ -1279,6 +1335,18 @@
           typeof runtimeScope.cineCoreSupportResolver === 'object'
         ) {
           return runtimeScope.cineCoreSupportResolver;
+        }
+
+        const loaderResolver = requireCoreRuntimeModule(
+          'modules/core/support-resolver.js',
+          {
+            primaryScope: runtimeScope,
+            runtimeScope,
+          }
+        );
+
+        if (loaderResolver && typeof loaderResolver === 'object') {
+          return loaderResolver;
         }
 
         if (typeof require === 'function') {

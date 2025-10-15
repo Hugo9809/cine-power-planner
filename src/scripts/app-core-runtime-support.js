@@ -53,6 +53,79 @@ function resolveCoreDeviceSchemaNamespace() {
 
 var CORE_DEVICE_SCHEMA = resolveCoreDeviceSchemaNamespace();
 
+function resolveRuntimeModuleLoader() {
+  function readLoaderFromScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const loader = scope.cineCoreRuntimeModuleLoader;
+      return loader && typeof loader === 'object' ? loader : null;
+    } catch (loaderLookupError) {
+      void loaderLookupError;
+    }
+
+    return null;
+  }
+
+  if (
+    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+    cineCoreRuntimeModuleLoader &&
+    typeof cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return cineCoreRuntimeModuleLoader;
+  }
+
+  const candidates = collectRuntimeScopeCandidates();
+  for (let index = 0; index < candidates.length; index += 1) {
+    const loader = readLoaderFromScope(candidates[index]);
+    if (loader) {
+      return loader;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && typeof requiredLoader === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const loader = readLoaderFromScope(candidates[index]);
+    if (loader) {
+      return loader;
+    }
+  }
+
+  return null;
+}
+
+function requireCoreRuntimeModule(moduleId, options) {
+  const loader = resolveRuntimeModuleLoader();
+  if (
+    loader &&
+    typeof loader.resolveCoreRuntimeModule === 'function'
+  ) {
+    try {
+      const resolved = loader.resolveCoreRuntimeModule(moduleId, options);
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+      return resolved;
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+
+  return null;
+}
+
 const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap() {
   const namespaceName = 'cineCoreRuntimeSupportBootstrap';
 
@@ -85,15 +158,12 @@ const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap(
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const requiredBootstrap = require('./modules/core/runtime-support-bootstrap.js');
-      if (requiredBootstrap && typeof requiredBootstrap === 'object') {
-        return requiredBootstrap;
-      }
-    } catch (runtimeSupportBootstrapRequireError) {
-      void runtimeSupportBootstrapRequireError;
-    }
+  const requiredBootstrap = requireCoreRuntimeModule(
+    'modules/core/runtime-support-bootstrap.js',
+    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
+  );
+  if (requiredBootstrap && typeof requiredBootstrap === 'object') {
+    return requiredBootstrap;
   }
 
   for (let index = 0; index < candidates.length; index += 1) {
@@ -136,15 +206,12 @@ const CORE_RUNTIME_SUPPORT_RESOLUTION = (function resolveRuntimeSupportResolutio
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const requiredResolution = require('./modules/core/runtime-support-resolution.js');
-      if (requiredResolution && typeof requiredResolution === 'object') {
-        return requiredResolution;
-      }
-    } catch (runtimeSupportResolutionRequireError) {
-      void runtimeSupportResolutionRequireError;
-    }
+  const requiredResolution = requireCoreRuntimeModule(
+    'modules/core/runtime-support-resolution.js',
+    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
+  );
+  if (requiredResolution && typeof requiredResolution === 'object') {
+    return requiredResolution;
   }
 
   for (let index = 0; index < candidates.length; index += 1) {
@@ -544,15 +611,12 @@ const CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = (function resolveRuntimeSupportD
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const requiredDefaults = require('./modules/core/runtime-support-defaults.js');
-      if (requiredDefaults && typeof requiredDefaults === 'object') {
-        return requiredDefaults;
-      }
-    } catch (runtimeSupportDefaultsRequireError) {
-      void runtimeSupportDefaultsRequireError;
-    }
+  const requiredDefaults = requireCoreRuntimeModule(
+    'modules/core/runtime-support-defaults.js',
+    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
+  );
+  if (requiredDefaults && typeof requiredDefaults === 'object') {
+    return requiredDefaults;
   }
 
   for (let index = 0; index < candidates.length; index += 1) {
