@@ -9136,6 +9136,76 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
   }
 
+  const focusScaleStorageKey =
+    (typeof FOCUS_SCALE_STORAGE_KEY_NAME === 'string' && FOCUS_SCALE_STORAGE_KEY_NAME)
+      || (typeof globalThis !== 'undefined'
+        && globalThis
+        && typeof globalThis.FOCUS_SCALE_STORAGE_KEY_NAME === 'string'
+        && globalThis.FOCUS_SCALE_STORAGE_KEY_NAME)
+      || 'cameraPowerPlanner_focusScale';
+
+  const storedFocusScale = safeGetItem(focusScaleStorageKey);
+  let restoredFocusScale = null;
+  if (storedFocusScale) {
+    let normalizedFocusScale = null;
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        normalizedFocusScale = normalizeFocusScale(storedFocusScale);
+      } catch (error) {
+        console.warn('Failed to normalize restored focus scale preference', error);
+      }
+    }
+    if (typeof normalizedFocusScale !== 'string' || !normalizedFocusScale) {
+      normalizedFocusScale =
+        typeof storedFocusScale === 'string' ? storedFocusScale.trim().toLowerCase() : '';
+    }
+
+    if (normalizedFocusScale === 'metric' || normalizedFocusScale === 'imperial') {
+      restoredFocusScale = normalizedFocusScale;
+      try {
+        if (typeof applyFocusScalePreference === 'function') {
+          applyFocusScalePreference(normalizedFocusScale, { persist: false, forceUpdate: true });
+        }
+      } catch (error) {
+        console.warn('Failed to apply restored focus scale preference', error);
+      }
+
+      sessionFocusScale = normalizedFocusScale;
+
+      try {
+        if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+          settingsFocusScale.value = normalizedFocusScale;
+        }
+      } catch (error) {
+        console.warn('Failed to sync restored focus scale selection', error);
+      }
+
+      if (typeof rememberSettingsFocusScaleBaseline === 'function') {
+        try {
+          rememberSettingsFocusScaleBaseline();
+        } catch (error) {
+          console.warn('Failed to update focus scale baseline after restore', error);
+        }
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        try {
+          globalThis.focusScalePreference = normalizedFocusScale;
+        } catch (error) {
+          console.warn('Failed to update global focus scale preference', error);
+        }
+      }
+
+      if (typeof focusScalePreference !== 'undefined') {
+        try {
+          focusScalePreference = normalizedFocusScale;
+        } catch (error) {
+          console.warn('Failed to update scoped focus scale preference', error);
+        }
+      }
+    }
+  }
+
   try {
     setThemePreference(safeGetItem('darkMode') === 'true', { persist: true });
   } catch (error) {
@@ -9229,6 +9299,7 @@ function applyPreferencesFromStorage(safeGetItem) {
     showAutoBackups: showBackups,
     accentColor: color || null,
     language: language || null,
+    focusScale: restoredFocusScale,
   };
 }
 
