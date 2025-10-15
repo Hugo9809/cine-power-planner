@@ -43,10 +43,76 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
 
+    function resolveCoreRuntimeHelpersPart2() {
+      const candidates = [];
+
+      if (typeof CORE_PART2_RUNTIME_HELPERS !== 'undefined' && CORE_PART2_RUNTIME_HELPERS) {
+        candidates.push(CORE_PART2_RUNTIME_HELPERS);
+      }
+
+      if (CORE_SHARED_LOCAL && typeof CORE_SHARED_LOCAL.cineCoreRuntimeHelpers === 'object') {
+        candidates.push(CORE_SHARED_LOCAL.cineCoreRuntimeHelpers);
+      }
+
+      if (
+        typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' &&
+        CORE_PART2_RUNTIME_SCOPE &&
+        typeof CORE_PART2_RUNTIME_SCOPE.cineCoreRuntimeHelpers === 'object'
+      ) {
+        candidates.push(CORE_PART2_RUNTIME_SCOPE.cineCoreRuntimeHelpers);
+      }
+
+      if (
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+        CORE_GLOBAL_SCOPE &&
+        typeof CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers === 'object'
+      ) {
+        candidates.push(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers);
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.cineCoreRuntimeHelpers === 'object') {
+        candidates.push(globalThis.cineCoreRuntimeHelpers);
+      }
+
+      if (typeof window !== 'undefined' && window && typeof window.cineCoreRuntimeHelpers === 'object') {
+        candidates.push(window.cineCoreRuntimeHelpers);
+      }
+
+      if (typeof self !== 'undefined' && self && typeof self.cineCoreRuntimeHelpers === 'object') {
+        candidates.push(self.cineCoreRuntimeHelpers);
+      }
+
+      if (typeof global !== 'undefined' && global && typeof global.cineCoreRuntimeHelpers === 'object') {
+        candidates.push(global.cineCoreRuntimeHelpers);
+      }
+
+      if (typeof require === 'function') {
+        try {
+          const required = require('./app-core-runtime-helpers.js');
+          if (required && typeof required === 'object') {
+            candidates.push(required);
+          }
+        } catch (runtimeHelpersError) {
+          void runtimeHelpersError;
+        }
+      }
+
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      }
+
+      return null;
+    }
+
     const CORE_PART2_HELPERS =
       typeof CORE_PART2_RUNTIME_HELPERS === 'object' && CORE_PART2_RUNTIME_HELPERS
         ? CORE_PART2_RUNTIME_HELPERS
         : null;
+
+    const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
 
     const autoGearHelpers =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
@@ -60,42 +126,51 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : null;
 
     const fallbackNormalizeAutoGearWeightOperator =
-      CORE_PART2_HELPERS &&
-      typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator === 'function'
-        ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator
+      typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
+        ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator
         : function normalizeAutoGearWeightOperatorFallback() {
             return 'greater';
           };
 
     const fallbackNormalizeAutoGearWeightValue =
-      CORE_PART2_HELPERS &&
-      typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue === 'function'
-        ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue
+      typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function'
+        ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue
         : function normalizeAutoGearWeightValueFallback() {
             return null;
           };
 
     const fallbackFormatAutoGearWeight =
-      CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackFormatAutoGearWeight === 'function'
-        ? CORE_PART2_HELPERS.fallbackFormatAutoGearWeight
+      typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function'
+        ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight
         : function formatAutoGearWeightFallback() {
             return '';
           };
 
     const fallbackGetAutoGearCameraWeightOperatorLabel =
-      CORE_PART2_HELPERS &&
-      typeof CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
-        ? CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel
-        : function getAutoGearCameraWeightOperatorLabelFallback() {
-            return '';
+      typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
+        ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel
+        : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
+            const textsForLang = langTexts || {};
+            const normalized = fallbackNormalizeAutoGearWeightOperator(operator);
+            if (normalized === 'less') {
+              return textsForLang.autoGearCameraWeightOperatorLess || '';
+            }
+            if (normalized === 'equal') {
+              return textsForLang.autoGearCameraWeightOperatorEqual || '';
+            }
+            return textsForLang.autoGearCameraWeightOperatorGreater || '';
           };
 
     const fallbackFormatAutoGearCameraWeight =
-      CORE_PART2_HELPERS &&
-      typeof CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight === 'function'
-        ? CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight
-        : function formatAutoGearCameraWeightFallback() {
-            return '';
+      typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function'
+        ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight
+        : function formatAutoGearCameraWeightFallback(condition, langTexts) {
+            if (!condition || !Number.isFinite(condition.value)) {
+              return '';
+            }
+            const label = fallbackGetAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+            const formattedValue = fallbackFormatAutoGearWeight(condition.value);
+            return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
           };
 
     const normalizeAutoGearWeightOperator =
@@ -111,9 +186,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const normalizeAutoGearCameraWeightCondition =
       autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearCameraWeightCondition === 'function'
         ? autoGearHelpers.normalizeAutoGearCameraWeightCondition
-        : function normalizeAutoGearCameraWeightCondition() {
-            return null;
-          };
+        : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition
+          : function normalizeAutoGearCameraWeightConditionFallback() {
+              return null;
+            };
 
     const formatAutoGearWeight =
       autoGearHelpers && typeof autoGearHelpers.formatAutoGearWeight === 'function'
@@ -322,75 +399,36 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
-    function fallbackStableStringify(value) {
-      if (value === null) return 'null';
-      if (value === undefined) return 'undefined';
-      if (Array.isArray(value)) {
-        let serialized = '[';
-        for (let index = 0; index < value.length; index += 1) {
-          if (index > 0) {
-            serialized += ',';
-          }
-          serialized += fallbackStableStringify(value[index]);
-        }
-        serialized += ']';
-        return serialized;
-      }
-      if (typeof value === 'object') {
-        const keys = Object.keys(value).sort();
-        let serialized = '{';
-        for (let index = 0; index < keys.length; index += 1) {
-          const key = keys[index];
-          if (index > 0) {
-            serialized += ',';
-          }
-          serialized += `${JSON.stringify(key)}:${fallbackStableStringify(value[key])}`;
-        }
-        serialized += '}';
-        return serialized;
-      }
-      return JSON.stringify(value);
-    }
-    
-    const FALLBACK_HUMANIZE_OVERRIDES_PART2 = {
-      powerDrawWatts: 'Power (W)',
-      capacity: 'Capacity (Wh)',
-      pinA: 'Pin A',
-      dtapA: 'D-Tap A',
-      mount_type: 'Mount',
-      screenSizeInches: 'Screen Size (in)',
-      brightnessNits: 'Brightness (nits)',
-      torqueNm: 'Torque (Nm)',
-      internalController: 'Internal Controller',
-      powerSource: 'Power Source',
-      batteryType: 'Battery Type',
-      connectivity: 'Connectivity'
-    };
-    
     const AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL =
       (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
-    
-    function fallbackHumanizeKey(key) {
-      if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART2, key)) {
-        return FALLBACK_HUMANIZE_OVERRIDES_PART2[key];
-      }
-    
-      const stringValue = typeof key === 'string' ? key : String(key || '');
-      return stringValue
-        .replace(/_/g, ' ')
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, (c) => c.toUpperCase());
-    }
-    
+
     const coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function'
       ? CORE_SHARED_LOCAL.stableStringify
-      : fallbackStableStringify;
-    
+      : typeof CORE_SHARED_LOCAL.fallbackStableStringify === 'function'
+        ? CORE_SHARED_LOCAL.fallbackStableStringify
+        : typeof CORE_RUNTIME_FALLBACKS.fallbackStableStringify === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackStableStringify
+          : function fallbackStableStringifyProxy(value) {
+              try {
+                return JSON.stringify(value);
+              } catch (serializationError) {
+                void serializationError;
+              }
+              return String(value);
+            };
+
     const coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function'
       ? CORE_SHARED_LOCAL.humanizeKey
-      : fallbackHumanizeKey;
+      : typeof CORE_SHARED_LOCAL.fallbackHumanizeKey === 'function'
+        ? CORE_SHARED_LOCAL.fallbackHumanizeKey
+        : typeof CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey
+          : function fallbackHumanizeKeyProxy(key) {
+              const stringValue = typeof key === 'string' ? key : String(key || '');
+              return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
+            };
     
     const sharedDeviceManagerLists = (() => {
       const candidates = [

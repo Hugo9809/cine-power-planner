@@ -3404,6 +3404,75 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
+function resolveCoreRuntimeHelpers() {
+  const candidates = [];
+
+  if (typeof CORE_PART2_RUNTIME_HELPERS !== 'undefined' && CORE_PART2_RUNTIME_HELPERS) {
+    candidates.push(CORE_PART2_RUNTIME_HELPERS);
+  }
+
+  if (CORE_SHARED && typeof CORE_SHARED.cineCoreRuntimeHelpers === 'object') {
+    candidates.push(CORE_SHARED.cineCoreRuntimeHelpers);
+  }
+
+  if (
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers === 'object'
+  ) {
+    candidates.push(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers);
+  }
+
+  if (
+    typeof CORE_SHARED_SCOPE_PART2 !== 'undefined' &&
+    CORE_SHARED_SCOPE_PART2 &&
+    typeof CORE_SHARED_SCOPE_PART2.cineCoreRuntimeHelpers === 'object'
+  ) {
+    candidates.push(CORE_SHARED_SCOPE_PART2.cineCoreRuntimeHelpers);
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.cineCoreRuntimeHelpers === 'object') {
+    candidates.push(globalThis.cineCoreRuntimeHelpers);
+  }
+
+  if (typeof window !== 'undefined' && window && typeof window.cineCoreRuntimeHelpers === 'object') {
+    candidates.push(window.cineCoreRuntimeHelpers);
+  }
+
+  if (typeof self !== 'undefined' && self && typeof self.cineCoreRuntimeHelpers === 'object') {
+    candidates.push(self.cineCoreRuntimeHelpers);
+  }
+
+  if (typeof global !== 'undefined' && global && typeof global.cineCoreRuntimeHelpers === 'object') {
+    candidates.push(global.cineCoreRuntimeHelpers);
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const required = require('./app-core-runtime-helpers.js');
+      if (required && typeof required === 'object') {
+        candidates.push(required);
+      }
+    } catch (runtimeHelpersError) {
+      void runtimeHelpersError;
+    }
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = candidates[index];
+    if (candidate && typeof candidate === 'object') {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+const CORE_RUNTIME_HELPERS = resolveCoreRuntimeHelpers();
+const CORE_RUNTIME_FALLBACKS = (CORE_RUNTIME_HELPERS && typeof CORE_RUNTIME_HELPERS === 'object')
+  ? CORE_RUNTIME_HELPERS
+  : {};
+
 function createCoreRuntimeStateFallback(candidateScopes) {
   const scopes = [];
   const seenScopes =
@@ -4199,70 +4268,31 @@ function formatWithPlaceholdersSafe(template, ...values) {
   }
 })();
 
-function fallbackStableStringify(value) {
-  if (value === null) return 'null';
-  if (value === undefined) return 'undefined';
-  if (Array.isArray(value)) {
-    let serialized = '[';
-    for (let index = 0; index < value.length; index += 1) {
-      if (index > 0) {
-        serialized += ',';
-      }
-      serialized += fallbackStableStringify(value[index]);
-    }
-    serialized += ']';
-    return serialized;
-  }
-  if (typeof value === 'object') {
-    const keys = Object.keys(value).sort();
-    let serialized = '{';
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      if (index > 0) {
-        serialized += ',';
-      }
-      serialized += `${JSON.stringify(key)}:${fallbackStableStringify(value[key])}`;
-    }
-    serialized += '}';
-    return serialized;
-  }
-  return JSON.stringify(value);
-}
-
-const FALLBACK_HUMANIZE_OVERRIDES_PART1 = {
-  powerDrawWatts: 'Power (W)',
-  capacity: 'Capacity (Wh)',
-  pinA: 'Pin A',
-  dtapA: 'D-Tap A',
-  mount_type: 'Mount',
-  screenSizeInches: 'Screen Size (in)',
-  brightnessNits: 'Brightness (nits)',
-  torqueNm: 'Torque (Nm)',
-  internalController: 'Internal Controller',
-  powerSource: 'Power Source',
-  batteryType: 'Battery Type',
-  connectivity: 'Connectivity'
-};
-
-function fallbackHumanizeKey(key) {
-  if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART1, key)) {
-    return FALLBACK_HUMANIZE_OVERRIDES_PART1[key];
-  }
-
-  const stringValue = typeof key === 'string' ? key : String(key || '');
-  return stringValue
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (c) => c.toUpperCase());
-}
-
 var stableStringify = typeof CORE_SHARED.stableStringify === 'function'
   ? CORE_SHARED.stableStringify
-  : fallbackStableStringify;
+  : typeof CORE_SHARED.fallbackStableStringify === 'function'
+    ? CORE_SHARED.fallbackStableStringify
+    : typeof CORE_RUNTIME_FALLBACKS.fallbackStableStringify === 'function'
+      ? CORE_RUNTIME_FALLBACKS.fallbackStableStringify
+      : function fallbackStableStringifyProxy(value) {
+          try {
+            return JSON.stringify(value);
+          } catch (serializationError) {
+            void serializationError;
+          }
+          return String(value);
+        };
 
 const humanizeKey = typeof CORE_SHARED.humanizeKey === 'function'
   ? CORE_SHARED.humanizeKey
-  : fallbackHumanizeKey;
+  : typeof CORE_SHARED.fallbackHumanizeKey === 'function'
+    ? CORE_SHARED.fallbackHumanizeKey
+    : typeof CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey === 'function'
+      ? CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey
+      : function fallbackHumanizeKeyProxy(key) {
+          const stringValue = typeof key === 'string' ? key : String(key || '');
+          return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
+        };
 
 function fallbackResolveConnectorSummaryGenerator() {
   const scopes = [];
@@ -4307,103 +4337,70 @@ let sessionSafeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnect
       }
     };
 
-function fallbackNormalizeAutoGearWeightOperator(value) {
-  if (typeof value !== 'string') return 'greater';
-  const normalized = value.trim().toLowerCase();
-  if (!normalized) return 'greater';
-  if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
-    return 'greater';
-  }
-  if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
-    return 'less';
-  }
-  if (
-    normalized === '=' ||
-    normalized === '==' ||
-    normalized === 'equal' ||
-    normalized === 'equals' ||
-    normalized === 'exactly' ||
-    normalized === 'match' ||
-    normalized === 'matches'
-  ) {
-    return 'equal';
-  }
-  return 'greater';
-}
-
 const normalizeAutoGearWeightOperator = typeof CORE_SHARED.normalizeAutoGearWeightOperator === 'function'
   ? CORE_SHARED.normalizeAutoGearWeightOperator
-  : fallbackNormalizeAutoGearWeightOperator;
+  : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator
+    : function normalizeAutoGearWeightOperatorFallback() {
+        return 'greater';
+      };
 
 const normalizeAutoGearWeightValue = typeof CORE_SHARED.normalizeAutoGearWeightValue === 'function'
   ? CORE_SHARED.normalizeAutoGearWeightValue
-  : function normalizeAutoGearWeightValue(value) {
-      if (typeof value === 'number' && Number.isFinite(value)) {
-        const rounded = Math.round(value);
-        return rounded >= 0 ? rounded : null;
-      }
-      if (typeof value === 'string') {
-        const trimmed = value.trim();
-        if (!trimmed) return null;
-        const sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
-        if (!sanitized) return null;
-        const parsed = Number.parseFloat(sanitized);
-        if (!Number.isFinite(parsed)) return null;
-        const rounded = Math.round(parsed);
-        return rounded >= 0 ? rounded : null;
-      }
-      return null;
-    };
+  : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue
+    : function normalizeAutoGearWeightValueFallback() {
+        return null;
+      };
 
 const normalizeAutoGearCameraWeightCondition = typeof CORE_SHARED.normalizeAutoGearCameraWeightCondition === 'function'
   ? CORE_SHARED.normalizeAutoGearCameraWeightCondition
-  : function normalizeAutoGearCameraWeightCondition() {
-      return null;
-    };
+  : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition
+    : function normalizeAutoGearCameraWeightConditionFallback() {
+        return null;
+      };
 
 const formatAutoGearWeight = typeof CORE_SHARED.formatAutoGearWeight === 'function'
   ? CORE_SHARED.formatAutoGearWeight
-  : function formatAutoGearWeight(value) {
-      if (!Number.isFinite(value)) return '';
-      try {
-        if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-          return new Intl.NumberFormat().format(value);
+  : typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight
+    : function formatAutoGearWeightFallback(value) {
+        return Number.isFinite(value) ? String(value) : '';
+      };
+
+const fallbackGetAutoGearCameraWeightOperatorLabel =
+  typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel
+    : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
+        const textsForLang = langTexts || {};
+        const normalized = normalizeAutoGearWeightOperator(operator);
+        if (normalized === 'less') {
+          return textsForLang.autoGearCameraWeightOperatorLess || 'Lighter than';
         }
-      } catch (error) {
-        void error;
-      }
-      return String(value);
-    };
+        if (normalized === 'equal') {
+          return textsForLang.autoGearCameraWeightOperatorEqual || 'Exactly';
+        }
+        return textsForLang.autoGearCameraWeightOperatorGreater || 'Heavier than';
+      };
 
 const getAutoGearCameraWeightOperatorLabel = typeof CORE_SHARED.getAutoGearCameraWeightOperatorLabel === 'function'
   ? CORE_SHARED.getAutoGearCameraWeightOperatorLabel
-  : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-      const textsForLang = langTexts || {};
-      const fallbackTexts = (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.texts && CORE_GLOBAL_SCOPE.texts.en) || {};
-      const normalized = normalizeAutoGearWeightOperator(operator);
-      if (normalized === 'less') {
-        return textsForLang.autoGearCameraWeightOperatorLess
-          || fallbackTexts.autoGearCameraWeightOperatorLess
-          || 'Lighter than';
-      }
-      if (normalized === 'equal') {
-        return textsForLang.autoGearCameraWeightOperatorEqual
-          || fallbackTexts.autoGearCameraWeightOperatorEqual
-          || 'Exactly';
-      }
-      return textsForLang.autoGearCameraWeightOperatorGreater
-        || fallbackTexts.autoGearCameraWeightOperatorGreater
-        || 'Heavier than';
-    };
+  : fallbackGetAutoGearCameraWeightOperatorLabel;
+
+const fallbackFormatAutoGearCameraWeight =
+  typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function'
+    ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight
+    : function formatAutoGearCameraWeightFallback(condition, langTexts) {
+        if (!condition || !Number.isFinite(condition.value)) return '';
+        const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+        const formattedValue = formatAutoGearWeight(condition.value);
+        return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
+      };
 
 const formatAutoGearCameraWeight = typeof CORE_SHARED.formatAutoGearCameraWeight === 'function'
   ? CORE_SHARED.formatAutoGearCameraWeight
-  : function formatAutoGearCameraWeight(condition, langTexts) {
-      if (!condition || !Number.isFinite(condition.value)) return '';
-      const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
-      const formattedValue = formatAutoGearWeight(condition.value);
-      return `${label} ${formattedValue} g`;
-    };
+  : fallbackFormatAutoGearCameraWeight;
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`

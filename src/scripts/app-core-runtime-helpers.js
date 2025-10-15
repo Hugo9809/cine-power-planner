@@ -14,6 +14,63 @@
  * keeps treating the file as intentionally new.
  */
 
+const FALLBACK_HUMANIZE_OVERRIDES = {
+  powerDrawWatts: 'Power (W)',
+  capacity: 'Capacity (Wh)',
+  pinA: 'Pin A',
+  dtapA: 'D-Tap A',
+  mount_type: 'Mount',
+  screenSizeInches: 'Screen Size (in)',
+  brightnessNits: 'Brightness (nits)',
+  torqueNm: 'Torque (Nm)',
+  internalController: 'Internal Controller',
+  powerSource: 'Power Source',
+  batteryType: 'Battery Type',
+  connectivity: 'Connectivity',
+};
+
+function fallbackStableStringify(value) {
+  if (value === null) return 'null';
+  if (typeof value === 'undefined') return 'undefined';
+  if (Array.isArray(value)) {
+    let serialized = '[';
+    for (let index = 0; index < value.length; index += 1) {
+      if (index > 0) {
+        serialized += ',';
+      }
+      serialized += fallbackStableStringify(value[index]);
+    }
+    serialized += ']';
+    return serialized;
+  }
+  if (typeof value === 'object' && value) {
+    const keys = Object.keys(value).sort();
+    let serialized = '{';
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+      if (index > 0) {
+        serialized += ',';
+      }
+      serialized += `${JSON.stringify(key)}:${fallbackStableStringify(value[key])}`;
+    }
+    serialized += '}';
+    return serialized;
+  }
+  return JSON.stringify(value);
+}
+
+function fallbackHumanizeKey(key) {
+  if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES, key)) {
+    return FALLBACK_HUMANIZE_OVERRIDES[key];
+  }
+
+  const stringValue = typeof key === 'string' ? key : String(key || '');
+  return stringValue
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (c) => c.toUpperCase());
+}
+
 function createArrayFromCandidates(primary, shared, globalScope) {
   const candidates = [];
 
@@ -379,6 +436,12 @@ function resolveAutoGearWeightHelpers(options) {
     formatAutoGearCameraWeight: formatCameraWeight,
     fallbackGetAutoGearCameraWeightOperatorLabel,
     fallbackFormatAutoGearCameraWeight: fallbackFormatCameraWeight,
+    fallbackNormalizeAutoGearCameraWeightCondition: function fallbackNormalizeAutoGearCameraWeightCondition(condition) {
+      if (!condition || typeof condition !== 'object') {
+        return null;
+      }
+      return null;
+    },
   };
 }
 
@@ -498,9 +561,17 @@ var CORE_PART2_RUNTIME_HELPERS = (function initialisePart2RuntimeHelpers() {
   return {
     resolveAutoGearWeightHelpers,
     resolveRuntimeScopeTools,
+    fallbackStableStringify,
+    fallbackHumanizeKey,
     fallbackNormalizeAutoGearWeightOperator,
     fallbackNormalizeAutoGearWeightValue,
     fallbackFormatAutoGearWeight,
+    fallbackNormalizeAutoGearCameraWeightCondition: function fallbackNormalizeAutoGearCameraWeightCondition(condition) {
+      if (!condition || typeof condition !== 'object') {
+        return null;
+      }
+      return null;
+    },
     fallbackGetAutoGearCameraWeightOperatorLabel: createFallbackGetAutoGearCameraWeightOperatorLabel(
       fallbackNormalizeAutoGearWeightOperator,
       function fallbackTexts() {
@@ -562,6 +633,45 @@ var CORE_PART2_RUNTIME_HELPERS = (function initialisePart2RuntimeHelpers() {
       scope.cineCorePart2RuntimeHelpers = namespace;
     } catch (exposeError) {
       void exposeError;
+    }
+  }
+})(CORE_PART2_RUNTIME_HELPERS);
+
+(function exposeRuntimeHelpersOnSharedNamespace(namespace) {
+  if (!namespace || typeof namespace !== 'object') {
+    return;
+  }
+
+  const candidateScopes = createArrayFromCandidates(
+    typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' ? CORE_PART2_RUNTIME_SCOPE : null,
+    typeof CORE_SHARED_SCOPE_PART2 !== 'undefined' ? CORE_SHARED_SCOPE_PART2 : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
+  );
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (scope.cineCoreShared && typeof scope.cineCoreShared === 'object') {
+        const sharedHelpers = scope.cineCoreShared.cineCoreRuntimeHelpers;
+        if (!sharedHelpers || typeof sharedHelpers !== 'object') {
+          scope.cineCoreShared.cineCoreRuntimeHelpers = namespace;
+        } else if (typeof Object.assign === 'function') {
+          Object.assign(sharedHelpers, namespace);
+        } else {
+          for (const key in namespace) {
+            if (Object.prototype.hasOwnProperty.call(namespace, key)) {
+              sharedHelpers[key] = namespace[key];
+            }
+          }
+        }
+
+      }
+    } catch (assignError) {
+      void assignError;
     }
   }
 })(CORE_PART2_RUNTIME_HELPERS);
