@@ -381,36 +381,19 @@ function buildBaseBootstrapInvocationOptions() {
   };
 }
 
-const BOOTSTRAP_INVOCATION_NORMALIZER =
-  APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions === 'function'
-    ? APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions
-    : null;
-
-const BOOTSTRAP_FALLBACK_COLLECTOR =
-  APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes === 'function'
-    ? APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes
-    : null;
-
-const BOOTSTRAP_INLINE_LOCALIZATION_CREATOR =
-  APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback === 'function'
-    ? APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback
-    : null;
-
-const BOOTSTRAP_INLINE_RUNTIME_CREATOR =
-  APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback === 'function'
-    ? APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback
-    : null;
-
 function normalizeBootstrapInvocationOptions(extraOptions) {
   const baseOptions = buildBaseBootstrapInvocationOptions();
 
-  if (typeof BOOTSTRAP_INVOCATION_NORMALIZER === 'function') {
+  const bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS || null;
+  const bootstrapInvocationNormalizer =
+    bootstrapTools &&
+    typeof bootstrapTools.normalizeBootstrapInvocationOptions === 'function'
+      ? bootstrapTools.normalizeBootstrapInvocationOptions
+      : null;
+
+  if (typeof bootstrapInvocationNormalizer === 'function') {
     try {
-      return BOOTSTRAP_INVOCATION_NORMALIZER(baseOptions, extraOptions);
+      return bootstrapInvocationNormalizer(baseOptions, extraOptions);
     } catch (bootstrapNormalizeError) {
       void bootstrapNormalizeError;
     }
@@ -461,9 +444,16 @@ function normalizeBootstrapInvocationOptions(extraOptions) {
 function collectBootstrapFallbackScopes(extraScopes) {
   const invocationOptions = normalizeBootstrapInvocationOptions(extraScopes);
 
-  if (typeof BOOTSTRAP_FALLBACK_COLLECTOR === 'function') {
+  const bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS || null;
+  const bootstrapFallbackCollector =
+    bootstrapTools &&
+    typeof bootstrapTools.collectBootstrapFallbackScopes === 'function'
+      ? bootstrapTools.collectBootstrapFallbackScopes
+      : null;
+
+  if (typeof bootstrapFallbackCollector === 'function') {
     try {
-      const collected = BOOTSTRAP_FALLBACK_COLLECTOR(invocationOptions);
+      const collected = bootstrapFallbackCollector(invocationOptions);
 
       if (Array.isArray(collected)) {
         return collected;
@@ -489,7 +479,7 @@ function collectBootstrapFallbackScopes(extraScopes) {
     }
   }
 
-  const bootstrapTools =
+  const resolvedBootstrapTools =
     (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
     (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapTools) ||
     RESOLVED_APP_CORE_BOOTSTRAP_TOOLS ||
@@ -497,11 +487,12 @@ function collectBootstrapFallbackScopes(extraScopes) {
     null;
 
   if (
-    bootstrapTools &&
-    typeof bootstrapTools.collectBootstrapFallbackScopes === 'function'
+    resolvedBootstrapTools &&
+    typeof resolvedBootstrapTools.collectBootstrapFallbackScopes === 'function'
   ) {
     try {
-      const collected = bootstrapTools.collectBootstrapFallbackScopes(invocationOptions);
+      const collected =
+        resolvedBootstrapTools.collectBootstrapFallbackScopes(invocationOptions);
 
       if (Array.isArray(collected)) {
         return collected;
@@ -540,9 +531,16 @@ function createInlineLocalizationFallback(options) {
     options && typeof options === 'object' ? options : null
   );
 
-  if (typeof BOOTSTRAP_INLINE_LOCALIZATION_CREATOR === 'function') {
+  const bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS || null;
+  const bootstrapInlineLocalizationCreator =
+    bootstrapTools &&
+    typeof bootstrapTools.createInlineLocalizationFallback === 'function'
+      ? bootstrapTools.createInlineLocalizationFallback
+      : null;
+
+  if (typeof bootstrapInlineLocalizationCreator === 'function') {
     try {
-      const inlineResult = BOOTSTRAP_INLINE_LOCALIZATION_CREATOR(invocationOptions);
+      const inlineResult = bootstrapInlineLocalizationCreator(invocationOptions);
 
       if (inlineResult && typeof inlineResult === 'object') {
         return inlineResult;
@@ -584,7 +582,7 @@ function createInlineLocalizationFallback(options) {
     }
   }
 
-  const bootstrapTools =
+  const resolvedBootstrapTools =
     (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
     (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapTools) ||
     RESOLVED_APP_CORE_BOOTSTRAP_TOOLS ||
@@ -592,12 +590,12 @@ function createInlineLocalizationFallback(options) {
     null;
 
   if (
-    bootstrapTools &&
-    typeof bootstrapTools.createInlineLocalizationFallback === 'function'
+    resolvedBootstrapTools &&
+    typeof resolvedBootstrapTools.createInlineLocalizationFallback === 'function'
   ) {
     try {
       const bootstrapInline =
-        bootstrapTools.createInlineLocalizationFallback(invocationOptions);
+        resolvedBootstrapTools.createInlineLocalizationFallback(invocationOptions);
 
       if (bootstrapInline && typeof bootstrapInline === 'object') {
         return bootstrapInline;
@@ -688,9 +686,16 @@ function createInlineRuntimeSharedFallback(options) {
     options && typeof options === 'object' ? options : null
   );
 
-  if (typeof BOOTSTRAP_INLINE_RUNTIME_CREATOR === 'function') {
+  const bootstrapTools = APP_CORE_BOOTSTRAP_TOOLS || null;
+  const bootstrapInlineRuntimeCreator =
+    bootstrapTools &&
+    typeof bootstrapTools.createInlineRuntimeSharedFallback === 'function'
+      ? bootstrapTools.createInlineRuntimeSharedFallback
+      : null;
+
+  if (typeof bootstrapInlineRuntimeCreator === 'function') {
     try {
-      const inlineResult = BOOTSTRAP_INLINE_RUNTIME_CREATOR(invocationOptions);
+      const inlineResult = bootstrapInlineRuntimeCreator(invocationOptions);
 
       if (inlineResult && typeof inlineResult === 'object') {
         return inlineResult;
@@ -732,7 +737,7 @@ function createInlineRuntimeSharedFallback(options) {
     }
   }
 
-  const bootstrapTools =
+  const resolvedBootstrapTools =
     (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
     (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapTools) ||
     RESOLVED_APP_CORE_BOOTSTRAP_TOOLS ||
@@ -740,12 +745,12 @@ function createInlineRuntimeSharedFallback(options) {
     null;
 
   if (
-    bootstrapTools &&
-    typeof bootstrapTools.createInlineRuntimeSharedFallback === 'function'
+    resolvedBootstrapTools &&
+    typeof resolvedBootstrapTools.createInlineRuntimeSharedFallback === 'function'
   ) {
     try {
       const bootstrapInline =
-        bootstrapTools.createInlineRuntimeSharedFallback(invocationOptions);
+        resolvedBootstrapTools.createInlineRuntimeSharedFallback(invocationOptions);
 
       if (bootstrapInline && typeof bootstrapInline === 'object') {
         return bootstrapInline;
