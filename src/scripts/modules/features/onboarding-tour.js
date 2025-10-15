@@ -3054,7 +3054,7 @@
 
   const DEFAULT_HIGHLIGHT_PADDING = 12;
   const EXTRA_ONBOARDING_CARD_VIEWPORT_TOP_MARGIN = 20;
-  const EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP = 12;
+  const EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP = 20;
 
   function normalizeHighlightPaddingValue(value, fallback) {
     if (typeof value === 'number' && Number.isFinite(value)) {
