@@ -1390,8 +1390,18 @@ main.legal-content {
   padding: clamp(1.25rem, 3vw, 1.75rem);
   width: min(92vw, 520px);
   min-inline-size: min(320px, 92vw);
-  border-color: var(--panel-border);
-  box-shadow: var(--panel-shadow);
+  max-height: min(92vh, 720px);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
+  border-radius: calc(var(--border-radius) * 1.9);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  background: color-mix(in srgb, var(--surface-color) 95%, var(--panel-bg) 5%);
+  overflow: hidden;
+}
+
+@supports (height: 100dvh) {
+  .avatar-options-surface {
+    max-height: min(92dvh, calc(100dvh - 2 * var(--modal-frame-padding, 20px)), 720px);
+  }
 }
 
 .avatar-options-header {
@@ -1415,6 +1425,16 @@ main.legal-content {
   flex-direction: column;
   align-items: center;
   gap: clamp(1.1rem, 2.8vw, 1.75rem);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.dark-mode .avatar-options-surface {
+  background: color-mix(in srgb, var(--control-bg) 80%, var(--surface-color) 20%);
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  box-shadow: 0 30px 64px rgba(0, 0, 0, 0.55);
 }
 
 .avatar-options-preview {
