@@ -790,3 +790,102 @@ const resolveCoreSupportModule =
           CORE_PART1_RUNTIME_SCOPE
         );
       };
+
+const CORE_RUNTIME_SUPPORT_EXPORTS = (function ensureRuntimeSupportExportsNamespace() {
+  const namespaceName = 'cineCoreRuntimeSupportExports';
+
+  function readNamespace(candidateScope) {
+    if (
+      !candidateScope ||
+      (typeof candidateScope !== 'object' && typeof candidateScope !== 'function')
+    ) {
+      return null;
+    }
+
+    try {
+      const namespace = candidateScope[namespaceName];
+      return namespace && typeof namespace === 'object' ? namespace : null;
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
+    }
+
+    return null;
+  }
+
+  const candidateScopes = collectRuntimeScopeCandidates([
+    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+  ]);
+
+  let namespace = null;
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const existing = readNamespace(candidateScopes[index]);
+    if (existing) {
+      namespace = existing;
+      break;
+    }
+  }
+
+  if (!namespace || typeof namespace !== 'object') {
+    namespace = {};
+  } else {
+    const isExtensible =
+      typeof Object.isExtensible === 'function' ? Object.isExtensible(namespace) : true;
+    const isSealed = typeof Object.isSealed === 'function' && Object.isSealed(namespace);
+
+    if (!isExtensible || isSealed) {
+      namespace = Object.assign({}, namespace);
+    }
+  }
+
+  function assignExport(target, key, value) {
+    if (!target || typeof target !== 'object') {
+      return;
+    }
+
+    try {
+      target[key] = value;
+      if (target[key] === value) {
+        return;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+
+    try {
+      Object.defineProperty(target, key, {
+        configurable: true,
+        writable: true,
+        value,
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+
+  assignExport(namespace, 'resolveRuntimeModuleLoader', resolveRuntimeModuleLoader);
+  assignExport(namespace, 'requireCoreRuntimeModule', requireCoreRuntimeModule);
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      scope[namespaceName] = namespace;
+    } catch (namespaceAssignError) {
+      void namespaceAssignError;
+    }
+  }
+
+  if (typeof module === 'object' && module && typeof module.exports === 'object') {
+    try {
+      module.exports = namespace;
+    } catch (moduleExportError) {
+      void moduleExportError;
+    }
+  }
+
+  return namespace;
+})();
