@@ -2208,10 +2208,24 @@ function callSessionCoreFunction(functionName, args = [], options = {}) {
 }
 
 function ensureSessionRuntimeFunction(functionName, options = {}) {
-  return ensureSessionRuntimePlaceholder(
-    functionName,
-    () => (...invocationArgs) => callSessionCoreFunction(functionName, invocationArgs, options),
-  );
+  return ensureSessionRuntimePlaceholder(functionName, () => {
+    const proxy = (...invocationArgs) => callSessionCoreFunction(functionName, invocationArgs, options);
+    try {
+      Object.defineProperty(proxy, '__cineSessionProxy__', {
+        value: true,
+        writable: false,
+        enumerable: false,
+      });
+    } catch (defineProxyFlagError) {
+      void defineProxyFlagError;
+      try {
+        proxy.__cineSessionProxy__ = true;
+      } catch (assignProxyFlagError) {
+        void assignProxyFlagError;
+      }
+    }
+    return proxy;
+  });
 }
 
 const AUTO_GEAR_RUNTIME_HANDLERS = [
