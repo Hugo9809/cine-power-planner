@@ -21,6 +21,31 @@
     return Array.isArray(value) ? value.slice() : [];
   }
 
+  function registerScope(scopes, scope) {
+    if (!scope || !isObject(scope)) {
+      return;
+    }
+
+    if (Array.isArray(scopes) && scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+
+  function attemptFactory(factory, factoryOptions) {
+    if (typeof factory !== 'function') {
+      return null;
+    }
+
+    try {
+      const result = factory(factoryOptions);
+      return result && typeof result === 'object' ? result : null;
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
   function collectBootstrapFallbackScopes(options) {
     const runtimeScope =
       options && isObject(options.runtimeScope) ? options.runtimeScope : null;
@@ -137,7 +162,7 @@
   function resolveBootstrapFallbackTools(options) {
     return resolveNamespace(
       'cineCoreAppCoreBootstrapFallbacks',
-      './modules/app-core/bootstrap-fallbacks.js',
+      './modules/app-core/bootstrap.js',
       options
     );
   }
@@ -163,7 +188,7 @@
 
     return resolveNamespace(
       'cineCoreAppCoreBootstrapEnvironment',
-      './modules/app-core/bootstrap-environment.js',
+      './modules/app-core/bootstrap.js',
       resolverOptions
     );
   }
@@ -178,9 +203,801 @@
 
     return resolveNamespace(
       'cineCoreAppCoreBootstrapResults',
-      './modules/app-core/bootstrap-results.js',
+      './modules/app-core/bootstrap.js',
       resolverOptions
     );
+  }
+
+  function collectEnvironmentFallbackScopes(options) {
+    const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope = options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+
+    return appendFallbackScopes(
+      ensureArray(options && options.fallbackScopes),
+      runtimeScope,
+      coreGlobalScope
+    );
+  }
+
+  function hasBootstrapResolverCapabilities(candidate) {
+    return (
+      !!candidate &&
+      typeof candidate === 'object' &&
+      typeof candidate.resolveBootstrapTools === 'function' &&
+      typeof candidate.resolveBootstrapFallbackTools === 'function' &&
+      typeof candidate.createInlineLocalizationFallback === 'function' &&
+      typeof candidate.createInlineRuntimeSharedFallback === 'function'
+    );
+  }
+
+  function resolveBootstrapResolverTools(options) {
+    const directResolverNamespace =
+      options && isObject(options.directResolverNamespace)
+        ? options.directResolverNamespace
+        : null;
+
+    if (hasBootstrapResolverCapabilities(directResolverNamespace)) {
+      return directResolverNamespace;
+    }
+
+    const resolverOptions = {
+      resolveCoreSupportModule:
+        options && typeof options.resolveCoreSupportModule === 'function'
+          ? options.resolveCoreSupportModule
+          : null,
+      requireFn: ensureRequireFn(options && options.requireFn),
+      runtimeScope: options && isObject(options.runtimeScope) ? options.runtimeScope : null,
+      coreGlobalScope:
+        options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null,
+      fallbackScopes: ensureArray(options && options.fallbackScopes),
+    };
+
+    const resolvedNamespace = resolveNamespace(
+      'cineCoreAppCoreBootstrapResolver',
+      './modules/app-core/bootstrap.js',
+      Object.assign({}, resolverOptions, { directNamespace: directResolverNamespace })
+    );
+
+    if (hasBootstrapResolverCapabilities(resolvedNamespace)) {
+      return resolvedNamespace;
+    }
+
+    if (
+      resolvedNamespace &&
+      isObject(resolvedNamespace.cineCoreAppCoreBootstrapResolver) &&
+      hasBootstrapResolverCapabilities(resolvedNamespace.cineCoreAppCoreBootstrapResolver)
+    ) {
+      return resolvedNamespace.cineCoreAppCoreBootstrapResolver;
+    }
+
+    if (
+      resolvedNamespace &&
+      isObject(resolvedNamespace.cineCoreAppCoreBootstrap) &&
+      hasBootstrapResolverCapabilities(resolvedNamespace.cineCoreAppCoreBootstrap)
+    ) {
+      return resolvedNamespace.cineCoreAppCoreBootstrap;
+    }
+
+    const fallbackScopes = collectBootstrapFallbackScopes(resolverOptions);
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+
+      if (!scope || !isObject(scope)) {
+        continue;
+      }
+
+      try {
+        const resolverCandidate = scope.cineCoreAppCoreBootstrapResolver;
+
+        if (hasBootstrapResolverCapabilities(resolverCandidate)) {
+          return resolverCandidate;
+        }
+
+        const bootstrapCandidate = scope.cineCoreAppCoreBootstrap;
+
+        if (hasBootstrapResolverCapabilities(bootstrapCandidate)) {
+          return bootstrapCandidate;
+        }
+      } catch (resolverLookupError) {
+        void resolverLookupError;
+      }
+    }
+
+    return null;
+  }
+
+  function resolveBootstrapToolsWithResolver(options) {
+    const resolverTools =
+      options && isObject(options.bootstrapResolverTools)
+        ? options.bootstrapResolverTools
+        : null;
+
+    if (resolverTools && typeof resolverTools.resolveBootstrapTools === 'function') {
+      try {
+        const resolved = resolverTools.resolveBootstrapTools(options);
+        if (resolved && isObject(resolved)) {
+          return resolved;
+        }
+      } catch (bootstrapResolveError) {
+        void bootstrapResolveError;
+      }
+    }
+
+    const directBootstrapNamespace =
+      options && isObject(options.directBootstrapNamespace)
+        ? options.directBootstrapNamespace
+        : null;
+
+    if (directBootstrapNamespace && isObject(directBootstrapNamespace)) {
+      return directBootstrapNamespace;
+    }
+
+    const resolveCoreSupportModule =
+      options && typeof options.resolveCoreSupportModule === 'function'
+        ? options.resolveCoreSupportModule
+        : null;
+
+    if (resolveCoreSupportModule) {
+      try {
+        const resolved = resolveCoreSupportModule(
+          'cineCoreAppCoreBootstrap',
+          './modules/app-core/bootstrap.js'
+        );
+
+        if (resolved && isObject(resolved)) {
+          return resolved;
+        }
+      } catch (bootstrapSupportResolveError) {
+        void bootstrapSupportResolveError;
+      }
+    }
+
+    const requireFn = ensureRequireFn(options && options.requireFn);
+
+    if (typeof requireFn === 'function') {
+      try {
+        const requiredBootstrap = requireFn('./modules/app-core/bootstrap.js');
+
+        if (requiredBootstrap && isObject(requiredBootstrap)) {
+          return requiredBootstrap;
+        }
+      } catch (bootstrapRequireError) {
+        void bootstrapRequireError;
+      }
+    }
+
+    const fallbackScopes = collectEnvironmentFallbackScopes(options);
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+
+      if (!scope || !isObject(scope)) {
+        continue;
+      }
+
+      try {
+        const candidate = scope.cineCoreAppCoreBootstrap;
+
+        if (candidate && isObject(candidate)) {
+          return candidate;
+        }
+      } catch (bootstrapLookupError) {
+        void bootstrapLookupError;
+      }
+    }
+
+    return null;
+  }
+
+  function resolveBootstrapFallbackToolsWithResolver(options) {
+    const resolverTools =
+      options && isObject(options.bootstrapResolverTools)
+        ? options.bootstrapResolverTools
+        : null;
+
+    if (resolverTools && typeof resolverTools.resolveBootstrapFallbackTools === 'function') {
+      try {
+        const resolved = resolverTools.resolveBootstrapFallbackTools(options);
+        if (resolved && isObject(resolved)) {
+          return resolved;
+        }
+      } catch (bootstrapFallbackResolveError) {
+        void bootstrapFallbackResolveError;
+      }
+    }
+
+    const directFallbackNamespace =
+      options && isObject(options.directBootstrapFallbackNamespace)
+        ? options.directBootstrapFallbackNamespace
+        : null;
+
+    if (directFallbackNamespace && isObject(directFallbackNamespace)) {
+      return directFallbackNamespace;
+    }
+
+    const resolveCoreSupportModule =
+      options && typeof options.resolveCoreSupportModule === 'function'
+        ? options.resolveCoreSupportModule
+        : null;
+
+    if (resolveCoreSupportModule) {
+      try {
+        const resolved = resolveCoreSupportModule(
+          'cineCoreAppCoreBootstrapFallbacks',
+          './modules/app-core/bootstrap.js'
+        );
+
+        if (resolved && isObject(resolved)) {
+          return resolved;
+        }
+      } catch (bootstrapFallbackSupportResolveError) {
+        void bootstrapFallbackSupportResolveError;
+      }
+    }
+
+    const requireFn = ensureRequireFn(options && options.requireFn);
+
+    if (typeof requireFn === 'function') {
+      try {
+        const requiredFallback = requireFn('./modules/app-core/bootstrap.js');
+
+        if (requiredFallback && isObject(requiredFallback.cineCoreAppCoreBootstrapFallbacks)) {
+          return requiredFallback.cineCoreAppCoreBootstrapFallbacks;
+        }
+
+        if (requiredFallback && isObject(requiredFallback)) {
+          return requiredFallback;
+        }
+      } catch (bootstrapFallbackRequireError) {
+        void bootstrapFallbackRequireError;
+      }
+    }
+
+    const fallbackScopes = collectEnvironmentFallbackScopes(options);
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+
+      if (!scope || !isObject(scope)) {
+        continue;
+      }
+
+      try {
+        const candidate = scope.cineCoreAppCoreBootstrapFallbacks;
+
+        if (candidate && isObject(candidate)) {
+          return candidate;
+        }
+      } catch (bootstrapFallbackLookupError) {
+        void bootstrapFallbackLookupError;
+      }
+    }
+
+    return null;
+  }
+
+  function createInlineLocalizationFallbackWithResolver(options) {
+    const resolverTools =
+      options && isObject(options.bootstrapResolverTools)
+        ? options.bootstrapResolverTools
+        : null;
+
+    if (resolverTools && typeof resolverTools.createInlineLocalizationFallback === 'function') {
+      try {
+        const generated = resolverTools.createInlineLocalizationFallback(options);
+
+        if (generated && isObject(generated)) {
+          return generated;
+        }
+      } catch (localizationFallbackResolveError) {
+        void localizationFallbackResolveError;
+      }
+    }
+
+    const fallbackTools = options && isObject(options.fallbackTools) ? options.fallbackTools : null;
+
+    if (
+      fallbackTools &&
+      typeof fallbackTools.createLocalizationBootstrapFallback === 'function'
+    ) {
+      try {
+        const fallbackResult = fallbackTools.createLocalizationBootstrapFallback(options);
+
+        if (fallbackResult && isObject(fallbackResult)) {
+          return fallbackResult;
+        }
+      } catch (localizationFallbackError) {
+        void localizationFallbackError;
+      }
+    }
+
+    return createLocalizationBootstrapFallback();
+  }
+
+  function createInlineRuntimeSharedFallbackWithResolver(options) {
+    const resolverTools =
+      options && isObject(options.bootstrapResolverTools)
+        ? options.bootstrapResolverTools
+        : null;
+
+    if (resolverTools && typeof resolverTools.createInlineRuntimeSharedFallback === 'function') {
+      try {
+        const generated = resolverTools.createInlineRuntimeSharedFallback(options);
+
+        if (generated && isObject(generated)) {
+          return generated;
+        }
+      } catch (runtimeSharedFallbackResolveError) {
+        void runtimeSharedFallbackResolveError;
+      }
+    }
+
+    const fallbackTools = options && isObject(options.fallbackTools) ? options.fallbackTools : null;
+
+    if (
+      fallbackTools &&
+      typeof fallbackTools.createRuntimeSharedBootstrapFallback === 'function'
+    ) {
+      try {
+        const moduleFallback = fallbackTools.createRuntimeSharedBootstrapFallback(options);
+
+        if (moduleFallback && isObject(moduleFallback)) {
+          return moduleFallback;
+        }
+      } catch (runtimeSharedFallbackError) {
+        void runtimeSharedFallbackError;
+      }
+    }
+
+    const fallbackScopes = collectEnvironmentFallbackScopes(options);
+
+    function fallbackResolveRuntimeSharedFromGlobal() {
+      for (let index = 0; index < fallbackScopes.length; index += 1) {
+        const scope = fallbackScopes[index];
+
+        if (!scope || !isObject(scope)) {
+          continue;
+        }
+
+        try {
+          const candidate = scope.cineCoreRuntimeShared;
+
+          if (candidate && isObject(candidate)) {
+            return candidate;
+          }
+        } catch (runtimeSharedLookupError) {
+          void runtimeSharedLookupError;
+        }
+      }
+
+      return null;
+    }
+
+    let runtimeShared =
+      options && isObject(options.currentRuntimeShared)
+        ? options.currentRuntimeShared
+        : null;
+
+    if (!runtimeShared) {
+      runtimeShared = fallbackResolveRuntimeSharedFromGlobal();
+    }
+
+    if (!runtimeShared || typeof runtimeShared !== 'object') {
+      try {
+        runtimeShared = Object.create(null);
+      } catch (runtimeSharedCreationError) {
+        void runtimeSharedCreationError;
+        runtimeShared = {};
+      }
+    }
+
+    return {
+      runtimeSharedNamespace: null,
+      runtimeSharedResolver: null,
+      existingRuntimeShared: runtimeShared,
+      runtimeShared,
+      fallbackResolveRuntimeSharedFromGlobal,
+    };
+  }
+
+  function createBootstrapEnvironment(options) {
+    const requireFn = ensureRequireFn(options && options.requireFn);
+    const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope =
+      options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+    const fallbackScopes = collectEnvironmentFallbackScopes({
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes: options && options.fallbackScopes,
+    });
+
+    const resolverTools = resolveBootstrapResolverTools({
+      directResolverNamespace: options && options.directResolverNamespace,
+      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes,
+    });
+
+    const bootstrapTools = resolveBootstrapToolsWithResolver({
+      directBootstrapNamespace: options && options.directBootstrapNamespace,
+      bootstrapResolverTools: resolverTools,
+      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes,
+    });
+
+    const bootstrapFallbackTools = resolveBootstrapFallbackToolsWithResolver({
+      directBootstrapFallbackNamespace: options && options.directBootstrapFallbackNamespace,
+      bootstrapResolverTools: resolverTools,
+      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes,
+    });
+
+    function createInlineLocalizationFallbackWithEnvironment() {
+      return createInlineLocalizationFallbackWithResolver({
+        bootstrapResolverTools: resolverTools,
+        fallbackTools: bootstrapFallbackTools,
+        resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+        requireFn,
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes,
+      });
+    }
+
+    function createInlineRuntimeSharedFallbackWithEnvironment(runtimeSharedOptions) {
+      const runtimeSharedFallbackScopes =
+        runtimeSharedOptions && runtimeSharedOptions.fallbackScopes
+          ? runtimeSharedOptions.fallbackScopes
+          : fallbackScopes;
+
+      return createInlineRuntimeSharedFallbackWithResolver({
+        bootstrapResolverTools: resolverTools,
+        fallbackTools: bootstrapFallbackTools,
+        resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+        requireFn,
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes: runtimeSharedFallbackScopes,
+        currentRuntimeShared:
+          runtimeSharedOptions && isObject(runtimeSharedOptions.currentRuntimeShared)
+            ? runtimeSharedOptions.currentRuntimeShared
+            : null,
+      });
+    }
+
+    function collectAdditionalFallbackScopes(extraScopes) {
+      return collectEnvironmentFallbackScopes({
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes: extraScopes,
+      });
+    }
+
+    return {
+      fallbackScopes,
+      bootstrapResolverTools: resolverTools,
+      bootstrapTools,
+      bootstrapFallbackTools,
+      createInlineLocalizationFallback: createInlineLocalizationFallbackWithEnvironment,
+      createInlineRuntimeSharedFallback: createInlineRuntimeSharedFallbackWithEnvironment,
+      collectFallbackScopes: collectAdditionalFallbackScopes,
+    };
+  }
+
+  function collectResultsFallbackScopes(options) {
+    const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope = options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+    const fallbackScopesInput = options ? options.fallbackScopes : null;
+
+    if (options && typeof options.collectFallbackScopes === 'function') {
+      try {
+        const collected = options.collectFallbackScopes(fallbackScopesInput);
+
+        if (Array.isArray(collected)) {
+          const list = ensureArray(collected);
+          registerScope(list, runtimeScope);
+          registerScope(list, coreGlobalScope);
+          registerScope(list, typeof globalThis !== 'undefined' ? globalThis : null);
+          registerScope(list, typeof window !== 'undefined' ? window : null);
+          registerScope(list, typeof self !== 'undefined' ? self : null);
+          registerScope(list, typeof global !== 'undefined' ? global : null);
+          return list;
+        }
+      } catch (collectorError) {
+        void collectorError;
+      }
+    }
+
+    const fallbackScopes = ensureArray(fallbackScopesInput);
+    registerScope(fallbackScopes, runtimeScope);
+    registerScope(fallbackScopes, coreGlobalScope);
+    registerScope(fallbackScopes, typeof globalThis !== 'undefined' ? globalThis : null);
+    registerScope(fallbackScopes, typeof window !== 'undefined' ? window : null);
+    registerScope(fallbackScopes, typeof self !== 'undefined' ? self : null);
+    registerScope(fallbackScopes, typeof global !== 'undefined' ? global : null);
+    return fallbackScopes;
+  }
+
+  function createLocalizationFallbackSkeleton() {
+    return {
+      localizationSupport: null,
+      localizationRuntimeEnvironment: null,
+      localizationBridge: null,
+      localizationFallbacks: null,
+      inlineLocalizationFallbacks: null,
+      localizationFallbackSupport: null,
+      createBasicLocalizationFallbackResolvers() {
+        return null;
+      },
+      localizationFallbackRegistry: {
+        createFallbackResolvers() {
+          return null;
+        },
+      },
+      localizationFallbackResolvers: null,
+      localizationFallbackNamespace: null,
+      fallbackResolveLocaleModule() {
+        return null;
+      },
+      createLocaleFallbacks() {
+        return null;
+      },
+    };
+  }
+
+  function createRuntimeSharedFallbackSkeleton(options) {
+    const fallbackScopes = collectResultsFallbackScopes(options || null);
+    const currentRuntimeShared =
+      options && isObject(options.currentRuntimeShared) ? options.currentRuntimeShared : null;
+
+    function fallbackResolveRuntimeSharedFromGlobal() {
+      for (let index = 0; index < fallbackScopes.length; index += 1) {
+        const scope = fallbackScopes[index];
+
+        if (!isObject(scope)) {
+          continue;
+        }
+
+        try {
+          const candidate = scope.cineCoreRuntimeShared;
+          if (candidate && typeof candidate === 'object') {
+            return candidate;
+          }
+        } catch (lookupError) {
+          void lookupError;
+        }
+      }
+
+      return null;
+    }
+
+    let runtimeShared = currentRuntimeShared;
+
+    if (!runtimeShared || typeof runtimeShared !== 'object') {
+      runtimeShared = fallbackResolveRuntimeSharedFromGlobal();
+    }
+
+    if (!runtimeShared || typeof runtimeShared !== 'object') {
+      try {
+        runtimeShared = Object.create(null);
+      } catch (creationError) {
+        void creationError;
+        runtimeShared = {};
+      }
+    }
+
+    return {
+      runtimeSharedNamespace: null,
+      runtimeSharedResolver: null,
+      existingRuntimeShared: runtimeShared,
+      runtimeShared,
+      fallbackResolveRuntimeSharedFromGlobal,
+    };
+  }
+
+  function resolveLocalizationBootstrapResult(options) {
+    const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope = options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+    const fallbackScopes = collectResultsFallbackScopes({
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes: options && options.fallbackScopes,
+      collectFallbackScopes: options && options.collectFallbackScopes,
+    });
+    const requireFn = ensureRequireFn(options && options.requireFn);
+    const resolveCoreSupportModule =
+      options && typeof options.resolveCoreSupportModule === 'function'
+        ? options.resolveCoreSupportModule
+        : null;
+
+    const bootstrapOptions = {
+      localizationSupportTools:
+        options && isObject(options.localizationSupportTools)
+          ? options.localizationSupportTools
+          : null,
+      localizationBootstrapTools:
+        options && isObject(options.localizationBootstrapTools)
+          ? options.localizationBootstrapTools
+          : null,
+      localizationRuntimeTools:
+        options && isObject(options.localizationRuntimeTools)
+          ? options.localizationRuntimeTools
+          : null,
+      resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes,
+      currentLocalization:
+        options && isObject(options.currentLocalization) ? options.currentLocalization : null,
+    };
+
+    const bootstrapTools =
+      options && isObject(options.bootstrapTools) ? options.bootstrapTools : null;
+
+    let result = attemptFactory(
+      bootstrapTools && bootstrapTools.createLocalizationBootstrapResult,
+      bootstrapOptions
+    );
+
+    if (!result) {
+      result = attemptFactory(
+        bootstrapTools && bootstrapTools.createLocalizationBootstrapFallback,
+        bootstrapOptions
+      );
+    }
+
+    if (!result) {
+      const inlineFactory =
+        options && typeof options.createInlineLocalizationFallback === 'function'
+          ? options.createInlineLocalizationFallback
+          : null;
+
+      result = attemptFactory(inlineFactory, {
+        fallbackTools:
+          options && isObject(options.bootstrapFallbackTools)
+            ? options.bootstrapFallbackTools
+            : null,
+        resolveCoreSupportModule,
+        requireFn,
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes,
+        localizationFallbackOptions:
+          options && options.localizationFallbackOptions
+            ? options.localizationFallbackOptions
+            : null,
+      });
+    }
+
+    if (!result) {
+      result = createLocalizationFallbackSkeleton();
+    }
+
+    return result;
+  }
+
+  function resolveRuntimeSharedBootstrapResult(options) {
+    const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope = options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+    const fallbackScopes = collectResultsFallbackScopes({
+      runtimeScope,
+      coreGlobalScope,
+      fallbackScopes: options && options.fallbackScopes,
+      collectFallbackScopes: options && options.collectFallbackScopes,
+    });
+    const requireFn = ensureRequireFn(options && options.requireFn);
+    const resolveCoreSupportModule =
+      options && typeof options.resolveCoreSupportModule === 'function'
+        ? options.resolveCoreSupportModule
+        : null;
+
+    const bootstrapOptions = {
+      runtimeSharedBootstrapResolverTools:
+        options && isObject(options.runtimeSharedBootstrapResolverTools)
+          ? options.runtimeSharedBootstrapResolverTools
+          : null,
+      runtimeSharedBootstrapTools:
+        options && isObject(options.runtimeSharedBootstrapTools)
+          ? options.runtimeSharedBootstrapTools
+          : null,
+      runtimeSharedNamespaceTools:
+        options && isObject(options.runtimeSharedNamespaceTools)
+          ? options.runtimeSharedNamespaceTools
+          : null,
+      runtimeSharedBootstrapInlineTools:
+        options && isObject(options.runtimeSharedBootstrapInlineTools)
+          ? options.runtimeSharedBootstrapInlineTools
+          : null,
+      runtimeSharedBootstrapResultTools:
+        options && isObject(options.runtimeSharedBootstrapResultTools)
+          ? options.runtimeSharedBootstrapResultTools
+          : null,
+      runtimeSharedBootstrapLoaderTools:
+        options && isObject(options.runtimeSharedBootstrapLoaderTools)
+          ? options.runtimeSharedBootstrapLoaderTools
+          : null,
+      runtimeSharedBootstrapManagerTools:
+        options && isObject(options.runtimeSharedBootstrapManagerTools)
+          ? options.runtimeSharedBootstrapManagerTools
+          : null,
+      resolveCoreSupportModule,
+      requireFn,
+      runtimeScope,
+      coreGlobalScope,
+      currentRuntimeShared:
+        options && isObject(options.currentRuntimeShared) ? options.currentRuntimeShared : null,
+      fallbackScopes,
+      runtimeSharedBootstrapInlineRequirePath:
+        options && options.runtimeSharedBootstrapInlineRequirePath
+          ? options.runtimeSharedBootstrapInlineRequirePath
+          : null,
+      runtimeSharedBootstrapResultRequirePath:
+        options && options.runtimeSharedBootstrapResultRequirePath
+          ? options.runtimeSharedBootstrapResultRequirePath
+          : null,
+    };
+
+    const bootstrapTools =
+      options && isObject(options.bootstrapTools) ? options.bootstrapTools : null;
+
+    let result = attemptFactory(
+      bootstrapTools && bootstrapTools.createRuntimeSharedBootstrapResult,
+      bootstrapOptions
+    );
+
+    if (!result) {
+      result = attemptFactory(
+        bootstrapTools && bootstrapTools.createRuntimeSharedBootstrapFallback,
+        bootstrapOptions
+      );
+    }
+
+    if (!result) {
+      const inlineFactory =
+        options && typeof options.createInlineRuntimeSharedFallback === 'function'
+          ? options.createInlineRuntimeSharedFallback
+          : null;
+
+      result = attemptFactory(inlineFactory, {
+        fallbackTools:
+          options && isObject(options.bootstrapFallbackTools)
+            ? options.bootstrapFallbackTools
+            : null,
+        resolveCoreSupportModule,
+        requireFn,
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes,
+        currentRuntimeShared:
+          options && isObject(options.currentRuntimeShared)
+            ? options.currentRuntimeShared
+            : null,
+      });
+    }
+
+    if (!result) {
+      result = createRuntimeSharedFallbackSkeleton({
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes,
+        currentRuntimeShared:
+          options && isObject(options.currentRuntimeShared)
+            ? options.currentRuntimeShared
+            : null,
+      });
+    }
+
+    return result;
   }
 
   function createLocalizationBootstrapFallback() {
@@ -237,21 +1054,6 @@
       coreGlobalScope
     );
 
-    function attempt(factory, factoryOptions) {
-      if (typeof factory !== 'function') {
-        return null;
-      }
-
-      try {
-        const result = factory(factoryOptions);
-        return result && typeof result === 'object' ? result : null;
-      } catch (error) {
-        void error;
-      }
-
-      return null;
-    }
-
     const resolverOptions = {
       localizationSupportTools,
       resolveCoreSupportModule,
@@ -261,14 +1063,14 @@
       fallbackScopes,
     };
 
-    let result = attempt(
+    let result = attemptFactory(
       localizationBootstrapTools &&
         localizationBootstrapTools.createLocalizationBootstrapResult,
       resolverOptions
     );
 
     if (!result) {
-      result = attempt(localizationRuntimeTools && localizationRuntimeTools.resolveRuntimeLocalization, {
+      result = attemptFactory(localizationRuntimeTools && localizationRuntimeTools.resolveRuntimeLocalization, {
         currentLocalization: options && options.currentLocalization,
         resolveCoreSupportModule,
         requireFn,
@@ -279,7 +1081,7 @@
     }
 
     if (!result) {
-      result = attempt(
+      result = attemptFactory(
         localizationRuntimeTools &&
           localizationRuntimeTools.createFallbackLocalizationRuntimeSetup,
         {
@@ -463,21 +1265,6 @@
         ? options.currentRuntimeShared
         : null;
 
-    function attempt(factory, factoryOptions) {
-      if (typeof factory !== 'function') {
-        return null;
-      }
-
-      try {
-        const result = factory(factoryOptions);
-        return result && typeof result === 'object' ? result : null;
-      } catch (error) {
-        void error;
-      }
-
-      return null;
-    }
-
     const resolverOptions = {
       runtimeSharedBootstrapTools,
       runtimeSharedNamespaceTools,
@@ -493,14 +1280,14 @@
       fallbackScopes,
     };
 
-    let result = attempt(
+    let result = attemptFactory(
       runtimeSharedBootstrapResolverTools &&
         runtimeSharedBootstrapResolverTools.createRuntimeSharedBootstrapResult,
       resolverOptions
     );
 
     if (!result) {
-      result = attempt(
+      result = attemptFactory(
         runtimeSharedBootstrapLoaderTools &&
           runtimeSharedBootstrapLoaderTools.resolveRuntimeSharedBootstrapResult,
         {
@@ -515,7 +1302,7 @@
     }
 
     if (!result) {
-      result = attempt(
+      result = attemptFactory(
         runtimeSharedBootstrapResultTools &&
           runtimeSharedBootstrapResultTools.createRuntimeSharedBootstrapResult,
         {
@@ -537,7 +1324,7 @@
     }
 
     if (!result && runtimeSharedBootstrapResultTools) {
-      result = attempt(
+      result = attemptFactory(
         runtimeSharedBootstrapResultTools.createRuntimeSharedBootstrapInlineFallback,
         {
           runtimeScope,
@@ -936,6 +1723,33 @@
     createInlineLocalizationFallback,
     createInlineRuntimeSharedFallback,
     createBootstrapSuite,
+    resolveBootstrapResolverTools,
+    createBootstrapEnvironment,
+  };
+
+  const fallbackNamespace = {
+    createLocalizationBootstrapFallback,
+    createRuntimeSharedBootstrapFallback,
+  };
+
+  const environmentNamespace = {
+    createBootstrapEnvironment,
+    resolveBootstrapResolverTools,
+    resolveBootstrapTools: resolveBootstrapToolsWithResolver,
+    resolveBootstrapFallbackTools: resolveBootstrapFallbackToolsWithResolver,
+    createInlineLocalizationFallback: createInlineLocalizationFallbackWithResolver,
+    createInlineRuntimeSharedFallback: createInlineRuntimeSharedFallbackWithResolver,
+    collectFallbackScopes: collectEnvironmentFallbackScopes,
+  };
+
+  const resultsNamespace = {
+    resolveLocalizationBootstrapResult,
+    resolveRuntimeSharedBootstrapResult,
+    collectBootstrapFallbackScopes(options) {
+      return collectResultsFallbackScopes(options || null);
+    },
+    createLocalizationFallbackSkeleton,
+    createRuntimeSharedFallbackSkeleton,
   };
 
   const namespaceName = 'cineCoreAppCoreBootstrap';
@@ -945,11 +1759,33 @@
 
   Object.assign(existing, namespace);
 
+  const fallbackNamespaceName = 'cineCoreAppCoreBootstrapFallbacks';
+  const existingFallbacks =
+    isObject(globalScope) && isObject(globalScope[fallbackNamespaceName])
+      ? globalScope[fallbackNamespaceName]
+      : {};
+  Object.assign(existingFallbacks, fallbackNamespace);
+
+  const environmentNamespaceName = 'cineCoreAppCoreBootstrapEnvironment';
+  const existingEnvironment =
+    isObject(globalScope) && isObject(globalScope[environmentNamespaceName])
+      ? globalScope[environmentNamespaceName]
+      : {};
+  Object.assign(existingEnvironment, environmentNamespace);
+
+  const resultsNamespaceName = 'cineCoreAppCoreBootstrapResults';
+  const existingResults =
+    isObject(globalScope) && isObject(globalScope[resultsNamespaceName])
+      ? globalScope[resultsNamespaceName]
+      : {};
+  Object.assign(existingResults, resultsNamespace);
+
   const resolverNamespace = {
     resolveBootstrapTools,
     resolveBootstrapFallbackTools,
     resolveBootstrapEnvironmentTools,
     resolveBootstrapResultsTools,
+    resolveBootstrapResolverTools,
     createInlineLocalizationFallback,
     createInlineRuntimeSharedFallback,
     createBootstrapSuite,
@@ -963,6 +1799,25 @@
 
   Object.assign(existingResolver, resolverNamespace);
 
+  if (isObject(existing)) {
+    existing.fallbacks =
+      isObject(existing.fallbacks)
+        ? Object.assign(existing.fallbacks, fallbackNamespace)
+        : existingFallbacks;
+    existing.environment =
+      isObject(existing.environment)
+        ? Object.assign(existing.environment, environmentNamespace)
+        : existingEnvironment;
+    existing.results =
+      isObject(existing.results)
+        ? Object.assign(existing.results, resultsNamespace)
+        : existingResults;
+    existing.resolver =
+      isObject(existing.resolver)
+        ? Object.assign(existing.resolver, resolverNamespace)
+        : existingResolver;
+  }
+
   if (isObject(globalScope)) {
     try {
       globalScope[namespaceName] = existing;
@@ -974,6 +1829,24 @@
       globalScope[resolverNamespaceName] = existingResolver;
     } catch (resolverAssignError) {
       void resolverAssignError;
+    }
+
+    try {
+      globalScope[fallbackNamespaceName] = existingFallbacks;
+    } catch (fallbackAssignError) {
+      void fallbackAssignError;
+    }
+
+    try {
+      globalScope[environmentNamespaceName] = existingEnvironment;
+    } catch (environmentAssignError) {
+      void environmentAssignError;
+    }
+
+    try {
+      globalScope[resultsNamespaceName] = existingResults;
+    } catch (resultsAssignError) {
+      void resultsAssignError;
     }
   }
 

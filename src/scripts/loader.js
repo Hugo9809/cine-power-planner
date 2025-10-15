@@ -3184,7 +3184,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/ui.js',
       'src/scripts/modules/runtime-guard.js',
       'src/scripts/modules/results.js',
-      'src/scripts/modules/app-core/bootstrap-fallbacks.js',
+      'src/scripts/modules/app-core/bootstrap.js',
       'src/scripts/modules/app-core/pink-mode.js',
       'src/scripts/modules/app-core/localization.js',
       'src/scripts/app-core-text.js',
