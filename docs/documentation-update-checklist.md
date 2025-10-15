@@ -20,6 +20,12 @@ instructions.
 - [ ] Capture new screenshots or diagrams using local assets only.
 - [ ] Cross-check the [Backup Rotation Guide](backup-rotation-guide.md) for any
       cadence or storage updates needed to match the new behaviour.
+- [ ] Run the [Backup Rotation Rehearsal Drill](backup-rotation-guide.md#rehearsal-drill):
+      perform a manual save, export the planner backup, export two project
+      bundles, restore inside the sandbox, promote the sandbox project back to
+      live data and confirm autosave history. Capture all required evidence
+      (diff logs, checksum logs and sandbox screenshots) and stage it for the
+      verification packet before proceeding.
 - [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
       payloads changed.
 - [ ] Record interim notes in `review-findings.md`.
@@ -32,6 +38,10 @@ instructions.
       if service worker assets or icons changed.
 - [ ] Restore backups in the rehearsal sandbox to confirm documentation for
       backup/restore remains correct.
+- [ ] Store the rehearsal diff logs, checksum logs and sandbox screenshots with
+      the verification packet and confirm redundant media copies before ticking
+      the drill item so save/share/restore docs stay aligned with runtime
+      safeguards.
 - [ ] Validate translations in-app using the language switcher.
 
 ## Finalise
