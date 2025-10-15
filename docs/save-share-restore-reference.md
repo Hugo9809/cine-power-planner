@@ -41,6 +41,9 @@ workstations.
 
 - **Sandbox first:** All imports land in the sandbox. Operators must explicitly
   promote data to avoid overwriting live projects.
+- **Factory reset safeguard:** Resetting automatic gear rules downloads the
+  current preset library before any defaults are restored. Keep the file with
+  other verification artifacts.
 - **Promotion safety:** Before promotion the runtime clones current live data to
   a timestamped backup slot. Reverting is always possible.
 - **Verification:** After promotion, confirm autosave ledger logs the restore and

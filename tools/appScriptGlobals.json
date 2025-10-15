@@ -555,6 +555,7 @@
     "escapeHtml",
     "exportAllData",
     "exportAutoGearRules",
+    "exportAutoGearPresets",
     "factoryResetButton",
     "featureList",
     "featureMap",
