@@ -89,28 +89,48 @@
     const doc = detectDocument(options.document);
     const scope = resolveGlobalScope();
 
+    const elementSelectors = {
+      card: 'documentationTrackerCard',
+      heading: 'documentationTrackerHeading',
+      description: 'documentationTrackerDescription',
+      addButton: 'documentationTrackerAddRelease',
+      list: 'documentationTrackerList',
+      emptyState: 'documentationTrackerEmpty',
+      summary: 'documentationTrackerSummary',
+    };
+
+    const elementOptionsProvided = {
+      card: !!options.card,
+      heading: !!options.heading,
+      description: !!options.description,
+      addButton: !!options.addButton,
+      list: !!options.list,
+      emptyState: !!options.emptyState,
+      summary: !!options.summary,
+    };
+
     const elements = {
       card:
         options.card ||
-        (doc ? doc.getElementById('documentationTrackerCard') : null),
+        (doc ? doc.getElementById(elementSelectors.card) : null),
       heading:
         options.heading ||
-        (doc ? doc.getElementById('documentationTrackerHeading') : null),
+        (doc ? doc.getElementById(elementSelectors.heading) : null),
       description:
         options.description ||
-        (doc ? doc.getElementById('documentationTrackerDescription') : null),
+        (doc ? doc.getElementById(elementSelectors.description) : null),
       addButton:
         options.addButton ||
-        (doc ? doc.getElementById('documentationTrackerAddRelease') : null),
+        (doc ? doc.getElementById(elementSelectors.addButton) : null),
       list:
         options.list ||
-        (doc ? doc.getElementById('documentationTrackerList') : null),
+        (doc ? doc.getElementById(elementSelectors.list) : null),
       emptyState:
         options.emptyState ||
-        (doc ? doc.getElementById('documentationTrackerEmpty') : null),
+        (doc ? doc.getElementById(elementSelectors.emptyState) : null),
       summary:
         options.summary ||
-        (doc ? doc.getElementById('documentationTrackerSummary') : null),
+        (doc ? doc.getElementById(elementSelectors.summary) : null),
     };
 
     const sectionOrder = ensureArray(options.sectionOrder).length
@@ -140,6 +160,46 @@
     let focusTargetId = '';
     let pendingHighlightId = '';
     let initialized = false;
+
+    function refreshDocumentationTrackerElements() {
+      if (!doc) {
+        return false;
+      }
+
+      let refreshed = false;
+      Object.keys(elementSelectors).forEach(key => {
+        if (elementOptionsProvided[key]) {
+          return;
+        }
+        const current = elements[key];
+        if (current && typeof current === 'object') {
+          if (typeof current.isConnected === 'boolean') {
+            if (current.isConnected) {
+              return;
+            }
+          } else if (doc.contains && typeof doc.contains === 'function') {
+            if (doc.contains(current)) {
+              return;
+            }
+          }
+        }
+        if (current) {
+          const replacement = doc.getElementById(elementSelectors[key]);
+          if (replacement && replacement !== current) {
+            elements[key] = replacement;
+            refreshed = true;
+          }
+          return;
+        }
+        const found = doc.getElementById(elementSelectors[key]);
+        if (found) {
+          elements[key] = found;
+          refreshed = true;
+        }
+      });
+
+      return refreshed;
+    }
 
     function resolveLocaleString(key) {
       if (!key) {
@@ -793,6 +853,8 @@
     }
 
     function renderDocumentationTracker() {
+      refreshDocumentationTrackerElements();
+
       if (!elements.list) {
         return;
       }
@@ -1104,11 +1166,32 @@
       elements.list.removeEventListener('click', handleDocumentationTrackerClick);
     }
 
+    let domReadyInitializationScheduled = false;
+
+    function scheduleDomReadyInitialization() {
+      if (domReadyInitializationScheduled || !doc) {
+        return;
+      }
+      if (doc.readyState === 'loading' && typeof doc.addEventListener === 'function') {
+        domReadyInitializationScheduled = true;
+        doc.addEventListener('DOMContentLoaded', handleDomReadyInitialization, {
+          once: true,
+        });
+      }
+    }
+
+    function handleDomReadyInitialization() {
+      domReadyInitializationScheduled = false;
+      initialize();
+    }
+
     function initialize() {
       if (initialized) {
         return;
       }
+      refreshDocumentationTrackerElements();
       if (!elements.card || !elements.list) {
+        scheduleDomReadyInitialization();
         return;
       }
       initialized = true;
@@ -1122,6 +1205,8 @@
     }
 
     function updateLocalization(localization = {}) {
+      refreshDocumentationTrackerElements();
+
       if (localization && typeof localization.language === 'string') {
         currentLanguage = localization.language;
       }
@@ -1165,6 +1250,10 @@
 
     function destroy() {
       detachEventListeners();
+      if (domReadyInitializationScheduled && doc && typeof doc.removeEventListener === 'function') {
+        doc.removeEventListener('DOMContentLoaded', handleDomReadyInitialization);
+        domReadyInitializationScheduled = false;
+      }
       initialized = false;
     }
 
