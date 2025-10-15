@@ -16218,37 +16218,39 @@ function resolveContactsDomRefs() {
 var monitoringConfigurationUserChanged = false;
 
 var crewRoles = [
-  // Production
-  'Producer',
-  'Production Manager',
-  'Director',
-  'Assistant Director',
-  'Production Assistant',
-
   // Camera
   'DoP',
+  'Steadicam Operator',
   'Camera Operator',
   'B-Camera Operator',
-  'Steadicam Operator',
   'Drone Operator',
+  'DIT',
   '1st AC',
   '2nd AC',
-  'DIT',
   'Video Operator',
+
+  // Grip
+  'Key Grip',
+  'Dolly Grip',
+  'Best Boy Grip',
+  'Rigging Grip',
+  'Grip',
 
   // Lighting
   'Key Gaffer',
   'Gaffer',
+  'Rigging Gaffer',
   'Best Boy Electric',
   'Electrician',
-  'Rigging Gaffer',
 
-  // Grip
-  'Key Grip',
-  'Best Boy Grip',
-  'Grip',
-  'Dolly Grip',
-  'Rigging Grip'
+  // Director
+  'Director',
+  'Assistant Director',
+
+  // Production
+  'Producer',
+  'Production Manager',
+  'Production Assistant'
 ];
 
 function getCrewRoleLabels() {

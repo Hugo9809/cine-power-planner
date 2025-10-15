@@ -12882,7 +12882,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
   }
   var monitoringConfigurationUserChanged = false;
-  var crewRoles = ['Producer', 'Production Manager', 'Director', 'Assistant Director', 'Production Assistant', 'DoP', 'Camera Operator', 'B-Camera Operator', 'Steadicam Operator', 'Drone Operator', '1st AC', '2nd AC', 'DIT', 'Video Operator', 'Key Gaffer', 'Gaffer', 'Best Boy Electric', 'Electrician', 'Rigging Gaffer', 'Key Grip', 'Best Boy Grip', 'Grip', 'Dolly Grip', 'Rigging Grip'];
+  var crewRoles = ['DoP', 'Steadicam Operator', 'Camera Operator', 'B-Camera Operator', 'Drone Operator', 'DIT', '1st AC', '2nd AC', 'Video Operator', 'Key Grip', 'Dolly Grip', 'Best Boy Grip', 'Rigging Grip', 'Grip', 'Key Gaffer', 'Gaffer', 'Rigging Gaffer', 'Best Boy Electric', 'Electrician', 'Director', 'Assistant Director', 'Producer', 'Production Manager', 'Production Assistant'];
   function getCrewRoleLabels() {
     var _texts3, _texts4;
     var lang = typeof currentLang === 'string' ? currentLang : 'en';
