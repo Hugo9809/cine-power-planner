@@ -207,6 +207,23 @@
 - Added the mirrored legacy bridge so older bundles reuse the same orchestration without regressing ES5 compatibility during offline cache hydration.【F:legacy/scripts/modules/app-core/pink-mode-support-bridge.js†L1-L449】【F:legacy/scripts/app-core-new-1.js†L73-L155】
 - Updated the bundler manifests, loader, script aggregator, and service worker asset list to ship the bridge in all environments, preserving offline availability and script integrity checks.【F:src/scripts/script.js†L39-L47】【F:legacy/scripts/script.js†L1-L4】【F:src/scripts/loader.js†L3176-L3193】【F:legacy/scripts/loader.js†L2662-L2666】【F:service-worker-assets.js†L80-L118】【F:service-worker-assets.js†L236-L270】
 
+## Step 17 – Bootstrap and localisation bridges
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 24729 | 23874 | -855 |
+| `src/scripts/app-core-bootstrap-bridge.js` | – | 360 | +360 |
+| `src/scripts/app-core-localization-bridge.js` | – | 318 | +318 |
+| `legacy/scripts/app-core-new-1.js` | 21817 | 21006 | -811 |
+| `legacy/scripts/app-core-bootstrap-bridge.js` | – | 494 | +494 |
+| `legacy/scripts/app-core-localization-bridge.js` | – | 501 | +501 |
+
+*Notes:*
+
+- Moved the shared bootstrap, resolver, and fallback plumbing into `app-core-bootstrap-bridge.js`, keeping autosave, backup, and restore fallbacks intact while trimming the orchestration file to mostly wiring code.【F:src/scripts/app-core-bootstrap-bridge.js†L1-L312】【F:src/scripts/app-core-new-1.js†L120-L387】
+- Localisation bootstrap logic now lives in `app-core-localization-bridge.js`, which returns the support namespaces and fallback factories so translation refreshes stay consistent with backup and sharing routines.【F:src/scripts/app-core-localization-bridge.js†L1-L243】【F:src/scripts/app-core-new-1.js†L389-L748】
+- Legacy bundles load mirrored ES5 bridges to preserve offline-safe behaviour and namespace exports for older browsers, letting both generations share the same bootstrap orchestration during cold starts and cache restores.【F:legacy/scripts/app-core-bootstrap-bridge.js†L1-L358】【F:legacy/scripts/app-core-localization-bridge.js†L1-L329】【F:legacy/scripts/app-core-new-1.js†L64-L379】
+
 
 
 ## Step 17 – Helper consolidation
