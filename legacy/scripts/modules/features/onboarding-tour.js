@@ -2004,11 +2004,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       scrollStateTimer = setTimeout(release, 150);
     }
   }
-  function handleGlobalScroll() {
+  function isOverlayScrollEvent(event) {
+    if (!event || !overlayRoot) {
+      return false;
+    }
+    if (typeof event.composedPath === 'function') {
+      try {
+        var composedPath = event.composedPath();
+        if (Array.isArray(composedPath)) {
+          for (var index = 0; index < composedPath.length; index += 1) {
+            if (composedPath[index] === overlayRoot) {
+              return true;
+            }
+          }
+        }
+      } catch (composedPathError) {
+        safeWarn('cine.features.onboardingTour could not inspect scroll event composedPath.', composedPathError);
+      }
+    }
+    var target = event.target;
+    if (target === overlayRoot) {
+      return true;
+    }
+    if (target && typeof target.closest === 'function') {
+      try {
+        var overlayMatch = target.closest('#' + OVERLAY_ID);
+        if (overlayMatch) {
+          return true;
+        }
+      } catch (closestError) {
+        safeWarn('cine.features.onboardingTour could not evaluate scroll event target.closest.', closestError);
+      }
+    }
+    if (overlayRoot && typeof overlayRoot.contains === 'function' && target && typeof target === 'object') {
+      try {
+        if (overlayRoot.contains(target)) {
+          return true;
+        }
+      } catch (containsError) {
+        safeWarn('cine.features.onboardingTour encountered an error inspecting scroll event containment.', containsError);
+      }
+    }
+    return false;
+  }
+  function handleGlobalScroll(event) {
     if (!active) {
       return;
     }
     markScrollActive();
+    if (isOverlayScrollEvent(event)) {
+      return;
+    }
     schedulePositionUpdate();
   }
   function getOverlayMetrics() {
