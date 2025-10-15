@@ -46,14 +46,112 @@
     return null;
   }
 
+  function normalizeBootstrapInvocationOptions(baseOrOverrides, overrides) {
+    const hasOverrides = arguments.length > 1;
+    const baseSource = hasOverrides ? baseOrOverrides : null;
+    const overrideSource = hasOverrides ? overrides : baseOrOverrides;
+
+    const normalized = {};
+
+    if (baseSource && isObject(baseSource) && !Array.isArray(baseSource)) {
+      const baseKeys = Object.keys(baseSource);
+      for (let index = 0; index < baseKeys.length; index += 1) {
+        const key = baseKeys[index];
+        normalized[key] = baseSource[key];
+      }
+    }
+
+    normalized.resolveCoreSupportModule =
+      typeof normalized.resolveCoreSupportModule === 'function'
+        ? normalized.resolveCoreSupportModule
+        : null;
+    normalized.requireFn = ensureRequireFn(normalized.requireFn);
+    normalized.runtimeScope = normalized.runtimeScope && isObject(normalized.runtimeScope)
+      ? normalized.runtimeScope
+      : null;
+    normalized.coreGlobalScope = normalized.coreGlobalScope && isObject(normalized.coreGlobalScope)
+      ? normalized.coreGlobalScope
+      : null;
+    normalized.fallbackScopes = ensureArray(normalized.fallbackScopes);
+
+    function applyOverrides(source) {
+      if (!source) {
+        return;
+      }
+
+      if (Array.isArray(source)) {
+        normalized.fallbackScopes = source.slice();
+        return;
+      }
+
+      if (!isObject(source)) {
+        return;
+      }
+
+      if (Array.isArray(source.fallbackScopes)) {
+        normalized.fallbackScopes = source.fallbackScopes.slice();
+      } else if (source.fallbackScopes) {
+        normalized.fallbackScopes = [source.fallbackScopes];
+      }
+
+      if (source.runtimeScope && isObject(source.runtimeScope)) {
+        normalized.runtimeScope = source.runtimeScope;
+      }
+
+      if (source.coreGlobalScope && isObject(source.coreGlobalScope)) {
+        normalized.coreGlobalScope = source.coreGlobalScope;
+      }
+
+      if (typeof source.requireFn === 'function') {
+        normalized.requireFn = source.requireFn;
+      } else if (Object.prototype.hasOwnProperty.call(source, 'requireFn')) {
+        normalized.requireFn = ensureRequireFn(source.requireFn);
+      }
+
+      if (typeof source.resolveCoreSupportModule === 'function') {
+        normalized.resolveCoreSupportModule = source.resolveCoreSupportModule;
+      } else if (Object.prototype.hasOwnProperty.call(source, 'resolveCoreSupportModule')) {
+        normalized.resolveCoreSupportModule = null;
+      }
+
+      const keys = Object.keys(source);
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+
+        if (
+          key === 'fallbackScopes' ||
+          key === 'runtimeScope' ||
+          key === 'coreGlobalScope' ||
+          key === 'requireFn' ||
+          key === 'resolveCoreSupportModule'
+        ) {
+          continue;
+        }
+
+        normalized[key] = source[key];
+      }
+    }
+
+    applyOverrides(overrideSource);
+
+    normalized.requireFn = ensureRequireFn(normalized.requireFn);
+    normalized.fallbackScopes = ensureArray(normalized.fallbackScopes);
+
+    return normalized;
+  }
+
   function collectBootstrapFallbackScopes(options) {
-    const runtimeScope =
-      options && isObject(options.runtimeScope) ? options.runtimeScope : null;
-    const coreGlobalScope =
-      options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
-    const fallbackScopeList = ensureArray(options && options.fallbackScopes);
-    const bootstrapEnvironmentTools = getBootstrapEnvironmentTools(options);
-    const bootstrapResultsTools = getBootstrapResultsTools(options);
+    const invocationOptions = normalizeBootstrapInvocationOptions(options);
+    const runtimeScope = invocationOptions.runtimeScope;
+    const coreGlobalScope = invocationOptions.coreGlobalScope;
+    const fallbackScopeList = ensureArray(invocationOptions.fallbackScopes);
+    const bootstrapEnvironmentTools =
+      invocationOptions.bootstrapEnvironmentTools ||
+      invocationOptions.bootstrapEnvironment ||
+      getBootstrapEnvironmentTools(invocationOptions);
+    const bootstrapResultsTools =
+      invocationOptions.bootstrapResultsTools ||
+      getBootstrapResultsTools(invocationOptions);
 
     if (
       bootstrapResultsTools &&
@@ -1236,39 +1334,36 @@
   }
 
   function createInlineLocalizationFallback(options) {
-    const runtimeScope =
-      options && isObject(options.runtimeScope) ? options.runtimeScope : null;
-    const coreGlobalScope =
-      options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
-    const requireFn = ensureRequireFn(options && options.requireFn);
-    const bootstrapEnvironmentTools = getBootstrapEnvironmentTools(options);
-    const bootstrapResultsTools = getBootstrapResultsTools(options);
-    const fallbackScopes = collectBootstrapFallbackScopes({
-      fallbackScopes: options && options.fallbackScopes,
-      runtimeScope,
-      coreGlobalScope,
-      bootstrapEnvironmentTools,
-      bootstrapEnvironment: bootstrapEnvironmentTools,
-      bootstrapResultsTools,
-      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
-      requireFn,
-    });
-    const resolverOptions = Object.assign({}, options, {
-      runtimeScope,
-      coreGlobalScope,
-      fallbackScopes,
-      requireFn,
-      bootstrapEnvironmentTools,
-      bootstrapEnvironment: bootstrapEnvironmentTools,
-      bootstrapResultsTools,
-    });
-    const bootstrapResolverTools = getBootstrapResolverTools(resolverOptions);
-    const fallbackTools = getBootstrapFallbackTools(resolverOptions);
-    const bootstrapSuite =
-      options && isObject(options.bootstrapSuite) ? options.bootstrapSuite : null;
+    const invocationOptions = normalizeBootstrapInvocationOptions(options);
+    const runtimeScope = invocationOptions.runtimeScope;
+    const coreGlobalScope = invocationOptions.coreGlobalScope;
+    const requireFn = invocationOptions.requireFn;
+    const bootstrapEnvironmentTools =
+      invocationOptions.bootstrapEnvironmentTools ||
+      invocationOptions.bootstrapEnvironment ||
+      getBootstrapEnvironmentTools(invocationOptions);
+    const bootstrapResultsTools =
+      invocationOptions.bootstrapResultsTools ||
+      getBootstrapResultsTools(invocationOptions);
     const localizationFallbackOptions =
-      options && options.localizationFallbackOptions
-        ? options.localizationFallbackOptions
+      invocationOptions.localizationFallbackOptions || null;
+    const resolverOptions = normalizeBootstrapInvocationOptions(invocationOptions, {
+      bootstrapEnvironmentTools,
+      bootstrapEnvironment: bootstrapEnvironmentTools,
+      bootstrapResultsTools,
+      fallbackScopes: invocationOptions.fallbackScopes,
+    });
+    const fallbackScopes = collectBootstrapFallbackScopes(resolverOptions);
+    resolverOptions.fallbackScopes = fallbackScopes;
+    const bootstrapResolverTools =
+      invocationOptions.bootstrapResolverTools || getBootstrapResolverTools(resolverOptions);
+    const fallbackTools =
+      invocationOptions.bootstrapFallbackTools ||
+      invocationOptions.fallbackTools ||
+      getBootstrapFallbackTools(resolverOptions);
+    const bootstrapSuite =
+      invocationOptions.bootstrapSuite && isObject(invocationOptions.bootstrapSuite)
+        ? invocationOptions.bootstrapSuite
         : null;
 
     if (
@@ -1278,7 +1373,7 @@
       try {
         const generated = bootstrapResolverTools.createInlineLocalizationFallback({
           fallbackTools,
-          resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+          resolveCoreSupportModule: invocationOptions.resolveCoreSupportModule,
           requireFn,
           runtimeScope,
           coreGlobalScope,
@@ -1317,7 +1412,7 @@
     if (fallbackTools && typeof fallbackTools.createLocalizationBootstrapFallback === 'function') {
       try {
         const fallbackResult = fallbackTools.createLocalizationBootstrapFallback({
-          resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+          resolveCoreSupportModule: invocationOptions.resolveCoreSupportModule,
           requireFn,
           runtimeScope,
           coreGlobalScope,
@@ -1410,41 +1505,42 @@
   }
 
   function createInlineRuntimeSharedFallback(options) {
-    const runtimeScope =
-      options && isObject(options.runtimeScope) ? options.runtimeScope : null;
-    const coreGlobalScope =
-      options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
-    const requireFn = ensureRequireFn(options && options.requireFn);
-    const bootstrapEnvironmentTools = getBootstrapEnvironmentTools(options);
-    const bootstrapResultsTools = getBootstrapResultsTools(options);
-    const fallbackScopes = collectBootstrapFallbackScopes({
-      fallbackScopes: options && options.fallbackScopes,
-      runtimeScope,
-      coreGlobalScope,
-      bootstrapEnvironmentTools,
-      bootstrapEnvironment: bootstrapEnvironmentTools,
-      bootstrapResultsTools,
-      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
-      requireFn,
-    });
+    const invocationOptions = normalizeBootstrapInvocationOptions(options);
+    const runtimeScope = invocationOptions.runtimeScope;
+    const coreGlobalScope = invocationOptions.coreGlobalScope;
+    const requireFn = invocationOptions.requireFn;
+    const bootstrapEnvironmentTools =
+      invocationOptions.bootstrapEnvironmentTools ||
+      invocationOptions.bootstrapEnvironment ||
+      getBootstrapEnvironmentTools(invocationOptions);
+    const bootstrapResultsTools =
+      invocationOptions.bootstrapResultsTools ||
+      getBootstrapResultsTools(invocationOptions);
     const currentRuntimeShared =
-      options && isObject(options.currentRuntimeShared)
-        ? options.currentRuntimeShared
+      invocationOptions.currentRuntimeShared &&
+      isObject(invocationOptions.currentRuntimeShared)
+        ? invocationOptions.currentRuntimeShared
         : null;
-    const resolverOptions = Object.assign({}, options, {
-      runtimeScope,
-      coreGlobalScope,
-      fallbackScopes,
-      currentRuntimeShared,
-      requireFn,
+    const resolverOptions = normalizeBootstrapInvocationOptions(invocationOptions, {
       bootstrapEnvironmentTools,
       bootstrapEnvironment: bootstrapEnvironmentTools,
       bootstrapResultsTools,
+      fallbackScopes: invocationOptions.fallbackScopes,
+      currentRuntimeShared,
     });
-    const bootstrapResolverTools = getBootstrapResolverTools(resolverOptions);
-    const fallbackTools = getBootstrapFallbackTools(resolverOptions);
+    const fallbackScopes = collectBootstrapFallbackScopes(resolverOptions);
+    resolverOptions.fallbackScopes = fallbackScopes;
+    resolverOptions.currentRuntimeShared = currentRuntimeShared;
+    const bootstrapResolverTools =
+      invocationOptions.bootstrapResolverTools || getBootstrapResolverTools(resolverOptions);
+    const fallbackTools =
+      invocationOptions.bootstrapFallbackTools ||
+      invocationOptions.fallbackTools ||
+      getBootstrapFallbackTools(resolverOptions);
     const bootstrapSuite =
-      options && isObject(options.bootstrapSuite) ? options.bootstrapSuite : null;
+      invocationOptions.bootstrapSuite && isObject(invocationOptions.bootstrapSuite)
+        ? invocationOptions.bootstrapSuite
+        : null;
 
     if (
       bootstrapResolverTools &&
@@ -1453,7 +1549,7 @@
       try {
         const generated = bootstrapResolverTools.createInlineRuntimeSharedFallback({
           fallbackTools,
-          resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+          resolveCoreSupportModule: invocationOptions.resolveCoreSupportModule,
           requireFn,
           runtimeScope,
           coreGlobalScope,
@@ -1495,7 +1591,7 @@
     ) {
       try {
         const moduleFallback = fallbackTools.createRuntimeSharedBootstrapFallback({
-          resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+          resolveCoreSupportModule: invocationOptions.resolveCoreSupportModule,
           requireFn,
           runtimeScope,
           coreGlobalScope,
@@ -1669,8 +1765,8 @@
   }
 
   function createBootstrapSuite(options) {
-    const normalizedOptions = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
-    const baseRequireFn = ensureRequireFn(normalizedOptions.requireFn);
+    const normalizedOptions = normalizeBootstrapInvocationOptions(options);
+    const baseRequireFn = normalizedOptions.requireFn;
 
     const bootstrapTools =
       resolveBootstrapTools(
@@ -1740,7 +1836,7 @@
 
       merged.fallbackScopes = fallbackScopes;
 
-      return merged;
+      return normalizeBootstrapInvocationOptions(merged);
     }
 
     function collectSuiteFallbackScopes(overrides) {
@@ -2037,6 +2133,7 @@
     createLocalizationBootstrapFallback,
     createRuntimeSharedBootstrapResult,
     createRuntimeSharedBootstrapFallback,
+    normalizeBootstrapInvocationOptions,
     collectBootstrapFallbackScopes,
     resolveBootstrapTools,
     resolveBootstrapFallbackTools,
@@ -2062,6 +2159,7 @@
     createInlineLocalizationFallback: createInlineLocalizationFallbackWithResolver,
     createInlineRuntimeSharedFallback: createInlineRuntimeSharedFallbackWithResolver,
     collectFallbackScopes: collectEnvironmentFallbackScopes,
+    normalizeBootstrapInvocationOptions,
   };
 
   const resultsNamespace = {
@@ -2111,6 +2209,7 @@
     createInlineLocalizationFallback,
     createInlineRuntimeSharedFallback,
     createBootstrapSuite,
+    normalizeBootstrapInvocationOptions,
   };
 
   const resolverNamespaceName = 'cineCoreAppCoreBootstrapResolver';
