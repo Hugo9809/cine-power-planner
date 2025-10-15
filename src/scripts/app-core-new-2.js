@@ -48,6 +48,142 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? CORE_PART2_RUNTIME_HELPERS
         : null;
 
+    const runtimeFallbacks = (function createRuntimeFallbacks() {
+      function createArrayFromCandidates(primary, shared, globalScope) {
+        const candidates = [];
+
+        if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
+          candidates.push(primary);
+        }
+
+        if (shared && (typeof shared === 'object' || typeof shared === 'function')) {
+          candidates.push(shared);
+        }
+
+        if (globalScope && (typeof globalScope === 'object' || typeof globalScope === 'function')) {
+          candidates.push(globalScope);
+        }
+
+        candidates.push(
+          typeof globalThis !== 'undefined' ? globalThis : null,
+          typeof window !== 'undefined' ? window : null,
+          typeof self !== 'undefined' ? self : null,
+          typeof global !== 'undefined' ? global : null,
+        );
+
+        const resolved = [];
+        for (let index = 0; index < candidates.length; index += 1) {
+          const candidate = candidates[index];
+          if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+            continue;
+          }
+
+          let duplicate = false;
+          for (let check = 0; check < resolved.length; check += 1) {
+            if (resolved[check] === candidate) {
+              duplicate = true;
+              break;
+            }
+          }
+
+          if (!duplicate) {
+            resolved.push(candidate);
+          }
+        }
+
+        return resolved;
+      }
+
+      function fallbackCreateRuntimeScopeCandidates(primaryScope, sharedScope, globalScope) {
+        if (typeof collectRuntimeScopeCandidates === 'function') {
+          return collectRuntimeScopeCandidates([primaryScope, sharedScope, globalScope]);
+        }
+
+        return createArrayFromCandidates(primaryScope, sharedScope, globalScope);
+      }
+
+      function fallbackReadCoreScopeValue(name, candidates) {
+        if (typeof name !== 'string' || !name) {
+          return undefined;
+        }
+
+        if (!Array.isArray(candidates) || candidates.length === 0) {
+          return undefined;
+        }
+
+        for (let index = 0; index < candidates.length; index += 1) {
+          const scope = candidates[index];
+          if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+          }
+          try {
+            if (name in scope) {
+              const value = scope[name];
+              if (typeof value !== 'undefined') {
+                return value;
+              }
+            }
+          } catch (readError) {
+            void readError;
+          }
+        }
+
+        return undefined;
+      }
+
+      function fallbackWriteCoreScopeValue(name, value, candidates) {
+        if (typeof name !== 'string' || !name) {
+          return false;
+        }
+
+        if (!Array.isArray(candidates) || candidates.length === 0) {
+          return false;
+        }
+
+        for (let index = 0; index < candidates.length; index += 1) {
+          const scope = candidates[index];
+          if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+          }
+          try {
+            scope[name] = value;
+            return true;
+          } catch (assignError) {
+            void assignError;
+          }
+          try {
+            Object.defineProperty(scope, name, {
+              configurable: true,
+              writable: true,
+              value,
+            });
+            return true;
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+
+        return false;
+      }
+
+      function fallbackDeclareCoreFallbackBinding(name, factory, candidates) {
+        const existing = fallbackReadCoreScopeValue(name, candidates);
+        if (typeof existing !== 'undefined') {
+          return existing;
+        }
+        const fallbackValue = typeof factory === 'function' ? factory() : factory;
+        fallbackWriteCoreScopeValue(name, fallbackValue, candidates);
+        return fallbackValue;
+      }
+
+      return {
+        createCandidates: fallbackCreateRuntimeScopeCandidates,
+        read: fallbackReadCoreScopeValue,
+        write: fallbackWriteCoreScopeValue,
+        declare: fallbackDeclareCoreFallbackBinding,
+      };
+    })();
+
     const autoGearHelpers =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
         ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
@@ -154,7 +290,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               CORE_SHARED_SCOPE_PART2,
               typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
             )
-          : [];
+          : runtimeFallbacks.createCandidates(
+              CORE_PART2_RUNTIME_SCOPE,
+              CORE_SHARED_SCOPE_PART2,
+              typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+            );
 
     const runtimeScopeBridge =
       runtimeScopeTools && runtimeScopeTools.runtimeScopeBridge
@@ -172,8 +312,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 runtimeScopeCandidatesRef
               );
             }
-          : function readCoreScopeValue() {
-              return undefined;
+          : function readCoreScopeValue(name) {
+              return runtimeFallbacks.read(name, runtimeScopeCandidatesRef);
             };
 
     const writeCoreScopeValue =
@@ -188,8 +328,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 runtimeScopeCandidatesRef
               );
             }
-          : function writeCoreScopeValue() {
-              return false;
+          : function writeCoreScopeValue(name, value) {
+              return runtimeFallbacks.write(name, value, runtimeScopeCandidatesRef);
             };
 
     const declareCoreFallbackBinding =
@@ -205,7 +345,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               );
             }
           : function declareCoreFallbackBinding(name, factory) {
-              return typeof factory === 'function' ? factory() : factory;
+              return runtimeFallbacks.declare(name, factory, runtimeScopeCandidatesRef);
             };
 
     const CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
