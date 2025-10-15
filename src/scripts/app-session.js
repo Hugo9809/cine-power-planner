@@ -6823,188 +6823,180 @@ const mountVoltageResetButtonRef = (() => {
     });
   }
 
+  const applySettingsAndCloseDialog = () => {
+    if (!settingsDialog) {
+      return;
+    }
+
+    if (settingsLanguage) {
+      applySetLanguage(settingsLanguage.value);
+      if (typeof populateUserButtonDropdowns === 'function') {
+        try {
+          populateUserButtonDropdowns();
+        } catch (userButtonError) {
+          console.warn('Failed to refresh user button selectors after language change', userButtonError);
+        }
+      }
+    }
+    if (settingsDarkMode) {
+      setThemePreference(settingsDarkMode.checked, { persist: true });
+    }
+    if (settingsPinkMode) {
+      persistPinkModePreference(settingsPinkMode.checked);
+    }
+    if (settingsHighContrast) {
+      const enabled = settingsHighContrast.checked;
+      applyHighContrast(enabled);
+      try {
+        localStorage.setItem('highContrast', enabled);
+      } catch (e) {
+        console.warn('Could not save high contrast preference', e);
+      }
+    }
+    if (settingsReduceMotion) {
+      const enabled = settingsReduceMotion.checked;
+      applyReduceMotion(enabled);
+      try {
+        localStorage.setItem('reduceMotion', enabled);
+      } catch (e) {
+        console.warn('Could not save reduce motion preference', e);
+      }
+    }
+    if (settingsRelaxedSpacing) {
+      const enabled = settingsRelaxedSpacing.checked;
+      applyRelaxedSpacing(enabled);
+      try {
+        localStorage.setItem('relaxedSpacing', enabled);
+      } catch (e) {
+        console.warn('Could not save relaxed spacing preference', e);
+      }
+    }
+    if (settingsShowAutoBackups) {
+      applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+    }
+    const autoGearShowBackupsToggle =
+      typeof document !== 'undefined' && typeof document.getElementById === 'function'
+        ? document.getElementById('autoGearShowBackups')
+        : null;
+    if (autoGearShowBackupsToggle) {
+      callSessionCoreFunction(
+        'setAutoGearBackupsVisible',
+        [Boolean(autoGearShowBackupsToggle.checked)],
+      );
+    }
+    if (accentColorInput) {
+      const color = accentColorInput.value;
+      if (!document.body.classList.contains('pink-mode')) {
+        applyAccentColor(color);
+      }
+      try {
+        if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
+          localStorage.removeItem('accentColor');
+        } else {
+          localStorage.setItem('accentColor', color);
+        }
+      } catch (e) {
+        console.warn('Could not save accent color', e);
+      }
+      accentColor = color;
+      prevAccentColor = color;
+      if (typeof updateAccentColorResetButtonState === 'function') {
+        updateAccentColorResetButtonState();
+      }
+    }
+    const cameraPalette = collectCameraColorInputValues();
+    const normalizedPalette = applyCameraLetterColors(cameraPalette);
+    const colorEntries = getCameraColorInputElements();
+    colorEntries.forEach(entry => {
+      const normalized = normalizedPalette[entry.letter];
+      if (normalized) {
+        entry.element.value = normalized;
+      }
+    });
+    if (settingsTemperatureUnit) {
+      const selectedTemperatureUnit =
+        typeof settingsTemperatureUnit.value === 'string'
+          ? settingsTemperatureUnit.value
+          : 'celsius';
+
+      applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
+
+      rememberSettingsTemperatureUnitBaseline();
+    }
+    if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+      if (typeof applyFocusScalePreference === 'function') {
+        applyFocusScalePreference(settingsFocusScale.value);
+      }
+      rememberSettingsFocusScaleBaseline();
+      sessionFocusScale =
+        typeof normalizeFocusScale === 'function'
+          ? normalizeFocusScale(settingsFocusScale.value)
+          : settingsFocusScale.value;
+    }
+    applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
+      persist: true,
+      triggerUpdate: true
+    });
+    rememberSettingsMountVoltagesBaseline();
+    if (settingsFontSize) {
+      const size = settingsFontSize.value;
+      applyFontSizeSafe(size);
+      try {
+        localStorage.setItem('fontSize', size);
+      } catch (e) {
+        console.warn('Could not save font size', e);
+      }
+      fontSize = size;
+    }
+    if (settingsFontFamily) {
+      const family = settingsFontFamily.value;
+      applyFontFamilySafe(family);
+      try {
+        localStorage.setItem('fontFamily', family);
+      } catch (e) {
+        console.warn('Could not save font family', e);
+      }
+      fontFamily = family;
+    }
+    if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
+      const file = settingsLogo.files[0];
+      if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            localStorage.setItem('customLogo', reader.result);
+          } catch (e) {
+            console.warn('Could not save custom logo', e);
+          }
+          renderSettingsLogoPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+        if (settingsLogo) settingsLogo.value = '';
+        safeLoadStoredLogoPreview();
+      }
+    }
+    closeAutoGearEditor();
+    collapseBackupDiffSection();
+    rememberSettingsPinkModeBaseline();
+    rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsFocusScaleBaseline();
+    rememberSettingsShowAutoBackupsBaseline();
+    rememberSettingsMountVoltagesBaseline();
+    closeDialog(settingsDialog);
+    settingsDialog.setAttribute('hidden', '');
+  };
+
   if (settingsSave) {
     settingsSave.addEventListener('click', () => {
-      if (settingsLanguage) {
-        applySetLanguage(settingsLanguage.value);
-        if (typeof populateUserButtonDropdowns === 'function') {
-          try {
-            populateUserButtonDropdowns();
-          } catch (userButtonError) {
-            console.warn('Failed to refresh user button selectors after language change', userButtonError);
-          }
-        }
-      }
-      if (settingsDarkMode) {
-        setThemePreference(settingsDarkMode.checked, { persist: true });
-      }
-      if (settingsPinkMode) {
-        persistPinkModePreference(settingsPinkMode.checked);
-      }
-      if (settingsHighContrast) {
-        const enabled = settingsHighContrast.checked;
-        applyHighContrast(enabled);
-        try {
-          localStorage.setItem('highContrast', enabled);
-        } catch (e) {
-          console.warn('Could not save high contrast preference', e);
-        }
-      }
-      if (settingsReduceMotion) {
-        const enabled = settingsReduceMotion.checked;
-        applyReduceMotion(enabled);
-        try {
-          localStorage.setItem('reduceMotion', enabled);
-        } catch (e) {
-          console.warn('Could not save reduce motion preference', e);
-        }
-      }
-      if (settingsRelaxedSpacing) {
-        const enabled = settingsRelaxedSpacing.checked;
-        applyRelaxedSpacing(enabled);
-        try {
-          localStorage.setItem('relaxedSpacing', enabled);
-        } catch (e) {
-          console.warn('Could not save relaxed spacing preference', e);
-        }
-      }
-      if (settingsShowAutoBackups) {
-        applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
-      }
-      const autoGearShowBackupsToggle =
-        typeof document !== 'undefined' && typeof document.getElementById === 'function'
-          ? document.getElementById('autoGearShowBackups')
-          : null;
-      if (autoGearShowBackupsToggle) {
-        callSessionCoreFunction(
-          'setAutoGearBackupsVisible',
-          [Boolean(autoGearShowBackupsToggle.checked)],
-        );
-      }
-      if (accentColorInput) {
-        const color = accentColorInput.value;
-        if (!document.body.classList.contains('pink-mode')) {
-          applyAccentColor(color);
-        }
-        try {
-          if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
-            localStorage.removeItem('accentColor');
-          } else {
-            localStorage.setItem('accentColor', color);
-          }
-        } catch (e) {
-          console.warn('Could not save accent color', e);
-        }
-        accentColor = color;
-        prevAccentColor = color;
-        if (typeof updateAccentColorResetButtonState === 'function') {
-          updateAccentColorResetButtonState();
-        }
-      }
-      const cameraPalette = collectCameraColorInputValues();
-      const normalizedPalette = applyCameraLetterColors(cameraPalette);
-      const colorEntries = getCameraColorInputElements();
-      colorEntries.forEach(entry => {
-        const normalized = normalizedPalette[entry.letter];
-        if (normalized) {
-          entry.element.value = normalized;
-        }
-      });
-      if (settingsTemperatureUnit) {
-        const selectedTemperatureUnit =
-          typeof settingsTemperatureUnit.value === 'string'
-            ? settingsTemperatureUnit.value
-            : 'celsius';
-
-        applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
-
-        rememberSettingsTemperatureUnitBaseline();
-      }
-      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-        if (typeof applyFocusScalePreference === 'function') {
-          applyFocusScalePreference(settingsFocusScale.value);
-        }
-        rememberSettingsFocusScaleBaseline();
-        sessionFocusScale =
-          typeof normalizeFocusScale === 'function'
-            ? normalizeFocusScale(settingsFocusScale.value)
-            : settingsFocusScale.value;
-      }
-      applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
-        persist: true,
-        triggerUpdate: true
-      });
-      rememberSettingsMountVoltagesBaseline();
-      if (settingsFontSize) {
-        const size = settingsFontSize.value;
-        applyFontSizeSafe(size);
-        try {
-          localStorage.setItem('fontSize', size);
-        } catch (e) {
-          console.warn('Could not save font size', e);
-        }
-        fontSize = size;
-      }
-      if (settingsFontFamily) {
-        const family = settingsFontFamily.value;
-        applyFontFamilySafe(family);
-        try {
-          localStorage.setItem('fontFamily', family);
-        } catch (e) {
-          console.warn('Could not save font family', e);
-        }
-        fontFamily = family;
-      }
-      if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
-        const file = settingsLogo.files[0];
-        if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            try {
-              localStorage.setItem('customLogo', reader.result);
-            } catch (e) {
-              console.warn('Could not save custom logo', e);
-            }
-            renderSettingsLogoPreview(reader.result);
-          };
-          reader.readAsDataURL(file);
-        } else {
-          showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-          if (settingsLogo) settingsLogo.value = '';
-          safeLoadStoredLogoPreview();
-        }
-      }
-      closeAutoGearEditor();
-      collapseBackupDiffSection();
-      rememberSettingsPinkModeBaseline();
-      rememberSettingsTemperatureUnitBaseline();
-      rememberSettingsFocusScaleBaseline();
-      rememberSettingsShowAutoBackupsBaseline();
-      rememberSettingsMountVoltagesBaseline();
-      closeDialog(settingsDialog);
-      settingsDialog.setAttribute('hidden', '');
+      applySettingsAndCloseDialog();
     });
   }
 
   settingsDialog.addEventListener('click', e => {
     if (e.target === settingsDialog) {
-      revertSettingsPinkModeIfNeeded();
-      rememberSettingsPinkModeBaseline();
-      revertSettingsTemperatureUnitIfNeeded();
-      rememberSettingsTemperatureUnitBaseline();
-      revertSettingsFocusScaleIfNeeded();
-      rememberSettingsFocusScaleBaseline();
-      revertSettingsShowAutoBackupsIfNeeded();
-      rememberSettingsShowAutoBackupsBaseline();
-      revertSettingsMountVoltagesIfNeeded();
-      rememberSettingsMountVoltagesBaseline();
-      invokeSessionRevertAccentColor();
-      if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) safeLoadStoredLogoPreview();
-      closeAutoGearEditor();
-      collapseBackupDiffSection();
-      closeDialog(settingsDialog);
-      settingsDialog.setAttribute('hidden', '');
+      applySettingsAndCloseDialog();
     }
   });
 
