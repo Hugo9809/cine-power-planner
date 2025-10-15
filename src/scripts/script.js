@@ -47,6 +47,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/app-core/localization.js',
     'app-core-runtime-scopes.js',
     'app-core-runtime-support.js',
+    'app-core-runtime-helpers.js',
     'app-core-text.js',
     'app-core-enviroment.js',
     'app-core-new-1.js',

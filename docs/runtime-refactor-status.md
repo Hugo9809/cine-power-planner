@@ -248,3 +248,18 @@
 - Taught the modern core localisation fallback environment to fetch the support resolver through the shared runtime module loader before falling back to legacy requires, ensuring the runtime merge keeps resolving helpers from the consolidated namespace even when the wrapper files disappear.【F:src/scripts/modules/core/localization.js†L1244-L1362】
 - Mirrored the loader-driven resolver lookup in the legacy bundle so ES5 builds use the same module namespace, avoiding divergence between environments while the runtime consolidation continues.【F:legacy/scripts/modules/core/localization.js†L30-L34】
 - Removed the dedicated support resolver files and pruned them from the service worker asset manifest now that all callers resolve the module via the shared runtime export, keeping the offline cache lean without breaking backup or restore flows.【F:service-worker-assets.js†L60-L110】【F:service-worker-assets.js†L220-L240】
+
+## Step 20 – Part 2 runtime helper extraction
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-2.js` | 17140 | 17063 | -77 |
+| `legacy/scripts/app-core-new-2.js` | 16276 | 16193 | -83 |
+| `src/scripts/app-core-runtime-helpers.js` | – | 567 | +567 |
+| `legacy/scripts/app-core-runtime-helpers.js` | – | 368 | +368 |
+
+*Notes:*
+
+- Extracted the auto gear normalisation, formatting, and runtime scope fallback utilities from the part 2 entry point into `app-core-runtime-helpers.js`, exposing shared helper APIs while preserving the defensive fallbacks that protect autosave, backup, and offline behaviour.【F:src/scripts/app-core-runtime-helpers.js†L1-L474】
+- Updated `app-core-new-2.js` to consume the shared helper namespace for auto gear weight logic and runtime scope bindings, eliminating duplicated fallback code without altering behaviour.【F:src/scripts/app-core-new-2.js†L41-L213】
+- Added the transpiled legacy helper mirror and wired both bundles, loaders, integrity tests, and the service worker manifest to preload the new runtime helper so offline caches and Node bundling stay aligned.【F:legacy/scripts/app-core-runtime-helpers.js†L1-L200】【F:legacy/scripts/app-core-new-2.js†L40-L140】【F:src/scripts/loader.js†L3170-L3203】【F:legacy/scripts/loader.js†L2660-L2669】【F:src/scripts/script.js†L30-L57】【F:legacy/scripts/script.js†L1-L33】【F:tests/script/scriptIntegrity.test.js†L105-L131】【F:service-worker-assets.js†L21-L44】【F:service-worker-assets.js†L173-L198】

@@ -55,142 +55,59 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
     var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
-    function fallbackNormalizeAutoGearWeightOperator(value) {
-      if (typeof value !== 'string') return 'greater';
-      var normalized = value.trim().toLowerCase();
-      if (!normalized) return 'greater';
-      if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
-        return 'greater';
-      }
-      if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
-        return 'less';
-      }
-      if (normalized === '=' || normalized === '==' || normalized === 'equal' || normalized === 'equals' || normalized === 'exactly' || normalized === 'match' || normalized === 'matches') {
-        return 'equal';
-      }
-      return 'greater';
-    }
-    function fallbackNormalizeAutoGearWeightValue(value) {
-      if (typeof value === 'number' && Number.isFinite(value)) {
-        var rounded = Math.round(value);
-        return rounded >= 0 ? rounded : null;
-      }
-      if (typeof value === 'string') {
-        var trimmed = value.trim();
-        if (!trimmed) return null;
-        var sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
-        if (!sanitized) return null;
-        var parsed = Number.parseFloat(sanitized);
-        if (!Number.isFinite(parsed)) return null;
-        var _rounded = Math.round(parsed);
-        return _rounded >= 0 ? _rounded : null;
-      }
-      return null;
-    }
-    function fallbackFormatAutoGearWeight(value) {
-      if (!Number.isFinite(value)) return '';
-      try {
-        if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-          return new Intl.NumberFormat().format(value);
-        }
-      } catch (error) {
-        void error;
-      }
-      return String(value);
-    }
-    var normalizeAutoGearWeightOperator = typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator : fallbackNormalizeAutoGearWeightOperator;
-    var normalizeAutoGearWeightValue = typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightValue === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearWeightValue : fallbackNormalizeAutoGearWeightValue;
-    var normalizeAutoGearCameraWeightCondition = typeof CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightCondition() {
-      return null;
-    };
-    var formatAutoGearWeight = typeof CORE_SHARED_LOCAL.formatAutoGearWeight === 'function' ? CORE_SHARED_LOCAL.formatAutoGearWeight : fallbackFormatAutoGearWeight;
-    var getAutoGearCameraWeightOperatorLabel = typeof CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel === 'function' ? CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-      var textsForLang = langTexts || {};
-      var fallbackTexts = CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.texts && CORE_GLOBAL_SCOPE.texts.en || {};
-      var normalized = normalizeAutoGearWeightOperator(operator);
-      if (normalized === 'less') {
-        return textsForLang.autoGearCameraWeightOperatorLess || fallbackTexts.autoGearCameraWeightOperatorLess || 'Lighter than';
-      }
-      if (normalized === 'equal') {
-        return textsForLang.autoGearCameraWeightOperatorEqual || fallbackTexts.autoGearCameraWeightOperatorEqual || 'Exactly';
-      }
-      return textsForLang.autoGearCameraWeightOperatorGreater || fallbackTexts.autoGearCameraWeightOperatorGreater || 'Heavier than';
-    };
-    var formatAutoGearCameraWeight = typeof CORE_SHARED_LOCAL.formatAutoGearCameraWeight === 'function' ? CORE_SHARED_LOCAL.formatAutoGearCameraWeight : function formatAutoGearCameraWeight(condition, langTexts) {
-      if (!condition || !Number.isFinite(condition.value)) return '';
-      var label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
-      var formattedValue = formatAutoGearWeight(condition.value);
-      return "".concat(label, " ").concat(formattedValue, " g");
-    };
-    function createFallbackRuntimeScopeCandidates() {
-      return [CORE_PART2_RUNTIME_SCOPE && (typeof CORE_PART2_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART2_RUNTIME_SCOPE)) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2) === 'object' ? CORE_SHARED_SCOPE_PART2 : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-    }
-    var runtimeScopeCandidatesRef = createFallbackRuntimeScopeCandidates();
-    function fallbackReadCoreScopeValue(name) {
-      for (var index = 0; index < runtimeScopeCandidatesRef.length; index += 1) {
-        var scope = runtimeScopeCandidatesRef[index];
-        if (!scope || _typeof(scope) !== 'object') {
-          continue;
-        }
-        try {
-          if (name in scope) {
-            var value = scope[name];
-            if (typeof value !== 'undefined') {
-              return value;
-            }
-          }
-        } catch (readError) {
-          void readError;
-        }
-      }
-      return undefined;
-    }
-    function fallbackWriteCoreScopeValue(name, value) {
-      for (var index = 0; index < runtimeScopeCandidatesRef.length; index += 1) {
-        var scope = runtimeScopeCandidatesRef[index];
-        if (!scope || _typeof(scope) !== 'object') {
-          continue;
-        }
-        try {
-          scope[name] = value;
-          return true;
-        } catch (assignError) {
-          void assignError;
-        }
-        try {
-          Object.defineProperty(scope, name, {
-            configurable: true,
-            writable: true,
-            value: value
-          });
-          return true;
-        } catch (defineError) {
-          void defineError;
-        }
-      }
-      return false;
-    }
-    function fallbackDeclareCoreFallbackBinding(name, factory) {
-      var existing = fallbackReadCoreScopeValue(name);
-      if (typeof existing !== 'undefined') {
-        return existing;
-      }
-      var fallbackValue = typeof factory === 'function' ? factory() : factory;
-      fallbackWriteCoreScopeValue(name, fallbackValue);
-      return fallbackValue;
-    }
-    var CORE_RUNTIME_SCOPE_BRIDGE_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeScopeBridge', './modules/app-core/runtime.js');
-    var runtimeScopeBridge = CORE_RUNTIME_SCOPE_BRIDGE_TOOLS && typeof CORE_RUNTIME_SCOPE_BRIDGE_TOOLS.createRuntimeScopeBridge === 'function' ? CORE_RUNTIME_SCOPE_BRIDGE_TOOLS.createRuntimeScopeBridge({
-      primaryScope: CORE_PART2_RUNTIME_SCOPE,
-      additionalScopes: [CORE_SHARED_SCOPE_PART2, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null]
+    var CORE_PART2_HELPERS = typeof CORE_PART2_RUNTIME_HELPERS === 'object' && CORE_PART2_RUNTIME_HELPERS ? CORE_PART2_RUNTIME_HELPERS : null;
+    var autoGearHelpers = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function' ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
+      coreShared: CORE_SHARED_LOCAL,
+      globalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null
     }) : null;
-    if (runtimeScopeBridge && Array.isArray(runtimeScopeBridge.candidates) && runtimeScopeBridge.candidates.length > 0) {
-      runtimeScopeCandidatesRef = runtimeScopeBridge.candidates;
-    }
+    var fallbackNormalizeAutoGearWeightOperator = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator === 'function' ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator : function normalizeAutoGearWeightOperatorFallback() {
+      return 'greater';
+    };
+    var fallbackNormalizeAutoGearWeightValue = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue === 'function' ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue : function normalizeAutoGearWeightValueFallback() {
+      return null;
+    };
+    var fallbackFormatAutoGearWeight = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackFormatAutoGearWeight === 'function' ? CORE_PART2_HELPERS.fallbackFormatAutoGearWeight : function formatAutoGearWeightFallback() {
+      return '';
+    };
+    var fallbackGetAutoGearCameraWeightOperatorLabel = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function' ? CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabelFallback() {
+      return '';
+    };
+    var fallbackFormatAutoGearCameraWeight = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight === 'function' ? CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight : function formatAutoGearCameraWeightFallback() {
+      return '';
+    };
+    var normalizeAutoGearWeightOperator = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightOperator === 'function' ? autoGearHelpers.normalizeAutoGearWeightOperator : fallbackNormalizeAutoGearWeightOperator;
+    var normalizeAutoGearWeightValue = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightValue === 'function' ? autoGearHelpers.normalizeAutoGearWeightValue : fallbackNormalizeAutoGearWeightValue;
+    var normalizeAutoGearCameraWeightCondition = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearCameraWeightCondition === 'function' ? autoGearHelpers.normalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightCondition() {
+      return null;
+    };
+    var formatAutoGearWeight = autoGearHelpers && typeof autoGearHelpers.formatAutoGearWeight === 'function' ? autoGearHelpers.formatAutoGearWeight : fallbackFormatAutoGearWeight;
+    var getAutoGearCameraWeightOperatorLabel = autoGearHelpers && typeof autoGearHelpers.getAutoGearCameraWeightOperatorLabel === 'function' ? autoGearHelpers.getAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
+      return fallbackGetAutoGearCameraWeightOperatorLabel(operator, langTexts);
+    };
+    var formatAutoGearCameraWeight = autoGearHelpers && typeof autoGearHelpers.formatAutoGearCameraWeight === 'function' ? autoGearHelpers.formatAutoGearCameraWeight : fallbackFormatAutoGearCameraWeight;
+    var runtimeScopeTools = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveRuntimeScopeTools === 'function' ? CORE_PART2_HELPERS.resolveRuntimeScopeTools({
+      runtimeScope: CORE_PART2_RUNTIME_SCOPE,
+      sharedScope: CORE_SHARED_SCOPE_PART2,
+      globalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null
+    }) : null;
+    var runtimeScopeCandidatesRef = runtimeScopeTools && Array.isArray(runtimeScopeTools.runtimeScopeCandidates) ? runtimeScopeTools.runtimeScopeCandidates : CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackCreateRuntimeScopeCandidates === 'function' ? CORE_PART2_HELPERS.fallbackCreateRuntimeScopeCandidates(CORE_PART2_RUNTIME_SCOPE, CORE_SHARED_SCOPE_PART2, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null) : [];
+    var runtimeScopeBridge = runtimeScopeTools && runtimeScopeTools.runtimeScopeBridge ? runtimeScopeTools.runtimeScopeBridge : null;
+    var readCoreScopeValue = runtimeScopeTools && typeof runtimeScopeTools.readCoreScopeValue === 'function' ? runtimeScopeTools.readCoreScopeValue : CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackReadCoreScopeValue === 'function' ? function readCoreScopeValue(name) {
+      return CORE_PART2_HELPERS.fallbackReadCoreScopeValue(name, runtimeScopeCandidatesRef);
+    } : function readCoreScopeValue() {
+      return undefined;
+    };
+    var writeCoreScopeValue = runtimeScopeTools && typeof runtimeScopeTools.writeCoreScopeValue === 'function' ? runtimeScopeTools.writeCoreScopeValue : CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackWriteCoreScopeValue === 'function' ? function writeCoreScopeValue(name, value) {
+      return CORE_PART2_HELPERS.fallbackWriteCoreScopeValue(name, value, runtimeScopeCandidatesRef);
+    } : function writeCoreScopeValue() {
+      return false;
+    };
+    var declareCoreFallbackBinding = runtimeScopeTools && typeof runtimeScopeTools.declareCoreFallbackBinding === 'function' ? runtimeScopeTools.declareCoreFallbackBinding : CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackDeclareCoreFallbackBinding === 'function' ? function declareCoreFallbackBinding(name, factory) {
+      return CORE_PART2_HELPERS.fallbackDeclareCoreFallbackBinding(name, factory, runtimeScopeCandidatesRef);
+    } : function declareCoreFallbackBinding(name, factory) {
+      return typeof factory === 'function' ? factory() : factory;
+    };
     var CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
-    var readCoreScopeValue = runtimeScopeBridge && typeof runtimeScopeBridge.readValue === 'function' ? runtimeScopeBridge.readValue : fallbackReadCoreScopeValue;
-    var writeCoreScopeValue = runtimeScopeBridge && typeof runtimeScopeBridge.writeValue === 'function' ? runtimeScopeBridge.writeValue : fallbackWriteCoreScopeValue;
-    var declareCoreFallbackBinding = runtimeScopeBridge && typeof runtimeScopeBridge.declareFallbackBinding === 'function' ? runtimeScopeBridge.declareFallbackBinding : fallbackDeclareCoreFallbackBinding;
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
