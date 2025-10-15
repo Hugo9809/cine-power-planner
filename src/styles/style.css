@@ -4352,6 +4352,20 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   margin: 0;
 }
 
+.settings-support-links {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-support-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: var(--font-weight-medium);
+}
+
 .settings-panel label {
   font-weight: var(--font-weight-light);
 }

@@ -15362,15 +15362,32 @@ function setLanguage(lang) {
     typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
   if (aboutVersionElem)
     aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
-  const supportLink =
-    typeof document !== 'undefined' ? document.getElementById('supportLink') : null;
-  if (supportLink) {
-    supportLink.textContent = texts[lang].supportLink;
-    const supportHelp =
-      texts[lang].supportLinkHelp || texts[lang].supportLink;
-    supportLink.setAttribute("data-help", supportHelp);
-    supportLink.setAttribute("title", supportHelp);
-  }
+  const supportLinkConfigs = [
+    { id: 'supportLink', textKey: 'supportLink', helpKey: 'supportLinkHelp' },
+    { id: 'reportBugLink', textKey: 'reportBugLink', helpKey: 'reportBugLinkHelp' },
+    { id: 'suggestFeatureLink', textKey: 'suggestFeatureLink', helpKey: 'suggestFeatureLinkHelp' },
+  ];
+  const langTexts = (texts && texts[lang]) || {};
+  const fallbackTexts = (texts && texts.en) || {};
+  supportLinkConfigs.forEach(config => {
+    const link =
+      typeof document !== 'undefined' ? document.getElementById(config.id) : null;
+    if (!link) {
+      return;
+    }
+    const label =
+      (typeof langTexts[config.textKey] === 'string' && langTexts[config.textKey]) ||
+      (typeof fallbackTexts[config.textKey] === 'string' && fallbackTexts[config.textKey]) ||
+      link.textContent;
+    link.textContent = label;
+    const help =
+      (typeof langTexts[config.helpKey] === 'string' && langTexts[config.helpKey]) ||
+      (typeof fallbackTexts[config.helpKey] === 'string' && fallbackTexts[config.helpKey]) ||
+      label;
+    link.setAttribute('data-help', help);
+    link.setAttribute('title', help);
+    link.setAttribute('aria-label', help);
+  });
   if (settingsSave) {
     const label = texts[lang].saveSettings || texts.en?.saveSettings || settingsSave.textContent;
     setButtonLabelWithIcon(settingsSave, label);
