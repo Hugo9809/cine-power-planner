@@ -4139,6 +4139,23 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
       : functionName;
 
   if (typeof target === 'function') {
+    if (target.__cineSessionProxy__ === true) {
+      const optionsObject = options && typeof options === 'object' ? options : {};
+      const attemptCount =
+        typeof optionsObject.attempts === 'number' && Number.isFinite(optionsObject.attempts)
+          ? optionsObject.attempts
+          : 0;
+      if (typeof enqueueCoreBootTask === 'function' && attemptCount < 3) {
+        const nextOptions = { ...optionsObject, defer: false, attempts: attemptCount + 1 };
+        enqueueCoreBootTask(() => {
+          callCoreFunctionIfAvailable(functionName, args, nextOptions);
+        });
+      }
+      if (Object.prototype.hasOwnProperty.call(optionsObject, 'defaultValue')) {
+        return optionsObject.defaultValue;
+      }
+      return undefined;
+    }
     if (target.__cineDeferredPlaceholder__ === true) {
       const optionsObject = options && typeof options === 'object' ? options : {};
       const attemptCount = typeof optionsObject.attempts === 'number' && Number.isFinite(optionsObject.attempts)
