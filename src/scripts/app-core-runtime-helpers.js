@@ -377,7 +377,7 @@ function resolveAutoGearWeightHelpers(options) {
     formatAutoGearWeight: formatWeight,
     getAutoGearCameraWeightOperatorLabel: getOperatorLabel,
     formatAutoGearCameraWeight: formatCameraWeight,
-    fallbackGetAutoGearCameraWeightOperatorLabel,
+    fallbackGetAutoGearCameraWeightOperatorLabel: fallbackGetOperatorLabel,
     fallbackFormatAutoGearCameraWeight: fallbackFormatCameraWeight,
   };
 }
