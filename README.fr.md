@@ -35,7 +35,7 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 - **Planification hors ligne en priorité.** Concevez des configurations V‑Mount, B‑Mount ou Gold-Mount directement dans le navigateur. Tous les Uicons, polices et scripts auxiliaires sont fournis localement, sans dépendre de CDNs ni du réseau. Clonez le dépôt, débranchez le câble et l’interface reste identique.
 - **Données conservées sur l’appareil.** Projets, retours d’autonomie, favoris, équipements personnalisés, listes et préférences restent locaux. Les sauvegardes et lots partageables sont des fichiers JSON lisibles.
 - **Réseaux de sécurité éprouvés.** Sauvegardes manuelles, enregistrements automatiques en arrière-plan et backups horodatés se complètent pour répéter la boucle Sauvegarder → Backup → Bundle → Restaurer dès la première utilisation.
-- **Mises à jour sous contrôle.** Le service worker attend votre validation avant d’actualiser afin que les équipes restent sur une version vérifiée, même en déplacement ou avec une connectivité limitée.
+- **Gérer les mises à jour en conscience.** Les nouvelles versions du service worker s’activent automatiquement, et le bouton **Forcer le rechargement** reste disponible pour purger les caches et garantir un redémarrage propre.
 
 ## Couches de sécurité en un coup d’œil
 
@@ -91,7 +91,7 @@ Avant de fusionner ou de publier une build terrain, cochez cette liste condensé
 3. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) et la [trame de journal de vérification](docs/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
 4. **Valider les bascules de langue.** Parcourez chaque langue dans l’app pour confirmer que les nouveaux libellés s’affichent correctement sans charger de ressources externes.
 5. **Stocker des archives redondantes.** Exportez `planner-backup.json`, les bundles projet actuels, les règles automatiques en JSON et une archive ZIP du dépôt. Placez le tout sur au moins deux supports hors ligne accompagnés d’une note de rétention.
-6. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** validé pour que les équipes sachent quelle révision est active.
+6. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** manuel pour que les équipes sachent quelle révision est active.
 
 ## Vue d’ensemble
 
@@ -101,7 +101,7 @@ Le planner a été conçu pour les 1ers assistants caméra, data managers et che
 
 ### Prêt à voyager
 
-Ouvrez `index.html` directement depuis le disque ou hébergez le dépôt sur votre réseau interne, sans build, serveur ni compte. Un service worker garde l’application disponible hors ligne, mémorise les préférences et n’applique les mises à jour que sur validation. Sauvegarde, partage, import, backup et restauration restent locaux pour protéger les données utilisateur.
+Ouvrez `index.html` directement depuis le disque ou hébergez le dépôt sur votre réseau interne, sans build, serveur ni compte. Un service worker garde l’application disponible hors ligne, mémorise les préférences et active automatiquement les nouvelles versions, tout en laissant le bouton optionnel **Forcer le rechargement** à disposition si vous souhaitez purger les caches à votre convenance. Sauvegarde, partage, import, backup et restauration restent locaux pour protéger les données utilisateur.
 
 ### Pourquoi l’offline-first est crucial
 
@@ -110,7 +110,7 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 ### Piliers fonctionnels
 
 - **Planifier en confiance.** Calculez la consommation à 14,4 V/12 V (et 33,6 V/21,6 V pour le B‑Mount), comparez les batteries compatibles et visualisez l’impact dans un tableau de bord pondéré.
-- **Rester prêt pour la production.** Les projets capturent équipements, exigences, scénarios, détails d’équipe et listes ; backups automatiques, bundles et mises à jour contrôlées gardent les données à jour sans sacrifier la stabilité.
+- **Rester prêt pour la production.** Les projets capturent équipements, exigences, scénarios, détails d’équipe et listes ; backups automatiques, bundles et le bouton optionnel **Forcer le rechargement** maintiennent les données à jour sans sacrifier la stabilité.
 - **Travailler à votre manière.** Détection de langue, thèmes sombre, rose et contraste élevé, contrôles typographiques, logos personnalisés et aide contextuelle rendent l’interface accessible en préparation comme sur le plateau. L’aide contextuelle renseigne désormais automatiquement des descriptions pour chaque bouton, champ et menu afin que chaque commande s’explique, même hors connexion.
 
 ## Principes fondamentaux
@@ -118,7 +118,7 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 - **Toujours hors ligne.** L’application complète — icônes, pages légales et outils — est livrée dans le dépôt. Ouvrez `index.html` depuis le disque ou un intranet privé et le service worker synchronise les ressources sans imposer de connexion.
 - **Pas de chemins cachés.** Sauvegardes, bundles, imports, backups et restaurations se déroulent intégralement dans le navigateur. Rien ne quitte la machine sauf export explicite.
 - **Filets redondants.** Sauvegardes manuelles, autosaves en arrière-plan, backups périodiques, sauvegardes forcées avant restauration et exports lisibles empêchent toute disparition silencieuse.
-- **Mises à jour prévisibles.** Elles ne s’appliquent que sur votre action. Les versions en cache restent disponibles jusqu’à ce que vous confirmiez **Forcer le rechargement**.
+- **Mises à jour prévisibles.** Les nouvelles versions du service worker s’activent automatiquement et les caches restent disponibles. Servez-vous de **Forcer le rechargement** pour purger les ressources stockées sans toucher aux sauvegardes.
 - **Présentation cohérente.** Uicons locaux, ressources OpenMoji et polices intégrées garantissent la même apparence en studio ou sur un poste déconnecté.
 - **Sécuriser chaque modification.** Avant toute restauration, le planner crée une sauvegarde forcée et conserve les versions précédentes afin qu’aucun import ne remplace ton travail. Les journaux de vérification et les notes de checksum accompagnent chaque archive pour prouver l’intégrité même hors ligne.
 
@@ -210,7 +210,7 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
    # ou
    python -m http.server
    ```
-   L’application se met ensuite en cache pour un usage hors ligne et n’applique les mises à jour qu’après validation.
+   L’application se met ensuite en cache pour un usage hors ligne, active automatiquement les nouvelles versions et laisse **Forcer le rechargement** disponible pour purger les caches à la demande.
 4. Chargez le planner, fermez l’onglet, coupez la connexion (ou activez le mode avion) puis rouvrez `index.html`. L’indicateur hors ligne doit clignoter brièvement pendant le chargement des ressources mises en cache, y compris les Uicons locaux.
 5. Ouvrez **Aide → Liste de démarrage rapide** et lancez le tutoriel guidé. Il couvre création de projets, sélection d’appareils, vérification du Résumé d’alimentation avec son point de contrôle Résumé rapide et la nouvelle répétition du filet de sécurité hors ligne qui met en avant l’indicateur supérieur et l’état du sauvegarde automatique, listes de matériel, contacts, matériel personnel, règles automatiques ainsi que les flux d’export, d’import et de sauvegarde. Le navigateur d’étapes et l’indicateur de progression permettent de revisiter les flux terminés sans recommencer et, si vous interrompez la session, l’option **Reprendre le tutoriel guidé** apparaît automatiquement avec vos compteurs enregistrés pour préserver la progression hors ligne. La ligne de la checklist affiche aussi un statut hors ligne avec les étapes terminées, le prochain flux et un horodatage indiquant quand la dernière étape a été achevée avant de relancer le parcours.
    Lorsque le tutoriel aborde le Résumé d’alimentation, recoupez les alertes colorées avec la [référence des alertes du Power Summary](docs/power-summary-warning-reference.md), consignez toute surcharge des broches ou des D-Tap, confirmez les sauvegardes redondantes et vérifiez que l’horodatage de l’autosave correspond à l’aperçu de partage/export avant de clôturer l’étape.
@@ -338,7 +338,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 ## Sécurité des données et mode hors ligne
 
-- Le service worker met en cache chaque ressource pour une utilisation hors ligne et n’applique les mises à jour qu’après **Forcer le rechargement**.
+- Le service worker met en cache chaque ressource pour une utilisation hors ligne. Les nouvelles versions s’activent automatiquement et **Forcer le rechargement** reste disponible si vous souhaitez nettoyer les caches pour repartir sur une base saine.
 - Projets, retours d’autonomie, favoris, équipements personnalisés, thèmes et listes résident dans le stockage du navigateur. Une demande de persistance est effectuée pour réduire le risque d’éviction.
 - Les sauvegardes automatiques enchaînent des instantanés de projet toutes les dix minutes ou après environ 50 modifications suivies. Lors d’un changement de projet, d’une importation, d’une exportation ou avant un rechargement, l’application capture également immédiatement une nouvelle image même si ce rythme n’est pas encore atteint; des archives complètes horaires et les copies des règles automatiques en arrière-plan complètent la protection. Activez **Paramètres → Sauvegarde & Restauration → Afficher les auto-sauvegardes dans la liste** pour afficher la rétention et restaurer des instantanés sans connexion.
 - Si le navigateur bloque les téléchargements, l’application ouvre un onglet **Téléchargement manuel** contenant le JSON afin de le copier dans un fichier `.json` et de le stocker sur un support hors ligne de confiance avant de fermer l’onglet.
@@ -347,7 +347,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - Ouvrir le dépôt depuis le disque ou un réseau interne évite toute fuite vers l’extérieur. Les exports JSON sont lisibles pour audit.
 - L’en-tête affiche un indicateur hors ligne lorsqu’il n’y a pas de connexion ; **Forcer le rechargement** rafraîchit les fichiers sans toucher aux sauvegardes et déclenche désormais un enregistrement automatique immédiat avec sauvegarde avant de vider les caches.
 - **Réinitialisation usine** ou nettoyage des données ne s’exécutent qu’après génération d’un backup automatique.
-- Les mises à jour du service worker se téléchargent en tâche de fond et attendent votre accord. À l’apparition de **Mise à jour prête**, terminez vos modifications, créez un backup puis cliquez sur **Forcer le rechargement**.
+- Les mises à jour du service worker se téléchargent en tâche de fond et s’activent automatiquement. Lorsque **Mise à jour prête** apparaît, finalisez vos modifications, capturez un backup pour vos traces puis utilisez **Forcer le rechargement** si vous voulez purger les caches et rouvrir la session avec les ressources fraîchement chargées.
 - Les données résident dans un `localStorage` renforcé ; les profils restreints basculent sur `sessionStorage`. Chaque écriture crée un instantané `__legacyMigrationBackup` pour restaurer sans perte en cas d’erreur de quota ou de schéma. Les outils développeur peuvent inspecter ou exporter les enregistrements avant de vider les caches ou de lancer des tests.
 - Un gardien de stockage critique s’exécute désormais à chaque ouverture et duplique chaque clé essentielle dans sa sauvegarde avant toute modification, garantissant que les données héritées conservent toujours une copie redondante prête pour un retour arrière.
 
@@ -493,7 +493,7 @@ Cine Power Planner est une Progressive Web App :
    - **Chrome/Edge (desktop)** : icône d’installation dans la barre d’adresse.
    - **Android** : menu du navigateur → *Ajouter à l’écran d’accueil*.
    - **Safari iOS** : bouton partager → *Ajouter à l’écran d’accueil*.
-3. Lancez l’application depuis votre liste de programmes. La version installée fonctionne hors ligne et se met à jour automatiquement après validation.
+3. Lancez l’application depuis votre liste de programmes. La version installée fonctionne hors ligne, se met à jour automatiquement et laisse **Forcer le rechargement** disponible si vous souhaitez nettoyer les caches pour un redémarrage impeccable.
 
 ## Flux de données matériel
 

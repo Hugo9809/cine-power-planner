@@ -35,7 +35,7 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
 - **Offline zuerst planen.** Baue V‑Mount-, B‑Mount- oder Gold-Mount-Setups direkt im Browser. Alle Uicons, Schriften und Hilfsskripte liegen lokal, sodass nichts von externen CDNs oder Netzwerken abhängt. Klone das Repository, zieh das Netzwerkkabel ab und die Oberfläche funktioniert unverändert weiter.
 - **Daten bleiben auf dem Gerät.** Projekte, Laufzeit-Feedback, Favoriten, eigene Geräte, Gerätelisten und Einstellungen bleiben lokal. Backups und teilbare Pakete sind menschenlesbare JSON-Dateien, die du kontrollierst.
 - **Sicherheitsnetze schnell prüfen.** Manuelle Speicherungen, Hintergrund-Auto-Saves und automatische Zeitstempel-Backups greifen ineinander, damit du den Ablauf Speichern → Backup → Bundle → Wiederherstellen als ersten Schritt üben kannst.
-- **Updates bewusst freigeben.** Der Service Worker wartet auf deine Bestätigung, bevor er aktualisiert. Teams bleiben so auf einer geprüften Revision – selbst unterwegs oder bei schwacher Verbindung.
+- **Updates bewusst begleiten.** Neue Service-Worker-Versionen aktivieren sich automatisch; der In-App-Button **Neu laden erzwingen** steht bereit, wenn du Caches leeren und einen sauberen Reload absichern möchtest.
 
 ## Sicherheitsnetze im Überblick
 
@@ -91,7 +91,7 @@ Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimi
 3. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
 4. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
 5. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
-6. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten bestätigten **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
+6. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten manuellen **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
 
 ## Überblick
 
@@ -101,7 +101,7 @@ Der Planner entstand für 1st ACs, Data Wrangler und DoPs. Sobald du Bodies, Bat
 
 ### Gemacht für Reisen
 
-Öffne `index.html` direkt von der Festplatte oder hoste das Repository intern – ganz ohne Build-Prozess, Server oder Accounts. Ein Service Worker hält die App offline verfügbar, merkt sich jede Einstellung und aktualisiert nur nach deiner Freigabe. Speichern, Teilen, Importieren, Backup und Wiederherstellen laufen immer lokal, damit Benutzerdaten geschützt bleiben.
+Öffne `index.html` direkt von der Festplatte oder hoste das Repository intern – ganz ohne Build-Prozess, Server oder Accounts. Ein Service Worker hält die App offline verfügbar, merkt sich jede Einstellung und aktiviert neue Versionen automatisch, während der optionale Button **Neu laden erzwingen** bereitsteht, falls du Caches auf eigenen Wunsch leeren möchtest. Speichern, Teilen, Importieren, Backup und Wiederherstellen laufen immer lokal, damit Benutzerdaten geschützt bleiben.
 
 ### Warum Offline-first zählt
 
@@ -110,7 +110,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 ### Funktionssäulen
 
 - **Mit Vertrauen planen.** Berechne Stromaufnahme bei 14,4 V/12 V (und 33,6 V/21,6 V für B‑Mount), vergleiche kompatible Akkus und visualisiere Laufzeiteffekte über ein gewichtetes Feedback-Dashboard.
-- **Produktionsbereit bleiben.** Projekte erfassen Geräte, Anforderungen, Szenarien, Crewdetails und Gerätelisten; Auto-Backups, Bundles und gesteuerte Aktualisierungen halten Daten aktuell, ohne Stabilität zu opfern.
+- **Produktionsbereit bleiben.** Projekte erfassen Geräte, Anforderungen, Szenarien, Crewdetails und Gerätelisten; Auto-Backups, Bundles und der optionale Button **Neu laden erzwingen** halten Daten aktuell, ohne Stabilität zu opfern.
 - **Arbeiten wie gewohnt.** Spracherkennung, Dark-, Pink- und High-Contrast-Themes, Typografie-Regler, Custom-Logo und Hover-Hilfe machen die Oberfläche on set und in der Vorbereitung zugänglich. Die Hover-Hilfe ergänzt nun automatisch kontextbezogene Beschreibungen für jede Schaltfläche, jedes Feld und jedes Menü, sodass sich jedes Bedienelement auch offline selbst erklärt.
 
 ## Grundprinzipien
@@ -118,7 +118,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 - **Immer offlinefähig.** Die komplette Anwendung inklusive Icons, Legal-Seiten und Tools liegt im Repository. Öffne `index.html` lokal oder über ein privates Intranet; der Service Worker hält Assets synchron, ohne Online-Zwang.
 - **Keine versteckten Datenpfade.** Speichern, Bundles, Importe, Backups und Wiederherstellungen passieren vollständig im Browser. Es verlässt nichts das Gerät, außer du exportierst es bewusst.
 - **Redundante Sicherheitsnetze.** Manuelle Saves, Hintergrund-Auto-Saves, periodische Auto-Backups, erzwungene Pre-Restore-Backups und menschenlesbare Exporte sorgen dafür, dass Benutzerdaten nicht verschwinden.
-- **Vorhersehbare Updates.** Aktualisierungen greifen nur nach deinem Trigger. Zwischengespeicherte Versionen bleiben verfügbar, bis du **Neu laden erzwingen** bestätigst.
+- **Vorhersehbare Updates.** Neue Service-Worker-Versionen aktivieren sich automatisch, zwischengespeicherte Varianten bleiben verfügbar. Mit **Neu laden erzwingen** kannst du Caches bewusst leeren, ohne gespeicherte Arbeit anzutasten.
 - **Konstante Darstellung.** Gebündelte Uicons, OpenMoji und Typografie-Dateien garantieren identische Optik – egal ob im Studio oder im Feld ohne Netz.
 - **Jede Änderung absichern.** Vor jeder Wiederherstellung legt der Planner ein erzwungenes Backup an und bewahrt frühere Revisionen, damit kein Import deine Arbeit überschreibt. Prüfprotokolle und Checksum-Notizen reisen mit jedem Archiv, um die Integrität auch offline nachzuweisen.
 
@@ -210,7 +210,7 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
    # oder
    python -m http.server
    ```
-   So installiert sich der Service Worker und wartet auf deine Freigabe, bevor Updates aktiv werden.
+   So installiert sich der Service Worker, aktiviert neue Versionen automatisch und lässt **Neu laden erzwingen** für manuelles Cache-Leeren verfügbar.
 4. Planner einmal laden, Tab schließen, Netzwerk trennen (oder Flugmodus aktivieren) und `index.html` erneut öffnen. Das Offline-Badge sollte kurz aufleuchten, während gecachte Assets – inklusive lokal gespeicherter Uicons – geladen werden.
 5. **Hilfe → Schnellstart-Checkliste** öffnen und das geführte Tutorial starten. Es führt durch Projektanlage, Gerätekonfiguration, Power-Summary-Kontrolle inklusive Schnellübersichts-Checkpoint sowie die neue Offline-Sicherheitsnetz-Übung, die den oberen Indikator und den Autosave-Status hervorhebt, Gear-Listen, Kontaktverwaltung, eigenes Equipment, automatische Regeln sowie Export/Import und Backups. Schritt-Navigator und Fortschrittsleiste lassen dich abgeschlossene Abschnitte ohne Neustart erneut ansehen; pausierst du zwischendurch, erscheint automatisch **Geführtes Tutorial fortsetzen** mit den gespeicherten Zählungen, damit der Fortschritt offline erhalten bleibt. Zusätzlich blendet die Checklisten-Zeile einen Offline-Status mit erledigten Schritten, dem nächsten Abschnitt und einem Zeitstempel ein, der zeigt, wann der letzte Schritt abgeschlossen wurde, bevor du den Rundgang erneut startest.
    Sobald der Power-Summary-Schritt aktiv ist, gleiche die farbcodierten Warnhinweise mit der [Referenz zu Power-Summary-Warnungen](docs/power-summary-warning-reference.md) ab, protokolliere eventuelle Pin- oder D-Tap-Überlastungen, bestätige redundante Backups und verifiziere, dass der Autosave-Zeitstempel zur Freigabe-/Export-Vorschau passt, bevor du den Abschnitt abhaken kannst.
@@ -336,7 +336,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 ## Datensicherheit & Offline-Betrieb
 
-- Service Worker cached alle Assets, Updates warten auf deine Freigabe via **Neu laden erzwingen**.
+- Der Service Worker cached alle Assets, damit die App offline bleibt. Updates aktivieren sich automatisch, und mit dem optionalen **Neu laden erzwingen** kannst du Caches gezielt leeren, wenn du einen garantiert sauberen Start brauchst.
 - Projekte, Laufzeitdaten, Favoriten, Custom-Geräte, Themes und Listen liegen im Browser-Speicher. Unterstützte Browser erhalten Persistenz-Anfragen, um Löschrisiken zu mindern.
 - Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten oder nach rund 50 festgehaltenen Änderungen. Bei Projektwechseln, Importen, Exporten oder vor dem Neuladen erstellt die App zusätzlich sofort eine neue Aufnahme, selbst wenn dieser Takt noch läuft; stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln ergänzen die Timeline. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
 - Blockiert der Browser Downloads, öffnet die App einen Tab **Manueller Download** mit dem JSON, damit du es in eine `.json`-Datei kopierst und auf vertrauenswürdigen Offline-Medien ablegst.
@@ -346,7 +346,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten und stößt vor dem Löschen der Caches
   jetzt automatisch einen sofortigen Auto-Save samt Backup an.
 - **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
-- Service-Worker-Updates laden im Hintergrund und warten auf deine Bestätigung. Bei **Update bereit**: Änderungen abschließen, Backup erstellen, dann **Neu laden erzwingen**.
+- Service-Worker-Updates laden im Hintergrund und aktivieren sich automatisch. Erscheint **Update bereit**, schließe deine Änderungen ab, sichere ein Backup für die Dokumentation und nutze **Neu laden erzwingen**, wenn du Caches leeren und die Sitzung mit frisch geladenen Assets fortsetzen möchtest.
 - Daten liegen in gehärtetem `localStorage`; gesperrte Profile weichen auf `sessionStorage` aus. Jeder Schreibvorgang legt zusätzlich einen `__legacyMigrationBackup`-Schnappschuss an, damit sich Quota- oder Schemafehler verlustfrei beheben lassen. Entwickler-Tools können Rohdaten exportieren, bevor Caches geleert oder Tests gefahren werden.
 - Ein kritischer Speicherwächter läuft bei jedem Start und spiegelt jeden wichtigen Schlüssel in sein Backup, bevor du Änderungen vornimmst. So bleibt auch bei Legacy-Daten stets eine redundante Kopie für Wiederherstellungen erhalten.
 
@@ -492,7 +492,7 @@ Cine Power Planner ist eine Progressive Web App:
    - **Chrome/Edge (Desktop):** Installationssymbol in der Adressleiste.
    - **Android:** Menü → *Zum Startbildschirm hinzufügen*.
    - **iOS Safari:** Teilen → *Zum Home-Bildschirm*.
-3. App aus dem Launcher starten. Die Installation funktioniert offline und aktualisiert sich automatisch nach deiner Freigabe.
+3. App aus dem Launcher starten. Die Installation funktioniert offline, aktualisiert sich automatisch und bietet dennoch **Neu laden erzwingen**, falls du Caches für einen sauberen Reload leeren möchtest.
 
 ## Gerätedaten-Workflow
 
