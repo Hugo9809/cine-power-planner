@@ -610,8 +610,115 @@
     };
   }
 
+  function createLocalizationBootstrapWiring(options) {
+    const bootstrapResult =
+      options && isObject(options.localizationBootstrapResult)
+        ? options.localizationBootstrapResult
+        : null;
+
+    const localizationSupport =
+      bootstrapResult && isObject(bootstrapResult.localizationSupport)
+        ? bootstrapResult.localizationSupport
+        : null;
+
+    const localizationRuntimeEnvironment =
+      bootstrapResult && isObject(bootstrapResult.localizationRuntimeEnvironment)
+        ? bootstrapResult.localizationRuntimeEnvironment
+        : null;
+
+    const localizationBridge =
+      bootstrapResult && isObject(bootstrapResult.localizationBridge)
+        ? bootstrapResult.localizationBridge
+        : null;
+
+    const localizationFallbacks =
+      bootstrapResult && isObject(bootstrapResult.localizationFallbacks)
+        ? bootstrapResult.localizationFallbacks
+        : null;
+
+    const inlineLocalizationFallbacks =
+      bootstrapResult && isObject(bootstrapResult.inlineLocalizationFallbacks)
+        ? bootstrapResult.inlineLocalizationFallbacks
+        : null;
+
+    const localizationFallbackSupport =
+      bootstrapResult &&
+      typeof bootstrapResult.localizationFallbackSupport !== 'undefined'
+        ? bootstrapResult.localizationFallbackSupport
+        : null;
+
+    const createBasicLocalizationFallbackResolvers =
+      bootstrapResult &&
+      typeof bootstrapResult.createBasicLocalizationFallbackResolvers === 'function'
+        ? bootstrapResult.createBasicLocalizationFallbackResolvers
+        : function createBasicLocalizationFallbackResolversProxy() {
+            return null;
+          };
+
+    const localizationFallbackRegistry =
+      bootstrapResult && isObject(bootstrapResult.localizationFallbackRegistry)
+        ? bootstrapResult.localizationFallbackRegistry
+        : {
+            createFallbackResolvers(fallbackOptions) {
+              return createBasicLocalizationFallbackResolvers(fallbackOptions);
+            },
+          };
+
+    const localizationFallbackResolvers =
+      bootstrapResult && isObject(bootstrapResult.localizationFallbackResolvers)
+        ? bootstrapResult.localizationFallbackResolvers
+        : localizationFallbackRegistry &&
+            typeof localizationFallbackRegistry.createFallbackResolvers === 'function'
+          ? localizationFallbackRegistry.createFallbackResolvers({
+              directNamespace: localizationFallbacks,
+              inlineNamespace: inlineLocalizationFallbacks,
+            })
+          : createBasicLocalizationFallbackResolvers({
+              directNamespace: localizationFallbacks,
+              inlineNamespace: inlineLocalizationFallbacks,
+            });
+
+    const localizationFallbackNamespace =
+      bootstrapResult &&
+      typeof bootstrapResult.localizationFallbackNamespace !== 'undefined'
+        ? bootstrapResult.localizationFallbackNamespace
+        : null;
+
+    const fallbackResolveLocaleModule =
+      bootstrapResult &&
+      typeof bootstrapResult.fallbackResolveLocaleModule === 'function'
+        ? bootstrapResult.fallbackResolveLocaleModule
+        : function fallbackResolveLocaleModuleProxy() {
+            return null;
+          };
+
+    const createLocaleFallbacks =
+      bootstrapResult && typeof bootstrapResult.createLocaleFallbacks === 'function'
+        ? bootstrapResult.createLocaleFallbacks
+        : function createLocaleFallbacksProxy() {
+            return null;
+          };
+
+    return {
+      localizationBootstrapResult: bootstrapResult,
+      localizationSupport,
+      localizationRuntimeEnvironment,
+      localizationBridge,
+      localizationFallbacks,
+      inlineLocalizationFallbacks,
+      localizationFallbackSupport,
+      createBasicLocalizationFallbackResolvers,
+      localizationFallbackRegistry,
+      localizationFallbackResolvers,
+      localizationFallbackNamespace,
+      fallbackResolveLocaleModule,
+      createLocaleFallbacks,
+    };
+  }
+
   const namespace = {
     createLocalizationBootstrapResult,
+    createLocalizationBootstrapWiring,
   };
 
   const globalScope = detectScope();
