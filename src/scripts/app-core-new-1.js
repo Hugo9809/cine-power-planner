@@ -22627,8 +22627,18 @@ const mountVoltageInputs = {
   },
 };
 
-if (typeof setMountVoltageDomReferences === 'function') {
-  setMountVoltageDomReferences({
+const mountVoltageNamespace =
+  typeof setMountVoltageDomReferences === 'function'
+    ? { setDomReferences: setMountVoltageDomReferences }
+    : CORE_GLOBAL_SCOPE
+        && typeof CORE_GLOBAL_SCOPE === 'object'
+        && CORE_GLOBAL_SCOPE.cineCoreMountVoltage
+        && typeof CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences === 'function'
+      ? { setDomReferences: CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences }
+      : null;
+
+if (mountVoltageNamespace && typeof mountVoltageNamespace.setDomReferences === 'function') {
+  mountVoltageNamespace.setDomReferences({
     section: mountVoltageSectionElem,
     heading: mountVoltageHeadingElem,
     description: mountVoltageDescriptionElem,
