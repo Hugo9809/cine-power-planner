@@ -119,15 +119,40 @@ const APP_CORE_BOOTSTRAP_FALLBACK_DIRECT = resolveCoreSupportModule(
   './modules/app-core/bootstrap-fallbacks.js'
 );
 
-const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS = resolveCoreSupportModule(
+const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrapEnvironment',
   './modules/app-core/bootstrap-environment.js'
 );
 
-const APP_CORE_BOOTSTRAP_RESULTS_TOOLS = resolveCoreSupportModule(
+const APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrapResults',
   './modules/app-core/bootstrap-results.js'
 );
+
+const APP_CORE_BOOTSTRAP_SUITE =
+  APP_CORE_BOOTSTRAP_TOOLS && typeof APP_CORE_BOOTSTRAP_TOOLS.createBootstrapSuite === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.createBootstrapSuite({
+        directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+        directBootstrapNamespace: APP_CORE_BOOTSTRAP_TOOLS,
+        directBootstrapFallbackNamespace: APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+        directBootstrapEnvironmentNamespace: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
+        directBootstrapResultsNamespace: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
+        resolveCoreSupportModule,
+        requireFn: typeof require === 'function' ? require : null,
+        runtimeScope: getDefaultRuntimeScope(),
+        coreGlobalScope: getDefaultCoreGlobalScope(),
+      })
+    : null;
+
+const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS =
+  (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapEnvironmentTools) ||
+  APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT ||
+  null;
+
+const APP_CORE_BOOTSTRAP_RESULTS_TOOLS =
+  (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapResultsTools) ||
+  APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT ||
+  null;
 
 function getDefaultRuntimeScope() {
   return typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
@@ -142,33 +167,59 @@ function getDefaultCoreGlobalScope() {
 }
 
 const APP_CORE_BOOTSTRAP_ENVIRONMENT =
-  APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment === 'function'
-    ? APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment({
+  (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapEnvironment) ||
+  (APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.createBootstrapEnvironment === 'function'
+    ? APP_CORE_BOOTSTRAP_SUITE.createBootstrapEnvironment({
         directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
-        directBootstrapNamespace: APP_CORE_BOOTSTRAP_TOOLS,
-        directBootstrapFallbackNamespace: APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+        directBootstrapNamespace:
+          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
+          APP_CORE_BOOTSTRAP_TOOLS,
+        directBootstrapFallbackNamespace:
+          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
+          APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
         resolveCoreSupportModule,
         requireFn: typeof require === 'function' ? require : null,
         runtimeScope: getDefaultRuntimeScope(),
         coreGlobalScope: getDefaultCoreGlobalScope(),
       })
-    : null;
+    : null) ||
+  (APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS &&
+    typeof APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment === 'function'
+    ? APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment({
+        directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+        directBootstrapNamespace:
+          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
+          APP_CORE_BOOTSTRAP_TOOLS,
+        directBootstrapFallbackNamespace:
+          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
+          APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+        resolveCoreSupportModule,
+        requireFn: typeof require === 'function' ? require : null,
+        runtimeScope: getDefaultRuntimeScope(),
+        coreGlobalScope: getDefaultCoreGlobalScope(),
+      })
+    : null);
 
 const APP_CORE_BOOTSTRAP_RESOLVER_TOOLS =
-  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapResolverTools)
-    || APP_CORE_BOOTSTRAP_RESOLVER_DIRECT
-    || null;
+  (APP_CORE_BOOTSTRAP_SUITE &&
+    APP_CORE_BOOTSTRAP_SUITE.bootstrapEnvironment &&
+    APP_CORE_BOOTSTRAP_SUITE.bootstrapEnvironment.bootstrapResolverTools) ||
+  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapResolverTools) ||
+  APP_CORE_BOOTSTRAP_RESOLVER_DIRECT ||
+  null;
 
 const RESOLVED_APP_CORE_BOOTSTRAP_TOOLS =
-  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapTools)
-    || APP_CORE_BOOTSTRAP_TOOLS
-    || null;
+  (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
+  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapTools) ||
+  APP_CORE_BOOTSTRAP_TOOLS ||
+  null;
 
 const APP_CORE_BOOTSTRAP_FALLBACK_TOOLS =
-  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapFallbackTools)
-    || APP_CORE_BOOTSTRAP_FALLBACK_DIRECT
-    || null;
+  (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
+  (APP_CORE_BOOTSTRAP_ENVIRONMENT && APP_CORE_BOOTSTRAP_ENVIRONMENT.bootstrapFallbackTools) ||
+  APP_CORE_BOOTSTRAP_FALLBACK_DIRECT ||
+  null;
 
 function collectBootstrapFallbackScopes(extraScopes) {
   const hasOptionsObject =
@@ -189,6 +240,25 @@ function collectBootstrapFallbackScopes(extraScopes) {
 
   const runtimeScope = runtimeScopeOverride || getDefaultRuntimeScope();
   const coreGlobalScope = coreGlobalScopeOverride || getDefaultCoreGlobalScope();
+
+  if (
+    APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.collectBootstrapFallbackScopes === 'function'
+  ) {
+    try {
+      const suiteCollected = APP_CORE_BOOTSTRAP_SUITE.collectBootstrapFallbackScopes({
+        runtimeScope,
+        coreGlobalScope,
+        fallbackScopes: fallbackScopeList,
+      });
+
+      if (Array.isArray(suiteCollected)) {
+        return suiteCollected;
+      }
+    } catch (bootstrapSuiteCollectError) {
+      void bootstrapSuiteCollectError;
+    }
+  }
 
   if (
     APP_CORE_BOOTSTRAP_RESULTS_TOOLS &&
@@ -258,6 +328,10 @@ function collectBootstrapFallbackScopes(extraScopes) {
 }
 
 const createInlineLocalizationFallback =
+  (APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.createInlineLocalizationFallback === 'function'
+      ? APP_CORE_BOOTSTRAP_SUITE.createInlineLocalizationFallback
+      : null) ||
   (APP_CORE_BOOTSTRAP_ENVIRONMENT &&
     typeof APP_CORE_BOOTSTRAP_ENVIRONMENT.createInlineLocalizationFallback === 'function'
       ? APP_CORE_BOOTSTRAP_ENVIRONMENT.createInlineLocalizationFallback
@@ -306,6 +380,26 @@ const createInlineLocalizationFallback =
         }
       } catch (localizationFallbackResolveError) {
         void localizationFallbackResolveError;
+      }
+    }
+
+    if (
+      APP_CORE_BOOTSTRAP_SUITE &&
+      typeof APP_CORE_BOOTSTRAP_SUITE.createLocalizationBootstrapFallback === 'function'
+    ) {
+      try {
+        const suiteFallback = APP_CORE_BOOTSTRAP_SUITE.createLocalizationBootstrapFallback({
+          fallbackScopes,
+          runtimeScope,
+          coreGlobalScope,
+          localizationFallbackOptions,
+        });
+
+        if (suiteFallback && typeof suiteFallback === 'object') {
+          return suiteFallback;
+        }
+      } catch (suiteLocalizationFallbackError) {
+        void suiteLocalizationFallbackError;
       }
     }
 
@@ -372,6 +466,10 @@ const createInlineLocalizationFallback =
   };
 
 const createInlineRuntimeSharedFallback =
+  (APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.createInlineRuntimeSharedFallback === 'function'
+      ? APP_CORE_BOOTSTRAP_SUITE.createInlineRuntimeSharedFallback
+      : null) ||
   (APP_CORE_BOOTSTRAP_ENVIRONMENT &&
     typeof APP_CORE_BOOTSTRAP_ENVIRONMENT.createInlineRuntimeSharedFallback === 'function'
       ? APP_CORE_BOOTSTRAP_ENVIRONMENT.createInlineRuntimeSharedFallback
@@ -420,6 +518,26 @@ const createInlineRuntimeSharedFallback =
         }
       } catch (runtimeSharedFallbackResolveError) {
         void runtimeSharedFallbackResolveError;
+      }
+    }
+
+    if (
+      APP_CORE_BOOTSTRAP_SUITE &&
+      typeof APP_CORE_BOOTSTRAP_SUITE.createRuntimeSharedBootstrapFallback === 'function'
+    ) {
+      try {
+        const suiteFallback = APP_CORE_BOOTSTRAP_SUITE.createRuntimeSharedBootstrapFallback({
+          fallbackScopes,
+          runtimeScope,
+          coreGlobalScope,
+          currentRuntimeShared: currentRuntimeSharedCandidate,
+        });
+
+        if (suiteFallback && typeof suiteFallback === 'object') {
+          return suiteFallback;
+        }
+      } catch (suiteRuntimeSharedFallbackError) {
+        void suiteRuntimeSharedFallbackError;
       }
     }
 
@@ -546,6 +664,21 @@ const localizationBootstrapResult = (function resolveLocalizationBootstrapResult
     localizationFallbackOptions: null,
     currentLocalization: null,
   };
+
+  if (
+    APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.createLocalizationBootstrapResult === 'function'
+  ) {
+    try {
+      const suiteResolved = APP_CORE_BOOTSTRAP_SUITE.createLocalizationBootstrapResult(moduleOptions);
+
+      if (suiteResolved && typeof suiteResolved === 'object') {
+        return suiteResolved;
+      }
+    } catch (suiteLocalizationBootstrapError) {
+      void suiteLocalizationBootstrapError;
+    }
+  }
 
   if (
     APP_CORE_BOOTSTRAP_RESULTS_TOOLS &&
@@ -781,6 +914,21 @@ const runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResu
     runtimeSharedBootstrapInlineRequirePath: null,
     runtimeSharedBootstrapResultRequirePath: null,
   };
+
+  if (
+    APP_CORE_BOOTSTRAP_SUITE &&
+    typeof APP_CORE_BOOTSTRAP_SUITE.createRuntimeSharedBootstrapResult === 'function'
+  ) {
+    try {
+      const suiteResolved = APP_CORE_BOOTSTRAP_SUITE.createRuntimeSharedBootstrapResult(moduleOptions);
+
+      if (suiteResolved && typeof suiteResolved === 'object') {
+        return suiteResolved;
+      }
+    } catch (suiteRuntimeSharedResultError) {
+      void suiteRuntimeSharedResultError;
+    }
+  }
 
   if (
     APP_CORE_BOOTSTRAP_RESULTS_TOOLS &&
