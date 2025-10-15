@@ -300,11 +300,11 @@ function resolveAutoGearWeightHelpers(options) {
         }
       : fallbackNormalizeAutoGearWeightValue;
 
-  const normalizeCameraWeightCondition =
-    shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function'
-      ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
-          try {
-            const normalized = shared.normalizeAutoGearCameraWeightCondition(condition);
+    const normalizeAutoGearCameraWeightCondition =
+      shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function'
+        ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
+            try {
+              const normalized = shared.normalizeAutoGearCameraWeightCondition(condition);
             return normalized || null;
           } catch (error) {
             void error;
