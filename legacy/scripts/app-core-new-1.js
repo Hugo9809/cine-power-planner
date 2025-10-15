@@ -11979,13 +11979,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var aboutVersionElem = typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
     if (aboutVersionElem) aboutVersionElem.textContent = "".concat(texts[lang].versionLabel, " ").concat(APP_VERSION);
-    var supportLink = typeof document !== 'undefined' ? document.getElementById('supportLink') : null;
-    if (supportLink) {
-      supportLink.textContent = texts[lang].supportLink;
-      var supportHelp = texts[lang].supportLinkHelp || texts[lang].supportLink;
-      supportLink.setAttribute("data-help", supportHelp);
-      supportLink.setAttribute("title", supportHelp);
-    }
+    var supportLinkConfigs = [
+      { id: 'supportLink', textKey: 'supportLink', helpKey: 'supportLinkHelp' },
+      { id: 'reportBugLink', textKey: 'reportBugLink', helpKey: 'reportBugLinkHelp' },
+      { id: 'suggestFeatureLink', textKey: 'suggestFeatureLink', helpKey: 'suggestFeatureLinkHelp' }
+    ];
+    var langTexts = texts && texts[lang] ? texts[lang] : {};
+    var fallbackTexts = texts && texts.en ? texts.en : {};
+    supportLinkConfigs.forEach(function (config) {
+      var link = typeof document !== 'undefined' ? document.getElementById(config.id) : null;
+      if (!link) {
+        return;
+      }
+      var label =
+        (typeof langTexts[config.textKey] === 'string' && langTexts[config.textKey]) ||
+        (typeof fallbackTexts[config.textKey] === 'string' && fallbackTexts[config.textKey]) ||
+        link.textContent;
+      link.textContent = label;
+      var help =
+        (typeof langTexts[config.helpKey] === 'string' && langTexts[config.helpKey]) ||
+        (typeof fallbackTexts[config.helpKey] === 'string' && fallbackTexts[config.helpKey]) ||
+        label;
+      link.setAttribute('data-help', help);
+      link.setAttribute('title', help);
+      link.setAttribute('aria-label', help);
+    });
     if (settingsSave) {
       var _texts$en258;
       var _label67 = texts[lang].saveSettings || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.saveSettings) || settingsSave.textContent;

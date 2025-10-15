@@ -1055,7 +1055,13 @@ const texts = {
     versionLabel: "Version",
     supportLink: "Support",
     supportLinkHelp:
-      "Open support documentation in a new tab.",
+      "Open the GitHub repository in a new tab.",
+    reportBugLink: "Report a bug",
+    reportBugLinkHelp:
+      "Open the GitHub issues tracker to report a bug.",
+    suggestFeatureLink: "Suggest a feature",
+    suggestFeatureLinkHelp:
+      "Open the GitHub issues tracker to share feature ideas.",
     restoreSuccess: "Settings restored. Reload to apply all changes.",
     restoreVerificationMatch:
       "Restore verification passed. Live data matches the backup snapshot.",
@@ -3901,7 +3907,13 @@ const texts = {
     versionLabel: "Versione",
     supportLink: "Supporto",
     supportLinkHelp:
-      "Apri la documentazione di supporto in una nuova scheda.",
+      "Apri il repository GitHub in una nuova scheda.",
+    reportBugLink: "Segnala un bug",
+    reportBugLinkHelp:
+      "Apri la sezione Issues di GitHub per segnalare un problema.",
+    suggestFeatureLink: "Suggerisci una funzionalità",
+    suggestFeatureLinkHelp:
+      "Apri la sezione Issues di GitHub per proporre nuove idee.",
     restoreSuccess: "Impostazioni ripristinate. Ricarica per applicare tutte le modifiche.",
     restoreVerificationMatch:
       "Verifica del ripristino completata. I dati attivi corrispondono al backup.",
@@ -6099,7 +6111,13 @@ const texts = {
     versionLabel: "Versión",
     supportLink: "Soporte",
     supportLinkHelp:
-      "Abre la documentación de soporte en una nueva pestaña.",
+      "Abre el repositorio de GitHub en una pestaña nueva.",
+    reportBugLink: "Reportar un error",
+    reportBugLinkHelp:
+      "Abre Issues de GitHub para reportar un problema.",
+    suggestFeatureLink: "Sugerir una función",
+    suggestFeatureLinkHelp:
+      "Abre Issues de GitHub para proponer nuevas ideas.",
     restoreSuccess: "Ajustes restaurados. Recarga para aplicar todos los cambios.",
     restoreVerificationMatch:
       "Verificación de restauración completada. Los datos activos coinciden con la copia de seguridad.",
@@ -8310,7 +8328,13 @@ const texts = {
     versionLabel: "Version",
     supportLink: "Support",
     supportLinkHelp:
-      "Ouvrez la documentation d’assistance dans un nouvel onglet.",
+      "Ouvrez le dépôt GitHub dans un nouvel onglet.",
+    reportBugLink: "Signaler un bug",
+    reportBugLinkHelp:
+      "Ouvrez les issues GitHub pour signaler un problème.",
+    suggestFeatureLink: "Suggérer une fonctionnalité",
+    suggestFeatureLinkHelp:
+      "Ouvrez les issues GitHub pour proposer de nouvelles idées.",
     restoreSuccess: "Paramètres restaurés. Rechargez pour appliquer tous les changements.",
     restoreVerificationMatch:
       "Vérification de la restauration réussie. Les données actives correspondent à la sauvegarde.",
@@ -10525,7 +10549,13 @@ const texts = {
     versionLabel: "Version",
     supportLink: "Support",
     supportLinkHelp:
-      "Öffnet die Support-Dokumentation in einem neuen Tab.",
+      "Öffnet das GitHub-Repository in einem neuen Tab.",
+    reportBugLink: "Fehler melden",
+    reportBugLinkHelp:
+      "Öffnet die GitHub-Issues, um ein Problem zu melden.",
+    suggestFeatureLink: "Feature vorschlagen",
+    suggestFeatureLinkHelp:
+      "Öffnet die GitHub-Issues, um neue Ideen zu teilen.",
     restoreSuccess: "Einstellungen wiederhergestellt. Zum Anwenden Seite neu laden.",
     restoreVerificationMatch:
       "Wiederherstellungsprüfung bestanden. Die Live-Daten entsprechen der Sicherung.",
