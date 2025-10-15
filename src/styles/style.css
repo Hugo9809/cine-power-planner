@@ -7808,13 +7808,15 @@ body.dark-mode .onboarding-active-target {
 }
 
 .onboarding-field-input {
-  width: 100%;
-  max-width: 100%;
+  width: calc(100% - var(--spacing-md));
+  max-width: calc(100% - var(--spacing-md));
+  margin-inline: auto;
 }
 
 .onboarding-field-select {
-  width: 100%;
-  max-width: 100%;
+  width: calc(100% - var(--spacing-md));
+  max-width: calc(100% - var(--spacing-md));
+  margin-inline: auto;
 }
 
 .onboarding-interaction-actions {
