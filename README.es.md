@@ -35,7 +35,7 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 - **Planifica sin conexión.** Construye configuraciones V‑Mount, B‑Mount o Gold-Mount directamente en el navegador. Todos los Uicons, fuentes y scripts auxiliares están incluidos, sin depender de CDNs ni de la red. Clona el repositorio, desconecta el cable y la interfaz seguirá funcionando igual.
 - **Mantén los datos en el dispositivo.** Proyectos, comentarios de autonomía, favoritos, equipos personalizados, listas y ajustes permanecen locales. Las copias de seguridad y los paquetes compartibles son archivos JSON legibles.
 - **Pon a prueba las redes de seguridad.** Guardados manuales, auto-guardados en segundo plano y copias automáticas con sello horario se combinan para que practiques la rutina Guardar → Copia → Paquete → Restaurar desde el primer día.
-- **Aprueba actualizaciones a conciencia.** El service worker espera tu confirmación antes de actualizar, de modo que el equipo se mantiene en una versión auditada incluso durante viajes o con conectividad limitada.
+- **Acompaña las actualizaciones con intención.** Las nuevas versiones del service worker se activan automáticamente, y el botón **Forzar recarga** queda disponible cuando quieras limpiar cachés y garantizar un reinicio impecable.
 
 ## Capas de seguridad a simple vista
 
@@ -91,7 +91,7 @@ Antes de fusionar o publicar una build para campo, completa esta lista condensad
 3. **Captura artefactos de verificación.** Completa el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y la [Plantilla de registro de verificación](docs/verification-log-template.md) con las notas de ensayo, hashes de exportes y capturas de precalentamiento de caché más recientes.
 4. **Valida los toggles de idioma.** Cambia por cada idioma de la app para confirmar que los textos actualizados se representan correctamente sin cargar assets externos.
 5. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, las reglas automáticas en JSON y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
-6. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** aprobado para que los equipos sepan qué revisión ejecutan.
+6. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** manual para que los equipos sepan qué revisión ejecutan.
 
 ## Panorama general
 
@@ -101,7 +101,7 @@ El planner se diseñó para foquistas, data wranglers y directores de fotografí
 
 ### Listo para viajar
 
-Abre `index.html` directamente desde disco o aloja el repositorio en tu red interna, sin builds, servidores ni cuentas. Un service worker mantiene la aplicación disponible offline, recuerda las preferencias y sólo se actualiza cuando lo autorizas. Guardar, compartir, importar, respaldar y restaurar siempre se ejecutan localmente, protegiendo los datos.
+Abre `index.html` directamente desde disco o aloja el repositorio en tu red interna, sin builds, servidores ni cuentas. Un service worker mantiene la aplicación disponible offline, recuerda las preferencias y activa automáticamente las nuevas versiones, mientras el botón opcional **Forzar recarga** queda listo por si quieres vaciar cachés bajo tu propio control. Guardar, compartir, importar, respaldar y restaurar siempre se ejecutan localmente, protegiendo los datos.
 
 ### Por qué importa el enfoque offline-first
 
@@ -110,7 +110,7 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 ### Pilares de funciones
 
 - **Planifica con confianza.** Calcula la demanda a 14,4 V/12 V (y 33,6 V/21,6 V para B‑Mount), compara baterías compatibles y visualiza el impacto en un panel ponderado de retroalimentación.
-- **Mantente listo para producción.** Los proyectos capturan dispositivos, requisitos, escenarios, detalles de equipo y listas; los auto-backups, paquetes y actualizaciones controladas mantienen la información vigente sin perder estabilidad.
+- **Mantente listo para producción.** Los proyectos capturan dispositivos, requisitos, escenarios, detalles de equipo y listas; los auto-backups, paquetes y el botón opcional **Forzar recarga** mantienen la información vigente sin perder estabilidad.
 - **Trabaja como prefieras.** Detección de idioma, temas oscuro, rosa y de alto contraste, controles tipográficos, logotipos personalizados y ayuda contextual hacen que la interfaz sea cómoda en rodajes y en preparación. La ayuda contextual ahora completa automáticamente descripciones para cada botón, campo y menú, de modo que cada control se explica por sí mismo incluso sin conexión.
 
 ## Principios clave
@@ -118,7 +118,7 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 - **Siempre offline.** Toda la aplicación, incluidos iconos, páginas legales y herramientas, vive en el repositorio. Abre `index.html` desde disco o una intranet y el service worker sincroniza los recursos sin obligarte a conectarte.
 - **Sin rutas ocultas de datos.** Guardados, paquetes, importaciones, copias de seguridad y restauraciones suceden íntegramente en el navegador. Nada sale del equipo a menos que lo exportes.
 - **Redes redundantes.** Guardados manuales, auto-guardados en segundo plano, copias periódicas, respaldos previos a la restauración y exportaciones legibles garantizan que ningún dato desaparezca.
-- **Actualizaciones previsibles.** Sólo se aplican cuando tú las activas. Las versiones en caché siguen disponibles hasta que confirmas **Forzar recarga**.
+- **Actualizaciones previsibles.** Las nuevas versiones del service worker se activan automáticamente y las versiones en caché permanecen accesibles. Usa **Forzar recarga** cuando quieras limpiar los recursos almacenados sin tocar el trabajo guardado.
 - **Presentación consistente.** Uicons locales, recursos OpenMoji y tipografías integradas aseguran la misma apariencia en un estudio o en un portátil desconectado.
 - **Proteger cada cambio.** Antes de cualquier restauración, el planner genera una copia de seguridad forzada y conserva las revisiones anteriores para que ninguna importación sobrescriba tu trabajo. Los registros de verificación y las notas de checksum acompañan a cada archivo para demostrar la integridad incluso sin conexión.
 
@@ -210,7 +210,7 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
    # o
    python -m http.server
    ```
-   La aplicación se almacenará en caché para uso offline y aplicará actualizaciones cuando las apruebes.
+   La aplicación se almacenará en caché para uso offline, activará automáticamente las nuevas versiones y dejará **Forzar recarga** disponible por si quieres limpiar cachés bajo demanda.
 4. Carga el planner, cierra la pestaña, desconecta la red (o activa modo avión) y vuelve a abrir `index.html`. El indicador offline debe parpadear mientras se cargan los recursos en caché, incluidos los Uicons locales.
 5. Abre **Ayuda → Lista de comprobación de inicio rápido** y lanza el tutorial guiado. Repasa creación de proyectos, selección de dispositivos, la revisión del Resumen de energía con su punto de control de Resumen rápido y la nueva repetición de la red de seguridad offline que destaca el indicador superior y el estado del autosave, listas de equipo, contactos, equipo propio, reglas automáticas y los flujos de exportación, importación y respaldo. El navegador de pasos y el indicador de progreso permiten volver a los flujos completados sin reiniciar y, si lo dejas a medias, aparecerá automáticamente **Reanudar tutorial guiado** con tus conteos guardados para conservar el progreso sin conexión. Además, la fila de la lista muestra un estado offline con los pasos completados, el siguiente flujo y un sello de tiempo que indica cuándo se completó el último paso antes de retomar el recorrido.
    Cuando el tutorial llegue al paso del Resumen de energía, contrasta las alertas codificadas por colores con la [Referencia de advertencias del resumen de potencia](docs/power-summary-warning-reference.md), registra cualquier sobrecarga de pines o D-Tap, confirma las copias de seguridad redundantes y asegúrate de que la marca de tiempo del autosave coincide con la vista previa de compartir/exportar antes de marcar el paso como completado.
@@ -335,7 +335,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 ## Seguridad de datos y operación offline
 
-- Un service worker almacena todos los recursos, ejecuta la app sin conexión y aplica actualizaciones sólo tras **Forzar recarga**.
+- Un service worker almacena todos los recursos para ejecutar la app sin conexión. Las nuevas versiones se activan automáticamente y **Forzar recarga** queda como opción para limpiar cachés cuando necesites un reinicio garantizado.
 - Proyectos, comentarios, favoritos, dispositivos, temas y listas viven en el almacenamiento del navegador. Se solicita persistencia cuando está disponible para reducir riesgos de expulsión.
 - Las copias automáticas encadenan instantáneas de proyectos cada diez minutos o tras unas 50 modificaciones registradas. Al cambiar de proyecto, importar, exportar o prepararte para recargar, la aplicación captura además una nueva instantánea aunque ese intervalo aún no haya concluido; las descargas completas por hora y los archivos de reglas automáticas en segundo plano completan la línea de tiempo. Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups en la lista** para ver la retención y recuperar instantáneas sin conectividad.
 - Si el navegador bloquea descargas, la app abre una pestaña de **Descarga manual** con el JSON para que lo copies en un archivo `.json` y lo guardes en medios offline de confianza antes de cerrarla.
@@ -344,7 +344,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - Ejecutar la app desde disco o una red interna mantiene los datos sensibles fuera de servicios externos. Las exportaciones en JSON son auditables.
 - La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado y ahora ejecuta un auto-guardado inmediato con copia de seguridad antes de limpiar las cachés.
 - **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.
-- Las actualizaciones del service worker se descargan en segundo plano y esperan tu aprobación. Al ver **Actualización lista**, termina los cambios, crea un backup y pulsa **Forzar recarga**.
+- Las actualizaciones del service worker se descargan en segundo plano y se activan automáticamente. Cuando veas **Actualización lista**, termina tus cambios, captura un backup para tus registros y usa **Forzar recarga** si deseas limpiar las cachés y reabrir la sesión con los recursos recién cargados.
 - Los datos residen en un `localStorage` reforzado; los perfiles restringidos recurren a `sessionStorage`. Cada escritura genera una instantánea `__legacyMigrationBackup` para recuperarse sin pérdidas si aparece un error de cuota o de esquema. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés o realizar pruebas.
 - Un guardián de almacenamiento crítico se ejecuta en cada inicio y duplica cada clave esencial en su copia de seguridad antes de que hagas cambios, de modo que incluso los datos heredados conservan siempre una copia redundante lista para restaurar.
 
@@ -490,7 +490,7 @@ Cine Power Planner es una aplicación web progresiva:
    - **Chrome/Edge (escritorio):** Haz clic en el icono de instalación en la barra de direcciones.
    - **Android:** Menú del navegador → *Añadir a pantalla de inicio*.
    - **iOS Safari:** Botón compartir → *Añadir a pantalla de inicio*.
-3. Inicia la app desde tu lista de aplicaciones. Funciona offline y se actualiza automáticamente tras aprobar una recarga.
+3. Inicia la app desde tu lista de aplicaciones. Funciona offline, se actualiza automáticamente y aún ofrece **Forzar recarga** si quieres limpiar cachés para un reinicio impecable.
 
 ## Flujo de datos de dispositivos
 

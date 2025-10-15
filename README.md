@@ -71,9 +71,9 @@ drive without phoning home.
   timestamped auto-backups layer together so you can rehearse recovery before
   leaving for set. Practicing the save → backup → bundle → restore loop is part
   of the recommended first-run routine so crews confirm every safeguard.
-- **Approve updates intentionally.** The service worker waits for you to
-  confirm a refresh, keeping teams on a known-good revision during travel or
-  low-connectivity shoots.
+- **Approve updates intentionally.** New service worker versions activate on
+  their own, and the in-app **Force reload** button is there when you want to
+  clear cached assets and guarantee a clean refresh.
 
 ## Safety Layers at a Glance
 
@@ -213,7 +213,7 @@ protect user data, documentation and translations:
    bundles, automatic gear rule JSON and a ZIP of the repository. Place the set
    on at least two offline media locations with a short retention note.
 6. **Log service worker state.** Record the reported version, offline indicator
-   behavior and the timestamp of the last approved **Force reload** so crews can
+   behavior and the timestamp of the last manual **Force reload** so crews can
    audit which revision they are running.
 
 ## Overview
@@ -231,9 +231,10 @@ hand off prep notes.
 Open `index.html` directly from disk or host the repository on your internal
 network—no build process, server dependencies or accounts required. A service
 worker keeps the whole app available offline, remembers every preference and
-only updates when you approve a refresh. Saving, sharing, import, backup and
-restore tools are always available and always run locally so user data stays
-safe.
+activates new versions automatically while leaving the optional **Force
+reload** control available when you want to clear caches on your schedule.
+Saving, sharing, import, backup and restore tools are always available and
+always run locally so user data stays safe.
 
 ### Why offline-first matters
 
@@ -251,8 +252,8 @@ production day.
   B‑Mount), compare compatible batteries and visualize runtime impact through a
   weighted feedback dashboard.
 - **Stay production-ready.** Projects capture devices, requirements, scenarios,
-  crew details and gear lists; auto-backups, shareable bundles and forced
-  refreshes keep data current without sacrificing stability.
+  crew details and gear lists; auto-backups, shareable bundles and the optional
+  **Force reload** control keep data current without sacrificing stability.
 - **Work the way you prefer.** Language detection, dark, pink and high-contrast
   themes, typography controls, custom logos and hover help make the interface
   approachable on set and in prep. Hover help now auto-fills contextual
@@ -271,9 +272,9 @@ production day.
 - **Redundant safety nets.** Manual saves, background auto-saves, periodic
   auto-backups, forced pre-restore backups and human-readable JSON exports work
   together so user data cannot disappear silently.
-- **Predictable updates.** Refreshes only apply when you trigger them. Cached
-  versions remain available until you approve a **Force reload**, keeping
-  planning sessions stable even when crews stay offline for extended periods.
+- **Predictable updates.** New service worker code activates automatically, and
+  cached versions remain available. Use the optional **Force reload** button to
+  clear stored assets and start fresh without disturbing saved work.
 - **Consistent presentation.** Locally bundled Uicons, OpenMoji assets and
   typography files guarantee identical visuals whether you run the planner on a
   stage workstation or a field laptop with no connectivity.
@@ -450,8 +451,8 @@ same online or offline.
    # or
    python -m http.server
    ```
-   The app then caches itself for offline use and applies updates when you
-   approve them.
+   The app then caches itself for offline use, activates updates automatically
+   and leaves **Force reload** available for clearing caches on demand.
 1. Load the planner once, close the tab, disconnect from the network (or toggle
    Airplane Mode) and reopen `index.html`. The offline indicator in the header
    should flash briefly while cached files load. Confirm the interface mirrors
@@ -832,8 +833,9 @@ Use Cine Power Planner end-to-end with the following routine:
 
 ## Data Safety & Offline Operation
 
-- A service worker caches every asset so the planner runs offline and applies
-  updates only when you approve them via **Force reload**.
+- A service worker caches every asset so the planner runs offline. Updates
+  activate automatically, and the optional **Force reload** button lets you
+  clear cached assets whenever you want a guaranteed clean start.
 - Projects, runtime submissions, favorites, custom devices, theme selections and
   gear lists live in browser storage. Browsers that support persistent storage
   receive an automatic retention request to reduce eviction risk.
@@ -858,10 +860,10 @@ Use Cine Power Planner end-to-end with the following routine:
 - Clearing the site’s data or using **Factory reset** removes local entries only
   after exporting a backup automatically, ensuring nothing disappears without a
   copy.
-- Service worker updates download in the background and wait for your approval.
-  When the **Update ready** toast appears, finish your current edits, trigger a
-  manual backup, then click **Force reload** so fresh assets load alongside your
-  preserved data.
+- Service worker updates download in the background and activate automatically.
+  When the **Update ready** toast appears, finish your current edits, capture a
+  manual backup for your records, then use **Force reload** if you want to clear
+  cached assets and reopen the session on a freshly loaded build.
 - Storage lives inside hardened `localStorage` with a `sessionStorage` fallback
   when browsers restrict long-term writes. Every save also creates a
   `__legacyMigrationBackup` snapshot so you can recover even if the browser
@@ -1244,7 +1246,8 @@ Cine Power Planner is a Progressive Web App:
    - **Android:** Open the browser menu and choose *Add to Home screen*.
    - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
 3. Launch the app from your applications list. The installed version works
-   offline and updates automatically once you approve a refresh.
+   offline, updates automatically and still offers **Force reload** if you want
+   to clear caches for a pristine refresh.
 
 ## Device Data Workflow
 

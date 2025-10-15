@@ -35,7 +35,7 @@ Cine Power Planner è un’applicazione web autonoma pensata per creare, verific
 - **Pianifica offline-first.** Costruisci configurazioni V‑Mount, B‑Mount o Gold-Mount direttamente dal browser. Uicons, font e script di supporto sono inclusi localmente, senza affidarsi a CDN o alla rete. Clona il repository, scollega il cavo e l’interfaccia continua a funzionare allo stesso modo.
 - **Dati sempre sul dispositivo.** Progetti, feedback sulle autonomie, preferiti, dispositivi personalizzati, liste e impostazioni restano locali. Backup e pacchetti condivisibili sono file JSON leggibili.
 - **Metti alla prova le reti di sicurezza.** Salvataggi manuali, auto-save in background e backup automatici con timestamp si sommano per esercitarsi fin da subito nel ciclo Salva → Backup → Bundle → Ripristina.
-- **Aggiornamenti sotto controllo.** Il service worker attende la tua conferma prima di aggiornarsi, mantenendo la troupe su una versione certificata anche in viaggio o con connettività limitata.
+- **Accompagna gli aggiornamenti con intenzione.** Le nuove versioni del service worker si attivano automaticamente e il pulsante **Forza ricarica** resta disponibile quando vuoi svuotare le cache e garantire un riavvio pulito.
 
 ## Reti di sicurezza in sintesi
 
@@ -91,7 +91,7 @@ Prima di un merge o di un rilascio sul campo, completa questa lista compatta per
 3. **Raccogli gli artefatti di verifica.** Compila il [Documentation Verification Packet](docs/documentation-verification-packet.md) e la [Verification Log Template](docs/verification-log-template.md) con note di prova, hash degli export e screenshot di priming della cache più recenti.
 4. **Valida gli switch di lingua.** Scorri tutte le lingue dell’app per confermare che i nuovi string funzionino senza caricare asset esterni.
 5. **Archivia copie ridondanti.** Esporta `planner-backup.json`, i bundle progetto correnti, le regole automatiche in JSON e uno ZIP del repository. Conserva tutto su almeno due supporti offline con una nota di retention.
-6. **Registra lo stato del service worker.** Annota versione riportata, comportamento dell’indicatore offline e timestamp dell’ultimo **Forza ricarica** approvato così le troupe sanno quale revisione è attiva.
+6. **Registra lo stato del service worker.** Annota versione riportata, comportamento dell’indicatore offline e timestamp dell’ultimo **Forza ricarica** manuale così le troupe sanno quale revisione è attiva.
 
 ## Panoramica
 
@@ -101,7 +101,7 @@ Il planner è stato ideato per 1st AC, data wrangler e direttori della fotografi
 
 ### Nato per viaggiare
 
-Apri `index.html` direttamente dal disco o ospita il repository sulla tua rete interna, senza build, server o account. Un service worker mantiene l’app disponibile offline, memorizza le preferenze e applica aggiornamenti solo con la tua approvazione. Salvataggi, condivisioni, import, backup e ripristini avvengono sempre in locale per proteggere i dati.
+Apri `index.html` direttamente dal disco o ospita il repository sulla tua rete interna, senza build, server o account. Un service worker mantiene l’app disponibile offline, memorizza le preferenze e attiva automaticamente le nuove versioni, lasciando il pulsante opzionale **Forza ricarica** pronto se vuoi liberare le cache quando preferisci. Salvataggi, condivisioni, import, backup e ripristini avvengono sempre in locale per proteggere i dati.
 
 ### Perché l’offline-first è fondamentale
 
@@ -110,7 +110,7 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 ### Pilastri funzionali
 
 - **Pianifica con sicurezza.** Calcola l’assorbimento a 14,4 V/12 V (e 33,6 V/21,6 V per B‑Mount), confronta batterie compatibili e visualizza l’impatto in un cruscotto ponderato.
-- **Resta pronto per la produzione.** I progetti includono dispositivi, requisiti, scenari, dettagli della troupe e liste; auto-backup, bundle e aggiornamenti controllati mantengono i dati aggiornati senza perdere stabilità.
+- **Resta pronto per la produzione.** I progetti includono dispositivi, requisiti, scenari, dettagli della troupe e liste; auto-backup, bundle e il pulsante opzionale **Forza ricarica** mantengono i dati aggiornati senza perdere stabilità.
 - **Lavora come preferisci.** Rilevamento lingua, temi scuro, rosa e alto contrasto, controlli tipografici, logo personalizzato e aiuto contestuale rendono l’interfaccia accogliente sia in preparazione sia sul set. L’aiuto contestuale ora compila automaticamente descrizioni per ogni pulsante, campo e menu così ogni controllo si spiega da solo anche offline.
 
 ## Principi chiave
@@ -118,7 +118,7 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 - **Sempre offline.** L’intera applicazione – icone, pagine legali e strumenti – è inclusa nel repository. Apri `index.html` dal disco o da una intranet privata e il service worker sincronizza le risorse senza richiedere connessione.
 - **Nessun percorso nascosto.** Salvataggi, bundle, import, backup e ripristini avvengono esclusivamente nel browser. Nulla lascia il dispositivo se non tramite un export volontario.
 - **Reti ridondanti.** Salvataggi manuali, auto-save, backup periodici, backup forzati prima dei ripristini ed export leggibili lavorano insieme per evitare perdite silenziose.
-- **Aggiornamenti prevedibili.** Si applicano solo quando li attivi. Le versioni in cache restano disponibili finché non confermi **Forza ricarica**.
+- **Aggiornamenti prevedibili.** Le nuove versioni del service worker si attivano automaticamente e le copie in cache restano disponibili. Usa **Forza ricarica** quando vuoi ripulire le risorse memorizzate senza toccare il lavoro salvato.
 - **Presentazione coerente.** Uicons locali, risorse OpenMoji e font inclusi garantiscono la stessa resa visiva in studio o su un portatile offline.
 - **Proteggi ogni modifica.** Prima di qualsiasi ripristino, il planner crea un backup forzato e conserva le revisioni precedenti così nessun import sovrascrive il tuo lavoro. I registri di verifica e le note di checksum viaggiano con ogni archivio per dimostrarne l’integrità anche offline.
 
@@ -210,7 +210,7 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
    # oppure
    python -m http.server
    ```
-   L’app viene messa in cache per l’uso offline e applica gli update solo con il tuo consenso.
+   L’app viene messa in cache per l’uso offline, attiva automaticamente le nuove versioni e lascia **Forza ricarica** disponibile se vuoi svuotare le cache su richiesta.
 4. Carica il planner, chiudi la scheda, disconnettiti (o attiva la modalità aereo) e riapri `index.html`. L’indicatore offline dovrebbe lampeggiare brevemente mentre carica le risorse memorizzate, inclusi gli Uicons locali.
 5. Apri **Aiuto → Checklist di avvio rapido** e avvia il tutorial guidato. Copre creazione dei progetti, configurazione dei dispositivi, controllo del Riepilogo alimentazione con il suo checkpoint Riepilogo rapido e la nuova prova della rete di sicurezza offline che evidenzia indicatore e stato di salvataggio automatico nella barra superiore, gear list, contatti, attrezzatura personale, regole automatiche oltre a export, import e backup. Il navigatore dei passaggi e l’indicatore di avanzamento permettono di rivedere i flussi completati senza ricominciare; se interrompi il percorso, apparirà automaticamente **Riprendi il tutorial guidato** con i conteggi salvati così il progresso offline resta protetto. La riga della checklist mostra anche uno stato offline con i passaggi completati, il prossimo flusso e un indicatore temporale che segnala quando è stato chiuso l’ultimo passaggio prima di riaprire il tour.
    Quando il tutorial raggiunge il Riepilogo alimentazione, confronta gli avvisi colorati con il [Reference sulle avvertenze del Power Summary](docs/power-summary-warning-reference.md), registra eventuali sovraccarichi di pin o D-Tap, conferma i backup ridondanti e assicurati che il timestamp dell’autosalvataggio coincida con l’anteprima di condivisione/esportazione prima di chiudere il passaggio.
@@ -336,7 +336,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 ## Sicurezza dei dati e uso offline
 
-- Un service worker mette in cache ogni risorsa per l’uso offline e applica gli aggiornamenti solo dopo **Forza ricarica**.
+- Un service worker mette in cache ogni risorsa per l’uso offline. Le nuove versioni si attivano automaticamente e **Forza ricarica** rimane come opzione per pulire le cache quando vuoi un avvio completamente fresco.
 - Progetti, feedback runtime, preferiti, dispositivi personalizzati, temi e liste vivono nello storage del browser. Quando possibile viene richiesta la persistenza per ridurre i rischi di cancellazione.
 - Le copie automatiche concatenano snapshot di progetto ogni dieci minuti o dopo circa 50 modifiche tracciate. Quando cambi progetto, importi, esporti o prepari un ricaricamento, l’app acquisisce subito una nuova istantanea anche se quell’intervallo non è ancora trascorso; i backup completi orari e gli archivi delle regole automatiche completano la protezione. Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup nell’elenco** per vedere la timeline, regolare la conservazione e ripristinare le istantanee senza connessione.
 - Se il browser blocca i download, l’app apre una scheda **Download manuale** con il JSON da copiare in un file `.json` e salvare su supporti offline affidabili prima di chiuderla.
@@ -345,7 +345,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Aprire il repository dal disco o da una rete interna mantiene i dati sensibili lontani da servizi esterni. Gli export JSON sono leggibili e auditabili.
 - L’header mostra l’indicatore offline quando manca connessione; **Forza ricarica** aggiorna gli asset senza toccare i salvataggi e ora avvia un salvataggio automatico immediato con backup prima di svuotare le cache.
 - **Ripristino impostazioni di fabbrica** o pulizia dei dati del sito avviene solo dopo aver generato automaticamente un backup.
-- Gli aggiornamenti del service worker vengono scaricati in background e attendono la tua approvazione. Quando compare **Aggiornamento pronto**, completa le modifiche, crea un backup e poi premi **Forza ricarica**.
+- Gli aggiornamenti del service worker vengono scaricati in background e si attivano automaticamente. Quando compare **Aggiornamento pronto**, termina le modifiche, acquisisci un backup per i tuoi registri e usa **Forza ricarica** se vuoi svuotare le cache e riaprire la sessione con le risorse appena caricate.
 - I dati risiedono in un `localStorage` rinforzato; i profili bloccati ricadono su `sessionStorage`. Ogni scrittura crea anche uno snapshot `__legacyMigrationBackup` per recuperare senza perdite eventuali errori di quota o di schema. Usa gli strumenti del browser per ispezionare o esportare i record prima di svuotare cache o fare prove.
 - Un guardiano dell'archiviazione critica parte ad ogni avvio e duplica ogni chiave essenziale nello slot di backup prima di qualsiasi modifica, così anche i dati legacy mantengono sempre una copia ridondante pronta al ripristino.
 
@@ -491,7 +491,7 @@ Cine Power Planner è una Progressive Web App:
    - **Chrome/Edge (desktop):** icona di installazione nella barra degli indirizzi.
    - **Android:** menu del browser → *Aggiungi alla schermata Home*.
    - **Safari iOS:** pulsante condividi → *Aggiungi alla schermata Home*.
-3. Avvia l’app dall’elenco applicazioni. Funziona offline e si aggiorna automaticamente dopo che approvi la ricarica.
+3. Avvia l’app dall’elenco applicazioni. Funziona offline, si aggiorna automaticamente e offre comunque **Forza ricarica** se vuoi svuotare le cache per un riavvio pulito.
 
 ## Workflow dati dispositivi
 
