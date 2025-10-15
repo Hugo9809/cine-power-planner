@@ -40,7 +40,7 @@ restore workflows protect every bit of user data.
    - [ ] Confirm autosave ledger logs the promotion event.
 9. **Share rehearsal**
    - [ ] Copy bundle to secondary workstation (offline).
-   - [ ] Import via sandbox, promote and compare diff logs to original.
+   - [ ] Import via sandbox, promote and export diff logs manually from **Settings → Backup & Restore → Compare versions** before comparing to the original.
 10. **Documentation alignment**
    - [ ] Check README + docs instructions against actual UI labels.
    - [ ] Update `review-findings.md` with discrepancies.

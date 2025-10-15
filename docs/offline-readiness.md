@@ -44,7 +44,8 @@ air-gapped workflows.
 ## Emergency recovery
 
 - If a workstation fails, use the spare machine and restore the latest planner
-  backup. Promote sandbox data only after verifying diff logs.
+  backup. Promote sandbox data only after exporting diff logs from **Settings →
+  Backup & Restore → Compare versions** and reviewing the changes.
 - If both primary and onsite backups fail, retrieve the offsite copy documented
   in the verification packet.
 - Document incidents in the [Data Protection Playbook](data-protection-playbook.md)

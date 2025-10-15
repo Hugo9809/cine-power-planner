@@ -23,10 +23,10 @@ drive without phoning home.
   and saved scenarios to mirror the exact builds used on set. Export bundles or
   backups at any time to move that configuration to another workstation without
   risking data loss.
-- **Safety rehearsals & audit trails.** Guided drills, automatic diff logs and
-  verification packets make it easy to prove that save, share, import, backup
-  and restore workflows protect every bit of user data—even when you never
-  reconnect to the internet.
+- **Safety rehearsals & audit trails.** Guided drills, manually exported
+  **Compare versions** diff logs and verification packets make it easy to prove
+  that save, share, import, backup and restore workflows protect every bit of
+  user data—even when you never reconnect to the internet.
 - **Offline-first operation.** All icons, fonts, Uicons and helper scripts ship
   with the repo. Autosave, backup, restore, share and help systems run entirely
   on-device so crews can rehearse and operate in fully disconnected
