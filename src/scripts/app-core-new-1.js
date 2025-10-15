@@ -192,7 +192,7 @@ const CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE = (function resolveRuntimeSupportExp
   return null;
 })();
 
-const resolveRuntimeModuleLoader =
+const resolveRuntimeModuleLoaderNamespaceResolver =
   CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE &&
   typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.resolveRuntimeModuleLoader === 'function'
     ? function resolveRuntimeModuleLoaderProxy() {
@@ -200,7 +200,14 @@ const resolveRuntimeModuleLoader =
       }
     : fallbackResolveRuntimeModuleLoader;
 
-const requireCoreRuntimeModule =
+var resolveRuntimeModuleLoader =
+  typeof globalThis === 'object' &&
+  globalThis &&
+  typeof globalThis.resolveRuntimeModuleLoader === 'function'
+    ? globalThis.resolveRuntimeModuleLoader
+    : resolveRuntimeModuleLoaderNamespaceResolver;
+
+const requireCoreRuntimeModuleNamespaceResolver =
   CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE &&
   typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.requireCoreRuntimeModule === 'function'
     ? function requireCoreRuntimeModuleProxy(moduleId, options) {
@@ -210,6 +217,13 @@ const requireCoreRuntimeModule =
         );
       }
     : fallbackRequireCoreRuntimeModule;
+
+var requireCoreRuntimeModule =
+  typeof globalThis === 'object' &&
+  globalThis &&
+  typeof globalThis.requireCoreRuntimeModule === 'function'
+    ? globalThis.requireCoreRuntimeModule
+    : requireCoreRuntimeModuleNamespaceResolver;
 
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. The modern refactor
