@@ -5,7 +5,7 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 
 | Surface | Owner | Last reviewed | Scope | Evidence stored |
 | --- | --- | --- | --- | --- |
-| README (all locales) | Documentation | _(fill date)_ | Quick start, offline rehearsal drill, safety overview. | Screenshots of updated sections, diff log, translation approvals. |
+| README (all locales) | Documentation | _(fill date)_ | Quick start, offline rehearsal drill, safety overview. | Screenshots of updated sections, **Compare versions** diff log export, translation approvals. |
 | In-app help overlay | Product | _(fill date)_ | Contextual workflow tips, safeguard explanations. | Exported `help-topics.json`, console capture of topic list. |
 | Docs/operations-checklist.md | QA | _(fill date)_ | End-to-end save/share/import/backup/restore rehearsal. | Verification log with timestamps and screenshots. |
 | Docs/save-share-restore-reference.md | QA | _(fill date)_ | Detailed workflow breakdown, failure recovery steps. | Restored bundle proof, checksum log. |
