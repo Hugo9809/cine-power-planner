@@ -7,6 +7,7 @@
           autoGearRules, autoGearRuleMatteboxKey, setAutoGearRules, cameraSelect, videoSelect, cageSelect,
           batteryPlateSelect, updateBatteryPlateVisibility, updateBatteryOptions, applyBatteryPlateSelectionFromBattery,
           getSliderBowlValue, getEasyrigValue, ensureAutoBackupBeforeDeletion, showNotification, notifyAutoSaveFromBackup,
+          exportAutoGearPresets,
           markAutoGearDefaultsSeeded, getAutoGearRules, clearAutoGearDefaultsSeeded, hasSeededAutoGearDefaults,
           assignAutoGearRules, AUTO_GEAR_ANY_MOTOR_TOKEN,
           AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS, AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP,
@@ -2107,10 +2108,39 @@ function seedAutoGearRulesFromCurrentProject() {
 
 function resetAutoGearRulesToFactoryAdditions() {
   const langTexts = texts[currentLang] || texts.en || {};
+  const fallbackTexts = texts.en || {};
   const confirmation = langTexts.autoGearResetFactoryConfirm
     || texts.en?.autoGearResetFactoryConfirm
     || 'Replace your automatic gear rules with the default additions?';
   if (typeof confirm === 'function' && !confirm(confirmation)) {
+    return;
+  }
+
+  const exportFailureMessage = langTexts.autoGearResetFactoryExportFailed
+    || fallbackTexts.autoGearResetFactoryExportFailed
+    || 'Automatic gear preset export failed. Reset cancelled.';
+
+  let presetExportOutcome = { status: 'skipped', reason: 'empty' };
+  if (typeof exportAutoGearPresets === 'function') {
+    try {
+      const result = exportAutoGearPresets({ reason: 'reset-auto-gear' });
+      presetExportOutcome = result || { status: 'failed', reason: 'unknown' };
+    } catch (exportError) {
+      console.error('Failed to export automatic gear presets before reset', exportError);
+      presetExportOutcome = { status: 'failed', reason: 'exception', error: exportError };
+    }
+  } else {
+    presetExportOutcome = { status: 'failed', reason: 'unavailable' };
+  }
+
+  if (
+    !presetExportOutcome
+    || presetExportOutcome.status === 'failed'
+    || (presetExportOutcome.status === 'skipped' && presetExportOutcome.reason !== 'empty')
+  ) {
+    if (typeof showNotification === 'function') {
+      showNotification('error', exportFailureMessage);
+    }
     return;
   }
 
@@ -2119,7 +2149,6 @@ function resetAutoGearRulesToFactoryAdditions() {
     return;
   }
 
-  const fallbackTexts = texts.en || {};
   const successMessage = langTexts.autoGearResetFactoryDone
     || fallbackTexts.autoGearResetFactoryDone
     || 'Automatic gear rules restored to factory additions.';

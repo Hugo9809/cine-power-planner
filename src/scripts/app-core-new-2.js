@@ -5571,6 +5571,120 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return null;
       }
     }
+
+    function formatAutoGearPresetExportFilename(date) {
+      const { iso } = formatFullBackupFilename(date);
+      const safeIso = iso.replace(/[:]/g, '-');
+      return `${safeIso} auto gear presets.json`;
+    }
+
+    function normalizeAutoGearPresetForExport(preset) {
+      if (!preset || typeof preset !== 'object') {
+        return null;
+      }
+
+      const label = typeof preset.label === 'string' ? preset.label : '';
+      if (!label) {
+        return null;
+      }
+
+      const id = typeof preset.id === 'string' && preset.id ? preset.id : generateAutoGearId('preset');
+      const sourceRules = Array.isArray(preset.rules) ? preset.rules : [];
+      let rules = [];
+
+      if (sourceRules.length === 0) {
+        rules = [];
+      } else {
+        try {
+          rules = JSON.parse(JSON.stringify(sourceRules));
+        } catch (cloneError) {
+          void cloneError;
+          rules = sourceRules.map((entry) => {
+            if (!entry || typeof entry !== 'object') {
+              return entry;
+            }
+            return { ...entry };
+          });
+        }
+      }
+
+      const fingerprint = typeof preset.fingerprint === 'string' && preset.fingerprint
+        ? preset.fingerprint
+        : createAutoGearRulesFingerprint(rules);
+
+      return { id, label, rules, fingerprint };
+    }
+
+    function exportAutoGearPresets(options = {}) {
+      const config = typeof options === 'object' && options !== null ? options : {};
+      const notifySuccess = config.notifySuccess !== false;
+      const notifyFailure = config.notifyFailure !== false;
+
+      const presetSource = Array.isArray(autoGearPresets) ? autoGearPresets : [];
+      const presets = presetSource
+        .map(normalizeAutoGearPresetForExport)
+        .filter(Boolean);
+
+      if (!presets.length) {
+        return { status: 'skipped', reason: 'empty' };
+      }
+
+      if (typeof document === 'undefined'
+        || typeof Blob !== 'function'
+        || !URL
+        || typeof URL.createObjectURL !== 'function') {
+        if (notifyFailure) {
+          const message = texts[currentLang]?.autoGearPresetExportError
+            || texts.en?.autoGearPresetExportError
+            || 'Automatic gear preset export failed.';
+          showNotification('error', message);
+        }
+        return { status: 'failed', reason: 'unsupported' };
+      }
+
+      try {
+        const payload = {
+          type: 'camera-power-planner/auto-gear-presets',
+          version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
+          createdAt: new Date().toISOString(),
+          presets,
+          activePresetId: typeof activeAutoGearPresetId === 'string' ? activeAutoGearPresetId : '',
+          autoPresetId: typeof autoGearAutoPresetIdState === 'string' ? autoGearAutoPresetIdState : '',
+        };
+
+        const json = JSON.stringify(payload, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        const fileName = formatAutoGearPresetExportFilename(new Date());
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        if (typeof URL.revokeObjectURL === 'function') {
+          URL.revokeObjectURL(url);
+        }
+
+        if (notifySuccess) {
+          const message = texts[currentLang]?.autoGearPresetExportSuccess
+            || texts.en?.autoGearPresetExportSuccess
+            || 'Automatic gear presets downloaded.';
+          showNotification('success', message);
+        }
+
+        return { status: 'exported', fileName };
+      } catch (error) {
+        console.warn('Automatic gear preset export failed', error);
+        if (notifyFailure) {
+          const message = texts[currentLang]?.autoGearPresetExportError
+            || texts.en?.autoGearPresetExportError
+            || 'Automatic gear preset export failed.';
+          showNotification('error', message);
+        }
+        return { status: 'failed', reason: 'error', error };
+      }
+    }
     
     function captureAutoGearBackupSnapshot(options = {}) {
       const config = typeof options === 'object' && options !== null ? options : {};
@@ -16546,6 +16660,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions,
       exportAutoGearRules,
+      exportAutoGearPresets,
       updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft,
       checkSetupChanged,
@@ -16976,6 +17091,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           'refreshAutoGearCrewOptions',
           'refreshAutoGearDistanceOptions',
           'exportAutoGearRules',
+          'exportAutoGearPresets',
           'generatePrintableOverview',
           'generateGearListHtml',
           'displayGearAndRequirements',

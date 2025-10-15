@@ -83,6 +83,7 @@ describe('core module registrations', () => {
       'refreshAutoGearCrewOptions',
       'refreshAutoGearDistanceOptions',
       'exportAutoGearRules',
+      'exportAutoGearPresets',
       'generatePrintableOverview',
       'generateGearListHtml',
       'displayGearAndRequirements',
@@ -293,6 +294,7 @@ describe('core module registrations', () => {
     global.refreshAutoGearCrewOptions = jest.fn();
     global.refreshAutoGearDistanceOptions = jest.fn();
     global.exportAutoGearRules = jest.fn();
+    global.exportAutoGearPresets = jest.fn();
     global.generatePrintableOverview = jest.fn();
     global.generateGearListHtml = jest.fn();
     global.displayGearAndRequirements = jest.fn();
@@ -346,6 +348,7 @@ describe('core module registrations', () => {
       refreshAutoGearCrewOptions: global.refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions: global.refreshAutoGearDistanceOptions,
       exportAutoGearRules: global.exportAutoGearRules,
+      exportAutoGearPresets: global.exportAutoGearPresets,
       generatePrintableOverview: global.generatePrintableOverview,
       generateGearListHtml: global.generateGearListHtml,
       displayGearAndRequirements: global.displayGearAndRequirements,

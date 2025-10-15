@@ -390,6 +390,8 @@ const texts = {
     autoGearPresetSaved: "Automatic gear preset saved.",
     autoGearPresetDeleted: "Automatic gear preset deleted.",
     autoGearPresetApplied: "Preset applied.",
+    autoGearPresetExportSuccess: "Automatic gear presets downloaded.",
+    autoGearPresetExportError: "Automatic gear preset export failed.",
     autoGearAddRule: "Add rule",
     autoGearNoRules: "No custom rules yet.",
     autoGearNoMatches: "No rules match your filters.",
@@ -590,13 +592,15 @@ const texts = {
     autoGearCancelEdit: "Cancel",
     autoGearResetFactoryButton: "Reset to factory additions",
     autoGearResetFactoryHelp:
-      "Restore the automatic gear rules generated from the planner's default scenarios.",
+      "Restore the automatic gear rules generated from the planner's default scenarios. Your current presets download before anything changes.",
     autoGearResetFactoryConfirm:
       "Replace your automatic gear rules with the default additions?",
     autoGearResetFactoryDone: "Automatic gear rules restored to factory additions.",
     autoGearResetFactoryEmpty:
       "Factory additions unavailable. Automatic gear rules cleared.",
     autoGearResetFactoryError: "Reset failed. Please try again.",
+    autoGearResetFactoryExportFailed:
+      "Automatic gear preset export failed. Reset cancelled.",
     autoGearExportButton: "Export rules",
     autoGearExportHelp: "Download your automatic gear rules as a JSON file.",
     autoGearExportSuccess: "Automatic gear rules downloaded.",
@@ -3225,6 +3229,9 @@ const texts = {
     autoGearPresetSaved: "Preimpostazione dell'attrezzatura automatica salvata.",
     autoGearPresetDeleted: "Preimpostazione dell'attrezzatura automatica eliminata.",
     autoGearPresetApplied: "Preimpostazione applicata.",
+    autoGearPresetExportSuccess: "Preimpostazioni dell'attrezzatura automatica scaricate.",
+    autoGearPresetExportError:
+      "Esportazione delle preimpostazioni dell'attrezzatura automatica non riuscita.",
     autoGearAddRule: "Aggiungi regola",
     autoGearNoRules: "Nessuna regola personalizzata al momento.",
     autoGearNoMatches: "Nessuna regola corrisponde ai filtri.",
@@ -3430,7 +3437,7 @@ const texts = {
     autoGearCancelEdit: "Annulla",
     autoGearResetFactoryButton: "Ripristina aggiunte di fabbrica",
     autoGearResetFactoryHelp:
-      "Ripristina le regole automatiche generate dagli scenari predefiniti dell’app.",
+      "Ripristina le regole automatiche generate dagli scenari predefiniti dell’app. Le tue preimpostazioni attuali vengono scaricate prima di qualsiasi modifica.",
     autoGearResetFactoryConfirm:
       "Sostituire le regole automatiche con le aggiunte predefinite?",
     autoGearResetFactoryDone:
@@ -3438,6 +3445,8 @@ const texts = {
     autoGearResetFactoryEmpty:
       "Nessuna aggiunta di fabbrica disponibile. Regole automatiche azzerate.",
     autoGearResetFactoryError: "Ripristino non riuscito. Riprova.",
+    autoGearResetFactoryExportFailed:
+      "Esportazione delle preimpostazioni non riuscita. Ripristino annullato.",
     autoGearExportButton: "Esporta regole",
     autoGearExportHelp: "Scarica le regole automatiche dell'equipaggiamento in un file JSON.",
     autoGearExportSuccess: "Regole automatiche dell'equipaggiamento scaricate.",
@@ -5424,6 +5433,8 @@ const texts = {
     autoGearPresetSaved: "Preajuste de equipo automático guardado.",
     autoGearPresetDeleted: "Preajuste de equipo automático eliminado.",
     autoGearPresetApplied: "Preajuste aplicado.",
+    autoGearPresetExportSuccess: "Preajustes de equipo automático descargados.",
+    autoGearPresetExportError: "Error al exportar los preajustes automáticos de equipo.",
     autoGearAddRule: "Agregar regla",
     autoGearNoRules: "Todavía no hay reglas personalizadas.",
     autoGearNoMatches: "Ninguna regla coincide con tus filtros.",
@@ -5629,7 +5640,7 @@ const texts = {
     autoGearCancelEdit: "Cancelar",
     autoGearResetFactoryButton: "Restablecer adiciones de fábrica",
     autoGearResetFactoryHelp:
-      "Restaura las reglas automáticas generadas a partir de los escenarios predeterminados del planificador.",
+      "Restaura las reglas automáticas generadas a partir de los escenarios predeterminados del planificador. Tus preajustes actuales se descargan antes de aplicar cambios.",
     autoGearResetFactoryConfirm:
       "¿Quieres reemplazar tus reglas automáticas con las adiciones predeterminadas?",
     autoGearResetFactoryDone:
@@ -5637,6 +5648,8 @@ const texts = {
     autoGearResetFactoryEmpty:
       "No hay adiciones de fábrica disponibles. Las reglas automáticas se han borrado.",
     autoGearResetFactoryError: "Error al restablecer. Inténtalo de nuevo.",
+    autoGearResetFactoryExportFailed:
+      "La exportación de los preajustes falló. Restablecimiento cancelado.",
     autoGearExportButton: "Exportar reglas",
     autoGearExportHelp: "Descarga tus reglas automáticas de equipo como un archivo JSON.",
     autoGearExportSuccess: "Reglas automáticas de equipo descargadas.",
@@ -7626,6 +7639,8 @@ const texts = {
     autoGearPresetSaved: "Préréglage automatique d’équipement enregistré.",
     autoGearPresetDeleted: "Préréglage automatique d’équipement supprimé.",
     autoGearPresetApplied: "Préréglage appliqué.",
+    autoGearPresetExportSuccess: "Préréglages automatiques d’équipement téléchargés.",
+    autoGearPresetExportError: "Échec de l’export des préréglages automatiques d’équipement.",
     autoGearAddRule: "Ajouter une règle",
     autoGearNoRules: "Aucune règle personnalisée pour le moment.",
     autoGearNoMatches: "Aucune règle ne correspond à vos filtres.",
@@ -7831,7 +7846,7 @@ const texts = {
     autoGearCancelEdit: "Annuler",
     autoGearResetFactoryButton: "Réinitialiser aux ajouts d’usine",
     autoGearResetFactoryHelp:
-      "Restaure les règles automatiques générées depuis les scénarios par défaut du planificateur.",
+      "Restaurez les règles automatiques générées depuis les scénarios par défaut du planificateur. Vos préréglages actuels sont téléchargés avant toute modification.",
     autoGearResetFactoryConfirm:
       "Remplacer vos règles automatiques par les ajouts par défaut ?",
     autoGearResetFactoryDone:
@@ -7839,6 +7854,8 @@ const texts = {
     autoGearResetFactoryEmpty:
       "Aucun ajout d’usine disponible. Les règles automatiques ont été effacées.",
     autoGearResetFactoryError: "La réinitialisation a échoué. Veuillez réessayer.",
+    autoGearResetFactoryExportFailed:
+      "L’export des préréglages a échoué. Réinitialisation annulée.",
     autoGearExportButton: "Exporter les règles",
     autoGearExportHelp: "Téléchargez vos règles automatiques d’équipement au format JSON.",
     autoGearExportSuccess: "Règles automatiques d’équipement téléchargées.",
@@ -9839,6 +9856,8 @@ const texts = {
     autoGearPresetSaved: "Automatische Gear-Voreinstellung gespeichert.",
     autoGearPresetDeleted: "Automatische Gear-Voreinstellung gelöscht.",
     autoGearPresetApplied: "Voreinstellung angewendet.",
+    autoGearPresetExportSuccess: "Automatische Gear-Voreinstellungen heruntergeladen.",
+    autoGearPresetExportError: "Export der automatischen Gear-Voreinstellungen fehlgeschlagen.",
     autoGearAddRule: "Regel hinzufügen",
     autoGearNoRules: "Noch keine benutzerdefinierten Regeln.",
     autoGearNoMatches: "Keine Regel passt zu deinen Filtern.",
@@ -10045,7 +10064,7 @@ const texts = {
     autoGearCancelEdit: "Abbrechen",
     autoGearResetFactoryButton: "Auf Werks-Ergänzungen zurücksetzen",
     autoGearResetFactoryHelp:
-      "Stellt die automatisch erzeugten Regeln aus den Standardszenarien des Planers wieder her.",
+      "Stellt die automatisch erzeugten Regeln aus den Standardszenarien des Planers wieder her. Deine aktuellen Voreinstellungen werden vor Änderungen heruntergeladen.",
     autoGearResetFactoryConfirm:
       "Automatische Gear-Regeln durch die Standard-Ergänzungen ersetzen?",
     autoGearResetFactoryDone:
@@ -10053,6 +10072,8 @@ const texts = {
     autoGearResetFactoryEmpty:
       "Keine Werks-Ergänzungen verfügbar. Automatische Regeln wurden geleert.",
     autoGearResetFactoryError: "Zurücksetzen fehlgeschlagen. Bitte erneut versuchen.",
+    autoGearResetFactoryExportFailed:
+      "Export der Voreinstellungen fehlgeschlagen. Zurücksetzen abgebrochen.",
     autoGearExportButton: "Regeln exportieren",
     autoGearExportHelp: "Lade deine automatischen Gear-Regeln als JSON-Datei herunter.",
     autoGearExportSuccess: "Automatische Gear-Regeln heruntergeladen.",
