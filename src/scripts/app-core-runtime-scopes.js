@@ -1,4 +1,4 @@
-/* global CORE_GLOBAL_SCOPE */
+/* global CORE_GLOBAL_SCOPE, cineCoreRuntimeModuleLoader */
 /* exported collectRuntimeScopeCandidates */
 
 /*
@@ -14,6 +14,77 @@
  * Git's rename heuristics continue to treat this file as intentionally new and
  * the review history remains readable.
  */
+
+function resolveRuntimeModuleLoader() {
+  if (typeof require === 'function') {
+    try {
+      const requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && typeof requiredLoader === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+
+  if (
+    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+    cineCoreRuntimeModuleLoader &&
+    typeof cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis &&
+    typeof globalThis.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return globalThis.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof window !== 'undefined' &&
+    window &&
+    typeof window.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return window.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof self !== 'undefined' &&
+    self &&
+    typeof self.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return self.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof global !== 'undefined' &&
+    global &&
+    typeof global.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return global.cineCoreRuntimeModuleLoader;
+  }
+
+  return null;
+}
+
+function requireCoreRuntimeModule(moduleId, options) {
+  const loader = resolveRuntimeModuleLoader();
+  if (
+    loader &&
+    typeof loader.resolveCoreRuntimeModule === 'function'
+  ) {
+    try {
+      return loader.resolveCoreRuntimeModule(moduleId, options);
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+
+  return null;
+}
 
 const CORE_RUNTIME_SCOPE_TOOLS = (function resolveRuntimeScopeTools() {
   const namespaceName = 'cineCoreRuntimeScopeTools';
@@ -58,15 +129,11 @@ const CORE_RUNTIME_SCOPE_TOOLS = (function resolveRuntimeScopeTools() {
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const requiredTools = require('./modules/core/runtime-scope-tools.js');
-      if (requiredTools && typeof requiredTools === 'object') {
-        return requiredTools;
-      }
-    } catch (runtimeScopeToolsError) {
-      void runtimeScopeToolsError;
-    }
+  const loaderScopeTools = requireCoreRuntimeModule(
+    'modules/core/runtime-scope-tools.js'
+  );
+  if (loaderScopeTools && typeof loaderScopeTools === 'object') {
+    return loaderScopeTools;
   }
 
   for (let index = 0; index < candidates.length; index += 1) {

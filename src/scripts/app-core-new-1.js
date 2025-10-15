@@ -85,6 +85,77 @@
 // pre-attached namespaces first and then fall back to CommonJS style requires.
 // This defensive dance keeps offline builds and automated backups aligned.
 
+function resolveRuntimeModuleLoader() {
+  if (typeof require === 'function') {
+    try {
+      const requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && typeof requiredLoader === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+
+  if (
+    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+    cineCoreRuntimeModuleLoader &&
+    typeof cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis &&
+    typeof globalThis.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return globalThis.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof window !== 'undefined' &&
+    window &&
+    typeof window.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return window.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof self !== 'undefined' &&
+    self &&
+    typeof self.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return self.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof global !== 'undefined' &&
+    global &&
+    typeof global.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return global.cineCoreRuntimeModuleLoader;
+  }
+
+  return null;
+}
+
+function requireCoreRuntimeModule(moduleId, options) {
+  const loader = resolveRuntimeModuleLoader();
+  if (
+    loader &&
+    typeof loader.resolveCoreRuntimeModule === 'function'
+  ) {
+    try {
+      return loader.resolveCoreRuntimeModule(moduleId, options);
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+
+  return null;
+}
+
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. The modern refactor
 // resolves that bridge through the lightweight localisation support module so
@@ -1553,14 +1624,12 @@ const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
     }
   }
 
-  if (!resolvedSupport && typeof require === 'function') {
-    try {
-      const requiredRuntimeState = require('./modules/core/runtime-state.js');
-      if (requiredRuntimeState && typeof requiredRuntimeState === 'object') {
-        resolvedSupport = requiredRuntimeState;
-      }
-    } catch (runtimeStateRequireError) {
-      void runtimeStateRequireError;
+  if (!resolvedSupport) {
+    const loaderRuntimeState = requireCoreRuntimeModule(
+      'modules/core/runtime-state.js'
+    );
+    if (loaderRuntimeState && typeof loaderRuntimeState === 'object') {
+      resolvedSupport = loaderRuntimeState;
     }
   }
 
@@ -1634,15 +1703,12 @@ const CORE_RUNTIME_LOCALIZATION = (function resolveCoreRuntimeLocalization() {
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const required = require('./modules/core/runtime-localization.js');
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (coreRuntimeLocalizationRequireError) {
-      void coreRuntimeLocalizationRequireError;
-    }
+  const loaderLocalization = requireCoreRuntimeModule(
+    'modules/core/runtime-localization.js',
+    { primaryScope: CORE_PART1_RUNTIME_SCOPE }
+  );
+  if (loaderLocalization && typeof loaderLocalization === 'object') {
+    return loaderLocalization;
   }
 
   return null;
@@ -2287,17 +2353,17 @@ let CORE_RUNTIME_TOOL_FALLBACK_FACTORY =
     ? CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks
     : null;
 
-if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY && typeof require === 'function') {
-  try {
-    const requiredFallbacks = require('./modules/core/runtime-tool-fallbacks.js');
-    if (
-      requiredFallbacks &&
-      typeof requiredFallbacks.createRuntimeToolFallbacks === 'function'
-    ) {
-      CORE_RUNTIME_TOOL_FALLBACK_FACTORY = requiredFallbacks.createRuntimeToolFallbacks;
-    }
-  } catch (runtimeToolFallbackRequireError) {
-    void runtimeToolFallbackRequireError;
+if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY) {
+  const runtimeToolFallbacks = requireCoreRuntimeModule(
+    'modules/core/runtime-tool-fallbacks.js',
+    { primaryScope: CORE_PART1_RUNTIME_SCOPE }
+  );
+  if (
+    runtimeToolFallbacks &&
+    typeof runtimeToolFallbacks.createRuntimeToolFallbacks === 'function'
+  ) {
+    CORE_RUNTIME_TOOL_FALLBACK_FACTORY =
+      runtimeToolFallbacks.createRuntimeToolFallbacks;
   }
 }
 

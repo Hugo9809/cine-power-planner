@@ -20,7 +20,79 @@
  *      instead of a rename during the multi-step refactor.
  */
 
-/* global cineGearList */
+/* global cineGearList, cineCoreRuntimeModuleLoader */
+
+
+function resolveRuntimeModuleLoader() {
+  if (typeof require === 'function') {
+    try {
+      const requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && typeof requiredLoader === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+
+  if (
+    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+    cineCoreRuntimeModuleLoader &&
+    typeof cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis &&
+    typeof globalThis.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return globalThis.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof window !== 'undefined' &&
+    window &&
+    typeof window.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return window.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof self !== 'undefined' &&
+    self &&
+    typeof self.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return self.cineCoreRuntimeModuleLoader;
+  }
+
+  if (
+    typeof global !== 'undefined' &&
+    global &&
+    typeof global.cineCoreRuntimeModuleLoader === 'object'
+  ) {
+    return global.cineCoreRuntimeModuleLoader;
+  }
+
+  return null;
+}
+
+function requireCoreRuntimeModule(moduleId, options) {
+  const loader = resolveRuntimeModuleLoader();
+  if (
+    loader &&
+    typeof loader.resolveCoreRuntimeModule === 'function'
+  ) {
+    try {
+      return loader.resolveCoreRuntimeModule(moduleId, options);
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+
+  return null;
+}
 
 
 if (typeof CORE_TEMPERATURE_QUEUE_KEY === 'undefined') {
@@ -179,14 +251,20 @@ var CORE_RUNTIME_SHARED =
           );
         }
 
-        if (!shared && typeof require === 'function') {
-          try {
-            var requiredShared = require('./modules/core/runtime-shared.js');
-            if (requiredShared && typeof requiredShared === 'object') {
-              shared = requiredShared;
+        if (!shared) {
+          var loaderShared = requireCoreRuntimeModule(
+            'modules/core/runtime-shared.js',
+            {
+              primaryScope:
+                typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+                CORE_GLOBAL_SCOPE &&
+                typeof CORE_GLOBAL_SCOPE === 'object'
+                  ? CORE_GLOBAL_SCOPE
+                  : null,
             }
-          } catch (runtimeSharedRequireError) {
-            void runtimeSharedRequireError;
+          );
+          if (loaderShared && typeof loaderShared === 'object') {
+            shared = loaderShared;
           }
         }
 
@@ -418,14 +496,10 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportP
     );
   }
 
-  if (!resolvedSupport && typeof require === 'function') {
-    try {
-      var requiredRuntimeState = require('./modules/core/runtime-state.js');
-      if (requiredRuntimeState && typeof requiredRuntimeState === 'object') {
-        resolvedSupport = requiredRuntimeState;
-      }
-    } catch (runtimeStateRequireError) {
-      void runtimeStateRequireError;
+  if (!resolvedSupport) {
+    var loaderRuntimeState = requireCoreRuntimeModule('modules/core/runtime-state.js');
+    if (loaderRuntimeState && typeof loaderRuntimeState === 'object') {
+      resolvedSupport = loaderRuntimeState;
     }
   }
 

@@ -221,3 +221,30 @@
 
 - Merged the localisation bridge, runtime wiring, and pink mode orchestration into dedicated consolidated helpers so the refactor can continue without juggling dozens of tiny files. The new files preserve every existing safeguard around offline storage, translations, and UI theming while reducing loader complexity.【F:src/scripts/modules/app-core/localization.js†L1-L2605】【F:src/scripts/modules/app-core/runtime.js†L1-L4240】【F:src/scripts/modules/app-core/pink-mode.js†L1-L2110】
 - Updated the modern loader, script aggregator, and service worker manifest so the consolidated helpers stay cached and available alongside the existing legacy mirrors. Documentation now tracks the new entry point names for future steps.【F:src/scripts/loader.js†L3188-L3196】【F:src/scripts/script.js†L41-L55】【F:service-worker-assets.js†L220-L236】
+
+## Step 18 – Core runtime loader consolidation
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/modules/core/runtime-module-loader.js` | – | 162 | +162 |
+| `legacy/scripts/modules/core/runtime-module-loader.js` | – | 162 | +162 |
+
+*Notes:*
+
+- Added a shared runtime module loader so modern and legacy bundles can resolve the core runtime namespaces directly from the consolidated `runtime.js` export, removing the need for the intermediate wrapper files while keeping autosave and backup guards intact across scopes.【F:src/scripts/modules/core/runtime-module-loader.js†L1-L162】【F:legacy/scripts/modules/core/runtime-module-loader.js†L1-L162】
+- Updated the app core runtime support, environment, runtime scopes, and monolithic runtime helpers to rely on the loader instead of `require`ing the removed wrapper files, ensuring fallbacks resolve the core helpers without needing file-level stubs.【F:src/scripts/app-core-runtime-support.js†L1-L148】【F:src/scripts/app-core-enviroment.js†L1-L522】【F:src/scripts/app-core-runtime-scopes.js†L1-L120】【F:src/scripts/modules/app-core/runtime.js†L1-L320】【F:legacy/scripts/app-core-runtime-support.js†L1-L440】【F:legacy/scripts/app-core-enviroment.js†L1-L330】【F:legacy/scripts/app-core-runtime-scopes.js†L1-L120】【F:legacy/scripts/modules/app-core/runtime.js†L1-L240】
+- Removed the obsolete runtime wrapper files from the modern and legacy bundles and pruned their references from the loader manifests and service worker asset list so the cache manifests only track the consolidated runtime entry points.【F:src/scripts/loader.js†L3190-L3248】【F:legacy/scripts/loader.js†L2635-L2669】【F:service-worker-assets.js†L80-L120】
+
+## Step 19 – Core support resolver merge
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/modules/core/localization.js` | – | – | +67 |
+| `legacy/scripts/modules/core/localization.js` | – | – | +2 |
+| `service-worker-assets.js` | – | – | -2 |
+
+*Notes:*
+
+- Taught the modern core localisation fallback environment to fetch the support resolver through the shared runtime module loader before falling back to legacy requires, ensuring the runtime merge keeps resolving helpers from the consolidated namespace even when the wrapper files disappear.【F:src/scripts/modules/core/localization.js†L1244-L1362】
+- Mirrored the loader-driven resolver lookup in the legacy bundle so ES5 builds use the same module namespace, avoiding divergence between environments while the runtime consolidation continues.【F:legacy/scripts/modules/core/localization.js†L30-L34】
+- Removed the dedicated support resolver files and pruned them from the service worker asset manifest now that all callers resolve the module via the shared runtime export, keeping the offline cache lean without breaking backup or restore flows.【F:service-worker-assets.js†L60-L110】【F:service-worker-assets.js†L220-L240】

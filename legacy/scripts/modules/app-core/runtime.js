@@ -36,6 +36,45 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return detectScope(fallback);
   }
+  function resolveRuntimeModuleLoader() {
+    if (typeof require === 'function') {
+      try {
+        var requiredLoader = require('../core/runtime-module-loader.js');
+        if (requiredLoader && _typeof(requiredLoader) === 'object') {
+          return requiredLoader;
+        }
+      } catch (runtimeLoaderError) {
+        void runtimeLoaderError;
+      }
+    }
+    if (
+      typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+      cineCoreRuntimeModuleLoader &&
+      _typeof(cineCoreRuntimeModuleLoader) === 'object'
+    ) {
+      return cineCoreRuntimeModuleLoader;
+    }
+    var scope = detectScope();
+    if (
+      scope &&
+      _typeof(scope.cineCoreRuntimeModuleLoader) === 'object' &&
+      scope.cineCoreRuntimeModuleLoader
+    ) {
+      return scope.cineCoreRuntimeModuleLoader;
+    }
+    return null;
+  }
+  function requireCoreRuntimeModule(moduleId, options) {
+    var loader = resolveRuntimeModuleLoader();
+    if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
+      try {
+        return loader.resolveCoreRuntimeModule(moduleId, options);
+      } catch (moduleResolutionError) {
+        void moduleResolutionError;
+      }
+    }
+    return null;
+  }
   function ensureResolveCoreSupportModule(candidate, requireFn, runtimeScope) {
     if (typeof candidate === 'function') {
       return candidate;
@@ -112,14 +151,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         shared = null;
       }
     }
-    if (!isObject(shared) && typeof requireFn === 'function') {
-      try {
-        var requiredShared = requireFn('./modules/core/runtime-shared.js');
-        if (isObject(requiredShared)) {
-          shared = requiredShared;
-        }
-      } catch (runtimeSharedRequireError) {
-        void runtimeSharedRequireError;
+    if (!isObject(shared)) {
+      var loaderShared = requireCoreRuntimeModule('modules/core/runtime-shared.js', {
+        primaryScope: runtimeScope || coreGlobalScope
+      });
+      if (isObject(loaderShared)) {
+        shared = loaderShared;
       }
     }
     if (isObject(shared)) {
@@ -2061,15 +2098,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void candidateScopeResolveError;
       }
     }
-    if (typeof requireFn === 'function') {
-      try {
-        var required = requireFn('./modules/core/runtime-candidate-scopes.js');
-        if (isObject(required)) {
-          return required;
-        }
-      } catch (candidateScopeRequireError) {
-        void candidateScopeRequireError;
-      }
+    var loaderCandidateScopes = requireCoreRuntimeModule(
+      'modules/core/runtime-candidate-scopes.js',
+      { primaryScope: runtimeScope || coreGlobalScope }
+    );
+    if (isObject(loaderCandidateScopes)) {
+      return loaderCandidateScopes;
     }
     var candidateScopes = [];
     if (isObject(runtimeScope)) {

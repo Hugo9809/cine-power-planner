@@ -7,6 +7,7 @@
  * identical. Each previous runtime helper is appended verbatim to preserve every
  * safeguard around backups, autosave, offline usage and global scope detection.
  */
+/* global cineCoreRuntimeModuleLoader, requireCoreRuntimeModule */
 /*
  * Consolidates the logic that resolves the shared runtime helpers used by the
  * modern app core. Moving this resolver into its own module keeps the main
@@ -60,6 +61,54 @@
     }
 
     return detectScope(fallback);
+  }
+
+  function resolveRuntimeModuleLoader() {
+    if (typeof require === 'function') {
+      try {
+        const requiredLoader = require('../core/runtime-module-loader.js');
+        if (requiredLoader && typeof requiredLoader === 'object') {
+          return requiredLoader;
+        }
+      } catch (runtimeLoaderError) {
+        void runtimeLoaderError;
+      }
+    }
+
+    if (
+      typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
+      cineCoreRuntimeModuleLoader &&
+      typeof cineCoreRuntimeModuleLoader === 'object'
+    ) {
+      return cineCoreRuntimeModuleLoader;
+    }
+
+    const scope = detectScope();
+    if (
+      scope &&
+      typeof scope.cineCoreRuntimeModuleLoader === 'object' &&
+      scope.cineCoreRuntimeModuleLoader
+    ) {
+      return scope.cineCoreRuntimeModuleLoader;
+    }
+
+    return null;
+  }
+
+  function requireCoreRuntimeModule(moduleId, options) {
+    const loader = resolveRuntimeModuleLoader();
+    if (
+      loader &&
+      typeof loader.resolveCoreRuntimeModule === 'function'
+    ) {
+      try {
+        return loader.resolveCoreRuntimeModule(moduleId, options);
+      } catch (moduleResolutionError) {
+        void moduleResolutionError;
+      }
+    }
+
+    return null;
   }
 
   function ensureResolveCoreSupportModule(candidate, requireFn, runtimeScope) {
@@ -172,14 +221,13 @@
       }
     }
 
-    if (!isObject(shared) && typeof requireFn === 'function') {
-      try {
-        const requiredShared = requireFn('./modules/core/runtime-shared.js');
-        if (isObject(requiredShared)) {
-          shared = requiredShared;
-        }
-      } catch (runtimeSharedRequireError) {
-        void runtimeSharedRequireError;
+    if (!isObject(shared)) {
+      const loaderShared = requireCoreRuntimeModule(
+        'modules/core/runtime-shared.js',
+        { primaryScope: runtimeScope || coreGlobalScope }
+      );
+      if (isObject(loaderShared)) {
+        shared = loaderShared;
       }
     }
 
@@ -3099,15 +3147,12 @@
       }
     }
 
-    if (typeof requireFn === 'function') {
-      try {
-        const required = requireFn('./modules/core/runtime-candidate-scopes.js');
-        if (isObject(required)) {
-          return required;
-        }
-      } catch (candidateScopeRequireError) {
-        void candidateScopeRequireError;
-      }
+    const loaderCandidateScopes = requireCoreRuntimeModule(
+      'modules/core/runtime-candidate-scopes.js',
+      { primaryScope: runtimeScope || coreGlobalScope }
+    );
+    if (isObject(loaderCandidateScopes)) {
+      return loaderCandidateScopes;
     }
 
     const candidateScopes = [];
