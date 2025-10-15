@@ -17418,6 +17418,27 @@ function handleAvatarEditCancel() {
   stopAvatarEditing({ restoreFocus: true });
 }
 
+function handleAvatarOptionsDialogPointerDown(event) {
+  if (!avatarOptionsDialog || !isDialogOpen(avatarOptionsDialog)) return;
+  if (event && typeof event.button === 'number' && event.button !== 0) return;
+  const target = event?.target || null;
+  const elementTarget = (typeof Element !== 'undefined' && target instanceof Element) ? target : null;
+  const path = typeof event?.composedPath === 'function' ? event.composedPath() : null;
+  if (avatarOptionsForm) {
+    if (elementTarget && avatarOptionsForm.contains(elementTarget)) {
+      return;
+    }
+    if (Array.isArray(path) && path.includes(avatarOptionsForm)) {
+      return;
+    }
+  }
+  if (avatarEditState && avatarEditState.active) {
+    applyAvatarEditChanges();
+    return;
+  }
+  closeAvatarOptionsDialog();
+}
+
 function dispatchGearProviderDataChanged(reason) {
   if (typeof document === 'undefined') return;
   try {
@@ -18612,6 +18633,7 @@ function initializeContactsModule() {
     closeAvatarOptionsDialog();
   });
   avatarOptionsDialog?.addEventListener('close', handleAvatarOptionsDialogClosed);
+  avatarOptionsDialog?.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
   avatarOptionsDeleteButton?.addEventListener('click', handleAvatarDeleteAction);
   avatarOptionsChangeButton?.addEventListener('click', handleAvatarChangeAction);
   avatarOptionsEditButton?.addEventListener('click', handleAvatarEditAction);
