@@ -200,12 +200,20 @@ const resolveRuntimeModuleLoaderNamespaceResolver =
       }
     : fallbackResolveRuntimeModuleLoader;
 
-var resolveRuntimeModuleLoader =
+const resolvedRuntimeModuleLoader =
   typeof globalThis === 'object' &&
   globalThis &&
   typeof globalThis.resolveRuntimeModuleLoader === 'function'
     ? globalThis.resolveRuntimeModuleLoader
     : resolveRuntimeModuleLoaderNamespaceResolver;
+
+if (
+  typeof globalThis === 'object' &&
+  globalThis &&
+  typeof globalThis.resolveRuntimeModuleLoader !== 'function'
+) {
+  globalThis.resolveRuntimeModuleLoader = resolvedRuntimeModuleLoader;
+}
 
 const requireCoreRuntimeModuleNamespaceResolver =
   CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE &&
@@ -218,12 +226,20 @@ const requireCoreRuntimeModuleNamespaceResolver =
       }
     : fallbackRequireCoreRuntimeModule;
 
-var requireCoreRuntimeModule =
+const resolvedRequireCoreRuntimeModule =
   typeof globalThis === 'object' &&
   globalThis &&
   typeof globalThis.requireCoreRuntimeModule === 'function'
     ? globalThis.requireCoreRuntimeModule
     : requireCoreRuntimeModuleNamespaceResolver;
+
+if (
+  typeof globalThis === 'object' &&
+  globalThis &&
+  typeof globalThis.requireCoreRuntimeModule !== 'function'
+) {
+  globalThis.requireCoreRuntimeModule = resolvedRequireCoreRuntimeModule;
+}
 
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. The modern refactor
@@ -1998,7 +2014,7 @@ const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   }
 
   if (!resolvedSupport) {
-    const loaderRuntimeState = requireCoreRuntimeModule(
+    const loaderRuntimeState = resolvedRequireCoreRuntimeModule(
       'modules/core/runtime-state.js'
     );
     if (loaderRuntimeState && typeof loaderRuntimeState === 'object') {
@@ -2076,7 +2092,7 @@ const CORE_RUNTIME_LOCALIZATION = (function resolveCoreRuntimeLocalization() {
     }
   }
 
-  const loaderLocalization = requireCoreRuntimeModule(
+  const loaderLocalization = resolvedRequireCoreRuntimeModule(
     'modules/core/runtime-localization.js',
     { primaryScope: CORE_PART1_RUNTIME_SCOPE }
   );
@@ -2727,7 +2743,7 @@ let CORE_RUNTIME_TOOL_FALLBACK_FACTORY =
     : null;
 
 if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY) {
-  const runtimeToolFallbacks = requireCoreRuntimeModule(
+  const runtimeToolFallbacks = resolvedRequireCoreRuntimeModule(
     'modules/core/runtime-tool-fallbacks.js',
     { primaryScope: CORE_PART1_RUNTIME_SCOPE }
   );
