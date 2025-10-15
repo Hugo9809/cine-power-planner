@@ -1672,7 +1672,7 @@ var texts = {
         },
         resultsBatteryPacks: {
           title: "Power Summary: Battery runtimes",
-          body: "Review each battery pack's projected runtime, reserve margin highlights and device notes while autosave keeps the latest selections ready for offline safety."
+          body: "Review each battery pack's projected runtime, all framed around a worst-case draw so most kits run longer—helping you know how many packs to bring, feel confident the rig won't demand constant swaps, and automatically pair the right batteries with each camera."
         },
         resultsChangeover: {
           title: "Power Summary: Changeovers",
@@ -3515,7 +3515,7 @@ var texts = {
         },
         resultsBatteryPacks: {
           title: "Power Summary: Autonomie delle batterie",
-          body: "Espandi ogni pacco batteria per verificare proiezioni di autonomia, evidenziazioni del margine di riserva e note dei dispositivi assicurandoti che l'autosalvataggio catturi le ultime scelte per la sicurezza offline."
+          body: "Esamina la proiezione di autonomia di ogni pacco sapendo che riflette uno scenario di consumo massimo, così la maggior parte dei setup durerà di più—ti aiuta a capire quante batterie portare, a sentirti tranquillo che il rig non richiederà cambi continui e ad aggiungere automaticamente i pacchi giusti insieme a ogni camera."
         },
         resultsChangeover: {
           title: "Power Summary: Cambi turno",
@@ -5358,7 +5358,7 @@ var texts = {
         },
         resultsBatteryPacks: {
           title: "Power Summary: Autonomías de baterías",
-          body: "Expande cada grupo de baterías para revisar proyecciones de autonomía, márgenes de reserva resaltados y notas de dispositivos asegurándote de que el autoguardado capture las últimas selecciones para la seguridad offline."
+          body: "Revisa la autonomía prevista de cada batería sabiendo que representa un escenario de consumo máximo, de modo que en la práctica la mayoría de los equipos durará más; así sabrás cuántas baterías llevar, tendrás la tranquilidad de que el rig no exigirá cambios constantes y añadirás automáticamente los paquetes correctos junto a cada cámara."
         },
         resultsChangeover: {
           title: "Power Summary: Cambios",
@@ -7201,7 +7201,7 @@ var texts = {
         },
         resultsBatteryPacks: {
           title: "Power Summary : Autonomie des batteries",
-          body: "Dépliez chaque groupe de batteries pour examiner les projections d’autonomie, les marges de réserve mises en évidence et les notes d’équipement en vérifiant que l’enregistrement automatique capture les derniers choix pour la sécurité hors ligne."
+          body: "Consultez la durée prévue de chaque bloc en sachant qu’elle repose sur un scénario de charge maximale, de sorte qu’en pratique la plupart des configurations dureront plus longtemps ; cela vous aide à savoir combien de batteries emporter, à rester serein sans changements incessants et à associer automatiquement les bons blocs à chaque caméra."
         },
         resultsChangeover: {
           title: "Power Summary : Basculements",
@@ -9044,7 +9044,7 @@ var texts = {
         },
         resultsBatteryPacks: {
           title: "Power Summary: Batterielaufzeiten",
-          body: "Klappe jede Batteriegruppe auf, um Laufzeitprognosen, hervorgehobene Reservemargen und Gerätehinweise zu prüfen und vergewissere dich, dass das Autosave die letzten Entscheidungen für die Offline-Sicherheit erfasst."
+          body: "Prüfe die prognostizierte Laufzeit jedes Akkupacks im Wissen, dass sie ein Worst-Case-Szenario abbildet, sodass die meisten Setups in der Praxis länger laufen – so weißt du, wie viele Akkus du einpacken musst, fühlst dich sicher ohne ständige Wechsel und fügst automatisch die passenden Packs zu jeder Kamera hinzu."
         },
         resultsChangeover: {
           title: "Power Summary: Umschaltungen",
