@@ -347,8 +347,8 @@ const APP_CORE_BOOTSTRAP_FALLBACK_TOOLS =
   APP_CORE_BOOTSTRAP_FALLBACK_DIRECT ||
   null;
 
-function normalizeBootstrapInvocationOptions(extraOptions) {
-  const baseOptions = {
+function buildBaseBootstrapInvocationOptions() {
+  return {
     resolveCoreSupportModule,
     requireFn: typeof require === 'function' ? require : null,
     runtimeScope: getDefaultRuntimeScope(),
@@ -379,27 +379,64 @@ function normalizeBootstrapInvocationOptions(extraOptions) {
     directBootstrapEnvironmentNamespace: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
     directBootstrapResultsNamespace: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
   };
+}
 
-  baseOptions.fallbackScopes = [];
+const BOOTSTRAP_INVOCATION_NORMALIZER =
+  APP_CORE_BOOTSTRAP_TOOLS &&
+  typeof APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions
+    : null;
+
+const BOOTSTRAP_FALLBACK_COLLECTOR =
+  APP_CORE_BOOTSTRAP_TOOLS &&
+  typeof APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes
+    : null;
+
+const BOOTSTRAP_INLINE_LOCALIZATION_CREATOR =
+  APP_CORE_BOOTSTRAP_TOOLS &&
+  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback
+    : null;
+
+const BOOTSTRAP_INLINE_RUNTIME_CREATOR =
+  APP_CORE_BOOTSTRAP_TOOLS &&
+  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback === 'function'
+    ? APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback
+    : null;
+
+function normalizeBootstrapInvocationOptions(extraOptions) {
+  const baseOptions = buildBaseBootstrapInvocationOptions();
+
+  if (typeof BOOTSTRAP_INVOCATION_NORMALIZER === 'function') {
+    try {
+      return BOOTSTRAP_INVOCATION_NORMALIZER(baseOptions, extraOptions);
+    } catch (bootstrapNormalizeError) {
+      void bootstrapNormalizeError;
+    }
+  }
+
+  const normalized = Object.assign({}, baseOptions);
+  normalized.fallbackScopes = [];
 
   if (Array.isArray(extraOptions)) {
-    baseOptions.fallbackScopes = extraOptions.slice();
-    return baseOptions;
+    normalized.fallbackScopes = extraOptions.slice();
+    return normalized;
   }
 
   if (extraOptions && typeof extraOptions === 'object') {
     if (Array.isArray(extraOptions.fallbackScopes)) {
-      baseOptions.fallbackScopes = extraOptions.fallbackScopes.slice();
+      normalized.fallbackScopes = extraOptions.fallbackScopes.slice();
     } else if (extraOptions.fallbackScopes) {
-      baseOptions.fallbackScopes = [extraOptions.fallbackScopes];
+      normalized.fallbackScopes = [extraOptions.fallbackScopes];
     }
 
     if (extraOptions.runtimeScope && typeof extraOptions.runtimeScope === 'object') {
-      baseOptions.runtimeScope = extraOptions.runtimeScope;
+      normalized.runtimeScope = extraOptions.runtimeScope;
     }
 
     if (extraOptions.coreGlobalScope && typeof extraOptions.coreGlobalScope === 'object') {
-      baseOptions.coreGlobalScope = extraOptions.coreGlobalScope;
+      normalized.coreGlobalScope = extraOptions.coreGlobalScope;
     }
 
     const keys = Object.keys(extraOptions);
@@ -410,19 +447,31 @@ function normalizeBootstrapInvocationOptions(extraOptions) {
         continue;
       }
 
-      baseOptions[key] = extraOptions[key];
+      normalized[key] = extraOptions[key];
     }
   }
 
-  if (!Array.isArray(baseOptions.fallbackScopes)) {
-    baseOptions.fallbackScopes = [];
+  if (!Array.isArray(normalized.fallbackScopes)) {
+    normalized.fallbackScopes = [];
   }
 
-  return baseOptions;
+  return normalized;
 }
 
 function collectBootstrapFallbackScopes(extraScopes) {
   const invocationOptions = normalizeBootstrapInvocationOptions(extraScopes);
+
+  if (typeof BOOTSTRAP_FALLBACK_COLLECTOR === 'function') {
+    try {
+      const collected = BOOTSTRAP_FALLBACK_COLLECTOR(invocationOptions);
+
+      if (Array.isArray(collected)) {
+        return collected;
+      }
+    } catch (bootstrapCollectorError) {
+      void bootstrapCollectorError;
+    }
+  }
 
   if (
     APP_CORE_BOOTSTRAP_SUITE &&
@@ -462,22 +511,6 @@ function collectBootstrapFallbackScopes(extraScopes) {
     }
   }
 
-  if (
-    APP_CORE_BOOTSTRAP_TOOLS &&
-    typeof APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes === 'function'
-  ) {
-    try {
-      const moduleCollected =
-        APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes(invocationOptions);
-
-      if (Array.isArray(moduleCollected)) {
-        return moduleCollected;
-      }
-    } catch (moduleCollectError) {
-      void moduleCollectError;
-    }
-  }
-
   const fallbackScopes = Array.isArray(invocationOptions.fallbackScopes)
     ? invocationOptions.fallbackScopes.slice()
     : [];
@@ -506,6 +539,18 @@ function createInlineLocalizationFallback(options) {
   const invocationOptions = normalizeBootstrapInvocationOptions(
     options && typeof options === 'object' ? options : null
   );
+
+  if (typeof BOOTSTRAP_INLINE_LOCALIZATION_CREATOR === 'function') {
+    try {
+      const inlineResult = BOOTSTRAP_INLINE_LOCALIZATION_CREATOR(invocationOptions);
+
+      if (inlineResult && typeof inlineResult === 'object') {
+        return inlineResult;
+      }
+    } catch (bootstrapInlineLocalizationError) {
+      void bootstrapInlineLocalizationError;
+    }
+  }
 
   if (
     APP_CORE_BOOTSTRAP_SUITE &&
@@ -559,23 +604,6 @@ function createInlineLocalizationFallback(options) {
       }
     } catch (bootstrapInlineError) {
       void bootstrapInlineError;
-    }
-  }
-
-  if (
-    APP_CORE_BOOTSTRAP_TOOLS &&
-    typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback === 'function'
-  ) {
-    try {
-      const moduleInline = APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback(
-        invocationOptions
-      );
-
-      if (moduleInline && typeof moduleInline === 'object') {
-        return moduleInline;
-      }
-    } catch (moduleInlineError) {
-      void moduleInlineError;
     }
   }
 
@@ -660,6 +688,18 @@ function createInlineRuntimeSharedFallback(options) {
     options && typeof options === 'object' ? options : null
   );
 
+  if (typeof BOOTSTRAP_INLINE_RUNTIME_CREATOR === 'function') {
+    try {
+      const inlineResult = BOOTSTRAP_INLINE_RUNTIME_CREATOR(invocationOptions);
+
+      if (inlineResult && typeof inlineResult === 'object') {
+        return inlineResult;
+      }
+    } catch (bootstrapRuntimeInlineError) {
+      void bootstrapRuntimeInlineError;
+    }
+  }
+
   if (
     APP_CORE_BOOTSTRAP_SUITE &&
     typeof APP_CORE_BOOTSTRAP_SUITE.createInlineRuntimeSharedFallback === 'function'
@@ -712,23 +752,6 @@ function createInlineRuntimeSharedFallback(options) {
       }
     } catch (bootstrapRuntimeSharedError) {
       void bootstrapRuntimeSharedError;
-    }
-  }
-
-  if (
-    APP_CORE_BOOTSTRAP_TOOLS &&
-    typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback === 'function'
-  ) {
-    try {
-      const moduleInline = APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback(
-        invocationOptions
-      );
-
-      if (moduleInline && typeof moduleInline === 'object') {
-        return moduleInline;
-      }
-    } catch (moduleRuntimeSharedError) {
-      void moduleRuntimeSharedError;
     }
   }
 
