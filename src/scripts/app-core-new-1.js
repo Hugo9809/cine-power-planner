@@ -187,17 +187,17 @@ const APP_CORE_BOOTSTRAP_RESOLVER_DIRECT = resolveCoreSupportModule(
 
 const APP_CORE_BOOTSTRAP_FALLBACK_DIRECT = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrapFallbacks',
-  './modules/app-core/bootstrap-fallbacks.js'
+  './modules/app-core/bootstrap.js'
 );
 
 const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrapEnvironment',
-  './modules/app-core/bootstrap-environment.js'
+  './modules/app-core/bootstrap.js'
 );
 
 const APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT = resolveCoreSupportModule(
   'cineCoreAppCoreBootstrapResults',
-  './modules/app-core/bootstrap-results.js'
+  './modules/app-core/bootstrap.js'
 );
 
 const APP_CORE_BOOTSTRAP_SUITE =
