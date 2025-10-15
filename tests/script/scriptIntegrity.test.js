@@ -110,6 +110,7 @@ describe('script.js modular runtime', () => {
       'modules/ui.js',
       'app-core-runtime-scopes.js',
       'app-core-runtime-support.js',
+      'app-core-runtime-helpers.js',
       'app-core-new-1.js',
       'app-core-enviroment.js',
       'app-core-new-2.js',
