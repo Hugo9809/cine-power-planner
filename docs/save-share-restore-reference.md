@@ -10,8 +10,17 @@ workstations.
 - **Manual save trigger:** Press **Save**, **Enter** on focused inputs, or
   `Ctrl+S` / `⌘S`. `app-session.js` dispatches a structured save event which
   `modules/persistence.js` clones and persists.
+- **Critical storage guard:** During application initialization,
+  `ensureCriticalStorageBackups()` mirrors critical keys (projects, gear rules,
+  rehearsal preferences and guardian state) to a safeguarded namespace before
+  any autosave or backup work executes. The guard runs before the first
+  autosave cycle and again whenever the runtime detects missing mirrors, so
+  the autosave ledger always references a valid snapshot. Cross-reference
+  `getLastCriticalStorageGuardResult()` when compiling verification packets to
+  document the guard run and the mirrored keys.
 - **Autosave cadence:** Fires after ~50 changes or 10 minutes of inactivity.
-  Each run logs to the autosave ledger accessible from **Settings → Safeguards**.
+  Each run logs to the autosave ledger accessible from **Settings → Safeguards**
+  alongside the latest guard evidence.
 - **Redundant mirrors:** `storage.js` keeps timestamped mirrors so reverting to a
   previous autosave never touches live data directly.
 
@@ -24,6 +33,10 @@ workstations.
   with physical copies.
 - **Archive storage:** Keep at least two copies (primary + offsite). Log
   locations in `review-findings.md` and the verification packet manifest.
+- **Guard verification artifacts:** Attach the most recent
+  `getLastCriticalStorageGuardResult()` dump and corresponding autosave ledger
+  entry to the backup record so auditors can confirm the mirrored keys existed
+  before the export.
 
 ## Share & import
 
@@ -57,6 +70,7 @@ workstations.
 | Bundle corrupt | Use checksum log to identify mismatch, fetch redundant copy from offsite media. |
 | Restore mismatch | Compare schema using `modules/helpers/schema/`; update docs and contact engineering before retrying. |
 | Service worker stale | Run cache reset (Settings → Offline & Cache), reload offline and repeat restore. |
+| Critical storage guard uncertainty | Confirm the latest guard run succeeded: look for the console log `Critical storage guard mirrored backup copies` and review **Settings → Data & Storage → Backup guardian** for a green "Mirrored" status with the same timestamp. Capture the `getLastCriticalStorageGuardResult()` output and autosave ledger entry for the verification packet. If errors appear, halt promotions, re-run the guard from the guardian row, collect error stack traces, and escalate to engineering with the captured evidence. |
 
 ## Documentation alignment
 
