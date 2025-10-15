@@ -85,7 +85,7 @@
 // pre-attached namespaces first and then fall back to CommonJS style requires.
 // This defensive dance keeps offline builds and automated backups aligned.
 
-function resolveRuntimeModuleLoader() {
+function fallbackResolveRuntimeModuleLoader() {
   if (typeof require === 'function') {
     try {
       const requiredLoader = require('./modules/core/runtime-module-loader.js');
@@ -140,8 +140,8 @@ function resolveRuntimeModuleLoader() {
   return null;
 }
 
-function requireCoreRuntimeModule(moduleId, options) {
-  const loader = resolveRuntimeModuleLoader();
+function fallbackRequireCoreRuntimeModule(moduleId, options) {
+  const loader = fallbackResolveRuntimeModuleLoader();
   if (
     loader &&
     typeof loader.resolveCoreRuntimeModule === 'function'
@@ -155,6 +155,61 @@ function requireCoreRuntimeModule(moduleId, options) {
 
   return null;
 }
+
+const CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE = (function resolveRuntimeSupportExportNamespace() {
+  const namespaces = [];
+
+  try {
+    if (
+      typeof CORE_RUNTIME_SUPPORT_EXPORTS === 'object' &&
+      CORE_RUNTIME_SUPPORT_EXPORTS
+    ) {
+      namespaces.push(CORE_RUNTIME_SUPPORT_EXPORTS);
+    }
+  } catch (coreRuntimeSupportExportsError) {
+    void coreRuntimeSupportExportsError;
+  }
+
+  try {
+    if (
+      typeof cineCoreRuntimeSupportExports !== 'undefined' &&
+      cineCoreRuntimeSupportExports &&
+      typeof cineCoreRuntimeSupportExports === 'object'
+    ) {
+      namespaces.push(cineCoreRuntimeSupportExports);
+    }
+  } catch (legacyRuntimeSupportExportsError) {
+    void legacyRuntimeSupportExportsError;
+  }
+
+  for (let index = 0; index < namespaces.length; index += 1) {
+    const namespace = namespaces[index];
+    if (namespace && typeof namespace === 'object') {
+      return namespace;
+    }
+  }
+
+  return null;
+})();
+
+const resolveRuntimeModuleLoader =
+  CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE &&
+  typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.resolveRuntimeModuleLoader === 'function'
+    ? function resolveRuntimeModuleLoaderProxy() {
+        return CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.resolveRuntimeModuleLoader();
+      }
+    : fallbackResolveRuntimeModuleLoader;
+
+const requireCoreRuntimeModule =
+  CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE &&
+  typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.requireCoreRuntimeModule === 'function'
+    ? function requireCoreRuntimeModuleProxy(moduleId, options) {
+        return CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.requireCoreRuntimeModule(
+          moduleId,
+          options
+        );
+      }
+    : fallbackRequireCoreRuntimeModule;
 
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. The modern refactor
