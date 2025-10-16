@@ -279,11 +279,6 @@ const RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule(
   './modules/app-core/runtime.js'
 );
 
-const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppRuntimeSharedNamespace',
-  './modules/app-core/runtime.js'
-);
-
 const SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppSettingsDocumentationTracker',
   './modules/app-core/settings-documentation-tracker.js'
