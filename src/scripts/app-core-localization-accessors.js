@@ -403,10 +403,40 @@ function createInlineLocalizationAccessors(options) {
   };
 }
 
+const LOCALIZATION_ACCESSORS_TOOLS_GLOBAL =
+  typeof LOCALIZATION_ACCESSORS_TOOLS !== 'undefined' && LOCALIZATION_ACCESSORS_TOOLS
+    ? LOCALIZATION_ACCESSORS_TOOLS
+    : null;
+
+const CORE_LOCALIZATION_RUNTIME_GLOBAL =
+  typeof CORE_LOCALIZATION_RUNTIME !== 'undefined' && CORE_LOCALIZATION_RUNTIME
+    ? CORE_LOCALIZATION_RUNTIME
+    : null;
+
+const CORE_LOCALIZATION_BRIDGE_GLOBAL =
+  typeof CORE_LOCALIZATION_BRIDGE !== 'undefined' && CORE_LOCALIZATION_BRIDGE
+    ? CORE_LOCALIZATION_BRIDGE
+    : null;
+
+const CORE_PART_RUNTIME_SCOPE_GLOBAL =
+  typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
+    ? CORE_PART1_RUNTIME_SCOPE
+    : null;
+
+const CORE_GLOBAL_SCOPE_GLOBAL =
+  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+    ? CORE_GLOBAL_SCOPE
+    : CORE_PART_RUNTIME_SCOPE_GLOBAL;
+
+const FALLBACK_RESOLVE_LOCALE_MODULE_GLOBAL =
+  typeof fallbackResolveLocaleModule === 'function'
+    ? fallbackResolveLocaleModule
+    : null;
+
 const createLocalizationAccessors =
-  (LOCALIZATION_ACCESSORS_TOOLS &&
-  typeof LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors === 'function'
-    ? LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors
+  (LOCALIZATION_ACCESSORS_TOOLS_GLOBAL &&
+  typeof LOCALIZATION_ACCESSORS_TOOLS_GLOBAL.createLocalizationAccessors === 'function'
+    ? LOCALIZATION_ACCESSORS_TOOLS_GLOBAL.createLocalizationAccessors
     : null) ||
   (function fallbackResolveLocalizationAccessorsFactory() {
     if (typeof require === 'function') {
@@ -424,8 +454,8 @@ const createLocalizationAccessors =
     }
 
     const fallbackScopes = [
-      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-      typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      CORE_PART_RUNTIME_SCOPE_GLOBAL,
+      CORE_GLOBAL_SCOPE_GLOBAL,
       typeof globalThis !== 'undefined' ? globalThis : null,
       typeof window !== 'undefined' ? window : null,
       typeof self !== 'undefined' ? self : null,
@@ -454,27 +484,49 @@ const createLocalizationAccessors =
     return null;
   })();
 
-const ACTIVE_LOCALIZATION_ACCESSORS =
-  (typeof createLocalizationAccessors === 'function'
-    ? createLocalizationAccessors({
-        coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
-        coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
-        corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
-        coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
-        fallbackResolveLocaleModule,
-        requireFn: typeof require === 'function' ? require : null,
-        translationsRequirePath: './translations.js',
-      })
-    : null) ||
-  createInlineLocalizationAccessors({
-    coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
-    coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
-    corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
-    coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
-    fallbackResolveLocaleModule,
-    requireFn: typeof require === 'function' ? require : null,
-    translationsRequirePath: './translations.js',
-  });
+let ACTIVE_LOCALIZATION_ACCESSORS = null;
+
+if (typeof createLocalizationAccessors === 'function') {
+  try {
+    const resolved = createLocalizationAccessors({
+      coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME_GLOBAL,
+      coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE_GLOBAL,
+      corePartRuntimeScope: CORE_PART_RUNTIME_SCOPE_GLOBAL,
+      coreGlobalScope: CORE_GLOBAL_SCOPE_GLOBAL,
+      fallbackResolveLocaleModule: FALLBACK_RESOLVE_LOCALE_MODULE_GLOBAL,
+      requireFn: typeof require === 'function' ? require : null,
+      translationsRequirePath: './translations.js',
+    });
+
+    if (resolved && typeof resolved === 'object') {
+      ACTIVE_LOCALIZATION_ACCESSORS = resolved;
+    }
+  } catch (resolveActiveLocalizationAccessorsError) {
+    void resolveActiveLocalizationAccessorsError;
+    ACTIVE_LOCALIZATION_ACCESSORS = null;
+  }
+}
+
+if (!ACTIVE_LOCALIZATION_ACCESSORS) {
+  try {
+    const fallbackAccessors = createInlineLocalizationAccessors({
+      coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME_GLOBAL,
+      coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE_GLOBAL,
+      corePartRuntimeScope: CORE_PART_RUNTIME_SCOPE_GLOBAL,
+      coreGlobalScope: CORE_GLOBAL_SCOPE_GLOBAL,
+      fallbackResolveLocaleModule: FALLBACK_RESOLVE_LOCALE_MODULE_GLOBAL,
+      requireFn: typeof require === 'function' ? require : null,
+      translationsRequirePath: './translations.js',
+    });
+
+    if (fallbackAccessors && typeof fallbackAccessors === 'object') {
+      ACTIVE_LOCALIZATION_ACCESSORS = fallbackAccessors;
+    }
+  } catch (createInlineLocalizationAccessorsError) {
+    void createInlineLocalizationAccessorsError;
+    ACTIVE_LOCALIZATION_ACCESSORS = null;
+  }
+}
 
 const LOCALE_MODULE =
   ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.localeModule
