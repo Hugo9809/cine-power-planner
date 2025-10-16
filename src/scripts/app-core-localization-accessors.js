@@ -538,6 +538,37 @@ const DEFAULT_LANGUAGE =
     ? ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
     : 'en';
 
+const GLOBAL_LOCALIZATION_SCOPE =
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof self !== 'undefined' && self) ||
+  (typeof global !== 'undefined' && global) ||
+  null;
+
+if (GLOBAL_LOCALIZATION_SCOPE && typeof GLOBAL_LOCALIZATION_SCOPE === 'object') {
+  try {
+    if (
+      typeof GLOBAL_LOCALIZATION_SCOPE.CPP_DEFAULT_LANGUAGE_SAFE !== 'string' ||
+      !GLOBAL_LOCALIZATION_SCOPE.CPP_DEFAULT_LANGUAGE_SAFE
+    ) {
+      GLOBAL_LOCALIZATION_SCOPE.CPP_DEFAULT_LANGUAGE_SAFE = DEFAULT_LANGUAGE;
+    }
+  } catch (assignDefaultLanguageSafeError) {
+    void assignDefaultLanguageSafeError;
+  }
+
+  try {
+    if (
+      typeof GLOBAL_LOCALIZATION_SCOPE.DEFAULT_LANGUAGE !== 'string' ||
+      !GLOBAL_LOCALIZATION_SCOPE.DEFAULT_LANGUAGE
+    ) {
+      GLOBAL_LOCALIZATION_SCOPE.DEFAULT_LANGUAGE = DEFAULT_LANGUAGE;
+    }
+  } catch (assignDefaultLanguagePropertyError) {
+    void assignDefaultLanguagePropertyError;
+  }
+}
+
 const RTL_LANGUAGE_CODES =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   Array.isArray(ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes) &&
