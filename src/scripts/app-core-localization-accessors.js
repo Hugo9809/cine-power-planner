@@ -454,7 +454,7 @@ const createLocalizationAccessors =
     return null;
   })();
 
-const ACTIVE_LOCALIZATION_ACCESSORS =
+var ACTIVE_LOCALIZATION_ACCESSORS =
   (typeof createLocalizationAccessors === 'function'
     ? createLocalizationAccessors({
         coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
@@ -476,24 +476,24 @@ const ACTIVE_LOCALIZATION_ACCESSORS =
     translationsRequirePath: './translations.js',
   });
 
-const LOCALE_MODULE =
+var LOCALE_MODULE =
   ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.localeModule
     ? ACTIVE_LOCALIZATION_ACCESSORS.localeModule
     : null;
 
-const DEFAULT_LANGUAGE =
+var DEFAULT_LANGUAGE =
   ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
     ? ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
     : 'en';
 
-const RTL_LANGUAGE_CODES =
+var RTL_LANGUAGE_CODES =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   Array.isArray(ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes) &&
   ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes.length > 0
     ? ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes
     : ['ar', 'fa', 'he', 'ur'];
 
-const normalizeLanguageCode =
+var normalizeLanguageCode =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   typeof ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode === 'function'
     ? ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode
@@ -512,7 +512,7 @@ const normalizeLanguageCode =
         return DEFAULT_LANGUAGE;
       };
 
-const isRtlLanguage =
+var isRtlLanguage =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   typeof ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage === 'function'
     ? ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage
@@ -522,7 +522,7 @@ const isRtlLanguage =
         return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
       };
 
-const resolveDocumentDirection =
+var resolveDocumentDirection =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   typeof ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection === 'function'
     ? ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection
@@ -541,7 +541,7 @@ const resolveDocumentDirection =
         return isRtlLanguage(lang) ? 'rtl' : 'ltr';
       };
 
-const applyLocaleMetadata =
+var applyLocaleMetadata =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   typeof ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata === 'function'
     ? ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata
@@ -567,10 +567,10 @@ const applyLocaleMetadata =
         }
       };
 
-const existingGetLanguageTexts =
+var existingGetLanguageTexts =
   typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
 
-const resolvedGetLanguageTexts =
+var resolvedGetLanguageTexts =
   ACTIVE_LOCALIZATION_ACCESSORS &&
   typeof ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts === 'function'
     ? ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts

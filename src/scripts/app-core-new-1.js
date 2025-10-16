@@ -415,7 +415,7 @@ const CORE_RUNTIME_LOCALIZATION = (function resolveCoreRuntimeLocalization() {
   return null;
 })();
 
-const CORE_LOCALIZATION_RUNTIME =
+var CORE_LOCALIZATION_RUNTIME =
   CORE_RUNTIME_LOCALIZATION &&
   typeof CORE_RUNTIME_LOCALIZATION.createLocalizationRuntime === 'function'
     ? CORE_RUNTIME_LOCALIZATION.createLocalizationRuntime({
@@ -18436,7 +18436,7 @@ function applyFilters() {
     }
   });
 }
-const deviceManagerPreferredOrder = [
+var deviceManagerPreferredOrder = [
   "cameras",
   "viewfinders",
   "monitors",

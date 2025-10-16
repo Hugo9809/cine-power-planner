@@ -17392,13 +17392,21 @@ function createFilterStorageValueSelect(type, selected) {
 }
 
 function renderFilterDetailsStorage(details) {
-  if (!filterDetailsStorage) return;
-  filterDetailsStorage.innerHTML = '';
+  const storage =
+    typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage
+      ? filterDetailsStorage
+      : typeof document !== 'undefined'
+      ? document.getElementById('filterDetails')
+      : null;
+
+  if (!storage) return;
+
+  storage.innerHTML = '';
   if (!details.length) {
-    filterDetailsStorage.hidden = true;
+    storage.hidden = true;
     return;
   }
-  filterDetailsStorage.hidden = true;
+  storage.hidden = true;
   details.forEach(detail => {
     const { type, size, values, needsSize, needsValues } = detail;
     if (needsSize) {
@@ -17406,12 +17414,12 @@ function renderFilterDetailsStorage(details) {
       sizeSelect.hidden = true;
       sizeSelect.setAttribute('aria-hidden', 'true');
       sizeSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(sizeSelect);
+      storage.appendChild(sizeSelect);
     }
     if (needsValues) {
       const valuesSelect = createFilterStorageValueSelect(type, values);
       valuesSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(valuesSelect);
+      storage.appendChild(valuesSelect);
     }
   });
 }
