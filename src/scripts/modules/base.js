@@ -364,6 +364,16 @@
     }
 
     if (
+      typeof value === 'object' &&
+      value &&
+      typeof value.id === 'string' &&
+      typeof value.filename === 'string' &&
+      (typeof value.loaded === 'boolean' || Array.isArray(value.children))
+    ) {
+      return true;
+    }
+
+    if (
       typeof process !== 'undefined' &&
       process &&
       process.release &&
