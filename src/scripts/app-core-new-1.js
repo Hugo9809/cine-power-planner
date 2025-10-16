@@ -3854,7 +3854,7 @@ function getAutoGearSelectorOptions(type, itemOrContext) {
 function getAutoGearSelectorLabel(type) {
   const normalizedType = normalizeAutoGearSelectorType(type);
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   if (normalizedType === 'monitor') {
     return langTexts.autoGearSelectorMonitorOption
       || fallbackTexts.autoGearSelectorMonitorOption
@@ -3897,7 +3897,7 @@ function getAutoGearSelectorLabel(type) {
 
 function getAutoGearSelectorScrollHint() {
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   return langTexts.autoGearSelectorScrollHint
     || fallbackTexts.autoGearSelectorScrollHint
     || 'Scroll to see more devices.';
@@ -3905,7 +3905,7 @@ function getAutoGearSelectorScrollHint() {
 
 function getAutoGearSelectorDefaultPlaceholder() {
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   return langTexts.autoGearSelectorDefaultPlaceholder
     || fallbackTexts.autoGearSelectorDefaultPlaceholder
     || 'Choose a default device';
@@ -3913,7 +3913,7 @@ function getAutoGearSelectorDefaultPlaceholder() {
 
 function getAutoGearMonitorDefaultPlaceholder() {
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   return langTexts.autoGearMonitorDefaultPlaceholder
     || fallbackTexts.autoGearMonitorDefaultPlaceholder
     || 'Use recommended automatically';
@@ -5367,7 +5367,7 @@ function updateAutoGearItemButtonState(type) {
   const button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
   if (!button) return;
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   const isEditing = autoGearEditorActiveItem?.listType === normalizedType;
   const defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
   const defaultLabel = langTexts[defaultKey]
@@ -6498,7 +6498,7 @@ function invalidateOwnGearSuggestionCache() {
 }
 
 function collectOwnGearSuggestionInfo() {
-  const lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE;
+  const lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE_SAFE;
   if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
     return ownGearSuggestionCache;
   }
@@ -6561,7 +6561,7 @@ function collectOwnGearSuggestionInfo() {
 
   try {
     const langItems = gearItemTranslations && typeof gearItemTranslations === 'object'
-      ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE] || null
+      ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE_SAFE] || null
       : null;
     if (langItems && typeof langItems === 'object') {
       Object.keys(langItems).forEach((key) => {
@@ -6583,7 +6583,7 @@ function collectOwnGearSuggestionInfo() {
   });
 
   const collator = (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function')
-    ? new Intl.Collator(lang || DEFAULT_LANGUAGE, { sensitivity: 'base' })
+    ? new Intl.Collator(lang || DEFAULT_LANGUAGE_SAFE, { sensitivity: 'base' })
     : null;
   const list = Array.from(uniqueNames.values()).sort((a, b) => {
     if (collator) {
@@ -6631,7 +6631,7 @@ function formatOwnGearQuantityText(quantity) {
   return trimmed;
 }
 
-function formatOwnGearCountText(count, langTexts, fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE)) {
+function formatOwnGearCountText(count, langTexts, fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE)) {
   const templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
   const template = (langTexts && langTexts[templateKey])
     || (fallbackTexts && fallbackTexts[templateKey])
@@ -7075,7 +7075,7 @@ function updateOwnGearSaveButtonState() {
     return;
   }
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   if (ownGearEditingId) {
     const label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
     setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
@@ -7110,7 +7110,7 @@ function handleOwnGearSubmit(event) {
     return;
   }
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   const rawName = ownGearNameInput.value || '';
   const trimmedName = rawName.trim();
   if (!trimmedName) {
@@ -7256,7 +7256,7 @@ function openOwnGearDialog() {
 
 function applyOwnGearLocalization(lang) {
   const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   if (ownGearDialog) {
     const title = document.getElementById('ownGearDialogHeading');
     if (title) {
@@ -8836,7 +8836,7 @@ function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
   if (!label) return;
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'batterySelectHelp', '');
   if (helpText) {
     label.setAttribute('data-help', helpText);
@@ -9062,7 +9062,7 @@ function checkFizCompatibility() {
   if (!compatElem) return;
 
   const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
 
   let incompatible = false;
   const arr = Array.from(brands);
@@ -9109,7 +9109,7 @@ function checkFizController() {
   const hasRemoteController = controllers.some(n => /ria-1|umc-4|cforce.*rf/i.test(n)) || motors.some(n => /cforce.*rf/i.test(n));
   if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
     const langTexts = getLanguageTexts(currentLang);
-    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     const warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
     setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
@@ -9140,7 +9140,7 @@ function checkFizController() {
 
   if (needController && !hasController) {
     const langTexts = getLanguageTexts(currentLang);
-    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     const warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'missingFIZControllerWarning', '');
     setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
@@ -9183,25 +9183,25 @@ function checkArriCompatibility() {
   const clmRegex = /CLM-[345]/i;
   const hasCLM = motors.some(m => clmRegex.test(m));
   if (hasCLM && !usesUMC4) {
-    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriCLMNoUMC4Warning', '');
   } else if (usesUMC4 && motors.some(m => !clmRegex.test(m))) {
-    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriUMC4Warning', '');
   } else if ((usesRIA1 || usesRF) && motors.some(m => clmRegex.test(m))) {
-    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriRIA1Warning', '');
   } else if (
     distance &&
     distance !== 'None' &&
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
-    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'distanceControllerWarning', '');
   } else if (onlyMasterGrip && !usesRF) {
-    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'masterGripWirelessWarning', '');
   }
 
   if (msg) {
     setStatusMessage(compatElem, msg);
     const langTexts = getLanguageTexts(currentLang);
-    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     const umcWarning = resolveTextEntryInternal(langTexts, fallbackTexts, 'arriUMC4Warning', '');
     if (msg === umcWarning && umcWarning) {
       setStatusLevel(compatElem, 'warning');
@@ -9262,11 +9262,11 @@ if (typeof texts === 'undefined') {
 const SUPPORTED_LANGUAGES =
   typeof texts === "object" && texts !== null
     ? Object.keys(texts)
-    : [DEFAULT_LANGUAGE];
+    : [DEFAULT_LANGUAGE_SAFE];
 
 function resolveLanguagePreference(candidate) {
   if (!candidate) {
-    return { language: DEFAULT_LANGUAGE, matched: false };
+    return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
   }
 
   const normalized = String(candidate).toLowerCase();
@@ -9279,7 +9279,7 @@ function resolveLanguagePreference(candidate) {
     return { language: short, matched: true };
   }
 
-  return { language: DEFAULT_LANGUAGE, matched: false };
+  return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
 }
 
 var autoGearHeadingElem = document.getElementById('autoGearHeading');
@@ -9808,8 +9808,114 @@ function getFocusScaleLabelForLang(lang = currentLang, scale) {
   );
 }
 
+const DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
+  const candidateResolvers = [
+    function resolveFromLexicalBinding() {
+      try {
+        if (typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE) {
+          return DEFAULT_LANGUAGE;
+        }
+      } catch (defaultLanguageLookupError) {
+        void defaultLanguageLookupError;
+      }
+      return null;
+    },
+    function resolveFromLocaleModule() {
+      try {
+        if (
+          typeof LOCALE_MODULE === 'object' &&
+          LOCALE_MODULE &&
+          typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' &&
+          LOCALE_MODULE.DEFAULT_LANGUAGE
+        ) {
+          return LOCALE_MODULE.DEFAULT_LANGUAGE;
+        }
+      } catch (localeModuleResolutionError) {
+        void localeModuleResolutionError;
+      }
+      return null;
+    },
+    function resolveFromLocalizationAccessors() {
+      try {
+        if (
+          typeof ACTIVE_LOCALIZATION_ACCESSORS === 'object' &&
+          ACTIVE_LOCALIZATION_ACCESSORS &&
+          typeof ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage === 'string' &&
+          ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
+        ) {
+          return ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage;
+        }
+      } catch (accessorResolutionError) {
+        void accessorResolutionError;
+      }
+      return null;
+    },
+    function resolveFromGlobalScope() {
+      try {
+        const globalScope =
+          (typeof globalThis !== 'undefined' && globalThis) ||
+          (typeof window !== 'undefined' && window) ||
+          (typeof self !== 'undefined' && self) ||
+          (typeof global !== 'undefined' && global) ||
+          null;
+        if (
+          globalScope &&
+          typeof globalScope.DEFAULT_LANGUAGE === 'string' &&
+          globalScope.DEFAULT_LANGUAGE
+        ) {
+          return globalScope.DEFAULT_LANGUAGE;
+        }
+        if (
+          globalScope &&
+          typeof globalScope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' &&
+          globalScope.CPP_DEFAULT_LANGUAGE_SAFE
+        ) {
+          return globalScope.CPP_DEFAULT_LANGUAGE_SAFE;
+        }
+      } catch (globalScopeResolutionError) {
+        void globalScopeResolutionError;
+      }
+      return null;
+    },
+  ];
+
+  for (let index = 0; index < candidateResolvers.length; index += 1) {
+    const resolved = candidateResolvers[index]();
+    if (typeof resolved === 'string' && resolved) {
+      return resolved;
+    }
+  }
+
+  return 'en';
+})();
+
+try {
+  const globalScope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
+  if (globalScope && typeof globalScope === 'object') {
+    if (
+      typeof globalScope.CPP_DEFAULT_LANGUAGE_SAFE !== 'string' ||
+      !globalScope.CPP_DEFAULT_LANGUAGE_SAFE
+    ) {
+      globalScope.CPP_DEFAULT_LANGUAGE_SAFE = DEFAULT_LANGUAGE_SAFE;
+    }
+    if (
+      typeof globalScope.DEFAULT_LANGUAGE !== 'string' ||
+      !globalScope.DEFAULT_LANGUAGE
+    ) {
+      globalScope.DEFAULT_LANGUAGE = DEFAULT_LANGUAGE_SAFE;
+    }
+  }
+} catch (assignDefaultLanguageScopeError) {
+  void assignDefaultLanguageScopeError;
+}
+
 // Determine initial language (default English)
-var currentLang = DEFAULT_LANGUAGE;
+var currentLang = DEFAULT_LANGUAGE_SAFE;
 var updateHelpQuickLinksForLanguage;
 var updateHelpResultsSummaryText;
 let lastRuntimeHours = null;
@@ -9849,18 +9955,18 @@ function setLanguage(lang) {
   let normalizedLang = resolved.language;
   if (!texts[normalizedLang]) {
     console.warn(
-      `Missing translation bundle for "${normalizedLang}". Falling back to ${DEFAULT_LANGUAGE}.`
+      `Missing translation bundle for "${normalizedLang}". Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
     );
-    normalizedLang = DEFAULT_LANGUAGE;
+    normalizedLang = DEFAULT_LANGUAGE_SAFE;
   }
   if (
     requested &&
-    normalizedLang === DEFAULT_LANGUAGE &&
+    normalizedLang === DEFAULT_LANGUAGE_SAFE &&
     !resolved.matched &&
-    requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE
+    requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE_SAFE
   ) {
     console.warn(
-      `Unsupported language preference "${requested}". Falling back to ${DEFAULT_LANGUAGE}.`
+      `Unsupported language preference "${requested}". Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
     );
   }
 
@@ -9912,7 +10018,7 @@ function setLanguage(lang) {
   document.getElementById("tagline").textContent = texts[lang].tagline;
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
-  const fallbackLocale = texts[DEFAULT_LANGUAGE] || {};
+  const fallbackLocale = texts[DEFAULT_LANGUAGE_SAFE] || {};
   const normalizeTemperatureUnitSafe = unit => {
     if (typeof normalizeTemperatureUnit === "function") {
       try {
@@ -11225,7 +11331,7 @@ function setLanguage(lang) {
     documentationTrackerController.updateLocalization({
       language: lang,
       texts: texts[lang] || {},
-      fallbackTexts: texts[DEFAULT_LANGUAGE] || texts.en || {},
+      fallbackTexts: texts[DEFAULT_LANGUAGE_SAFE] || texts.en || {},
     });
     if (documentationTrackerController.isInitialized()) {
       documentationTrackerController.render();
@@ -14789,9 +14895,10 @@ function setContactSelectOptions(select, selectedId) {
     optionLang = document.documentElement.lang || '';
   }
   if (!optionLang) {
-    optionLang = currentLang || DEFAULT_LANGUAGE;
+    optionLang = currentLang || DEFAULT_LANGUAGE_SAFE;
   }
-  const optionDirection = select.dir || resolveDocumentDirection(optionLang || currentLang || DEFAULT_LANGUAGE);
+  const optionDirection = select.dir ||
+    resolveDocumentDirection(optionLang || currentLang || DEFAULT_LANGUAGE_SAFE);
   while (select.firstChild) {
     select.removeChild(select.firstChild);
   }
@@ -16575,7 +16682,7 @@ function createCrewRow(data = {}) {
   if (typeof document !== 'undefined' && document && document.documentElement) {
     documentLang = document.documentElement.lang || '';
   }
-  const rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE;
+  const rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE_SAFE;
   const rowDirection = resolveDocumentDirection(rowLanguage);
   applyLocaleMetadata(row, rowLanguage, rowDirection);
 
