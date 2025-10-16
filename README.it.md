@@ -44,7 +44,7 @@ Cine Power Planner è un’applicazione web autonoma pensata per creare, verific
 | Salvataggi manuali | Stato attuale del progetto: dispositivi, note sulle autonomie e liste attrezzatura. | Premi **Invio**, scegli **Salva** o usa `Ctrl+S`/`⌘S`. | Voci con timestamp nel selettore ed export dei diff da **Confronta versioni**. |
 | Cadenza di auto-save e auto-backup | Snapshot continui che catturano le modifiche in corso. | Lascia il progetto aperto: avvengono ogni ~50 modifiche o 10 minuti. | Voci `auto-backup-…` nel selettore e timeline di **Attività recente**. |
 | Backup completo del planner | Tutti i progetti, i preferiti, i feedback runtime, le regole automatiche e le preferenze. | **Impostazioni → Backup & Ripristino → Backup** (o **Protezioni rapide**). | `planner-backup.json`, export del registro cronologico dei backup e allegati del log di verifica. |
-| Export dei bundle progetto | Singoli progetti pronti per il trasferimento a un’altra workstation. | **Esporta progetto** dal selettore. | File `nome-progetto.json` (o `.cpproject` rinominati) salvati con note sulle checksum. |
+| Export dei bundle progetto | Un singolo progetto più i dispositivi personalizzati referenziati (i preferiti restano locali). | **Esporta progetto** dal selettore. | File `nome-progetto.json` (o `.cpproject` rinominati) salvati con note sulle checksum. |
 | Sandbox di prova ripristino | Garanzia che import e ripristino funzionino prima di toccare i dati live. | **Impostazioni → Backup & Ripristino → Prova di ripristino**. | Acquisizione console di `window.__cineRuntimeIntegrity`, note di prova e screenshot della sandbox. |
 | Aggiornamenti di documentazione e traduzioni | Argomenti di help center, README localizzati e guide stampabili. | Segui la checklist di manutenzione della documentazione a ogni variazione di comportamento. | Documenti aggiornati in `docs/`, file `README.*.md` tradotti e pacchetti di verifica firmati. |
 
@@ -233,7 +233,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 1. **Salvataggio base.** Apri il progetto attuale, esegui un salvataggio manuale e annota l’orario. Un auto-backup dovrebbe comparire entro dieci minuti.
 2. **Export ridondanti.** Crea un backup completo e un bundle di progetto. Rinominalo in `.cpproject` se richiesto e salva entrambi su supporti diversi.
-3. **Prova di ripristino.** Passa a un profilo privato (o seconda macchina), importa il backup completo e poi il bundle. Controlla liste, dashboard, regole e preferiti.
+3. **Prova di ripristino.** Passa a un profilo privato (o seconda macchina), importa il backup completo e poi il bundle. Controlla liste, dashboard e regole. I preferiti e gli altri dati globali arrivano con il backup completo: il bundle non li aggiunge.
 4. **Verifica offline.** Nel profilo di test, disconnetti la rete e ricarica `index.html`. Assicurati che l’indicatore offline appaia e che Uicons e script locali si carichino correttamente.
 5. **Registra un diff.** Torna nel profilo principale, apri **Impostazioni → Backup e ripristino → Confronta versioni**, seleziona l’ultimo salvataggio manuale e l’auto-backup più recente, rivedi le differenze evidenziate, annota il contesto in **Note sull’incidente** ed esporta il JSON. Archivia il file con gli artefatti della prova così gli audit offline possono ricostruire la cronologia.
 6. **Archiviazione sicura.** Elimina il profilo di test dopo la verifica e etichetta gli export secondo la procedura di produzione.
@@ -268,7 +268,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 ## Condivisione e import
 
-- **Bundle leggeri.** **Esporta progetto** scarica `project-name.json` con progetto attivo, preferiti e dispositivi personalizzati. Puoi rinominarlo `.cpproject`.
+- **Bundle leggeri.** **Esporta progetto** scarica `project-name.json` con il progetto attivo e i dispositivi personalizzati referenziati (oltre alle regole automatiche se scegli di includerle). I preferiti e gli altri dati globali restano sulla macchina di origine: abbina il bundle a un backup completo se devono viaggiare. Puoi rinominarlo `.cpproject`.
 - **Regole automatiche insieme al bundle.** Attiva **Includi regole automatiche** per inserirle; all’import il destinatario può applicarle solo al progetto o fonderle con le proprie.
 - **Gli import non sovrascrivono mai per errore.** Se un bundle in arrivo usa lo stesso nome di un progetto esistente, il planner salva la nuova copia come `nome-progetto-imported` così puoi confrontarle entrambe.
 - **Import offline validati.** Importando `auto-gear-rules-*.json`, il planner controlla tipo, versione semantica e metadati prima di modificare le tue regole. Se qualcosa non torna, avvisa e ripristina lo snapshot precedente.
@@ -281,7 +281,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 ## Formati di file
 
-- **`project-name.json` (bundle).** Include un progetto, preferiti e dispositivi personalizzati. L’estensione `.cpproject` è equivalente.
+- **`project-name.json` (bundle).** Include un progetto e i dispositivi personalizzati referenziati (più le regole automatiche se sono state incluse). I preferiti, i contatti e gli altri dati globali restano locali: usa un backup completo del planner quando devono spostarsi. L’estensione `.cpproject` è equivalente.
 - **`planner-backup.json` (backup completo).** Da **Impostazioni → Backup e ripristino → Backup** ottieni tutti i progetti,
   auto-backup, preferiti, feedback, regole, contatti, preferenze, font e branding.
 - **`auto-gear-rules-*.json` (regole).** Export opzionali da **Regole automatiche** con metadati per la validazione offline; conservali insieme ai backup completi.

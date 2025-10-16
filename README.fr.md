@@ -44,7 +44,7 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 | Sauvegardes manuelles | L’état courant du projet : équipements, notes d’autonomie et listes de matériel. | Appuyer sur **Entrée**, cliquer sur **Sauvegarder** ou utiliser `Ctrl+S`/`⌘S`. | Entrées horodatées dans le sélecteur et journaux de diff exportés depuis **Comparer les versions**. |
 | Cadence d’autosave et d’auto-backup | Des instantanés continus qui capturent les modifications en cours. | Laisser le projet ouvert : une capture toutes les ~50 modifications ou 10 minutes. | Entrées `auto-backup-…` dans le sélecteur et chronologie **Activité récente**. |
 | Backup complet du planner | L’ensemble des projets, favoris, retours d’autonomie, règles automatiques et préférences. | **Paramètres → Sauvegarde & restauration → Backup** (ou **Protections express**). | `planner-backup.json`, exports du journal d’historique et annexes du rapport de vérification. |
-| Exports de bundles projet | Projets individuels prêts pour un transfert vers un autre poste. | **Exporter le projet** depuis le sélecteur. | Fichiers `nom-du-projet.json` (ou `.cpproject` renommés) accompagnés de notes de checksum. |
+| Exports de bundles projet | Un projet unique plus les équipements personnalisés référencés (les favoris restent locaux). | **Exporter le projet** depuis le sélecteur. | Fichiers `nom-du-projet.json` (ou `.cpproject` renommés) accompagnés de notes de checksum. |
 | Bac à sable de répétition de restauration | Assurance que les imports/restaurations fonctionnent avant de toucher aux données actives. | **Paramètres → Sauvegarde & restauration → Répétition de restauration**. | Capture console de `window.__cineRuntimeIntegrity`, notes de répétition et captures du bac à sable. |
 | Mises à jour documentation & traductions | Articles d’aide, READMEs localisés et guides imprimables. | Suivre la checklist de maintenance documentaire à chaque évolution fonctionnelle. | Docs mises à jour dans `docs/`, fichiers `README.*.md` localisés et paquets de vérification signés. |
 
@@ -233,7 +233,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 1. **Sauvegarde de base.** Ouvrez le projet courant, effectuez une sauvegarde manuelle et notez l’horodatage. Un auto-backup doit apparaître en moins de dix minutes.
 2. **Export redondant.** Produisez un backup du planner et un bundle projet. Renommez-le en `.cpproject` si nécessaire et stockez les deux sur des supports distincts.
-3. **Répétition de restauration.** Passez sur un profil privé (ou une seconde machine), importez d’abord le backup complet, puis le bundle. Vérifiez listes, tableaux de bord, règles et favoris.
+3. **Répétition de restauration.** Passez sur un profil privé (ou une seconde machine), importez d’abord le backup complet, puis le bundle. Vérifiez listes, tableaux de bord et règles. Les favoris et autres données globales proviennent du backup complet ; le bundle ne les ajoute pas.
 4. **Vérification hors ligne.** Sur le profil d’essai, coupez la connexion et rechargez `index.html`. Confirmez l’affichage de l’indicateur hors ligne et le chargement des Uicons et scripts locaux.
 5. **Consigner un diff.** De retour sur le profil principal, ouvrez **Paramètres → Sauvegarde & restauration → Comparer les versions**, sélectionnez la dernière sauvegarde manuelle et l’auto-backup le plus récent, examinez les changements mis en évidence, ajoutez du contexte dans **Notes d’incident** et exportez le JSON. Archivez-le avec les artefacts de la répétition pour que les audits hors ligne retrouvent l’historique.
 6. **Archivage.** Supprimez le profil de test après validation et étiquetez les exports selon le protocole de production.
@@ -269,7 +269,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 ## Partage et imports
 
-- **Bundles compacts.** **Exporter le projet** télécharge `project-name.json` avec le projet actif, les favoris et les équipements personnalisés. Renommez-le en `.cpproject` si votre flux le requiert.
+- **Bundles compacts.** **Exporter le projet** télécharge `project-name.json` avec le projet actif et les équipements personnalisés référencés (ainsi que les règles automatiques si vous choisissez de les inclure). Les favoris et autres données globales restent sur la machine source : accompagnez le bundle d’un backup complet si vous devez les déplacer. Renommez-le en `.cpproject` si votre flux le requiert.
 - **Règles automatiques incluses.** Activez **Inclure les règles automatiques** pour qu’elles voyagent ; à l’import, vos collègues peuvent les ignorer, les appliquer uniquement au projet ou les fusionner au jeu global.
 - **Les imports n’écrasent rien par accident.** Si un bundle entrant porte le même nom qu’un projet existant, le planner enregistre la nouvelle copie sous `nom-du-projet-imported` afin de conserver les deux versions.
 - **Imports validés hors ligne.** Lors de l’import d’un `auto-gear-rules-*.json`, le planner vérifie type, version sémantique et métadonnées avant d’écraser vos règles. Les fichiers provenant d’une autre version déclenchent des avertissements et l’ancienne capture est restaurée automatiquement en cas d’échec.
@@ -282,7 +282,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 ## Formats de fichiers
 
-- **`project-name.json` (bundle).** Contient un projet, les favoris et équipements personnalisés. Renommer en `.cpproject` ne change rien à l’import.
+- **`project-name.json` (bundle).** Contient un projet et les équipements personnalisés référencés (ainsi que les règles automatiques si elles ont été incluses). Les favoris, contacts et autres données globales restent locaux ; utilisez un backup complet du planner si vous devez les transporter. Renommer en `.cpproject` ne change rien à l’import.
 - **`planner-backup.json` (backup complet).** Généré via **Paramètres → Backup & Restauration → Backup**, il capture projets,
   auto-backups, favoris, retours, règles, contacts, préférences, polices et éléments de branding.
 - **`auto-gear-rules-*.json` (règles).** Export optionnel depuis **Règles automatiques** avec métadonnées de type, version et horodatage pour validation hors ligne. Stockez-les avec les backups complets.
