@@ -3,7 +3,7 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
-const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespaceTools() {
+var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespaceTools() {
   const runtimeScope =
     typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
       ? CORE_PART1_RUNTIME_SCOPE
@@ -70,47 +70,47 @@ const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamesp
   return resolved;
 })();
 
-const RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrap',
   './modules/app-core/runtime.js'
 );
 
-const LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule(
+var LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationAccessors',
   './modules/app-core/localization.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapInline',
   './modules/app-core/runtime.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_RESULT_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_RESULT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapResult',
   './modules/app-core/runtime.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapLoader',
   './modules/app-core/runtime.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapManager',
   './modules/app-core/runtime.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapResolver',
   './modules/app-core/runtime.js'
 );
 
-const RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule(
+var RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapContext',
   './modules/app-core/runtime.js'
 );
 
-const runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult() {
+var runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult() {
   const runtimeScope = getDefaultRuntimeScope();
   const coreGlobalScope = getDefaultCoreGlobalScope();
   const requireFn = typeof require === 'function' ? require : null;
@@ -211,18 +211,18 @@ const runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResu
   return createInlineRuntimeSharedFallback(moduleOptions);
 })();
 
-const CORE_RUNTIME_SHARED_NAMESPACE =
+var CORE_RUNTIME_SHARED_NAMESPACE =
   runtimeSharedBootstrapResult && runtimeSharedBootstrapResult.runtimeSharedNamespace
     ? runtimeSharedBootstrapResult.runtimeSharedNamespace
     : null;
 
-const CORE_RUNTIME_SHARED_RESOLVER =
+var CORE_RUNTIME_SHARED_RESOLVER =
   runtimeSharedBootstrapResult &&
   typeof runtimeSharedBootstrapResult.runtimeSharedResolver === 'function'
     ? runtimeSharedBootstrapResult.runtimeSharedResolver
     : null;
 
-const EXISTING_CORE_RUNTIME_SHARED =
+var EXISTING_CORE_RUNTIME_SHARED =
   (runtimeSharedBootstrapResult &&
   runtimeSharedBootstrapResult.existingRuntimeShared &&
   typeof runtimeSharedBootstrapResult.existingRuntimeShared === 'object'
@@ -232,7 +232,7 @@ const EXISTING_CORE_RUNTIME_SHARED =
     ? CORE_RUNTIME_SHARED
     : null);
 
-const fallbackResolveRuntimeSharedFromGlobal =
+var fallbackResolveRuntimeSharedFromGlobal =
   runtimeSharedBootstrapResult &&
   typeof runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal ===
     'function'
