@@ -3193,6 +3193,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/app-core-runtime-helpers.js',
       'src/scripts/app-core-enviroment.js',
       'src/scripts/app-core-new-1.js',
+      'src/scripts/app-core-auto-gear-weight.js',
+      'src/scripts/app-core-deferred-boot.js',
       'src/scripts/app-core-new-2.js',
       'src/scripts/app-events.js',
       'src/scripts/app-setups.js',

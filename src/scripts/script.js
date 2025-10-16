@@ -51,6 +51,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-text.js',
     'app-core-enviroment.js',
     'app-core-new-1.js',
+    'app-core-auto-gear-weight.js',
+    'app-core-deferred-boot.js',
     'app-core-new-2.js',
     'app-events.js',
     'app-setups.js',

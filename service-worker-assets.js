@@ -172,6 +172,8 @@
   "./src/illustrations/unicorns/unicorn.svg",
   "./src/scripts/app-core-enviroment.js",
   "./src/scripts/app-core-new-1.js",
+  "./src/scripts/app-core-auto-gear-weight.js",
+  "./src/scripts/app-core-deferred-boot.js",
   "./src/scripts/app-core-new-2.js",
   "./src/scripts/app-core-runtime-scopes.js",
   "./src/scripts/app-core-runtime-support.js",

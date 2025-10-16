@@ -114,100 +114,101 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
 
-    const autoGearHelpers =
-      CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
-        ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
-            coreShared: CORE_SHARED_LOCAL,
-            globalScope:
-              typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
-                ? CORE_GLOBAL_SCOPE
-                : null,
-          })
-        : null;
+    const PART2_MODULES =
+      (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.cineCorePart2Modules)
+        || (typeof CORE_SHARED_SCOPE_PART2 !== 'undefined'
+          && CORE_SHARED_SCOPE_PART2
+          && CORE_SHARED_SCOPE_PART2.cineCorePart2Modules)
+        || (typeof CORE_GLOBAL_SCOPE !== 'undefined'
+          && CORE_GLOBAL_SCOPE
+          && CORE_GLOBAL_SCOPE.cineCorePart2Modules)
+        || (typeof globalThis !== 'undefined' && globalThis && globalThis.cineCorePart2Modules)
+        || (typeof window !== 'undefined' && window && window.cineCorePart2Modules)
+        || (typeof self !== 'undefined' && self && self.cineCorePart2Modules)
+        || (typeof global !== 'undefined' && global && global.cineCorePart2Modules)
+        || null;
 
-    const fallbackNormalizeAutoGearWeightOperator =
-      typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
-        ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator
-        : function normalizeAutoGearWeightOperatorFallback() {
-            return 'greater';
-          };
+    const createAutoGearWeightHelpers =
+      typeof CINE_CORE_PART2_CREATE_AUTO_GEAR_WEIGHT_HELPERS === 'function'
+        ? CINE_CORE_PART2_CREATE_AUTO_GEAR_WEIGHT_HELPERS
+        : PART2_MODULES && typeof PART2_MODULES.createAutoGearWeightHelpers === 'function'
+          ? PART2_MODULES.createAutoGearWeightHelpers
+          : null;
 
-    const fallbackNormalizeAutoGearWeightValue =
-      typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function'
-        ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue
-        : function normalizeAutoGearWeightValueFallback() {
-            return null;
-          };
+    const autoGearWeightHelpers = createAutoGearWeightHelpers
+      ? createAutoGearWeightHelpers({
+          corePart2Helpers: CORE_PART2_HELPERS,
+          coreRuntimeFallbacks: CORE_RUNTIME_FALLBACKS,
+          coreShared: CORE_SHARED_LOCAL,
+          coreGlobalScope:
+            typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+              ? CORE_GLOBAL_SCOPE
+              : null,
+        })
+      : null;
 
-    const fallbackFormatAutoGearWeight =
-      typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function'
-        ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight
-        : function formatAutoGearWeightFallback() {
-            return '';
-          };
-
-    const fallbackGetAutoGearCameraWeightOperatorLabel =
-      typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
-        ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel
-        : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
-            const textsForLang = langTexts || {};
-            const normalized = fallbackNormalizeAutoGearWeightOperator(operator);
-            if (normalized === 'less') {
-              return textsForLang.autoGearCameraWeightOperatorLess || '';
-            }
-            if (normalized === 'equal') {
-              return textsForLang.autoGearCameraWeightOperatorEqual || '';
-            }
-            return textsForLang.autoGearCameraWeightOperatorGreater || '';
-          };
-
-    const fallbackFormatAutoGearCameraWeight =
-      typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function'
-        ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight
-        : function formatAutoGearCameraWeightFallback(condition, langTexts) {
-            if (!condition || !Number.isFinite(condition.value)) {
-              return '';
-            }
-            const label = fallbackGetAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
-            const formattedValue = fallbackFormatAutoGearWeight(condition.value);
-            return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
-          };
+    const autoGearHelpers = autoGearWeightHelpers ? autoGearWeightHelpers.autoGearHelpers : null;
 
     const normalizeAutoGearWeightOperator =
-      autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightOperator === 'function'
-        ? autoGearHelpers.normalizeAutoGearWeightOperator
-        : fallbackNormalizeAutoGearWeightOperator;
+      (autoGearWeightHelpers && autoGearWeightHelpers.normalizeAutoGearWeightOperator)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator
+          : function normalizeAutoGearWeightOperatorFallback() {
+              return 'greater';
+            });
 
     const normalizeAutoGearWeightValue =
-      autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightValue === 'function'
-        ? autoGearHelpers.normalizeAutoGearWeightValue
-        : fallbackNormalizeAutoGearWeightValue;
+      (autoGearWeightHelpers && autoGearWeightHelpers.normalizeAutoGearWeightValue)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue
+          : function normalizeAutoGearWeightValueFallback() {
+              return null;
+            });
 
     const normalizeAutoGearCameraWeightCondition =
-      autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearCameraWeightCondition === 'function'
-        ? autoGearHelpers.normalizeAutoGearCameraWeightCondition
-        : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function'
+      (autoGearWeightHelpers && autoGearWeightHelpers.normalizeAutoGearCameraWeightCondition)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function'
           ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition
           : function normalizeAutoGearCameraWeightConditionFallback() {
               return null;
-            };
+            });
 
     const formatAutoGearWeight =
-      autoGearHelpers && typeof autoGearHelpers.formatAutoGearWeight === 'function'
-        ? autoGearHelpers.formatAutoGearWeight
-        : fallbackFormatAutoGearWeight;
+      (autoGearWeightHelpers && autoGearWeightHelpers.formatAutoGearWeight)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight
+          : function formatAutoGearWeightFallback() {
+              return '';
+            });
 
     const getAutoGearCameraWeightOperatorLabel =
-      autoGearHelpers && typeof autoGearHelpers.getAutoGearCameraWeightOperatorLabel === 'function'
-        ? autoGearHelpers.getAutoGearCameraWeightOperatorLabel
-        : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-            return fallbackGetAutoGearCameraWeightOperatorLabel(operator, langTexts);
-          };
+      (autoGearWeightHelpers && autoGearWeightHelpers.getAutoGearCameraWeightOperatorLabel)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel
+          : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
+              const textsForLang = langTexts || {};
+              const normalized = normalizeAutoGearWeightOperator(operator);
+              if (normalized === 'less') {
+                return textsForLang.autoGearCameraWeightOperatorLess || '';
+              }
+              if (normalized === 'equal') {
+                return textsForLang.autoGearCameraWeightOperatorEqual || '';
+              }
+              return textsForLang.autoGearCameraWeightOperatorGreater || '';
+            });
 
     const formatAutoGearCameraWeight =
-      autoGearHelpers && typeof autoGearHelpers.formatAutoGearCameraWeight === 'function'
-        ? autoGearHelpers.formatAutoGearCameraWeight
-        : fallbackFormatAutoGearCameraWeight;
+      (autoGearWeightHelpers && autoGearWeightHelpers.formatAutoGearCameraWeight)
+        || (typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function'
+          ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight
+          : function formatAutoGearCameraWeightFallback(condition, langTexts) {
+              if (!condition || !Number.isFinite(condition.value)) {
+                return '';
+              }
+              const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+              const formattedValue = formatAutoGearWeight(condition.value);
+              return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
+            });
 
     const runtimeScopeTools =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveRuntimeScopeTools === 'function'
@@ -330,74 +331,97 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     let defaultProjectInfoSnapshot = null;
     
-    const CORE_BOOT_QUEUE_KEY_PART2 = (function resolveBootQueueKeyPart2(scope) {
-      if (scope && typeof scope === 'object') {
-        const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
-        const existingHidden = scope.__cineCoreBootQueueKey;
-    
-        if (typeof existingPublic === 'string' && existingPublic) {
-          return existingPublic;
-        }
-    
-        if (typeof existingHidden === 'string' && existingHidden) {
-          return existingHidden;
-        }
-      }
-    
-      return '__coreRuntimeBootQueue';
-    })(CORE_SHARED_SCOPE_PART2);
-    
-    const CORE_BOOT_QUEUE_PART2 = (function bootstrapCoreBootQueuePart2(existingQueue) {
-      if (Array.isArray(existingQueue)) {
-        return existingQueue;
-      }
-    
-      if (CORE_SHARED_SCOPE_PART2 && typeof CORE_SHARED_SCOPE_PART2 === 'object') {
-        const shared = CORE_SHARED_SCOPE_PART2.cineCoreShared;
-        if (shared && typeof shared === 'object') {
-          const sharedQueue = shared[CORE_BOOT_QUEUE_KEY_PART2];
-          if (Array.isArray(sharedQueue)) {
-            return sharedQueue;
+    const createDeferredBootHelpers =
+      typeof CINE_CORE_PART2_CREATE_DEFERRED_BOOT_HELPERS === 'function'
+        ? CINE_CORE_PART2_CREATE_DEFERRED_BOOT_HELPERS
+        : PART2_MODULES && typeof PART2_MODULES.createDeferredBootHelpers === 'function'
+          ? PART2_MODULES.createDeferredBootHelpers
+          : null;
+
+    const deferredBootHelpers = createDeferredBootHelpers
+      ? createDeferredBootHelpers({ sharedScope: CORE_SHARED_SCOPE_PART2 })
+      : (function createDeferredBootFallback(scope) {
+          const CORE_BOOT_QUEUE_KEY_FALLBACK = (function resolveBootQueueKeyPart2(fallbackScope) {
+            if (fallbackScope && typeof fallbackScope === 'object') {
+              const existingPublic = fallbackScope.CORE_BOOT_QUEUE_KEY;
+              const existingHidden = fallbackScope.__cineCoreBootQueueKey;
+
+              if (typeof existingPublic === 'string' && existingPublic) {
+                return existingPublic;
+              }
+
+              if (typeof existingHidden === 'string' && existingHidden) {
+                return existingHidden;
+              }
+            }
+
+            return '__coreRuntimeBootQueue';
+          })(scope);
+
+          const CORE_BOOT_QUEUE_PART2_FALLBACK = (function bootstrapCoreBootQueuePart2(existingQueue) {
+            if (Array.isArray(existingQueue)) {
+              return existingQueue;
+            }
+
+            if (scope && typeof scope === 'object') {
+              const shared = scope.cineCoreShared;
+              if (shared && typeof shared === 'object') {
+                const sharedQueue = shared[CORE_BOOT_QUEUE_KEY_FALLBACK];
+                if (Array.isArray(sharedQueue)) {
+                  return sharedQueue;
+                }
+                if (Object.isExtensible(shared)) {
+                  shared[CORE_BOOT_QUEUE_KEY_FALLBACK] = [];
+                  return shared[CORE_BOOT_QUEUE_KEY_FALLBACK];
+                }
+              }
+
+              if (!Array.isArray(scope.CORE_BOOT_QUEUE)) {
+                scope.CORE_BOOT_QUEUE = [];
+              }
+              return scope.CORE_BOOT_QUEUE;
+            }
+
+            return [];
+          })(scope && scope.CORE_BOOT_QUEUE);
+
+          if (scope && scope.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE_PART2_FALLBACK) {
+            scope.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE_PART2_FALLBACK;
           }
-          if (Object.isExtensible(shared)) {
-            shared[CORE_BOOT_QUEUE_KEY_PART2] = [];
-            return shared[CORE_BOOT_QUEUE_KEY_PART2];
+
+          function flushCoreBootQueueFallback() {
+            if (!Array.isArray(CORE_BOOT_QUEUE_PART2_FALLBACK) || CORE_BOOT_QUEUE_PART2_FALLBACK.length === 0) {
+              return;
+            }
+
+            const pending = CORE_BOOT_QUEUE_PART2_FALLBACK.splice(0, CORE_BOOT_QUEUE_PART2_FALLBACK.length);
+            for (let index = 0; index < pending.length; index += 1) {
+              const task = pending[index];
+              if (typeof task !== 'function') {
+                continue;
+              }
+              try {
+                task();
+              } catch (taskError) {
+                if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                  console.error('Core boot task failed', taskError);
+                }
+              }
+            }
           }
-        }
-    
-        if (!Array.isArray(CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE)) {
-          CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = [];
-        }
-        return CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE;
-      }
-    
-      return [];
-    })(CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE);
-    
-    if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE_PART2) {
-      CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE_PART2;
-    }
-    
-    function flushCoreBootQueue() {
-      if (!Array.isArray(CORE_BOOT_QUEUE_PART2) || CORE_BOOT_QUEUE_PART2.length === 0) {
-        return;
-      }
-    
-      const pending = CORE_BOOT_QUEUE_PART2.splice(0, CORE_BOOT_QUEUE_PART2.length);
-      for (let index = 0; index < pending.length; index += 1) {
-        const task = pending[index];
-        if (typeof task !== 'function') {
-          continue;
-        }
-        try {
-          task();
-        } catch (taskError) {
-          if (typeof console !== 'undefined' && typeof console.error === 'function') {
-            console.error('Core boot task failed', taskError);
-          }
-        }
-      }
-    }
+
+          return {
+            CORE_BOOT_QUEUE_KEY_PART2: CORE_BOOT_QUEUE_KEY_FALLBACK,
+            CORE_BOOT_QUEUE_PART2: CORE_BOOT_QUEUE_PART2_FALLBACK,
+            flushCoreBootQueue: flushCoreBootQueueFallback,
+          };
+        })(CORE_SHARED_SCOPE_PART2);
+
+    const {
+      CORE_BOOT_QUEUE_KEY_PART2,
+      CORE_BOOT_QUEUE_PART2,
+      flushCoreBootQueue,
+    } = deferredBootHelpers;
     
     const AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL =
       (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
