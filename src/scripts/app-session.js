@@ -880,9 +880,61 @@ const ACTIVE_APP_VERSION = resolveKnownAppVersion(
   typeof APP_VERSION === 'string' ? APP_VERSION : null,
 );
 
+function resolveMountVoltageNamespace() {
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const namespace = scope.cineCoreMountVoltage;
+      if (namespace && typeof namespace === 'object') {
+        return namespace;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return null;
+}
+
+function resolveMountVoltageRuntimeExports() {
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const exports = scope.MOUNT_VOLTAGE_RUNTIME_EXPORTS;
+      if (exports && typeof exports === 'object') {
+        return exports;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return null;
+}
+
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
     return null;
+  }
+
+  const mountNamespace = resolveMountVoltageNamespace();
+  if (mountNamespace && typeof mountNamespace[name] === 'function') {
+    return mountNamespace[name];
+  }
+
+  const mountRuntimeExports = resolveMountVoltageRuntimeExports();
+  if (mountRuntimeExports && typeof mountRuntimeExports[name] === 'function') {
+    return mountRuntimeExports[name];
   }
 
   const scopes = getSessionRuntimeScopes();
