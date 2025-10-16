@@ -537,7 +537,7 @@ the safety nets that protect user data even when you stay offline.
 | Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
 | Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
-| Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices, favorites and (optionally) automatic gear rules. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
+| Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices and (optionally) automatic gear rules—favorites stay local. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
 | Restore or import | Choose **Import Backup**, **Import Project** or restore from the selector. | Applies planner backups, project bundles or auto-backups into the live environment. | Runs entirely in the browser with the same offline guarantees as saving. | Captures a safety backup before applying changes and isolates sandbox rehearsals so production data stays intact. |
 
 Revisit this reference during training, audits and documentation updates so the
@@ -577,8 +577,9 @@ access.
    separate physical media.
 3. **Restore dress rehearsal.** Switch to a private browser profile (or a
    second machine), import the planner backup, then import the project bundle.
-   Inspect gear lists, runtime dashboards, automatic gear rules and favorites
-   to confirm they survived the round-trip.
+   Inspect gear lists, runtime dashboards and automatic gear rules to confirm
+   they survived the round-trip. Favorites and other global data should already
+   be present from the planner backup—project bundles do not add them.
 4. **Offline verification.** While still in the rehearsal profile, disconnect
    from the network and reload `index.html`. Ensure the offline indicator shows,
    the interface matches the source machine and locally stored Uicons plus
@@ -685,10 +686,12 @@ Use Cine Power Planner end-to-end with the following routine:
 ## Sharing & Imports
 
 - **Project bundles travel light.** Click **Export Project** to download a
-  `project-name.json` file containing the active project, favorites and any
-  referenced custom devices. Rename the file if your archiving standards call
-  for a `.cpproject` extension, then send it via your preferred secure channel;
-  recipients can import without needing internet access.
+  `project-name.json` file containing the active project plus any referenced
+  custom devices (and optional automatic gear rules). Favorites and other
+  global data remain on the source machine—pair the bundle with a planner
+  backup when those need to travel. Rename the file if your archiving
+  standards call for a `.cpproject` extension, then send it via your preferred
+  secure channel; recipients can import without needing internet access.
 - **Automatic gear rules travel with bundles.** Flip the **Include automatic
   gear rules** toggle during export to decide whether your automations ship with
   the bundle; teammates who import the file can ignore them, apply them only to
@@ -738,9 +741,11 @@ Use Cine Power Planner end-to-end with the following routine:
 ## Project & Backup File Formats
 
 - **`project-name.json` (project bundle).** Exported from **Export Project**,
-  this JSON bundle stores one project, favorites and any referenced custom
-  devices. Rename it to `.cpproject` if your workflow expects that extension;
-  the planner treats both identically during import.
+  this JSON bundle stores one project plus any referenced custom devices (and
+  optional automatic gear rules). Favorites, contacts and other global data
+  stay put—use a planner backup when those must accompany the project. Rename
+  the file to `.cpproject` if your workflow expects that extension; the planner
+  treats both identically during import.
 - **`planner-backup.json` (full backup).** Created via **Settings → Backup &
   Restore → Backup**, this archive captures every project, auto-backup,
   favorite, runtime submission, automatic gear rule, contact roster, UI

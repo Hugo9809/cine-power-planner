@@ -44,7 +44,7 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 | Guardados manuales | Estado activo del proyecto, incluidos dispositivos, notas de autonomía y listas de equipo. | Pulsa **Enter**, elige **Guardar** o usa `Ctrl+S`/`⌘S`. | Entradas con marca temporal en el selector y registros de diferencias exportados desde **Comparar versiones**. |
 | Cadencia de auto-guardado y auto-backup | Instantáneas continuas que capturan ediciones en curso. | Mantén el proyecto abierto: las instantáneas se ejecutan cada ~50 cambios o 10 minutos. | Entradas `auto-backup-…` en el selector y la línea de tiempo de **Actividad reciente**. |
 | Copia de seguridad completa del planner | Todos los proyectos, favoritos, registros de autonomía, reglas automáticas y preferencias. | **Ajustes → Copia y restauración → Copia de seguridad** (o **Protecciones rápidas**). | `planner-backup.json`, exportes del historial de copias y anexos del registro de verificación. |
-| Exportaciones de paquetes de proyecto | Proyectos individuales listos para traspasar a otra estación de trabajo. | **Exportar proyecto** desde el selector. | Archivos `nombre-del-proyecto.json` (o `.cpproject` renombrados) guardados con notas de checksum. |
+| Exportaciones de paquetes de proyecto | Un único proyecto más los dispositivos personalizados referenciados (los favoritos permanecen locales). | **Exportar proyecto** desde el selector. | Archivos `nombre-del-proyecto.json` (o `.cpproject` renombrados) guardados con notas de checksum. |
 | Sandbox de ensayo de restauración | Confianza en que los procesos de importación y restauración funcionan antes de tocar datos en producción. | **Ajustes → Copia y restauración → Ensayo de restauración**. | Captura de consola de `window.__cineRuntimeIntegrity`, notas del ensayo y capturas de la sandbox. |
 | Actualizaciones de documentación y traducciones | Temas del centro de ayuda, READMEs localizados y guías imprimibles. | Sigue la lista de mantenimiento de documentación cada vez que cambie el comportamiento. | Documentos actualizados en `docs/`, archivos `README.*.md` localizados y paquetes de verificación firmados. |
 
@@ -233,7 +233,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 1. **Guardado base.** Abre el proyecto actual, realiza un guardado manual y observa el sello horario. Un auto-backup debería añadirse en menos de diez minutos.
 2. **Exporta redundancias.** Genera una copia completa y un paquete del proyecto. Renómbralo a `.cpproject` si lo requiere tu flujo y guarda ambos en medios distintos.
-3. **Ensayo de restauración.** Cambia a un perfil privado (o segunda máquina), importa la copia completa y después el paquete. Comprueba listas, paneles, reglas y favoritos.
+3. **Ensayo de restauración.** Cambia a un perfil privado (o segunda máquina), importa la copia completa y después el paquete. Comprueba listas, paneles y reglas. Los favoritos y demás datos globales llegarán con la copia completa; el paquete no los añade.
 4. **Verificación offline.** En el perfil de ensayo, desconecta la red y recarga `index.html`. Confirma que aparece el indicador offline y que los Uicons y scripts locales cargan correctamente.
 5. **Registra un diff.** De vuelta en el perfil principal abre **Configuración → Copia de seguridad y restauración → Comparar versiones**, selecciona el último guardado manual y el auto-backup más reciente, revisa los cambios resaltados, añade contexto en **Notas de incidente** y exporta el JSON. Guarda el archivo junto a los artefactos del ensayo para que auditorías futuras puedan revisar el historial sin conexión.
 6. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
@@ -269,7 +269,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 ## Compartir e importar
 
-- **Paquetes de proyecto ligeros.** **Exportar proyecto** descarga `project-name.json` con el proyecto activo, favoritos y dispositivos personalizados. Renómbralo a `.cpproject` si tu archivo maestro lo requiere.
+- **Paquetes de proyecto ligeros.** **Exportar proyecto** descarga `project-name.json` con el proyecto activo y los dispositivos personalizados referenciados (además de las reglas automáticas si decides incluirlas). Los favoritos y otros datos globales permanecen en el equipo de origen; acompaña el paquete con una copia completa si deben viajar. Renómbralo a `.cpproject` si tu archivo maestro lo requiere.
 - **Reglas automáticas junto al paquete.** Activa **Incluir reglas automáticas** durante la exportación para que viajen; al importar se pueden aplicar sólo al proyecto o fusionarse con las reglas globales.
 - **Las importaciones no sobrescriben por accidente.** Si un paquete entrante coincide con el nombre de un proyecto existente, el planner guarda la copia nueva como `nombre-proyecto-imported` para que puedas revisar ambas versiones con calma.
 - **Importaciones validadas offline.** Al importar `auto-gear-rules-*.json`, la app verifica tipo, versión semántica y metadatos antes de sobrescribir. Las discrepancias muestran avisos y, si algo falla, se restaura el snapshot anterior automáticamente.
@@ -282,7 +282,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 ## Formatos de archivos
 
-- **`project-name.json` (paquete).** Incluye un proyecto, favoritos y dispositivos personalizados. Cambiar la extensión a `.cpproject` no altera la importación.
+- **`project-name.json` (paquete).** Incluye un proyecto y los dispositivos personalizados referenciados (más las reglas automáticas si se incluyeron). Los favoritos, contactos y otros datos globales permanecen locales; utiliza una copia completa del planner si deben acompañar al proyecto. Cambiar la extensión a `.cpproject` no altera la importación.
 - **`planner-backup.json` (respaldo completo).** **Configuración → Copia de seguridad y restauración → Copia de seguridad**
   captura proyectos, auto-backups, favoritos, comentarios, reglas, contactos, ajustes, fuentes y branding.
 - **`auto-gear-rules-*.json` (reglas).** Exportaciones opcionales desde **Reglas automáticas** con tipo de archivo, versión y metadatos para validar offline. Guarda estas copias junto a los respaldos completos.

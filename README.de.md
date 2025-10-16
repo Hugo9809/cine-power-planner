@@ -44,7 +44,7 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
 | Manuelle Speicherungen | Aktuellen Projektstand inklusive Geräte, Laufzeitnotizen und Gear-Listen. | **Enter** drücken, **Speichern** wählen oder `Strg+S`/`⌘S` nutzen. | Zeitgestempelte Einträge im Selektor und exportierte Diff-Protokolle aus **Versionen vergleichen**. |
 | Auto-Save- & Auto-Backup-Kadenz | Laufende Schnappschüsse, die Zwischenstände sichern. | Projekt geöffnet lassen – Schnappschüsse laufen etwa alle 50 Änderungen oder 10 Minuten. | `auto-backup-…`-Einträge im Selektor sowie die Zeitleiste unter **Letzte Aktivitäten**. |
 | Vollständiges Planner-Backup | Alle Projekte, Favoriten, Laufzeitnotizen, automatische Gear-Regeln und Einstellungen. | **Einstellungen → Backup & Wiederherstellung → Backup** (oder **Schnelle Schutzmaßnahmen**). | `planner-backup.json`, exportierte Backup-Verlaufsprotokolle und Anhänge des Prüfprotokolls. |
-| Projekt-Bundle-Exporte | Einzelne Projekte für die Übergabe an andere Workstations. | **Projekt exportieren** im Selektor. | Dateien `projektname.json` (oder umbenannte `.cpproject`) mit Prüfsummen-Notizen. |
+| Projekt-Bundle-Exporte | Ein einzelnes Projekt plus referenzierte Custom-Geräte (Favoriten bleiben lokal). | **Projekt exportieren** im Selektor. | Dateien `projektname.json` (oder umbenannte `.cpproject`) mit Prüfsummen-Notizen. |
 | Wiederherstellungs-Sandbox | Sicherheit, dass Import und Restore korrekt funktionieren, bevor Live-Daten berührt werden. | **Einstellungen → Backup & Wiederherstellung → Restore-Probe**. | Konsolenmitschnitt von `window.__cineRuntimeIntegrity`, Probenotizen und Sandbox-Screenshots. |
 | Dokumentations- & Übersetzungsupdates | Hilfecenter-Themen, lokalisierte READMEs und druckbare Leitfäden. | Dokumentations-Checkliste befolgen, sobald sich Abläufe ändern. | Aktualisierte Docs in `docs/`, lokalisierte `README.*.md` und signierte Prüfpakete. |
 
@@ -233,7 +233,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 1. **Baseline-Save.** Aktuelles Projekt öffnen, manuell speichern und den Zeitstempel merken. Innerhalb von zehn Minuten sollte ein Auto-Backup erscheinen.
 2. **Redundanz-Export.** Planner-Backup und Projekt-Bundle exportieren, ggf. `.cpproject`-Konvention nutzen, auf getrennten Medien sichern.
-3. **Restore-Generalprobe.** In einem privaten Profil oder zweiten Gerät Backup importieren, danach das Bundle. Gerätelisten, Dashboards, Regeln und Favoriten prüfen.
+3. **Restore-Generalprobe.** In einem privaten Profil oder zweiten Gerät Backup importieren, danach das Bundle. Gerätelisten, Dashboards und Regeln prüfen. Favoriten und andere globale Daten stammen aus dem Planner-Backup – Projekt-Bundles fügen sie nicht hinzu.
 4. **Offline-Verifikation.** Im Testprofil Netzwerk trennen, `index.html` neu laden und prüfen, ob Offline-Indikator, Uicons und Hilfsskripte sauber geladen werden.
 5. **Diff-Log erfassen.** Zurück im Primärprofil **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen** öffnen, den neuesten manuellen Save und das aktuellste Auto-Backup auswählen, die markierten Änderungen prüfen, Kontext in **Vorfallsnotizen** festhalten und das JSON exportieren. Die Datei gemeinsam mit den Drill-Artefakten ablegen, damit Audits die Historie offline nachvollziehen können.
 6. **Archivieren.** Testprofil löschen, Exporte beschriften und in die Produktions-Checkliste aufnehmen.
@@ -269,7 +269,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 ## Teilen & Importe
 
-- **Projekt-Bundles bleiben leichtgewichtig.** **Projekt exportieren** speichert `project-name.json` mit Projekt, Favoriten und Custom-Geräten. Optional zu `.cpproject` umbenennen und über sichere Kanäle teilen.
+- **Projekt-Bundles bleiben leichtgewichtig.** **Projekt exportieren** speichert `project-name.json` mit dem aktiven Projekt plus referenzierten Custom-Geräten (und optional eingeschlossenen Automationsregeln). Favoriten und andere globale Daten bleiben auf dem Ausgangsgerät – kombiniere das Bundle mit einem Planner-Backup, wenn sie mitreisen sollen. Optional zu `.cpproject` umbenennen und über sichere Kanäle teilen.
 - **Automatische Gear-Regeln reisen mit.** Toggle **Automatische Gear-Regeln einschließen** entscheidet, ob Regeln im Bundle landen; beim Import können Teams sie getrennt übernehmen.
 - **Importe überschreiben nichts versehentlich.** Trifft ein Bundle auf ein bestehendes Projekt mit identischem Namen, speichert der Planner die neue Kopie als `projektname-imported`, sodass beide Varianten erhalten bleiben.
 - **Standalone-Regelimporte validieren offline.** Beim Import von `auto-gear-rules-*.json` prüft der Planner Dateityp, Semver und Zeitstempel, bevor Regeln überschrieben werden. Alte/neue Builds lösen Warnungen aus; bei Fehlern wird der vorherige Snapshot automatisch wiederhergestellt.
@@ -282,7 +282,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 ## Projekt- & Backup-Dateiformate
 
-- **`project-name.json` (Projekt-Bundle).** Enthält ein Projekt, Favoriten und referenzierte Custom-Geräte. `.cpproject` wird gleich behandelt.
+- **`project-name.json` (Projekt-Bundle).** Enthält ein Projekt plus referenzierte Custom-Geräte (und optional automatische Gear-Regeln). Favoriten, Kontakte und andere globale Daten bleiben lokal – verwende ein Planner-Backup, wenn sie mitreisen sollen. `.cpproject` wird gleich behandelt.
 - **`planner-backup.json` (Vollbackup).** **Einstellungen → Backup & Wiederherstellung → Backup** speichert alle Projekte,
   Auto-Backups, Favoriten, Laufzeitfeedback, Regeln, Kontaktlisten, UI-Präferenzen, Fonts und Branding.
 - **`auto-gear-rules-*.json` (Regel-Exports).** Zeitgestempelte Sicherungen der Automations-Setups inklusive Metadaten zur Offline-Validierung.
