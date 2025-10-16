@@ -3,10 +3,72 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
-const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppRuntimeSharedNamespace',
-  './modules/app-core/runtime.js'
-);
+const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = (function resolveRuntimeSharedNamespaceTools() {
+  const runtimeScope =
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE
+      ? CORE_PART1_RUNTIME_SCOPE
+      : null;
+  const globalScope =
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
+
+  const fallbacks = [
+    runtimeScope,
+    globalScope,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < fallbacks.length; index += 1) {
+    const scope = fallbacks[index];
+
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      const existing = scope.CORE_RUNTIME_SHARED_NAMESPACE_TOOLS;
+      if (existing && typeof existing === 'object') {
+        return existing;
+      }
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
+    }
+  }
+
+  const resolved = resolveCoreSupportModule(
+    'cineCoreAppRuntimeSharedNamespace',
+    './modules/app-core/runtime.js'
+  );
+
+  const targets = [runtimeScope, globalScope];
+  for (let index = 0; index < targets.length; index += 1) {
+    const target = targets[index];
+    if (!target || typeof target !== 'object') {
+      continue;
+    }
+
+    try {
+      if (typeof target.CORE_RUNTIME_SHARED_NAMESPACE_TOOLS === 'undefined') {
+        Object.defineProperty(target, 'CORE_RUNTIME_SHARED_NAMESPACE_TOOLS', {
+          configurable: true,
+          writable: true,
+          value: resolved,
+        });
+      }
+    } catch (assignError) {
+      try {
+        target.CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolved;
+      } catch (fallbackAssignError) {
+        void fallbackAssignError;
+      }
+      void assignError;
+    }
+  }
+
+  return resolved;
+})();
 
 const RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrap',
@@ -37,14 +99,6 @@ const RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapManager',
   './modules/app-core/runtime.js'
 );
-
-var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS =
-  typeof CORE_RUNTIME_SHARED_NAMESPACE_TOOLS !== 'undefined'
-    ? CORE_RUNTIME_SHARED_NAMESPACE_TOOLS
-    : resolveCoreSupportModule(
-        'cineCoreAppRuntimeSharedNamespace',
-        './modules/app-core/runtime.js'
-      );
 
 const RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapResolver',
