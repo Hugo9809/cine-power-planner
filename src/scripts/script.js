@@ -49,7 +49,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-runtime-support.js',
     'app-core-runtime-helpers.js',
     'app-core-text.js',
-    'app-core-enviroment.js',
+    'app-core-environment.js',
     'app-core-bootstrap.js',
     'app-core-runtime-shared.js',
     'app-core-localization-accessors.js',

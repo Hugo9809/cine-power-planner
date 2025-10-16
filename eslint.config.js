@@ -23,7 +23,7 @@ const additionalGlobalsByKey = {
 const additionalAppScriptFiles = {
   'app-core': [
     'app-core-new-1',
-    'app-core-enviroment',
+    'app-core-environment',
     'app-core-new-2',
     'app-core-runtime-support',
     'app-core-runtime-helpers',
