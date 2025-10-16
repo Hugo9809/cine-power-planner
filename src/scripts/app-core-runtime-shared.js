@@ -3,6 +3,11 @@
  * The logic remains identical to protect autosave, offline, and localization behaviours.
  */
 
+const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppRuntimeSharedNamespace',
+  './modules/app-core/runtime.js'
+);
+
 const RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrap',
   './modules/app-core/runtime.js'
