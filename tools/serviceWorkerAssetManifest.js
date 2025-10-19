@@ -8,6 +8,7 @@ const EXPLICIT_FILES = [
   'manifest.webmanifest',
   'Icon Bluenew.svg',
   'Icon Pinknew.svg',
+  'app-version.js',
 ];
 
 const TOOL_WHITELIST = new Set([
