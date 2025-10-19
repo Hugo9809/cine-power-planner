@@ -112,16 +112,39 @@
         return false;
       }
 
-      var assigned = false;
-
+      var descriptor = null;
       try {
-        target[key] = value;
-        assigned = target[key] === value;
-      } catch (assignError) {
-        void assignError;
+        descriptor = Object.getOwnPropertyDescriptor(target, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
       }
 
-      if (!assigned && typeof Object.defineProperty === 'function') {
+      var isTargetFrozen = false;
+      try {
+        isTargetFrozen = typeof Object.isFrozen === 'function' && Object.isFrozen(target);
+      } catch (frozenCheckError) {
+        void frozenCheckError;
+        isTargetFrozen = false;
+      }
+
+      var assigned = false;
+      var canAttemptDirectWrite = !isTargetFrozen && (!descriptor || descriptor.writable !== false);
+
+      if (canAttemptDirectWrite) {
+        try {
+          target[key] = value;
+          assigned = target[key] === value;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+
+      if (
+        !assigned &&
+        typeof Object.defineProperty === 'function' &&
+        (!descriptor || descriptor.configurable !== false)
+      ) {
         try {
           Object.defineProperty(target, key, {
             configurable: true,

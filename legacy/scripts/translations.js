@@ -100,6 +100,165 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return container;
   }
+  function tryAssignContainerValue(target, key, value) {
+    if (!target || _typeof(target) !== 'object') {
+      return false;
+    }
+    var descriptor = null;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(target, key);
+    } catch (descriptorError) {
+      void descriptorError;
+      descriptor = null;
+    }
+    var isTargetFrozen = false;
+    try {
+      isTargetFrozen = typeof Object.isFrozen === 'function' && Object.isFrozen(target);
+    } catch (frozenCheckError) {
+      void frozenCheckError;
+      isTargetFrozen = false;
+    }
+    var assigned = false;
+    var canAttemptDirectWrite = !isTargetFrozen && (!descriptor || descriptor.writable !== false);
+    if (canAttemptDirectWrite) {
+      try {
+        target[key] = value;
+        assigned = target[key] === value;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    if (!assigned && typeof Object.defineProperty === 'function' && (!descriptor || descriptor.configurable !== false)) {
+      try {
+        Object.defineProperty(target, key, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: value
+        });
+        assigned = target[key] === value;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+    return assigned;
+  }
+  function cloneContainerEntries(source) {
+    var clone = {};
+    if (!source || _typeof(source) !== 'object') {
+      return clone;
+    }
+    try {
+      var descriptors = Object.getOwnPropertyDescriptors ? Object.getOwnPropertyDescriptors(source) : null;
+      if (descriptors) {
+        Object.keys(descriptors).forEach(function cloneDescriptor(key) {
+          var descriptor = descriptors[key];
+          if (!descriptor) {
+            return;
+          }
+          if (typeof descriptor.get === 'function' || typeof descriptor.set === 'function') {
+            try {
+              Object.defineProperty(clone, key, descriptor);
+              return;
+            } catch (accessorError) {
+              void accessorError;
+            }
+          }
+          try {
+            Object.defineProperty(clone, key, {
+              configurable: true,
+              enumerable: descriptor.enumerable === true,
+              writable: true,
+              value: descriptor.value
+            });
+          } catch (defineError) {
+            void defineError;
+            try {
+              clone[key] = source[key];
+            } catch (copyError) {
+              void copyError;
+            }
+          }
+        });
+        return clone;
+      }
+    } catch (descriptorError) {
+      void descriptorError;
+    }
+    try {
+      var keys = Object.keys(source);
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        clone[key] = source[key];
+      }
+    } catch (copyKeysError) {
+      void copyKeysError;
+    }
+    return clone;
+  }
+  function replaceContainerReference(containerName, replacement) {
+    if (!scope || !containerName) {
+      return false;
+    }
+    var replaced = false;
+    try {
+      scope[containerName] = replacement;
+      replaced = scope[containerName] === replacement;
+    } catch (assignError) {
+      void assignError;
+    }
+    if (replaced) {
+      return true;
+    }
+    var descriptor = null;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(scope, containerName);
+    } catch (descriptorError) {
+      void descriptorError;
+    }
+    if (descriptor) {
+      if (!replaced && typeof descriptor.set === 'function') {
+        try {
+          descriptor.set.call(scope, replacement);
+          replaced = scope[containerName] === replacement;
+        } catch (setterError) {
+          void setterError;
+        }
+      }
+      if (!replaced && descriptor.configurable) {
+        try {
+          Object.defineProperty(scope, containerName, {
+            configurable: true,
+            enumerable: descriptor.enumerable === true,
+            writable: true,
+            value: replacement
+          });
+          replaced = scope[containerName] === replacement;
+        } catch (redefineError) {
+          void redefineError;
+        }
+      }
+    }
+    return replaced;
+  }
+  function ensureContainerAssignment(containerName, container, locale, value) {
+    var targetContainer = container && _typeof(container) === 'object' ? container : null;
+    if (!targetContainer) {
+      return { container: container, assigned: false };
+    }
+    if (tryAssignContainerValue(targetContainer, locale, value)) {
+      return { container: targetContainer, assigned: true };
+    }
+    var replacement = cloneContainerEntries(targetContainer);
+    if (tryAssignContainerValue(replacement, locale, value) && replaceContainerReference(containerName, replacement)) {
+      return { container: replacement, assigned: true };
+    }
+    var fallback = {};
+    if (tryAssignContainerValue(fallback, locale, value) && replaceContainerReference(containerName, fallback)) {
+      return { container: fallback, assigned: true };
+    }
+    return { container: targetContainer, assigned: false };
+  }
   function cloneTranslationValue(value) {
     if (Array.isArray(value)) {
       return value.map(function cloneArrayItem(item) {
@@ -272,9 +431,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var alignedTexts = isDefaultLocale ? reference.texts : alignDataset(reference.texts, localeTexts);
     var alignedCategoryNames = isDefaultLocale ? reference.categoryNames : alignDataset(reference.categoryNames, localeCategoryNames);
     var alignedGearItems = isDefaultLocale ? reference.gearItems : alignDataset(reference.gearItems, localeGearItems);
-    textsContainer[locale] = alignedTexts;
-    categoryNamesContainer[locale] = alignedCategoryNames;
-    gearItemsContainer[locale] = alignedGearItems;
+    var textsAssignment = ensureContainerAssignment('texts', textsContainer, locale, alignedTexts);
+    textsContainer = textsAssignment.container;
+    var categoryNamesAssignment = ensureContainerAssignment('categoryNames', categoryNamesContainer, locale, alignedCategoryNames);
+    categoryNamesContainer = categoryNamesAssignment.container;
+    var gearItemsAssignment = ensureContainerAssignment('gearItems', gearItemsContainer, locale, alignedGearItems);
+    gearItemsContainer = gearItemsAssignment.container;
+    if (!textsAssignment.assigned || !categoryNamesAssignment.assigned || !gearItemsAssignment.assigned) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('Failed to fully register locale data', locale);
+      }
+    }
     if (Object.prototype.hasOwnProperty.call(LOCALE_SCRIPTS, locale)) {
       LOCALE_SCRIPTS[locale].loaded = true;
     }
