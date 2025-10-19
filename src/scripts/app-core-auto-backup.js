@@ -134,6 +134,42 @@ function resolveLegacyAutoBackupLogger() {
 
 let autoBackupLoggerCache = null;
 
+const deepCloneStrategyWarnings = {
+  coreDeepClone: false,
+  cineDeepClone: false,
+  structuredClone: false,
+  jsonClone: false,
+};
+
+function warnDeepCloneStrategyFailure(strategy, error) {
+  if (!strategy || deepCloneStrategyWarnings[strategy]) {
+    return;
+  }
+
+  deepCloneStrategyWarnings[strategy] = true;
+
+  const messages = {
+    coreDeepClone: 'CORE_DEEP_CLONE failed; falling back to runtime deep clone helpers',
+    cineDeepClone: '__cineDeepClone failed; falling back to runtime deep clone helpers',
+    structuredClone: 'structuredClone failed while deep cloning auto backup data; using JSON fallback',
+    jsonClone: 'JSON deep clone failed while preparing auto backup data; returning original value',
+  };
+
+  const message = messages[strategy] || 'Deep clone strategy failed; falling back to next option';
+
+  try {
+    logAutoBackupEvent('warn', message, error, { strategy });
+  } catch (loggingError) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      try {
+        console.warn('[auto-backup] Deep clone warning:', message, error, loggingError);
+      } catch (consoleError) {
+        void consoleError;
+      }
+    }
+  }
+}
+
 function resolveAutoBackupLogger() {
   if (autoBackupLoggerCache) {
     return autoBackupLoggerCache;
@@ -223,7 +259,7 @@ function resolveDeepCloneHelper(explicit) {
       return CORE_DEEP_CLONE;
     }
   } catch (coreDeepCloneError) {
-    void coreDeepCloneError;
+    warnDeepCloneStrategyFailure('coreDeepClone', coreDeepCloneError);
   }
 
   const scopes = collectAutoBackupLoggingScopes();
@@ -237,7 +273,7 @@ function resolveDeepCloneHelper(explicit) {
         return scope.__cineDeepClone;
       }
     } catch (scopeError) {
-      void scopeError;
+      warnDeepCloneStrategyFailure('cineDeepClone', scopeError);
     }
   }
 
@@ -250,12 +286,12 @@ function resolveDeepCloneHelper(explicit) {
         return structuredClone(value);
       }
     } catch (structuredCloneError) {
-      void structuredCloneError;
+      warnDeepCloneStrategyFailure('structuredClone', structuredCloneError);
     }
     try {
       return JSON.parse(JSON.stringify(value));
     } catch (jsonCloneError) {
-      void jsonCloneError;
+      warnDeepCloneStrategyFailure('jsonClone', jsonCloneError);
     }
     return value;
   };
