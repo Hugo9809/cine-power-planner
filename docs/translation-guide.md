@@ -5,11 +5,14 @@ offline bundles safe and documentation consistent.
 
 ## Locale files
 
-- All strings live in `src/scripts/translations.js`.
-- Each locale exports the same structure (English, German, French, Italian,
-  Spanish).
+- Each language lives in `src/scripts/translations/<locale>.js` and exports the
+  full translation tree used by the planner (English, German, French, Italian,
+  Spanish by default).
+- The loader `src/scripts/translations.js` resolves these modules via the
+  `LOCALE_SCRIPTS` map and exposes shared loading states so offline launches can
+  pull the correct bundle without network access.
 - Never rely on remote translation services; edits happen locally and are
-  reviewed offline.
+  reviewed offline to keep sensitive projects and rehearsal data on-device.
 
 ## Workflow
 
@@ -17,13 +20,20 @@ offline bundles safe and documentation consistent.
    - List UI strings affected by the feature/documentation update.
    - Identify docs (READMEs, guides) requiring translated updates.
 2. **Edit safely**
-   - Update `translations.js` entries for each locale.
-   - Keep placeholders, keyboard shortcuts and punctuation consistent.
-   - Confirm long strings still fit UI components by testing offline.
+   - Update every affected `src/scripts/translations/<locale>.js` module. Copy
+     from English first, then translate while preserving placeholders, keyboard
+     shortcuts and punctuation.
+   - Register new locales—or adjust URLs and loading copy—in
+     `src/scripts/translations.js` so the loader preloads the module and displays
+     the correct offline loading message.
+   - Confirm long strings still fit UI components by testing offline. Capture
+     screenshots for the verification packet when layouts differ.
 3. **Synchronise docs**
-   - Mirror changes in `README.<locale>.md` and relevant docs if they include
-     locale-specific guidance.
-   - Update screenshots using the same locale.
+   - Mirror updates across `README.<locale>.md`, the help overlay and any docs
+     referencing the affected workflow so every offline reader sees the same
+     copy.
+   - Update screenshots using the same locale and store them with the offline
+     evidence set.
 4. **Review**
    - Use bilingual reviewers to validate accuracy.
    - Run the planner in each locale, rehearse save/share/import/backup/restore

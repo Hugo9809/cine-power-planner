@@ -479,9 +479,14 @@ Neue Sprachen lassen sich sofort testen – kein Build nötig:
   aktualisiert wurden.
 
 1. README duplizieren und übersetzen (`README.<lang>.md`).
-2. UI-Strings in `translations.js` ergänzen; Platzhalter wie `%s` erhalten.
-3. Statische Seiten (Privacy, Impressum) kopieren und übersetzen.
-4. `npm test` ausführen, bevor ein Pull Request entsteht.
+2. Ein bestehendes Sprachmodul unter `src/scripts/translations/<locale>.js`
+   kopieren und alle Werte offline übersetzen. Platzhalter wie `%s`,
+   Tastenkürzel und Satzzeichen unverändert lassen.
+3. Die Sprache im Loader `src/scripts/translations.js` registrieren, damit
+   `LOCALE_SCRIPTS` und die Ladehinweiskarten das Modul auch bei Offline-Starts
+   vorladen.
+4. Statische Seiten (Privacy, Impressum) kopieren und übersetzen.
+5. `npm test` ausführen, bevor ein Pull Request entsteht.
 
 ## Als App installieren
 
