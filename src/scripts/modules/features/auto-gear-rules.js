@@ -826,9 +826,10 @@ function buildCameraHandleAutoRules(baseInfo, baselineMap) {
 
     if (!diff || (!diff.add.length && !diff.remove.length)) return;
 
-    const additions = cloneAutoGearItems(diff.add);
-    if (!additions.length) return;
-    const removals = cloneAutoGearItems(diff.remove);
+    const additions = Array.isArray(diff.add) ? cloneAutoGearItems(diff.add) : [];
+    const removals = Array.isArray(diff.remove) ? cloneAutoGearItems(diff.remove) : [];
+
+    if (!additions.length && !removals.length) return;
 
     rules.push({
       id: generateAutoGearId('rule'),
