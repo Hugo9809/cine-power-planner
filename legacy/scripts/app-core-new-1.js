@@ -7786,194 +7786,142 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   if (autoGearEditor) {
     autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
   }
-  var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
-  var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
-  var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
-  var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
-  var autoGearScenarioModeSelectElement = document.getElementById('autoGearScenarioMode');
-  var autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
-  var autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
-  var autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
-  var autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
-  var autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
-  var autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
-  var autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
-  var autoGearShootingDaysInput = document.getElementById('autoGearShootingDays');
-  var autoGearShootingDaysLabel = document.getElementById('autoGearShootingDaysLabel');
-  var autoGearShootingDaysHelp = document.getElementById('autoGearShootingDaysHelp');
-  var autoGearShootingDaysValueLabel = document.getElementById('autoGearShootingDaysCountLabel');
-  var autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
-  var autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
-  var autoGearMatteboxModeLabel = document.getElementById('autoGearMatteboxModeLabel');
-  var autoGearMatteboxModeSelect = document.getElementById('autoGearMatteboxMode');
-  var autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
-  var autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
-  var autoGearCameraHandleModeLabel = document.getElementById('autoGearCameraHandleModeLabel');
-  var autoGearCameraHandleModeSelect = document.getElementById('autoGearCameraHandleMode');
-  var autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
-  var autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
-  var autoGearViewfinderExtensionModeLabel = document.getElementById('autoGearViewfinderExtensionModeLabel');
-  var autoGearViewfinderExtensionModeSelect = document.getElementById('autoGearViewfinderExtensionMode');
-  var autoGearDeliveryResolutionSelect = document.getElementById('autoGearDeliveryResolution');
-  var autoGearDeliveryResolutionLabel = document.getElementById('autoGearDeliveryResolutionLabel');
-  var autoGearDeliveryResolutionModeLabel = document.getElementById('autoGearDeliveryResolutionModeLabel');
-  var autoGearDeliveryResolutionModeSelect = document.getElementById('autoGearDeliveryResolutionMode');
-  var autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
-  var autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
-  var autoGearVideoDistributionModeLabel = document.getElementById('autoGearVideoDistributionModeLabel');
-  var autoGearVideoDistributionModeSelect = document.getElementById('autoGearVideoDistributionMode');
-  var autoGearCameraSelect = document.getElementById('autoGearCamera');
-  var autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
-  var autoGearCameraModeLabel = document.getElementById('autoGearCameraModeLabel');
-  var autoGearCameraModeSelect = document.getElementById('autoGearCameraMode');
-  var autoGearOwnGearLabel = document.getElementById('autoGearOwnGearLabel');
-  var autoGearOwnGearModeLabel = document.getElementById('autoGearOwnGearModeLabel');
-  var autoGearOwnGearModeSelect = document.getElementById('autoGearOwnGearMode');
-  var autoGearOwnGearSelect = document.getElementById('autoGearOwnGear');
-  var autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
-  var autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
-  var autoGearCameraWeightOperatorLabel = document.getElementById('autoGearCameraWeightOperatorLabel');
-  var autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValue');
-  var autoGearCameraWeightValueLabel = document.getElementById('autoGearCameraWeightValueLabel');
-  var autoGearCameraWeightHelp = document.getElementById('autoGearCameraWeightHelp');
-  var autoGearMonitorSelect = document.getElementById('autoGearMonitor');
-  var autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
-  var autoGearMonitorModeLabel = document.getElementById('autoGearMonitorModeLabel');
-  var autoGearMonitorModeSelect = document.getElementById('autoGearMonitorMode');
-  var autoGearTripodHeadBrandSelect = document.getElementById('autoGearTripodHeadBrand');
-  var autoGearTripodHeadBrandLabel = document.getElementById('autoGearTripodHeadBrandLabel');
-  var autoGearTripodHeadBrandModeLabel = document.getElementById('autoGearTripodHeadBrandModeLabel');
-  var autoGearTripodHeadBrandModeSelect = document.getElementById('autoGearTripodHeadBrandMode');
-  var autoGearTripodBowlSelect = document.getElementById('autoGearTripodBowl');
-  var autoGearTripodBowlLabel = document.getElementById('autoGearTripodBowlLabel');
-  var autoGearTripodBowlModeLabel = document.getElementById('autoGearTripodBowlModeLabel');
-  var autoGearTripodBowlModeSelect = document.getElementById('autoGearTripodBowlMode');
-  var autoGearTripodTypesSelect = document.getElementById('autoGearTripodTypes');
-  var autoGearTripodTypesLabel = document.getElementById('autoGearTripodTypesLabel');
-  var autoGearTripodTypesModeLabel = document.getElementById('autoGearTripodTypesModeLabel');
-  var autoGearTripodTypesModeSelect = document.getElementById('autoGearTripodTypesMode');
-  var autoGearTripodSpreaderSelect = document.getElementById('autoGearTripodSpreader');
-  var autoGearTripodSpreaderLabel = document.getElementById('autoGearTripodSpreaderLabel');
-  var autoGearTripodSpreaderModeLabel = document.getElementById('autoGearTripodSpreaderModeLabel');
-  var autoGearTripodSpreaderModeSelect = document.getElementById('autoGearTripodSpreaderMode');
-  var autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
-  var autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
-  var autoGearCrewPresentModeLabel = document.getElementById('autoGearCrewPresentModeLabel');
-  var autoGearCrewPresentModeSelect = document.getElementById('autoGearCrewPresentMode');
-  var autoGearCrewAbsentSelect = document.getElementById('autoGearCrewAbsent');
-  var autoGearCrewAbsentLabel = document.getElementById('autoGearCrewAbsentLabel');
-  var autoGearCrewAbsentModeLabel = document.getElementById('autoGearCrewAbsentModeLabel');
-  var autoGearCrewAbsentModeSelect = document.getElementById('autoGearCrewAbsentMode');
-  var autoGearWirelessSelect = document.getElementById('autoGearWireless');
-  var autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
-  var autoGearWirelessModeLabel = document.getElementById('autoGearWirelessModeLabel');
-  var autoGearWirelessModeSelect = document.getElementById('autoGearWirelessMode');
-  var autoGearMotorsSelect = document.getElementById('autoGearMotors');
-  var autoGearMotorsLabel = document.getElementById('autoGearMotorsLabel');
-  var autoGearMotorsModeLabel = document.getElementById('autoGearMotorsModeLabel');
-  var autoGearMotorsModeSelect = document.getElementById('autoGearMotorsMode');
-  var autoGearControllersSelect = document.getElementById('autoGearControllers');
-  var autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
-  var autoGearControllersModeLabel = document.getElementById('autoGearControllersModeLabel');
-  var autoGearControllersModeSelect = document.getElementById('autoGearControllersMode');
-  var autoGearDistanceSelect = document.getElementById('autoGearDistance');
-  var autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
-  var autoGearDistanceModeLabel = document.getElementById('autoGearDistanceModeLabel');
-  var autoGearDistanceModeSelect = document.getElementById('autoGearDistanceMode');
-  var autoGearConditionLabels = {
-    always: autoGearAlwaysLabel,
-    scenarios: autoGearScenariosLabel,
-    shootingDays: autoGearShootingDaysLabel,
-    mattebox: autoGearMatteboxLabel,
-    cameraHandle: autoGearCameraHandleLabel,
-    viewfinderExtension: autoGearViewfinderExtensionLabel,
-    deliveryResolution: autoGearDeliveryResolutionLabel,
-    videoDistribution: autoGearVideoDistributionLabel,
-    camera: autoGearCameraLabel,
-    ownGear: autoGearOwnGearLabel,
-    cameraWeight: autoGearCameraWeightLabel,
-    monitor: autoGearMonitorLabel,
-    tripodHeadBrand: autoGearTripodHeadBrandLabel,
-    tripodBowl: autoGearTripodBowlLabel,
-    tripodTypes: autoGearTripodTypesLabel,
-    tripodSpreader: autoGearTripodSpreaderLabel,
-    crewPresent: autoGearCrewPresentLabel,
-    crewAbsent: autoGearCrewAbsentLabel,
-    wireless: autoGearWirelessLabel,
-    motors: autoGearMotorsLabel,
-    controllers: autoGearControllersLabel,
-    distance: autoGearDistanceLabel
+  var AUTO_GEAR_UI_EXPORTS = function resolveAutoGearUiExports() {
+    if (typeof resolveCoreSupportModule === 'function') {
+      try {
+        var resolved = resolveCoreSupportModule('cineCoreAutoGearUi', './app-core-auto-gear-ui.js');
+        if (resolved && _typeof(resolved) === 'object') {
+          return resolved;
+        }
+      } catch (autoGearUiResolutionError) {
+        void autoGearUiResolutionError;
+      }
+    }
+    try {
+      if ((typeof cineCoreAutoGearUi === "undefined" ? "undefined" : _typeof(cineCoreAutoGearUi)) === 'object' && cineCoreAutoGearUi) {
+        return cineCoreAutoGearUi;
+      }
+    } catch (cineCoreAutoGearUiError) {
+      void cineCoreAutoGearUiError;
+    }
+    try {
+      var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+      if (scope && _typeof(scope.cineCoreAutoGearUi) === 'object' && scope.cineCoreAutoGearUi) {
+        return scope.cineCoreAutoGearUi;
+      }
+    } catch (autoGearUiScopeError) {
+      void autoGearUiScopeError;
+    }
+    return {};
+  }();
+  var autoGearRuleNameInput = AUTO_GEAR_UI_EXPORTS.autoGearRuleNameInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearRuleNameInput : null;
+  var autoGearRuleNameLabel = AUTO_GEAR_UI_EXPORTS.autoGearRuleNameLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearRuleNameLabel : null;
+  var autoGearScenariosSelect = AUTO_GEAR_UI_EXPORTS.autoGearScenariosSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenariosSelect : null;
+  var autoGearScenariosLabel = AUTO_GEAR_UI_EXPORTS.autoGearScenariosLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenariosLabel : null;
+  var autoGearScenarioModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeLabel : null;
+  var autoGearScenarioMultiplierContainer = AUTO_GEAR_UI_EXPORTS.autoGearScenarioMultiplierContainer !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioMultiplierContainer : null;
+  var autoGearScenarioBaseSelect = AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseSelect : null;
+  var autoGearScenarioBaseLabel = AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseLabel : null;
+  var autoGearScenarioFactorInput = AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorInput : null;
+  var autoGearScenarioFactorLabel = AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorLabel : null;
+  var autoGearShootingDaysMode = AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysMode !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysMode : null;
+  var autoGearShootingDaysInput = AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysInput : null;
+  var autoGearShootingDaysLabel = AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysLabel : null;
+  var autoGearShootingDaysHelp = AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysHelp !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysHelp : null;
+  var autoGearShootingDaysValueLabel = AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysValueLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysValueLabel : null;
+  var autoGearMatteboxSelect = AUTO_GEAR_UI_EXPORTS.autoGearMatteboxSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxSelect : null;
+  var autoGearMatteboxLabel = AUTO_GEAR_UI_EXPORTS.autoGearMatteboxLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxLabel : null;
+  var autoGearMatteboxModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeLabel : null;
+  var autoGearMatteboxModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeSelect : null;
+  var autoGearCameraHandleSelect = AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleSelect : null;
+  var autoGearCameraHandleLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleLabel : null;
+  var autoGearCameraHandleModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeLabel : null;
+  var autoGearCameraHandleModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeSelect : null;
+  var autoGearViewfinderExtensionSelect = AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionSelect : null;
+  var autoGearViewfinderExtensionLabel = AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionLabel : null;
+  var autoGearViewfinderExtensionModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeLabel : null;
+  var autoGearViewfinderExtensionModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeSelect : null;
+  var autoGearDeliveryResolutionSelect = AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionSelect : null;
+  var autoGearDeliveryResolutionLabel = AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionLabel : null;
+  var autoGearDeliveryResolutionModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeLabel : null;
+  var autoGearDeliveryResolutionModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeSelect : null;
+  var autoGearVideoDistributionSelect = AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionSelect : null;
+  var autoGearVideoDistributionLabel = AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionLabel : null;
+  var autoGearVideoDistributionModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeLabel : null;
+  var autoGearVideoDistributionModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeSelect : null;
+  var autoGearCameraSelect = AUTO_GEAR_UI_EXPORTS.autoGearCameraSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraSelect : null;
+  var autoGearCameraLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraLabel : null;
+  var autoGearCameraModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraModeLabel : null;
+  var autoGearCameraModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearCameraModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraModeSelect : null;
+  var autoGearOwnGearLabel = AUTO_GEAR_UI_EXPORTS.autoGearOwnGearLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearLabel : null;
+  var autoGearOwnGearModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeLabel : null;
+  var autoGearOwnGearModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeSelect : null;
+  var autoGearOwnGearSelect = AUTO_GEAR_UI_EXPORTS.autoGearOwnGearSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearSelect : null;
+  var autoGearCameraWeightLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightLabel : null;
+  var autoGearCameraWeightOperator = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperator !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperator : null;
+  var autoGearCameraWeightOperatorLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperatorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperatorLabel : null;
+  var autoGearCameraWeightValueInput = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueInput : null;
+  var autoGearCameraWeightValueLabel = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueLabel : null;
+  var autoGearCameraWeightHelp = AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightHelp !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightHelp : null;
+  var autoGearMonitorSelect = AUTO_GEAR_UI_EXPORTS.autoGearMonitorSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorSelect : null;
+  var autoGearMonitorLabel = AUTO_GEAR_UI_EXPORTS.autoGearMonitorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorLabel : null;
+  var autoGearMonitorModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeLabel : null;
+  var autoGearMonitorModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeSelect : null;
+  var autoGearTripodHeadBrandSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandSelect : null;
+  var autoGearTripodHeadBrandLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandLabel : null;
+  var autoGearTripodHeadBrandModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeLabel : null;
+  var autoGearTripodHeadBrandModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeSelect : null;
+  var autoGearTripodBowlSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlSelect : null;
+  var autoGearTripodBowlLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlLabel : null;
+  var autoGearTripodBowlModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeLabel : null;
+  var autoGearTripodBowlModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeSelect : null;
+  var autoGearTripodTypesSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesSelect : null;
+  var autoGearTripodTypesLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesLabel : null;
+  var autoGearTripodTypesModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeLabel : null;
+  var autoGearTripodTypesModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeSelect : null;
+  var autoGearTripodSpreaderSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderSelect : null;
+  var autoGearTripodSpreaderLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderLabel : null;
+  var autoGearTripodSpreaderModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeLabel : null;
+  var autoGearTripodSpreaderModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeSelect : null;
+  var autoGearCrewPresentSelect = AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentSelect : null;
+  var autoGearCrewPresentLabel = AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentLabel : null;
+  var autoGearCrewPresentModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeLabel : null;
+  var autoGearCrewPresentModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeSelect : null;
+  var autoGearCrewAbsentSelect = AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentSelect : null;
+  var autoGearCrewAbsentLabel = AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentLabel : null;
+  var autoGearCrewAbsentModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeLabel : null;
+  var autoGearCrewAbsentModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeSelect : null;
+  var autoGearWirelessSelect = AUTO_GEAR_UI_EXPORTS.autoGearWirelessSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessSelect : null;
+  var autoGearWirelessLabel = AUTO_GEAR_UI_EXPORTS.autoGearWirelessLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessLabel : null;
+  var autoGearWirelessModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeLabel : null;
+  var autoGearWirelessModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeSelect : null;
+  var autoGearMotorsSelect = AUTO_GEAR_UI_EXPORTS.autoGearMotorsSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsSelect : null;
+  var autoGearMotorsLabel = AUTO_GEAR_UI_EXPORTS.autoGearMotorsLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsLabel : null;
+  var autoGearMotorsModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeLabel : null;
+  var autoGearMotorsModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeSelect : null;
+  var autoGearControllersSelect = AUTO_GEAR_UI_EXPORTS.autoGearControllersSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersSelect : null;
+  var autoGearControllersLabel = AUTO_GEAR_UI_EXPORTS.autoGearControllersLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersLabel : null;
+  var autoGearControllersModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearControllersModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersModeLabel : null;
+  var autoGearControllersModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearControllersModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersModeSelect : null;
+  var autoGearDistanceSelect = AUTO_GEAR_UI_EXPORTS.autoGearDistanceSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceSelect : null;
+  var autoGearDistanceLabel = AUTO_GEAR_UI_EXPORTS.autoGearDistanceLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceLabel : null;
+  var autoGearDistanceModeLabel = AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeLabel : null;
+  var autoGearDistanceModeSelect = AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeSelect : null;
+  var autoGearConditionLabels = AUTO_GEAR_UI_EXPORTS.autoGearConditionLabels !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLabels : {};
+  var autoGearConditionSelects = AUTO_GEAR_UI_EXPORTS.autoGearConditionSelects !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionSelects : {};
+  var autoGearConditionLogicLabels = AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicLabels !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicLabels : {};
+  var autoGearConditionLogicSelects = AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicSelects !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicSelects : {};
+  var getAutoGearScenarioModeSelectElementRef = typeof AUTO_GEAR_UI_EXPORTS.getAutoGearScenarioModeSelectElement === 'function' ? AUTO_GEAR_UI_EXPORTS.getAutoGearScenarioModeSelectElement : function () {
+    return AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeSelectElement || null;
   };
-  var autoGearConditionSelects = {
-    always: null,
-    scenarios: autoGearScenariosSelect,
-    shootingDays: autoGearShootingDaysInput,
-    mattebox: autoGearMatteboxSelect,
-    cameraHandle: autoGearCameraHandleSelect,
-    viewfinderExtension: autoGearViewfinderExtensionSelect,
-    deliveryResolution: autoGearDeliveryResolutionSelect,
-    videoDistribution: autoGearVideoDistributionSelect,
-    camera: autoGearCameraSelect,
-    ownGear: autoGearOwnGearSelect,
-    cameraWeight: autoGearCameraWeightValueInput,
-    monitor: autoGearMonitorSelect,
-    tripodHeadBrand: autoGearTripodHeadBrandSelect,
-    tripodBowl: autoGearTripodBowlSelect,
-    tripodTypes: autoGearTripodTypesSelect,
-    tripodSpreader: autoGearTripodSpreaderSelect,
-    crewPresent: autoGearCrewPresentSelect,
-    crewAbsent: autoGearCrewAbsentSelect,
-    wireless: autoGearWirelessSelect,
-    motors: autoGearMotorsSelect,
-    controllers: autoGearControllersSelect,
-    distance: autoGearDistanceSelect
+  var setAutoGearScenarioModeSelectElementRef = typeof AUTO_GEAR_UI_EXPORTS.setAutoGearScenarioModeSelectElement === 'function' ? AUTO_GEAR_UI_EXPORTS.setAutoGearScenarioModeSelectElement : function (value) {
+    AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeSelectElement = value || null;
   };
-  var autoGearConditionLogicLabels = {
-    mattebox: autoGearMatteboxModeLabel,
-    cameraHandle: autoGearCameraHandleModeLabel,
-    viewfinderExtension: autoGearViewfinderExtensionModeLabel,
-    deliveryResolution: autoGearDeliveryResolutionModeLabel,
-    videoDistribution: autoGearVideoDistributionModeLabel,
-    camera: autoGearCameraModeLabel,
-    ownGear: autoGearOwnGearModeLabel,
-    monitor: autoGearMonitorModeLabel,
-    tripodHeadBrand: autoGearTripodHeadBrandModeLabel,
-    tripodBowl: autoGearTripodBowlModeLabel,
-    tripodTypes: autoGearTripodTypesModeLabel,
-    tripodSpreader: autoGearTripodSpreaderModeLabel,
-    crewPresent: autoGearCrewPresentModeLabel,
-    crewAbsent: autoGearCrewAbsentModeLabel,
-    wireless: autoGearWirelessModeLabel,
-    motors: autoGearMotorsModeLabel,
-    controllers: autoGearControllersModeLabel,
-    distance: autoGearDistanceModeLabel
-  };
-  var autoGearConditionLogicSelects = {
-    mattebox: autoGearMatteboxModeSelect,
-    cameraHandle: autoGearCameraHandleModeSelect,
-    viewfinderExtension: autoGearViewfinderExtensionModeSelect,
-    deliveryResolution: autoGearDeliveryResolutionModeSelect,
-    videoDistribution: autoGearVideoDistributionModeSelect,
-    camera: autoGearCameraModeSelect,
-    ownGear: autoGearOwnGearModeSelect,
-    monitor: autoGearMonitorModeSelect,
-    tripodHeadBrand: autoGearTripodHeadBrandModeSelect,
-    tripodBowl: autoGearTripodBowlModeSelect,
-    tripodTypes: autoGearTripodTypesModeSelect,
-    tripodSpreader: autoGearTripodSpreaderModeSelect,
-    crewPresent: autoGearCrewPresentModeSelect,
-    crewAbsent: autoGearCrewAbsentModeSelect,
-    wireless: autoGearWirelessModeSelect,
-    motors: autoGearMotorsModeSelect,
-    controllers: autoGearControllersModeSelect,
-    distance: autoGearDistanceModeSelect
-  };
-  Object.values(autoGearConditionLogicSelects).forEach(function (select) {
-    if (select) select.disabled = true;
-  });
-  var AUTO_GEAR_CONDITION_KEYS = ['always', 'scenarios', 'shootingDays', 'mattebox', 'cameraHandle', 'viewfinderExtension', 'deliveryResolution', 'videoDistribution', 'camera', 'ownGear', 'cameraWeight', 'monitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'crewPresent', 'crewAbsent', 'wireless', 'motors', 'controllers', 'distance'];
-  var AUTO_GEAR_REPEATABLE_CONDITIONS = new Set(['scenarios', 'mattebox', 'cameraHandle', 'viewfinderExtension', 'deliveryResolution', 'videoDistribution', 'camera', 'ownGear', 'monitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'crewPresent', 'crewAbsent', 'wireless', 'motors', 'controllers', 'distance']);
-  var AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
+  var autoGearScenarioModeSelectElement = getAutoGearScenarioModeSelectElementRef();
+  setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
+  var AUTO_GEAR_CONDITION_KEYS = Array.isArray(AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_KEYS) ? AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_KEYS : ['always', 'scenarios', 'shootingDays', 'mattebox', 'cameraHandle', 'viewfinderExtension', 'deliveryResolution', 'videoDistribution', 'camera', 'ownGear', 'cameraWeight', 'monitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'crewPresent', 'crewAbsent', 'wireless', 'motors', 'controllers', 'distance'];
+  var AUTO_GEAR_REPEATABLE_CONDITIONS = AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_REPEATABLE_CONDITIONS instanceof Set ? AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_REPEATABLE_CONDITIONS : new Set(['scenarios', 'mattebox', 'cameraHandle', 'viewfinderExtension', 'deliveryResolution', 'videoDistribution', 'camera', 'ownGear', 'monitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'crewPresent', 'crewAbsent', 'wireless', 'motors', 'controllers', 'distance']);
+  var AUTO_GEAR_CONDITION_FALLBACK_LABELS = AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_FALLBACK_LABELS || {
     always: 'Always include',
     scenarios: 'Required scenarios',
     shootingDays: 'Shooting days condition',
@@ -8228,8 +8176,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function _setLanguage() {
     _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
-      var _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en74, _texts$en75, _texts$en76, _texts$en77, _texts$en78, _texts$en79, _texts$en80, _texts$en81, _texts$en82, _texts$en83, _texts$en84, _texts$en85, _texts$en86, _texts$en87, _texts$en88, _texts$en90, _texts$en195, _texts$en196, _texts$lang, _texts$en197, _texts$lang2, _texts$en198, _texts$lang3, _texts$en199, _texts$lang4, _texts$en200, _texts$en262;
-      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineHelp, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en42, extraLabel, _texts$en43, heading, _texts$en44, filenameLabel, _texts$en45, confirmLabel, _texts$en46, cancelLabel, _texts$en47, _texts$en48, label, help, _texts$en49, _texts$en50, _label5, _help2, sharedImportLegendText, _texts$en51, title, _texts$en52, message, _texts$en53, _label6, _texts$en54, _label7, _texts$en55, legend, _texts$en56, _texts$en57, _label8, _help3, _texts$en58, _texts$en59, _label9, _help4, _texts$en60, _texts$en61, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en62, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en63, _texts$en64, generalLabel, generalHelp, _texts$en65, sectionHeading, _texts$en66, _sectionHeading, _texts$en67, _sectionHeading2, _texts$en68, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en89, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en92, _texts$en93, headingHelp, _texts$en94, _texts$en95, _heading, _texts$en96, _description, _texts$en98, _texts$en99, _texts$en100, _label10, _help6, _texts$en101, _label11, _texts$en102, _label12, _texts$en103, _texts$en104, _label13, _help7, _texts$en105, _texts$en106, _label14, _help8, _texts$en107, _texts$en108, _label15, _help9, _texts$en109, _texts$en110, _label16, _help0, _texts$en111, _texts$en112, _label17, _help1, _texts$en113, placeholder, _texts$en114, _texts$en115, _label18, _help10, _texts$en116, _label19, _texts$en117, _texts$en118, _description2, _texts$en119, _texts$en120, _label20, _help11, _texts$en121, hiddenText, _texts$en122, _texts$en123, _label21, _help12, _texts$en124, _label22, _texts$en125, _label23, _texts$en126, emptyText, _texts$en127, _texts$en128, _label24, _help13, _texts$en129, _texts$en130, _label25, _help14, _texts$en131, _label26, _texts$en132, _texts$en133, _label27, _help15, _texts$en134, _texts$en135, _label28, _help16, _texts$en136, _texts$en137, modeLabel, modeHelp, _texts$en138, _texts$en139, baseLabel, baseHelp, _texts$en140, _texts$en141, factorLabel, factorHelp, _texts$en142, _texts$en143, _texts$en144, _texts$en145, _texts$en146, _texts$en147, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en148, _texts$en149, _label30, _help18, _texts$en150, _texts$en151, _label31, _help19, _texts$en152, _texts$en153, _label32, _help20, _texts$en154, _texts$en155, _label33, _help21, _texts$en156, _texts$en157, _label34, _help22, _texts$en158, _texts$en159, _label35, _help23, _texts$en160, _texts$en161, _texts$en162, _texts$en163, _label36, _help24, _texts$en164, _texts$en165, _label37, _help25, _texts$en166, _label38, _texts$en167, _texts$en168, _texts$en169, greaterLabel, lessLabel, equalLabel, _texts$en170, _texts$en171, _label39, _help26, _texts$en172, _help27, _texts$en173, _texts$en174, _label40, _help28, _texts$en175, _texts$en176, _label41, _help29, _texts$en177, _texts$en178, _label42, _help30, _texts$en179, _texts$en180, _label43, _help31, _texts$en181, _texts$en182, _label44, _help32, _texts$en183, _texts$en184, _label45, _help33, _texts$en185, _texts$en186, _label46, _help34, _texts$en187, _texts$en188, _label47, _help35, _texts$en189, _texts$en190, _label48, _help36, _texts$en191, _texts$en192, _label49, _help37, _texts$en193, _texts$en194, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _label51, _help39, _placeholder3, _texts$en205, _texts$en206, _label52, hint, helpText, _texts$en207, _label53, _texts$en208, _label54, _texts$en209, _label55, _texts$en210, _label56, _texts$en211, _texts$en212, _texts$en213, _texts$en214, _texts$en215, _texts$en216, _texts$en217, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en218, _label57, _texts$en219, _label58, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _label59, _help40, _placeholder4, _texts$en224, _texts$en225, _label60, _hint, _helpText4, _texts$en226, _label61, _texts$en227, _label62, _texts$en228, _label63, _texts$en229, _label64, _texts$en230, _texts$en231, _texts$en232, _texts$en233, _texts$en234, _texts$en235, _texts$en236, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en237, _label65, _texts$en238, _label66, _texts$en239, _heading2, _texts$en240, _description3, _texts$en241, _heading3, _texts$en242, _label67, _texts$en243, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en244, _texts$en245, _headingText, _headingHelp, _texts$en246, _texts$en247, _texts$en248, requestLabel, requestHelp, _texts$en249, idleText, _texts$en250, _texts$en251, _headingText2, _headingHelp2, _texts$en252, _texts$en253, _texts$en254, backupLabel, backupHelp, _texts$en255, _texts$en256, openLabel, openHelp, _texts$en257, _texts$en258, statusHeading, statusHelp, _texts$en259, _texts$en260, _texts$en261, statusDefaultText, _texts$en263, sectionHelp, _texts$en264, _texts$en265, _headingText3, _headingHelp3, _texts$en266, _texts$en267, _filterLabel, _texts$en268, _texts$en269, _texts$en270, _texts$en271, _texts$en272, optionTexts, filterHelp, _texts$en273, namespaceLabel, _texts$en274, _texts$en275, _placeholder5, namespaceHelp, _texts$en276, historyLabel, _texts$en277, historyHelp, _texts$en278, _texts$en279, limitHelp, limitAria, _texts$en280, consoleLabel, _texts$en281, consoleHelp, _texts$en282, consoleCaptureLabel, _texts$en283, consoleCaptureHelp, _texts$en284, captureLabel, _texts$en285, captureHelp, _texts$en286, persistLabel, _texts$en287, persistHelp, _texts$en288, exportLabel, _texts$en289, exportHelp, _texts$en290, statusText, _texts$en291, _emptyText, _texts$en292, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en293, _texts$en294, _texts$en295, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en296, _texts$en297, proceedLabel, proceedHelp, _texts$en298, _texts$en299, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en300, _label69, saveHelp, _texts$en301, _cancelLabel, cancelHelp, menuToggle, _texts$en302, _texts$en303, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en304, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en305, _closeLabel3, _closeHelp, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en306, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
+      var _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en74, _texts$en75, _texts$en76, _texts$en78, _texts$en183, _texts$en184, _texts$lang, _texts$en185, _texts$lang2, _texts$en186, _texts$lang3, _texts$en187, _texts$lang4, _texts$en188, _texts$en250;
+      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineHelp, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en30, extraLabel, _texts$en31, heading, _texts$en32, filenameLabel, _texts$en33, confirmLabel, _texts$en34, cancelLabel, _texts$en35, _texts$en36, label, help, _texts$en37, _texts$en38, _label5, _help2, sharedImportLegendText, _texts$en39, title, _texts$en40, message, _texts$en41, _label6, _texts$en42, _label7, _texts$en43, legend, _texts$en44, _texts$en45, _label8, _help3, _texts$en46, _texts$en47, _label9, _help4, _texts$en48, _texts$en49, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en50, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en51, _texts$en52, generalLabel, generalHelp, _texts$en53, sectionHeading, _texts$en54, _sectionHeading, _texts$en55, _sectionHeading2, _texts$en56, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en77, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en80, _texts$en81, headingHelp, _texts$en82, _texts$en83, _heading, _texts$en84, _description, _texts$en86, _texts$en87, _texts$en88, _label10, _help6, _texts$en89, _label11, _texts$en90, _label12, _texts$en91, _texts$en92, _label13, _help7, _texts$en93, _texts$en94, _label14, _help8, _texts$en95, _texts$en96, _label15, _help9, _texts$en97, _texts$en98, _label16, _help0, _texts$en99, _texts$en100, _label17, _help1, _texts$en101, placeholder, _texts$en102, _texts$en103, _label18, _help10, _texts$en104, _label19, _texts$en105, _texts$en106, _description2, _texts$en107, _texts$en108, _label20, _help11, _texts$en109, hiddenText, _texts$en110, _texts$en111, _label21, _help12, _texts$en112, _label22, _texts$en113, _label23, _texts$en114, emptyText, _texts$en115, _texts$en116, _label24, _help13, _texts$en117, _texts$en118, _label25, _help14, _texts$en119, _label26, _texts$en120, _texts$en121, _label27, _help15, _texts$en122, _texts$en123, _label28, _help16, _texts$en124, _texts$en125, modeLabel, modeHelp, _texts$en126, _texts$en127, baseLabel, baseHelp, _texts$en128, _texts$en129, factorLabel, factorHelp, _texts$en130, _texts$en131, _texts$en132, _texts$en133, _texts$en134, _texts$en135, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en136, _texts$en137, _label30, _help18, _texts$en138, _texts$en139, _label31, _help19, _texts$en140, _texts$en141, _label32, _help20, _texts$en142, _texts$en143, _label33, _help21, _texts$en144, _texts$en145, _label34, _help22, _texts$en146, _texts$en147, _label35, _help23, _texts$en148, _texts$en149, _texts$en150, _texts$en151, _label36, _help24, _texts$en152, _texts$en153, _label37, _help25, _texts$en154, _label38, _texts$en155, _texts$en156, _texts$en157, greaterLabel, lessLabel, equalLabel, _texts$en158, _texts$en159, _label39, _help26, _texts$en160, _help27, _texts$en161, _texts$en162, _label40, _help28, _texts$en163, _texts$en164, _label41, _help29, _texts$en165, _texts$en166, _label42, _help30, _texts$en167, _texts$en168, _label43, _help31, _texts$en169, _texts$en170, _label44, _help32, _texts$en171, _texts$en172, _label45, _help33, _texts$en173, _texts$en174, _label46, _help34, _texts$en175, _texts$en176, _label47, _help35, _texts$en177, _texts$en178, _label48, _help36, _texts$en179, _texts$en180, _label49, _help37, _texts$en181, _texts$en182, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en189, _texts$en190, _texts$en191, _texts$en192, _label51, _help39, _placeholder3, _texts$en193, _texts$en194, _label52, hint, helpText, _texts$en195, _label53, _texts$en196, _label54, _texts$en197, _label55, _texts$en198, _label56, _texts$en199, _texts$en200, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _texts$en205, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en206, _label57, _texts$en207, _label58, _texts$en208, _texts$en209, _texts$en210, _texts$en211, _label59, _help40, _placeholder4, _texts$en212, _texts$en213, _label60, _hint, _helpText4, _texts$en214, _label61, _texts$en215, _label62, _texts$en216, _label63, _texts$en217, _label64, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _texts$en224, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en225, _label65, _texts$en226, _label66, _texts$en227, _heading2, _texts$en228, _description3, _texts$en229, _heading3, _texts$en230, _label67, _texts$en231, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en232, _texts$en233, _headingText, _headingHelp, _texts$en234, _texts$en235, _texts$en236, requestLabel, requestHelp, _texts$en237, idleText, _texts$en238, _texts$en239, _headingText2, _headingHelp2, _texts$en240, _texts$en241, _texts$en242, backupLabel, backupHelp, _texts$en243, _texts$en244, openLabel, openHelp, _texts$en245, _texts$en246, statusHeading, statusHelp, _texts$en247, _texts$en248, _texts$en249, statusDefaultText, _texts$en251, sectionHelp, _texts$en252, _texts$en253, _headingText3, _headingHelp3, _texts$en254, _texts$en255, _filterLabel, _texts$en256, _texts$en257, _texts$en258, _texts$en259, _texts$en260, optionTexts, filterHelp, _texts$en261, namespaceLabel, _texts$en262, _texts$en263, _placeholder5, namespaceHelp, _texts$en264, historyLabel, _texts$en265, historyHelp, _texts$en266, _texts$en267, limitHelp, limitAria, _texts$en268, consoleLabel, _texts$en269, consoleHelp, _texts$en270, consoleCaptureLabel, _texts$en271, consoleCaptureHelp, _texts$en272, captureLabel, _texts$en273, captureHelp, _texts$en274, persistLabel, _texts$en275, persistHelp, _texts$en276, exportLabel, _texts$en277, exportHelp, _texts$en278, statusText, _texts$en279, _emptyText, _texts$en280, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en281, _texts$en282, _texts$en283, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en284, _texts$en285, proceedLabel, proceedHelp, _texts$en286, _texts$en287, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en288, _label69, saveHelp, _texts$en289, _cancelLabel, cancelHelp, menuToggle, _texts$en290, _texts$en291, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en292, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en293, _closeLabel3, _closeHelp, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en294, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -8702,7 +8650,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
             if (addExtraGearBtnElem) {
-              extraLabel = texts[lang].addExtraGearBtn || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.addExtraGearBtn) || "Add temporary extra gear";
+              extraLabel = texts[lang].addExtraGearBtn || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.addExtraGearBtn) || "Add temporary extra gear";
               addExtraGearBtnElem.textContent = extraLabel;
               addExtraGearBtnElem.setAttribute("title", extraLabel);
               addExtraGearBtnElem.setAttribute("data-help", extraLabel);
@@ -8710,30 +8658,30 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
             shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
             if (shareDialogHeadingElem) {
-              heading = texts[lang].shareDialogTitle || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.shareDialogTitle) || shareDialogHeadingElem.textContent;
+              heading = texts[lang].shareDialogTitle || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.shareDialogTitle) || shareDialogHeadingElem.textContent;
               shareDialogHeadingElem.textContent = heading;
             }
             if (shareFilenameLabelElem) {
-              filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.shareFilenameLabel) || shareFilenameLabelElem.textContent;
+              filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.shareFilenameLabel) || shareFilenameLabelElem.textContent;
               shareFilenameLabelElem.textContent = filenameLabel;
             }
             if (shareConfirmBtn) {
-              confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.shareDialogConfirm) || shareConfirmBtn.textContent;
+              confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.shareDialogConfirm) || shareConfirmBtn.textContent;
               setButtonLabelWithIconBinding(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
               shareConfirmBtn.setAttribute('title', confirmLabel);
               shareConfirmBtn.setAttribute('aria-label', confirmLabel);
               shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
             }
             if (shareCancelBtn) {
-              cancelLabel = texts[lang].shareDialogCancel || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.shareDialogCancel) || shareCancelBtn.textContent;
+              cancelLabel = texts[lang].shareDialogCancel || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.shareDialogCancel) || shareCancelBtn.textContent;
               setButtonLabelWithIconBinding(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
               shareCancelBtn.setAttribute('title', cancelLabel);
               shareCancelBtn.setAttribute('aria-label', cancelLabel);
             }
             if (shareIncludeAutoGearText) {
-              label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
+              label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
               shareIncludeAutoGearText.textContent = label;
-              help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.shareIncludeAutoGearHelp) || label;
+              help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.shareIncludeAutoGearHelp) || label;
               if (shareIncludeAutoGearLabelElem) {
                 shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
               }
@@ -8742,9 +8690,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (shareIncludeOwnedGearText) {
-              _label5 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
+              _label5 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
               shareIncludeOwnedGearText.textContent = _label5;
-              _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.shareIncludeOwnedGearHelp) || _label5;
+              _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.shareIncludeOwnedGearHelp) || _label5;
               if (shareIncludeOwnedGearLabelElem) {
                 shareIncludeOwnedGearLabelElem.setAttribute('data-help', _help2);
               }
@@ -8754,26 +8702,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
             if (sharedImportDialogHeading) {
-              title = texts[lang].sharedImportDialogTitle || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
+              title = texts[lang].sharedImportDialogTitle || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
               sharedImportDialogHeading.textContent = title;
             }
             if (sharedImportDialogMessage) {
-              message = texts[lang].sharedImportDialogMessage || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
+              message = texts[lang].sharedImportDialogMessage || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
               sharedImportDialogMessage.textContent = message;
               sharedImportDialogMessage.setAttribute('data-help', message);
             }
             if (sharedImportConfirmBtn) {
-              _label6 = texts[lang].sharedImportDialogConfirm || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
+              _label6 = texts[lang].sharedImportDialogConfirm || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
               setButtonLabelWithIconBinding(sharedImportConfirmBtn, _label6, ICON_GLYPHS.check);
               sharedImportConfirmBtn.setAttribute('data-help', _label6);
             }
             if (sharedImportCancelBtn) {
-              _label7 = texts[lang].sharedImportDialogCancel || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
+              _label7 = texts[lang].sharedImportDialogCancel || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
               setButtonLabelWithIconBinding(sharedImportCancelBtn, _label7, ICON_GLYPHS.circleX);
               sharedImportCancelBtn.setAttribute('data-help', _label7);
             }
             if (sharedImportLegend) {
-              legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
+              legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
               sharedImportLegend.textContent = legend;
               sharedImportLegendText = legend;
               if (sharedImportOptions) {
@@ -8785,25 +8733,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
             }
             if (sharedImportModeNoneOption) {
-              _label8 = texts[lang].sharedImportAutoGearNone || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
+              _label8 = texts[lang].sharedImportAutoGearNone || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
               sharedImportModeNoneOption.textContent = _label8;
-              _help3 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.sharedImportAutoGearNoneHelp) || _label8;
+              _help3 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.sharedImportAutoGearNoneHelp) || _label8;
               sharedImportModeNoneOption.setAttribute('data-help', _help3);
               sharedImportModeNoneOption.setAttribute('title', _help3);
               sharedImportModeNoneOption.setAttribute('aria-label', _label8);
             }
             if (sharedImportModeProjectOption) {
-              _label9 = texts[lang].sharedImportAutoGearProject || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
+              _label9 = texts[lang].sharedImportAutoGearProject || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
               sharedImportModeProjectOption.textContent = _label9;
-              _help4 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.sharedImportAutoGearProjectHelp) || _label9;
+              _help4 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.sharedImportAutoGearProjectHelp) || _label9;
               sharedImportModeProjectOption.setAttribute('data-help', _help4);
               sharedImportModeProjectOption.setAttribute('title', _help4);
               sharedImportModeProjectOption.setAttribute('aria-label', _label9);
             }
             if (sharedImportModeGlobalOption) {
-              _label0 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
+              _label0 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
               sharedImportModeGlobalOption.textContent = _label0;
-              _help5 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.sharedImportAutoGearGlobalHelp) || _label0;
+              _help5 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.sharedImportAutoGearGlobalHelp) || _label0;
               sharedImportModeGlobalOption.setAttribute('data-help', _help5);
               sharedImportModeGlobalOption.setAttribute('title', _help5);
               sharedImportModeGlobalOption.setAttribute('aria-label', _label0);
@@ -9158,7 +9106,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
             }
             if (settingsTablist) {
-              sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
+              sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
               settingsTablist.setAttribute('aria-label', sectionsLabel);
             }
             getSettingsTabLabelText = function getSettingsTabLabelText(button) {
@@ -9232,27 +9180,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             };
             if (settingsTabGeneral) {
-              generalLabel = texts[lang].settingsTabGeneral || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
-              generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
+              generalLabel = texts[lang].settingsTabGeneral || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
+              generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
               applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
               if (generalSettingsHeading) {
                 generalSettingsHeading.textContent = generalLabel;
                 generalSettingsHeading.setAttribute('data-help', generalHelp);
               }
               if (generalLanguageHeading) {
-                sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
+                sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
                 generalLanguageHeading.textContent = sectionHeading;
               }
               if (generalAppearanceHeading) {
-                _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
+                _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
                 generalAppearanceHeading.textContent = _sectionHeading;
               }
               if (generalTypographyHeading) {
-                _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
+                _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
                 generalTypographyHeading.textContent = _sectionHeading2;
               }
               if (generalBrandingHeading) {
-                _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
+                _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
                 generalBrandingHeading.textContent = _sectionHeading3;
               }
               documentationTrackerController.updateLocalization({
@@ -9264,11 +9212,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 documentationTrackerController.render();
               }
             }
-            applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearHeadingHelp));
-            applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.accessibilityHeadingHelp));
-            applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.backupHeadingHelp));
-            applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.settingsTabData) || texts[lang].dataHeading || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.dataHeadingHelp));
-            applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.aboutHeadingHelp));
+            applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearHeadingHelp));
+            applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.accessibilityHeadingHelp));
+            applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.backupHeadingHelp));
+            applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.settingsTabData) || texts[lang].dataHeading || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.dataHeadingHelp));
+            applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.aboutHeadingHelp));
             settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
             if (settingsLanguageLabel) {
               settingsLanguageLabel.textContent = texts[lang].languageSetting;
@@ -9310,13 +9258,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
             }
             if (cameraColorsDescription) {
-              description = texts[lang].cameraColorSettingDescription || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.cameraColorSettingDescription) || cameraColorsDescription.textContent;
+              description = texts[lang].cameraColorSettingDescription || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.cameraColorSettingDescription) || cameraColorsDescription.textContent;
               cameraColorsDescription.textContent = description;
             }
-            cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.cameraColorInputHelp) || '';
+            cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.cameraColorInputHelp) || '';
             cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
             cameraColorLabelEntries.forEach(function (_ref78) {
-              var _texts$en91;
+              var _texts$en79;
               var _ref79 = _slicedToArray(_ref78, 3),
                 letter = _ref79[0],
                 labelElement = _ref79[1],
@@ -9325,7 +9273,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 return;
               }
               var key = "cameraColor".concat(letter, "Label");
-              var labelText = texts[lang][key] || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91[key]) || labelElement.textContent;
+              var labelText = texts[lang][key] || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79[key]) || labelElement.textContent;
               labelElement.textContent = labelText;
               var helpText = cameraColorHelpTemplate ? cameraColorHelpTemplate.replace('%s', letter) : '';
               if (helpText) {
@@ -9447,26 +9395,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearHeadingElem) {
-              autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearHeading) || 'Automatic Gear Rules';
-              headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearHeadingHelp);
+              autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearHeading) || 'Automatic Gear Rules';
+              headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearHeadingHelp);
               if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
             }
             if (autoGearDescriptionElem) {
-              autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearDescription) || '';
+              autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearDescription) || '';
             }
             if (autoGearMonitorDefaultsHeading) {
-              _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
+              _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
               autoGearMonitorDefaultsHeading.textContent = _heading;
             }
             if (autoGearMonitorDefaultsDescription) {
-              _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
+              _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
               autoGearMonitorDefaultsDescription.textContent = _description;
             }
             autoGearMonitorDefaultControls.forEach(function (control) {
-              var _texts$en97, _control$label, _control$label2;
+              var _texts$en85, _control$label, _control$label2;
               if (!control) return;
               var labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
-              var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
+              var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
               if (control.label && labelText) {
                 control.label.textContent = labelText;
                 control.label.setAttribute('data-help', labelText);
@@ -9483,11 +9431,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               defer: true
             });
             if (autoGearPresetDescription) {
-              autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearPresetDescription) || '';
+              autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearPresetDescription) || '';
             }
             if (autoGearPresetLabel) {
-              _label10 = texts[lang].autoGearPresetLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearPresetLabel) || autoGearPresetLabel.textContent;
-              _help6 = texts[lang].autoGearPresetDescription || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearPresetDescription) || _label10;
+              _label10 = texts[lang].autoGearPresetLabel || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearPresetLabel) || autoGearPresetLabel.textContent;
+              _help6 = texts[lang].autoGearPresetDescription || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearPresetDescription) || _label10;
               autoGearPresetLabel.textContent = _label10;
               autoGearPresetLabel.setAttribute('data-help', _help6);
               if (autoGearPresetSelect) {
@@ -9496,62 +9444,62 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearSavePresetButton) {
-              _label11 = texts[lang].autoGearSavePresetButton || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
+              _label11 = texts[lang].autoGearSavePresetButton || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
               setButtonLabelWithIconBinding(autoGearSavePresetButton, _label11, ICON_GLYPHS.save);
               autoGearSavePresetButton.setAttribute('data-help', _label11);
               autoGearSavePresetButton.setAttribute('aria-label', _label11);
             }
             if (autoGearDeletePresetButton) {
-              _label12 = texts[lang].autoGearDeletePresetButton || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
+              _label12 = texts[lang].autoGearDeletePresetButton || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
               setButtonLabelWithIconBinding(autoGearDeletePresetButton, _label12, ICON_GLYPHS.trash);
               autoGearDeletePresetButton.setAttribute('data-help', _label12);
               autoGearDeletePresetButton.setAttribute('aria-label', _label12);
             }
             if (autoGearAddRuleBtn) {
-              _label13 = texts[lang].autoGearAddRule || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearAddRule) || autoGearAddRuleBtn.textContent;
+              _label13 = texts[lang].autoGearAddRule || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearAddRule) || autoGearAddRuleBtn.textContent;
               setButtonLabelWithIconBinding(autoGearAddRuleBtn, _label13, ICON_GLYPHS.add);
-              _help7 = texts[lang].autoGearHeadingHelp || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearHeadingHelp) || _label13;
+              _help7 = texts[lang].autoGearHeadingHelp || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearHeadingHelp) || _label13;
               autoGearAddRuleBtn.setAttribute('data-help', _help7);
             }
             if (autoGearResetFactoryButton) {
-              _label14 = texts[lang].autoGearResetFactoryButton || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
-              _help8 = texts[lang].autoGearResetFactoryHelp || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearResetFactoryHelp) || _label14;
+              _label14 = texts[lang].autoGearResetFactoryButton || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
+              _help8 = texts[lang].autoGearResetFactoryHelp || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearResetFactoryHelp) || _label14;
               setButtonLabelWithIconBinding(autoGearResetFactoryButton, _label14, ICON_GLYPHS.reload);
               autoGearResetFactoryButton.setAttribute('data-help', _help8);
               autoGearResetFactoryButton.setAttribute('title', _help8);
               autoGearResetFactoryButton.setAttribute('aria-label', _label14);
             }
             if (autoGearExportButton) {
-              _label15 = texts[lang].autoGearExportButton || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearExportButton) || autoGearExportButton.textContent;
-              _help9 = texts[lang].autoGearExportHelp || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearExportHelp) || _label15;
+              _label15 = texts[lang].autoGearExportButton || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearExportButton) || autoGearExportButton.textContent;
+              _help9 = texts[lang].autoGearExportHelp || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearExportHelp) || _label15;
               setButtonLabelWithIconBinding(autoGearExportButton, _label15, ICON_GLYPHS.fileExport);
               autoGearExportButton.setAttribute('data-help', _help9);
               autoGearExportButton.setAttribute('title', _help9);
               autoGearExportButton.setAttribute('aria-label', _label15);
             }
             if (autoGearImportButton) {
-              _label16 = texts[lang].autoGearImportButton || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearImportButton) || autoGearImportButton.textContent;
-              _help0 = texts[lang].autoGearImportHelp || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearImportHelp) || _label16;
+              _label16 = texts[lang].autoGearImportButton || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearImportButton) || autoGearImportButton.textContent;
+              _help0 = texts[lang].autoGearImportHelp || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearImportHelp) || _label16;
               setButtonLabelWithIconBinding(autoGearImportButton, _label16, ICON_GLYPHS.fileImport);
               autoGearImportButton.setAttribute('data-help', _help0);
               autoGearImportButton.setAttribute('title', _help0);
               autoGearImportButton.setAttribute('aria-label', _label16);
             }
             if (autoGearSearchLabel) {
-              _label17 = texts[lang].autoGearSearchLabel || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearSearchLabel) || autoGearSearchLabel.textContent;
-              _help1 = texts[lang].autoGearSearchHelp || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearSearchHelp) || _label17;
+              _label17 = texts[lang].autoGearSearchLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearSearchLabel) || autoGearSearchLabel.textContent;
+              _help1 = texts[lang].autoGearSearchHelp || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearSearchHelp) || _label17;
               autoGearSearchLabel.textContent = _label17;
               autoGearSearchLabel.setAttribute('data-help', _help1);
               if (autoGearSearchInput) {
-                placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
+                placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
                 autoGearSearchInput.setAttribute('placeholder', placeholder);
                 autoGearSearchInput.setAttribute('aria-label', _label17);
                 autoGearSearchInput.setAttribute('data-help', _help1);
               }
             }
             if (autoGearFilterScenarioLabel) {
-              _label18 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
-              _help10 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearFilterScenarioHelp) || _label18;
+              _label18 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
+              _help10 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearFilterScenarioHelp) || _label18;
               autoGearFilterScenarioLabel.textContent = _label18;
               autoGearFilterScenarioLabel.setAttribute('data-help', _help10);
               if (autoGearFilterScenarioSelect) {
@@ -9560,25 +9508,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearFilterClearButton) {
-              _label19 = texts[lang].autoGearFilterClear || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearFilterClear) || autoGearFilterClearButton.textContent;
+              _label19 = texts[lang].autoGearFilterClear || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearFilterClear) || autoGearFilterClearButton.textContent;
               setButtonLabelWithIconBinding(autoGearFilterClearButton, _label19, ICON_GLYPHS.circleX);
               autoGearFilterClearButton.setAttribute('data-help', _label19);
               autoGearFilterClearButton.setAttribute('aria-label', _label19);
             }
             refreshAutoGearScenarioFilterOptions(getAutoGearRules());
             if (autoGearBackupsHeading) {
-              autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
+              autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
             }
             if (autoGearBackupsDescription) {
-              _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearBackupsDescription) || '';
+              _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearBackupsDescription) || '';
               autoGearBackupsDescription.textContent = _description2;
               if (_description2) {
                 autoGearBackupsDescription.setAttribute('data-help', _description2);
               }
             }
             if (autoGearShowBackupsLabel) {
-              _label20 = texts[lang].autoGearShowBackupsLabel || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
-              _help11 = texts[lang].autoGearShowBackupsHelp || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearShowBackupsHelp) || _label20;
+              _label20 = texts[lang].autoGearShowBackupsLabel || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
+              _help11 = texts[lang].autoGearShowBackupsHelp || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearShowBackupsHelp) || _label20;
               autoGearShowBackupsLabel.textContent = _label20;
               autoGearShowBackupsLabel.setAttribute('data-help', _help11);
               if (autoGearShowBackupsCheckbox) {
@@ -9587,12 +9535,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearBackupsHiddenNotice) {
-              hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
+              hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
               autoGearBackupsHiddenNotice.textContent = hiddenText;
             }
             if (autoGearBackupRetentionLabel) {
-              _label21 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
-              _help12 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearBackupRetentionHelp) || _label21;
+              _label21 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
+              _help12 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearBackupRetentionHelp) || _label21;
               autoGearBackupRetentionLabel.textContent = _label21;
               autoGearBackupRetentionLabel.setAttribute('data-help', _help12);
               if (autoGearBackupRetentionInput) {
@@ -9606,7 +9554,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               });
             }
             if (autoGearBackupSelectLabel) {
-              _label22 = texts[lang].autoGearBackupSelectLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
+              _label22 = texts[lang].autoGearBackupSelectLabel || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
               autoGearBackupSelectLabel.textContent = _label22;
               if (autoGearBackupSelect) {
                 autoGearBackupSelect.setAttribute('aria-label', _label22);
@@ -9614,13 +9562,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearBackupRestoreButton) {
-              _label23 = texts[lang].autoGearBackupRestore || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
+              _label23 = texts[lang].autoGearBackupRestore || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
               setButtonLabelWithIconBinding(autoGearBackupRestoreButton, _label23, ICON_GLYPHS.fileImport);
               autoGearBackupRestoreButton.setAttribute('aria-label', _label23);
               autoGearBackupRestoreButton.setAttribute('title', _label23);
             }
             if (autoGearBackupEmptyMessage) {
-              emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
+              emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
               autoGearBackupEmptyMessage.textContent = emptyText;
             }
             if (autoGearBackupSelect) {
@@ -9629,9 +9577,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               });
             }
             if (autoGearRuleNameLabel) {
-              _label24 = texts[lang].autoGearRuleNameLabel || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
+              _label24 = texts[lang].autoGearRuleNameLabel || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
               autoGearRuleNameLabel.textContent = _label24;
-              _help13 = texts[lang].autoGearRuleNameHelp || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearRuleNameHelp) || _label24;
+              _help13 = texts[lang].autoGearRuleNameHelp || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearRuleNameHelp) || _label24;
               autoGearRuleNameLabel.setAttribute('data-help', _help13);
               if (autoGearRuleNameInput) {
                 autoGearRuleNameInput.setAttribute('data-help', _help13);
@@ -9639,8 +9587,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearConditionSelectLabel) {
-              _label25 = texts[lang].autoGearConditionSelectLabel || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
-              _help14 = texts[lang].autoGearConditionSelectHelp || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearConditionSelectHelp) || _label25;
+              _label25 = texts[lang].autoGearConditionSelectLabel || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
+              _help14 = texts[lang].autoGearConditionSelectHelp || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearConditionSelectHelp) || _label25;
               autoGearConditionSelectLabel.textContent = _label25;
               autoGearConditionSelectLabel.setAttribute('data-help', _help14);
               if (autoGearConditionSelect) {
@@ -9649,14 +9597,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearConditionAddButton) {
-              _label26 = texts[lang].autoGearAddCondition || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
+              _label26 = texts[lang].autoGearAddCondition || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
               setButtonLabelWithIconBinding(autoGearConditionAddButton, _label26, ICON_GLYPHS.add);
               autoGearConditionAddButton.setAttribute('aria-label', _label26);
               autoGearConditionAddButton.setAttribute('data-help', _label26);
             }
             if (autoGearAlwaysLabel) {
-              _label27 = texts[lang].autoGearAlwaysLabel || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
-              _help15 = texts[lang].autoGearAlwaysHelp || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearAlwaysHelp) || _label27;
+              _label27 = texts[lang].autoGearAlwaysLabel || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
+              _help15 = texts[lang].autoGearAlwaysHelp || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearAlwaysHelp) || _label27;
               autoGearAlwaysLabel.textContent = _label27;
               autoGearAlwaysLabel.setAttribute('data-help', _help15);
               if (autoGearAlwaysHelp) {
@@ -9668,17 +9616,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             refreshAutoGearConditionPicker();
             updateAutoGearConditionAddButtonState();
             if (autoGearScenariosLabel) {
-              _label28 = texts[lang].autoGearScenariosLabel || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
+              _label28 = texts[lang].autoGearScenariosLabel || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
               autoGearScenariosLabel.textContent = _label28;
-              _help16 = texts[lang].autoGearScenariosHelp || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearScenariosHelp) || _label28;
+              _help16 = texts[lang].autoGearScenariosHelp || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearScenariosHelp) || _label28;
               autoGearScenariosLabel.setAttribute('data-help', _help16);
               if (autoGearScenariosSelect) {
                 autoGearScenariosSelect.setAttribute('data-help', _help16);
                 autoGearScenariosSelect.setAttribute('aria-label', _label28);
               }
               if (autoGearScenarioModeLabel) {
-                modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
-                modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearScenarioModeHelp) || modeLabel;
+                modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
+                modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearScenarioModeHelp) || modeLabel;
                 autoGearScenarioModeLabel.textContent = modeLabel;
                 autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
                 if (autoGearScenarioModeSelectElement) {
@@ -9687,8 +9635,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 }
               }
               if (autoGearScenarioBaseLabel) {
-                baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
-                baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearScenarioBaseHelp) || baseLabel;
+                baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
+                baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearScenarioBaseHelp) || baseLabel;
                 autoGearScenarioBaseLabel.textContent = baseLabel;
                 autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
                 if (autoGearScenarioBaseSelect) {
@@ -9697,8 +9645,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 }
               }
               if (autoGearScenarioFactorLabel) {
-                factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
-                factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearScenarioFactorHelp) || factorLabel;
+                factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
+                factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearScenarioFactorHelp) || factorLabel;
                 autoGearScenarioFactorLabel.textContent = factorLabel;
                 autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
                 if (autoGearScenarioFactorInput) {
@@ -9708,12 +9656,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearShootingDaysLabel) {
-              _label29 = texts[lang].autoGearShootingDaysLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
-              _help17 = texts[lang].autoGearShootingDaysHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearShootingDaysHelp) || _label29;
-              minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearShootingDaysModeMinimum) || 'Minimum';
-              maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearShootingDaysModeMaximum) || 'Maximum';
-              everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearShootingDaysModeEvery) || 'Every';
-              valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearShootingDaysValueLabel) || 'Shooting days value';
+              _label29 = texts[lang].autoGearShootingDaysLabel || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
+              _help17 = texts[lang].autoGearShootingDaysHelp || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearShootingDaysHelp) || _label29;
+              minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearShootingDaysModeMinimum) || 'Minimum';
+              maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearShootingDaysModeMaximum) || 'Maximum';
+              everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearShootingDaysModeEvery) || 'Every';
+              valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearShootingDaysValueLabel) || 'Shooting days value';
               autoGearShootingDaysLabel.textContent = _label29;
               autoGearShootingDaysLabel.setAttribute('data-help', _help17);
               if (autoGearShootingDaysMode) {
@@ -9744,9 +9692,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearMatteboxLabel) {
-              _label30 = texts[lang].autoGearMatteboxLabel || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
+              _label30 = texts[lang].autoGearMatteboxLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
               autoGearMatteboxLabel.textContent = _label30;
-              _help18 = texts[lang].autoGearMatteboxHelp || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearMatteboxHelp) || _label30;
+              _help18 = texts[lang].autoGearMatteboxHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearMatteboxHelp) || _label30;
               autoGearMatteboxLabel.setAttribute('data-help', _help18);
               if (autoGearMatteboxSelect) {
                 autoGearMatteboxSelect.setAttribute('data-help', _help18);
@@ -9754,9 +9702,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraHandleLabel) {
-              _label31 = texts[lang].autoGearCameraHandleLabel || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
+              _label31 = texts[lang].autoGearCameraHandleLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
               autoGearCameraHandleLabel.textContent = _label31;
-              _help19 = texts[lang].autoGearCameraHandleHelp || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearCameraHandleHelp) || _label31;
+              _help19 = texts[lang].autoGearCameraHandleHelp || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearCameraHandleHelp) || _label31;
               autoGearCameraHandleLabel.setAttribute('data-help', _help19);
               if (autoGearCameraHandleSelect) {
                 autoGearCameraHandleSelect.setAttribute('data-help', _help19);
@@ -9764,9 +9712,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearViewfinderExtensionLabel) {
-              _label32 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
+              _label32 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
               autoGearViewfinderExtensionLabel.textContent = _label32;
-              _help20 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearViewfinderExtensionHelp) || _label32;
+              _help20 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearViewfinderExtensionHelp) || _label32;
               autoGearViewfinderExtensionLabel.setAttribute('data-help', _help20);
               if (autoGearViewfinderExtensionSelect) {
                 autoGearViewfinderExtensionSelect.setAttribute('data-help', _help20);
@@ -9774,9 +9722,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearDeliveryResolutionLabel) {
-              _label33 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
+              _label33 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
               autoGearDeliveryResolutionLabel.textContent = _label33;
-              _help21 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearDeliveryResolutionHelp) || _label33;
+              _help21 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearDeliveryResolutionHelp) || _label33;
               autoGearDeliveryResolutionLabel.setAttribute('data-help', _help21);
               if (autoGearDeliveryResolutionSelect) {
                 autoGearDeliveryResolutionSelect.setAttribute('data-help', _help21);
@@ -9784,9 +9732,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearVideoDistributionLabel) {
-              _label34 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
+              _label34 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
               autoGearVideoDistributionLabel.textContent = _label34;
-              _help22 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearVideoDistributionHelp) || _label34;
+              _help22 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearVideoDistributionHelp) || _label34;
               autoGearVideoDistributionLabel.setAttribute('data-help', _help22);
               if (autoGearVideoDistributionSelect) {
                 autoGearVideoDistributionSelect.setAttribute('data-help', _help22);
@@ -9794,9 +9742,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraLabel) {
-              _label35 = texts[lang].autoGearCameraLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearCameraLabel) || autoGearCameraLabel.textContent;
+              _label35 = texts[lang].autoGearCameraLabel || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearCameraLabel) || autoGearCameraLabel.textContent;
               autoGearCameraLabel.textContent = _label35;
-              _help23 = texts[lang].autoGearCameraHelp || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearCameraHelp) || _label35;
+              _help23 = texts[lang].autoGearCameraHelp || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearCameraHelp) || _label35;
               autoGearCameraLabel.setAttribute('data-help', _help23);
               if (autoGearCameraSelect) {
                 autoGearCameraSelect.setAttribute('data-help', _help23);
@@ -9804,8 +9752,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearOwnGearLabel) {
-              _label36 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearConditionOwnGearLabel) || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
-              _help24 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearOwnGearHelp) || _label36;
+              _label36 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearConditionOwnGearLabel) || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
+              _help24 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearOwnGearHelp) || _label36;
               autoGearOwnGearLabel.textContent = _label36;
               autoGearOwnGearLabel.setAttribute('data-help', _help24);
               if (autoGearOwnGearSelect) {
@@ -9814,21 +9762,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraWeightLabel) {
-              _label37 = texts[lang].autoGearCameraWeightLabel || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
-              _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearCameraWeightHelp) || _label37;
+              _label37 = texts[lang].autoGearCameraWeightLabel || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
+              _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearCameraWeightHelp) || _label37;
               autoGearCameraWeightLabel.textContent = _label37;
               autoGearCameraWeightLabel.setAttribute('data-help', _help25);
             }
             if (autoGearCameraWeightOperatorLabel) {
-              _label38 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
+              _label38 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
               autoGearCameraWeightOperatorLabel.textContent = _label38;
               autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label38);
               if (autoGearCameraWeightOperator) {
                 autoGearCameraWeightOperator.setAttribute('data-help', _label38);
                 autoGearCameraWeightOperator.setAttribute('aria-label', _label38);
-                greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearCameraWeightOperatorGreater) || 'Heavier than';
-                lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearCameraWeightOperatorLess) || 'Lighter than';
-                equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearCameraWeightOperatorEqual) || 'Exactly';
+                greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearCameraWeightOperatorGreater) || 'Heavier than';
+                lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearCameraWeightOperatorLess) || 'Lighter than';
+                equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearCameraWeightOperatorEqual) || 'Exactly';
                 Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
                   if (!option) return;
                   if (option.value === 'greater') {
@@ -9842,8 +9790,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraWeightValueLabel) {
-              _label39 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
-              _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearCameraWeightHelp) || _label39;
+              _label39 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
+              _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearCameraWeightHelp) || _label39;
               autoGearCameraWeightValueLabel.textContent = _label39;
               autoGearCameraWeightValueLabel.setAttribute('data-help', _help26);
               if (autoGearCameraWeightValueInput) {
@@ -9852,16 +9800,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraWeightHelp) {
-              _help27 = texts[lang].autoGearCameraWeightHelp || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
+              _help27 = texts[lang].autoGearCameraWeightHelp || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
               autoGearCameraWeightHelp.textContent = _help27;
               if (_help27) {
                 autoGearCameraWeightHelp.setAttribute('data-help', _help27);
               }
             }
             if (autoGearMonitorLabel) {
-              _label40 = texts[lang].autoGearMonitorLabel || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
+              _label40 = texts[lang].autoGearMonitorLabel || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
               autoGearMonitorLabel.textContent = _label40;
-              _help28 = texts[lang].autoGearMonitorHelp || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearMonitorHelp) || _label40;
+              _help28 = texts[lang].autoGearMonitorHelp || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearMonitorHelp) || _label40;
               autoGearMonitorLabel.setAttribute('data-help', _help28);
               if (autoGearMonitorSelect) {
                 autoGearMonitorSelect.setAttribute('data-help', _help28);
@@ -9869,9 +9817,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearTripodHeadBrandLabel) {
-              _label41 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
+              _label41 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
               autoGearTripodHeadBrandLabel.textContent = _label41;
-              _help29 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearTripodHeadBrandHelp) || _label41;
+              _help29 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearTripodHeadBrandHelp) || _label41;
               autoGearTripodHeadBrandLabel.setAttribute('data-help', _help29);
               if (autoGearTripodHeadBrandSelect) {
                 autoGearTripodHeadBrandSelect.setAttribute('data-help', _help29);
@@ -9879,9 +9827,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearTripodBowlLabel) {
-              _label42 = texts[lang].autoGearTripodBowlLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
+              _label42 = texts[lang].autoGearTripodBowlLabel || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
               autoGearTripodBowlLabel.textContent = _label42;
-              _help30 = texts[lang].autoGearTripodBowlHelp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearTripodBowlHelp) || _label42;
+              _help30 = texts[lang].autoGearTripodBowlHelp || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearTripodBowlHelp) || _label42;
               autoGearTripodBowlLabel.setAttribute('data-help', _help30);
               if (autoGearTripodBowlSelect) {
                 autoGearTripodBowlSelect.setAttribute('data-help', _help30);
@@ -9889,9 +9837,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearTripodTypesLabel) {
-              _label43 = texts[lang].autoGearTripodTypesLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
+              _label43 = texts[lang].autoGearTripodTypesLabel || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
               autoGearTripodTypesLabel.textContent = _label43;
-              _help31 = texts[lang].autoGearTripodTypesHelp || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearTripodTypesHelp) || _label43;
+              _help31 = texts[lang].autoGearTripodTypesHelp || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearTripodTypesHelp) || _label43;
               autoGearTripodTypesLabel.setAttribute('data-help', _help31);
               if (autoGearTripodTypesSelect) {
                 autoGearTripodTypesSelect.setAttribute('data-help', _help31);
@@ -9899,9 +9847,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearTripodSpreaderLabel) {
-              _label44 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
+              _label44 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
               autoGearTripodSpreaderLabel.textContent = _label44;
-              _help32 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearTripodSpreaderHelp) || _label44;
+              _help32 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearTripodSpreaderHelp) || _label44;
               autoGearTripodSpreaderLabel.setAttribute('data-help', _help32);
               if (autoGearTripodSpreaderSelect) {
                 autoGearTripodSpreaderSelect.setAttribute('data-help', _help32);
@@ -9909,9 +9857,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCrewPresentLabel) {
-              _label45 = texts[lang].autoGearCrewPresentLabel || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
+              _label45 = texts[lang].autoGearCrewPresentLabel || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
               autoGearCrewPresentLabel.textContent = _label45;
-              _help33 = texts[lang].autoGearCrewPresentHelp || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearCrewPresentHelp) || _label45;
+              _help33 = texts[lang].autoGearCrewPresentHelp || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearCrewPresentHelp) || _label45;
               autoGearCrewPresentLabel.setAttribute('data-help', _help33);
               if (autoGearCrewPresentSelect) {
                 autoGearCrewPresentSelect.setAttribute('data-help', _help33);
@@ -9919,9 +9867,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCrewAbsentLabel) {
-              _label46 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
+              _label46 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
               autoGearCrewAbsentLabel.textContent = _label46;
-              _help34 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearCrewAbsentHelp) || _label46;
+              _help34 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearCrewAbsentHelp) || _label46;
               autoGearCrewAbsentLabel.setAttribute('data-help', _help34);
               if (autoGearCrewAbsentSelect) {
                 autoGearCrewAbsentSelect.setAttribute('data-help', _help34);
@@ -9929,9 +9877,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearWirelessLabel) {
-              _label47 = texts[lang].autoGearWirelessLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
+              _label47 = texts[lang].autoGearWirelessLabel || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
               autoGearWirelessLabel.textContent = _label47;
-              _help35 = texts[lang].autoGearWirelessHelp || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearWirelessHelp) || _label47;
+              _help35 = texts[lang].autoGearWirelessHelp || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearWirelessHelp) || _label47;
               autoGearWirelessLabel.setAttribute('data-help', _help35);
               if (autoGearWirelessSelect) {
                 autoGearWirelessSelect.setAttribute('data-help', _help35);
@@ -9939,9 +9887,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearMotorsLabel) {
-              _label48 = texts[lang].autoGearMotorsLabel || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
+              _label48 = texts[lang].autoGearMotorsLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
               autoGearMotorsLabel.textContent = _label48;
-              _help36 = texts[lang].autoGearMotorsHelp || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearMotorsHelp) || _label48;
+              _help36 = texts[lang].autoGearMotorsHelp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearMotorsHelp) || _label48;
               autoGearMotorsLabel.setAttribute('data-help', _help36);
               if (autoGearMotorsSelect) {
                 autoGearMotorsSelect.setAttribute('data-help', _help36);
@@ -9949,9 +9897,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearControllersLabel) {
-              _label49 = texts[lang].autoGearControllersLabel || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearControllersLabel) || autoGearControllersLabel.textContent;
+              _label49 = texts[lang].autoGearControllersLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearControllersLabel) || autoGearControllersLabel.textContent;
               autoGearControllersLabel.textContent = _label49;
-              _help37 = texts[lang].autoGearControllersHelp || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearControllersHelp) || _label49;
+              _help37 = texts[lang].autoGearControllersHelp || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearControllersHelp) || _label49;
               autoGearControllersLabel.setAttribute('data-help', _help37);
               if (autoGearControllersSelect) {
                 autoGearControllersSelect.setAttribute('data-help', _help37);
@@ -9959,22 +9907,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearDistanceLabel) {
-              _label50 = texts[lang].autoGearDistanceLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
+              _label50 = texts[lang].autoGearDistanceLabel || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
               autoGearDistanceLabel.textContent = _label50;
-              _help38 = texts[lang].autoGearDistanceHelp || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearDistanceHelp) || _label50;
+              _help38 = texts[lang].autoGearDistanceHelp || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearDistanceHelp) || _label50;
               autoGearDistanceLabel.setAttribute('data-help', _help38);
               if (autoGearDistanceSelect) {
                 autoGearDistanceSelect.setAttribute('data-help', _help38);
                 autoGearDistanceSelect.setAttribute('aria-label', _label50);
               }
             }
-            logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearConditionLogicLabel) || 'Match behavior';
-            logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearConditionLogicHelp) || logicLabelText;
+            logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearConditionLogicLabel) || 'Match behavior';
+            logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearConditionLogicHelp) || logicLabelText;
             logicOptionTexts = {
-              all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearConditionLogicAll) || 'Require every selected value',
-              any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearConditionLogicAny) || 'Match any selected value',
-              none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearConditionLogicNone) || 'Require none of the selected values',
-              multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
+              all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearConditionLogicAll) || 'Require every selected value',
+              any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearConditionLogicAny) || 'Match any selected value',
+              none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearConditionLogicNone) || 'Require none of the selected values',
+              multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
             };
             Object.entries(autoGearConditionLogicSelects).forEach(function (_ref80) {
               var _ref81 = _slicedToArray(_ref80, 2),
@@ -9997,12 +9945,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             });
             if (autoGearAddItemsHeading) {
-              autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
+              autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
             }
             if (autoGearAddOwnGearLabel) {
-              _label51 = texts[lang].autoGearOwnGearLabel || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
-              _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearOwnGearHelp) || _label51;
-              _placeholder3 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearOwnGearPlaceholder) || '';
+              _label51 = texts[lang].autoGearOwnGearLabel || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
+              _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearOwnGearHelp) || _label51;
+              _placeholder3 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearOwnGearPlaceholder) || '';
               autoGearAddOwnGearLabel.textContent = _label51;
               autoGearAddOwnGearLabel.setAttribute('data-help', _help39);
               if (autoGearAddOwnGearSelect) {
@@ -10016,8 +9964,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearAddItemLabel) {
-              _label52 = texts[lang].autoGearAddItemLabel || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
-              hint = texts[lang].autoGearAddMultipleHint || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearAddMultipleHint) || '';
+              _label52 = texts[lang].autoGearAddItemLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
+              hint = texts[lang].autoGearAddMultipleHint || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearAddMultipleHint) || '';
               helpText = hint ? "".concat(_label52, " \u2013 ").concat(hint) : _label52;
               autoGearAddItemLabel.textContent = _label52;
               autoGearAddItemLabel.setAttribute('data-help', helpText);
@@ -10032,38 +9980,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearAddCategoryLabel) {
-              _label53 = texts[lang].autoGearAddCategoryLabel || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
+              _label53 = texts[lang].autoGearAddCategoryLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
               autoGearAddCategoryLabel.textContent = _label53;
               if (autoGearAddCategorySelect) {
                 autoGearAddCategorySelect.setAttribute('aria-label', _label53);
               }
             }
             if (autoGearAddQuantityLabel) {
-              _label54 = texts[lang].autoGearAddQuantityLabel || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
+              _label54 = texts[lang].autoGearAddQuantityLabel || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
               autoGearAddQuantityLabel.textContent = _label54;
               if (autoGearAddQuantityInput) {
                 autoGearAddQuantityInput.setAttribute('aria-label', _label54);
               }
             }
             if (autoGearAddScreenSizeLabel) {
-              _label55 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
+              _label55 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
               autoGearAddScreenSizeLabel.textContent = _label55;
               if (autoGearAddScreenSizeInput) {
                 autoGearAddScreenSizeInput.setAttribute('aria-label', _label55);
               }
             }
             if (autoGearAddSelectorTypeLabel) {
-              _label56 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
+              _label56 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
               autoGearAddSelectorTypeLabel.textContent = _label56;
               if (autoGearAddSelectorTypeSelect) {
                 autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label56);
-                noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.autoGearSelectorNoneOption) || 'No selector';
-                monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.autoGearSelectorMonitorOption) || 'Monitor selector';
-                directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.autoGearSelectorDirectorOption) || 'Director monitor selector';
-                tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-                _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-                _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-                _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearSelectorNoneOption) || 'No selector';
+                monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearSelectorMonitorOption) || 'Monitor selector';
+                directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
                 selectorLabels = new Map([['none', noneLabel], ['monitor', monitorLabel], ['directorMonitor', directorLabel], ['tripodHeadBrand', tripodHeadLabel], ['tripodBowl', _tripodBowlLabel], ['tripodTypes', _tripodTypesLabel], ['tripodSpreader', _tripodSpreaderLabel]]);
                 Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
                   var text = selectorLabels.get(opt.value);
@@ -10072,14 +10020,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearAddSelectorDefaultLabel) {
-              _label57 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
+              _label57 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
               autoGearAddSelectorDefaultLabel.textContent = _label57;
               if (autoGearAddSelectorDefaultInput) {
                 autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label57);
               }
             }
             if (autoGearAddNotesLabel) {
-              _label58 = texts[lang].autoGearAddNotesLabel || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
+              _label58 = texts[lang].autoGearAddNotesLabel || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
               autoGearAddNotesLabel.textContent = _label58;
               if (autoGearAddNotesInput) {
                 autoGearAddNotesInput.setAttribute('aria-label', _label58);
@@ -10091,12 +10039,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveItemsHeading) {
-              autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
+              autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
             }
             if (autoGearRemoveOwnGearLabel) {
-              _label59 = texts[lang].autoGearOwnGearLabel || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
-              _help40 = texts[lang].autoGearOwnGearHelp || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.autoGearOwnGearHelp) || _label59;
-              _placeholder4 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.autoGearOwnGearPlaceholder) || '';
+              _label59 = texts[lang].autoGearOwnGearLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
+              _help40 = texts[lang].autoGearOwnGearHelp || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.autoGearOwnGearHelp) || _label59;
+              _placeholder4 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.autoGearOwnGearPlaceholder) || '';
               autoGearRemoveOwnGearLabel.textContent = _label59;
               autoGearRemoveOwnGearLabel.setAttribute('data-help', _help40);
               if (autoGearRemoveOwnGearSelect) {
@@ -10110,8 +10058,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveItemLabel) {
-              _label60 = texts[lang].autoGearRemoveItemLabel || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
-              _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.autoGearRemoveMultipleHint) || '';
+              _label60 = texts[lang].autoGearRemoveItemLabel || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
+              _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.autoGearRemoveMultipleHint) || '';
               _helpText4 = _hint ? "".concat(_label60, " \u2013 ").concat(_hint) : _label60;
               autoGearRemoveItemLabel.textContent = _label60;
               autoGearRemoveItemLabel.setAttribute('data-help', _helpText4);
@@ -10126,38 +10074,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveCategoryLabel) {
-              _label61 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
+              _label61 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
               autoGearRemoveCategoryLabel.textContent = _label61;
               if (autoGearRemoveCategorySelect) {
                 autoGearRemoveCategorySelect.setAttribute('aria-label', _label61);
               }
             }
             if (autoGearRemoveQuantityLabel) {
-              _label62 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
+              _label62 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
               autoGearRemoveQuantityLabel.textContent = _label62;
               if (autoGearRemoveQuantityInput) {
                 autoGearRemoveQuantityInput.setAttribute('aria-label', _label62);
               }
             }
             if (autoGearRemoveScreenSizeLabel) {
-              _label63 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
+              _label63 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
               autoGearRemoveScreenSizeLabel.textContent = _label63;
               if (autoGearRemoveScreenSizeInput) {
                 autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label63);
               }
             }
             if (autoGearRemoveSelectorTypeLabel) {
-              _label64 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
+              _label64 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
               autoGearRemoveSelectorTypeLabel.textContent = _label64;
               if (autoGearRemoveSelectorTypeSelect) {
                 autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label64);
-                _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.autoGearSelectorNoneOption) || 'No selector';
-                _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.autoGearSelectorMonitorOption) || 'Monitor selector';
-                _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.autoGearSelectorDirectorOption) || 'Director monitor selector';
-                _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-                _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-                _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-                _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.autoGearSelectorNoneOption) || 'No selector';
+                _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.autoGearSelectorMonitorOption) || 'Monitor selector';
+                _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
                 _selectorLabels = new Map([['none', _noneLabel], ['monitor', _monitorLabel], ['directorMonitor', _directorLabel], ['tripodHeadBrand', _tripodHeadLabel], ['tripodBowl', _tripodBowlLabel2], ['tripodTypes', _tripodTypesLabel2], ['tripodSpreader', _tripodSpreaderLabel2]]);
                 Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
                   var text = _selectorLabels.get(opt.value);
@@ -10166,14 +10114,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveSelectorDefaultLabel) {
-              _label65 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
+              _label65 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
               autoGearRemoveSelectorDefaultLabel.textContent = _label65;
               if (autoGearRemoveSelectorDefaultInput) {
                 autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label65);
               }
             }
             if (autoGearRemoveNotesLabel) {
-              _label66 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
+              _label66 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
               autoGearRemoveNotesLabel.textContent = _label66;
               if (autoGearRemoveNotesInput) {
                 autoGearRemoveNotesInput.setAttribute('aria-label', _label66);
@@ -10181,11 +10129,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             updateAutoGearOwnGearOptions();
             if (autoGearDraftImpactHeading) {
-              _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
+              _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
               autoGearDraftImpactHeading.textContent = _heading2;
             }
             if (autoGearDraftImpactDescription) {
-              _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
+              _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
               autoGearDraftImpactDescription.textContent = _description3;
               if (autoGearDraftImpactHeading) {
                 autoGearDraftImpactHeading.setAttribute('data-help', _description3);
@@ -10195,7 +10143,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearDraftWarningHeading) {
-              _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
+              _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
               autoGearDraftWarningHeading.textContent = _heading3;
             }
             if (autoGearRemoveItemButton) {
@@ -10204,12 +10152,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearSaveRuleButton) {
-              _label67 = texts[lang].autoGearSaveRule || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
+              _label67 = texts[lang].autoGearSaveRule || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
               setButtonLabelWithIconBinding(autoGearSaveRuleButton, _label67);
               autoGearSaveRuleButton.setAttribute('data-help', _label67);
             }
             if (autoGearCancelEditButton) {
-              _label68 = texts[lang].autoGearCancelEdit || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
+              _label68 = texts[lang].autoGearCancelEdit || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
               setButtonLabelWithIconBinding(autoGearCancelEditButton, _label68, ICON_GLYPHS.circleX);
               autoGearCancelEditButton.setAttribute('data-help', _label68);
             }
@@ -10313,25 +10261,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
             }
             if (storagePersistenceHeading) {
-              _headingText = texts[lang].storagePersistenceHeading || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.storagePersistenceHeading) || storagePersistenceHeading.textContent;
+              _headingText = texts[lang].storagePersistenceHeading || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.storagePersistenceHeading) || storagePersistenceHeading.textContent;
               storagePersistenceHeading.textContent = _headingText;
-              _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.storagePersistenceHeadingHelp) || _headingText;
+              _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.storagePersistenceHeadingHelp) || _headingText;
               storagePersistenceHeading.setAttribute('data-help', _headingHelp);
             }
             if (storagePersistenceIntro) {
-              storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.storagePersistenceIntro) || storagePersistenceIntro.textContent;
+              storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.storagePersistenceIntro) || storagePersistenceIntro.textContent;
             }
             if (storagePersistenceRequestButton) {
-              requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
+              requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
               setButtonLabelWithIconBinding(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
               storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
-              requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.storagePersistenceRequestHelp) || requestLabel;
+              requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.storagePersistenceRequestHelp) || requestLabel;
               storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
               storagePersistenceRequestButton.setAttribute('title', requestHelp);
               storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
             }
             if (storagePersistenceStatus) {
-              idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
+              idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
               storagePersistenceStatus.textContent = idleText;
               storagePersistenceStatus.setAttribute('data-help', idleText);
             }
@@ -10339,44 +10287,44 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               defer: true
             });
             if (storageActionsHeading) {
-              _headingText2 = texts[lang].storageActionsHeading || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.storageActionsHeading) || storageActionsHeading.textContent;
+              _headingText2 = texts[lang].storageActionsHeading || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.storageActionsHeading) || storageActionsHeading.textContent;
               storageActionsHeading.textContent = _headingText2;
-              _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.storageActionsHeadingHelp) || _headingText2;
+              _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.storageActionsHeadingHelp) || _headingText2;
               storageActionsHeading.setAttribute('data-help', _headingHelp2);
             }
             if (storageActionsIntro) {
-              storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.storageActionsIntro) || storageActionsIntro.textContent;
+              storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.storageActionsIntro) || storageActionsIntro.textContent;
             }
             if (storageBackupNowButton) {
-              backupLabel = texts[lang].storageBackupNow || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.storageBackupNow) || storageBackupNowButton.textContent;
+              backupLabel = texts[lang].storageBackupNow || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.storageBackupNow) || storageBackupNowButton.textContent;
               setButtonLabelWithIconBinding(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
-              backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.storageBackupNowHelp) || backupLabel;
+              backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.storageBackupNowHelp) || backupLabel;
               storageBackupNowButton.setAttribute('data-help', backupHelp);
               storageBackupNowButton.setAttribute('title', backupHelp);
             }
             if (storageOpenBackupTabButton) {
-              openLabel = texts[lang].storageOpenBackupTab || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
+              openLabel = texts[lang].storageOpenBackupTab || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
               setButtonLabelWithIconBinding(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
-              openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.storageOpenBackupTabHelp) || openLabel;
+              openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.storageOpenBackupTabHelp) || openLabel;
               storageOpenBackupTabButton.setAttribute('data-help', openHelp);
               storageOpenBackupTabButton.setAttribute('title', openHelp);
             }
             if (storageStatusHeading) {
-              statusHeading = texts[lang].storageStatusHeading || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.storageStatusHeading) || storageStatusHeading.textContent;
+              statusHeading = texts[lang].storageStatusHeading || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.storageStatusHeading) || storageStatusHeading.textContent;
               storageStatusHeading.textContent = statusHeading;
-              statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.storageStatusHeadingHelp) || statusHeading;
+              statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.storageStatusHeadingHelp) || statusHeading;
               storageStatusHeading.setAttribute('data-help', statusHelp);
             }
             if (storageStatusLastProjectLabel) {
-              storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
+              storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
             }
             if (storageStatusLastAutoBackupLabel) {
-              storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
+              storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
             }
             if (storageStatusLastFullBackupLabel) {
-              storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
+              storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
             }
-            statusDefaultText = texts[lang].storageStatusNever || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
+            statusDefaultText = texts[lang].storageStatusNever || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
             if (storageStatusLastProjectValue) {
               storageStatusLastProjectValue.textContent = statusDefaultText;
             }
@@ -10393,7 +10341,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               storageStatusReminder.removeAttribute('data-help');
             }
             if (loggingSection) {
-              sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.loggingHeadingHelp) || '';
+              sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.loggingHeadingHelp) || '';
               if (sectionHelp) {
                 loggingSection.setAttribute('data-help', sectionHelp);
               } else {
@@ -10401,25 +10349,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingHeading) {
-              _headingText3 = texts[lang].loggingHeading || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
+              _headingText3 = texts[lang].loggingHeading || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
               loggingHeading.textContent = _headingText3;
-              _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.loggingHeadingHelp) || _headingText3;
+              _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.loggingHeadingHelp) || _headingText3;
               loggingHeading.setAttribute('data-help', _headingHelp3);
             }
             if (loggingIntro) {
-              loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.loggingIntro) || loggingIntro.textContent;
+              loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.loggingIntro) || loggingIntro.textContent;
             }
             if (loggingLevelFilterLabel) {
-              _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
+              _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
               loggingLevelFilterLabel.textContent = _filterLabel;
               loggingLevelFilterLabel.setAttribute('data-help', _filterLabel);
             }
             if (loggingLevelFilter) {
               optionTexts = {
-                all: texts[lang].loggingLevelFilterAll || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.loggingLevelFilterAll) || 'All levels',
-                info: texts[lang].loggingLevelFilterInfo || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.loggingLevelFilterInfo) || 'Info and above',
-                warn: texts[lang].loggingLevelFilterWarn || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.loggingLevelFilterWarn) || 'Warnings and errors',
-                error: texts[lang].loggingLevelFilterError || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.loggingLevelFilterError) || 'Errors only'
+                all: texts[lang].loggingLevelFilterAll || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.loggingLevelFilterAll) || 'All levels',
+                info: texts[lang].loggingLevelFilterInfo || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.loggingLevelFilterInfo) || 'Info and above',
+                warn: texts[lang].loggingLevelFilterWarn || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.loggingLevelFilterWarn) || 'Warnings and errors',
+                error: texts[lang].loggingLevelFilterError || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.loggingLevelFilterError) || 'Errors only'
               };
               Array.from(loggingLevelFilter.options || []).forEach(function (option) {
                 if (!option || typeof option.value !== 'string') return;
@@ -10428,7 +10376,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                   option.textContent = optionTexts[key];
                 }
               });
-              filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.loggingLevelFilterHelp) || '';
+              filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.loggingLevelFilterHelp) || '';
               if (filterHelp) {
                 loggingLevelFilter.setAttribute('data-help', filterHelp);
               } else {
@@ -10436,15 +10384,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingNamespaceFilterLabel) {
-              namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
+              namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
               loggingNamespaceFilterLabel.textContent = namespaceLabel;
             }
             if (loggingNamespaceFilter) {
-              _placeholder5 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.loggingNamespaceFilterPlaceholder) || '';
+              _placeholder5 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.loggingNamespaceFilterPlaceholder) || '';
               if (_placeholder5) {
                 loggingNamespaceFilter.setAttribute('placeholder', _placeholder5);
               }
-              namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.loggingNamespaceFilterHelp) || _placeholder5;
+              namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.loggingNamespaceFilterHelp) || _placeholder5;
               if (namespaceHelp) {
                 loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
                 if (loggingNamespaceFilterLabel) {
@@ -10461,85 +10409,85 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingHistoryLimitLabel) {
-              historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
+              historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
               loggingHistoryLimitLabel.textContent = historyLabel;
             }
             if (loggingHistoryLimitHelp) {
-              historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
+              historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
               loggingHistoryLimitHelp.textContent = historyHelp;
             }
             if (loggingHistoryLimit) {
-              limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.loggingHistoryLimitHelp) || '';
+              limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.loggingHistoryLimitHelp) || '';
               if (limitHelp) {
                 loggingHistoryLimit.setAttribute('data-help', limitHelp);
               } else {
                 loggingHistoryLimit.removeAttribute('data-help');
               }
-              limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.loggingHistoryLimitAria) || '';
+              limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.loggingHistoryLimitAria) || '';
               if (limitAria) {
                 loggingHistoryLimit.setAttribute('aria-label', limitAria);
               }
             }
             if (loggingConsoleOutputLabel) {
-              consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
+              consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
               loggingConsoleOutputLabel.textContent = consoleLabel;
             }
             if (loggingConsoleOutputHelp) {
-              consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
+              consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
               loggingConsoleOutputHelp.textContent = consoleHelp;
             }
             if (loggingCaptureConsoleLabel) {
-              consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
+              consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
               loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
             }
             if (loggingCaptureConsoleHelp) {
-              consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
+              consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
               loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
             }
             if (loggingCaptureErrorsLabel) {
-              captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
+              captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
               loggingCaptureErrorsLabel.textContent = captureLabel;
             }
             if (loggingCaptureErrorsHelp) {
-              captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
+              captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
               loggingCaptureErrorsHelp.textContent = captureHelp;
             }
             if (loggingPersistSessionLabel) {
-              persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
+              persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
               loggingPersistSessionLabel.textContent = persistLabel;
             }
             if (loggingPersistSessionHelp) {
-              persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
+              persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
               loggingPersistSessionHelp.textContent = persistHelp;
             }
             if (loggingExportButton) {
-              exportLabel = texts[lang].loggingExportButton || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.loggingExportButton) || loggingExportButton.textContent;
+              exportLabel = texts[lang].loggingExportButton || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.loggingExportButton) || loggingExportButton.textContent;
               setButtonLabelWithIconBinding(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
               loggingExportButton.setAttribute('data-help', exportLabel);
               loggingExportButton.setAttribute('title', exportLabel);
               loggingExportButton.setAttribute('aria-label', exportLabel);
             }
             if (loggingExportHelp) {
-              exportHelp = texts[lang].loggingExportHelp || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.loggingExportHelp) || loggingExportHelp.textContent;
+              exportHelp = texts[lang].loggingExportHelp || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.loggingExportHelp) || loggingExportHelp.textContent;
               loggingExportHelp.textContent = exportHelp;
               loggingExportHelp.setAttribute('data-help', exportHelp);
             }
             if (loggingStatus) {
-              statusText = texts[lang].loggingStatusIdle || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.loggingStatusIdle) || '';
+              statusText = texts[lang].loggingStatusIdle || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.loggingStatusIdle) || '';
               loggingStatus.textContent = statusText;
               if (statusText) {
                 loggingStatus.setAttribute('data-help', statusText);
               }
             }
             if (loggingEmpty) {
-              _emptyText = texts[lang].loggingEmptyState || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.loggingEmptyState) || loggingEmpty.textContent;
+              _emptyText = texts[lang].loggingEmptyState || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.loggingEmptyState) || loggingEmpty.textContent;
               loggingEmpty.textContent = _emptyText;
               if (_emptyText) {
                 loggingEmpty.setAttribute('data-help', _emptyText);
               }
             }
             if (loggingUnavailable) {
-              loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.loggingUnavailable) || loggingUnavailable.textContent;
+              loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.loggingUnavailable) || loggingUnavailable.textContent;
             }
             showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
             if (showAutoBackupsLabel) {
@@ -10655,13 +10603,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
             }
             if (restoreRehearsalRuleHeading) {
-              restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
+              restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
             }
             if (restoreRehearsalRuleIntro) {
-              restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
+              restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
             }
             if (restoreRehearsalRuleEmpty) {
-              restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
+              restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
             }
             if (restoreRehearsalTableCaption) {
               restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
@@ -10686,16 +10634,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
             }
             if (restoreRehearsalProceedButton) {
-              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.restoreRehearsalProceed) || 'Continue rehearsal restore';
-              proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en297 = texts.en) === null || _texts$en297 === void 0 ? void 0 : _texts$en297.restoreRehearsalProceedHelp) || proceedLabel;
+              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.restoreRehearsalProceed) || 'Continue rehearsal restore';
+              proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.restoreRehearsalProceedHelp) || proceedLabel;
               setButtonLabelWithIconBinding(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
               restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
               restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
               restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
             }
             if (restoreRehearsalAbortButton) {
-              abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en298 = texts.en) === null || _texts$en298 === void 0 ? void 0 : _texts$en298.restoreRehearsalAbort) || 'Abort rehearsal';
-              abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en299 = texts.en) === null || _texts$en299 === void 0 ? void 0 : _texts$en299.restoreRehearsalAbortHelp) || abortLabel;
+              abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.restoreRehearsalAbort) || 'Abort rehearsal';
+              abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.restoreRehearsalAbortHelp) || abortLabel;
               setButtonLabelWithIconBinding(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
               restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
               restoreRehearsalAbortButton.setAttribute('title', abortHelp);
@@ -10744,7 +10692,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               link.setAttribute('aria-label', help);
             });
             if (settingsSave) {
-              _label69 = texts[lang].saveSettings || ((_texts$en300 = texts.en) === null || _texts$en300 === void 0 ? void 0 : _texts$en300.saveSettings) || settingsSave.textContent;
+              _label69 = texts[lang].saveSettings || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.saveSettings) || settingsSave.textContent;
               setButtonLabelWithIconBinding(settingsSave, _label69);
               saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label69;
               settingsSave.setAttribute("data-help", saveHelp);
@@ -10752,7 +10700,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               settingsSave.setAttribute("aria-label", saveHelp);
             }
             if (settingsCancel) {
-              _cancelLabel = texts[lang].cancelSettings || ((_texts$en301 = texts.en) === null || _texts$en301 === void 0 ? void 0 : _texts$en301.cancelSettings) || settingsCancel.textContent;
+              _cancelLabel = texts[lang].cancelSettings || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.cancelSettings) || settingsCancel.textContent;
               setButtonLabelWithIconBinding(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
               cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
               settingsCancel.setAttribute("data-help", cancelHelp);
@@ -10761,8 +10709,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             menuToggle = document.getElementById("menuToggle");
             if (menuToggle) {
-              menuLabel = texts[lang].menuToggleLabel || ((_texts$en302 = texts.en) === null || _texts$en302 === void 0 ? void 0 : _texts$en302.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
-              _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en303 = texts.en) === null || _texts$en303 === void 0 ? void 0 : _texts$en303.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
+              menuLabel = texts[lang].menuToggleLabel || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
+              _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
               closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel2;
               menuToggle.setAttribute("title", menuLabel);
               menuToggle.setAttribute("aria-label", menuLabel);
@@ -10784,7 +10732,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             sideMenuTitle = document.getElementById("sideMenuTitle");
             if (sideMenuTitle) {
-              titleLabel = texts[lang].sideMenuTitle || ((_texts$en304 = texts.en) === null || _texts$en304 === void 0 ? void 0 : _texts$en304.sideMenuTitle) || sideMenuTitle.textContent;
+              titleLabel = texts[lang].sideMenuTitle || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.sideMenuTitle) || sideMenuTitle.textContent;
               sideMenuTitle.textContent = titleLabel;
               titleHelp = texts[lang].sideMenuTitleHelp || texts[lang].sideMenuHelp || titleLabel;
               sideMenuTitle.setAttribute("data-help", titleHelp);
@@ -10792,7 +10740,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             closeMenuButton = document.getElementById("closeMenuButton");
             closeMenuLabel = document.getElementById("closeMenuLabel");
             if (closeMenuButton) {
-              _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en305 = texts.en) === null || _texts$en305 === void 0 ? void 0 : _texts$en305.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
+              _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
               _closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel3;
               closeMenuButton.setAttribute("aria-label", _closeLabel3);
               closeMenuButton.setAttribute("title", _closeHelp);
@@ -11194,7 +11142,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
               };
               crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
-              fallbackContacts = ((_texts$en306 = texts.en) === null || _texts$en306 === void 0 ? void 0 : _texts$en306.contacts) || {};
+              fallbackContacts = ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.contacts) || {};
               contactsTexts = ((_texts$lang5 = texts[lang]) === null || _texts$lang5 === void 0 ? void 0 : _texts$lang5.contacts) || fallbackContacts;
               if (contactsDialogHeading && contactsTexts.heading) {
                 contactsDialogHeading.textContent = contactsTexts.heading;
@@ -19794,517 +19742,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       conditionLogic: {}
     };
   }
-  function refreshAutoGearShootingDaysValue(selected) {
-    if (!autoGearShootingDaysInput) return;
-    var condition = function () {
-      if (selected && _typeof(selected) === 'object' && !Array.isArray(selected)) {
-        return normalizeAutoGearShootingDaysCondition(selected);
-      }
-      if (Array.isArray(selected) && selected.length) {
-        return normalizeAutoGearShootingDaysCondition({
-          mode: 'minimum',
-          value: selected[0]
-        });
-      }
-      if (autoGearEditorDraft !== null && autoGearEditorDraft !== void 0 && autoGearEditorDraft.shootingDays) {
-        return normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays);
-      }
-      return null;
-    }();
-    var mode = condition ? condition.mode : 'minimum';
-    if (autoGearShootingDaysMode) {
-      autoGearShootingDaysMode.value = AUTO_GEAR_SHOOTING_DAY_MODES.has(mode) ? mode : 'minimum';
-    }
-    var value = condition ? condition.value : '';
-    autoGearShootingDaysInput.value = value ? String(value) : '';
-  }
-  function refreshAutoGearScenarioOptions(selected) {
-    if (!autoGearScenariosSelect) return;
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.scenarios) ? autoGearEditorDraft.scenarios : [];
-    var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean)));
-    autoGearScenariosSelect.innerHTML = '';
-    autoGearScenariosSelect.multiple = true;
-    var source = document.getElementById('requiredScenarios');
-    var hasOptions = false;
-    if (source) {
-      Array.from(source.options).forEach(function (opt) {
-        if (!opt.value) return;
-        var option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.textContent;
-        if (selectedValues.includes(opt.value)) {
-          option.selected = true;
-        }
-        autoGearScenariosSelect.appendChild(option);
-        hasOptions = true;
-      });
-    }
-    if (!hasOptions) {
-      var _texts$currentLang21, _texts$en29;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioPlaceholder) || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.autoGearScenarioPlaceholder) || 'Select scenarios';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearScenariosSelect.appendChild(placeholder);
-    } else {
-      selectedValues.forEach(function (value) {
-        var exists = Array.from(autoGearScenariosSelect.options || []).some(function (option) {
-          return option && option.value === value;
-        });
-        if (!exists) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = value;
-          fallbackOption.textContent = value;
-          fallbackOption.selected = true;
-          autoGearScenariosSelect.appendChild(fallbackOption);
-        }
-      });
-    }
-    var selectableOptions = Array.from(autoGearScenariosSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearScenariosSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-    applyAutoGearScenarioSettings(selectedValues);
-  }
-  function getAutoGearScenarioSelectedValues() {
-    if (!autoGearScenariosSelect) return [];
-    return Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
-      return option ? option.value : '';
-    }).filter(function (value) {
-      return typeof value === 'string' && value.trim();
-    });
-  }
-  function applyAutoGearScenarioSettings(selectedValues) {
-    var _autoGearScenarioMode;
-    var values = Array.isArray(selectedValues) ? selectedValues.filter(function (value) {
-      return typeof value === 'string' && value.trim();
-    }) : [];
-    var uniqueValues = Array.from(new Set(values));
-    var desiredMode = autoGearEditorDraft ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic) : normalizeAutoGearScenarioLogic((_autoGearScenarioMode = autoGearScenarioModeSelectElement) === null || _autoGearScenarioMode === void 0 ? void 0 : _autoGearScenarioMode.value);
-    if (autoGearScenarioModeSelectElement) {
-      var _texts$currentLang22, _texts$en30, _texts$currentLang23, _texts$en31, _texts$currentLang24, _texts$en32;
-      var modeLabels = {
-        all: ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearScenarioModeAll) || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.autoGearScenarioModeAll) || 'Require every selected scenario',
-        any: ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearScenarioModeAny) || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.autoGearScenarioModeAny) || 'Match any selected scenario',
-        multiplier: ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearScenarioModeMultiplier) || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.autoGearScenarioModeMultiplier) || 'Multiply when combined'
-      };
-      Array.from(autoGearScenarioModeSelectElement.options || []).forEach(function (option) {
-        if (!option) return;
-        if (option.value === 'multiplier') {
-          option.disabled = uniqueValues.length < 2;
-        } else {
-          option.disabled = false;
-        }
-        var label = modeLabels[option.value] || modeLabels.all;
-        if (label) {
-          option.textContent = label;
-        }
-      });
-      var nextMode = desiredMode;
-      if (nextMode === 'multiplier' && uniqueValues.length < 2) {
-        nextMode = 'all';
-      }
-      autoGearScenarioModeSelectElement.value = nextMode;
-      if (autoGearEditorDraft && autoGearEditorDraft.scenarioLogic !== nextMode) {
-        autoGearEditorDraft.scenarioLogic = nextMode;
-      }
-      updateAutoGearScenarioMultiplierVisibility(nextMode, uniqueValues);
-    } else {
-      updateAutoGearScenarioMultiplierVisibility(desiredMode, uniqueValues);
-    }
-  }
-  function updateAutoGearScenarioMultiplierVisibility(mode, selectedValues) {
-    if (!autoGearScenarioMultiplierContainer) return;
-    var normalizedMode = normalizeAutoGearScenarioLogic(mode);
-    var values = Array.isArray(selectedValues) ? selectedValues.filter(function (value) {
-      return typeof value === 'string' && value.trim();
-    }) : [];
-    var shouldShow = normalizedMode === 'multiplier' && values.length >= 1;
-    autoGearScenarioMultiplierContainer.hidden = !shouldShow;
-    autoGearScenarioMultiplierContainer.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-    if (autoGearScenarioFactorInput) {
-      autoGearScenarioFactorInput.disabled = !shouldShow;
-    }
-    refreshAutoGearScenarioBaseSelect(values, {
-      forceDisable: !shouldShow
-    });
-  }
-  function refreshAutoGearScenarioBaseSelect(selectedValues) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    if (!autoGearScenarioBaseSelect) return;
-    var _options$forceDisable = options.forceDisable,
-      forceDisable = _options$forceDisable === void 0 ? false : _options$forceDisable;
-    var values = Array.isArray(selectedValues) ? selectedValues.filter(function (value) {
-      return typeof value === 'string' && value.trim();
-    }) : [];
-    var uniqueValues = Array.from(new Set(values));
-    var previousValue = autoGearScenarioBaseSelect.value || '';
-    autoGearScenarioBaseSelect.innerHTML = '';
-    if (forceDisable || !uniqueValues.length) {
-      var _texts$currentLang25, _texts$en33;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearScenarioBasePlaceholder) || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.autoGearScenarioBasePlaceholder) || 'Select a base scenario';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearScenarioBaseSelect.appendChild(placeholder);
-      autoGearScenarioBaseSelect.disabled = true;
-      return;
-    }
-    uniqueValues.forEach(function (value) {
-      var option = document.createElement('option');
-      option.value = value;
-      option.textContent = value;
-      autoGearScenarioBaseSelect.appendChild(option);
-    });
-    var preferred = autoGearEditorDraft ? normalizeAutoGearScenarioPrimary(autoGearEditorDraft.scenarioPrimary) : '';
-    var normalizedPreferred = normalizeAutoGearTriggerValue(preferred);
-    var nextValue = '';
-    if (normalizedPreferred) {
-      var matched = uniqueValues.find(function (value) {
-        return normalizeAutoGearTriggerValue(value) === normalizedPreferred;
-      });
-      if (matched) {
-        nextValue = matched;
-      }
-    }
-    if (!nextValue && previousValue) {
-      var normalizedPrevious = normalizeAutoGearTriggerValue(previousValue);
-      var matchedPrevious = uniqueValues.find(function (value) {
-        return normalizeAutoGearTriggerValue(value) === normalizedPrevious;
-      });
-      if (matchedPrevious) {
-        nextValue = matchedPrevious;
-      }
-    }
-    if (!nextValue) {
-      nextValue = uniqueValues[0];
-    }
-    autoGearScenarioBaseSelect.value = nextValue;
-    autoGearScenarioBaseSelect.disabled = false;
-  }
-  function refreshAutoGearMatteboxOptions(selected) {
-    if (!autoGearMatteboxSelect) return;
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.mattebox) ? autoGearEditorDraft.mattebox : [];
-    var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean)));
-    autoGearMatteboxSelect.innerHTML = '';
-    autoGearMatteboxSelect.multiple = true;
-    var source = document.getElementById('mattebox');
-    var hasOptions = false;
-    if (source) {
-      Array.from(source.options).forEach(function (opt) {
-        if (!opt.value) return;
-        var option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.textContent;
-        if (selectedValues.includes(opt.value)) {
-          option.selected = true;
-        }
-        autoGearMatteboxSelect.appendChild(option);
-        hasOptions = true;
-      });
-    }
-    if (!hasOptions) {
-      var _texts$currentLang26, _texts$en34;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearMatteboxPlaceholder) || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.autoGearMatteboxPlaceholder) || 'Select mattebox options';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearMatteboxSelect.appendChild(placeholder);
-    } else {
-      selectedValues.forEach(function (value) {
-        var exists = Array.from(autoGearMatteboxSelect.options || []).some(function (option) {
-          return option && option.value === value;
-        });
-        if (!exists) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = value;
-          fallbackOption.textContent = value;
-          fallbackOption.selected = true;
-          autoGearMatteboxSelect.appendChild(fallbackOption);
-        }
-      });
-    }
-    var selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearMatteboxSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-  }
-  function refreshAutoGearCameraHandleOptions(selected) {
-    if (!autoGearCameraHandleSelect) return;
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.cameraHandle) ? autoGearEditorDraft.cameraHandle : [];
-    var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean)));
-    autoGearCameraHandleSelect.innerHTML = '';
-    autoGearCameraHandleSelect.multiple = true;
-    var source = document.getElementById('cameraHandle');
-    var hasOptions = false;
-    if (source) {
-      Array.from(source.options).forEach(function (opt) {
-        if (!opt.value) return;
-        var option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.textContent;
-        if (selectedValues.includes(opt.value)) {
-          option.selected = true;
-        }
-        autoGearCameraHandleSelect.appendChild(option);
-        hasOptions = true;
-      });
-    }
-    if (!hasOptions) {
-      var _texts$currentLang27, _texts$en35;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearCameraHandlePlaceholder) || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.autoGearCameraHandlePlaceholder) || 'Select camera handles';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearCameraHandleSelect.appendChild(placeholder);
-    } else {
-      selectedValues.forEach(function (value) {
-        var exists = Array.from(autoGearCameraHandleSelect.options || []).some(function (option) {
-          return option && option.value === value;
-        });
-        if (!exists) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = value;
-          fallbackOption.textContent = value;
-          fallbackOption.selected = true;
-          autoGearCameraHandleSelect.appendChild(fallbackOption);
-        }
-      });
-    }
-    var selectableOptions = Array.from(autoGearCameraHandleSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearCameraHandleSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-  }
-  function resolveViewfinderOptionValue(option) {
-    if (!option) return '';
-    var raw = typeof option.value === 'string' ? option.value : '';
-    return raw ? raw : '__none__';
-  }
-  function getViewfinderFallbackLabel(value) {
-    if (value === '__none__') {
-      var _texts$currentLang28, _texts$en36;
-      return ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.viewfinderExtensionNone) || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.viewfinderExtensionNone) || 'No';
-    }
-    return value;
-  }
-  function getVideoDistributionFallbackLabel(value) {
-    if (value === '__none__') {
-      var _texts$currentLang29, _texts$en37;
-      return ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearVideoDistributionNone) || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.autoGearVideoDistributionNone) || 'No video distribution selected';
-    }
-    return value;
-  }
-  function normalizeVideoDistributionOptionValue(value) {
-    if (typeof value !== 'string') return '';
-    var trimmed = value.trim();
-    if (!trimmed) return '';
-    var lower = trimmed.toLowerCase();
-    if (lower === '__none__' || lower === 'none') return '__none__';
-    return trimmed;
-  }
-  function refreshAutoGearViewfinderExtensionOptions(selected) {
-    if (!autoGearViewfinderExtensionSelect) return;
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.viewfinderExtension) ? autoGearEditorDraft.viewfinderExtension : [];
-    var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean)));
-    autoGearViewfinderExtensionSelect.innerHTML = '';
-    autoGearViewfinderExtensionSelect.multiple = true;
-    var source = document.getElementById('viewfinderExtension');
-    var hasOptions = false;
-    if (source) {
-      Array.from(source.options).forEach(function (opt) {
-        var option = document.createElement('option');
-        var value = resolveViewfinderOptionValue(opt);
-        option.value = value;
-        option.textContent = opt.textContent;
-        if (selectedValues.includes(value)) {
-          option.selected = true;
-        }
-        autoGearViewfinderExtensionSelect.appendChild(option);
-        hasOptions = true;
-      });
-    }
-    if (!hasOptions) {
-      var _texts$currentLang30, _texts$en38;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearViewfinderExtensionPlaceholder) || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearViewfinderExtensionSelect.appendChild(placeholder);
-    } else {
-      selectedValues.forEach(function (value) {
-        var exists = Array.from(autoGearViewfinderExtensionSelect.options || []).some(function (option) {
-          return option && option.value === value;
-        });
-        if (!exists) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = value;
-          fallbackOption.textContent = getViewfinderFallbackLabel(value);
-          fallbackOption.selected = true;
-          autoGearViewfinderExtensionSelect.appendChild(fallbackOption);
-        }
-      });
-    }
-    var selectableOptions = Array.from(autoGearViewfinderExtensionSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearViewfinderExtensionSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-  }
-  function refreshAutoGearDeliveryResolutionOptions(selected) {
-    if (!autoGearDeliveryResolutionSelect) return;
-    var selectedValues = collectAutoGearSelectedValues(selected, 'deliveryResolution');
-    autoGearDeliveryResolutionSelect.innerHTML = '';
-    autoGearDeliveryResolutionSelect.multiple = true;
-    var seen = new Set();
-    var addOption = function addOption(value, label) {
-      var normalized = typeof value === 'string' ? value.trim() : '';
-      if (!normalized || seen.has(normalized)) return;
-      var option = document.createElement('option');
-      option.value = normalized;
-      option.textContent = label || normalized;
-      if (selectedValues.includes(normalized)) {
-        option.selected = true;
-      }
-      autoGearDeliveryResolutionSelect.appendChild(option);
-      seen.add(normalized);
-    };
-    if (deliveryResolutionSelect) {
-      Array.from(deliveryResolutionSelect.options || []).forEach(function (opt) {
-        if (!opt || typeof opt.value !== 'string') return;
-        var value = opt.value.trim();
-        if (!value) return;
-        var label = (opt.textContent || value).trim();
-        addOption(value, label);
-      });
-    }
-    selectedValues.forEach(function (value) {
-      if (!seen.has(value)) addOption(value, value);
-    });
-    if (!autoGearDeliveryResolutionSelect.options.length) {
-      var _texts$currentLang31, _texts$en39;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearDeliveryResolutionPlaceholder) || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearDeliveryResolutionSelect.appendChild(placeholder);
-    }
-    var visibleCount = Array.from(autoGearDeliveryResolutionSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    }).length;
-    autoGearDeliveryResolutionSelect.size = computeAutoGearMultiSelectSize(visibleCount, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-  }
-  function refreshAutoGearVideoDistributionOptions(selected) {
-    if (!autoGearVideoDistributionSelect) return;
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.videoDistribution) ? autoGearEditorDraft.videoDistribution : [];
-    var normalizedSelections = Array.from(new Set(candidateValues.map(normalizeVideoDistributionOptionValue).filter(Boolean)));
-    var hasNoneSelection = normalizedSelections.includes('__none__');
-    var selectedValues = normalizedSelections.filter(function (value) {
-      return value !== '__none__';
-    });
-    autoGearVideoDistributionSelect.innerHTML = '';
-    autoGearVideoDistributionSelect.multiple = true;
-    var noneOption = document.createElement('option');
-    noneOption.value = '__none__';
-    noneOption.textContent = getVideoDistributionFallbackLabel('__none__');
-    if (hasNoneSelection) {
-      noneOption.selected = true;
-    }
-    autoGearVideoDistributionSelect.appendChild(noneOption);
-    var source = document.getElementById('videoDistribution');
-    var hasOptions = false;
-    if (source) {
-      Array.from(source.options).forEach(function (opt) {
-        var value = normalizeVideoDistributionOptionValue(opt.value);
-        if (!value) return;
-        if (value === '__none__') {
-          if (hasNoneSelection) {
-            noneOption.selected = true;
-          }
-          return;
-        }
-        var option = document.createElement('option');
-        option.value = value;
-        option.textContent = opt.textContent;
-        if (selectedValues.includes(value)) {
-          option.selected = true;
-        }
-        autoGearVideoDistributionSelect.appendChild(option);
-        hasOptions = true;
-      });
-    }
-    if (!hasOptions) {
-      var _texts$currentLang32, _texts$en40;
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearVideoDistributionPlaceholder) || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      autoGearVideoDistributionSelect.appendChild(placeholder);
-    } else {
-      selectedValues.forEach(function (value) {
-        var exists = Array.from(autoGearVideoDistributionSelect.options || []).some(function (option) {
-          return option && option.value === value;
-        });
-        if (!exists) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = value;
-          fallbackOption.textContent = getVideoDistributionFallbackLabel(value);
-          fallbackOption.selected = true;
-          autoGearVideoDistributionSelect.appendChild(fallbackOption);
-        }
-      });
-    }
-    var selectableOptions = Array.from(autoGearVideoDistributionSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearVideoDistributionSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-  }
-  function collectAutoGearSelectedValues(selected, key) {
-    var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft[key]) ? autoGearEditorDraft[key] : [];
-    return Array.from(new Set(candidateValues.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean)));
-  }
+  var refreshAutoGearShootingDaysValue = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue : function refreshAutoGearShootingDaysValue() {};
+  var refreshAutoGearScenarioOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions : function refreshAutoGearScenarioOptions() {};
+  var refreshAutoGearScenarioBaseSelect = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect : function refreshAutoGearScenarioBaseSelect() {};
+  var refreshAutoGearMatteboxOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions : function refreshAutoGearMatteboxOptions() {};
+  var refreshAutoGearCameraHandleOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions : function refreshAutoGearCameraHandleOptions() {};
+  var refreshAutoGearViewfinderExtensionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions : function refreshAutoGearViewfinderExtensionOptions() {};
+  var refreshAutoGearDeliveryResolutionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions : function refreshAutoGearDeliveryResolutionOptions() {};
+  var refreshAutoGearVideoDistributionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions : function refreshAutoGearVideoDistributionOptions() {};
+  var collectAutoGearSelectedValues = typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function' ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues : function collectAutoGearSelectedValues() {
+    return [];
+  };
   function getCrewRoleEntries() {
-    var _texts$en41;
+    var _texts$en29;
     var langTexts = texts[currentLang] || texts.en || {};
-    var crewRoleMap = langTexts.crewRoles || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.crewRoles) || {};
+    var crewRoleMap = langTexts.crewRoles || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.crewRoles) || {};
     var seen = new Set();
     var entries = [];
     Object.entries(crewRoleMap).forEach(function (_ref75) {
@@ -20410,6 +19862,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       },
       set: function set(value) {
         autoGearScenarioModeSelectElement = value || null;
+        setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
       }
     },
     pinkModeIconRotationTimer: {

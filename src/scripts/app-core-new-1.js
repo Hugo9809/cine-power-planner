@@ -8879,262 +8879,233 @@ if (autoGearAddRuleBtn) {
 if (autoGearEditor) {
   autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
 }
-var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
-var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
-var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
-var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
-let autoGearScenarioModeSelectElement = document.getElementById('autoGearScenarioMode');
-var autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
-var autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
-var autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
-var autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
-var autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
-var autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
-var autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
-var autoGearShootingDaysInput = document.getElementById('autoGearShootingDays');
-var autoGearShootingDaysLabel = document.getElementById('autoGearShootingDaysLabel');
-var autoGearShootingDaysHelp = document.getElementById('autoGearShootingDaysHelp');
-var autoGearShootingDaysValueLabel = document.getElementById('autoGearShootingDaysCountLabel');
-var autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
-var autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
-var autoGearMatteboxModeLabel = document.getElementById('autoGearMatteboxModeLabel');
-var autoGearMatteboxModeSelect = document.getElementById('autoGearMatteboxMode');
-var autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
-var autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
-var autoGearCameraHandleModeLabel = document.getElementById('autoGearCameraHandleModeLabel');
-var autoGearCameraHandleModeSelect = document.getElementById('autoGearCameraHandleMode');
-var autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
-var autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
-var autoGearViewfinderExtensionModeLabel = document.getElementById('autoGearViewfinderExtensionModeLabel');
-var autoGearViewfinderExtensionModeSelect = document.getElementById('autoGearViewfinderExtensionMode');
-var autoGearDeliveryResolutionSelect = document.getElementById('autoGearDeliveryResolution');
-var autoGearDeliveryResolutionLabel = document.getElementById('autoGearDeliveryResolutionLabel');
-var autoGearDeliveryResolutionModeLabel = document.getElementById('autoGearDeliveryResolutionModeLabel');
-var autoGearDeliveryResolutionModeSelect = document.getElementById('autoGearDeliveryResolutionMode');
-var autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
-var autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
-var autoGearVideoDistributionModeLabel = document.getElementById('autoGearVideoDistributionModeLabel');
-var autoGearVideoDistributionModeSelect = document.getElementById('autoGearVideoDistributionMode');
-var autoGearCameraSelect = document.getElementById('autoGearCamera');
-var autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
-var autoGearCameraModeLabel = document.getElementById('autoGearCameraModeLabel');
-var autoGearCameraModeSelect = document.getElementById('autoGearCameraMode');
-var autoGearOwnGearLabel = document.getElementById('autoGearOwnGearLabel');
-var autoGearOwnGearModeLabel = document.getElementById('autoGearOwnGearModeLabel');
-var autoGearOwnGearModeSelect = document.getElementById('autoGearOwnGearMode');
-var autoGearOwnGearSelect = document.getElementById('autoGearOwnGear');
-var autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
-var autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
-var autoGearCameraWeightOperatorLabel = document.getElementById('autoGearCameraWeightOperatorLabel');
-var autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValue');
-var autoGearCameraWeightValueLabel = document.getElementById('autoGearCameraWeightValueLabel');
-var autoGearCameraWeightHelp = document.getElementById('autoGearCameraWeightHelp');
-var autoGearMonitorSelect = document.getElementById('autoGearMonitor');
-var autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
-var autoGearMonitorModeLabel = document.getElementById('autoGearMonitorModeLabel');
-var autoGearMonitorModeSelect = document.getElementById('autoGearMonitorMode');
-var autoGearTripodHeadBrandSelect = document.getElementById('autoGearTripodHeadBrand');
-var autoGearTripodHeadBrandLabel = document.getElementById('autoGearTripodHeadBrandLabel');
-var autoGearTripodHeadBrandModeLabel = document.getElementById('autoGearTripodHeadBrandModeLabel');
-var autoGearTripodHeadBrandModeSelect = document.getElementById('autoGearTripodHeadBrandMode');
-var autoGearTripodBowlSelect = document.getElementById('autoGearTripodBowl');
-var autoGearTripodBowlLabel = document.getElementById('autoGearTripodBowlLabel');
-var autoGearTripodBowlModeLabel = document.getElementById('autoGearTripodBowlModeLabel');
-var autoGearTripodBowlModeSelect = document.getElementById('autoGearTripodBowlMode');
-var autoGearTripodTypesSelect = document.getElementById('autoGearTripodTypes');
-var autoGearTripodTypesLabel = document.getElementById('autoGearTripodTypesLabel');
-var autoGearTripodTypesModeLabel = document.getElementById('autoGearTripodTypesModeLabel');
-var autoGearTripodTypesModeSelect = document.getElementById('autoGearTripodTypesMode');
-var autoGearTripodSpreaderSelect = document.getElementById('autoGearTripodSpreader');
-var autoGearTripodSpreaderLabel = document.getElementById('autoGearTripodSpreaderLabel');
-var autoGearTripodSpreaderModeLabel = document.getElementById('autoGearTripodSpreaderModeLabel');
-var autoGearTripodSpreaderModeSelect = document.getElementById('autoGearTripodSpreaderMode');
-var autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
-var autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
-var autoGearCrewPresentModeLabel = document.getElementById('autoGearCrewPresentModeLabel');
-var autoGearCrewPresentModeSelect = document.getElementById('autoGearCrewPresentMode');
-var autoGearCrewAbsentSelect = document.getElementById('autoGearCrewAbsent');
-var autoGearCrewAbsentLabel = document.getElementById('autoGearCrewAbsentLabel');
-var autoGearCrewAbsentModeLabel = document.getElementById('autoGearCrewAbsentModeLabel');
-var autoGearCrewAbsentModeSelect = document.getElementById('autoGearCrewAbsentMode');
-var autoGearWirelessSelect = document.getElementById('autoGearWireless');
-var autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
-var autoGearWirelessModeLabel = document.getElementById('autoGearWirelessModeLabel');
-var autoGearWirelessModeSelect = document.getElementById('autoGearWirelessMode');
-var autoGearMotorsSelect = document.getElementById('autoGearMotors');
-var autoGearMotorsLabel = document.getElementById('autoGearMotorsLabel');
-var autoGearMotorsModeLabel = document.getElementById('autoGearMotorsModeLabel');
-var autoGearMotorsModeSelect = document.getElementById('autoGearMotorsMode');
-var autoGearControllersSelect = document.getElementById('autoGearControllers');
-var autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
-var autoGearControllersModeLabel = document.getElementById('autoGearControllersModeLabel');
-var autoGearControllersModeSelect = document.getElementById('autoGearControllersMode');
-var autoGearDistanceSelect = document.getElementById('autoGearDistance');
-var autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
-var autoGearDistanceModeLabel = document.getElementById('autoGearDistanceModeLabel');
-var autoGearDistanceModeSelect = document.getElementById('autoGearDistanceMode');
-var autoGearConditionLabels = {
-  always: autoGearAlwaysLabel,
-  scenarios: autoGearScenariosLabel,
-  shootingDays: autoGearShootingDaysLabel,
-  mattebox: autoGearMatteboxLabel,
-  cameraHandle: autoGearCameraHandleLabel,
-  viewfinderExtension: autoGearViewfinderExtensionLabel,
-  deliveryResolution: autoGearDeliveryResolutionLabel,
-  videoDistribution: autoGearVideoDistributionLabel,
-  camera: autoGearCameraLabel,
-  ownGear: autoGearOwnGearLabel,
-  cameraWeight: autoGearCameraWeightLabel,
-  monitor: autoGearMonitorLabel,
-  tripodHeadBrand: autoGearTripodHeadBrandLabel,
-  tripodBowl: autoGearTripodBowlLabel,
-  tripodTypes: autoGearTripodTypesLabel,
-  tripodSpreader: autoGearTripodSpreaderLabel,
-  crewPresent: autoGearCrewPresentLabel,
-  crewAbsent: autoGearCrewAbsentLabel,
-  wireless: autoGearWirelessLabel,
-  motors: autoGearMotorsLabel,
-  controllers: autoGearControllersLabel,
-  distance: autoGearDistanceLabel,
-};
-var autoGearConditionSelects = {
-  always: null,
-  scenarios: autoGearScenariosSelect,
-  shootingDays: autoGearShootingDaysInput,
-  mattebox: autoGearMatteboxSelect,
-  cameraHandle: autoGearCameraHandleSelect,
-  viewfinderExtension: autoGearViewfinderExtensionSelect,
-  deliveryResolution: autoGearDeliveryResolutionSelect,
-  videoDistribution: autoGearVideoDistributionSelect,
-  camera: autoGearCameraSelect,
-  ownGear: autoGearOwnGearSelect,
-  cameraWeight: autoGearCameraWeightValueInput,
-  monitor: autoGearMonitorSelect,
-  tripodHeadBrand: autoGearTripodHeadBrandSelect,
-  tripodBowl: autoGearTripodBowlSelect,
-  tripodTypes: autoGearTripodTypesSelect,
-  tripodSpreader: autoGearTripodSpreaderSelect,
-  crewPresent: autoGearCrewPresentSelect,
-  crewAbsent: autoGearCrewAbsentSelect,
-  wireless: autoGearWirelessSelect,
-  motors: autoGearMotorsSelect,
-  controllers: autoGearControllersSelect,
-  distance: autoGearDistanceSelect,
-};
-var autoGearConditionLogicLabels = {
-  mattebox: autoGearMatteboxModeLabel,
-  cameraHandle: autoGearCameraHandleModeLabel,
-  viewfinderExtension: autoGearViewfinderExtensionModeLabel,
-  deliveryResolution: autoGearDeliveryResolutionModeLabel,
-  videoDistribution: autoGearVideoDistributionModeLabel,
-  camera: autoGearCameraModeLabel,
-  ownGear: autoGearOwnGearModeLabel,
-  monitor: autoGearMonitorModeLabel,
-  tripodHeadBrand: autoGearTripodHeadBrandModeLabel,
-  tripodBowl: autoGearTripodBowlModeLabel,
-  tripodTypes: autoGearTripodTypesModeLabel,
-  tripodSpreader: autoGearTripodSpreaderModeLabel,
-  crewPresent: autoGearCrewPresentModeLabel,
-  crewAbsent: autoGearCrewAbsentModeLabel,
-  wireless: autoGearWirelessModeLabel,
-  motors: autoGearMotorsModeLabel,
-  controllers: autoGearControllersModeLabel,
-  distance: autoGearDistanceModeLabel,
-};
-var autoGearConditionLogicSelects = {
-  mattebox: autoGearMatteboxModeSelect,
-  cameraHandle: autoGearCameraHandleModeSelect,
-  viewfinderExtension: autoGearViewfinderExtensionModeSelect,
-  deliveryResolution: autoGearDeliveryResolutionModeSelect,
-  videoDistribution: autoGearVideoDistributionModeSelect,
-  camera: autoGearCameraModeSelect,
-  ownGear: autoGearOwnGearModeSelect,
-  monitor: autoGearMonitorModeSelect,
-  tripodHeadBrand: autoGearTripodHeadBrandModeSelect,
-  tripodBowl: autoGearTripodBowlModeSelect,
-  tripodTypes: autoGearTripodTypesModeSelect,
-  tripodSpreader: autoGearTripodSpreaderModeSelect,
-  crewPresent: autoGearCrewPresentModeSelect,
-  crewAbsent: autoGearCrewAbsentModeSelect,
-  wireless: autoGearWirelessModeSelect,
-  motors: autoGearMotorsModeSelect,
-  controllers: autoGearControllersModeSelect,
-  distance: autoGearDistanceModeSelect,
-};
-Object.values(autoGearConditionLogicSelects).forEach(select => {
-  if (select) select.disabled = true;
-});
-const AUTO_GEAR_CONDITION_KEYS = [
-  'always',
-  'scenarios',
-  'shootingDays',
-  'mattebox',
-  'cameraHandle',
-  'viewfinderExtension',
-  'deliveryResolution',
-  'videoDistribution',
-  'camera',
-  'ownGear',
-  'cameraWeight',
-  'monitor',
-  'tripodHeadBrand',
-  'tripodBowl',
-  'tripodTypes',
-  'tripodSpreader',
-  'crewPresent',
-  'crewAbsent',
-  'wireless',
-  'motors',
-  'controllers',
-  'distance',
-];
-const AUTO_GEAR_REPEATABLE_CONDITIONS = new Set([
-  'scenarios',
-  'mattebox',
-  'cameraHandle',
-  'viewfinderExtension',
-  'deliveryResolution',
-  'videoDistribution',
-  'camera',
-  'ownGear',
-  'monitor',
-  'tripodHeadBrand',
-  'tripodBowl',
-  'tripodTypes',
-  'tripodSpreader',
-  'crewPresent',
-  'crewAbsent',
-  'wireless',
-  'motors',
-  'controllers',
-  'distance',
-]);
-const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
-  always: 'Always include',
-  scenarios: 'Required scenarios',
-  shootingDays: 'Shooting days condition',
-  mattebox: 'Mattebox options',
-  cameraHandle: 'Camera handles',
-  viewfinderExtension: 'Viewfinder extension',
-  deliveryResolution: 'Delivery resolution',
-  videoDistribution: 'Video distribution',
-  camera: 'Camera',
-  ownGear: 'Own gear items',
-  cameraWeight: 'Camera weight',
-  monitor: 'Onboard monitor',
-  tripodHeadBrand: 'Tripod head brand',
-  tripodBowl: 'Tripod bowl size',
-  tripodTypes: 'Tripod types',
-  tripodSpreader: 'Tripod spreader',
-  crewPresent: 'Crew present',
-  crewAbsent: 'Crew absent',
-  wireless: 'Wireless transmitter',
-  motors: 'FIZ motors',
-  controllers: 'FIZ controllers',
-  distance: 'FIZ distance devices',
-};
+const AUTO_GEAR_UI_EXPORTS = (function resolveAutoGearUiExports() {
+  if (typeof resolveCoreSupportModule === 'function') {
+    try {
+      const resolved = resolveCoreSupportModule('cineCoreAutoGearUi', './app-core-auto-gear-ui.js');
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+    } catch (autoGearUiResolutionError) {
+      void autoGearUiResolutionError;
+    }
+  }
 
-function resolveFocusScalePreference() {
+  try {
+    if (typeof cineCoreAutoGearUi === 'object' && cineCoreAutoGearUi) {
+      return cineCoreAutoGearUi;
+    }
+  } catch (cineCoreAutoGearUiError) {
+    void cineCoreAutoGearUiError;
+  }
+
+  try {
+    const scope =
+      (typeof globalThis !== 'undefined' && globalThis) ||
+      (typeof window !== 'undefined' && window) ||
+      (typeof self !== 'undefined' && self) ||
+      (typeof global !== 'undefined' && global) ||
+      null;
+    if (scope && typeof scope.cineCoreAutoGearUi === 'object' && scope.cineCoreAutoGearUi) {
+      return scope.cineCoreAutoGearUi;
+    }
+  } catch (autoGearUiScopeError) {
+    void autoGearUiScopeError;
+  }
+
+  return {};
+})();
+
+var autoGearRuleNameInput = (AUTO_GEAR_UI_EXPORTS.autoGearRuleNameInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearRuleNameInput : null);
+var autoGearRuleNameLabel = (AUTO_GEAR_UI_EXPORTS.autoGearRuleNameLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearRuleNameLabel : null);
+var autoGearScenariosSelect = (AUTO_GEAR_UI_EXPORTS.autoGearScenariosSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenariosSelect : null);
+var autoGearScenariosLabel = (AUTO_GEAR_UI_EXPORTS.autoGearScenariosLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenariosLabel : null);
+var autoGearScenarioModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeLabel : null);
+var autoGearScenarioMultiplierContainer = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioMultiplierContainer !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioMultiplierContainer : null);
+var autoGearScenarioBaseSelect = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseSelect : null);
+var autoGearScenarioBaseLabel = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioBaseLabel : null);
+var autoGearScenarioFactorInput = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorInput : null);
+var autoGearScenarioFactorLabel = (AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearScenarioFactorLabel : null);
+var autoGearShootingDaysMode = (AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysMode !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysMode : null);
+var autoGearShootingDaysInput = (AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysInput : null);
+var autoGearShootingDaysLabel = (AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysLabel : null);
+var autoGearShootingDaysHelp = (AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysHelp !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysHelp : null);
+var autoGearShootingDaysValueLabel = (AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysValueLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearShootingDaysValueLabel : null);
+var autoGearMatteboxSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMatteboxSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxSelect : null);
+var autoGearMatteboxLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMatteboxLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxLabel : null);
+var autoGearMatteboxModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeLabel : null);
+var autoGearMatteboxModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMatteboxModeSelect : null);
+var autoGearCameraHandleSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleSelect : null);
+var autoGearCameraHandleLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleLabel : null);
+var autoGearCameraHandleModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeLabel : null);
+var autoGearCameraHandleModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraHandleModeSelect : null);
+var autoGearViewfinderExtensionSelect = (AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionSelect : null);
+var autoGearViewfinderExtensionLabel = (AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionLabel : null);
+var autoGearViewfinderExtensionModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeLabel : null);
+var autoGearViewfinderExtensionModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearViewfinderExtensionModeSelect : null);
+var autoGearDeliveryResolutionSelect = (AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionSelect : null);
+var autoGearDeliveryResolutionLabel = (AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionLabel : null);
+var autoGearDeliveryResolutionModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeLabel : null);
+var autoGearDeliveryResolutionModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDeliveryResolutionModeSelect : null);
+var autoGearVideoDistributionSelect = (AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionSelect : null);
+var autoGearVideoDistributionLabel = (AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionLabel : null);
+var autoGearVideoDistributionModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeLabel : null);
+var autoGearVideoDistributionModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearVideoDistributionModeSelect : null);
+var autoGearCameraSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCameraSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraSelect : null);
+var autoGearCameraLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraLabel : null);
+var autoGearCameraModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraModeLabel : null);
+var autoGearCameraModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCameraModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraModeSelect : null);
+var autoGearOwnGearLabel = (AUTO_GEAR_UI_EXPORTS.autoGearOwnGearLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearLabel : null);
+var autoGearOwnGearModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeLabel : null);
+var autoGearOwnGearModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearModeSelect : null);
+var autoGearOwnGearSelect = (AUTO_GEAR_UI_EXPORTS.autoGearOwnGearSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearOwnGearSelect : null);
+var autoGearCameraWeightLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightLabel : null);
+var autoGearCameraWeightOperator = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperator !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperator : null);
+var autoGearCameraWeightOperatorLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperatorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightOperatorLabel : null);
+var autoGearCameraWeightValueInput = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueInput !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueInput : null);
+var autoGearCameraWeightValueLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightValueLabel : null);
+var autoGearCameraWeightHelp = (AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightHelp !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCameraWeightHelp : null);
+var autoGearMonitorSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMonitorSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorSelect : null);
+var autoGearMonitorLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMonitorLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorLabel : null);
+var autoGearMonitorModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeLabel : null);
+var autoGearMonitorModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMonitorModeSelect : null);
+var autoGearTripodHeadBrandSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandSelect : null);
+var autoGearTripodHeadBrandLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandLabel : null);
+var autoGearTripodHeadBrandModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeLabel : null);
+var autoGearTripodHeadBrandModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodHeadBrandModeSelect : null);
+var autoGearTripodBowlSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlSelect : null);
+var autoGearTripodBowlLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlLabel : null);
+var autoGearTripodBowlModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeLabel : null);
+var autoGearTripodBowlModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodBowlModeSelect : null);
+var autoGearTripodTypesSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesSelect : null);
+var autoGearTripodTypesLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesLabel : null);
+var autoGearTripodTypesModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeLabel : null);
+var autoGearTripodTypesModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodTypesModeSelect : null);
+var autoGearTripodSpreaderSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderSelect : null);
+var autoGearTripodSpreaderLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderLabel : null);
+var autoGearTripodSpreaderModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeLabel : null);
+var autoGearTripodSpreaderModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearTripodSpreaderModeSelect : null);
+var autoGearCrewPresentSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentSelect : null);
+var autoGearCrewPresentLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentLabel : null);
+var autoGearCrewPresentModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeLabel : null);
+var autoGearCrewPresentModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewPresentModeSelect : null);
+var autoGearCrewAbsentSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentSelect : null);
+var autoGearCrewAbsentLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentLabel : null);
+var autoGearCrewAbsentModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeLabel : null);
+var autoGearCrewAbsentModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearCrewAbsentModeSelect : null);
+var autoGearWirelessSelect = (AUTO_GEAR_UI_EXPORTS.autoGearWirelessSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessSelect : null);
+var autoGearWirelessLabel = (AUTO_GEAR_UI_EXPORTS.autoGearWirelessLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessLabel : null);
+var autoGearWirelessModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeLabel : null);
+var autoGearWirelessModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearWirelessModeSelect : null);
+var autoGearMotorsSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMotorsSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsSelect : null);
+var autoGearMotorsLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMotorsLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsLabel : null);
+var autoGearMotorsModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeLabel : null);
+var autoGearMotorsModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearMotorsModeSelect : null);
+var autoGearControllersSelect = (AUTO_GEAR_UI_EXPORTS.autoGearControllersSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersSelect : null);
+var autoGearControllersLabel = (AUTO_GEAR_UI_EXPORTS.autoGearControllersLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersLabel : null);
+var autoGearControllersModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearControllersModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersModeLabel : null);
+var autoGearControllersModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearControllersModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearControllersModeSelect : null);
+var autoGearDistanceSelect = (AUTO_GEAR_UI_EXPORTS.autoGearDistanceSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceSelect : null);
+var autoGearDistanceLabel = (AUTO_GEAR_UI_EXPORTS.autoGearDistanceLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceLabel : null);
+var autoGearDistanceModeLabel = (AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeLabel !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeLabel : null);
+var autoGearDistanceModeSelect = (AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeSelect !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearDistanceModeSelect : null);
+var autoGearConditionLabels = (AUTO_GEAR_UI_EXPORTS.autoGearConditionLabels !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLabels : {});
+var autoGearConditionSelects = (AUTO_GEAR_UI_EXPORTS.autoGearConditionSelects !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionSelects : {});
+var autoGearConditionLogicLabels = (AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicLabels !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicLabels : {});
+var autoGearConditionLogicSelects = (AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicSelects !== undefined ? AUTO_GEAR_UI_EXPORTS.autoGearConditionLogicSelects : {});
+
+const getAutoGearScenarioModeSelectElementRef =
+  typeof AUTO_GEAR_UI_EXPORTS.getAutoGearScenarioModeSelectElement === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.getAutoGearScenarioModeSelectElement
+    : () => AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeSelectElement || null;
+
+const setAutoGearScenarioModeSelectElementRef =
+  typeof AUTO_GEAR_UI_EXPORTS.setAutoGearScenarioModeSelectElement === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.setAutoGearScenarioModeSelectElement
+    : value => {
+        AUTO_GEAR_UI_EXPORTS.autoGearScenarioModeSelectElement = value || null;
+      };
+
+let autoGearScenarioModeSelectElement = getAutoGearScenarioModeSelectElementRef();
+setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
+
+const AUTO_GEAR_CONDITION_KEYS = Array.isArray(AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_KEYS)
+  ? AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_KEYS
+  : [
+      'always',
+      'scenarios',
+      'shootingDays',
+      'mattebox',
+      'cameraHandle',
+      'viewfinderExtension',
+      'deliveryResolution',
+      'videoDistribution',
+      'camera',
+      'ownGear',
+      'cameraWeight',
+      'monitor',
+      'tripodHeadBrand',
+      'tripodBowl',
+      'tripodTypes',
+      'tripodSpreader',
+      'crewPresent',
+      'crewAbsent',
+      'wireless',
+      'motors',
+      'controllers',
+      'distance',
+    ];
+
+const AUTO_GEAR_REPEATABLE_CONDITIONS =
+  AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_REPEATABLE_CONDITIONS instanceof Set
+    ? AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_REPEATABLE_CONDITIONS
+    : new Set([
+        'scenarios',
+        'mattebox',
+        'cameraHandle',
+        'viewfinderExtension',
+        'deliveryResolution',
+        'videoDistribution',
+        'camera',
+        'ownGear',
+        'monitor',
+        'tripodHeadBrand',
+        'tripodBowl',
+        'tripodTypes',
+        'tripodSpreader',
+        'crewPresent',
+        'crewAbsent',
+        'wireless',
+        'motors',
+        'controllers',
+        'distance',
+      ]);
+
+const AUTO_GEAR_CONDITION_FALLBACK_LABELS =
+  AUTO_GEAR_UI_EXPORTS.AUTO_GEAR_CONDITION_FALLBACK_LABELS || {
+    always: 'Always include',
+    scenarios: 'Required scenarios',
+    shootingDays: 'Shooting days condition',
+    mattebox: 'Mattebox options',
+    cameraHandle: 'Camera handles',
+    viewfinderExtension: 'Viewfinder extension',
+    deliveryResolution: 'Delivery resolution',
+    videoDistribution: 'Video distribution',
+    camera: 'Camera',
+    ownGear: 'Own gear items',
+    cameraWeight: 'Camera weight',
+    monitor: 'Onboard monitor',
+    tripodHeadBrand: 'Tripod head brand',
+    tripodBowl: 'Tripod bowl size',
+    tripodTypes: 'Tripod types',
+    tripodSpreader: 'Tripod spreader',
+    crewPresent: 'Crew present',
+    crewAbsent: 'Crew absent',
+    wireless: 'Wireless transmitter',
+    motors: 'FIZ motors',
+    controllers: 'FIZ controllers',
+    distance: 'FIZ distance devices',
+  };function resolveFocusScalePreference() {
   if (typeof resolveGlobalFocusScalePreference === 'function') {
     try {
       const resolved = resolveGlobalFocusScalePreference();
@@ -22375,615 +22346,50 @@ function createAutoGearDraft(rule) {
   };
 }
 
-function refreshAutoGearShootingDaysValue(selected) {
-  if (!autoGearShootingDaysInput) return;
-  const condition = (() => {
-    if (selected && typeof selected === 'object' && !Array.isArray(selected)) {
-      return normalizeAutoGearShootingDaysCondition(selected);
-    }
-    if (Array.isArray(selected) && selected.length) {
-      return normalizeAutoGearShootingDaysCondition({ mode: 'minimum', value: selected[0] });
-    }
-    if (autoGearEditorDraft?.shootingDays) {
-      return normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays);
-    }
-    return null;
-  })();
-  const mode = condition ? condition.mode : 'minimum';
-  if (autoGearShootingDaysMode) {
-    autoGearShootingDaysMode.value = AUTO_GEAR_SHOOTING_DAY_MODES.has(mode) ? mode : 'minimum';
-  }
-  const value = condition ? condition.value : '';
-  autoGearShootingDaysInput.value = value ? String(value) : '';
-}
+const refreshAutoGearShootingDaysValue =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
+    : function refreshAutoGearShootingDaysValue() {};
 
-function refreshAutoGearScenarioOptions(selected) {
-  if (!autoGearScenariosSelect) return;
+const refreshAutoGearScenarioOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions
+    : function refreshAutoGearScenarioOptions() {};
 
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.scenarios)
-        ? autoGearEditorDraft.scenarios
-        : [];
+const refreshAutoGearScenarioBaseSelect =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect
+    : function refreshAutoGearScenarioBaseSelect() {};
 
-  const selectedValues = Array.from(
-    new Set(
-      candidateValues
-        .filter(value => typeof value === 'string')
-        .map(value => value.trim())
-        .filter(Boolean)
-    )
-  );
+const refreshAutoGearMatteboxOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions
+    : function refreshAutoGearMatteboxOptions() {};
 
-  autoGearScenariosSelect.innerHTML = '';
-  autoGearScenariosSelect.multiple = true;
+const refreshAutoGearCameraHandleOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions
+    : function refreshAutoGearCameraHandleOptions() {};
 
-  const source = document.getElementById('requiredScenarios');
-  let hasOptions = false;
+const refreshAutoGearViewfinderExtensionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions
+    : function refreshAutoGearViewfinderExtensionOptions() {};
 
-  if (source) {
-    Array.from(source.options).forEach(opt => {
-      if (!opt.value) return;
-      const option = document.createElement('option');
-      option.value = opt.value;
-      option.textContent = opt.textContent;
-      if (selectedValues.includes(opt.value)) {
-        option.selected = true;
-      }
-      autoGearScenariosSelect.appendChild(option);
-      hasOptions = true;
-    });
-  }
+const refreshAutoGearDeliveryResolutionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions
+    : function refreshAutoGearDeliveryResolutionOptions() {};
 
-  if (!hasOptions) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
-      || texts.en?.autoGearScenarioPlaceholder
-      || 'Select scenarios';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearScenariosSelect.appendChild(placeholder);
-  } else {
-    selectedValues.forEach(value => {
-      const exists = Array.from(autoGearScenariosSelect.options || []).some(
-        option => option && option.value === value
-      );
-      if (!exists) {
-        const fallbackOption = document.createElement('option');
-        fallbackOption.value = value;
-        fallbackOption.textContent = value;
-        fallbackOption.selected = true;
-        autoGearScenariosSelect.appendChild(fallbackOption);
-      }
-    });
-  }
+const refreshAutoGearVideoDistributionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions
+    : function refreshAutoGearVideoDistributionOptions() {};
 
-  const selectableOptions = Array.from(autoGearScenariosSelect.options || []).filter(option => !option.disabled);
-  autoGearScenariosSelect.size = computeAutoGearMultiSelectSize(
-    selectableOptions.length,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-  applyAutoGearScenarioSettings(selectedValues);
-}
-
-function getAutoGearScenarioSelectedValues() {
-  if (!autoGearScenariosSelect) return [];
-  return Array.from(autoGearScenariosSelect.selectedOptions || [])
-    .map(option => (option ? option.value : ''))
-    .filter(value => typeof value === 'string' && value.trim());
-}
-
-function applyAutoGearScenarioSettings(selectedValues) {
-  const values = Array.isArray(selectedValues)
-    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
-    : [];
-  const uniqueValues = Array.from(new Set(values));
-  const desiredMode = autoGearEditorDraft
-    ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic)
-    : normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectElement?.value);
-  if (autoGearScenarioModeSelectElement) {
-    const modeLabels = {
-      all: texts[currentLang]?.autoGearScenarioModeAll
-        || texts.en?.autoGearScenarioModeAll
-        || 'Require every selected scenario',
-      any: texts[currentLang]?.autoGearScenarioModeAny
-        || texts.en?.autoGearScenarioModeAny
-        || 'Match any selected scenario',
-      multiplier: texts[currentLang]?.autoGearScenarioModeMultiplier
-        || texts.en?.autoGearScenarioModeMultiplier
-        || 'Multiply when combined',
-    };
-    Array.from(autoGearScenarioModeSelectElement.options || []).forEach(option => {
-      if (!option) return;
-      if (option.value === 'multiplier') {
-        option.disabled = uniqueValues.length < 2;
-      } else {
-        option.disabled = false;
-      }
-      const label = modeLabels[option.value] || modeLabels.all;
-      if (label) {
-        option.textContent = label;
-      }
-    });
-    let nextMode = desiredMode;
-    if (nextMode === 'multiplier' && uniqueValues.length < 2) {
-      nextMode = 'all';
-    }
-    autoGearScenarioModeSelectElement.value = nextMode;
-    if (autoGearEditorDraft && autoGearEditorDraft.scenarioLogic !== nextMode) {
-      autoGearEditorDraft.scenarioLogic = nextMode;
-    }
-    updateAutoGearScenarioMultiplierVisibility(nextMode, uniqueValues);
-  } else {
-    updateAutoGearScenarioMultiplierVisibility(desiredMode, uniqueValues);
-  }
-}
-
-function updateAutoGearScenarioMultiplierVisibility(mode, selectedValues) {
-  if (!autoGearScenarioMultiplierContainer) return;
-  const normalizedMode = normalizeAutoGearScenarioLogic(mode);
-  const values = Array.isArray(selectedValues)
-    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
-    : [];
-  const shouldShow = normalizedMode === 'multiplier' && values.length >= 1;
-  autoGearScenarioMultiplierContainer.hidden = !shouldShow;
-  autoGearScenarioMultiplierContainer.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-  if (autoGearScenarioFactorInput) {
-    autoGearScenarioFactorInput.disabled = !shouldShow;
-  }
-  refreshAutoGearScenarioBaseSelect(values, { forceDisable: !shouldShow });
-}
-
-function refreshAutoGearScenarioBaseSelect(selectedValues, options = {}) {
-  if (!autoGearScenarioBaseSelect) return;
-  const { forceDisable = false } = options;
-  const values = Array.isArray(selectedValues)
-    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
-    : [];
-  const uniqueValues = Array.from(new Set(values));
-  const previousValue = autoGearScenarioBaseSelect.value || '';
-  autoGearScenarioBaseSelect.innerHTML = '';
-  if (forceDisable || !uniqueValues.length) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearScenarioBasePlaceholder
-      || texts.en?.autoGearScenarioBasePlaceholder
-      || 'Select a base scenario';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearScenarioBaseSelect.appendChild(placeholder);
-    autoGearScenarioBaseSelect.disabled = true;
-    return;
-  }
-  uniqueValues.forEach(value => {
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = value;
-    autoGearScenarioBaseSelect.appendChild(option);
-  });
-  const preferred = autoGearEditorDraft
-    ? normalizeAutoGearScenarioPrimary(autoGearEditorDraft.scenarioPrimary)
-    : '';
-  const normalizedPreferred = normalizeAutoGearTriggerValue(preferred);
-  let nextValue = '';
-  if (normalizedPreferred) {
-    const matched = uniqueValues.find(value => normalizeAutoGearTriggerValue(value) === normalizedPreferred);
-    if (matched) {
-      nextValue = matched;
-    }
-  }
-  if (!nextValue && previousValue) {
-    const normalizedPrevious = normalizeAutoGearTriggerValue(previousValue);
-    const matchedPrevious = uniqueValues.find(value => normalizeAutoGearTriggerValue(value) === normalizedPrevious);
-    if (matchedPrevious) {
-      nextValue = matchedPrevious;
-    }
-  }
-  if (!nextValue) {
-    nextValue = uniqueValues[0];
-  }
-  autoGearScenarioBaseSelect.value = nextValue;
-  autoGearScenarioBaseSelect.disabled = false;
-}
-
-function refreshAutoGearMatteboxOptions(selected) {
-  if (!autoGearMatteboxSelect) return;
-
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.mattebox)
-        ? autoGearEditorDraft.mattebox
-        : [];
-
-  const selectedValues = Array.from(new Set(
-    candidateValues
-      .filter(value => typeof value === 'string')
-      .map(value => value.trim())
-      .filter(Boolean)
-  ));
-
-  autoGearMatteboxSelect.innerHTML = '';
-  autoGearMatteboxSelect.multiple = true;
-
-  const source = document.getElementById('mattebox');
-  let hasOptions = false;
-
-  if (source) {
-    Array.from(source.options).forEach(opt => {
-      if (!opt.value) return;
-      const option = document.createElement('option');
-      option.value = opt.value;
-      option.textContent = opt.textContent;
-      if (selectedValues.includes(opt.value)) {
-        option.selected = true;
-      }
-      autoGearMatteboxSelect.appendChild(option);
-      hasOptions = true;
-    });
-  }
-
-  if (!hasOptions) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearMatteboxPlaceholder
-      || texts.en?.autoGearMatteboxPlaceholder
-      || 'Select mattebox options';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearMatteboxSelect.appendChild(placeholder);
-  } else {
-    selectedValues.forEach(value => {
-      const exists = Array.from(autoGearMatteboxSelect.options || []).some(
-        option => option && option.value === value
-      );
-      if (!exists) {
-        const fallbackOption = document.createElement('option');
-        fallbackOption.value = value;
-        fallbackOption.textContent = value;
-        fallbackOption.selected = true;
-        autoGearMatteboxSelect.appendChild(fallbackOption);
-      }
-    });
-  }
-
-  const selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(option => !option.disabled);
-  autoGearMatteboxSelect.size = computeAutoGearMultiSelectSize(
-    selectableOptions.length,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-}
-
-function refreshAutoGearCameraHandleOptions(selected) {
-  if (!autoGearCameraHandleSelect) return;
-
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.cameraHandle)
-        ? autoGearEditorDraft.cameraHandle
-        : [];
-
-  const selectedValues = Array.from(new Set(
-    candidateValues
-      .filter(value => typeof value === 'string')
-      .map(value => value.trim())
-      .filter(Boolean)
-  ));
-
-  autoGearCameraHandleSelect.innerHTML = '';
-  autoGearCameraHandleSelect.multiple = true;
-
-  const source = document.getElementById('cameraHandle');
-  let hasOptions = false;
-
-  if (source) {
-    Array.from(source.options).forEach(opt => {
-      if (!opt.value) return;
-      const option = document.createElement('option');
-      option.value = opt.value;
-      option.textContent = opt.textContent;
-      if (selectedValues.includes(opt.value)) {
-        option.selected = true;
-      }
-      autoGearCameraHandleSelect.appendChild(option);
-      hasOptions = true;
-    });
-  }
-
-  if (!hasOptions) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearCameraHandlePlaceholder
-      || texts.en?.autoGearCameraHandlePlaceholder
-      || 'Select camera handles';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearCameraHandleSelect.appendChild(placeholder);
-  } else {
-    selectedValues.forEach(value => {
-      const exists = Array.from(autoGearCameraHandleSelect.options || []).some(
-        option => option && option.value === value
-      );
-      if (!exists) {
-        const fallbackOption = document.createElement('option');
-        fallbackOption.value = value;
-        fallbackOption.textContent = value;
-        fallbackOption.selected = true;
-        autoGearCameraHandleSelect.appendChild(fallbackOption);
-      }
-    });
-  }
-
-  const selectableOptions = Array.from(autoGearCameraHandleSelect.options || []).filter(option => !option.disabled);
-  autoGearCameraHandleSelect.size = computeAutoGearMultiSelectSize(
-    selectableOptions.length,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-}
-
-function resolveViewfinderOptionValue(option) {
-  if (!option) return '';
-  const raw = typeof option.value === 'string' ? option.value : '';
-  return raw ? raw : '__none__';
-}
-
-function getViewfinderFallbackLabel(value) {
-  if (value === '__none__') {
-    return texts[currentLang]?.viewfinderExtensionNone
-      || texts.en?.viewfinderExtensionNone
-      || 'No';
-  }
-  return value;
-}
-
-function getVideoDistributionFallbackLabel(value) {
-  if (value === '__none__') {
-    return texts[currentLang]?.autoGearVideoDistributionNone
-      || texts.en?.autoGearVideoDistributionNone
-      || 'No video distribution selected';
-  }
-  return value;
-}
-
-function normalizeVideoDistributionOptionValue(value) {
-  if (typeof value !== 'string') return '';
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-  const lower = trimmed.toLowerCase();
-  if (lower === '__none__' || lower === 'none') return '__none__';
-  return trimmed;
-}
-
-function refreshAutoGearViewfinderExtensionOptions(selected) {
-  if (!autoGearViewfinderExtensionSelect) return;
-
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.viewfinderExtension)
-        ? autoGearEditorDraft.viewfinderExtension
-        : [];
-
-  const selectedValues = Array.from(new Set(
-    candidateValues
-      .filter(value => typeof value === 'string')
-      .map(value => value.trim())
-      .filter(Boolean)
-  ));
-
-  autoGearViewfinderExtensionSelect.innerHTML = '';
-  autoGearViewfinderExtensionSelect.multiple = true;
-
-  const source = document.getElementById('viewfinderExtension');
-  let hasOptions = false;
-
-  if (source) {
-    Array.from(source.options).forEach(opt => {
-      const option = document.createElement('option');
-      const value = resolveViewfinderOptionValue(opt);
-      option.value = value;
-      option.textContent = opt.textContent;
-      if (selectedValues.includes(value)) {
-        option.selected = true;
-      }
-      autoGearViewfinderExtensionSelect.appendChild(option);
-      hasOptions = true;
-    });
-  }
-
-  if (!hasOptions) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearViewfinderExtensionPlaceholder
-      || texts.en?.autoGearViewfinderExtensionPlaceholder
-      || 'Select viewfinder extension options';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearViewfinderExtensionSelect.appendChild(placeholder);
-  } else {
-    selectedValues.forEach(value => {
-      const exists = Array.from(autoGearViewfinderExtensionSelect.options || []).some(
-        option => option && option.value === value
-      );
-      if (!exists) {
-        const fallbackOption = document.createElement('option');
-        fallbackOption.value = value;
-        fallbackOption.textContent = getViewfinderFallbackLabel(value);
-        fallbackOption.selected = true;
-        autoGearViewfinderExtensionSelect.appendChild(fallbackOption);
-      }
-    });
-  }
-
-  const selectableOptions = Array.from(autoGearViewfinderExtensionSelect.options || []).filter(option => !option.disabled);
-  autoGearViewfinderExtensionSelect.size = computeAutoGearMultiSelectSize(
-    selectableOptions.length,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-}
-
-function refreshAutoGearDeliveryResolutionOptions(selected) {
-  if (!autoGearDeliveryResolutionSelect) return;
-
-  const selectedValues = collectAutoGearSelectedValues(selected, 'deliveryResolution');
-
-  autoGearDeliveryResolutionSelect.innerHTML = '';
-  autoGearDeliveryResolutionSelect.multiple = true;
-
-  const seen = new Set();
-  const addOption = (value, label) => {
-    const normalized = typeof value === 'string' ? value.trim() : '';
-    if (!normalized || seen.has(normalized)) return;
-    const option = document.createElement('option');
-    option.value = normalized;
-    option.textContent = label || normalized;
-    if (selectedValues.includes(normalized)) {
-      option.selected = true;
-    }
-    autoGearDeliveryResolutionSelect.appendChild(option);
-    seen.add(normalized);
-  };
-
-  if (deliveryResolutionSelect) {
-    Array.from(deliveryResolutionSelect.options || []).forEach(opt => {
-      if (!opt || typeof opt.value !== 'string') return;
-      const value = opt.value.trim();
-      if (!value) return;
-      const label = (opt.textContent || value).trim();
-      addOption(value, label);
-    });
-  }
-
-  selectedValues.forEach(value => {
-    if (!seen.has(value)) addOption(value, value);
-  });
-
-  if (!autoGearDeliveryResolutionSelect.options.length) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearDeliveryResolutionPlaceholder
-      || texts.en?.autoGearDeliveryResolutionPlaceholder
-      || 'Select delivery resolutions';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearDeliveryResolutionSelect.appendChild(placeholder);
-  }
-
-  const visibleCount = Array.from(autoGearDeliveryResolutionSelect.options || []).filter(option => !option.disabled).length;
-  autoGearDeliveryResolutionSelect.size = computeAutoGearMultiSelectSize(
-    visibleCount,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-}
-
-function refreshAutoGearVideoDistributionOptions(selected) {
-  if (!autoGearVideoDistributionSelect) return;
-
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.videoDistribution)
-        ? autoGearEditorDraft.videoDistribution
-        : [];
-
-  const normalizedSelections = Array.from(new Set(
-    candidateValues
-      .map(normalizeVideoDistributionOptionValue)
-      .filter(Boolean)
-  ));
-  const hasNoneSelection = normalizedSelections.includes('__none__');
-  const selectedValues = normalizedSelections.filter(value => value !== '__none__');
-
-  autoGearVideoDistributionSelect.innerHTML = '';
-  autoGearVideoDistributionSelect.multiple = true;
-
-  const noneOption = document.createElement('option');
-  noneOption.value = '__none__';
-  noneOption.textContent = getVideoDistributionFallbackLabel('__none__');
-  if (hasNoneSelection) {
-    noneOption.selected = true;
-  }
-  autoGearVideoDistributionSelect.appendChild(noneOption);
-
-  const source = document.getElementById('videoDistribution');
-  let hasOptions = false;
-
-  if (source) {
-    Array.from(source.options).forEach(opt => {
-      const value = normalizeVideoDistributionOptionValue(opt.value);
-      if (!value) return;
-      if (value === '__none__') {
-        if (hasNoneSelection) {
-          noneOption.selected = true;
-        }
-        return;
-      }
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = opt.textContent;
-      if (selectedValues.includes(value)) {
-        option.selected = true;
-      }
-      autoGearVideoDistributionSelect.appendChild(option);
-      hasOptions = true;
-    });
-  }
-
-  if (!hasOptions) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = texts[currentLang]?.autoGearVideoDistributionPlaceholder
-      || texts.en?.autoGearVideoDistributionPlaceholder
-      || 'Select video distribution options';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    autoGearVideoDistributionSelect.appendChild(placeholder);
-  } else {
-    selectedValues.forEach(value => {
-      const exists = Array.from(autoGearVideoDistributionSelect.options || []).some(
-        option => option && option.value === value
-      );
-      if (!exists) {
-        const fallbackOption = document.createElement('option');
-        fallbackOption.value = value;
-        fallbackOption.textContent = getVideoDistributionFallbackLabel(value);
-        fallbackOption.selected = true;
-        autoGearVideoDistributionSelect.appendChild(fallbackOption);
-      }
-    });
-  }
-
-  const selectableOptions = Array.from(autoGearVideoDistributionSelect.options || []).filter(option => !option.disabled);
-  autoGearVideoDistributionSelect.size = computeAutoGearMultiSelectSize(
-    selectableOptions.length,
-    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
-  );
-}
-
-function collectAutoGearSelectedValues(selected, key) {
-  const candidateValues = Array.isArray(selected)
-    ? selected
-    : typeof selected === 'string' && selected
-      ? [selected]
-      : Array.isArray(autoGearEditorDraft?.[key])
-        ? autoGearEditorDraft[key]
-        : [];
-  return Array.from(new Set(
-    candidateValues
-      .filter(value => typeof value === 'string')
-      .map(value => value.trim())
-      .filter(Boolean)
-  ));
-}
-
+const collectAutoGearSelectedValues =
+  typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues
+    : function collectAutoGearSelectedValues() { return []; };
 function getCrewRoleEntries() {
   const langTexts = texts[currentLang] || texts.en || {};
   const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
@@ -23081,6 +22487,7 @@ exposeCoreRuntimeBindings({
     get: () => autoGearScenarioModeSelectElement,
     set: value => {
       autoGearScenarioModeSelectElement = value || null;
+      setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
     },
   },
   pinkModeIconRotationTimer: {
