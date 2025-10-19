@@ -10129,6 +10129,7 @@ const loggingState = {
   config: null,
   namespaceDebounce: null,
   statusResetTimer: null,
+  degraded: false,
 };
 
 function getLoggingLangInfo() {
@@ -10737,7 +10738,9 @@ function renderLoggingHistory() {
     }
   }
 
-  setLoggingStatusKey('loggingStatusIdle');
+  if (!loggingState.degraded) {
+    setLoggingStatusKey('loggingStatusIdle');
+  }
 }
 
 function scheduleLoggingRender(options = {}) {
@@ -10820,22 +10823,40 @@ function attachLoggingSubscriptions() {
   }
 
   try {
-    applyLoggingConfig(typeof logging.getConfig === 'function' ? logging.getConfig() : {});
+    const config = typeof logging.getConfig === 'function' ? logging.getConfig() : {};
+    applyLoggingConfig(config);
+    loggingState.degraded = false;
   } catch (error) {
-    console.warn('Unable to read logging config', error);
+    loggingState.degraded = true;
+    setLoggingStatusKey('loggingStatusError');
+    logSettingsEvent(
+      'warn',
+      'Failed to load diagnostics logging config snapshot',
+      { message: describeError(error) },
+      { namespace: 'logging-panel' },
+    );
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('Unable to read logging config', error);
+    }
   }
 
   detachLoggingSubscriptions();
 
   if (typeof logging.subscribe === 'function') {
     loggingState.unsubscribeHistory = logging.subscribe(() => {
-      setLoggingStatusKey('loggingStatusUpdating');
+      if (!loggingState.degraded) {
+        setLoggingStatusKey('loggingStatusUpdating');
+      }
       scheduleLoggingRender();
     });
   }
   if (typeof logging.subscribeConfig === 'function') {
     loggingState.unsubscribeConfig = logging.subscribeConfig(snapshot => {
       applyLoggingConfig(snapshot || {});
+      if (loggingState.degraded) {
+        loggingState.degraded = false;
+        setLoggingStatusKey('loggingStatusIdle');
+      }
     });
   }
 
@@ -10856,7 +10877,9 @@ function initializeLoggingPanel() {
     loggingLevelFilterEl.addEventListener('change', () => {
       const selected = typeof loggingLevelFilterEl.value === 'string' ? loggingLevelFilterEl.value : 'all';
       loggingState.levelFilter = selected;
-      setLoggingStatusKey('loggingStatusUpdating');
+      if (!loggingState.degraded) {
+        setLoggingStatusKey('loggingStatusUpdating');
+      }
       scheduleLoggingRender({ immediate: true });
     });
   }
@@ -10871,7 +10894,9 @@ function initializeLoggingPanel() {
       loggingState.namespaceDebounce = setTimeout(() => {
         loggingState.namespaceDebounce = null;
         loggingState.namespaceFilter = loggingNamespaceFilterEl.value || '';
-        setLoggingStatusKey('loggingStatusUpdating');
+        if (!loggingState.degraded) {
+          setLoggingStatusKey('loggingStatusUpdating');
+        }
         scheduleLoggingRender({ immediate: true });
       }, debounceDelay);
     });
@@ -10895,7 +10920,9 @@ function initializeLoggingPanel() {
         return;
       }
       loggingHistoryLimitInput.value = clamped;
-      setLoggingStatusKey('loggingStatusUpdating');
+      if (!loggingState.degraded) {
+        setLoggingStatusKey('loggingStatusUpdating');
+      }
       updateLoggingConfig({ historyLimit: clamped });
     };
     loggingHistoryLimitInput.addEventListener('change', applyLimitUpdate);
@@ -10911,7 +10938,9 @@ function initializeLoggingPanel() {
         return;
       }
       input.setAttribute('aria-checked', checked ? 'true' : 'false');
-      setLoggingStatusKey('loggingStatusUpdating');
+      if (!loggingState.degraded) {
+        setLoggingStatusKey('loggingStatusUpdating');
+      }
       updateLoggingConfig({ [key]: checked });
     });
   };
