@@ -1,7 +1,7 @@
 /*
  * context.js
  * ----------
- * Exposes utilities that co-ordinate shared runtime context across the
+ * Exposes utilities that coordinate shared runtime context across the
  * planner. Many of these helpers provide "fallback" implementations so that the
  * application keeps functioning flawlessly even when specific browser features
  * are unavailable or when code executes from a cached offline bundle. The
