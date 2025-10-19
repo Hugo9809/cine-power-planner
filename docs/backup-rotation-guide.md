@@ -21,7 +21,7 @@ an offline bundle.
 - **Wednesday:** Copy the current `backups/` folder to a read-only medium (USB
   drive or optical disc) labelled with date and revision hash. Update the
   `review-findings.md` log with storage location details.
-- **Friday:** Rotate the off-site copy. Use `Tools → Export Diagnostics` to
+- **Friday:** Rotate the off-site copy. From `Settings → Data & Storage → Diagnostics log`, use the `Export log` button to
   capture the autosave ledger, attach it to the verification packet and store a
   duplicate with the off-site bundle.
 
