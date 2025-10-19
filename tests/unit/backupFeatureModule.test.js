@@ -4,6 +4,24 @@ const vm = require('vm');
 
 const BACKUP_MODULE_PATH = path.resolve(__dirname, '../../src/scripts/modules/features/backup.js');
 const BACKUP_MODULE_SOURCE = fs.readFileSync(BACKUP_MODULE_PATH, 'utf8');
+const BACKUP_MODULE_SOURCE_WITH_TEST_STUBS = BACKUP_MODULE_SOURCE.replace(/\}\)\(\);\s*$/u, (
+  match,
+) => `  GLOBAL_SCOPE.__setBackupTestStubs = function (overrides) {\n` +
+    `    if (!overrides || typeof overrides !== 'object') {\n` +
+    `      return;\n` +
+    `    }\n` +
+    `    if (Object.prototype.hasOwnProperty.call(overrides, 'monitorAutomaticDownloadPermission')) {\n` +
+    `      monitorAutomaticDownloadPermission = overrides.monitorAutomaticDownloadPermission;\n` +
+    `    }\n` +
+    `    if (Object.prototype.hasOwnProperty.call(overrides, 'triggerBackupDownload')) {\n` +
+    `      triggerBackupDownload = overrides.triggerBackupDownload;\n` +
+    `    }\n` +
+    `    if (Object.prototype.hasOwnProperty.call(overrides, 'openBackupFallbackWindow')) {\n` +
+    `      openBackupFallbackWindow = overrides.openBackupFallbackWindow;\n` +
+    `    }\n` +
+    `  };\n` +
+    match,
+);
 
 function createDeepFreeze() {
   const freeze = (value, seen = new WeakSet()) => {
@@ -85,11 +103,13 @@ function evaluateBackupModule(options = {}) {
     });
   }
 
-  vm.runInNewContext(BACKUP_MODULE_SOURCE, context, { filename: BACKUP_MODULE_PATH });
+  vm.runInNewContext(BACKUP_MODULE_SOURCE_WITH_TEST_STUBS, context, { filename: BACKUP_MODULE_PATH });
 
   return {
     backupModule: exposures.get('cineFeatureBackup'),
     registerCalls,
+    context,
+    exposures,
   };
 }
 
@@ -170,5 +190,114 @@ describe('cineFeatureBackup module', () => {
 
     expect(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS).toContain('iosPwaHelpDisplayed');
     expect(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS).not.toContain('iosPwaHelpShown');
+  });
+
+  test('falls back to manual window when blob and data URLs fail', () => {
+    const blobUrl = 'blob:manual-test';
+    const setTimeoutMock = jest.fn((callback) => {
+      if (typeof callback === 'function') {
+        callback();
+      }
+      return 0;
+    });
+    const createObjectURLMock = jest.fn(() => blobUrl);
+    const revokeObjectURLMock = jest.fn();
+
+    const { backupModule, context } = evaluateBackupModule({
+      overrides: {
+        setTimeout: setTimeoutMock,
+        Blob: class TestBlob {
+          constructor(parts, options) {
+            this.parts = parts;
+            this.options = options;
+          }
+        },
+        URL: {
+          createObjectURL: createObjectURLMock,
+          revokeObjectURL: revokeObjectURLMock,
+        },
+        navigator: {},
+        window: {},
+        document: {},
+      },
+    });
+
+    expect(typeof context.__setBackupTestStubs).toBe('function');
+
+    const permissionMonitor = { state: 'stubbed' };
+    const monitorStub = jest.fn(() => permissionMonitor);
+    const triggerStub = jest.fn(() => false);
+    const fallbackStub = jest.fn(() => true);
+
+    context.__setBackupTestStubs({
+      monitorAutomaticDownloadPermission: monitorStub,
+      triggerBackupDownload: triggerStub,
+      openBackupFallbackWindow: fallbackStub,
+    });
+
+    const payload = '{"data":true}';
+    const fileName = 'cine-backup.json';
+    const result = backupModule.downloadBackupPayload(payload, fileName);
+
+    expect(monitorStub).toHaveBeenCalledTimes(1);
+    expect(triggerStub).toHaveBeenCalledTimes(2);
+    expect(triggerStub).toHaveBeenNthCalledWith(1, blobUrl, fileName);
+    expect(triggerStub.mock.calls[1][0]).toMatch(/^data:application\/json/);
+    expect(fallbackStub).toHaveBeenCalledTimes(1);
+    expect(fallbackStub).toHaveBeenCalledWith(payload, fileName);
+    expect(result).toEqual({ success: true, method: 'manual', permission: permissionMonitor });
+  });
+
+  test('returns failure when manual fallback window cannot be created', () => {
+    const blobUrl = 'blob:manual-test';
+    const setTimeoutMock = jest.fn((callback) => {
+      if (typeof callback === 'function') {
+        callback();
+      }
+      return 0;
+    });
+    const createObjectURLMock = jest.fn(() => blobUrl);
+    const revokeObjectURLMock = jest.fn();
+
+    const { backupModule, context } = evaluateBackupModule({
+      overrides: {
+        setTimeout: setTimeoutMock,
+        Blob: class TestBlob {
+          constructor(parts, options) {
+            this.parts = parts;
+            this.options = options;
+          }
+        },
+        URL: {
+          createObjectURL: createObjectURLMock,
+          revokeObjectURL: revokeObjectURLMock,
+        },
+        navigator: {},
+        window: {},
+        document: {},
+      },
+    });
+
+    expect(typeof context.__setBackupTestStubs).toBe('function');
+
+    const permissionMonitor = { state: 'stubbed' };
+    const monitorStub = jest.fn(() => permissionMonitor);
+    const triggerStub = jest.fn(() => false);
+    const fallbackStub = jest.fn(() => false);
+
+    context.__setBackupTestStubs({
+      monitorAutomaticDownloadPermission: monitorStub,
+      triggerBackupDownload: triggerStub,
+      openBackupFallbackWindow: fallbackStub,
+    });
+
+    const payload = '{"data":true}';
+    const fileName = 'cine-backup.json';
+    const result = backupModule.downloadBackupPayload(payload, fileName);
+
+    expect(monitorStub).toHaveBeenCalledTimes(1);
+    expect(triggerStub).toHaveBeenCalledTimes(2);
+    expect(fallbackStub).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ success: false, method: null, permission: permissionMonitor });
   });
 });
