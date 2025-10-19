@@ -26,6 +26,15 @@ describe('restore verification reporting', () => {
     expect(report.alertMessage).toBe('Verification passed.');
   });
 
+  test('treats an empty dataset as a successful verification', () => {
+    const report = verification.buildReport({ rows: [], translation: translator });
+    expect(report.status).toBe('empty');
+    expect(report.differences).toHaveLength(0);
+    expect(report.notificationType).toBe('success');
+    expect(report.alertMessage).toBe('Verification passed.');
+    expect(report.notificationMessage).toBe('Verification passed.');
+  });
+
   test('includes difference details when counts diverge', () => {
     const rows = [
       { label: 'Projects', live: 1, sandbox: 3, diff: 2 },
