@@ -1619,10 +1619,10 @@
       "skipConfirmationCancel": "Continue tutorial",
       "steps": {
         "intro": {
-          "title": "",
-          "body": "",
+          "title": "Welcome to Cine Power Planner",
+          "body": "This guided tour highlights the offline safeguards, crew-focused automation, and restore drills that keep every project ready before call time.",
           "hero": {
-            "heading": "",
+            "heading": "Welcome to Cine Power Planner",
             "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
             "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
             "badgeIcon": "",
