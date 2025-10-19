@@ -23,8 +23,9 @@ save/share/import/backup/restore behaviour.
          UI label matches the documentation wording.
    - [ ] Verify autosave, backup and restore logs record the run.
 3. **Translation alignment**
-   - [ ] Review `src/scripts/translations.js` and confirm every string referenced
-         in documentation exists and is current.
+   - [ ] Review `src/scripts/translations/<locale>.js` modules and the loader in
+         `src/scripts/translations.js` to confirm every string referenced in
+         documentation exists and is current for offline use.
    - [ ] Update `docs/translation-guide.md` with any locale-specific nuances.
 4. **Asset integrity**
    - [ ] Ensure all referenced icons and fonts exist in the repo and are loaded

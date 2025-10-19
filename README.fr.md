@@ -480,9 +480,14 @@ Prévisualisez immédiatement de nouvelles langues :
   de livrer les lots hors ligne.
 
 1. Dupliquez le README le plus proche en `README.<lang>.md` et traduisez-le.
-2. Ajoutez les chaînes dans `translations.js` en conservant les placeholders (`%s`).
-3. Copiez et traduisez les pages statiques (confidentialité, mentions légales).
-4. Exécutez `npm test` avant de soumettre une pull request.
+2. Copiez un module de langue existant dans `src/scripts/translations/<locale>.js`
+   et traduisez chaque valeur hors ligne. Conservez les placeholders (`%s`),
+   les raccourcis clavier et la ponctuation.
+3. Enregistrez la langue dans le chargeur `src/scripts/translations.js` afin que
+   les cartes `LOCALE_SCRIPTS` et de messages de chargement préchargent le
+   module lors des lancements hors ligne.
+4. Copiez et traduisez les pages statiques (confidentialité, mentions légales).
+5. Exécutez `npm test` avant de soumettre une pull request.
 
 ## Installer comme application
 

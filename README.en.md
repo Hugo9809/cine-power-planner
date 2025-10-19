@@ -1036,11 +1036,15 @@ the planner:
 
 1. Duplicate the closest language README as `README.<lang>.md` and translate the
    documentation.
-2. Add UI strings to `translations.js` by copying an existing language block and
-   translating each value. Preserve formatting placeholders such as `%s`.
-3. Provide translated static pages (privacy policy, imprint) by copying the
+2. Copy an existing locale module in `src/scripts/translations/<locale>.js` and
+   translate every value offline. Keep placeholders such as `%s`, keyboard
+   shortcuts and punctuation untouched.
+3. Register the locale with the loader in `src/scripts/translations.js` so the
+   `LOCALE_SCRIPTS` and loading message maps know how to preload the new module
+   during offline launches.
+4. Provide translated static pages (privacy policy, imprint) by copying the
    relevant HTML files.
-4. Run `npm test` to ensure linting, data validation and Jest suites pass before
+5. Run `npm test` to ensure linting, data validation and Jest suites pass before
    submitting a pull request.
 
 ## Install as an App

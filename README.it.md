@@ -478,9 +478,14 @@ Puoi provare subito una nuova lingua senza build:
   prima di distribuire i pacchetti offline.
 
 1. Duplica il README più simile come `README.<lang>.md` e traducilo.
-2. Aggiungi le stringhe in `translations.js`, mantenendo i placeholder come `%s`.
-3. Copia e traduci le pagine statiche (privacy, note legali).
-4. Esegui `npm test` prima di inviare una pull request.
+2. Copia un modulo esistente in `src/scripts/translations/<locale>.js` e
+   traduci ogni valore offline. Mantieni invariati placeholder come `%s`,
+   scorciatoie e punteggiatura.
+3. Registra la lingua nel loader `src/scripts/translations.js` così le mappe
+   `LOCALE_SCRIPTS` e dei messaggi di caricamento precaricano il modulo anche
+   durante gli avvii offline.
+4. Copia e traduci le pagine statiche (privacy, note legali).
+5. Esegui `npm test` prima di inviare una pull request.
 
 ## Installazione come app
 
