@@ -3219,9 +3219,12 @@
     const left = combinedRect.left + offsetLeft - padding.left;
     const top = combinedRect.top + offsetTop - padding.top;
 
+    const normalizedLeft = Number.isFinite(left) ? left : 0;
+    const normalizedTop = Number.isFinite(top) ? top : 0;
+
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
-    highlightEl.style.transform = `translate(${Math.max(0, left)}px, ${Math.max(0, top)}px)`;
+    highlightEl.style.transform = `translate(${normalizedLeft}px, ${normalizedTop}px)`;
     highlightEl.style.opacity = '1';
     positionCard(highlightElements[0] || null, combinedRect);
   }
