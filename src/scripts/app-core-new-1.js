@@ -439,6 +439,22 @@ const CORE_LOCALIZATION_RUNTIME =
       })
     : null;
 
+if (typeof initializeLocalizationAccessorsRuntime === 'function') {
+  try {
+    initializeLocalizationAccessorsRuntime({
+      coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
+      coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
+      corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
+      coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
+      fallbackResolveLocaleModule,
+      requireFn: typeof require === 'function' ? require : null,
+      translationsRequirePath: './translations.js',
+    });
+  } catch (initializeLocalizationAccessorsError) {
+    void initializeLocalizationAccessorsError;
+  }
+}
+
 // Localization accessor factories initialized via app-core-localization-accessors.js
 
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
