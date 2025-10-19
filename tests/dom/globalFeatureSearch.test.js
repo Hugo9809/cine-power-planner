@@ -15,7 +15,7 @@ describe('global feature search help navigation', () => {
   };
 
   beforeEach(() => {
-    env = setupScriptEnvironment();
+    env = setupScriptEnvironment({ disableFreeze: true });
     window.alert = jest.fn();
     featureSearch = document.getElementById('featureSearch');
     helpDialog = document.getElementById('helpDialog');
@@ -171,6 +171,71 @@ describe('global feature search help navigation', () => {
     expect(highlights.length).toBeGreaterThan(0);
     const highlightedText = Array.from(highlights).map(el => el.textContent.trim().toLowerCase());
     expect(highlightedText.some(text => text.includes('backup'))).toBe(true);
+  });
+
+  test('synonym searches surface restore workflows and quick links', async () => {
+    expect(featureSearch).toBeTruthy();
+    expect(helpDialog).toBeTruthy();
+    expect(helpQuickLinksList).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const featureList = document.getElementById('featureList');
+    expect(featureList).toBeTruthy();
+
+    featureSearch.value = 'recover';
+    featureSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const options = Array.from(featureList.options);
+    expect(options.length).toBeGreaterThan(0);
+
+    const optionValues = options.map(option => option.value);
+    const restoreIndex = optionValues.indexOf('Restore');
+    const restoreRehearsalIndex = optionValues.indexOf('Restore rehearsal');
+    const restoreHelpIndex = optionValues.findIndex(value =>
+      value.startsWith('Saving, Sharing & Restoring Projects') && value.trim().endsWith('(help)')
+    );
+
+    expect(restoreIndex).toBeGreaterThanOrEqual(0);
+    expect(restoreHelpIndex).toBeGreaterThanOrEqual(0);
+    if (restoreRehearsalIndex >= 0) {
+      expect(restoreIndex).toBeLessThan(restoreRehearsalIndex);
+      expect(restoreRehearsalIndex).toBeLessThan(restoreHelpIndex);
+    } else {
+      expect(restoreIndex).toBeLessThan(restoreHelpIndex);
+    }
+
+    triggerFeatureSearch('recover');
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    expect(helpSearch.value).toBe('recover');
+
+    const visibleQuickLinks = Array.from(
+      helpQuickLinksList.querySelectorAll('li:not([hidden]) .help-quick-link-label')
+    ).map(label => label.textContent.trim());
+
+    expect(visibleQuickLinks.length).toBeGreaterThan(0);
+    expect(visibleQuickLinks).toEqual([
+      'Start Here',
+      'Features at a Glance',
+      'Saving, Sharing & Restoring Projects',
+      'Data & Storage Dashboard',
+      'Local Storage & Offline Access',
+      'Automatic Backups',
+      'Automatic Gear Rules',
+      'Search & Filtering',
+      'Troubleshooting & Recovery',
+      'FAQ'
+    ]);
+
+    const activeQuickLink = helpQuickLinksList.querySelector(
+      'li:not([hidden]) .help-quick-link.active .help-quick-link-label'
+    );
+    expect(activeQuickLink).toBeTruthy();
+    expect(activeQuickLink.textContent.trim()).toBe('Saving, Sharing & Restoring Projects');
   });
 
   test('feature filter skips device matches when navigating from search', async () => {
