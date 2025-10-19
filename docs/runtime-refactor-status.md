@@ -213,27 +213,27 @@
 
 | File | Previous lines | Current lines | Delta |
 | --- | --- | --- | --- |
-| `src/scripts/modules/app-core/localization.js` | – | 2605 | +2605 |
-| `src/scripts/modules/app-core/runtime.js` | – | 4240 | +4240 |
-| `src/scripts/modules/app-core/pink-mode.js` | – | 2110 | +2110 |
+| `src/scripts/modules/app-core/localization.js` | – | 2712 | +2712 |
+| `src/scripts/modules/app-core/runtime.js` | – | 4285 | +4285 |
+| `src/scripts/modules/app-core/pink-mode.js` | – | 2157 | +2157 |
 
 *Notes:*
 
-- Merged the localisation bridge, runtime wiring, and pink mode orchestration into dedicated consolidated helpers so the refactor can continue without juggling dozens of tiny files. The new files preserve every existing safeguard around offline storage, translations, and UI theming while reducing loader complexity.【F:src/scripts/modules/app-core/localization.js†L1-L2605】【F:src/scripts/modules/app-core/runtime.js†L1-L4240】【F:src/scripts/modules/app-core/pink-mode.js†L1-L2110】
-- Updated the modern loader, script aggregator, and service worker manifest so the consolidated helpers stay cached and available alongside the existing legacy mirrors. Documentation now tracks the new entry point names for future steps.【F:src/scripts/loader.js†L3188-L3196】【F:src/scripts/script.js†L41-L55】【F:service-worker-assets.js†L220-L236】
+- Merged the localisation bridge, runtime wiring, and pink mode orchestration into dedicated consolidated helpers so the refactor can continue without juggling dozens of tiny files. The new files preserve every existing safeguard around offline storage, translations, and UI theming while reducing loader complexity.【F:src/scripts/modules/app-core/localization.js†L1-L2712】【F:src/scripts/modules/app-core/runtime.js†L1-L4285】【F:src/scripts/modules/app-core/pink-mode.js†L1-L2157】
+- Updated the modern loader, script aggregator, and service worker manifest so the consolidated helpers stay cached and available alongside the existing legacy mirrors. Documentation now tracks the new entry point names for future steps.【F:src/scripts/loader.js†L3822-L3831】【F:src/scripts/script.js†L47-L63】【F:service-worker-assets.js†L205-L238】
 
 ## Step 18 – Core runtime loader consolidation
 
 | File | Previous lines | Current lines | Delta |
 | --- | --- | --- | --- |
-| `src/scripts/modules/core/runtime-module-loader.js` | – | 162 | +162 |
-| `legacy/scripts/modules/core/runtime-module-loader.js` | – | 162 | +162 |
+| `src/scripts/modules/core/runtime-module-loader.js` | – | 248 | +248 |
+| `legacy/scripts/modules/core/runtime-module-loader.js` | – | 178 | +178 |
 
 *Notes:*
 
-- Added a shared runtime module loader so modern and legacy bundles can resolve the core runtime namespaces directly from the consolidated `runtime.js` export, removing the need for the intermediate wrapper files while keeping autosave and backup guards intact across scopes.【F:src/scripts/modules/core/runtime-module-loader.js†L1-L162】【F:legacy/scripts/modules/core/runtime-module-loader.js†L1-L162】
-- Updated the app core runtime support, environment, runtime scopes, and monolithic runtime helpers to rely on the loader instead of `require`ing the removed wrapper files, ensuring fallbacks resolve the core helpers without needing file-level stubs.【F:src/scripts/app-core-runtime-support.js†L1-L148】【F:src/scripts/app-core-environment.js†L1-L522】【F:src/scripts/app-core-runtime-scopes.js†L1-L120】【F:src/scripts/modules/app-core/runtime.js†L1-L320】【F:legacy/scripts/app-core-runtime-support.js†L1-L440】【F:legacy/scripts/app-core-environment.js†L1-L330】【F:legacy/scripts/app-core-runtime-scopes.js†L1-L120】【F:legacy/scripts/modules/app-core/runtime.js†L1-L240】
-- Removed the obsolete runtime wrapper files from the modern and legacy bundles and pruned their references from the loader manifests and service worker asset list so the cache manifests only track the consolidated runtime entry points.【F:src/scripts/loader.js†L3190-L3248】【F:legacy/scripts/loader.js†L2635-L2669】【F:service-worker-assets.js†L80-L120】
+- Added a shared runtime module loader so modern and legacy bundles can resolve the core runtime namespaces directly from the consolidated `runtime.js` export, removing the need for the intermediate wrapper files while keeping autosave and backup guards intact across scopes.【F:src/scripts/modules/core/runtime-module-loader.js†L1-L248】【F:legacy/scripts/modules/core/runtime-module-loader.js†L1-L178】
+- Updated the app core runtime support, environment, runtime scopes, and monolithic runtime helpers to rely on the loader instead of `require`ing the removed wrapper files, ensuring fallbacks resolve the core helpers without needing file-level stubs.【F:src/scripts/app-core-runtime-support.js†L62-L127】【F:src/scripts/app-core-environment.js†L26-L78】【F:src/scripts/app-core-runtime-scopes.js†L18-L86】【F:src/scripts/modules/app-core/runtime.js†L57-L104】【F:legacy/scripts/app-core-runtime-support.js†L40-L126】【F:legacy/scripts/app-core-environment.js†L1-L44】【F:legacy/scripts/app-core-runtime-scopes.js†L1-L74】【F:legacy/scripts/modules/app-core/runtime.js†L28-L72】
+- Removed the obsolete runtime wrapper files from the modern and legacy bundles and pruned their references from the loader manifests and service worker asset list so the cache manifests only track the consolidated runtime entry points.【F:src/scripts/loader.js†L3822-L3839】【F:legacy/scripts/loader.js†L2994-L3003】【F:service-worker-assets.js†L64-L70】【F:service-worker-assets.js†L205-L238】
 
 ## Step 19 – Core support resolver merge
 
@@ -253,13 +253,13 @@
 
 | File | Previous lines | Current lines | Delta |
 | --- | --- | --- | --- |
-| `src/scripts/app-core-new-2.js` | 17140 | 17063 | -77 |
-| `legacy/scripts/app-core-new-2.js` | 16276 | 16193 | -83 |
-| `src/scripts/app-core-runtime-helpers.js` | – | 567 | +567 |
-| `legacy/scripts/app-core-runtime-helpers.js` | – | 368 | +368 |
+| `src/scripts/app-core-new-2.js` | 17140 | 17363 | +223 |
+| `legacy/scripts/app-core-new-2.js` | 16276 | 16420 | +144 |
+| `src/scripts/app-core-runtime-helpers.js` | – | 677 | +677 |
+| `legacy/scripts/app-core-runtime-helpers.js` | – | 463 | +463 |
 
 *Notes:*
 
-- Extracted the auto gear normalisation, formatting, and runtime scope fallback utilities from the part 2 entry point into `app-core-runtime-helpers.js`, exposing shared helper APIs while preserving the defensive fallbacks that protect autosave, backup, and offline behaviour.【F:src/scripts/app-core-runtime-helpers.js†L1-L474】
-- Updated `app-core-new-2.js` to consume the shared helper namespace for auto gear weight logic and runtime scope bindings, eliminating duplicated fallback code without altering behaviour.【F:src/scripts/app-core-new-2.js†L41-L213】
-- Added the transpiled legacy helper mirror and wired both bundles, loaders, integrity tests, and the service worker manifest to preload the new runtime helper so offline caches and Node bundling stay aligned.【F:legacy/scripts/app-core-runtime-helpers.js†L1-L200】【F:legacy/scripts/app-core-new-2.js†L40-L140】【F:src/scripts/loader.js†L3170-L3203】【F:legacy/scripts/loader.js†L2660-L2669】【F:src/scripts/script.js†L30-L57】【F:legacy/scripts/script.js†L1-L33】【F:tests/script/scriptIntegrity.test.js†L105-L131】【F:service-worker-assets.js†L21-L44】【F:service-worker-assets.js†L173-L198】
+- Extracted the auto gear normalisation, formatting, and runtime scope fallback utilities from the part 2 entry point into `app-core-runtime-helpers.js`, exposing shared helper APIs while preserving the defensive fallbacks that protect autosave, backup, and offline behaviour.【F:src/scripts/app-core-runtime-helpers.js†L311-L599】【F:legacy/scripts/app-core-runtime-helpers.js†L220-L392】
+- Updated `app-core-new-2.js` to consume the shared helper namespace for auto gear weight logic and runtime scope bindings, eliminating duplicated fallback code without altering behaviour.【F:src/scripts/app-core-new-2.js†L220-L360】【F:legacy/scripts/app-core-new-2.js†L179-L244】
+- Added the transpiled legacy helper mirror and wired both bundles, loaders, integrity tests, and the service worker manifest to preload the new runtime helper so offline caches and Node bundling stay aligned.【F:legacy/scripts/app-core-runtime-helpers.js†L1-L220】【F:src/scripts/loader.js†L3824-L3903】【F:legacy/scripts/loader.js†L2994-L3003】【F:src/scripts/script.js†L30-L64】【F:legacy/scripts/script.js†L7-L31】【F:tests/script/scriptIntegrity.test.js†L105-L125】【F:service-worker-assets.js†L21-L70】【F:service-worker-assets.js†L205-L238】
