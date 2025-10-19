@@ -1336,6 +1336,64 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 });
 
 CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'cineDeferredScriptsReady',
+  validator: function (value) {
+    return !!(value && typeof value === 'object' && typeof value.then === 'function');
+  },
+  fallback: function () {
+    if (typeof Promise === 'function') {
+      return Promise.resolve();
+    }
+
+    return {
+      then: function (onFulfilled) {
+        if (typeof onFulfilled === 'function') {
+          try {
+            onFulfilled();
+          } catch (handlerError) {
+            void handlerError;
+          }
+        }
+        return this;
+      },
+      catch: function () {
+        return this;
+      },
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'cineEnsureDeferredScriptsLoaded',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function () {
+      if (typeof Promise === 'function') {
+        return Promise.resolve();
+      }
+
+      return {
+        then: function (onFulfilled) {
+          if (typeof onFulfilled === 'function') {
+            try {
+              onFulfilled();
+            } catch (handlerError) {
+              void handlerError;
+            }
+          }
+          return this;
+        },
+        catch: function () {
+          return this;
+        },
+      };
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'ICON_FONT_KEYS',
   validator: function (value) {
     return (
@@ -3117,32 +3175,260 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     };
   }
 
-  function scheduleDeferredScripts(urls) {
-    if (!urls || urls.length === 0) {
-      return;
+  function createDeferredScriptsState(urls) {
+    var state = {
+      urls: Array.isArray(urls) ? urls.slice() : [],
+      status: urls && urls.length ? 'scheduled' : 'idle',
+      loader: null,
+      started: false,
+      promise: null,
+      error: null,
+      result: null,
+    };
+
+    var settled = false;
+    var fallbackHandlers = [];
+    var settleType = null;
+    var settleValue = null;
+
+    function scheduleFallbackNotify(handler, value) {
+      try {
+        handler(value);
+      } catch (handlerError) {
+        void handlerError;
+      }
     }
 
-    // Load deferred bundles immediately so all planner sections are always ready.
-    // Using a microtask keeps execution ordered without waiting for idle time,
-    // preventing situations where fast user interaction delays essential UI.
-    function startDeferredLoad() {
-      loadScriptsSequentially(urls);
-    }
+    function flushFallbackHandlers(type, value) {
+      if (!fallbackHandlers.length) {
+        return;
+      }
 
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(startDeferredLoad);
-      return;
+      var handlers = fallbackHandlers.slice();
+      fallbackHandlers.length = 0;
+
+      for (var index = 0; index < handlers.length; index += 1) {
+        var entry = handlers[index];
+        if (!entry) {
+          continue;
+        }
+
+        if (type === 'fulfilled') {
+          if (typeof entry.onFulfilled === 'function') {
+            scheduleFallbackNotify(entry.onFulfilled, value);
+          }
+        } else if (typeof entry.onRejected === 'function') {
+          scheduleFallbackNotify(entry.onRejected, value);
+        }
+      }
     }
 
     if (typeof Promise === 'function') {
-      Promise.resolve().then(startDeferredLoad).catch(function (error) {
-        console.warn('Deferred script microtask scheduling failed. Loading immediately.', error);
-        startDeferredLoad();
+      state.promise = new Promise(function (resolve, reject) {
+        state._resolve = resolve;
+        state._reject = reject;
       });
+    } else {
+      state.promise = {
+        then: function (onFulfilled, onRejected) {
+          var handler = {
+            onFulfilled: typeof onFulfilled === 'function' ? onFulfilled : null,
+            onRejected: typeof onRejected === 'function' ? onRejected : null,
+          };
+
+          if (settled) {
+            if (settleType === 'fulfilled' && handler.onFulfilled) {
+              scheduleFallbackNotify(handler.onFulfilled, settleValue);
+            } else if (settleType === 'rejected' && handler.onRejected) {
+              scheduleFallbackNotify(handler.onRejected, settleValue);
+            }
+            return state.promise;
+          }
+
+          fallbackHandlers.push(handler);
+          return state.promise;
+        },
+        catch: function (onRejected) {
+          return state.promise.then(null, onRejected);
+        },
+      };
+
+      state._resolve = function (value) {
+        settled = true;
+        settleType = 'fulfilled';
+        settleValue = value;
+        flushFallbackHandlers('fulfilled', value);
+      };
+
+      state._reject = function (error) {
+        settled = true;
+        settleType = 'rejected';
+        settleValue = error;
+        flushFallbackHandlers('rejected', error);
+      };
+    }
+
+    state.resolve = function (value) {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      state.status = 'loaded';
+      state.error = null;
+      state.result = value;
+
+      try {
+        state._resolve(value);
+      } catch (resolveError) {
+        void resolveError;
+      }
+    };
+
+    state.reject = function (error) {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      state.status = 'error';
+      state.error = error || null;
+
+      if (typeof state._reject === 'function') {
+        try {
+          state._reject(error);
+        } catch (rejectError) {
+          void rejectError;
+        }
+      } else if (typeof state._resolve === 'function') {
+        try {
+          state._resolve();
+        } catch (fallbackError) {
+          void fallbackError;
+        }
+      }
+    };
+
+    state.ensureStart = function () {
+      if (state.started) {
+        return state.loader;
+      }
+
+      state.started = true;
+      return null;
+    };
+
+    return state;
+  }
+
+  function publishDeferredScriptsState(state, ensureFn) {
+    var scope = getGlobalScope();
+    if (!scope) {
       return;
     }
 
-    startDeferredLoad();
+    try {
+      scope.__cineDeferredScriptsState = state;
+    } catch (assignStateError) {
+      void assignStateError;
+    }
+
+    try {
+      scope.cineDeferredScriptsReady = state.promise;
+    } catch (assignPromiseError) {
+      void assignPromiseError;
+    }
+
+    try {
+      scope.cineEnsureDeferredScriptsLoaded = function (context) {
+        void context;
+
+        try {
+          return ensureFn();
+        } catch (ensureError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Failed to force deferred script loading', ensureError);
+          }
+          return state.promise;
+        }
+      };
+    } catch (assignEnsureError) {
+      void assignEnsureError;
+    }
+  }
+
+  function scheduleDeferredScripts(urls) {
+    var normalized = Array.isArray(urls) ? urls.filter(Boolean) : [];
+
+    if (!normalized.length) {
+      var emptyState = createDeferredScriptsState([]);
+      publishDeferredScriptsState(emptyState, function () {
+        return emptyState.promise;
+      });
+      emptyState.resolve({ urls: [] });
+      return emptyState.promise;
+    }
+
+    var state = createDeferredScriptsState(normalized);
+
+    function startDeferredLoad() {
+      if (state.loader) {
+        return state.loader;
+      }
+
+      state.ensureStart();
+      state.status = 'loading';
+
+      state.loader = loadScriptsSequentially(normalized, {
+        onComplete: function handleDeferredComplete() {
+          state.resolve({ urls: normalized.slice() });
+        },
+        onError: function handleDeferredError(context) {
+          var error = null;
+          if (context && context.event && context.event.error) {
+            error = context.event.error;
+          } else if (context && context.url) {
+            error = new Error('Failed to load deferred script: ' + context.url);
+          } else {
+            error = new Error('Deferred script failed to load.');
+          }
+
+          state.reject(error);
+          return false;
+        },
+      });
+
+      return state.loader;
+    }
+
+    publishDeferredScriptsState(state, function ensureDeferredLoad() {
+      startDeferredLoad();
+      return state.promise;
+    });
+
+    function scheduleWithTimeout() {
+      try {
+        setTimeout(startDeferredLoad, 1200);
+      } catch (timeoutError) {
+        void timeoutError;
+        startDeferredLoad();
+      }
+    }
+
+    if (typeof requestIdleCallback === 'function') {
+      try {
+        requestIdleCallback(function () {
+          startDeferredLoad();
+        }, { timeout: 2400 });
+      } catch (idleError) {
+        void idleError;
+        scheduleWithTimeout();
+      }
+    } else {
+      scheduleWithTimeout();
+    }
+
+    return state.promise;
   }
 
   function loadScriptBundle(bundle, options) {
