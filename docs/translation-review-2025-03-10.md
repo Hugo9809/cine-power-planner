@@ -24,7 +24,7 @@ This audit captures UI copy that still appears in English or uses inconsistent t
   - `projectForm.userButtonFunctions.frameGrab` remains "Frame Grab" and should match the other locales. 【F:src/scripts/translations/de.js†L569-L596】
 
 - [ ] Localise the "Gear" terminology across the German gear list flows. Key entries still use the English noun:
-  - Section navigation (`gearListNav`, `gearListNavHelp`, `overviewExportTitleSuffix`). 【F:src/scripts/translations/de.js†L61-L65】
+  - [x] Section navigation (`gearListNav`, `gearListNavHelp`, `overviewExportTitleSuffix`). 【F:src/scripts/translations/de.js†L61-L65】
   - Primary actions (`generateGearListBtn`, `deleteGearListBtn`, `deleteGearListBtnHelp`, confirmation prompts). 【F:src/scripts/translations/de.js†L497-L498】【F:src/scripts/translations/de.js†L754-L756】
   - Gear list maintenance copy such as the autosave note still references an "Offline-Gear-Manifest"; swap to a German phrasing that keeps offline safety messaging intact. 【F:src/scripts/translations/de.js†L692-L695】
 
