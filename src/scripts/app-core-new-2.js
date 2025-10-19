@@ -526,6 +526,68 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return dynamicResolverProxy;
     }
 
+    function createResilientRuntimeFunction(name, resolver, fallback) {
+      const fallbackFn = typeof fallback === 'function'
+        ? fallback
+        : function identityFallback() {
+            return undefined;
+          };
+
+      function readCandidateFunction(candidate) {
+        if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+          return null;
+        }
+
+        try {
+          const value = candidate[name];
+          return typeof value === 'function' ? value : null;
+        } catch (candidateError) {
+          void candidateError;
+        }
+
+        return null;
+      }
+
+      function resilientProxy() {
+        const args = Array.prototype.slice.call(arguments);
+
+        if (typeof resolver === 'function') {
+          try {
+            return resolver.apply(this, args);
+          } catch (resolverError) {
+            void resolverError;
+          }
+        }
+
+        const scopeCandidates = [
+          typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE,
+          CORE_SHARED_SCOPE_PART2,
+          typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE,
+          typeof globalThis !== 'undefined' && globalThis,
+          typeof window !== 'undefined' && window,
+          typeof self !== 'undefined' && self,
+          typeof global !== 'undefined' && global,
+        ];
+
+        for (let index = 0; index < scopeCandidates.length; index += 1) {
+          const candidate = scopeCandidates[index];
+          const fn = readCandidateFunction(candidate);
+          if (!fn) {
+            continue;
+          }
+          try {
+            return fn.apply(this, args);
+          } catch (invokeError) {
+            void invokeError;
+          }
+        }
+
+        return fallbackFn.apply(this, args);
+      }
+
+      return resilientProxy;
+    }
+
     function fallbackGetViewfinderFallbackLabelLocal(value) {
       if (value === '__none__') {
         const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
@@ -557,13 +619,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return typeof value === 'string' ? value : '';
     }
 
-    const getViewfinderFallbackLabel = createDynamicScopeFunctionResolver(
+    const runtimeGetViewfinderFallbackLabel = createDynamicScopeFunctionResolver(
       'getViewfinderFallbackLabel',
       fallbackGetViewfinderFallbackLabelLocal,
     );
 
-    const getVideoDistributionFallbackLabel = createDynamicScopeFunctionResolver(
+    const getViewfinderFallbackLabel = createResilientRuntimeFunction(
+      'getViewfinderFallbackLabel',
+      runtimeGetViewfinderFallbackLabel,
+      fallbackGetViewfinderFallbackLabelLocal,
+    );
+
+    const runtimeGetVideoDistributionFallbackLabel = createDynamicScopeFunctionResolver(
       'getVideoDistributionFallbackLabel',
+      fallbackGetVideoDistributionFallbackLabelLocal,
+    );
+
+    const getVideoDistributionFallbackLabel = createResilientRuntimeFunction(
+      'getVideoDistributionFallbackLabel',
+      runtimeGetVideoDistributionFallbackLabel,
       fallbackGetVideoDistributionFallbackLabelLocal,
     );
 
