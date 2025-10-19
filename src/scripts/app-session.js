@@ -10784,6 +10784,67 @@ function applyLoggingConfig(config) {
   setToggleState(loggingPersistSessionInput, config.persistSession !== false);
 }
 
+function sanitizeLoggingConfigPartial(partial) {
+  if (!partial || typeof partial !== 'object') {
+    return null;
+  }
+
+  const MAX_STRING_LENGTH = 64;
+  const summary = {};
+
+  try {
+    const keys = Object.keys(partial);
+    summary.keys = keys.slice(0, 20);
+
+    summary.values = summary.keys.reduce((accumulator, key) => {
+      const value = partial[key];
+      if (value == null || typeof value === 'boolean') {
+        accumulator[key] = value;
+        return accumulator;
+      }
+
+      if (typeof value === 'number') {
+        accumulator[key] = Number.isFinite(value) ? value : '[number]';
+        return accumulator;
+      }
+
+      if (typeof value === 'string') {
+        const trimmed = value.length > MAX_STRING_LENGTH
+          ? `${value.slice(0, MAX_STRING_LENGTH)}…`
+          : value;
+        accumulator[key] = trimmed;
+        if (value.length > MAX_STRING_LENGTH) {
+          accumulator[`${key}Length`] = value.length;
+        }
+        return accumulator;
+      }
+
+      if (Array.isArray(value)) {
+        accumulator[key] = `[array:${value.length}]`;
+        return accumulator;
+      }
+
+      if (typeof value === 'object') {
+        let objectSize = null;
+        try {
+          objectSize = Object.keys(value).length;
+        } catch (objectSizeError) {
+          void objectSizeError;
+        }
+        accumulator[key] = `[object${objectSize != null ? `:${objectSize}` : ''}]`;
+        return accumulator;
+      }
+
+      accumulator[key] = `[${typeof value}]`;
+      return accumulator;
+    }, {});
+  } catch (sanitizationError) {
+    summary.error = describeError(sanitizationError);
+  }
+
+  return summary;
+}
+
 function updateLoggingConfig(partial) {
   const logging = resolveLoggingApi();
   if (!logging || typeof logging.setConfig !== 'function' || !partial || typeof partial !== 'object') {
@@ -10793,6 +10854,15 @@ function updateLoggingConfig(partial) {
     logging.setConfig(partial);
   } catch (error) {
     console.warn('Unable to update logging config', error);
+    logSettingsEvent(
+      'error',
+      'Failed to update diagnostics logging config',
+      {
+        message: describeError(error),
+        partial: sanitizeLoggingConfigPartial(partial),
+      },
+      { namespace: 'logging-config' },
+    );
     setLoggingStatusKey('loggingStatusError');
   }
 }
