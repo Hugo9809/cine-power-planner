@@ -9315,10 +9315,54 @@ if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function
   }
 }
 
-const SUPPORTED_LANGUAGES =
-  typeof texts === 'object' && texts !== null
-    ? Object.keys(texts)
-    : [DEFAULT_LANGUAGE_SAFE];
+const SUPPORTED_LANGUAGES = (() => {
+  const known = new Set();
+  const addLanguage = value => {
+    if (typeof value !== 'string') {
+      return;
+    }
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return;
+    }
+    known.add(normalized);
+    const short = normalized.slice(0, 2);
+    if (short && short !== normalized) {
+      known.add(short);
+    }
+  };
+
+  if (typeof texts === 'object' && texts !== null) {
+    Object.keys(texts).forEach(addLanguage);
+  }
+
+  if (translationsRuntime && typeof translationsRuntime === 'object') {
+    if (
+      translationsRuntime.texts &&
+      typeof translationsRuntime.texts === 'object'
+    ) {
+      Object.keys(translationsRuntime.texts).forEach(addLanguage);
+    }
+
+    if (typeof translationsRuntime.getAvailableLanguages === 'function') {
+      try {
+        const runtimeLanguages = translationsRuntime.getAvailableLanguages();
+        if (Array.isArray(runtimeLanguages)) {
+          runtimeLanguages.forEach(addLanguage);
+        }
+      } catch (availableLanguagesError) {
+        console.warn(
+          'Failed to read available languages from translations runtime',
+          availableLanguagesError,
+        );
+      }
+    }
+  }
+
+  addLanguage(DEFAULT_LANGUAGE_SAFE);
+
+  return Array.from(known);
+})();
 
 function resolveLanguagePreference(candidate) {
   if (!candidate) {
