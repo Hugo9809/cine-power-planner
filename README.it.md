@@ -273,7 +273,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Gli import non sovrascrivono mai per errore.** Se un bundle in arrivo usa lo stesso nome di un progetto esistente, il planner salva la nuova copia come `nome-progetto-imported` così puoi confrontarle entrambe.
 - **Import offline validati.** Importando `auto-gear-rules-*.json`, il planner controlla tipo, versione semantica e metadati prima di modificare le tue regole. Se qualcosa non torna, avvisa e ripristina lo snapshot precedente.
 - **Ripristini a doppio buffer.** Prima dell’import viene richiesto un backup del contesto corrente. Dopo la validazione il progetto ripristinato appare in cima al selettore.
-- **Flussi cross-device senza rete.** Copia `index.html`, `script.js`, `devices/` e i tuoi file di backup/bundle su un supporto removibile, avvia dal disco e continua senza internet.
+- **Flussi cross-device senza rete.** Copia `index.html`, le cartelle `src/scripts/` e `src/data/` (compresa `src/data/devices/`) e i tuoi file di backup o bundle su un supporto removibile. Avvia dal disco, importa il pacchetto e continua senza internet.
 - **Esporta con attenzione.** Controlla il JSON prima di condividerlo per verificare che contenga solo ciò che serve. Il formato è leggibile per eventuali modifiche.
 - **Il download manuale tutela gli export.** Se il browser o un blocco impedisce lo scaricamento, il planner apre una scheda «Manual download» con il JSON. Premi `Ctrl+A`/`Ctrl+C` (`⌘A`/`⌘C` su macOS), incolla il testo in un file `.json` e archivialo con i backup prima di chiudere la scheda.
 - **Sincronizza con le checklist.** Quando ricevi un bundle aggiornato, importalo, verifica i timestamp `Aggiornato` e archivia il JSON precedente per mantenere la storia.
