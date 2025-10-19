@@ -542,11 +542,12 @@
     );
     gearItemsContainer = gearItemsAssignment.container;
 
-    if (
-      !textsAssignment.assigned ||
-      !categoryNamesAssignment.assigned ||
-      !gearItemsAssignment.assigned
-    ) {
+    var assignmentsSucceeded =
+      textsAssignment.assigned &&
+      categoryNamesAssignment.assigned &&
+      gearItemsAssignment.assigned;
+
+    if (!assignmentsSucceeded) {
       if (
         typeof console !== 'undefined' &&
         console &&
@@ -557,7 +558,7 @@
     }
 
     if (Object.prototype.hasOwnProperty.call(LOCALE_SCRIPTS, locale)) {
-      LOCALE_SCRIPTS[locale].loaded = true;
+      LOCALE_SCRIPTS[locale].loaded = assignmentsSucceeded;
     }
 
     return {
