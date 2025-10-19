@@ -31,10 +31,12 @@ protecting user data.
    - Clear application data (localStorage + caches).
    - Restore the backup via the sandbox, then promote it.
    - Ensure the service worker reinstalls seamlessly and logs the restore.
-5. **Cache reset test**
-   - Trigger **Settings → Offline & Cache → Reset cache** (or equivalent).
-   - Confirm the app reloads cleanly, rehydrates from storage and preserves user
-     data.
+5. **Force reload test**
+   - Click the 🔄 **Force reload** button (or use **Settings → Force reload**) to
+     flush stale service worker assets.
+   - Confirm the app reloads cleanly, **Settings → Data & Storage → Quick
+     safeguards** still reports mirrored backups, and all user data remains
+     intact.
 
 ## Evidence to collect
 

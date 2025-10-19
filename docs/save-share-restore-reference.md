@@ -69,7 +69,7 @@ workstations.
 | Autosave missing | Load the latest planner backup, restore via sandbox, then check timestamped mirrors for newer data. |
 | Bundle corrupt | Use checksum log to identify mismatch, fetch redundant copy from offsite media. |
 | Restore mismatch | Compare schema using `modules/helpers/schema/`; update docs and contact engineering before retrying. |
-| Service worker stale | Run cache reset (Settings → Offline & Cache), reload offline and repeat restore. |
+| Service worker stale | Trigger the 🔄 **Force reload** control (or open **Settings → Force reload**) to refresh cached assets, then verify **Settings → Data & Storage → Quick safeguards** still reports mirrored backups before repeating the offline restore. |
 | Critical storage guard uncertainty | Confirm the latest guard run succeeded: look for the console log `Critical storage guard mirrored backup copies` and review **Settings → Data & Storage → Backup guardian** for a green "Mirrored" status with the same timestamp. Capture the `getLastCriticalStorageGuardResult()` output and autosave ledger entry for the verification packet. If errors appear, halt promotions, re-run the guard from the guardian row, collect error stack traces, and escalate to engineering with the captured evidence. |
 
 ## Documentation alignment
