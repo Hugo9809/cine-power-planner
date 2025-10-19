@@ -495,7 +495,7 @@ Cine Power Planner è una Progressive Web App:
 
 ## Workflow dati dispositivi
 
-I cataloghi risiedono in `devices/`. Ogni file raggruppa attrezzatura correlata per semplificare le revisioni. Prima di eseguire commit, lancia:
+I cataloghi risiedono in `src/data/devices/`. Ogni file raggruppa attrezzatura correlata per semplificare le revisioni. Prima di eseguire commit, lancia:
 
 ```bash
 npm run normalize

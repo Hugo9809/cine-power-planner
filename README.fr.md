@@ -497,7 +497,7 @@ Cine Power Planner est une Progressive Web App :
 
 ## Flux de données matériel
 
-Les catalogues se trouvent dans `devices/`. Chaque fichier regroupe des équipements associés pour faciliter l’audit. Avant de valider une modification, exécutez :
+Les catalogues se trouvent dans `src/data/devices/`. Chaque fichier regroupe des équipements associés pour faciliter l’audit. Avant de valider une modification, exécutez :
 
 ```bash
 npm run normalize
