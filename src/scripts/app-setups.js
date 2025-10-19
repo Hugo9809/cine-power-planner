@@ -1638,8 +1638,150 @@ function resolveRentalHouseCatalog() {
     return [];
 }
 
-const rentalHouseCatalog = resolveRentalHouseCatalog();
 const RENTAL_HOUSE_SUGGESTION_LIMIT = 50;
+
+let rentalHouseRuntime = null;
+
+function isValidRentalHouseRuntime(runtime) {
+    return (
+        !!runtime
+        && Array.isArray(runtime.catalog)
+        && Array.isArray(runtime.searchIndex)
+        && runtime.lookup
+        && typeof runtime.lookup === 'object'
+        && typeof runtime.signature === 'string'
+    );
+}
+
+function publishRentalHouseRuntime(runtime) {
+    if (!runtime) {
+        return;
+    }
+
+    const scope = getGlobalScope();
+    if (!scope) {
+        return;
+    }
+
+    try {
+        scope.__cineRentalHouseRuntime = runtime;
+    } catch (assignRuntimeError) {
+        void assignRuntimeError;
+    }
+
+    if (!Array.isArray(scope.__cineRentalHouseCatalog)) {
+        try {
+            scope.__cineRentalHouseCatalog = runtime.catalog;
+        } catch (assignCatalogError) {
+            void assignCatalogError;
+        }
+    }
+
+    try {
+        scope.__cineRentalHouseSearchIndex = runtime.searchIndex;
+    } catch (assignIndexError) {
+        void assignIndexError;
+    }
+
+    try {
+        scope.__cineRentalHouseLookup = runtime.lookup;
+    } catch (assignLookupError) {
+        void assignLookupError;
+    }
+
+    try {
+        scope.__cineRentalHouseSignature = runtime.signature;
+    } catch (assignSignatureError) {
+        void assignSignatureError;
+    }
+}
+
+function buildRentalHouseRuntime() {
+    const scope = getGlobalScope();
+    if (scope) {
+        try {
+            const existingRuntime = scope.__cineRentalHouseRuntime;
+            if (isValidRentalHouseRuntime(existingRuntime)) {
+                return existingRuntime;
+            }
+        } catch (readRuntimeError) {
+            void readRuntimeError;
+        }
+    }
+
+    let catalog = [];
+
+    if (scope) {
+        try {
+            const globalCatalog = scope.__cineRentalHouseCatalog;
+            if (Array.isArray(globalCatalog) && globalCatalog.length) {
+                catalog = globalCatalog.slice();
+            }
+        } catch (readCatalogError) {
+            void readCatalogError;
+        }
+    }
+
+    if (!catalog.length) {
+        catalog = resolveRentalHouseCatalog();
+    }
+
+    const searchIndex = catalog
+        .map(entry => {
+            if (!entry || typeof entry !== 'object') return null;
+            const name = entry.name ? String(entry.name).trim() : '';
+            if (!name) return null;
+            const key = normalizeRentalHouseKey(name);
+            if (!key) return null;
+            const location = formatRentalHouseLocation(entry);
+            const normalizedName = normalizeRentalHouseSearchValue(name);
+            const normalizedLocation = normalizeRentalHouseSearchValue(location);
+            const additionalParts = normalizeRentalHouseSearchValue(
+                [entry.city, entry.country, entry.address, entry.phone, entry.email]
+                    .map(part => (part ? String(part).trim() : ''))
+                    .filter(Boolean)
+                    .join(' ')
+            );
+            const searchKey = [normalizedName, normalizedLocation, additionalParts]
+                .filter(Boolean)
+                .join(' ');
+
+            return {
+                entry,
+                name,
+                key,
+                location,
+                normalizedName,
+                normalizedLocation,
+                searchKey
+            };
+        })
+        .filter(Boolean);
+
+    const signature = searchIndex
+        .map(info => `${info.key}|${info.location}`)
+        .join('||');
+
+    const lookup = Object.create(null);
+    catalog.forEach(entry => {
+        if (!entry || typeof entry !== 'object') return;
+        const key = normalizeRentalHouseKey(entry.name);
+        if (key && !lookup[key]) {
+            lookup[key] = entry;
+        }
+    });
+
+    return { catalog, searchIndex, signature, lookup };
+}
+
+function getRentalHouseRuntime() {
+    if (!isValidRentalHouseRuntime(rentalHouseRuntime)) {
+        rentalHouseRuntime = buildRentalHouseRuntime();
+        publishRentalHouseRuntime(rentalHouseRuntime);
+    }
+
+    return rentalHouseRuntime;
+}
 
 function normalizeRentalHouseSearchValue(value) {
     if (!value) return '';
@@ -1660,42 +1802,6 @@ function normalizeRentalHouseSearchValue(value) {
         .trim();
 }
 
-const rentalHouseSearchIndex = rentalHouseCatalog
-    .map(entry => {
-        if (!entry || typeof entry !== 'object') return null;
-        const name = entry.name ? String(entry.name).trim() : '';
-        if (!name) return null;
-        const key = normalizeRentalHouseKey(name);
-        if (!key) return null;
-        const location = formatRentalHouseLocation(entry);
-        const normalizedName = normalizeRentalHouseSearchValue(name);
-        const normalizedLocation = normalizeRentalHouseSearchValue(location);
-        const additionalParts = normalizeRentalHouseSearchValue(
-            [entry.city, entry.country, entry.address, entry.phone, entry.email]
-                .map(part => (part ? String(part).trim() : ''))
-                .filter(Boolean)
-                .join(' ')
-        );
-        const searchKey = [normalizedName, normalizedLocation, additionalParts]
-            .filter(Boolean)
-            .join(' ');
-
-        return {
-            entry,
-            name,
-            key,
-            location,
-            normalizedName,
-            normalizedLocation,
-            searchKey
-        };
-    })
-    .filter(Boolean);
-
-const rentalHouseCatalogSignature = rentalHouseSearchIndex
-    .map(info => `${info.key}|${info.location}`)
-    .join('||');
-
 function normalizeRentalHouseKey(value) {
     if (!value) return '';
     return String(value)
@@ -1703,18 +1809,6 @@ function normalizeRentalHouseKey(value) {
         .replace(/[\u2012\u2013\u2014\u2015]/g, '-')
         .toLowerCase();
 }
-
-const rentalHouseLookup = (() => {
-    const map = Object.create(null);
-    rentalHouseCatalog.forEach(entry => {
-        if (!entry || typeof entry !== 'object') return;
-        const key = normalizeRentalHouseKey(entry.name);
-        if (key && !map[key]) {
-            map[key] = entry;
-        }
-    });
-    return map;
-})();
 
 const RENTAL_HOUSE_SUFFIX_TOKENS = new Set([
     'AG',
@@ -1821,7 +1915,12 @@ function resolveRentalProviderNoteLabel(options = {}) {
     if (!rentalValue) {
         return fallback;
     }
-    const match = rentalHouseLookup[normalizeRentalHouseKey(rentalValue)];
+    let match = null;
+    if (rentalValue) {
+        const runtime = getRentalHouseRuntime();
+        const lookup = runtime && runtime.lookup;
+        match = lookup ? lookup[normalizeRentalHouseKey(rentalValue)] : null;
+    }
     const shortName = formatRentalHouseShortName(match || rentalValue);
     if (shortName) {
         return shortName;
@@ -1969,17 +2068,23 @@ function scoreRentalHouseMatch(info, query) {
 }
 
 function getRentalHouseMatches(query) {
+    const runtime = getRentalHouseRuntime();
+    const searchIndex = (runtime && Array.isArray(runtime.searchIndex)) ? runtime.searchIndex : [];
     const normalizedQuery = normalizeRentalHouseSearchValue(query);
 
+    if (!searchIndex.length) {
+        return [];
+    }
+
     if (!normalizedQuery) {
-        return rentalHouseSearchIndex
+        return searchIndex
             .slice()
             .sort((a, b) => a.name.localeCompare(b.name))
             .slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT);
     }
 
     const results = [];
-    rentalHouseSearchIndex.forEach(info => {
+    searchIndex.forEach(info => {
         const score = scoreRentalHouseMatch(info, normalizedQuery);
         if (!Number.isFinite(score)) return;
         results.push({ info, score });
@@ -1994,13 +2099,16 @@ function getRentalHouseMatches(query) {
 }
 
 function renderRentalHouseSuggestions(input = resolveRentalHouseInput()) {
-    if (!input || !rentalHouseSearchIndex.length) return;
+    const runtime = getRentalHouseRuntime();
+    const searchIndex = (runtime && Array.isArray(runtime.searchIndex)) ? runtime.searchIndex : [];
+    if (!input || !searchIndex.length) return;
     const datalist = ensureRentalHouseDatalist(input);
     if (!datalist) return;
 
     const query = typeof input.value === 'string' ? input.value : '';
     const normalizedQuery = normalizeRentalHouseSearchValue(query);
-    const signature = `${rentalHouseCatalogSignature}::${normalizedQuery}`;
+    const signatureBase = runtime && typeof runtime.signature === 'string' ? runtime.signature : '';
+    const signature = `${signatureBase}::${normalizedQuery}`;
 
     if (datalist.__rentalHouseSignature === signature) {
         return;
@@ -2032,7 +2140,12 @@ function renderRentalHouseSuggestions(input = resolveRentalHouseInput()) {
 function updateRentalHouseAssistiveDetails(input = resolveRentalHouseInput()) {
     if (!input) return;
     const value = typeof input.value === 'string' ? input.value.trim() : '';
-    const match = value ? rentalHouseLookup[normalizeRentalHouseKey(value)] : null;
+    let match = null;
+    if (value) {
+        const runtime = getRentalHouseRuntime();
+        const lookup = runtime && runtime.lookup;
+        match = lookup ? lookup[normalizeRentalHouseKey(value)] : null;
+    }
     if (match) {
         const tooltip = formatRentalHouseTooltip(match);
         if (tooltip) {
@@ -2051,9 +2164,6 @@ function updateRentalHouseAssistiveDetails(input = resolveRentalHouseInput()) {
 
 const initialRentalHouseInput = resolveRentalHouseInput();
 if (initialRentalHouseInput) {
-    if (rentalHouseSearchIndex.length) {
-        renderRentalHouseSuggestions(initialRentalHouseInput);
-    }
     updateRentalHouseAssistiveDetails(initialRentalHouseInput);
     initialRentalHouseInput.addEventListener('input', () => {
         renderRentalHouseSuggestions(initialRentalHouseInput);
