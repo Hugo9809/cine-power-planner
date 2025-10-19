@@ -215,7 +215,7 @@
 
 .cine-notification-stack {
   position: fixed;
-  top: 1rem;
+  top: calc(env(safe-area-inset-top, 0px) + 5.5rem);
   right: 1rem;
   display: flex;
   flex-direction: column;
@@ -225,6 +225,12 @@
   max-width: 100%;
   z-index: 10000;
   pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .cine-notification-stack {
+    top: calc(env(safe-area-inset-top, 0px) + 6.5rem);
+  }
 }
 
 .cine-notification-stack > * {
