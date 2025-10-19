@@ -1282,7 +1282,12 @@
           if (xmlHttpResult === true) {
             return true;
           }
-          shouldAttemptFetch = true;
+
+          if (xmlHttpResult === false) {
+            shouldAttemptFetch = false;
+          } else {
+            shouldAttemptFetch = true;
+          }
         } catch (xmlHttpError) {
           void xmlHttpError;
           shouldAttemptFetch = true;
