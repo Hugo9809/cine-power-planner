@@ -203,6 +203,71 @@
   --onboarding-button-disabled-bg: var(--control-disabled-bg);
   --onboarding-button-disabled-text: color-mix(in srgb, var(--control-text) 70%, transparent);
 }
+
+@keyframes cineAutoBackupSpinnerRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.cine-notification-stack {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: min(360px, calc(100vw - 2rem));
+  max-width: 100%;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.cine-notification-stack > * {
+  pointer-events: auto;
+}
+
+.cine-notification {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  margin-top: 0.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.14);
+  background: rgba(32, 40, 62, 0.92);
+  color: #ffffff;
+}
+
+.cine-notification:first-child {
+  margin-top: 0;
+}
+
+.cine-notification__spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 0.2rem solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: cineAutoBackupSpinnerRotate 1s linear infinite;
+}
+
+.cine-notification--loading {
+  background: rgba(32, 40, 62, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .cine-notification--loading {
+    backdrop-filter: none;
+  }
+}
 @media (max-width: 600px) {
   :root {
     --page-padding: var(--spacing-sm);
