@@ -32,7 +32,7 @@ protecting user data.
    - Restore the backup via the sandbox, then promote it.
    - Ensure the service worker reinstalls seamlessly and logs the restore.
 5. **Cache reset test**
-   - Trigger **Settings → Offline & Cache → Reset cache** (or equivalent).
+   - Trigger **Settings → Force reload**.
    - Confirm the app reloads cleanly, rehydrates from storage and preserves user
      data.
 
