@@ -1,4 +1,4 @@
-/* global cineModuleBase */
+/* global CORE_GLOBAL_SCOPE, cineModuleBase */
 
 (function () {
   function detectGlobalScope() {
@@ -18,6 +18,94 @@
   }
 
   var GLOBAL_SCOPE = detectGlobalScope();
+
+  function resolveUiHelpers(scope) {
+    var candidates = [];
+
+    if (typeof require === 'function') {
+      try {
+        var required = require('../app-core-ui-helpers.js');
+        if (required && typeof required === 'object') {
+          candidates.push(required);
+        }
+      } catch (uiHelpersError) {
+        void uiHelpersError;
+      }
+    }
+
+    var scopes = [];
+
+    if (scope && (typeof scope === 'object' || typeof scope === 'function')) {
+      scopes.push(scope);
+    }
+
+    try {
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        scopes.push(CORE_GLOBAL_SCOPE);
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      scopes.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window) {
+      scopes.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self) {
+      scopes.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global) {
+      scopes.push(global);
+    }
+
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scopeCandidate = scopes[index];
+      if (!scopeCandidate || (typeof scopeCandidate !== 'object' && typeof scopeCandidate !== 'function')) {
+        continue;
+      }
+      try {
+        var helpers = scopeCandidate.cineCoreUiHelpers;
+        if (helpers && typeof helpers === 'object') {
+          candidates.push(helpers);
+        }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
+      }
+    }
+
+    for (var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+      var candidate = candidates[candidateIndex];
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    }
+
+    return {};
+  }
+
+  var UI_HELPERS = resolveUiHelpers(GLOBAL_SCOPE);
+
+  var escapeHtmlHelper =
+    typeof UI_HELPERS.escapeHtml === 'function'
+      ? UI_HELPERS.escapeHtml
+      : function escapeHtmlFallback(value) {
+          return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        };
+
+  var setButtonLabelWithIconHelper =
+    typeof UI_HELPERS.setButtonLabelWithIcon === 'function'
+      ? UI_HELPERS.setButtonLabelWithIcon
+      : null;
 
   function resolveModuleBase(scope) {
     if (typeof cineModuleBase === 'object' && cineModuleBase) {
@@ -145,7 +233,7 @@
       updateFeedbackTemperatureOptions: null,
       refreshTotalCurrentLabels: null,
       updateMountVoltageSettingLabels: null,
-      setButtonLabelWithIcon: null,
+      setButtonLabelWithIcon: setButtonLabelWithIconHelper,
       iconGlyphs: null,
       getSelectedPlate: null,
       getMountVoltageConfig: null,
@@ -164,7 +252,7 @@
       supportsBMountCamera: null,
       supportsGoldMountCamera: null,
       getCssVariableValue: null,
-      escapeHtml: null,
+      escapeHtml: escapeHtmlHelper,
       getLastRuntimeHours: null,
       setLastRuntimeHours: null,
       getDevices: null,

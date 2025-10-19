@@ -15,6 +15,129 @@
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
 
+const UI_HELPERS = (function resolveUiHelpersForSetups() {
+    if (typeof require === 'function') {
+        try {
+            const required = require('./app-core-ui-helpers.js');
+            if (required && typeof required === 'object') {
+                return required;
+            }
+        } catch (uiHelpersError) {
+            void uiHelpersError;
+        }
+    }
+
+    const scopes = [];
+
+    try {
+        if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+            scopes.push(CORE_GLOBAL_SCOPE);
+        }
+    } catch (coreScopeError) {
+        void coreScopeError;
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis) {
+        scopes.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window) {
+        scopes.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self) {
+        scopes.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global) {
+        scopes.push(global);
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope) {
+            continue;
+        }
+        try {
+            const helpers = scope.cineCoreUiHelpers;
+            if (helpers && typeof helpers === 'object') {
+                return helpers;
+            }
+        } catch (scopeLookupError) {
+            void scopeLookupError;
+        }
+    }
+
+    return {};
+})();
+
+const escapeHtml =
+    typeof UI_HELPERS.escapeHtml === 'function'
+        ? UI_HELPERS.escapeHtml
+        : function escapeHtmlFallback(str) {
+              return String(str)
+                  .replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#39;');
+          };
+
+const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForSetups() {
+    if (typeof UI_HELPERS.setButtonLabelWithIcon === 'function') {
+        return UI_HELPERS.setButtonLabelWithIcon;
+    }
+
+    const candidates = [];
+
+    try {
+        if (
+            typeof CORE_GLOBAL_SCOPE === 'object' &&
+            CORE_GLOBAL_SCOPE &&
+            typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
+        ) {
+            candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+        }
+    } catch (coreScopeError) {
+        void coreScopeError;
+    }
+
+    if (
+        typeof globalThis !== 'undefined' &&
+        globalThis &&
+        typeof globalThis.setButtonLabelWithIcon === 'function'
+    ) {
+        candidates.push(globalThis.setButtonLabelWithIcon);
+    }
+
+    if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+        candidates.push(window.setButtonLabelWithIcon);
+    }
+
+    if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+        candidates.push(self.setButtonLabelWithIcon);
+    }
+
+    if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+        candidates.push(global.setButtonLabelWithIcon);
+    }
+
+    if (candidates.length > 0) {
+        return candidates[0];
+    }
+
+    return function setButtonLabelWithIconFallback(button, label) {
+        if (!button) {
+            return;
+        }
+        try {
+            button.textContent = typeof label === 'string' ? label : '';
+        } catch (assignError) {
+            void assignError;
+        }
+    };
+})();
+
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
