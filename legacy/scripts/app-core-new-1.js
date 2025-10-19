@@ -1225,6 +1225,465 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       || (typeof cineCoreRuntimeGlobalTools === 'object' && cineCoreRuntimeGlobalTools)
       || null;
 
+  function fallbackGetCoreGlobalObjectFromBridge(scopeCandidate) {
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject === 'function'
+    ) {
+      try {
+        var resolvedScope = CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject(
+          scopeCandidate
+        );
+        if (resolvedScope) {
+          return resolvedScope;
+        }
+      } catch (bridgeFallbackScopeError) {
+        void bridgeFallbackScopeError;
+      }
+    }
+
+    var candidateScopes = [];
+
+    if (
+      scopeCandidate &&
+      (typeof scopeCandidate === 'object' || typeof scopeCandidate === 'function')
+    ) {
+      candidateScopes.push(scopeCandidate);
+    }
+
+    if (
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' &&
+      CORE_PART1_RUNTIME_SCOPE &&
+      typeof CORE_PART1_RUNTIME_SCOPE === 'object'
+    ) {
+      candidateScopes.push(CORE_PART1_RUNTIME_SCOPE);
+    }
+
+    if (
+      typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+      CORE_GLOBAL_SCOPE &&
+      typeof CORE_GLOBAL_SCOPE === 'object'
+    ) {
+      candidateScopes.push(CORE_GLOBAL_SCOPE);
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+      candidateScopes.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window && typeof window === 'object') {
+      candidateScopes.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self && typeof self === 'object') {
+      candidateScopes.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global && typeof global === 'object') {
+      candidateScopes.push(global);
+    }
+
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var candidate = candidateScopes[index];
+      if (candidate && (typeof candidate === 'object' || typeof candidate === 'function')) {
+        return candidate;
+      }
+    }
+
+    return null;
+  }
+
+  function fallbackEnsureCoreGlobalValueFromBridge(name, fallbackValue, scopeCandidate) {
+    var provider =
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
+
+    if (!name || typeof name !== 'string') {
+      try {
+        return provider();
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+
+    var scope = fallbackGetCoreGlobalObjectFromBridge(scopeCandidate);
+    if (!scope || typeof scope !== 'object') {
+      try {
+        return provider();
+      } catch (fallbackScopeError) {
+        void fallbackScopeError;
+        return undefined;
+      }
+    }
+
+    try {
+      if (typeof scope[name] !== 'undefined') {
+        return scope[name];
+      }
+    } catch (readError) {
+      void readError;
+    }
+
+    var value = provider();
+
+    try {
+      scope[name] = value;
+      return scope[name];
+    } catch (assignError) {
+      void assignError;
+    }
+
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        value: value,
+      });
+
+      return scope[name];
+    } catch (defineError) {
+      void defineError;
+    }
+
+    return value;
+  }
+
+  function fallbackCoreJsonDeepCloneFromBridge(value) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (jsonCloneError) {
+      void jsonCloneError;
+    }
+
+    return value;
+  }
+
+  function fallbackResolveStructuredCloneFromBridge(scopeCandidate) {
+    if (typeof structuredClone === 'function') {
+      return structuredClone;
+    }
+
+    var candidateScopes = [];
+
+    if (
+      scopeCandidate &&
+      (typeof scopeCandidate === 'object' || typeof scopeCandidate === 'function')
+    ) {
+      candidateScopes.push(scopeCandidate);
+    }
+
+    var bridgeScope = fallbackGetCoreGlobalObjectFromBridge();
+    if (bridgeScope && candidateScopes.indexOf(bridgeScope) === -1) {
+      candidateScopes.push(bridgeScope);
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+      candidateScopes.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window && typeof window === 'object') {
+      candidateScopes.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self && typeof self === 'object') {
+      candidateScopes.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global && typeof global === 'object') {
+      candidateScopes.push(global);
+    }
+
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var candidate = candidateScopes[index];
+      if (candidate && typeof candidate.structuredClone === 'function') {
+        try {
+          return candidate.structuredClone.bind(candidate);
+        } catch (bindError) {
+          void bindError;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function fallbackCoreCreateResilientDeepCloneFromBridge(scopeCandidate) {
+    var structuredCloneImpl = fallbackResolveStructuredCloneFromBridge(scopeCandidate);
+
+    if (!structuredCloneImpl) {
+      return function resilientDeepCloneFallback(value) {
+        return fallbackCoreJsonDeepCloneFromBridge(value);
+      };
+    }
+
+    return function resilientDeepCloneFallback(value) {
+      if (value === null || typeof value !== 'object') {
+        return value;
+      }
+
+      try {
+        return structuredCloneImpl(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
+      }
+
+      return fallbackCoreJsonDeepCloneFromBridge(value);
+    };
+  }
+
+  function fallbackEnsureDeepCloneFromBridge(scopeCandidate) {
+    var targetScope =
+      (scopeCandidate &&
+        (typeof scopeCandidate === 'object' || typeof scopeCandidate === 'function')
+        ? scopeCandidate
+        : null) || fallbackGetCoreGlobalObjectFromBridge();
+
+    var clone = fallbackCoreCreateResilientDeepCloneFromBridge(targetScope);
+
+    if (targetScope && typeof targetScope === 'object') {
+      try {
+        Object.defineProperty(targetScope, '__cineDeepClone', {
+          configurable: true,
+          writable: true,
+          value: clone,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+
+      try {
+        if (typeof targetScope.__cineDeepClone !== 'function') {
+          targetScope.__cineDeepClone = clone;
+        }
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+
+    return clone;
+  }
+
+  var getCoreGlobalObject = (function resolveGetCoreGlobalObject() {
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.getCoreGlobalObject === 'function'
+    ) {
+      return function getCoreGlobalObjectBridgeProxy() {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.getCoreGlobalObject();
+        } catch (coreGlobalScopeError) {
+          void coreGlobalScopeError;
+        }
+
+        if (
+          CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+          typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject === 'function'
+        ) {
+          try {
+            return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject();
+          } catch (bridgeFallbackScopeError) {
+            void bridgeFallbackScopeError;
+          }
+        }
+
+        return fallbackGetCoreGlobalObjectFromBridge();
+      };
+    }
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject === 'function'
+    ) {
+      return function getCoreGlobalObjectFallbackBridgeProxy() {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackGetCoreGlobalObject();
+        } catch (bridgeFallbackScopeError) {
+          void bridgeFallbackScopeError;
+        }
+
+        return fallbackGetCoreGlobalObjectFromBridge();
+      };
+    }
+
+    return fallbackGetCoreGlobalObjectFromBridge;
+  })();
+
+  var ensureCoreGlobalValue = (function resolveEnsureCoreGlobalValue() {
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.ensureCoreGlobalValue === 'function'
+    ) {
+      return function ensureCoreGlobalValueBridgeProxy(name, fallbackValue, scopeCandidate) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.ensureCoreGlobalValue(
+            name,
+            fallbackValue,
+            scopeCandidate
+          );
+        } catch (ensureError) {
+          void ensureError;
+        }
+
+        if (
+          CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+          typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureCoreGlobalValue === 'function'
+        ) {
+          try {
+            return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureCoreGlobalValue(
+              name,
+              fallbackValue,
+              scopeCandidate
+            );
+          } catch (bridgeFallbackEnsureError) {
+            void bridgeFallbackEnsureError;
+          }
+        }
+
+        return fallbackEnsureCoreGlobalValueFromBridge(name, fallbackValue, scopeCandidate);
+      };
+    }
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureCoreGlobalValue === 'function'
+    ) {
+      return function ensureCoreGlobalValueFallbackBridgeProxy(
+        name,
+        fallbackValue,
+        scopeCandidate
+      ) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureCoreGlobalValue(
+            name,
+            fallbackValue,
+            scopeCandidate
+          );
+        } catch (bridgeFallbackEnsureError) {
+          void bridgeFallbackEnsureError;
+        }
+
+        return fallbackEnsureCoreGlobalValueFromBridge(name, fallbackValue, scopeCandidate);
+      };
+    }
+
+    return fallbackEnsureCoreGlobalValueFromBridge;
+  })();
+
+  var coreJsonDeepClone = (function resolveCoreJsonDeepClone() {
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.coreJsonDeepClone === 'function'
+    ) {
+      return function coreJsonDeepCloneBridgeProxy(value) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.coreJsonDeepClone(value);
+        } catch (coreJsonCloneError) {
+          void coreJsonCloneError;
+        }
+
+        return fallbackCoreJsonDeepCloneFromBridge(value);
+      };
+    }
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackJsonDeepClone === 'function'
+    ) {
+      return function coreJsonDeepCloneFallbackBridgeProxy(value) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackJsonDeepClone(value);
+        } catch (coreJsonCloneError) {
+          void coreJsonCloneError;
+        }
+
+        return fallbackCoreJsonDeepCloneFromBridge(value);
+      };
+    }
+
+    return fallbackCoreJsonDeepCloneFromBridge;
+  })();
+
+  var coreCreateResilientDeepClone = (function resolveCoreCreateResilientDeepClone() {
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.coreCreateResilientDeepClone === 'function'
+    ) {
+      return function coreCreateResilientDeepCloneBridgeProxy(scopeCandidate) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.coreCreateResilientDeepClone(scopeCandidate);
+        } catch (coreCreateResilientDeepCloneError) {
+          void coreCreateResilientDeepCloneError;
+        }
+
+        return fallbackCoreCreateResilientDeepCloneFromBridge(scopeCandidate);
+      };
+    }
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackCreateResilientDeepClone === 'function'
+    ) {
+      return function coreCreateResilientDeepCloneFallbackBridgeProxy(scopeCandidate) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackCreateResilientDeepClone(scopeCandidate);
+        } catch (coreCreateResilientDeepCloneError) {
+          void coreCreateResilientDeepCloneError;
+        }
+
+        return fallbackCoreCreateResilientDeepCloneFromBridge(scopeCandidate);
+      };
+    }
+
+    return fallbackCoreCreateResilientDeepCloneFromBridge;
+  })();
+
+  var CORE_DEEP_CLONE = (function resolveCoreDeepClone() {
+    var bridgeScope =
+      (CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+        CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_GLOBAL_SCOPE) ||
+      (typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_DEEP_CLONE === 'function'
+    ) {
+      return function coreDeepCloneBridgeProxy(value) {
+        try {
+          return CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_DEEP_CLONE(value);
+        } catch (coreDeepCloneError) {
+          void coreDeepCloneError;
+        }
+
+        var fallbackClone = fallbackEnsureDeepCloneFromBridge(bridgeScope);
+        return fallbackClone(value);
+      };
+    }
+
+    if (
+      CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
+      typeof CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureDeepClone === 'function'
+    ) {
+      try {
+        var ensuredClone = CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.fallbackEnsureDeepClone(bridgeScope);
+        if (typeof ensuredClone === 'function') {
+          return ensuredClone;
+        }
+      } catch (fallbackEnsureDeepCloneError) {
+        void fallbackEnsureDeepCloneError;
+      }
+    }
+
+    return fallbackEnsureDeepCloneFromBridge(bridgeScope);
+  })();
+
   if (
     CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
     CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS &&
