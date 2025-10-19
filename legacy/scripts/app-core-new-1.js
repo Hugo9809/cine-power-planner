@@ -8145,7 +8145,48 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn('Failed to trigger default translation load', defaultRuntimeError);
     }
   }
-  var SUPPORTED_LANGUAGES = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts !== null ? Object.keys(texts) : [DEFAULT_LANGUAGE_SAFE];
+  var SUPPORTED_LANGUAGES = function () {
+    var known = new Set();
+    var addLanguage = function addLanguage(value) {
+      if (typeof value !== 'string') {
+        return;
+      }
+      var normalized = value.trim().toLowerCase();
+      if (!normalized) {
+        return;
+      }
+      known.add(normalized);
+      var short = normalized.slice(0, 2);
+      if (short && short !== normalized) {
+        known.add(short);
+      }
+    };
+
+    if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts !== null) {
+      Object.keys(texts).forEach(addLanguage);
+    }
+
+    if (translationsRuntime && (typeof translationsRuntime === "undefined" ? "undefined" : _typeof(translationsRuntime)) === 'object') {
+      if (translationsRuntime.texts && _typeof(translationsRuntime.texts) === 'object') {
+        Object.keys(translationsRuntime.texts).forEach(addLanguage);
+      }
+
+      if (typeof translationsRuntime.getAvailableLanguages === 'function') {
+        try {
+          var runtimeLanguages = translationsRuntime.getAvailableLanguages();
+          if (Array.isArray(runtimeLanguages)) {
+            runtimeLanguages.forEach(addLanguage);
+          }
+        } catch (availableLanguagesError) {
+          console.warn('Failed to read available languages from translations runtime', availableLanguagesError);
+        }
+      }
+    }
+
+    addLanguage(DEFAULT_LANGUAGE_SAFE);
+
+    return Array.from(known);
+  }();
   function resolveLanguagePreference(candidate) {
     if (!candidate) {
       return {
