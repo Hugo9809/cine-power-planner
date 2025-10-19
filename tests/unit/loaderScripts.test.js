@@ -7,6 +7,24 @@ describe('loader script bundles', () => {
   const loaderSource = fs.readFileSync(loaderPath, 'utf8');
   const legacyLoaderPath = path.join(__dirname, '..', '..', 'legacy', 'scripts', 'loader.js');
   const legacyLoaderSource = fs.readFileSync(legacyLoaderPath, 'utf8');
+  const appCoreEnvironmentPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'src',
+    'scripts',
+    'app-core-environment.js'
+  );
+  const appCoreEnvironmentSource = fs.readFileSync(appCoreEnvironmentPath, 'utf8');
+  const legacyAppCoreEnvironmentPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'legacy',
+    'scripts',
+    'app-core-environment.js'
+  );
+  const legacyAppCoreEnvironmentSource = fs.readFileSync(legacyAppCoreEnvironmentPath, 'utf8');
 
   test('modern bundle loads charger data', () => {
     expect(loaderSource).toMatch(/['"]src\/data\/devices\/chargers\.js['"]/);
@@ -27,8 +45,7 @@ describe('loader script bundles', () => {
   });
 
   test('modern bundle loads runtime environment helpers', () => {
-    expect(loaderSource).toContain('src/scripts/modules/runtime-environment-helpers.js');
-    expect(loaderSource).toContain('legacy/scripts/modules/runtime-environment-helpers.js');
+    expect(appCoreEnvironmentSource).toContain("require('./modules/runtime-environment-helpers.js')");
   });
 
   test('legacy bundle migrates auto gear retention storage keys', () => {
@@ -42,8 +59,7 @@ describe('loader script bundles', () => {
   });
 
   test('legacy loader includes runtime environment helpers', () => {
-    expect(legacyLoaderSource).toContain('src/scripts/modules/runtime-environment-helpers.js');
-    expect(legacyLoaderSource).toContain('legacy/scripts/modules/runtime-environment-helpers.js');
+    expect(legacyAppCoreEnvironmentSource).toContain("require('./modules/runtime-environment-helpers.js')");
   });
 
   test('modern bundle migrates auto gear monitor defaults keys', () => {
