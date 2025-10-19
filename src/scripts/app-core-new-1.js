@@ -1005,21 +1005,42 @@ const CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefault
 CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
 CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 
-const CORE_UI_HELPERS = (function resolveCoreUiHelpers() {
+function fallbackEscapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const CORE_RUNTIME_UI_BRIDGE = (function resolveCoreRuntimeUiBridge() {
   const candidates = [];
 
   if (typeof require === 'function') {
     try {
-      const requiredHelpers = require('./app-core-ui-helpers.js');
-      if (requiredHelpers && typeof requiredHelpers === 'object') {
-        candidates.push(requiredHelpers);
+      const requiredBridge = require('./app-core-runtime-ui.js');
+      if (requiredBridge && typeof requiredBridge === 'object') {
+        candidates.push(requiredBridge);
       }
-    } catch (helpersError) {
-      void helpersError;
+    } catch (bridgeRequireError) {
+      void bridgeRequireError;
     }
   }
 
   const scopes = [];
+
+  try {
+    if (
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' &&
+      CORE_PART1_RUNTIME_SCOPE &&
+      typeof CORE_PART1_RUNTIME_SCOPE === 'object'
+    ) {
+      scopes.push(CORE_PART1_RUNTIME_SCOPE);
+    }
+  } catch (partScopeError) {
+    void partScopeError;
+  }
 
   try {
     if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
@@ -1047,16 +1068,17 @@ const CORE_UI_HELPERS = (function resolveCoreUiHelpers() {
 
   for (let index = 0; index < scopes.length; index += 1) {
     const scope = scopes[index];
-    if (!scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
       continue;
     }
+
     try {
-      const helpers = scope.cineCoreUiHelpers;
-      if (helpers && typeof helpers === 'object') {
-        candidates.push(helpers);
+      const bridge = scope.cineCoreRuntimeUiBridge;
+      if (bridge && typeof bridge === 'object') {
+        candidates.push(bridge);
       }
-    } catch (scopeLookupError) {
-      void scopeLookupError;
+    } catch (bridgeLookupError) {
+      void bridgeLookupError;
     }
   }
 
@@ -1071,20 +1093,13 @@ const CORE_UI_HELPERS = (function resolveCoreUiHelpers() {
 })();
 
 const escapeHtml =
-  typeof CORE_UI_HELPERS.escapeHtml === 'function'
-    ? CORE_UI_HELPERS.escapeHtml
-    : function escapeHtmlFallback(str) {
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      };
+  CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
+    ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
+    : fallbackEscapeHtml;
 
 const escapeButtonLabelSafely =
-  typeof CORE_UI_HELPERS.escapeButtonLabelSafely === 'function'
-    ? CORE_UI_HELPERS.escapeButtonLabelSafely
+  CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely === 'function'
+    ? CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely
     : function escapeButtonLabelSafelyFallback(text) {
         if (typeof text !== 'string' || text === '') {
           return '';
@@ -1093,8 +1108,8 @@ const escapeButtonLabelSafely =
       };
 
 const resolveButtonIconMarkup =
-  typeof CORE_UI_HELPERS.resolveButtonIconMarkup === 'function'
-    ? CORE_UI_HELPERS.resolveButtonIconMarkup
+  CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup === 'function'
+    ? CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup
     : function resolveButtonIconMarkupFallback() {
         return '';
       };
@@ -1102,8 +1117,11 @@ const resolveButtonIconMarkup =
 const setButtonLabelWithIcon = ensureCoreGlobalValue(
   'setButtonLabelWithIcon',
   function resolveSetButtonLabelWithIconValue() {
-    if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
-      return CORE_UI_HELPERS.setButtonLabelWithIcon;
+    if (
+      CORE_RUNTIME_UI_BRIDGE &&
+      typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function'
+    ) {
+      return CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon;
     }
 
     return function setButtonLabelWithIconFallback(button, label, glyph) {
@@ -1133,6 +1151,24 @@ const setButtonLabelWithIcon = ensureCoreGlobalValue(
     };
   },
 );
+
+if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE === 'object') {
+  if (typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml !== 'function') {
+    CORE_RUNTIME_UI_BRIDGE.escapeHtml = escapeHtml;
+  }
+
+  if (typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely !== 'function') {
+    CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely = escapeButtonLabelSafely;
+  }
+
+  if (typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup !== 'function') {
+    CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup = resolveButtonIconMarkup;
+  }
+
+  if (typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon !== 'function') {
+    CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+  }
+}
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   try {

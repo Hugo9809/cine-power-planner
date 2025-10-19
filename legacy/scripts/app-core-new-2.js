@@ -107,6 +107,125 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     } : function declareCoreFallbackBinding(name, factory) {
       return typeof factory === 'function' ? factory() : factory;
     };
+    function fallbackEscapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    var CORE_RUNTIME_UI_BRIDGE = function resolveCoreRuntimeUiBridgeForPart2() {
+      var candidates = [];
+      if (typeof require === 'function') {
+        try {
+          var requiredBridge = require('./app-core-runtime-ui.js');
+          if (requiredBridge && _typeof(requiredBridge) === 'object') {
+            candidates.push(requiredBridge);
+          }
+        } catch (bridgeRequireError) {
+          void bridgeRequireError;
+        }
+      }
+      var scopes = [];
+      if (
+        typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' &&
+        CORE_PART2_RUNTIME_SCOPE &&
+        _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object'
+      ) {
+        scopes.push(CORE_PART2_RUNTIME_SCOPE);
+      }
+      if (
+        typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' &&
+        CORE_PART1_RUNTIME_SCOPE &&
+        _typeof(CORE_PART1_RUNTIME_SCOPE) === 'object'
+      ) {
+        scopes.push(CORE_PART1_RUNTIME_SCOPE);
+      }
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        scopes.push(CORE_GLOBAL_SCOPE);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        scopes.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && window) {
+        scopes.push(window);
+      }
+      if (typeof self !== 'undefined' && self) {
+        scopes.push(self);
+      }
+      if (typeof global !== 'undefined' && global) {
+        scopes.push(global);
+      }
+      for (var index = 0; index < scopes.length; index += 1) {
+        var scope = scopes[index];
+        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+          continue;
+        }
+        try {
+          var bridge = scope.cineCoreRuntimeUiBridge;
+          if (bridge && _typeof(bridge) === 'object') {
+            candidates.push(bridge);
+          }
+        } catch (bridgeLookupError) {
+          void bridgeLookupError;
+        }
+      }
+      for (var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+        var candidate = candidates[candidateIndex];
+        if (candidate && _typeof(candidate) === 'object') {
+          return candidate;
+        }
+      }
+      return {};
+    }();
+    var escapeHtml = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeHtml : fallbackEscapeHtml;
+    var escapeButtonLabelSafely = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely : function escapeButtonLabelSafelyFallback(text) {
+      if (typeof text !== 'string' || text === '') {
+        return '';
+      }
+      return escapeHtml(text);
+    };
+    var resolveButtonIconMarkup = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup === 'function' ? CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup : function resolveButtonIconMarkupFallback() {
+      return '';
+    };
+    var setButtonLabelWithIcon = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function' ? CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon : function setButtonLabelWithIconFallback(button, label, glyph) {
+      if (!button) {
+        return;
+      }
+      var resolvedGlyph = glyph;
+      if (typeof resolvedGlyph === 'undefined') {
+        try {
+          if (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+            resolvedGlyph = ICON_GLYPHS.save;
+          }
+        } catch (glyphError) {
+          void glyphError;
+        }
+      }
+      var iconHtml = resolveButtonIconMarkup(resolvedGlyph);
+      var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+      try {
+        button.innerHTML = ''.concat(iconHtml).concat(safeLabel);
+      } catch (assignError) {
+        void assignError;
+      }
+    };
+    if (CORE_RUNTIME_UI_BRIDGE && _typeof(CORE_RUNTIME_UI_BRIDGE) === 'object') {
+      if (typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml !== 'function') {
+        CORE_RUNTIME_UI_BRIDGE.escapeHtml = escapeHtml;
+      }
+      if (typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely !== 'function') {
+        CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely = escapeButtonLabelSafely;
+      }
+      if (typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup !== 'function') {
+        CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup = resolveButtonIconMarkup;
+      }
+      if (typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon !== 'function') {
+        CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+      }
+    }
+
     var CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {

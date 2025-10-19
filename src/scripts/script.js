@@ -49,6 +49,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-runtime-scopes.js',
     'app-core-runtime-support.js',
     'app-core-runtime-helpers.js',
+    'app-core-runtime-ui.js',
     'app-core-text.js',
     'app-core-environment.js',
     'app-core-bootstrap.js',
