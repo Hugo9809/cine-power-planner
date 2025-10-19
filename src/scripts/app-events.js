@@ -324,6 +324,142 @@ const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
 
 const AUTO_BACKUP_LOG_META = { feature: 'auto-backup' };
 
+const DEVICE_IMPORT_LOG_META = { feature: 'device-import', source: 'app-events' };
+const MAX_SANITIZED_IMPORT_ERRORS = 10;
+
+function sanitizeErrorForLogging(error) {
+  if (!error) {
+    return null;
+  }
+
+  if (typeof error === 'string') {
+    return { message: error };
+  }
+
+  if (typeof error !== 'object') {
+    try {
+      return { message: String(error) };
+    } catch (stringifyError) {
+      void stringifyError;
+      return { message: 'Unknown error' };
+    }
+  }
+
+  const sanitized = {};
+  if (typeof error.name === 'string' && error.name) {
+    sanitized.name = error.name;
+  }
+  if (typeof error.message === 'string' && error.message) {
+    sanitized.message = error.message;
+  }
+  if (typeof error.code === 'string' || typeof error.code === 'number') {
+    sanitized.code = error.code;
+  }
+  if (typeof error.lineNumber === 'number') {
+    sanitized.lineNumber = error.lineNumber;
+  }
+  if (typeof error.columnNumber === 'number') {
+    sanitized.columnNumber = error.columnNumber;
+  }
+
+  if (Object.keys(sanitized).length > 0) {
+    return sanitized;
+  }
+
+  try {
+    return { message: String(error) };
+  } catch (fallbackError) {
+    void fallbackError;
+    return { message: 'Unknown error' };
+  }
+}
+
+function sanitizeImportErrors(errors) {
+  if (!Array.isArray(errors) || errors.length === 0) {
+    return [];
+  }
+
+  const sanitized = [];
+  for (let index = 0; index < errors.length && sanitized.length < MAX_SANITIZED_IMPORT_ERRORS; index += 1) {
+    const candidate = errors[index];
+    if (typeof candidate === 'string') {
+      sanitized.push(candidate);
+    } else if (candidate && typeof candidate === 'object') {
+      const entry = {};
+      if (typeof candidate.message === 'string' && candidate.message) {
+        entry.message = candidate.message;
+      }
+      if (typeof candidate.code === 'string' || typeof candidate.code === 'number') {
+        entry.code = candidate.code;
+      }
+      if (Object.keys(entry).length > 0) {
+        sanitized.push(entry);
+      } else {
+        try {
+          sanitized.push(String(candidate));
+        } catch (stringifyError) {
+          void stringifyError;
+        }
+      }
+    } else {
+      try {
+        sanitized.push(String(candidate));
+      } catch (stringifyError) {
+        void stringifyError;
+      }
+    }
+  }
+
+  return sanitized;
+}
+
+function safeCountDevices(collection) {
+  if (typeof countDeviceDatabaseEntries !== 'function') {
+    return null;
+  }
+
+  if (!collection || typeof collection !== 'object') {
+    return collection === null ? 0 : null;
+  }
+
+  try {
+    return countDeviceDatabaseEntries(collection);
+  } catch (error) {
+    void error;
+  }
+
+  return null;
+}
+
+function buildDeviceCountsSnapshot(currentDevices, importedDevices) {
+  const snapshot = {};
+  const existingCount = safeCountDevices(currentDevices);
+  if (typeof existingCount === 'number') {
+    snapshot.existing = existingCount;
+  }
+  const importedCount = safeCountDevices(importedDevices);
+  if (typeof importedCount === 'number') {
+    snapshot.imported = importedCount;
+  }
+  return Object.keys(snapshot).length > 0 ? snapshot : null;
+}
+
+function logDeviceImportEvent(level, message, detail, metaOverrides) {
+  if (!eventsLogger || typeof eventsLogger[level] !== 'function') {
+    return;
+  }
+
+  const meta = metaOverrides && typeof metaOverrides === 'object'
+    ? { ...DEVICE_IMPORT_LOG_META, ...metaOverrides }
+    : DEVICE_IMPORT_LOG_META;
+
+  try {
+    eventsLogger[level](message, detail || {}, meta);
+  } catch (loggerError) {
+    void loggerError;
+  }
+}
+
 function resolveConsoleMethodForLevel(level) {
   if (typeof level !== 'string') {
     return 'log';
@@ -4186,13 +4322,26 @@ if (exportAndRevertBtn) {
   }
 
   const reader = new FileReader();
+  const importFileName = typeof file.name === 'string' && file.name ? file.name : null;
   reader.onload = (e) => {
     try {
       const importedData = JSON.parse(e.target.result);
       const result = parseDeviceDatabaseImport(importedData);
+      const importDeviceCounts = buildDeviceCountsSnapshot(devices, result.devices);
 
       if (!result.devices) {
         const summary = formatDeviceImportErrors(result.errors);
+        logDeviceImportEvent(
+          'warn',
+          'Device import validation failed',
+          {
+            fileName: importFileName,
+            deviceCounts: importDeviceCounts,
+            validationErrors: sanitizeImportErrors(result.errors),
+            errorCount: Array.isArray(result.errors) ? result.errors.length : 0,
+          },
+          { action: 'validate' }
+        );
         console.error('Device import validation failed:', result.errors);
         alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
         return;
@@ -4206,6 +4355,16 @@ if (exportAndRevertBtn) {
             reason: 'import',
           });
         } catch (error) {
+          logDeviceImportEvent(
+            'warn',
+            'Auto backup before device import failed',
+            {
+              fileName: importFileName,
+              deviceCounts: importDeviceCounts,
+              error: sanitizeErrorForLogging(error),
+            },
+            { action: 'auto-backup' }
+          );
           console.warn('Failed to auto backup before import', error);
         }
       }
@@ -4244,6 +4403,16 @@ if (exportAndRevertBtn) {
       exportOutput.style.display = "block"; // Show the textarea
       exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
     } catch (error) {
+      logDeviceImportEvent(
+        'error',
+        'Failed to import device data',
+        {
+          fileName: importFileName,
+          deviceCounts: buildDeviceCountsSnapshot(devices, null),
+          error: sanitizeErrorForLogging(error),
+        },
+        { action: 'parse' }
+      );
       console.error("Error parsing or importing data:", error);
       const errorMessage = error && error.message ? error.message : String(error);
       const summary = formatDeviceImportErrors([errorMessage]);

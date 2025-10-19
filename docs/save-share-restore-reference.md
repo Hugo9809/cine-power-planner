@@ -49,6 +49,22 @@ workstations.
   load bundles into the sandbox before promoting.
 - **Diff review:** The restore sandbox displays differences; capture screenshots
   and attach them to the verification log.
+- **Device database imports:** Every import attempt now emits telemetry through
+  the `events` logger before any console output or user alert fires. Validation
+  failures log a `warn` entry, auto-backup fallbacks log a `warn` entry tagged
+  with the failing error metadata, and JSON parse problems emit an `error`
+  entry. Each payload includes the file name, sanitized error details, and the
+  device counts detected, so the data protection and observability teams can
+  reconcile logs without inspecting raw user data.
+- **Import verification drill:** During release rehearsals load an intentionally
+  malformed device export and confirm the telemetry pipeline recorded the
+  `Device import validation failed` warn event before the UI alert appears. Next
+  simulate an auto-backup failure (e.g. disable the quota bucket in the staging
+  profile) and confirm the `Auto backup before device import failed` warn entry
+  precedes the console warning while the import still succeeds. Finally, run a
+  corrupted JSON file and check that the `Failed to import device data` error
+  event logs before the catch block surfaces the alert. Record the event IDs in
+  the verification packet alongside the usual UI screenshots.
 
 ## Restore
 
