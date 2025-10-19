@@ -1047,7 +1047,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
               return _context2.a(2, true);
             case 9:
-              shouldAttemptFetch = true;
+              shouldAttemptFetch = xmlHttpResult === false ? false : true;
               _context2.n = 11;
               break;
             case 10:
