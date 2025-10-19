@@ -281,6 +281,62 @@
     }
   })();
 
+  function resolveLocalStorageFromScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const candidate = scope.localStorage;
+      if (candidate && typeof candidate.getItem === 'function') {
+        return candidate;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  function collectLocalStorageCandidates() {
+    const scopes = [
+      GLOBAL_SCOPE,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal ? GLOBAL_SCOPE.__cineGlobal : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    const candidates = [];
+    const seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidate = resolveLocalStorageFromScope(scopes[index]);
+      if (!candidate) {
+        continue;
+      }
+
+      if (seen) {
+        try {
+          if (seen.has(candidate)) {
+            continue;
+          }
+          seen.add(candidate);
+        } catch (error) {
+          void error;
+        }
+      } else if (candidates.indexOf(candidate) !== -1) {
+        continue;
+      }
+
+      candidates.push(candidate);
+    }
+
+    return candidates;
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone !== 'function') {
     try {
       GLOBAL_SCOPE.__cineDeepClone = STORAGE_DEEP_CLONE;
@@ -5599,24 +5655,27 @@ function createMemoryStorage() {
 }
 
 function initializeSafeLocalStorage() {
-  if (typeof window !== 'undefined') {
-    let candidate = null;
-    try {
-      if ('localStorage' in window) {
-        candidate = window.localStorage;
-        const storage = verifyStorage(candidate);
-        if (storage) {
-          lastFailedUpgradeCandidate = null;
-          return { storage, type: 'local' };
-        }
-      }
-    } catch (e) {
-      console.warn('localStorage is unavailable:', e);
-      if (candidate) {
-        lastFailedUpgradeCandidate = candidate;
-      }
+  const localCandidates = collectLocalStorageCandidates();
+
+  for (let index = 0; index < localCandidates.length; index += 1) {
+    const candidate = localCandidates[index];
+    if (!candidate) {
+      continue;
     }
 
+    try {
+      const storage = verifyStorage(candidate);
+      if (storage) {
+        lastFailedUpgradeCandidate = null;
+        return { storage, type: 'local' };
+      }
+    } catch (error) {
+      console.warn('localStorage is unavailable:', error);
+      lastFailedUpgradeCandidate = candidate;
+    }
+  }
+
+  if (typeof window !== 'undefined') {
     try {
       if ('sessionStorage' in window) {
         const storage = verifyStorage(window.sessionStorage);
@@ -5909,63 +5968,64 @@ function attemptLocalStorageUpgrade() {
     return safeLocalStorageInfo.storage;
   }
 
-  if (typeof window === 'undefined') {
-    return safeLocalStorageInfo.storage;
-  }
+  const candidates = collectLocalStorageCandidates();
+  const currentStorage = safeLocalStorageInfo.storage;
+  let selectedCandidate = null;
+  let verifiedStorage = null;
 
-  let candidate;
-  try {
-    if (!('localStorage' in window)) {
-      return safeLocalStorageInfo.storage;
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = candidates[index];
+    if (!candidate || candidate === currentStorage) {
+      continue;
     }
-    candidate = window.localStorage;
-  } catch (error) {
-    console.warn('Unable to access localStorage during upgrade attempt', error);
-    lastFailedUpgradeCandidate = null;
-    return safeLocalStorageInfo.storage;
-  }
+    if (candidate === lastFailedUpgradeCandidate) {
+      continue;
+    }
 
-  if (candidate && candidate === lastFailedUpgradeCandidate) {
-    return safeLocalStorageInfo.storage;
-  }
-
-  let verified;
-  try {
-    verified = verifyStorage(candidate);
-  } catch (verificationError) {
-    console.warn('localStorage upgrade verification failed', verificationError);
-    lastFailedUpgradeCandidate = candidate;
-    return safeLocalStorageInfo.storage;
-  }
-
-  if (!verified || verified === safeLocalStorageInfo.storage) {
-    if (!verified) {
+    let verified;
+    try {
+      verified = verifyStorage(candidate);
+    } catch (verificationError) {
+      console.warn('localStorage upgrade verification failed', verificationError);
       lastFailedUpgradeCandidate = candidate;
-    } else {
-      lastFailedUpgradeCandidate = null;
+      continue;
     }
-    return safeLocalStorageInfo.storage;
+
+    if (!verified || verified === currentStorage) {
+      if (!verified) {
+        lastFailedUpgradeCandidate = candidate;
+      }
+      continue;
+    }
+
+    selectedCandidate = candidate;
+    verifiedStorage = verified;
+    break;
   }
 
-  const snapshot = snapshotStorageEntries(safeLocalStorageInfo.storage);
-  const { migratedKeys, failedKeys } = migrateSnapshotToStorage(snapshot, verified);
+  if (!verifiedStorage) {
+    return currentStorage;
+  }
+
+  const snapshot = snapshotStorageEntries(currentStorage);
+  const { migratedKeys, failedKeys } = migrateSnapshotToStorage(snapshot, verifiedStorage);
 
   if (failedKeys.length > 0) {
-    rollbackMigratedKeys(verified, migratedKeys);
+    rollbackMigratedKeys(verifiedStorage, migratedKeys);
     console.warn(
       'Aborting localStorage upgrade because some entries could not be migrated. Continuing to use fallback storage.',
       failedKeys,
     );
     alertStorageError('migration-write');
-    lastFailedUpgradeCandidate = candidate;
-    return safeLocalStorageInfo.storage;
+    lastFailedUpgradeCandidate = selectedCandidate || verifiedStorage;
+    return currentStorage;
   }
 
-  clearMigratedKeys(snapshot, safeLocalStorageInfo.storage, migratedKeys);
+  clearMigratedKeys(snapshot, currentStorage, migratedKeys);
 
-  safeLocalStorageInfo = { storage: verified, type: 'local' };
+  safeLocalStorageInfo = { storage: verifiedStorage, type: 'local' };
   lastFailedUpgradeCandidate = null;
-  return verified;
+  return verifiedStorage;
 }
 
 function getSafeLocalStorage() {
