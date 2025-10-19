@@ -337,12 +337,70 @@ function resolveConsoleMethodForLevel(level) {
   return 'log';
 }
 
+function resolveCoreAutoBackupNamespace() {
+  if (typeof require === 'function') {
+    try {
+      return require('./app-core-auto-backup.js');
+    } catch (autoBackupRequireError) {
+      void autoBackupRequireError;
+    }
+  }
+
+  const candidateScopes = [
+    getGlobalScope(),
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (scope.CORE_AUTO_BACKUP && typeof scope.CORE_AUTO_BACKUP === 'object') {
+        return scope.CORE_AUTO_BACKUP;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+
+  return null;
+}
+
+const AUTO_BACKUP_LOGGER_NAMESPACE = resolveCoreAutoBackupNamespace();
+const delegatedAutoBackupLogger =
+  AUTO_BACKUP_LOGGER_NAMESPACE && typeof AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent === 'function'
+    ? AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent
+    : null;
+
 function logAutoBackupEvent(level, message, detail, metaOverrides) {
   const resolvedLevel = typeof level === 'string' && level ? level : 'info';
   const resolvedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
   const meta = metaOverrides && typeof metaOverrides === 'object'
     ? { ...AUTO_BACKUP_LOG_META, ...metaOverrides }
     : AUTO_BACKUP_LOG_META;
+
+  let delegateHandled = false;
+  if (delegatedAutoBackupLogger) {
+    try {
+      delegatedAutoBackupLogger(resolvedLevel, resolvedMessage, detail, meta);
+      delegateHandled = true;
+    } catch (delegateError) {
+      delegateHandled = false;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        try {
+          console.warn('Auto backup delegate logging failed', delegateError);
+        } catch (delegateConsoleError) {
+          void delegateConsoleError;
+        }
+      }
+    }
+  }
 
   let handledByLogger = false;
   if (eventsLogger && typeof eventsLogger[resolvedLevel] === 'function') {
@@ -364,7 +422,7 @@ function logAutoBackupEvent(level, message, detail, metaOverrides) {
     }
   }
 
-  if (!handledByLogger && typeof console !== 'undefined' && console) {
+  if (!(handledByLogger || delegateHandled) && typeof console !== 'undefined' && console) {
     const consoleMethod = resolveConsoleMethodForLevel(resolvedLevel);
     const fallback = typeof console[consoleMethod] === 'function' ? console[consoleMethod] : console.log;
     if (typeof fallback === 'function') {
