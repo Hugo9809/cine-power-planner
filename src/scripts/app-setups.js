@@ -3066,11 +3066,41 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
   if (metadata && typeof metadata === 'object') {
     currentSetup.metadata = metadata;
   }
+
+  const shareDiagnostics = (() => {
+    const metadataFlags = {};
+    if (metadata && typeof metadata === 'object') {
+      Object.keys(metadata).forEach((keyName) => {
+        const value = metadata[keyName];
+        if (value === null || value === undefined) {
+          metadataFlags[keyName] = value;
+        } else if (typeof value === 'string') {
+          metadataFlags[keyName] = value.length > 120 ? `${value.slice(0, 117)}…` : value;
+        } else if (typeof value === 'object') {
+          metadataFlags[keyName] = Array.isArray(value)
+            ? { type: 'array', length: value.length }
+            : { type: 'object', keys: Object.keys(value).length };
+        } else {
+          metadataFlags[keyName] = value;
+        }
+      });
+    }
+
+    return {
+      setupName: typeof setupName === 'string' ? setupName : '',
+      setupKey: typeof key === 'string' ? key : '',
+      includeAutoGear: Boolean(includeAutoGear),
+      includeOwnedGear: Boolean(includeOwnedGear),
+      ownedGearMarkerCount: Array.isArray(ownedGearMarkers) ? ownedGearMarkers.length : 0,
+      metadata: metadataFlags,
+    };
+  })();
+
   const notifyShareFailure = error => {
     if (error) {
-      console.warn('Project export failed', error);
+      console.warn('Project export failed', shareDiagnostics, error);
     } else {
-      console.warn('Project export failed');
+      console.warn('Project export failed', shareDiagnostics);
     }
     const failureMessage = getLocalizedText('shareExportFailed') || 'Project export failed.';
     if (shareLinkMessage) {
