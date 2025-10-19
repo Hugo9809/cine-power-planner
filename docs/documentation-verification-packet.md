@@ -22,7 +22,7 @@ release backups.
 1. Create a folder named `verification-<YYYYMMDD>-<revision>`.
 2. Copy documentation diffs, screenshots, backups and console logs into the
    folder. Preserve original filenames.
-3. Generate a manifest `manifest.json` listing each artefact, checksum and
+3. Generate a manifest `manifest.json` listing each artifact, checksum and
    storage media location.
 4. Print the manifest and include it with the physical media.
 5. Update `review-findings.md` with storage locations and responsible contacts.
