@@ -140,6 +140,7 @@
 
 var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
+var autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
 var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
 var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
 let autoGearScenarioModeSelectElement = document.getElementById('autoGearScenarioMode');
