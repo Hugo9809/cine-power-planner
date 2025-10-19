@@ -34,6 +34,110 @@
 
   const GLOBAL_SCOPE = detectGlobalScope();
 
+  const missingAutoGearHelperLog = new Set();
+
+  function logMissingAutoGearHelper(name, error) {
+    if (missingAutoGearHelperLog.has(name)) {
+      return;
+    }
+    missingAutoGearHelperLog.add(name);
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      if (error) {
+        console.warn(`[cine] Missing auto gear helper: ${name}`, error);
+      } else {
+        console.warn(`[cine] Missing auto gear helper: ${name}`);
+      }
+    }
+  }
+
+  function resolveAutoGearUiExports() {
+    if (!GLOBAL_SCOPE || (typeof GLOBAL_SCOPE !== 'object' && typeof GLOBAL_SCOPE !== 'function')) {
+      return null;
+    }
+    try {
+      if (
+        GLOBAL_SCOPE.cineCoreAutoGearUi
+        && typeof GLOBAL_SCOPE.cineCoreAutoGearUi === 'object'
+      ) {
+        return GLOBAL_SCOPE.cineCoreAutoGearUi;
+      }
+    } catch (readError) {
+      logMissingAutoGearHelper('cineCoreAutoGearUi', readError);
+    }
+    return null;
+  }
+
+  function resolveAutoGearHelperFunction(name) {
+    if (typeof name !== 'string' || !name) {
+      return null;
+    }
+
+    const exports = resolveAutoGearUiExports();
+    if (exports && typeof exports[name] === 'function') {
+      return exports[name];
+    }
+
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[name] === 'function') {
+      return GLOBAL_SCOPE[name];
+    }
+
+    logMissingAutoGearHelper(name);
+    return null;
+  }
+
+  function getFallbackViewfinderLabel(value) {
+    if (value === '__none__') {
+      const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+      const textSource =
+        typeof texts === 'object' && texts
+          ? texts[activeLang] || texts.en || {}
+          : {};
+      return (
+        textSource.viewfinderExtensionNone
+        || textSource.autoGearViewfinderExtensionNone
+        || 'No'
+      );
+    }
+    return typeof value === 'string' ? value : '';
+  }
+
+  function getFallbackVideoDistributionLabel(value) {
+    if (value === '__none__') {
+      const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+      const textSource =
+        typeof texts === 'object' && texts
+          ? texts[activeLang] || texts.en || {}
+          : {};
+      return textSource.autoGearVideoDistributionNone || 'No video distribution selected';
+    }
+    return typeof value === 'string' ? value : '';
+  }
+
+  function invokeAutoGearLabelHelper(name, fallback, value) {
+    const helper = resolveAutoGearHelperFunction(name);
+    if (typeof helper === 'function') {
+      try {
+        const result = helper.call(GLOBAL_SCOPE, value);
+        return result !== undefined && result !== null ? result : fallback(value);
+      } catch (invokeError) {
+        logMissingAutoGearHelper(name, invokeError);
+      }
+    }
+    return fallback(value);
+  }
+
+  function getSafeViewfinderFallbackLabel(value) {
+    return invokeAutoGearLabelHelper('getViewfinderFallbackLabel', getFallbackViewfinderLabel, value);
+  }
+
+  function getSafeVideoDistributionFallbackLabel(value) {
+    return invokeAutoGearLabelHelper(
+      'getVideoDistributionFallbackLabel',
+      getFallbackVideoDistributionLabel,
+      value,
+    );
+  }
+
   function createModuleBaseFallback(scope) {
     const targetScope =
       scope && (typeof scope === 'object' || typeof scope === 'function') ? scope : detectGlobalScope();
@@ -877,7 +981,7 @@ function buildViewfinderExtensionAutoRules(baseInfo, baselineMap) {
 
     rules.push({
       id: generateAutoGearId('rule'),
-      label: getViewfinderFallbackLabel(trimmed),
+      label: getSafeViewfinderFallbackLabel(trimmed),
       scenarios: [],
       mattebox: [],
       cameraHandle: [],
@@ -923,7 +1027,7 @@ function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
 
     rules.push({
       id: generateAutoGearId('rule'),
-      label: getVideoDistributionFallbackLabel(trimmed),
+      label: getSafeVideoDistributionFallbackLabel(trimmed),
       scenarios: [],
       mattebox: [],
       cameraHandle: [],
@@ -1183,7 +1287,7 @@ function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
 
     const rules = [];
     if (viewfinderSelection) {
-      const contextLabel = getViewfinderFallbackLabel(viewfinderSelection);
+      const contextLabel = getSafeViewfinderFallbackLabel(viewfinderSelection);
       const viewfinderRule = createArriBracketRule({
         label: `${contextLabel || viewfinderSelection} – ARRI viewfinder support`,
         viewfinderExtension: [viewfinderSelection],
@@ -1260,7 +1364,7 @@ function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
 
     generatedRules.push({
       id: generateAutoGearId('rule'),
-      label: getVideoDistributionFallbackLabel(trimmed),
+      label: getSafeVideoDistributionFallbackLabel(trimmed),
       scenarios: [],
       mattebox: [],
       cameraHandle: [],
@@ -1325,7 +1429,7 @@ function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
       if (additions.length) {
         generatedRules.push({
           id: generateAutoGearId('rule'),
-          label: getVideoDistributionFallbackLabel(iosLabel),
+          label: getSafeVideoDistributionFallbackLabel(iosLabel),
           scenarios: [],
           mattebox: [],
           cameraHandle: [],
