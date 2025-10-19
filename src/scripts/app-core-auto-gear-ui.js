@@ -114,6 +114,14 @@
       AUTO_GEAR_CONDITION_KEYS: [],
       AUTO_GEAR_REPEATABLE_CONDITIONS: new Set(),
       AUTO_GEAR_CONDITION_FALLBACK_LABELS: {},
+      getViewfinderFallbackLabel: function (value) {
+        if (value === '__none__') return 'No';
+        return typeof value === 'string' ? value : '';
+      },
+      getVideoDistributionFallbackLabel: function (value) {
+        if (value === '__none__') return 'No video distribution selected';
+        return typeof value === 'string' ? value : '';
+      },
       refreshAutoGearShootingDaysValue: function () {},
       refreshAutoGearScenarioOptions: function () {},
       refreshAutoGearScenarioBaseSelect: function () {},
@@ -133,6 +141,8 @@
 
     if (scope && typeof scope === 'object') {
       scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+      scope.getViewfinderFallbackLabel = AUTO_GEAR_UI_EXPORTS.getViewfinderFallbackLabel;
+      scope.getVideoDistributionFallbackLabel = AUTO_GEAR_UI_EXPORTS.getVideoDistributionFallbackLabel;
     }
 
     return;
@@ -1115,6 +1125,8 @@ function collectAutoGearSelectedValues(selected, key) {
     AUTO_GEAR_CONDITION_KEYS,
     AUTO_GEAR_REPEATABLE_CONDITIONS,
     AUTO_GEAR_CONDITION_FALLBACK_LABELS,
+    getViewfinderFallbackLabel,
+    getVideoDistributionFallbackLabel,
     refreshAutoGearShootingDaysValue,
     refreshAutoGearScenarioOptions,
     refreshAutoGearScenarioBaseSelect,
@@ -1136,5 +1148,7 @@ function collectAutoGearSelectedValues(selected, key) {
 
   if (scope && typeof scope === 'object') {
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+    scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
+    scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);

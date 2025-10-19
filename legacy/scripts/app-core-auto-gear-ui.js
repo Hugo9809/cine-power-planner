@@ -108,6 +108,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       AUTO_GEAR_CONDITION_KEYS: [],
       AUTO_GEAR_REPEATABLE_CONDITIONS: new Set(),
       AUTO_GEAR_CONDITION_FALLBACK_LABELS: {},
+      getViewfinderFallbackLabel: function getViewfinderFallbackLabelStub(value) {
+        if (value === '__none__') return 'No';
+        return typeof value === 'string' ? value : '';
+      },
+      getVideoDistributionFallbackLabel: function getVideoDistributionFallbackLabelStub(value) {
+        if (value === '__none__') return 'No video distribution selected';
+        return typeof value === 'string' ? value : '';
+      },
       refreshAutoGearShootingDaysValue: function refreshAutoGearShootingDaysValue() {},
       refreshAutoGearScenarioOptions: function refreshAutoGearScenarioOptions() {},
       refreshAutoGearScenarioBaseSelect: function refreshAutoGearScenarioBaseSelect() {},
@@ -129,6 +137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (scope && _typeof(scope) === 'object') {
       scope.cineCoreAutoGearUi = _AUTO_GEAR_UI_EXPORTS;
+      scope.getViewfinderFallbackLabel = _AUTO_GEAR_UI_EXPORTS.getViewfinderFallbackLabel;
+      scope.getVideoDistributionFallbackLabel = _AUTO_GEAR_UI_EXPORTS.getVideoDistributionFallbackLabel;
     }
     return;
   }
@@ -964,6 +974,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     AUTO_GEAR_CONDITION_KEYS: AUTO_GEAR_CONDITION_KEYS,
     AUTO_GEAR_REPEATABLE_CONDITIONS: AUTO_GEAR_REPEATABLE_CONDITIONS,
     AUTO_GEAR_CONDITION_FALLBACK_LABELS: AUTO_GEAR_CONDITION_FALLBACK_LABELS,
+    getViewfinderFallbackLabel: getViewfinderFallbackLabel,
+    getVideoDistributionFallbackLabel: getVideoDistributionFallbackLabel,
     refreshAutoGearShootingDaysValue: refreshAutoGearShootingDaysValue,
     refreshAutoGearScenarioOptions: refreshAutoGearScenarioOptions,
     refreshAutoGearScenarioBaseSelect: refreshAutoGearScenarioBaseSelect,
@@ -983,5 +995,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   if (scope && _typeof(scope) === 'object') {
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
+    scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
+    scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);
