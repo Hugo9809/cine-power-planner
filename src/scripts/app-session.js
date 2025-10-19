@@ -1155,6 +1155,39 @@ function ensureDeferredScriptsLoaded(reason) {
   return result;
 }
 
+function ensureOnboardingTourReady(reason) {
+  const scope = (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (!scope) {
+    return null;
+  }
+
+  let loader = null;
+
+  try {
+    if (typeof scope.cineEnsureOnboardingTourLoaded === 'function') {
+      loader = scope.cineEnsureOnboardingTourLoaded(reason);
+    }
+  } catch (error) {
+    void error;
+    loader = null;
+  }
+
+  if (loader && typeof loader.then === 'function') {
+    loader.catch(loadError => {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Onboarding tour module failed to pre-load for help interactions.', loadError);
+      }
+    });
+  }
+
+  return loader;
+}
+
 function requestSettingsOpen(context) {
   const dialog = resolveSettingsDialog();
   const trigger = resolveSettingsButton();
@@ -14803,6 +14836,7 @@ if (helpButton && helpDialog) {
   // doesn't persist between openings, and focus is moved to the search field
   // for immediate typing.
   const openHelp = () => {
+    ensureOnboardingTourReady('help-open');
     closeSideMenu();
     helpDialog.removeAttribute('hidden');
     openDialog(helpDialog);
