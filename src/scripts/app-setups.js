@@ -83,7 +83,7 @@ const escapeHtml =
                   .replace(/'/g, '&#39;');
           };
 
-const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForSetups() {
+const setButtonLabelWithIconForSetups = (function resolveSetButtonLabelWithIconForSetups() {
     if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
         return SETUPS_UI_HELPERS.setButtonLabelWithIcon;
     }
@@ -4349,7 +4349,7 @@ if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'func
           : null,
     updateCalculations: typeof updateCalculations === 'function' ? updateCalculations : null,
     setButtonLabelWithIcon:
-      typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+      typeof setButtonLabelWithIconForSetups === 'function' ? setButtonLabelWithIconForSetups : null,
     iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
   });
 }
@@ -8569,8 +8569,8 @@ function ensureGearItemEditButton(element) {
   }
   const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
   const sliderGlyph = hasIconRegistry ? ICON_GLYPHS.sliders : null;
-  if (typeof setButtonLabelWithIcon === 'function' && sliderGlyph) {
-    setButtonLabelWithIcon(button, '', sliderGlyph);
+  if (typeof setButtonLabelWithIconForSetups === 'function' && sliderGlyph) {
+    setButtonLabelWithIconForSetups(button, '', sliderGlyph);
   } else if (typeof iconMarkup === 'function' && sliderGlyph) {
     button.innerHTML = iconMarkup(sliderGlyph, { className: 'btn-icon' });
   } else if (editLabel) {
@@ -8705,8 +8705,8 @@ function ensureGearListCustomControls(container) {
 
     const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
     const addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
-    if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
-      setButtonLabelWithIcon(addButton, '', addGlyph);
+    if (typeof setButtonLabelWithIconForSetups === 'function' && hasIconRegistry && addGlyph) {
+      setButtonLabelWithIconForSetups(addButton, '', addGlyph);
     } else if (typeof iconMarkup === 'function' && addGlyph) {
       addButton.innerHTML = iconMarkup(addGlyph, { className: 'btn-icon' });
     } else {
@@ -8754,8 +8754,8 @@ function ensureExtraGearCategory() {
   addButton.setAttribute('title', textsForExtra.addButton);
   const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
   const addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
-  if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
-    setButtonLabelWithIcon(addButton, '', addGlyph);
+  if (typeof setButtonLabelWithIconForSetups === 'function' && hasIconRegistry && addGlyph) {
+    setButtonLabelWithIconForSetups(addButton, '', addGlyph);
   } else if (typeof iconMarkup === 'function' && addGlyph) {
     addButton.innerHTML = iconMarkup(addGlyph, { className: 'btn-icon' });
   } else {
@@ -9047,9 +9047,9 @@ function applyGearItemEditDialogTexts(context) {
     const resetLabel = textsForDialog.resetLabel;
     context.resetButton.setAttribute('aria-label', resetLabel);
     context.resetButton.title = resetLabel;
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+    if (typeof setButtonLabelWithIconForSetups === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
       const resetGlyph = ICON_GLYPHS.reload || ICON_GLYPHS.save;
-      setButtonLabelWithIcon(context.resetButton, resetLabel, resetGlyph);
+      setButtonLabelWithIconForSetups(context.resetButton, resetLabel, resetGlyph);
     } else {
       context.resetButton.textContent = resetLabel;
     }
@@ -9068,16 +9068,16 @@ function applyGearItemEditDialogTexts(context) {
   if (context.cancelButton) {
     const cancelLabel = textsForDialog.cancelLabel;
     context.cancelButton.setAttribute('aria-label', cancelLabel);
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-      setButtonLabelWithIcon(context.cancelButton, cancelLabel, ICON_GLYPHS.circleX || ICON_GLYPHS.minus);
+    if (typeof setButtonLabelWithIconForSetups === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      setButtonLabelWithIconForSetups(context.cancelButton, cancelLabel, ICON_GLYPHS.circleX || ICON_GLYPHS.minus);
     } else {
       context.cancelButton.textContent = cancelLabel;
     }
   }
   if (context.saveButton) {
     const saveLabel = textsForDialog.saveLabel;
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-      setButtonLabelWithIcon(context.saveButton, saveLabel, ICON_GLYPHS.save);
+    if (typeof setButtonLabelWithIconForSetups === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      setButtonLabelWithIconForSetups(context.saveButton, saveLabel, ICON_GLYPHS.save);
     } else {
       context.saveButton.textContent = saveLabel;
     }
@@ -13629,8 +13629,8 @@ function ensureGearListActions() {
     deleteBtn.id = 'deleteGearListBtn';
     deleteBtn.type = 'button';
     deleteBtn.className = 'gear-list-action-btn';
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object') {
-        setButtonLabelWithIcon(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
+    if (typeof setButtonLabelWithIconForSetups === 'function' && typeof ICON_GLYPHS === 'object') {
+        setButtonLabelWithIconForSetups(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
     } else {
         const iconHtml = typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object'
             ? iconMarkup(ICON_GLYPHS.trash, 'btn-icon')
