@@ -9423,6 +9423,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const MAX_FEATURE_SEARCH_HISTORY = 50;
     const MAX_FEATURE_SEARCH_RECENTS = 5;
     let featureSearchHistoryLoaded = false;
+    let featureSearchHistoryLoadInProgress = false;
+    let featureSearchHistoryLoadRetryTimer = null;
+    const FEATURE_SEARCH_HISTORY_RETRY_DELAY = 1000;
     const featureSearchHistory = new Map();
     let featureSearchHistorySaveTimer = null;
     
@@ -9482,20 +9485,53 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     };
     
+    const resetFeatureSearchHistoryRetryTimer = () => {
+      if (!featureSearchHistoryLoadRetryTimer) return;
+      if (typeof clearTimeout === 'function') {
+        clearTimeout(featureSearchHistoryLoadRetryTimer);
+      }
+      featureSearchHistoryLoadRetryTimer = null;
+    };
+
+    const scheduleFeatureSearchHistoryRetry = () => {
+      // Retry reads after a short delay when storage temporarily refuses access.
+      // This protects offline data integrity without hammering storage repeatedly.
+      if (featureSearchHistoryLoadRetryTimer || typeof setTimeout !== 'function') {
+        return;
+      }
+      featureSearchHistoryLoadRetryTimer = setTimeout(() => {
+        featureSearchHistoryLoadRetryTimer = null;
+        featureSearchHistoryLoadInProgress = false;
+        loadFeatureSearchHistory();
+      }, FEATURE_SEARCH_HISTORY_RETRY_DELAY);
+    };
+
     const loadFeatureSearchHistory = () => {
-      if (featureSearchHistoryLoaded) return;
-      featureSearchHistoryLoaded = true;
+      if (featureSearchHistoryLoaded || featureSearchHistoryLoadInProgress) {
+        // Short-circuit once a stable snapshot has been read, while still allowing
+        // retries to run if a previous attempt failed and scheduled a reload.
+        return;
+      }
+      featureSearchHistoryLoadInProgress = true;
       const storage = getFeatureSearchHistoryStorage();
       if (!storage || typeof storage.getItem !== 'function') {
+        featureSearchHistoryLoadInProgress = false;
+        scheduleFeatureSearchHistoryRetry();
         return;
       }
       let raw = null;
       try {
         raw = storage.getItem(FEATURE_SEARCH_HISTORY_STORAGE_KEY);
       } catch (err) {
+        featureSearchHistoryLoadInProgress = false;
+        featureSearchHistoryLoaded = false;
         console.warn('Could not read feature search history', err);
+        scheduleFeatureSearchHistoryRetry();
         return;
       }
+      featureSearchHistoryLoadInProgress = false;
+      featureSearchHistoryLoaded = true;
+      resetFeatureSearchHistoryRetryTimer();
       if (!raw) return;
       let parsed = null;
       try {
