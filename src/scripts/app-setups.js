@@ -71,6 +71,60 @@ const UI_HELPERS = (function resolveUiHelpersForSetups() {
     return {};
 })();
 
+const TRANSLATIONS_RUNTIME_FOR_SETUPS = (function resolveTranslationsRuntimeForSetups() {
+    const candidates = [];
+    try { candidates.push(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch (coreScopeError) { void coreScopeError; }
+    try { candidates.push(typeof globalThis !== 'undefined' ? globalThis : null); } catch (globalThisError) { void globalThisError; }
+    try { candidates.push(typeof window !== 'undefined' ? window : null); } catch (windowError) { void windowError; }
+    try { candidates.push(typeof self !== 'undefined' ? self : null); } catch (selfError) { void selfError; }
+    try { candidates.push(typeof global !== 'undefined' ? global : null); } catch (globalError) { void globalError; }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const scope = candidates[index];
+        if (!scope || typeof scope !== 'object') {
+            continue;
+        }
+        try {
+            const runtime = scope.translations;
+            if (runtime && typeof runtime.loadLanguage === 'function') {
+                return runtime;
+            }
+        } catch (runtimeError) {
+            void runtimeError;
+        }
+    }
+
+    if (typeof require === 'function') {
+        try {
+            const required = require('./translations.js');
+            if (required && typeof required.loadLanguage === 'function') {
+                return required;
+            }
+        } catch (requireError) {
+            void requireError;
+        }
+    }
+
+    return null;
+})();
+
+if (TRANSLATIONS_RUNTIME_FOR_SETUPS && typeof TRANSLATIONS_RUNTIME_FOR_SETUPS.loadLanguage === 'function') {
+    const activeLanguage =
+        (typeof currentLang === 'string' && currentLang) ||
+        (typeof DEFAULT_LANGUAGE_SAFE === 'string' && DEFAULT_LANGUAGE_SAFE) ||
+        (TRANSLATIONS_RUNTIME_FOR_SETUPS.defaultLanguage || 'en');
+    try {
+        const pending = TRANSLATIONS_RUNTIME_FOR_SETUPS.loadLanguage(activeLanguage);
+        if (pending && typeof pending.then === 'function') {
+            pending.catch(error => {
+                console.warn('Failed to prepare translations for setups module', error);
+            });
+        }
+    } catch (runtimeLoadError) {
+        console.warn('Could not prepare translations runtime for setups module', runtimeLoadError);
+    }
+}
+
 const escapeHtml =
     typeof UI_HELPERS.escapeHtml === 'function'
         ? UI_HELPERS.escapeHtml
