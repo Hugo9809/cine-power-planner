@@ -1598,7 +1598,83 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }();
   CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
   CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
+  var CORE_RUNTIME_UI_BRIDGE = function resolveCoreRuntimeUiBridgeLegacy() {
+    var namespaceName = 'cineCoreRuntimeUiBridge';
+    var candidates = [];
+
+    if (typeof require === 'function') {
+      try {
+        var requiredBridge = require('./app-core-runtime-ui.js');
+        if (requiredBridge && _typeof(requiredBridge) === 'object') {
+          candidates.push(requiredBridge);
+        }
+      } catch (bridgeRequireError) {
+        void bridgeRequireError;
+      }
+    }
+
+    if (typeof cineCoreRuntimeUiBridge !== 'undefined' && cineCoreRuntimeUiBridge) {
+      candidates.push(cineCoreRuntimeUiBridge);
+    }
+
+    var scopeCandidates = [];
+
+    try {
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        scopeCandidates.push(CORE_GLOBAL_SCOPE);
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      scopeCandidates.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window) {
+      scopeCandidates.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self) {
+      scopeCandidates.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global) {
+      scopeCandidates.push(global);
+    }
+
+    for (var index = 0; index < scopeCandidates.length; index += 1) {
+      var scope = scopeCandidates[index];
+      if (!scope || typeof scope !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+
+      try {
+        var namespace = scope[namespaceName];
+        if (namespace && _typeof(namespace) === 'object') {
+          candidates.push(namespace);
+        }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
+      }
+    }
+
+    for (var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+      var candidate = candidates[candidateIndex];
+      if (candidate && _typeof(candidate) === 'object') {
+        return candidate;
+      }
+    }
+
+    return null;
+  }();
   function getEscapeHtmlFunction() {
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function') {
+      return CORE_RUNTIME_UI_BRIDGE.escapeHtml;
+    }
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.fallbackEscapeHtml === 'function') {
+      return CORE_RUNTIME_UI_BRIDGE.fallbackEscapeHtml;
+    }
     try {
       return typeof escapeHtml === 'function' ? escapeHtml : null;
     } catch (maybeReferenceError) {
@@ -1641,6 +1717,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!glyph) {
       return '';
     }
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup === 'function') {
+      return CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup(glyph);
+    }
     var iconFactory = getIconMarkupFunction();
     if (!iconFactory) {
       return '';
@@ -1652,7 +1731,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return '';
   }
-  var setButtonLabelWithIcon = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function' ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon : function setButtonLabelWithIcon(button, label, glyph) {
+  var setButtonLabelWithIcon = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function' ? CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon : CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function' ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon : function setButtonLabelWithIcon(button, label, glyph) {
     if (!button) {
       return;
     }

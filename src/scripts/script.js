@@ -51,6 +51,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-runtime-helpers.js',
     'app-core-text.js',
     'app-core-environment.js',
+    'app-core-runtime-ui.js',
     'app-core-bootstrap.js',
     'app-core-runtime-shared.js',
     'app-core-pink-mode.js',
