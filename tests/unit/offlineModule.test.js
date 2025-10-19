@@ -309,6 +309,149 @@ describe('cineOffline module', () => {
     }
   });
 
+  test('scheduleReloadWarmup relies on XHR path for standalone Apple browser without Safari token', async () => {
+    class MockXMLHttpRequest {
+      constructor() {
+        this.eventHandlers = {};
+        this.status = 204;
+        this.withCredentials = false;
+        this.responseType = 'text';
+      }
+
+      addEventListener(event, handler) {
+        this.eventHandlers[event] = handler;
+      }
+
+      open() {}
+
+      setRequestHeader() {}
+
+      send() {
+        if (this.eventHandlers.load) {
+          this.eventHandlers.load();
+        }
+      }
+    }
+
+    const navigatorMock = {
+      vendor: 'Apple Computer, Inc.',
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+      standalone: true,
+      onLine: true,
+    };
+
+    const windowMock = {
+      navigator: navigatorMock,
+      location: {
+        href: 'https://example.test/app/index.html',
+        origin: 'https://example.test',
+        pathname: '/app/index.html',
+        search: '',
+        hash: '',
+      },
+      matchMedia: jest.fn(() => ({ matches: false })),
+      XMLHttpRequest: MockXMLHttpRequest,
+    };
+
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => ({
+          bodyUsed: false,
+          text: jest.fn(() => Promise.resolve('<html></html>')),
+        })),
+      }),
+    );
+
+    const warmupHandle = internal.scheduleReloadWarmup({
+      fetch: fetchMock,
+      nextHref: 'https://example.test/app/index.html?forceReload=token',
+      navigator: navigatorMock,
+      window: windowMock,
+      serviceWorkerPromise: Promise.resolve(true),
+      cachePromise: Promise.resolve(true),
+      allowCache: false,
+    });
+
+    expect(warmupHandle).not.toBeNull();
+    await expect(warmupHandle.promise).resolves.toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test('scheduleReloadWarmup still uses fetch path for Chrome on iOS', async () => {
+    const navigatorMock = {
+      vendor: 'Apple Computer, Inc.',
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/124.0.0.0 Mobile/15E148',
+      standalone: false,
+      onLine: true,
+    };
+
+    class MockXMLHttpRequest {
+      constructor() {
+        this.eventHandlers = {};
+      }
+
+      addEventListener(event, handler) {
+        this.eventHandlers[event] = handler;
+      }
+
+      open() {}
+
+      setRequestHeader() {}
+
+      send() {
+        if (this.eventHandlers.load) {
+          this.eventHandlers.load();
+        }
+      }
+    }
+
+    const windowMock = {
+      navigator: navigatorMock,
+      location: {
+        href: 'https://example.test/app/index.html',
+        origin: 'https://example.test',
+        pathname: '/app/index.html',
+        search: '',
+        hash: '',
+      },
+      matchMedia: jest.fn(() => ({ matches: false })),
+      XMLHttpRequest: MockXMLHttpRequest,
+    };
+
+    const responseClone = {
+      bodyUsed: false,
+      text: jest.fn(() => Promise.resolve('<html></html>')),
+    };
+
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      }),
+    );
+
+    const warmupHandle = internal.scheduleReloadWarmup({
+      fetch: fetchMock,
+      nextHref: 'https://example.test/app/index.html?forceReload=token',
+      navigator: navigatorMock,
+      window: windowMock,
+      serviceWorkerPromise: Promise.resolve(true),
+      cachePromise: Promise.resolve(true),
+      allowCache: false,
+    });
+
+    expect(warmupHandle).not.toBeNull();
+    await expect(warmupHandle.promise).resolves.toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   test('cleans up forceReload markers from the current URL during initialization', () => {
     if (harness) {
       harness.teardown();
