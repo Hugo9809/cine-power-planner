@@ -539,6 +539,201 @@ ensureResolveTextEntryFallback();
 var loaderBaseUrlCache = null;
 var documentBaseUrlCache = null;
 
+var MAX_SCRIPT_RETRY_ATTEMPTS = 3;
+var SCRIPT_RETRY_BACKOFF_BASE_DELAY = 600;
+var SCRIPT_RETRY_BACKOFF_MULTIPLIER = 2;
+var SCRIPT_RETRY_MAX_DELAY = 5000;
+var scriptRetryState = Object.create(null);
+
+function getRetryStateEntry(url) {
+  if (typeof url !== 'string' || !url) {
+    return null;
+  }
+
+  if (!scriptRetryState) {
+    scriptRetryState = Object.create(null);
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(scriptRetryState, url)) {
+    scriptRetryState[url] = { attempts: 0, timerId: null };
+  }
+
+  return scriptRetryState[url];
+}
+
+function clearRetryTimer(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return;
+  }
+
+  if (entry.timerId !== null && typeof clearTimeout === 'function') {
+    try {
+      clearTimeout(entry.timerId);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+
+  entry.timerId = null;
+}
+
+function resetScriptRetryState(url) {
+  if (typeof url !== 'string' || !url || !scriptRetryState) {
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(scriptRetryState, url)) {
+    return;
+  }
+
+  var entry = scriptRetryState[url];
+  clearRetryTimer(entry);
+  delete scriptRetryState[url];
+}
+
+function flushAllScriptRetryState() {
+  if (!scriptRetryState) {
+    return;
+  }
+
+  var keys = Object.keys(scriptRetryState);
+  for (var index = 0; index < keys.length; index += 1) {
+    var key = keys[index];
+    resetScriptRetryState(key);
+  }
+
+  scriptRetryState = Object.create(null);
+}
+
+function resolveErrorMessage(event) {
+  if (!event) {
+    return '';
+  }
+
+  if (typeof event === 'string') {
+    return event;
+  }
+
+  var error = null;
+  if (event && typeof event === 'object' && event.error) {
+    error = event.error;
+  }
+
+  if (error && typeof error.message === 'string' && error.message) {
+    return error.message;
+  }
+
+  if (typeof event.message === 'string' && event.message) {
+    return event.message;
+  }
+
+  return '';
+}
+
+function isNavigatorExplicitlyOffline() {
+  if (typeof navigator === 'undefined' || !navigator) {
+    return false;
+  }
+
+  try {
+    if (typeof navigator.onLine === 'boolean') {
+      return navigator.onLine === false;
+    }
+  } catch (navigatorError) {
+    void navigatorError;
+  }
+
+  return false;
+}
+
+function shouldRetryScriptLoad(event) {
+  if (isNavigatorExplicitlyOffline()) {
+    return true;
+  }
+
+  var message = resolveErrorMessage(event);
+  if (!message) {
+    return true;
+  }
+
+  var lower = message.toLowerCase();
+  if (lower.indexOf('network') !== -1) {
+    return true;
+  }
+  if (lower.indexOf('internet') !== -1 && lower.indexOf('disconnect') !== -1) {
+    return true;
+  }
+  if (lower.indexOf('failed to fetch') !== -1) {
+    return true;
+  }
+  if (lower.indexOf('timed out') !== -1) {
+    return true;
+  }
+  if (lower.indexOf('load cancelled') !== -1 || lower.indexOf('load canceled') !== -1) {
+    return true;
+  }
+
+  return false;
+}
+
+function scheduleScriptRetry(url, retryCallback) {
+  if (typeof url !== 'string' || !url || typeof retryCallback !== 'function') {
+    return false;
+  }
+
+  var state = getRetryStateEntry(url);
+  if (!state) {
+    return false;
+  }
+
+  if (state.attempts >= MAX_SCRIPT_RETRY_ATTEMPTS) {
+    return false;
+  }
+
+  state.attempts += 1;
+
+  var delay = SCRIPT_RETRY_BACKOFF_BASE_DELAY;
+  var backoffPower = state.attempts - 1;
+  for (var index = 0; index < backoffPower; index += 1) {
+    delay *= SCRIPT_RETRY_BACKOFF_MULTIPLIER;
+    if (delay >= SCRIPT_RETRY_MAX_DELAY) {
+      delay = SCRIPT_RETRY_MAX_DELAY;
+      break;
+    }
+  }
+
+  clearRetryTimer(state);
+
+  var invokeRetry = function invokeRetry() {
+    state.timerId = null;
+
+    try {
+      retryCallback();
+    } catch (retryError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Script retry callback failed', url, retryError);
+      }
+    }
+  };
+
+  if (typeof setTimeout === 'function') {
+    try {
+      state.timerId = setTimeout(invokeRetry, delay);
+    } catch (scheduleError) {
+      state.timerId = null;
+      invokeRetry();
+    }
+  } else {
+    invokeRetry();
+  }
+
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Retrying script load after transient failure:', url, '(attempt', state.attempts, 'delay', delay, 'ms)');
+  }
+
+  return true;
+}
+
 function stripUrlSearchAndHash(url) {
   if (typeof url !== 'string') {
     return '';
@@ -2987,46 +3182,74 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
     for (var index = 0; index < urls.length; index += 1) {
       (function parallelLoaderIterator(currentIndex) {
-        if (aborted) {
-          return;
-        }
-
-        var currentUrl = urls[currentIndex];
-        var resolvedUrl = resolveAssetUrl(currentUrl);
-        var script = document.createElement('script');
-        script.src = resolvedUrl;
-        script.async = true;
-        script.defer = true;
-
-        script.onload = function () {
-          if (aborted || completed) {
+        function attachParallelScript() {
+          if (aborted) {
             return;
           }
 
-          remaining -= 1;
-          if (remaining <= 0) {
-            finalizeParallel();
-          }
-        };
+          var currentUrl = urls[currentIndex];
+          var resolvedUrl = resolveAssetUrl(currentUrl);
+          var script = document.createElement('script');
+          script.src = resolvedUrl;
+          script.async = true;
+          script.defer = true;
 
-        script.onerror = function (event) {
-          console.error(
-            'Failed to load parallel script:',
-            currentUrl,
-            '→',
-            resolvedUrl,
-            event && event.error,
-          );
+          script.onload = function () {
+            if (aborted || completed) {
+              return;
+            }
 
-          handleError({ event: event, url: currentUrl, index: currentIndex });
+            resetScriptRetryState(currentUrl);
 
-          remaining -= 1;
-          if (remaining <= 0) {
-            finalizeParallel();
-          }
-        };
+            remaining -= 1;
+            if (remaining <= 0) {
+              finalizeParallel();
+            }
+          };
 
-        head.appendChild(script);
+          script.onerror = function (event) {
+            var syntaxError = isSyntaxErrorEvent(event);
+            var retried = false;
+
+            if (!syntaxError && shouldRetryScriptLoad(event)) {
+              retried = scheduleScriptRetry(currentUrl, function () {
+                if (script && script.parentNode) {
+                  try {
+                    script.parentNode.removeChild(script);
+                  } catch (removeError) {
+                    void removeError;
+                  }
+                }
+                attachParallelScript();
+              });
+            }
+
+            if (retried) {
+              return;
+            }
+
+            resetScriptRetryState(currentUrl);
+
+            console.error(
+              'Failed to load parallel script:',
+              currentUrl,
+              '→',
+              resolvedUrl,
+              event && event.error,
+            );
+
+            handleError({ event: event, url: currentUrl, index: currentIndex });
+
+            remaining -= 1;
+            if (remaining <= 0) {
+              finalizeParallel();
+            }
+          };
+
+          head.appendChild(script);
+        }
+
+        attachParallelScript();
       })(index);
     }
 
@@ -3076,6 +3299,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
       completed = true;
 
+      flushAllScriptRetryState();
+
       dispatchLoaderEvent('cine-loader-complete');
 
       if (typeof settings.onComplete === 'function') {
@@ -3087,17 +3312,16 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     }
 
-    function next() {
+    function loadScriptAtIndex(currentIndex) {
       if (aborted) {
         return;
       }
 
-      if (index >= items.length) {
+      if (currentIndex >= items.length) {
         finalize();
         return;
       }
 
-      var currentIndex = index;
       var currentItem = items[currentIndex];
 
       if (currentItem && typeof currentItem === 'object' && !Array.isArray(currentItem)) {
@@ -3115,6 +3339,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
               if (shouldAbort) {
                 aborted = true;
+                flushAllScriptRetryState();
               }
 
               return shouldAbort;
@@ -3124,7 +3349,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
                 return;
               }
               index = currentIndex + 1;
-              next();
+              loadScriptAtIndex(index);
             },
           });
           return;
@@ -3134,9 +3359,10 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       var currentUrl = typeof currentItem === 'string' ? currentItem : '';
       if (!currentUrl) {
         index = currentIndex + 1;
-        next();
+        loadScriptAtIndex(index);
         return;
       }
+
       var resolvedUrl = resolveAssetUrl(currentUrl);
 
       dispatchLoaderEvent('cine-loader-progress', {
@@ -3153,10 +3379,35 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         if (aborted) {
           return;
         }
+
+        resetScriptRetryState(currentUrl);
+
         index = currentIndex + 1;
-        next();
+        loadScriptAtIndex(index);
       };
       script.onerror = function (event) {
+        var syntaxError = isSyntaxErrorEvent(event);
+        var retried = false;
+
+        if (!syntaxError && shouldRetryScriptLoad(event)) {
+          retried = scheduleScriptRetry(currentUrl, function () {
+            if (script && script.parentNode) {
+              try {
+                script.parentNode.removeChild(script);
+              } catch (removeError) {
+                void removeError;
+              }
+            }
+            loadScriptAtIndex(currentIndex);
+          });
+        }
+
+        if (retried) {
+          return;
+        }
+
+        resetScriptRetryState(currentUrl);
+
         console.error(
           'Failed to load script:',
           currentUrl,
@@ -3180,6 +3431,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
         if (shouldAbort) {
           aborted = true;
+          flushAllScriptRetryState();
           return;
         }
 
@@ -3188,9 +3440,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         }
 
         index = currentIndex + 1;
-        next();
+        loadScriptAtIndex(index);
       };
       head.appendChild(script);
+    }
+
+    function next() {
+      loadScriptAtIndex(index);
     }
 
     next();
@@ -3198,6 +3454,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return {
       cancel: function cancelSequentialLoader() {
         aborted = true;
+        flushAllScriptRetryState();
       },
     };
   }
