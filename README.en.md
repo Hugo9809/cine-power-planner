@@ -546,9 +546,10 @@ Use Cine Power Planner end-to-end with the following routine:
   planner validates its JSON schema, merges new devices and places the restored
   project at the top of the selector.
 - **Cross-device workflows stay offline.** To move a plan to a workstation with
-  no connectivity, copy `index.html`, `script.js`, `devices/` and your backup or
-  bundle files onto removable media. Launch from disk, import the bundle and
-  continue planning without touching external networks.
+  no connectivity, copy `index.html`, the `src/scripts/` and `src/data/`
+  directories (including `src/data/devices/`), plus your backup or bundle files
+  onto removable media. Launch from disk, import the bundle and continue
+  planning without touching external networks.
 - **Export responsibly.** Review the exported JSON before distributing it to
   make sure no extra projects or notes are included. The structure is human
   readable so you can redact or duplicate entries as needed, and the file stays
