@@ -4096,6 +4096,24 @@ function markProjectActivity(name, timestamp) {
   projectActivityTimestamps.set(name, recordTime);
 }
 
+function markProjectCollectionActivity(projects, timestamp) {
+  if (!projects || typeof projects !== 'object') {
+    return;
+  }
+
+  const recordTime = typeof timestamp === 'number' && Number.isFinite(timestamp)
+    ? timestamp
+    : Date.now();
+
+  Object.keys(projects).forEach((key) => {
+    if (typeof key !== 'string' || !key || isAutoBackupStorageKey(key)) {
+      return;
+    }
+
+    markProjectActivity(key, recordTime);
+  });
+}
+
 function removeProjectActivity(name) {
   if (typeof name !== 'string') {
     return;
@@ -12163,6 +12181,7 @@ function loadProject(name) {
     projects = mutableProjects;
   }
   if (name === undefined) {
+    markProjectCollectionActivity(projects);
     return projects;
   }
   if (
