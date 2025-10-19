@@ -2128,6 +2128,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var LEGACY_BUNDLE_STORAGE_KEY = 'cameraPowerPlanner_forceLegacyBundle';
   var LEGACY_BUNDLE_RETRY_SESSION_KEY = 'cameraPowerPlanner_forceLegacyBundleRetry';
   var LEGACY_BUNDLE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+  var legacyReloadPending = false;
 
   function nowMilliseconds() {
     if (typeof Date !== 'function' || typeof Date.now !== 'function') {
@@ -2265,6 +2266,33 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
 
     return marked;
+  }
+
+  function clearLegacyBundleRetryAttempt() {
+    var storages = getLegacyRetryStorages();
+    if (!storages.length) {
+      return false;
+    }
+
+    var cleared = false;
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      try {
+        if (typeof storage.removeItem === 'function') {
+          storage.removeItem(LEGACY_BUNDLE_RETRY_SESSION_KEY);
+          cleared = true;
+        }
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+
+    return cleared;
   }
 
   function clearLegacyBundlePreference() {
@@ -3727,6 +3755,10 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return loadScriptsSequentially(bundle.core, {
       onError: settings.onError,
       onComplete: function handleBundleComplete() {
+        if (!legacyReloadPending) {
+          clearLegacyBundleRetryAttempt();
+        }
+
         if (bundle.deferred && bundle.deferred.length) {
           scheduleDeferredScripts(bundle.deferred);
         }
@@ -3890,28 +3922,33 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   };
 
   function startLoading() {
-    if (shouldForceLegacyBundle()) {
+    var legacyRetryPending = hasLegacyBundleRetryAttempt();
+    var forcedLegacy = shouldForceLegacyBundle();
+
+    if (forcedLegacy || legacyRetryPending) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;
 
-      if (hasLegacyBundleRetryAttempt()) {
+      if (legacyRetryPending) {
         loadScriptBundle(legacyScriptBundle);
         return;
       }
 
-      supportsModernFeatures(function (supportsModern) {
-        if (supportsModern) {
-          var cleared = clearLegacyBundlePreference();
-          if (cleared) {
-            if (triggerLegacyBundleReload({ rememberPreference: false, markRetry: true })) {
-              return;
+      if (forcedLegacy) {
+        supportsModernFeatures(function (supportsModern) {
+          if (supportsModern) {
+            var cleared = clearLegacyBundlePreference();
+            if (cleared) {
+              if (triggerLegacyBundleReload({ rememberPreference: false, markRetry: true })) {
+                return;
+              }
             }
           }
-        }
 
-        loadScriptBundle(legacyScriptBundle);
-      });
+          loadScriptBundle(legacyScriptBundle);
+        });
 
-      return;
+        return;
+      }
     }
 
     supportsModernFeatures(function (supportsModern) {
@@ -3946,19 +3983,27 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           var syntaxError = isSyntaxErrorEvent(errorEvent);
           var fallbackReason = syntaxError ? 'syntax-error' : 'transient-error';
           var fallbackMessage = extractLegacyFallbackMessage(errorEvent);
+          var alreadyRetried = hasLegacyBundleRetryAttempt();
 
-          if (syntaxError) {
-            if (
-              triggerLegacyBundleReload({
-                reason: fallbackReason,
-                message: fallbackMessage,
-              })
-            ) {
+          if (!alreadyRetried) {
+            var reloadTriggered = triggerLegacyBundleReload({
+              reason: fallbackReason,
+              message: fallbackMessage,
+              rememberPreference: syntaxError ? undefined : false,
+              markRetry: true,
+            });
+
+            if (reloadTriggered) {
+              legacyReloadPending = true;
               return true;
             }
           }
 
-          if (!syntaxError && typeof console !== 'undefined' && typeof console.info === 'function') {
+          if (
+            !syntaxError &&
+            typeof console !== 'undefined' &&
+            typeof console.info === 'function'
+          ) {
             console.info('Proceeding with inline legacy bundle due to transient modern load failure.');
           }
 
