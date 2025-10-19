@@ -9259,6 +9259,87 @@ if (typeof texts === 'undefined') {
 } else {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
+const DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
+  const candidateResolvers = [
+    function resolveFromLexicalBinding() {
+      try {
+        if (typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE) {
+          return DEFAULT_LANGUAGE;
+        }
+      } catch (defaultLanguageLookupError) {
+        void defaultLanguageLookupError;
+      }
+      return null;
+    },
+    function resolveFromLocaleModule() {
+      try {
+        if (
+          typeof LOCALE_MODULE === 'object' &&
+          LOCALE_MODULE &&
+          typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' &&
+          LOCALE_MODULE.DEFAULT_LANGUAGE
+        ) {
+          return LOCALE_MODULE.DEFAULT_LANGUAGE;
+        }
+      } catch (localeModuleResolutionError) {
+        void localeModuleResolutionError;
+      }
+      return null;
+    },
+    function resolveFromLocalizationAccessors() {
+      try {
+        if (
+          typeof ACTIVE_LOCALIZATION_ACCESSORS === 'object' &&
+          ACTIVE_LOCALIZATION_ACCESSORS &&
+          typeof ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage === 'string' &&
+          ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
+        ) {
+          return ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage;
+        }
+      } catch (accessorResolutionError) {
+        void accessorResolutionError;
+      }
+      return null;
+    },
+    function resolveFromGlobalScope() {
+      try {
+        const globalScope =
+          (typeof globalThis !== 'undefined' && globalThis) ||
+          (typeof window !== 'undefined' && window) ||
+          (typeof self !== 'undefined' && self) ||
+          (typeof global !== 'undefined' && global) ||
+          null;
+        if (
+          globalScope &&
+          typeof globalScope.DEFAULT_LANGUAGE === 'string' &&
+          globalScope.DEFAULT_LANGUAGE
+        ) {
+          return globalScope.DEFAULT_LANGUAGE;
+        }
+        if (
+          globalScope &&
+          typeof globalScope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' &&
+          globalScope.CPP_DEFAULT_LANGUAGE_SAFE
+        ) {
+          return globalScope.CPP_DEFAULT_LANGUAGE_SAFE;
+        }
+      } catch (globalScopeResolutionError) {
+        void globalScopeResolutionError;
+      }
+      return null;
+    },
+  ];
+
+  for (let index = 0; index < candidateResolvers.length; index += 1) {
+    const resolved = candidateResolvers[index]();
+    if (typeof resolved === 'string' && resolved) {
+      return resolved;
+    }
+  }
+
+  return 'en';
+})();
+
 const SUPPORTED_LANGUAGES =
   typeof texts === "object" && texts !== null
     ? Object.keys(texts)
@@ -9807,87 +9888,6 @@ function getFocusScaleLabelForLang(lang = currentLang, scale) {
     metricLabel
   );
 }
-
-const DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
-  const candidateResolvers = [
-    function resolveFromLexicalBinding() {
-      try {
-        if (typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE) {
-          return DEFAULT_LANGUAGE;
-        }
-      } catch (defaultLanguageLookupError) {
-        void defaultLanguageLookupError;
-      }
-      return null;
-    },
-    function resolveFromLocaleModule() {
-      try {
-        if (
-          typeof LOCALE_MODULE === 'object' &&
-          LOCALE_MODULE &&
-          typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' &&
-          LOCALE_MODULE.DEFAULT_LANGUAGE
-        ) {
-          return LOCALE_MODULE.DEFAULT_LANGUAGE;
-        }
-      } catch (localeModuleResolutionError) {
-        void localeModuleResolutionError;
-      }
-      return null;
-    },
-    function resolveFromLocalizationAccessors() {
-      try {
-        if (
-          typeof ACTIVE_LOCALIZATION_ACCESSORS === 'object' &&
-          ACTIVE_LOCALIZATION_ACCESSORS &&
-          typeof ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage === 'string' &&
-          ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
-        ) {
-          return ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage;
-        }
-      } catch (accessorResolutionError) {
-        void accessorResolutionError;
-      }
-      return null;
-    },
-    function resolveFromGlobalScope() {
-      try {
-        const globalScope =
-          (typeof globalThis !== 'undefined' && globalThis) ||
-          (typeof window !== 'undefined' && window) ||
-          (typeof self !== 'undefined' && self) ||
-          (typeof global !== 'undefined' && global) ||
-          null;
-        if (
-          globalScope &&
-          typeof globalScope.DEFAULT_LANGUAGE === 'string' &&
-          globalScope.DEFAULT_LANGUAGE
-        ) {
-          return globalScope.DEFAULT_LANGUAGE;
-        }
-        if (
-          globalScope &&
-          typeof globalScope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' &&
-          globalScope.CPP_DEFAULT_LANGUAGE_SAFE
-        ) {
-          return globalScope.CPP_DEFAULT_LANGUAGE_SAFE;
-        }
-      } catch (globalScopeResolutionError) {
-        void globalScopeResolutionError;
-      }
-      return null;
-    },
-  ];
-
-  for (let index = 0; index < candidateResolvers.length; index += 1) {
-    const resolved = candidateResolvers[index]();
-    if (typeof resolved === 'string' && resolved) {
-      return resolved;
-    }
-  }
-
-  return 'en';
-})();
 
 try {
   const globalScope =
