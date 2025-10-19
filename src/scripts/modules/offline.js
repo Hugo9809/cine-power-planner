@@ -932,11 +932,9 @@
     }
 
     const normalisedVendor = vendor.toLowerCase();
+    const trimmedVendor = normalisedVendor.trim();
     const normalisedUserAgent = userAgent.toLowerCase();
 
-    if (!normalisedVendor.includes('apple')) {
-      return false;
-    }
     const exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
     for (let index = 0; index < exclusionTokens.length; index += 1) {
       const token = exclusionTokens[index];
@@ -945,7 +943,21 @@
       }
     }
 
-    if (normalisedUserAgent.includes('safari')) {
+    const vendorIndicatesSafariFamily = trimmedVendor.includes('apple');
+    const userAgentHasSafariToken = normalisedUserAgent.includes('safari');
+    const userAgentHasAppleWebkitToken = normalisedUserAgent.includes('applewebkit');
+    const vendorIsEffectivelyEmpty = trimmedVendor.length === 0;
+    const fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasSafariToken && userAgentHasAppleWebkitToken;
+
+    if (!vendorIndicatesSafariFamily && !fallbackSafariMatch) {
+      return false;
+    }
+
+    if (vendorIndicatesSafariFamily && userAgentHasSafariToken) {
+      return true;
+    }
+
+    if (fallbackSafariMatch) {
       return true;
     }
 

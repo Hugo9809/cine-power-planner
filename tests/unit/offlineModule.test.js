@@ -381,6 +381,78 @@ describe('cineOffline module', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  test('scheduleReloadWarmup uses Safari path when vendor string is empty', async () => {
+    class MockXMLHttpRequest {
+      constructor() {
+        this.eventHandlers = {};
+        this.status = 204;
+        this.withCredentials = false;
+        this.responseType = 'text';
+      }
+
+      addEventListener(event, handler) {
+        this.eventHandlers[event] = handler;
+      }
+
+      open() {}
+
+      setRequestHeader() {}
+
+      send() {
+        if (this.eventHandlers.load) {
+          this.eventHandlers.load();
+        }
+      }
+    }
+
+    const navigatorMock = {
+      vendor: '',
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1',
+      standalone: false,
+      onLine: true,
+    };
+
+    const windowMock = {
+      navigator: navigatorMock,
+      location: {
+        href: 'https://example.test/app/index.html',
+        origin: 'https://example.test',
+        pathname: '/app/index.html',
+        search: '',
+        hash: '',
+      },
+      matchMedia: jest.fn(() => ({ matches: false })),
+      XMLHttpRequest: MockXMLHttpRequest,
+    };
+
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => ({
+          bodyUsed: false,
+          text: jest.fn(() => Promise.resolve('<html></html>')),
+        })),
+      }),
+    );
+
+    const warmupHandle = internal.scheduleReloadWarmup({
+      fetch: fetchMock,
+      nextHref: 'https://example.test/app/index.html?forceReload=token',
+      navigator: navigatorMock,
+      window: windowMock,
+      serviceWorkerPromise: Promise.resolve(true),
+      cachePromise: Promise.resolve(true),
+      allowCache: false,
+    });
+
+    expect(warmupHandle).not.toBeNull();
+    await expect(warmupHandle.promise).resolves.toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   test('scheduleReloadWarmup still uses fetch path for Chrome on iOS', async () => {
     const navigatorMock = {
       vendor: 'Apple Computer, Inc.',
