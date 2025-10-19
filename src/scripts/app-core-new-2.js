@@ -114,17 +114,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
 
-    const CORE_UI_HELPERS = (function resolveCoreUiHelpersPart2() {
+    const CORE_RUNTIME_UI_BRIDGE = (function resolveCoreRuntimeUiBridgePart2() {
       const candidates = [];
 
       if (typeof require === 'function') {
         try {
-          const required = require('./app-core-ui-helpers.js');
-          if (required && typeof required === 'object') {
-            candidates.push(required);
+          const requiredBridge = require('./app-core-runtime-ui.js');
+          if (requiredBridge && typeof requiredBridge === 'object') {
+            candidates.push(requiredBridge);
           }
-        } catch (uiHelpersError) {
-          void uiHelpersError;
+        } catch (bridgeError) {
+          void bridgeError;
         }
       }
 
@@ -167,10 +167,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!scope) {
           continue;
         }
+
         try {
-          const helpers = scope.cineCoreUiHelpers;
-          if (helpers && typeof helpers === 'object') {
-            candidates.push(helpers);
+          const bridge = scope.cineCoreRuntimeUiBridge;
+          if (bridge && typeof bridge === 'object') {
+            candidates.push(bridge);
           }
         } catch (scopeLookupError) {
           void scopeLookupError;
@@ -188,8 +189,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     })();
 
     const escapeHtml =
-      typeof CORE_UI_HELPERS.escapeHtml === 'function'
-        ? CORE_UI_HELPERS.escapeHtml
+      typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
+        ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
         : function escapeHtmlFallback(str) {
             return String(str)
               .replace(/&/g, '&amp;')
@@ -199,60 +200,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               .replace(/'/g, '&#39;');
           };
 
-    const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIcon() {
-      if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
-        return CORE_UI_HELPERS.setButtonLabelWithIcon;
-      }
+    const setButtonLabelWithIcon =
+      typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function'
+        ? CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon
+        : function setButtonLabelWithIconFallback(button, label) {
+            if (!button) {
+              return;
+            }
 
-      const candidates = [];
+            const safeLabel = typeof label === 'string' ? label : '';
 
-      try {
-        if (
-          typeof CORE_GLOBAL_SCOPE === 'object' &&
-          CORE_GLOBAL_SCOPE &&
-          typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
-        ) {
-          candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
-        }
-      } catch (coreScopeError) {
-        void coreScopeError;
-      }
-
-      if (
-        typeof globalThis !== 'undefined' &&
-        globalThis &&
-        typeof globalThis.setButtonLabelWithIcon === 'function'
-      ) {
-        candidates.push(globalThis.setButtonLabelWithIcon);
-      }
-
-      if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
-        candidates.push(window.setButtonLabelWithIcon);
-      }
-
-      if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
-        candidates.push(self.setButtonLabelWithIcon);
-      }
-
-      if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
-        candidates.push(global.setButtonLabelWithIcon);
-      }
-
-      if (candidates.length > 0) {
-        return candidates[0];
-      }
-
-      return function setButtonLabelWithIconFallback(button, label) {
-        if (!button) {
-          return;
-        }
-        try {
-          button.textContent = typeof label === 'string' ? label : '';
-        } catch (assignError) {
-          void assignError;
-        }
-      };
-    })();
+            try {
+              button.textContent = escapeHtml(safeLabel);
+            } catch (assignError) {
+              void assignError;
+            }
+          };
 
     const autoGearHelpers =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
