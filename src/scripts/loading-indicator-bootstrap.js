@@ -26,6 +26,57 @@
   var currentKey = 'preparing';
   var container = null;
   var indicator = null;
+  var hideTimeoutId = null;
+
+  function cancelScheduledHide() {
+    if (hideTimeoutId !== null) {
+      if (typeof clearTimeout === 'function') {
+        clearTimeout(hideTimeoutId);
+      }
+      hideTimeoutId = null;
+    }
+  }
+
+  function updateNoticeReferences() {
+    if (scope.__cineLoadingNotice && typeof scope.__cineLoadingNotice === 'object') {
+      scope.__cineLoadingNotice.container = container;
+      scope.__cineLoadingNotice.indicator = indicator;
+    }
+  }
+
+  function cleanupIndicatorIfIdle() {
+    cancelScheduledHide();
+    if (indicator && indicator.parentNode) {
+      indicator.parentNode.removeChild(indicator);
+    }
+    indicator = null;
+    if (container) {
+      if (container.children && container.children.length === 0 && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+      if (container.children && container.children.length === 0) {
+        container = null;
+      }
+    }
+    updateNoticeReferences();
+  }
+
+  function scheduleHideAfterComplete() {
+    if (hideTimeoutId !== null) {
+      return;
+    }
+    if (typeof setTimeout !== 'function') {
+      cleanupIndicatorIfIdle();
+      return;
+    }
+    hideTimeoutId = setTimeout(function () {
+      hideTimeoutId = null;
+      if (indicator && indicator.dataset && indicator.dataset.preventBootstrapHide === 'true') {
+        return;
+      }
+      cleanupIndicatorIfIdle();
+    }, 600);
+  }
 
   function getLocalizedMessage(key) {
     var trimmedKey = typeof key === 'string' ? key.trim() : '';
@@ -49,6 +100,7 @@
     if (container && container.parentNode) {
       return container;
     }
+    cancelScheduledHide();
     var existing = document.getElementById(containerId);
     container = existing || document.createElement('div');
     container.id = containerId;
@@ -65,6 +117,8 @@
       parent.appendChild(container);
     }
 
+    updateNoticeReferences();
+
     return container;
   }
 
@@ -73,6 +127,7 @@
       return indicator;
     }
 
+    cancelScheduledHide();
     container = ensureContainer();
     var existing = document.getElementById(indicatorId);
     indicator = existing || document.createElement('div');
@@ -111,6 +166,8 @@
     if (container && indicator.parentNode !== container) {
       container.appendChild(indicator);
     }
+
+    updateNoticeReferences();
 
     return indicator;
   }
@@ -203,6 +260,7 @@
   function handleComplete() {
     setMessageKey('almost');
     setBusy(false);
+    scheduleHideAfterComplete();
   }
 
   document.addEventListener('cine-loader-progress', handleProgress);
