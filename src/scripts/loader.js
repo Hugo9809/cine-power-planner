@@ -3527,7 +3527,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/features/auto-gear-rules.js',
       'src/scripts/modules/features/connection-diagram.js',
       'src/scripts/modules/features/backup.js',
-      'src/scripts/modules/features/onboarding-tour.js',
       'src/scripts/modules/features/print-workflow.js',
       'src/scripts/modules/ui.js',
       'src/scripts/modules/runtime-guard.js',
@@ -3551,6 +3550,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/app-events.js',
       'src/scripts/app-setups.js',
       'src/scripts/restore-verification.js',
+      'src/scripts/onboarding-deferred-loader.js',
       'src/scripts/app-session.js',
       'src/scripts/modules/persistence.js',
       'src/scripts/modules/runtime.js',
@@ -3559,6 +3559,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     deferred: [
       'src/scripts/auto-gear-monitoring.js',
       'src/scripts/overview.js',
+      'src/scripts/modules/features/onboarding-tour.js',
       'src/scripts/autosave-overlay.js'
     ],
   };
@@ -3601,7 +3602,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/modules/logging.js',
       'legacy/scripts/modules/core/mount-voltage.js',
       'legacy/scripts/modules/features/backup.js',
-      'legacy/scripts/modules/features/onboarding-tour.js',
       'legacy/scripts/modules/features/print-workflow.js',
       'legacy/scripts/modules/ui.js',
       'legacy/scripts/modules/runtime-guard.js',
@@ -3616,6 +3616,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/app-core-new-2.js',
       'legacy/scripts/app-events.js',
       'legacy/scripts/app-setups.js',
+      'legacy/scripts/onboarding-deferred-loader.js',
       'legacy/scripts/app-session.js',
       'legacy/scripts/modules/runtime.js',
       'legacy/scripts/modules/persistence.js',
@@ -3624,6 +3625,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     deferred: [
       'legacy/scripts/auto-gear-monitoring.js',
       'legacy/scripts/overview.js',
+      'legacy/scripts/modules/features/onboarding-tour.js',
       'legacy/scripts/autosave-overlay.js'
     ],
   };

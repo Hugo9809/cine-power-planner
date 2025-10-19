@@ -14803,6 +14803,22 @@ if (helpButton && helpDialog) {
   // doesn't persist between openings, and focus is moved to the search field
   // for immediate typing.
   const openHelp = () => {
+    try {
+      const scope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+      const helper = scope && scope.cineOnboardingDeferredLoader;
+      if (helper && typeof helper.ensure === 'function') {
+        helper.ensure('help-open');
+      } else {
+        ensureDeferredScriptsLoaded('help-open');
+      }
+    } catch (onboardingEnsureError) {
+      void onboardingEnsureError;
+      ensureDeferredScriptsLoaded('help-open');
+    }
     closeSideMenu();
     helpDialog.removeAttribute('hidden');
     openDialog(helpDialog);
