@@ -1125,7 +1125,9 @@ function collectAutoGearSelectedValues(selected, key) {
     refreshAutoGearVideoDistributionOptions,
     collectAutoGearSelectedValues,
     getAutoGearScenarioModeSelectElement,
-    setAutoGearScenarioModeSelectElement
+    setAutoGearScenarioModeSelectElement,
+    getViewfinderFallbackLabel,
+    getVideoDistributionFallbackLabel
   };
 
   if (typeof module === 'object' && module && module.exports) {
