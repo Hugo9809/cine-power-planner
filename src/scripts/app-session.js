@@ -1155,6 +1155,54 @@ function ensureDeferredScriptsLoaded(reason) {
   return result;
 }
 
+let createOnboardingLoaderHelpers = null;
+if (typeof cineCreateOnboardingLoaderHelpers === 'function') {
+  createOnboardingLoaderHelpers = cineCreateOnboardingLoaderHelpers;
+}
+if (!createOnboardingLoaderHelpers && typeof require === 'function') {
+  try {
+    const helperModule = require('./app-session-onboarding-loader.js');
+    if (helperModule && typeof helperModule.createOnboardingLoaderHelpers === 'function') {
+      createOnboardingLoaderHelpers = helperModule.createOnboardingLoaderHelpers;
+    }
+  } catch (helperModuleError) {
+    void helperModuleError;
+    createOnboardingLoaderHelpers = null;
+  }
+}
+
+const onboardingLoaderHelpers = createOnboardingLoaderHelpers
+  ? createOnboardingLoaderHelpers({
+      resolveModuleApi,
+      getSafeLocalStorage: () => {
+        if (typeof getSafeLocalStorage === 'function') {
+          try {
+            return getSafeLocalStorage();
+          } catch (storageError) {
+            void storageError;
+          }
+        }
+        return null;
+      },
+      ensureDeferredScriptsLoaded,
+    })
+  : null;
+
+const ensureOnboardingModuleRequested = onboardingLoaderHelpers
+  && typeof onboardingLoaderHelpers.ensureOnboardingModuleRequested === 'function'
+  ? onboardingLoaderHelpers.ensureOnboardingModuleRequested
+  : () => null;
+const ensureOnboardingModuleForFirstRun = onboardingLoaderHelpers
+  && typeof onboardingLoaderHelpers.ensureOnboardingModuleForFirstRun === 'function'
+  ? onboardingLoaderHelpers.ensureOnboardingModuleForFirstRun
+  : () => {};
+const handleDeferredOnboardingTrigger = onboardingLoaderHelpers
+  && typeof onboardingLoaderHelpers.handleDeferredOnboardingTrigger === 'function'
+  ? onboardingLoaderHelpers.handleDeferredOnboardingTrigger
+  : () => {};
+
+ensureOnboardingModuleForFirstRun();
+
 function requestSettingsOpen(context) {
   const dialog = resolveSettingsDialog();
   const trigger = resolveSettingsButton();
@@ -14804,6 +14852,7 @@ if (helpButton && helpDialog) {
   // for immediate typing.
   const openHelp = () => {
     closeSideMenu();
+    ensureOnboardingModuleRequested('help-open');
     helpDialog.removeAttribute('hidden');
     openDialog(helpDialog);
     if (helpSearch) {
@@ -16140,6 +16189,9 @@ if (helpButton && helpDialog) {
 
   // Wire up button clicks and search field interactions
   helpButton.addEventListener('click', toggleHelp);
+  if (typeof document.addEventListener === 'function') {
+    document.addEventListener('click', handleDeferredOnboardingTrigger, true);
+  }
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
   if (helpSearchClear) helpSearchClear.addEventListener('click', () => {

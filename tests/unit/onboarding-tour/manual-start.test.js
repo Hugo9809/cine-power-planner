@@ -99,6 +99,17 @@ describe('onboarding tour manual start', () => {
       return !event.defaultPrevented;
     };
 
+    global.MutationObserver = class {
+      constructor(callback) {
+        this.callback = callback;
+      }
+      observe() {}
+      disconnect() {}
+      takeRecords() {
+        return [];
+      }
+    };
+
     global.cineModuleBase = {
       safeWarn: jest.fn(),
       freezeDeep: value => value,

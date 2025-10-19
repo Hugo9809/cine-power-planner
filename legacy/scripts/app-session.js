@@ -531,6 +531,51 @@ function resolveModuleApi(name, validator) {
   }
   return null;
 }
+
+var createOnboardingLoaderHelpers = null;
+if (typeof cineCreateOnboardingLoaderHelpers === 'function') {
+  createOnboardingLoaderHelpers = cineCreateOnboardingLoaderHelpers;
+}
+if (!createOnboardingLoaderHelpers && typeof require === 'function') {
+  try {
+    var helperModule = require('./app-session-onboarding-loader.js');
+    if (helperModule && typeof helperModule.createOnboardingLoaderHelpers === 'function') {
+      createOnboardingLoaderHelpers = helperModule.createOnboardingLoaderHelpers;
+    }
+  } catch (helperModuleError) {
+    void helperModuleError;
+    createOnboardingLoaderHelpers = null;
+  }
+}
+
+var onboardingLoaderHelpers = createOnboardingLoaderHelpers
+  ? createOnboardingLoaderHelpers({
+      resolveModuleApi: resolveModuleApi,
+      getSafeLocalStorage: function getSafeLocalStorageWrapper() {
+        if (typeof getSafeLocalStorage === 'function') {
+          try {
+            return getSafeLocalStorage();
+          } catch (storageError) {
+            void storageError;
+          }
+        }
+        return null;
+      },
+      ensureDeferredScriptsLoaded: ensureDeferredScriptsLoaded
+    })
+  : null;
+
+var ensureOnboardingModuleRequested = onboardingLoaderHelpers && typeof onboardingLoaderHelpers.ensureOnboardingModuleRequested === 'function'
+  ? onboardingLoaderHelpers.ensureOnboardingModuleRequested
+  : function () { return null; };
+var ensureOnboardingModuleForFirstRun = onboardingLoaderHelpers && typeof onboardingLoaderHelpers.ensureOnboardingModuleForFirstRun === 'function'
+  ? onboardingLoaderHelpers.ensureOnboardingModuleForFirstRun
+  : function () {};
+var handleDeferredOnboardingTrigger = onboardingLoaderHelpers && typeof onboardingLoaderHelpers.handleDeferredOnboardingTrigger === 'function'
+  ? onboardingLoaderHelpers.handleDeferredOnboardingTrigger
+  : function () {};
+
+ensureOnboardingModuleForFirstRun();
 function normalizeVersionValue(value) {
   if (typeof value !== 'string') {
     return null;
@@ -12761,6 +12806,7 @@ if (helpButton && helpDialog) {
   };
   var openHelp = function openHelp() {
     closeSideMenu();
+    ensureOnboardingModuleRequested('help-open');
     helpDialog.removeAttribute('hidden');
     openDialog(helpDialog);
     if (helpSearch) {
@@ -13963,6 +14009,9 @@ if (helpButton && helpDialog) {
     }
   }
   helpButton.addEventListener('click', toggleHelp);
+  if (typeof document.addEventListener === 'function') {
+    document.addEventListener('click', handleDeferredOnboardingTrigger, true);
+  }
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
   if (helpSearchClear) helpSearchClear.addEventListener('click', function () {
