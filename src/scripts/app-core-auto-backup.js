@@ -13,6 +13,10 @@
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
+let hasWarnedResolverRequireFailure = false;
+let hasWarnedResolverScopeFailure = false;
+let hasWarnedLoggerResolverFailure = false;
+
 function collectAutoBackupLoggingScopes() {
   const scopes = [];
 
@@ -53,7 +57,16 @@ function resolveAutoBackupLoggingResolver() {
         return required;
       }
     } catch (resolverRequireError) {
-      void resolverRequireError;
+      if (!hasWarnedResolverRequireFailure) {
+        hasWarnedResolverRequireFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to require logging resolver module', resolverRequireError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
 
@@ -70,7 +83,16 @@ function resolveAutoBackupLoggingResolver() {
         return resolver;
       }
     } catch (resolveError) {
-      void resolveError;
+      if (!hasWarnedResolverScopeFailure) {
+        hasWarnedResolverScopeFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to resolve logging resolver from scope', resolveError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
 
@@ -126,7 +148,16 @@ function resolveAutoBackupLogger() {
         return autoBackupLoggerCache;
       }
     } catch (resolverError) {
-      void resolverError;
+      if (!hasWarnedLoggerResolverFailure) {
+        hasWarnedLoggerResolverFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to create logger via resolver', resolverError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
 
