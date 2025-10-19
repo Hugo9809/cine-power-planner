@@ -330,7 +330,8 @@
         gearItems: frozenGearItems,
       };
 
-      loaderState.defaultLocale = defaultLocale;
+      loaderState = assignDefaultLocale(loaderState, defaultLocale);
+      defaultLocale = loaderState.defaultLocale || defaultLocale;
     }
 
     var reference = defaultLocale || {
@@ -362,6 +363,90 @@
       categoryNames: alignedCategoryNames,
       gearItems: alignedGearItems,
     };
+  }
+
+  function assignDefaultLocale(loaderState, nextDefaultLocale) {
+    if (!loaderState || typeof loaderState !== 'object') {
+      var initialState = { defaultLocale: nextDefaultLocale, loading: {} };
+      try {
+        scope[loaderStateKey] = initialState;
+        return initialState;
+      } catch (initialAssignError) {
+        void initialAssignError;
+        try {
+          Object.defineProperty(scope, loaderStateKey, {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: initialState,
+          });
+        } catch (initialDefineError) {
+          void initialDefineError;
+        }
+        return initialState;
+      }
+    }
+
+    try {
+      loaderState.defaultLocale = nextDefaultLocale;
+      return loaderState;
+    } catch (assignError) {
+      void assignError;
+    }
+
+    var descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(loaderState, 'defaultLocale');
+    } catch (descriptorError) {
+      void descriptorError;
+      descriptor = null;
+    }
+
+    if (!descriptor || descriptor.configurable) {
+      try {
+        Object.defineProperty(loaderState, 'defaultLocale', {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: nextDefaultLocale,
+        });
+        return loaderState;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    var replacement = {};
+    var keys = Object.keys(loaderState);
+    for (var index = 0; index < keys.length; index += 1) {
+      var key = keys[index];
+      if (key === 'defaultLocale') {
+        continue;
+      }
+      replacement[key] = loaderState[key];
+    }
+
+    replacement.defaultLocale = nextDefaultLocale;
+
+    try {
+      scope[loaderStateKey] = replacement;
+      return replacement;
+    } catch (replaceError) {
+      void replaceError;
+      try {
+        Object.defineProperty(scope, loaderStateKey, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: replacement,
+        });
+        return replacement;
+      } catch (defineStateError) {
+        void defineStateError;
+      }
+    }
+
+    return loaderState;
   }
 
   function resolveLoadingMessage(locale) {
