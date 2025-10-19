@@ -11,6 +11,91 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./app-core-ui-helpers.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+    } catch (uiHelpersError) {
+      void uiHelpersError;
+    }
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      var helpers = scope.cineCoreUiHelpers;
+      if (helpers && _typeof(helpers) === 'object') {
+        return helpers;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  return {};
+}();
+var setButtonLabelWithIconForEvents = function resolveSetButtonLabelWithIconForEvents() {
+  if (typeof EVENTS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+    return EVENTS_UI_HELPERS.setButtonLabelWithIcon;
+  }
+  var candidates = [];
+  try {
+    if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+      candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.setButtonLabelWithIcon === 'function') {
+    candidates.push(globalThis.setButtonLabelWithIcon);
+  }
+  if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+    candidates.push(window.setButtonLabelWithIcon);
+  }
+  if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+    candidates.push(self.setButtonLabelWithIcon);
+  }
+  if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+    candidates.push(global.setButtonLabelWithIcon);
+  }
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+  return function setButtonLabelWithIconFallback(button, label) {
+    if (!button) {
+      return;
+    }
+    try {
+      button.textContent = typeof label === 'string' ? label : '';
+    } catch (assignError) {
+      void assignError;
+    }
+  };
+}();
 function collectLoggingResolverScopes() {
   var scopes = [];
   var primary = getGlobalScope();
@@ -167,6 +252,135 @@ var AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-re
 var AUTO_BACKUP_LOG_META = {
   feature: 'auto-backup'
 };
+var DEVICE_IMPORT_LOG_META = {
+  feature: 'device-import',
+  source: 'app-events'
+};
+var MAX_SANITIZED_IMPORT_ERRORS = 10;
+function sanitizeErrorForLogging(error) {
+  if (!error) {
+    return null;
+  }
+  if (typeof error === 'string') {
+    return {
+      message: error
+    };
+  }
+  if (_typeof(error) !== 'object') {
+    try {
+      return {
+        message: String(error)
+      };
+    } catch (stringifyError) {
+      void stringifyError;
+      return {
+        message: 'Unknown error'
+      };
+    }
+  }
+  var sanitized = {};
+  if (typeof error.name === 'string' && error.name) {
+    sanitized.name = error.name;
+  }
+  if (typeof error.message === 'string' && error.message) {
+    sanitized.message = error.message;
+  }
+  if (typeof error.code === 'string' || typeof error.code === 'number') {
+    sanitized.code = error.code;
+  }
+  if (typeof error.lineNumber === 'number') {
+    sanitized.lineNumber = error.lineNumber;
+  }
+  if (typeof error.columnNumber === 'number') {
+    sanitized.columnNumber = error.columnNumber;
+  }
+  if (Object.keys(sanitized).length > 0) {
+    return sanitized;
+  }
+  try {
+    return {
+      message: String(error)
+    };
+  } catch (fallbackError) {
+    void fallbackError;
+    return {
+      message: 'Unknown error'
+    };
+  }
+}
+function sanitizeImportErrors(errors) {
+  if (!Array.isArray(errors) || errors.length === 0) {
+    return [];
+  }
+  var sanitized = [];
+  for (var index = 0; index < errors.length && sanitized.length < MAX_SANITIZED_IMPORT_ERRORS; index += 1) {
+    var candidate = errors[index];
+    if (typeof candidate === 'string') {
+      sanitized.push(candidate);
+    } else if (candidate && _typeof(candidate) === 'object') {
+      var entry = {};
+      if (typeof candidate.message === 'string' && candidate.message) {
+        entry.message = candidate.message;
+      }
+      if (typeof candidate.code === 'string' || typeof candidate.code === 'number') {
+        entry.code = candidate.code;
+      }
+      if (Object.keys(entry).length > 0) {
+        sanitized.push(entry);
+      } else {
+        try {
+          sanitized.push(String(candidate));
+        } catch (stringifyError) {
+          void stringifyError;
+        }
+      }
+    } else {
+      try {
+        sanitized.push(String(candidate));
+      } catch (stringifyError) {
+        void stringifyError;
+      }
+    }
+  }
+  return sanitized;
+}
+function safeCountDevices(collection) {
+  if (typeof countDeviceDatabaseEntries !== 'function') {
+    return null;
+  }
+  if (!collection || _typeof(collection) !== 'object') {
+    return collection === null ? 0 : null;
+  }
+  try {
+    return countDeviceDatabaseEntries(collection);
+  } catch (error) {
+    void error;
+  }
+  return null;
+}
+function buildDeviceCountsSnapshot(currentDevices, importedDevices) {
+  var snapshot = {};
+  var existingCount = safeCountDevices(currentDevices);
+  if (typeof existingCount === 'number') {
+    snapshot.existing = existingCount;
+  }
+  var importedCount = safeCountDevices(importedDevices);
+  if (typeof importedCount === 'number') {
+    snapshot.imported = importedCount;
+  }
+  return Object.keys(snapshot).length > 0 ? snapshot : null;
+}
+function logDeviceImportEvent(level, message, detail, metaOverrides) {
+  if (!eventsLogger || typeof eventsLogger[level] !== 'function') {
+    return;
+  }
+  var meta = metaOverrides && _typeof(metaOverrides) === 'object' ? _objectSpread(_objectSpread({}, DEVICE_IMPORT_LOG_META), metaOverrides) : DEVICE_IMPORT_LOG_META;
+  try {
+    eventsLogger[level](message, detail || {}, meta);
+  } catch (loggerError) {
+    void loggerError;
+  }
+}
 function resolveConsoleMethodForLevel(level) {
   if (typeof level !== 'string') {
     return 'log';
@@ -177,10 +391,52 @@ function resolveConsoleMethodForLevel(level) {
   }
   return 'log';
 }
+function resolveCoreAutoBackupNamespace() {
+  if (typeof require === 'function') {
+    try {
+      return require('./app-core-auto-backup.js');
+    } catch (autoBackupRequireError) {
+      void autoBackupRequireError;
+    }
+  }
+  var candidateScopes = [getGlobalScope(), typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      if (scope.CORE_AUTO_BACKUP && _typeof(scope.CORE_AUTO_BACKUP) === 'object') {
+        return scope.CORE_AUTO_BACKUP;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+  return null;
+}
+var AUTO_BACKUP_LOGGER_NAMESPACE = resolveCoreAutoBackupNamespace();
+var delegatedAutoBackupLogger = AUTO_BACKUP_LOGGER_NAMESPACE && typeof AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent === 'function' ? AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent : null;
 function logAutoBackupEvent(level, message, detail, metaOverrides) {
   var resolvedLevel = typeof level === 'string' && level ? level : 'info';
   var resolvedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
   var meta = metaOverrides && _typeof(metaOverrides) === 'object' ? _objectSpread(_objectSpread({}, AUTO_BACKUP_LOG_META), metaOverrides) : AUTO_BACKUP_LOG_META;
+  var delegateHandled = false;
+  if (delegatedAutoBackupLogger) {
+    try {
+      delegatedAutoBackupLogger(resolvedLevel, resolvedMessage, detail, meta);
+      delegateHandled = true;
+    } catch (delegateError) {
+      delegateHandled = false;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        try {
+          console.warn('Auto backup delegate logging failed', delegateError);
+        } catch (delegateConsoleError) {
+          void delegateConsoleError;
+        }
+      }
+    }
+  }
   var handledByLogger = false;
   if (eventsLogger && typeof eventsLogger[resolvedLevel] === 'function') {
     try {
@@ -199,7 +455,7 @@ function logAutoBackupEvent(level, message, detail, metaOverrides) {
       }
     }
   }
-  if (!handledByLogger && typeof console !== 'undefined' && console) {
+  if (!(handledByLogger || delegateHandled) && typeof console !== 'undefined' && console) {
     var consoleMethod = resolveConsoleMethodForLevel(resolvedLevel);
     var fallback = typeof console[consoleMethod] === 'function' ? console[consoleMethod] : console.log;
     if (typeof fallback === 'function') {
@@ -863,14 +1119,27 @@ function enqueueCineUiRegistration(callback) {
 }
 enqueueCineUiRegistration(registerEventsCineUiInternal);
 addSafeEventListener(languageSelect, "change", function (event) {
-  setLanguage(event.target.value);
-  if (typeof populateUserButtonDropdowns === 'function') {
-    try {
-      populateUserButtonDropdowns();
-    } catch (userButtonError) {
-      console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+  var updateDropdowns = function updateDropdowns() {
+    if (typeof populateUserButtonDropdowns === 'function') {
+      try {
+        populateUserButtonDropdowns();
+      } catch (userButtonError) {
+        console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+      }
     }
+  };
+  try {
+    var result = setLanguage(event.target.value);
+    if (result && typeof result.then === 'function') {
+      result.then(updateDropdowns).catch(function (error) {
+        console.warn('Language selection update failed', error);
+      });
+      return;
+    }
+  } catch (languageError) {
+    console.warn('Language selection handler threw', languageError);
   }
+  updateDropdowns();
 });
 addSafeEventListener(skipLink, "click", function () {
   var main = document.getElementById("mainContent");
@@ -2283,7 +2552,7 @@ function showDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
   if (!deviceManagerSection.classList.contains('hidden')) return;
   deviceManagerSection.classList.remove('hidden');
-  setButtonLabelWithIcon(toggleDeviceBtn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
+  setButtonLabelWithIconForEvents(toggleDeviceBtn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
   toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'true');
@@ -2294,7 +2563,7 @@ function hideDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
   if (deviceManagerSection.classList.contains('hidden')) return;
   deviceManagerSection.classList.add('hidden');
-  setButtonLabelWithIcon(toggleDeviceBtn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
+  setButtonLabelWithIconForEvents(toggleDeviceBtn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
   toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'false');
@@ -2809,10 +3078,10 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
       deviceData = devices[categoryKey][name];
     }
     populateDeviceForm(categoryKey, deviceData, subcategory);
-    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "edit";
-    setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     showFormSection(cancelEditBtn);
     document.getElementById("addDeviceHeading").scrollIntoView({
@@ -3019,19 +3288,19 @@ if (newCategorySelectElement) {
     }
     var cancelLabel = texts[currentLang].cancelEditBtn;
     if (wasEditing) {
-      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
       addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
       cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
       showFormSection(cancelEditBtn);
     } else {
-      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
       addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
       addDeviceBtn.dataset.mode = "add";
       delete addDeviceBtn.dataset.originalName;
       delete addDeviceBtn.dataset.originalSubcategory;
       delete addDeviceBtn.dataset.originalCategory;
-      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
       cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
       hideFormSection(cancelEditBtn);
     }
@@ -3054,7 +3323,7 @@ function resetDeviceForm() {
   }
   if (cancelEditBtn) {
     hideFormSection(cancelEditBtn);
-    setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconForEvents(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   }
   var categorySelect = resolveNewCategorySelect();
@@ -3481,12 +3750,22 @@ addSafeEventListener(importFileInput, "change", function (event) {
     return;
   }
   var reader = new FileReader();
+  var importFileName = typeof file.name === 'string' && file.name ? file.name : null;
   reader.onload = function (e) {
     try {
       var importedData = JSON.parse(e.target.result);
       var result = parseDeviceDatabaseImport(importedData);
+      var importDeviceCounts = buildDeviceCountsSnapshot(devices, result.devices);
       if (!result.devices) {
         var summary = formatDeviceImportErrors(result.errors);
+        logDeviceImportEvent('warn', 'Device import validation failed', {
+          fileName: importFileName,
+          deviceCounts: importDeviceCounts,
+          validationErrors: sanitizeImportErrors(result.errors),
+          errorCount: Array.isArray(result.errors) ? result.errors.length : 0
+        }, {
+          action: 'validate'
+        });
         console.error('Device import validation failed:', result.errors);
         alert(summary ? "".concat(texts[currentLang].alertImportError, "\n").concat(summary) : texts[currentLang].alertImportError);
         return;
@@ -3499,6 +3778,13 @@ addSafeEventListener(importFileInput, "change", function (event) {
             reason: 'import'
           });
         } catch (error) {
+          logDeviceImportEvent('warn', 'Auto backup before device import failed', {
+            fileName: importFileName,
+            deviceCounts: importDeviceCounts,
+            error: sanitizeErrorForLogging(error)
+          }, {
+            action: 'auto-backup'
+          });
           console.warn('Failed to auto backup before import', error);
         }
       }
@@ -3538,6 +3824,13 @@ addSafeEventListener(importFileInput, "change", function (event) {
       exportOutput.style.display = "block";
       exportOutput.value = JSON.stringify(devices, null, 2);
     } catch (error) {
+      logDeviceImportEvent('error', 'Failed to import device data', {
+        fileName: importFileName,
+        deviceCounts: buildDeviceCountsSnapshot(devices, null),
+        error: sanitizeErrorForLogging(error)
+      }, {
+        action: 'parse'
+      });
       console.error("Error parsing or importing data:", error);
       var errorMessage = error && error.message ? error.message : String(error);
       var _summary = formatDeviceImportErrors([errorMessage]);

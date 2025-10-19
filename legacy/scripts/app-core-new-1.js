@@ -26,8 +26,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-
-function resolveRuntimeModuleLoader() {
+function fallbackResolveRuntimeModuleLoader() {
   if (typeof require === 'function') {
     try {
       var requiredLoader = require('./modules/core/runtime-module-loader.js');
@@ -38,35 +37,25 @@ function resolveRuntimeModuleLoader() {
       void runtimeLoaderError;
     }
   }
-
-  if (
-    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-    cineCoreRuntimeModuleLoader &&
-    _typeof(cineCoreRuntimeModuleLoader) === 'object'
-  ) {
+  if (typeof cineCoreRuntimeModuleLoader !== 'undefined' && cineCoreRuntimeModuleLoader && (typeof cineCoreRuntimeModuleLoader === "undefined" ? "undefined" : _typeof(cineCoreRuntimeModuleLoader)) === 'object') {
     return cineCoreRuntimeModuleLoader;
   }
-
-  var scope =
-    typeof globalThis !== 'undefined' && globalThis ?
-      globalThis :
-    typeof window !== 'undefined' && window ?
-      window :
-    typeof self !== 'undefined' && self ?
-      self :
-    typeof global !== 'undefined' && global ?
-      global :
-      null;
-
-  if (scope && _typeof(scope.cineCoreRuntimeModuleLoader) === 'object') {
-    return scope.cineCoreRuntimeModuleLoader;
+  if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis.cineCoreRuntimeModuleLoader) === 'object') {
+    return globalThis.cineCoreRuntimeModuleLoader;
   }
-
+  if (typeof window !== 'undefined' && window && _typeof(window.cineCoreRuntimeModuleLoader) === 'object') {
+    return window.cineCoreRuntimeModuleLoader;
+  }
+  if (typeof self !== 'undefined' && self && _typeof(self.cineCoreRuntimeModuleLoader) === 'object') {
+    return self.cineCoreRuntimeModuleLoader;
+  }
+  if (typeof global !== 'undefined' && global && _typeof(global.cineCoreRuntimeModuleLoader) === 'object') {
+    return global.cineCoreRuntimeModuleLoader;
+  }
   return null;
 }
-
-function requireCoreRuntimeModule(moduleId, options) {
-  var loader = resolveRuntimeModuleLoader();
+function fallbackRequireCoreRuntimeModule(moduleId, options) {
+  var loader = fallbackResolveRuntimeModuleLoader();
   if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
     try {
       return loader.resolveCoreRuntimeModule(moduleId, options);
@@ -74,662 +63,81 @@ function requireCoreRuntimeModule(moduleId, options) {
       void moduleResolutionError;
     }
   }
-
   return null;
 }
-var APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule('cineCoreAppLocalizationSupport', './modules/app-core/localization.js');
-var APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS = resolveCoreSupportModule('cineCoreAppLocalizationBootstrap', './modules/app-core/localization.js');
-var localizationBootstrapResult = function resolveLocalizationBootstrapResult() {
-  var requireFn = typeof require === 'function' ? require : null;
-  function createInlineLocalizationFallback() {
-    return {
-      localizationSupport: null,
-      localizationRuntimeEnvironment: null,
-      localizationBridge: null,
-      localizationFallbacks: null,
-      inlineLocalizationFallbacks: null,
-      localizationFallbackSupport: null,
-      createBasicLocalizationFallbackResolvers: function createBasicLocalizationFallbackResolvers() {
-        return null;
-      },
-      localizationFallbackRegistry: {
-        createFallbackResolvers: function createFallbackResolvers() {
-          return null;
-        }
-      },
-      localizationFallbackResolvers: null,
-      localizationFallbackNamespace: null,
-      fallbackResolveLocaleModule: function fallbackResolveLocaleModule() {
-        return null;
-      },
-      createLocaleFallbacks: function createLocaleFallbacks() {
-        return null;
-      }
-    };
+var CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE = function resolveRuntimeSupportExportNamespace() {
+  var namespaces = [];
+  try {
+    if ((typeof CORE_RUNTIME_SUPPORT_EXPORTS === "undefined" ? "undefined" : _typeof(CORE_RUNTIME_SUPPORT_EXPORTS)) === 'object' && CORE_RUNTIME_SUPPORT_EXPORTS) {
+      namespaces.push(CORE_RUNTIME_SUPPORT_EXPORTS);
+    }
+  } catch (coreRuntimeSupportExportsError) {
+    void coreRuntimeSupportExportsError;
   }
-  var resolverOptions = {
-    localizationSupportTools: APP_CORE_LOCALIZATION_SUPPORT_TOOLS,
-    resolveCoreSupportModule: resolveCoreSupportModule,
-    requireFn: requireFn,
-    runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-    coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-    fallbackScopes: [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null]
-  };
-  function attemptResolve(candidate) {
-    if (!candidate || _typeof(candidate) !== 'object') {
-      return null;
+  try {
+    if (typeof cineCoreRuntimeSupportExports !== 'undefined' && cineCoreRuntimeSupportExports && (typeof cineCoreRuntimeSupportExports === "undefined" ? "undefined" : _typeof(cineCoreRuntimeSupportExports)) === 'object') {
+      namespaces.push(cineCoreRuntimeSupportExports);
     }
-    var resolver = typeof candidate.createLocalizationBootstrapResult === 'function' ? candidate.createLocalizationBootstrapResult : null;
-    if (!resolver) {
-      return null;
-    }
-    try {
-      var _result = resolver(resolverOptions);
-      return _result && _typeof(_result) === 'object' ? _result : null;
-    } catch (localizationBootstrapError) {
-      void localizationBootstrapError;
-    }
-    return null;
+  } catch (legacyRuntimeSupportExportsError) {
+    void legacyRuntimeSupportExportsError;
   }
-  var result = attemptResolve(APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS);
-  if (!result && typeof requireFn === 'function') {
-    try {
-      var requiredTools = requireFn('./modules/app-core/localization.js');
-      result = attemptResolve(requiredTools);
-    } catch (localizationBootstrapRequireError) {
-      void localizationBootstrapRequireError;
+  for (var index = 0; index < namespaces.length; index += 1) {
+    var namespace = namespaces[index];
+    if (namespace && _typeof(namespace) === 'object') {
+      return namespace;
     }
   }
-  if (!result) {
-    var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-    for (var index = 0; index < fallbackScopes.length; index += 1) {
-      var scope = fallbackScopes[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
-      }
-      try {
-        var candidate = scope.cineCoreAppLocalizationBootstrap;
-        result = attemptResolve(candidate);
-      } catch (localizationBootstrapLookupError) {
-        void localizationBootstrapLookupError;
-      }
-      if (result) {
-        break;
-      }
-    }
-  }
-  if (!result) {
-    result = createInlineLocalizationFallback();
-  }
-  return result;
+  return null;
 }();
-var APP_CORE_LOCALIZATION_SUPPORT = localizationBootstrapResult && localizationBootstrapResult.localizationSupport ? localizationBootstrapResult.localizationSupport : null;
-var localizationRuntimeEnvironment = localizationBootstrapResult && localizationBootstrapResult.localizationRuntimeEnvironment ? localizationBootstrapResult.localizationRuntimeEnvironment : null;
-var CORE_LOCALIZATION_BRIDGE = localizationBootstrapResult && localizationBootstrapResult.localizationBridge ? localizationBootstrapResult.localizationBridge : null;
-var CORE_LOCALIZATION_FALLBACKS = localizationBootstrapResult && localizationBootstrapResult.localizationFallbacks ? localizationBootstrapResult.localizationFallbacks : null;
-var CORE_INLINE_LOCALIZATION_FALLBACKS = localizationBootstrapResult && localizationBootstrapResult.inlineLocalizationFallbacks ? localizationBootstrapResult.inlineLocalizationFallbacks : null;
-var LOCALIZATION_FALLBACK_SUPPORT = localizationBootstrapResult && typeof localizationBootstrapResult.localizationFallbackSupport !== 'undefined' ? localizationBootstrapResult.localizationFallbackSupport : null;
-var createBasicLocalizationFallbackResolvers = localizationBootstrapResult && typeof localizationBootstrapResult.createBasicLocalizationFallbackResolvers === 'function' ? localizationBootstrapResult.createBasicLocalizationFallbackResolvers : function createBasicLocalizationFallbackResolversProxy() {
-  return null;
-};
-var LOCALIZATION_FALLBACK_REGISTRY = localizationBootstrapResult && localizationBootstrapResult.localizationFallbackRegistry ? localizationBootstrapResult.localizationFallbackRegistry : {
-  createFallbackResolvers: function createFallbackResolvers(fallbackOptions) {
-    return createBasicLocalizationFallbackResolvers(fallbackOptions);
-  }
-};
-var LOCALIZATION_FALLBACK_RESOLVERS = localizationBootstrapResult && localizationBootstrapResult.localizationFallbackResolvers ? localizationBootstrapResult.localizationFallbackResolvers : LOCALIZATION_FALLBACK_REGISTRY && typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function' ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
-  directNamespace: CORE_LOCALIZATION_FALLBACKS,
-  inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS
-}) : createBasicLocalizationFallbackResolvers({
-  directNamespace: CORE_LOCALIZATION_FALLBACKS,
-  inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS
-});
-var LOCALIZATION_FALLBACK_NAMESPACE = localizationBootstrapResult && typeof localizationBootstrapResult.localizationFallbackNamespace !== 'undefined' ? localizationBootstrapResult.localizationFallbackNamespace : null;
-var fallbackResolveLocaleModule = localizationBootstrapResult && typeof localizationBootstrapResult.fallbackResolveLocaleModule === 'function' ? localizationBootstrapResult.fallbackResolveLocaleModule : function fallbackResolveLocaleModuleProxy() {
-  return null;
-};
-var createLocaleFallbacks = localizationBootstrapResult && typeof localizationBootstrapResult.createLocaleFallbacks === 'function' ? localizationBootstrapResult.createLocaleFallbacks : function createLocaleFallbacksProxy() {
-  return null;
-};
+var resolveRuntimeModuleLoaderNamespaceResolver = CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE && typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.resolveRuntimeModuleLoader === 'function' ? function resolveRuntimeModuleLoaderProxy() {
+  return CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.resolveRuntimeModuleLoader();
+} : fallbackResolveRuntimeModuleLoader;
+var resolvedRuntimeModuleLoader = (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && typeof globalThis.resolveRuntimeModuleLoader === 'function' ? globalThis.resolveRuntimeModuleLoader : resolveRuntimeModuleLoaderNamespaceResolver;
+if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && typeof globalThis.resolveRuntimeModuleLoader !== 'function') {
+  globalThis.resolveRuntimeModuleLoader = resolvedRuntimeModuleLoader;
+}
+var requireCoreRuntimeModuleNamespaceResolver = CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE && typeof CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.requireCoreRuntimeModule === 'function' ? function requireCoreRuntimeModuleProxy(moduleId, options) {
+  return CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE.requireCoreRuntimeModule(moduleId, options);
+} : fallbackRequireCoreRuntimeModule;
+var resolvedRequireCoreRuntimeModule = (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && typeof globalThis.requireCoreRuntimeModule === 'function' ? globalThis.requireCoreRuntimeModule : requireCoreRuntimeModuleNamespaceResolver;
+if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && typeof globalThis.requireCoreRuntimeModule !== 'function') {
+  globalThis.requireCoreRuntimeModule = resolvedRequireCoreRuntimeModule;
+}
+var _localizationBootstra = localizationBootstrapWiring,
+  APP_CORE_LOCALIZATION_SUPPORT = _localizationBootstra.localizationSupport,
+  localizationRuntimeEnvironment = _localizationBootstra.localizationRuntimeEnvironment,
+  CORE_LOCALIZATION_BRIDGE = _localizationBootstra.localizationBridge,
+  CORE_LOCALIZATION_FALLBACKS = _localizationBootstra.localizationFallbacks,
+  CORE_INLINE_LOCALIZATION_FALLBACKS = _localizationBootstra.inlineLocalizationFallbacks,
+  LOCALIZATION_FALLBACK_SUPPORT = _localizationBootstra.localizationFallbackSupport,
+  createBasicLocalizationFallbackResolvers = _localizationBootstra.createBasicLocalizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_REGISTRY = _localizationBootstra.localizationFallbackRegistry,
+  LOCALIZATION_FALLBACK_RESOLVERS = _localizationBootstra.localizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_NAMESPACE = _localizationBootstra.localizationFallbackNamespace,
+  fallbackResolveLocaleModule = _localizationBootstra.fallbackResolveLocaleModule,
+  createLocaleFallbacks = _localizationBootstra.createLocaleFallbacks;
 var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');
 var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRuntimeToolFallbacks', './modules/core/runtime-tool-fallbacks.js');
 var RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeToolInlineFallbacks', './modules/app-core/runtime.js');
-var CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedNamespace', './modules/app-core/runtime.js');
 var SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule('cineCoreAppSettingsDocumentationTracker', './modules/app-core/settings-documentation-tracker.js');
-var RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrap', './modules/app-core/runtime.js');
-var LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule('cineCoreAppLocalizationAccessors', './modules/app-core/localization.js');
-var RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapInline', './modules/app-core/runtime.js');
-var RUNTIME_SHARED_BOOTSTRAP_RESULT_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapResult', './modules/app-core/runtime.js');
-var RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapLoader', './modules/app-core/runtime.js');
-var RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapManager', './modules/app-core/runtime.js');
-var RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapResolver', './modules/app-core/runtime.js');
-var RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeSharedBootstrapContext', './modules/app-core/runtime.js');
-var runtimeSharedBootstrapResult = function resolveRuntimeSharedBootstrapResult() {
-  var requireFn = typeof require === 'function' ? require : null;
-  function createInlineRuntimeSharedFallback() {
-    var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-    function fallbackResolveRuntimeSharedFromGlobal() {
-      for (var index = 0; index < fallbackScopes.length; index += 1) {
-        var scope = fallbackScopes[index];
-        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-          continue;
-        }
-        try {
-          var candidate = scope.cineCoreRuntimeShared;
-          if (candidate && _typeof(candidate) === 'object') {
-            return candidate;
-          }
-        } catch (runtimeSharedLookupError) {
-          void runtimeSharedLookupError;
-        }
-      }
-      return null;
-    }
-    var runtimeShared = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null;
-    if (!runtimeShared || _typeof(runtimeShared) !== 'object') {
-      runtimeShared = fallbackResolveRuntimeSharedFromGlobal();
-    }
-    if (!runtimeShared || _typeof(runtimeShared) !== 'object') {
-      try {
-        runtimeShared = Object.create(null);
-      } catch (runtimeSharedCreationError) {
-        void runtimeSharedCreationError;
-        runtimeShared = {};
-      }
-    }
-    return {
-      runtimeSharedNamespace: null,
-      runtimeSharedResolver: null,
-      existingRuntimeShared: runtimeShared,
-      runtimeShared: runtimeShared,
-      fallbackResolveRuntimeSharedFromGlobal: fallbackResolveRuntimeSharedFromGlobal
-    };
-  }
-  var resolverOptions = {
-    runtimeSharedBootstrapResolverTools: RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS,
-    runtimeSharedBootstrapTools: RUNTIME_SHARED_BOOTSTRAP_TOOLS,
-    runtimeSharedNamespaceTools: CORE_RUNTIME_SHARED_NAMESPACE_TOOLS,
-    runtimeSharedBootstrapInlineTools: RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS,
-    runtimeSharedBootstrapResultTools: RUNTIME_SHARED_BOOTSTRAP_RESULT_TOOLS,
-    runtimeSharedBootstrapLoaderTools: RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS,
-    runtimeSharedBootstrapManagerTools: RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS,
-    resolveCoreSupportModule: resolveCoreSupportModule,
-    requireFn: requireFn,
-    runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-    coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-    currentRuntimeShared: typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null,
-    fallbackScopes: [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null]
-  };
-  function attemptResolve(candidate) {
-    if (!candidate || _typeof(candidate) !== 'object') {
-      return null;
-    }
-    var resolver = typeof candidate.createRuntimeSharedBootstrapContext === 'function' ? candidate.createRuntimeSharedBootstrapContext : null;
-    if (!resolver) {
-      return null;
-    }
-    try {
-      var _result2 = resolver(resolverOptions);
-      return _result2 && _typeof(_result2) === 'object' ? _result2 : null;
-    } catch (runtimeSharedBootstrapContextError) {
-      void runtimeSharedBootstrapContextError;
-    }
-    return null;
-  }
-  var result = attemptResolve(RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS);
-  if (!result && typeof requireFn === 'function') {
-    try {
-      var requiredTools = requireFn('./modules/app-core/runtime.js');
-      result = attemptResolve(requiredTools);
-    } catch (runtimeSharedBootstrapContextRequireError) {
-      void runtimeSharedBootstrapContextRequireError;
-    }
-  }
-  if (!result) {
-    var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-    for (var index = 0; index < fallbackScopes.length; index += 1) {
-      var scope = fallbackScopes[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
-      }
-      try {
-        var candidate = scope.cineCoreAppRuntimeSharedBootstrapContext;
-        result = attemptResolve(candidate);
-      } catch (runtimeSharedBootstrapContextLookupError) {
-        void runtimeSharedBootstrapContextLookupError;
-      }
-      if (result) {
-        break;
-      }
-    }
-  }
-  if (!result) {
-    result = createInlineRuntimeSharedFallback();
-  }
-  return result;
-}();
-var CORE_RUNTIME_SHARED_NAMESPACE = runtimeSharedBootstrapResult && runtimeSharedBootstrapResult.runtimeSharedNamespace ? runtimeSharedBootstrapResult.runtimeSharedNamespace : null;
-var CORE_RUNTIME_SHARED_RESOLVER = runtimeSharedBootstrapResult && typeof runtimeSharedBootstrapResult.runtimeSharedResolver === 'function' ? runtimeSharedBootstrapResult.runtimeSharedResolver : null;
-var EXISTING_CORE_RUNTIME_SHARED = (runtimeSharedBootstrapResult && runtimeSharedBootstrapResult.existingRuntimeShared && _typeof(runtimeSharedBootstrapResult.existingRuntimeShared) === 'object' ? runtimeSharedBootstrapResult.existingRuntimeShared : null) || (typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null);
-var fallbackResolveRuntimeSharedFromGlobal = runtimeSharedBootstrapResult && typeof runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal === 'function' ? runtimeSharedBootstrapResult.fallbackResolveRuntimeSharedFromGlobal : function fallbackResolveRuntimeSharedFromGlobal() {
-  return null;
-};
-var CORE_RUNTIME_SHARED = (runtimeSharedBootstrapResult && runtimeSharedBootstrapResult.runtimeShared && _typeof(runtimeSharedBootstrapResult.runtimeShared) === 'object' ? runtimeSharedBootstrapResult.runtimeShared : null) || (EXISTING_CORE_RUNTIME_SHARED && _typeof(EXISTING_CORE_RUNTIME_SHARED) === 'object' ? EXISTING_CORE_RUNTIME_SHARED : null) || (CORE_RUNTIME_SHARED_RESOLVER ? function resolveRuntimeSharedWithResolver() {
-  try {
-    var resolved = CORE_RUNTIME_SHARED_RESOLVER({
-      currentShared: EXISTING_CORE_RUNTIME_SHARED,
-      resolveCoreSupportModule: resolveCoreSupportModule,
-      requireFn: typeof require === 'function' ? require : null,
-      runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-      coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
-    });
-    if (resolved && _typeof(resolved) === 'object') {
-      return resolved;
-    }
-  } catch (runtimeSharedResolverError) {
-    void runtimeSharedResolverError;
-  }
-  return null;
-}() : null) || fallbackResolveRuntimeSharedFromGlobal() || Object.create(null);
-var PINK_MODE_SUPPORT_LOADER_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeSupportLoader', './modules/app-core/pink-mode.js');
-var PINK_MODE_SUPPORT_API_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeSupportApi', './modules/app-core/pink-mode.js');
-var PINK_MODE_SUPPORT_RESOLVER_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeSupportResolver', './modules/app-core/pink-mode.js');
-var PINK_MODE_SUPPORT_API = function resolvePinkModeSupportApi() {
-  var requireFn = typeof require === 'function' ? require : null;
-  function createInlinePinkModeLastResortApi() {
-    if (PINK_MODE_SUPPORT_RESOLVER_TOOLS && typeof PINK_MODE_SUPPORT_RESOLVER_TOOLS.createPinkModeSupportLastResortApi === 'function') {
-      try {
-        var _api = PINK_MODE_SUPPORT_RESOLVER_TOOLS.createPinkModeSupportLastResortApi();
-        if (_api && _typeof(_api) === 'object') {
-          return _api;
-        }
-      } catch (pinkModeLastResortError) {
-        void pinkModeLastResortError;
-      }
-    }
-    if (typeof requireFn === 'function') {
-      try {
-        var requiredResolverTools = requireFn('./modules/app-core/pink-mode.js');
-        if (requiredResolverTools && typeof requiredResolverTools.createPinkModeSupportLastResortApi === 'function') {
-          var _api2 = requiredResolverTools.createPinkModeSupportLastResortApi();
-          if (_api2 && _typeof(_api2) === 'object') {
-            return _api2;
-          }
-        }
-      } catch (pinkModeSupportInlineFallbackError) {
-        void pinkModeSupportInlineFallbackError;
-      }
-    }
-    var fallbackIcons = Object.freeze({
-      off: Object.freeze({
-        className: 'icon-svg pink-mode-icon',
-        markup: ''
-      }),
-      onSequence: Object.freeze([])
-    });
-    function ensureSafePromise(value) {
-      if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
-        return Promise.resolve(value);
-      }
-      var promiseLike = {
-        then: function then(callback) {
-          if (typeof callback === 'function') {
-            try {
-              return ensureSafePromise(callback(value));
-            } catch (callbackError) {
-              void callbackError;
-            }
-          }
-          return promiseLike;
-        },
-        catch: function _catch() {
-          return promiseLike;
-        }
-      };
-      return promiseLike;
-    }
-    function noop() {}
-    return Object.freeze({
-      pinkModeIcons: fallbackIcons,
-      ensureSvgHasAriaHidden: noop,
-      setPinkModeIconSequence: noop,
-      loadPinkModeIconsFromFiles: function loadPinkModeIconsFromFiles() {
-        return ensureSafePromise(fallbackIcons);
-      },
-      ensurePinkModeLottieRuntime: function ensurePinkModeLottieRuntime() {
-        return ensureSafePromise(null);
-      },
-      resolvePinkModeLottieRuntime: function resolvePinkModeLottieRuntime() {
-        return ensureSafePromise(null);
-      },
-      startPinkModeAnimatedIcons: noop,
-      stopPinkModeAnimatedIcons: noop,
-      triggerPinkModeIconRain: noop,
-      getPinkModeIconRotationTimer: noop,
-      setPinkModeIconRotationTimer: noop,
-      getPinkModeIconIndex: noop,
-      setPinkModeIconIndex: noop,
-      PINK_MODE_ICON_INTERVAL_MS: 12000,
-      PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-animation',
-      PINK_MODE_ICON_ANIMATION_RESET_DELAY: 90,
-      PINK_MODE_ICON_FALLBACK_MARKUP: ''
-    });
-  }
-  var resolverOptions = {
-    loaderTools: PINK_MODE_SUPPORT_LOADER_TOOLS,
-    apiTools: PINK_MODE_SUPPORT_API_TOOLS,
-    resolveCoreSupportModule: resolveCoreSupportModule,
-    requireFn: requireFn,
-    runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-    coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-    fallbackScopes: [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null],
-    loaderPath: './modules/app-core/pink-mode.js',
-    apiRequirePath: './modules/app-core/pink-mode.js',
-    lastResortFactory: createInlinePinkModeLastResortApi
-  };
-  function attemptResolve(candidate) {
-    if (!candidate || _typeof(candidate) !== 'object') {
-      return null;
-    }
-    var resolver = typeof candidate.resolvePinkModeSupportApi === 'function' ? candidate.resolvePinkModeSupportApi : null;
-    if (!resolver) {
-      return null;
-    }
-    try {
-      var _api3 = resolver(resolverOptions);
-      return _api3 && _typeof(_api3) === 'object' ? _api3 : null;
-    } catch (pinkModeSupportResolverError) {
-      void pinkModeSupportResolverError;
-    }
-    return null;
-  }
-  var api = attemptResolve(PINK_MODE_SUPPORT_RESOLVER_TOOLS);
-  if (!api && typeof requireFn === 'function') {
-    try {
-      var requiredResolverTools = requireFn('./modules/app-core/pink-mode.js');
-      api = attemptResolve(requiredResolverTools);
-    } catch (pinkModeSupportResolverRequireError) {
-      void pinkModeSupportResolverRequireError;
-    }
-  }
-  if (!api) {
-    var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-    for (var index = 0; index < fallbackScopes.length; index += 1) {
-      var scope = fallbackScopes[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
-      }
-      try {
-        var candidate = scope.cineCoreAppPinkModeSupportResolver;
-        api = attemptResolve(candidate);
-      } catch (pinkModeSupportResolverLookupError) {
-        void pinkModeSupportResolverLookupError;
-      }
-      if (api) {
-        break;
-      }
-    }
-  }
-  if (!api || _typeof(api) !== 'object') {
-    api = createInlinePinkModeLastResortApi();
-  }
-  return api;
-}();
-var pinkModeIcons = PINK_MODE_SUPPORT_API.pinkModeIcons,
-  ensureSvgHasAriaHidden = PINK_MODE_SUPPORT_API.ensureSvgHasAriaHidden,
-  setPinkModeIconSequence = PINK_MODE_SUPPORT_API.setPinkModeIconSequence,
-  loadPinkModeIconsFromFiles = PINK_MODE_SUPPORT_API.loadPinkModeIconsFromFiles,
-  ensurePinkModeLottieRuntime = PINK_MODE_SUPPORT_API.ensurePinkModeLottieRuntime,
-  resolvePinkModeLottieRuntime = PINK_MODE_SUPPORT_API.resolvePinkModeLottieRuntime,
-  startPinkModeAnimatedIcons = PINK_MODE_SUPPORT_API.startPinkModeAnimatedIcons,
-  stopPinkModeAnimatedIcons = PINK_MODE_SUPPORT_API.stopPinkModeAnimatedIcons,
-  triggerPinkModeIconRain = PINK_MODE_SUPPORT_API.triggerPinkModeIconRain,
-  getPinkModeIconRotationTimer = PINK_MODE_SUPPORT_API.getPinkModeIconRotationTimer,
-  setPinkModeIconRotationTimer = PINK_MODE_SUPPORT_API.setPinkModeIconRotationTimer,
-  getPinkModeIconIndex = PINK_MODE_SUPPORT_API.getPinkModeIconIndex,
-  setPinkModeIconIndex = PINK_MODE_SUPPORT_API.setPinkModeIconIndex,
-  PINK_MODE_ICON_INTERVAL_MS = PINK_MODE_SUPPORT_API.PINK_MODE_ICON_INTERVAL_MS,
-  PINK_MODE_ICON_ANIMATION_CLASS = PINK_MODE_SUPPORT_API.PINK_MODE_ICON_ANIMATION_CLASS,
-  PINK_MODE_ICON_ANIMATION_RESET_DELAY = PINK_MODE_SUPPORT_API.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-  PINK_MODE_ICON_FALLBACK_MARKUP = PINK_MODE_SUPPORT_API.PINK_MODE_ICON_FALLBACK_MARKUP;
-var CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = resolveCoreSupportModule('cineCoreRuntimeCandidateScopes', './modules/core/runtime-candidate-scopes.js');
-var CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeCandidateScopeSupport', './modules/app-core/runtime.js');
-var resolveRuntimeCandidateScopeSupport = (CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS && typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.resolveRuntimeCandidateScopeSupport === 'function' ? CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.resolveRuntimeCandidateScopeSupport : null) || function fallbackResolveRuntimeCandidateScopeSupport() {
-  if (typeof require === 'function') {
-    try {
-      var required = require('./modules/app-core/runtime.js');
-      if (required && typeof required.resolveRuntimeCandidateScopeSupport === 'function') {
-        return required.resolveRuntimeCandidateScopeSupport;
-      }
-    } catch (runtimeCandidateScopeSupportError) {
-      void runtimeCandidateScopeSupportError;
-    }
-  }
-  var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var index = 0; index < fallbackScopes.length; index += 1) {
-    var scope = fallbackScopes[index];
-    if (!scope || _typeof(scope) !== 'object') {
-      continue;
-    }
-    try {
-      var candidate = scope.cineCoreAppRuntimeCandidateScopeSupport;
-      if (candidate && typeof candidate.resolveRuntimeCandidateScopeSupport === 'function') {
-        return candidate.resolveRuntimeCandidateScopeSupport;
-      }
-    } catch (candidateScopeSupportLookupError) {
-      void candidateScopeSupportLookupError;
-    }
-  }
-  return null;
-}();
-var createFallbackRuntimeCandidateScopeSupport = (CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS && typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.createFallbackRuntimeCandidateScopeSupport === 'function' ? CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS.createFallbackRuntimeCandidateScopeSupport : null) || function fallbackCreateRuntimeCandidateScopeSupport() {
-  if (typeof require === 'function') {
-    try {
-      var required = require('./modules/app-core/runtime.js');
-      if (required && typeof required.createFallbackRuntimeCandidateScopeSupport === 'function') {
-        return required.createFallbackRuntimeCandidateScopeSupport;
-      }
-    } catch (runtimeCandidateScopeFallbackError) {
-      void runtimeCandidateScopeFallbackError;
-    }
-  }
-  var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var index = 0; index < fallbackScopes.length; index += 1) {
-    var scope = fallbackScopes[index];
-    if (!scope || _typeof(scope) !== 'object') {
-      continue;
-    }
-    try {
-      var candidate = scope.cineCoreAppRuntimeCandidateScopeSupport;
-      if (candidate && typeof candidate.createFallbackRuntimeCandidateScopeSupport === 'function') {
-        return candidate.createFallbackRuntimeCandidateScopeSupport;
-      }
-    } catch (candidateScopeFallbackLookupError) {
-      void candidateScopeFallbackLookupError;
-    }
-  }
-  return null;
-}();
-var RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeCandidateScopeFallback', './modules/app-core/runtime.js');
-var createRuntimeCandidateScopeSupportFallback = RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS && typeof RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS.createRuntimeCandidateScopeSupportFallback === 'function' ? RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS.createRuntimeCandidateScopeSupportFallback : function resolveRuntimeCandidateScopeFallbackFactory() {
-  if (typeof require === 'function') {
-    try {
-      var requiredRuntimeCandidateScopeFallback = require('./modules/app-core/runtime.js');
-      if (requiredRuntimeCandidateScopeFallback && typeof requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback === 'function') {
-        return requiredRuntimeCandidateScopeFallback.createRuntimeCandidateScopeSupportFallback;
-      }
-    } catch (runtimeCandidateScopeFallbackRequireError) {
-      void runtimeCandidateScopeFallbackRequireError;
-    }
-  }
-  return function runtimeCandidateScopeSupportFallbackFactory(options) {
-    var fallbackSupport = {
-      collectCandidateScopes: function collectCandidateScopes() {
-        return [];
-      },
-      collectCandidateScopesWithFallback: function collectCandidateScopesWithFallback() {
-        return [];
-      },
-      resolveCandidateScopes: function resolveCandidateScopes(resolveOptions) {
-        var provided = resolveOptions && Array.isArray(resolveOptions.currentCandidateScopes) ? resolveOptions.currentCandidateScopes : null;
-        return provided || [];
-      },
-      syncCandidateScopes: function syncCandidateScopes(candidateScopes, syncOptions) {
-        var list = Array.isArray(candidateScopes) ? candidateScopes : [];
-        var assignCandidateScopes = syncOptions && typeof syncOptions.assignCurrentCandidateScopes === 'function' ? syncOptions.assignCurrentCandidateScopes : options && typeof options.assignCurrentCandidateScopes === 'function' ? options.assignCurrentCandidateScopes : null;
-        if (assignCandidateScopes) {
-          try {
-            assignCandidateScopes(list);
-          } catch (assignCandidateScopesError) {
-            void assignCandidateScopesError;
-          }
-        }
-        return list;
-      },
-      ensureCandidateScopes: function ensureCandidateScopes(ensureOptions) {
-        var ensureOptionsWithDefaults = ensureOptions || {};
-        var resolved = fallbackSupport.resolveCandidateScopes(ensureOptionsWithDefaults);
-        return fallbackSupport.syncCandidateScopes(resolved, ensureOptionsWithDefaults);
-      }
-    };
-    return fallbackSupport;
-  };
-}();
-var FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT = typeof createFallbackRuntimeCandidateScopeSupport === 'function' ? createFallbackRuntimeCandidateScopeSupport({
-  runtimeShared: CORE_RUNTIME_SHARED,
-  environmentHelpers: CORE_ENVIRONMENT_HELPERS
-}) : createRuntimeCandidateScopeSupportFallback({
-  runtimeShared: CORE_RUNTIME_SHARED,
-  environmentHelpers: CORE_ENVIRONMENT_HELPERS,
-  candidateScopeBridge: CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE,
-  corePartRuntimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-  assignCurrentCandidateScopes: function assignCurrentCandidateScopes(value) {
-    try {
-      CORE_RUNTIME_CANDIDATE_SCOPES = value;
-    } catch (candidateAssignError) {
-      void candidateAssignError;
-    }
-  }
-});
-var CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT = (typeof resolveRuntimeCandidateScopeSupport === 'function' ? resolveRuntimeCandidateScopeSupport({
-  resolveCoreSupportModule: resolveCoreSupportModule,
-  requireFn: typeof require === 'function' ? require : null,
-  runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-  runtimeShared: CORE_RUNTIME_SHARED,
-  environmentHelpers: CORE_ENVIRONMENT_HELPERS
-}) : null) || FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT;
-var RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeCandidateScopeResolvers', './modules/app-core/runtime.js');
-var createRuntimeCandidateScopeResolvers = RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS && typeof RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers === 'function' ? RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers : function resolveRuntimeCandidateScopeResolversFactory() {
-  if (typeof require === 'function') {
-    try {
-      var requiredRuntimeCandidateScopeResolvers = require('./modules/app-core/runtime.js');
-      if (requiredRuntimeCandidateScopeResolvers && typeof requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers === 'function') {
-        return requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers;
-      }
-    } catch (runtimeCandidateScopeResolversRequireError) {
-      void runtimeCandidateScopeResolversRequireError;
-    }
-  }
-  return null;
-}();
-function createInlineRuntimeCandidateScopeResolvers(resolverOptions) {
-  var runtimeSupport = resolverOptions && resolverOptions.runtimeCandidateScopeSupport ? resolverOptions.runtimeCandidateScopeSupport : null;
-  var fallbackSupport = resolverOptions && resolverOptions.fallbackRuntimeCandidateScopeSupport ? resolverOptions.fallbackRuntimeCandidateScopeSupport : null;
-  function tryCollectWithSupport(support, primaryScope) {
-    if (!support || typeof support.collectCandidateScopes !== 'function') {
-      return null;
-    }
-    try {
-      var collected = support.collectCandidateScopes(primaryScope);
-      return Array.isArray(collected) ? collected : null;
-    } catch (collectCandidateScopesError) {
-      void collectCandidateScopesError;
-    }
-    return null;
-  }
-  function tryEnsureWithSupport(support, options) {
-    if (!support || typeof support.ensureCandidateScopes !== 'function') {
-      return null;
-    }
-    try {
-      var ensured = support.ensureCandidateScopes(options);
-      return Array.isArray(ensured) ? ensured : null;
-    } catch (ensureCandidateScopesError) {
-      void ensureCandidateScopesError;
-    }
-    return null;
-  }
-  function inlineCollectCoreRuntimeCandidateScopes(primaryScope) {
-    var collected = tryCollectWithSupport(runtimeSupport, primaryScope);
-    if (collected) {
-      return collected;
-    }
-    var fallbackCollected = tryCollectWithSupport(fallbackSupport, primaryScope);
-    if (fallbackCollected) {
-      return fallbackCollected;
-    }
-    return [];
-  }
-  function inlineEnsureCoreRuntimeCandidateScopes(ensureOptions) {
-    var options = ensureOptions && _typeof(ensureOptions) === 'object' ? ensureOptions : {};
-    var ensured = tryEnsureWithSupport(runtimeSupport, options);
-    if (ensured && ensured.length) {
-      return ensured;
-    }
-    var fallbackEnsured = tryEnsureWithSupport(fallbackSupport, options);
-    if (fallbackEnsured && fallbackEnsured.length) {
-      return fallbackEnsured;
-    }
-    return inlineCollectCoreRuntimeCandidateScopes(options.primaryScope);
-  }
-  return {
-    collectCoreRuntimeCandidateScopes: inlineCollectCoreRuntimeCandidateScopes,
-    ensureCoreRuntimeCandidateScopes: inlineEnsureCoreRuntimeCandidateScopes
-  };
-}
-var runtimeCandidateScopeResolvers = (typeof createRuntimeCandidateScopeResolvers === 'function' ? createRuntimeCandidateScopeResolvers({
-  runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
-  fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT
-}) : null) || createInlineRuntimeCandidateScopeResolvers({
-  runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
-  fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT
-});
-var COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE = _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE || typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis || typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window || typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' && self || typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' && global || null;
-var collectRuntimeCandidateScopesFromResolvers = runtimeCandidateScopeResolvers && typeof runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes === 'function' ? runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes : inlineCollectCoreRuntimeCandidateScopes;
-var collectRuntimeCandidateScopesFromGlobal = COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE && typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes === 'function' ? COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes : null;
-var resolvedCollectCoreRuntimeCandidateScopes = collectRuntimeCandidateScopesFromGlobal || collectRuntimeCandidateScopesFromResolvers;
-if (COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE && typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes !== 'function') {
-  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes = resolvedCollectCoreRuntimeCandidateScopes;
-}
-var CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = function ensureCoreRuntimeCandidateScopes() {
-  var primaryScope = _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null;
-  var ensureFn = runtimeCandidateScopeResolvers && typeof runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes === 'function' ? runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes : null;
-  var ensureOptions = {
-    primaryScope: primaryScope,
-    currentCandidateScopes: typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' && CORE_RUNTIME_CANDIDATE_SCOPES && typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number' ? CORE_RUNTIME_CANDIDATE_SCOPES : null,
-    globalScope: typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null,
-    assignCurrentCandidateScopes: function assignCurrentCandidateScopes(value) {
-      try {
-        CORE_RUNTIME_CANDIDATE_SCOPES = value;
-      } catch (candidateAssignError) {
-        void candidateAssignError;
-      }
-    }
-  };
-  if (typeof ensureFn === 'function') {
-    try {
-      var ensuredScopes = ensureFn(ensureOptions);
-      if (Array.isArray(ensuredScopes)) {
-        return ensuredScopes;
-      }
-    } catch (ensureCandidateScopesError) {
-      void ensureCandidateScopesError;
-    }
-  }
-  return resolvedCollectCoreRuntimeCandidateScopes(primaryScope);
-}();
+var _PINK_MODE_SUPPORT_AP = PINK_MODE_SUPPORT_API,
+  pinkModeIcons = _PINK_MODE_SUPPORT_AP.pinkModeIcons,
+  ensureSvgHasAriaHidden = _PINK_MODE_SUPPORT_AP.ensureSvgHasAriaHidden,
+  setPinkModeIconSequence = _PINK_MODE_SUPPORT_AP.setPinkModeIconSequence,
+  loadPinkModeIconsFromFiles = _PINK_MODE_SUPPORT_AP.loadPinkModeIconsFromFiles,
+  ensurePinkModeLottieRuntime = _PINK_MODE_SUPPORT_AP.ensurePinkModeLottieRuntime,
+  resolvePinkModeLottieRuntime = _PINK_MODE_SUPPORT_AP.resolvePinkModeLottieRuntime,
+  startPinkModeAnimatedIcons = _PINK_MODE_SUPPORT_AP.startPinkModeAnimatedIcons,
+  stopPinkModeAnimatedIcons = _PINK_MODE_SUPPORT_AP.stopPinkModeAnimatedIcons,
+  triggerPinkModeIconRain = _PINK_MODE_SUPPORT_AP.triggerPinkModeIconRain,
+  getPinkModeIconRotationTimer = _PINK_MODE_SUPPORT_AP.getPinkModeIconRotationTimer,
+  setPinkModeIconRotationTimer = _PINK_MODE_SUPPORT_AP.setPinkModeIconRotationTimer,
+  getPinkModeIconIndex = _PINK_MODE_SUPPORT_AP.getPinkModeIconIndex,
+  setPinkModeIconIndex = _PINK_MODE_SUPPORT_AP.setPinkModeIconIndex,
+  PINK_MODE_ICON_INTERVAL_MS = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_INTERVAL_MS,
+  PINK_MODE_ICON_ANIMATION_CLASS = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_ANIMATION_CLASS,
+  PINK_MODE_ICON_ANIMATION_RESET_DELAY = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+  PINK_MODE_ICON_FALLBACK_MARKUP = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_FALLBACK_MARKUP;
 var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -741,7 +149,7 @@ var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
     }
   }
   if (!resolvedSupport) {
-    var loaderRuntimeState = requireCoreRuntimeModule('modules/core/runtime-state.js');
+    var loaderRuntimeState = resolvedRequireCoreRuntimeModule('modules/core/runtime-state.js');
     if (loaderRuntimeState && _typeof(loaderRuntimeState) === 'object') {
       resolvedSupport = loaderRuntimeState;
     }
@@ -749,7 +157,7 @@ var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
   if (resolvedSupport) {
     return resolvedSupport;
   }
-  var fallbackScopes = resolvedCollectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+  var fallbackScopes = resolvedCollectCoreRuntimeCandidateScopes((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
   for (var index = 0; index < fallbackScopes.length; index += 1) {
     var candidateScope = fallbackScopes[index];
     if (!candidateScope || _typeof(candidateScope) !== 'object') {
@@ -792,10 +200,9 @@ var CORE_RUNTIME_LOCALIZATION = function resolveCoreRuntimeLocalization() {
       void coreRuntimeLocalizationLookupError;
     }
   }
-  var loaderLocalization = requireCoreRuntimeModule(
-    'modules/core/runtime-localization.js',
-    { primaryScope: CORE_PART1_RUNTIME_SCOPE }
-  );
+  var loaderLocalization = resolvedRequireCoreRuntimeModule('modules/core/runtime-localization.js', {
+    primaryScope: CORE_PART1_RUNTIME_SCOPE
+  });
   if (loaderLocalization && _typeof(loaderLocalization) === 'object') {
     return loaderLocalization;
   }
@@ -815,383 +222,6 @@ var CORE_LOCALIZATION_RUNTIME = CORE_RUNTIME_LOCALIZATION && typeof CORE_RUNTIME
   createLocaleFallbacks: createLocaleFallbacks,
   translationsRequirePath: './translations.js'
 }) : null;
-function createInlineLocalizationAccessors(options) {
-  function isObject(value) {
-    return !!value && (_typeof(value) === 'object' || typeof value === 'function');
-  }
-  var runtime = options && options.coreLocalizationRuntime && (_typeof(options.coreLocalizationRuntime) === 'object' || typeof options.coreLocalizationRuntime === 'function') ? options.coreLocalizationRuntime : null;
-  var localizationBridge = options && options.coreLocalizationBridge && (_typeof(options.coreLocalizationBridge) === 'object' || typeof options.coreLocalizationBridge === 'function') ? options.coreLocalizationBridge : null;
-  var runtimeScope = options && options.corePartRuntimeScope;
-  var coreGlobalScope = options && options.coreGlobalScope;
-  var fallbackResolveLocaleModule = options && typeof options.fallbackResolveLocaleModule === 'function' ? options.fallbackResolveLocaleModule : null;
-  var requireFn = options && typeof options.requireFn === 'function' ? options.requireFn : typeof require === 'function' ? require : null;
-  var translationsRequirePath = options && typeof options.translationsRequirePath === 'string' && options.translationsRequirePath ? options.translationsRequirePath : './translations.js';
-  var fallbackScopes = function collectInlineLocalizationScopes() {
-    var scopes = [];
-    var seen = typeof Set === 'function' ? new Set() : null;
-    function register(scope) {
-      if (!isObject(scope)) {
-        return;
-      }
-      if (seen) {
-        if (seen.has(scope)) {
-          return;
-        }
-        seen.add(scope);
-        scopes.push(scope);
-        return;
-      }
-      if (scopes.indexOf(scope) !== -1) {
-        return;
-      }
-      scopes.push(scope);
-    }
-    register(runtimeScope);
-    register(coreGlobalScope);
-    register(typeof globalThis !== 'undefined' ? globalThis : null);
-    register(typeof window !== 'undefined' ? window : null);
-    register(typeof self !== 'undefined' ? self : null);
-    register(typeof global !== 'undefined' ? global : null);
-    return scopes;
-  }();
-  var localeModule = runtime && runtime.localeModule || (fallbackResolveLocaleModule ? fallbackResolveLocaleModule(runtimeScope) : null);
-  var defaultLanguage = runtime && runtime.defaultLanguage || (localeModule && typeof localeModule.DEFAULT_LANGUAGE === 'string' ? localeModule.DEFAULT_LANGUAGE : 'en');
-  var rtlLanguageCodes = runtime && runtime.rtlLanguageCodes || (localeModule && Array.isArray(localeModule.RTL_LANGUAGE_CODES) && localeModule.RTL_LANGUAGE_CODES.length > 0 ? localeModule.RTL_LANGUAGE_CODES : ['ar', 'fa', 'he', 'ur']);
-  function fallbackNormalizeLanguageCodeProxy(lang) {
-    if (!lang) {
-      return defaultLanguage;
-    }
-    try {
-      var normalized = String(lang).trim().toLowerCase();
-      return normalized || defaultLanguage;
-    } catch (languageNormalizeError) {
-      void languageNormalizeError;
-    }
-    return defaultLanguage;
-  }
-  var normalizeLanguageCode = runtime && typeof runtime.normalizeLanguageCode === 'function' ? function runtimeNormalizeLanguageCodeProxy(lang) {
-    try {
-      return runtime.normalizeLanguageCode(lang);
-    } catch (runtimeNormalizeError) {
-      void runtimeNormalizeError;
-    }
-    return fallbackNormalizeLanguageCodeProxy(lang);
-  } : localizationBridge && typeof localizationBridge.normalizeLanguageCode === 'function' ? function bridgeNormalizeLanguageCodeProxy(lang) {
-    try {
-      return localizationBridge.normalizeLanguageCode(lang, runtimeScope);
-    } catch (bridgeNormalizeError) {
-      void bridgeNormalizeError;
-    }
-    return fallbackNormalizeLanguageCodeProxy(lang);
-  } : fallbackNormalizeLanguageCodeProxy;
-  function fallbackIsRtlLanguageProxy(lang) {
-    var normalized = normalizeLanguageCode(lang);
-    var base = normalized.split('-')[0];
-    return rtlLanguageCodes.indexOf(base) !== -1;
-  }
-  var isRtlLanguage = runtime && typeof runtime.isRtlLanguage === 'function' ? function runtimeIsRtlLanguageProxy(lang) {
-    try {
-      return runtime.isRtlLanguage(lang);
-    } catch (runtimeIsRtlError) {
-      void runtimeIsRtlError;
-    }
-    return fallbackIsRtlLanguageProxy(lang);
-  } : localizationBridge && typeof localizationBridge.isRtlLanguage === 'function' ? function bridgeIsRtlLanguageProxy(lang) {
-    try {
-      return localizationBridge.isRtlLanguage(lang, runtimeScope);
-    } catch (bridgeIsRtlError) {
-      void bridgeIsRtlError;
-    }
-    return fallbackIsRtlLanguageProxy(lang);
-  } : fallbackIsRtlLanguageProxy;
-  function fallbackResolveDocumentDirectionProxy(lang) {
-    if (typeof document !== 'undefined' && document && document.documentElement) {
-      try {
-        var docDir = document.documentElement.getAttribute('dir');
-        if (docDir) {
-          return docDir;
-        }
-      } catch (resolveDirectionError) {
-        void resolveDirectionError;
-      }
-    }
-    return isRtlLanguage(lang) ? 'rtl' : 'ltr';
-  }
-  var resolveDocumentDirection = runtime && typeof runtime.resolveDocumentDirection === 'function' ? function runtimeResolveDocumentDirectionProxy(lang) {
-    try {
-      return runtime.resolveDocumentDirection(lang);
-    } catch (runtimeResolveDirectionError) {
-      void runtimeResolveDirectionError;
-    }
-    return fallbackResolveDocumentDirectionProxy(lang);
-  } : localizationBridge && typeof localizationBridge.resolveDocumentDirection === 'function' ? function bridgeResolveDocumentDirectionProxy(lang) {
-    try {
-      return localizationBridge.resolveDocumentDirection(lang, runtimeScope);
-    } catch (bridgeResolveDirectionError) {
-      void bridgeResolveDirectionError;
-    }
-    return fallbackResolveDocumentDirectionProxy(lang);
-  } : fallbackResolveDocumentDirectionProxy;
-  function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
-    if (!target) {
-      return;
-    }
-    if (lang) {
-      try {
-        target.lang = lang;
-      } catch (setLangError) {
-        void setLangError;
-      }
-    }
-    if (direction) {
-      try {
-        target.dir = direction;
-      } catch (setDirError) {
-        void setDirError;
-      }
-    }
-  }
-  var applyLocaleMetadata = runtime && typeof runtime.applyLocaleMetadata === 'function' ? function runtimeApplyLocaleMetadataProxy(target, lang, direction) {
-    try {
-      return runtime.applyLocaleMetadata(target, lang, direction);
-    } catch (runtimeApplyLocaleError) {
-      void runtimeApplyLocaleError;
-    }
-    return fallbackApplyLocaleMetadataProxy(target, lang, direction);
-  } : localizationBridge && typeof localizationBridge.applyLocaleMetadata === 'function' ? function bridgeApplyLocaleMetadataProxy(target, lang, direction) {
-    try {
-      return localizationBridge.applyLocaleMetadata(target, lang, direction, runtimeScope);
-    } catch (bridgeApplyLocaleError) {
-      void bridgeApplyLocaleError;
-    }
-    return fallbackApplyLocaleMetadataProxy(target, lang, direction);
-  } : fallbackApplyLocaleMetadataProxy;
-  function fallbackResolveTranslationDataset() {
-    for (var index = 0; index < fallbackScopes.length; index += 1) {
-      var scope = fallbackScopes[index];
-      if (!isObject(scope)) {
-        continue;
-      }
-      var dataset = scope.texts;
-      if (isObject(dataset)) {
-        return dataset;
-      }
-    }
-    if (typeof requireFn === 'function') {
-      try {
-        var translationsModule = requireFn(translationsRequirePath);
-        if (isObject(translationsModule) && isObject(translationsModule.texts)) {
-          return translationsModule.texts;
-        }
-      } catch (translationRequireError) {
-        void translationRequireError;
-      }
-    }
-    return {};
-  }
-  function fallbackGetLanguageTextsProxy(lang) {
-    var dataset = fallbackResolveTranslationDataset();
-    var fallbackLang = typeof defaultLanguage === 'string' && defaultLanguage ? defaultLanguage : 'en';
-    var normalized = null;
-    if (typeof lang === 'string' && lang) {
-      try {
-        normalized = String(lang).trim().toLowerCase();
-      } catch (normalizeError) {
-        void normalizeError;
-        normalized = null;
-      }
-    }
-    var resolved = normalized && Object.prototype.hasOwnProperty.call(dataset, normalized) ? normalized : '';
-    if (!resolved && normalized) {
-      var base = normalized.split('-')[0];
-      if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
-        resolved = base;
-      }
-    }
-    if (!resolved) {
-      resolved = fallbackLang;
-    }
-    var candidate = dataset && resolved && _typeof(dataset[resolved]) === 'object' ? dataset[resolved] : null;
-    if (candidate) {
-      return candidate;
-    }
-    if (resolved !== fallbackLang) {
-      var fallbackCandidate = dataset && _typeof(dataset[fallbackLang]) === 'object' ? dataset[fallbackLang] : null;
-      if (fallbackCandidate) {
-        return fallbackCandidate;
-      }
-    }
-    if (dataset && _typeof(dataset.en) === 'object') {
-      return dataset.en;
-    }
-    var languages = dataset ? Object.keys(dataset) : [];
-    if (languages.length) {
-      var firstLang = languages[0];
-      var firstTexts = dataset[firstLang];
-      if (firstTexts && _typeof(firstTexts) === 'object') {
-        return firstTexts;
-      }
-    }
-    return {};
-  }
-  var getLanguageTexts = runtime && typeof runtime.getLanguageTexts === 'function' ? function runtimeGetLanguageTextsProxy(lang) {
-    try {
-      return runtime.getLanguageTexts(lang);
-    } catch (runtimeGetLanguageTextsError) {
-      void runtimeGetLanguageTextsError;
-    }
-    return fallbackGetLanguageTextsProxy(lang);
-  } : fallbackGetLanguageTextsProxy;
-  function ensureGlobalGetLanguageTextsAvailability(getLanguageTextsFn) {
-    if (runtime && typeof runtime.ensureGlobalGetLanguageTextsAvailability === 'function') {
-      try {
-        runtime.ensureGlobalGetLanguageTextsAvailability();
-        return;
-      } catch (ensureError) {
-        void ensureError;
-      }
-    }
-    var assignableFunction = typeof getLanguageTextsFn === 'function' ? getLanguageTextsFn : getLanguageTexts;
-    for (var index = 0; index < fallbackScopes.length; index += 1) {
-      var scope = fallbackScopes[index];
-      if (!isObject(scope)) {
-        continue;
-      }
-      if (typeof scope.getLanguageTexts !== 'function') {
-        try {
-          scope.getLanguageTexts = assignableFunction;
-        } catch (assignError) {
-          void assignError;
-        }
-      }
-    }
-  }
-  return {
-    localeModule: isObject(localeModule) ? localeModule : null,
-    defaultLanguage: typeof defaultLanguage === 'string' && defaultLanguage ? defaultLanguage : 'en',
-    rtlLanguageCodes: Array.isArray(rtlLanguageCodes) && rtlLanguageCodes.length ? rtlLanguageCodes : ['ar', 'fa', 'he', 'ur'],
-    normalizeLanguageCode: normalizeLanguageCode,
-    isRtlLanguage: isRtlLanguage,
-    resolveDocumentDirection: resolveDocumentDirection,
-    applyLocaleMetadata: applyLocaleMetadata,
-    getLanguageTexts: getLanguageTexts,
-    ensureGlobalGetLanguageTextsAvailability: ensureGlobalGetLanguageTextsAvailability,
-    fallbackResolveTranslationDataset: fallbackResolveTranslationDataset
-  };
-}
-var createLocalizationAccessors = (LOCALIZATION_ACCESSORS_TOOLS && typeof LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors === 'function' ? LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors : null) || function fallbackResolveLocalizationAccessorsFactory() {
-  if (typeof require === 'function') {
-    try {
-      var required = require('./modules/app-core/localization.js');
-      if (required && typeof required.createLocalizationAccessors === 'function') {
-        return required.createLocalizationAccessors;
-      }
-    } catch (localizationAccessorsRequireError) {
-      void localizationAccessorsRequireError;
-    }
-  }
-  var fallbackScopes = [typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var index = 0; index < fallbackScopes.length; index += 1) {
-    var scope = fallbackScopes[index];
-    if (!scope || _typeof(scope) !== 'object') {
-      continue;
-    }
-    try {
-      var candidate = scope.cineCoreAppLocalizationAccessors;
-      if (candidate && typeof candidate.createLocalizationAccessors === 'function') {
-        return candidate.createLocalizationAccessors;
-      }
-    } catch (localizationAccessorsLookupError) {
-      void localizationAccessorsLookupError;
-    }
-  }
-  return null;
-}();
-var ACTIVE_LOCALIZATION_ACCESSORS = (typeof createLocalizationAccessors === 'function' ? createLocalizationAccessors({
-  coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
-  coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
-  corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
-  coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
-  fallbackResolveLocaleModule: fallbackResolveLocaleModule,
-  requireFn: typeof require === 'function' ? require : null,
-  translationsRequirePath: './translations.js'
-}) : null) || createInlineLocalizationAccessors({
-  coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
-  coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
-  corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
-  coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
-  fallbackResolveLocaleModule: fallbackResolveLocaleModule,
-  requireFn: typeof require === 'function' ? require : null,
-  translationsRequirePath: './translations.js'
-});
-var LOCALE_MODULE = ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.localeModule ? ACTIVE_LOCALIZATION_ACCESSORS.localeModule : null;
-var DEFAULT_LANGUAGE = ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage ? ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage : 'en';
-var RTL_LANGUAGE_CODES = ACTIVE_LOCALIZATION_ACCESSORS && Array.isArray(ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes) && ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes.length > 0 ? ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes : ['ar', 'fa', 'he', 'ur'];
-var normalizeLanguageCode = ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode === 'function' ? ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode : function fallbackNormalizeLanguageCodeProxy(lang) {
-  if (!lang) {
-    return DEFAULT_LANGUAGE;
-  }
-  try {
-    var normalized = String(lang).trim().toLowerCase();
-    return normalized || DEFAULT_LANGUAGE;
-  } catch (languageNormalizeError) {
-    void languageNormalizeError;
-  }
-  return DEFAULT_LANGUAGE;
-};
-var isRtlLanguage = ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage === 'function' ? ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage : function fallbackIsRtlLanguageProxy(lang) {
-  var normalized = normalizeLanguageCode(lang);
-  var base = normalized.split('-')[0];
-  return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
-};
-var resolveDocumentDirection = ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection === 'function' ? ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection : function fallbackResolveDocumentDirectionProxy(lang) {
-  if (typeof document !== 'undefined' && document && document.documentElement) {
-    try {
-      var docDir = document.documentElement.getAttribute('dir');
-      if (docDir) {
-        return docDir;
-      }
-    } catch (resolveDirectionError) {
-      void resolveDirectionError;
-    }
-  }
-  return isRtlLanguage(lang) ? 'rtl' : 'ltr';
-};
-var applyLocaleMetadata = ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata === 'function' ? ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata : function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
-  if (!target) {
-    return;
-  }
-  if (lang) {
-    try {
-      target.lang = lang;
-    } catch (setLangError) {
-      void setLangError;
-    }
-  }
-  if (direction) {
-    try {
-      target.dir = direction;
-    } catch (setDirError) {
-      void setDirError;
-    }
-  }
-};
-var existingGetLanguageTexts = typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
-var resolvedGetLanguageTexts = ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts === 'function' ? ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts : existingGetLanguageTexts || function fallbackGetLanguageTextsProxy() {
-  return {};
-};
-try {
-  getLanguageTexts = resolvedGetLanguageTexts;
-} catch (assignGetLanguageTextsError) {
-  void assignGetLanguageTextsError;
-}
-if (ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.ensureGlobalGetLanguageTextsAvailability === 'function') {
-  try {
-    ACTIVE_LOCALIZATION_ACCESSORS.ensureGlobalGetLanguageTextsAvailability(resolvedGetLanguageTexts);
-  } catch (ensureGetLanguageTextsAvailabilityError) {
-    void ensureGetLanguageTextsAvailabilityError;
-  }
-}
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -1212,29 +242,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var CORE_RUNTIME_TOOL_FALLBACK_FACTORY = CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE && typeof CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks === 'function' ? CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks : null;
   if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY) {
-    var runtimeToolFallbacks = requireCoreRuntimeModule(
-      'modules/core/runtime-tool-fallbacks.js',
-      { primaryScope: CORE_PART1_RUNTIME_SCOPE }
-    );
+    var runtimeToolFallbacks = resolvedRequireCoreRuntimeModule('modules/core/runtime-tool-fallbacks.js', {
+      primaryScope: CORE_PART1_RUNTIME_SCOPE
+    });
     if (runtimeToolFallbacks && typeof runtimeToolFallbacks.createRuntimeToolFallbacks === 'function') {
       CORE_RUNTIME_TOOL_FALLBACK_FACTORY = runtimeToolFallbacks.createRuntimeToolFallbacks;
     }
   }
-  var CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE =
-    (typeof CORE_RUNTIME_GLOBAL_TOOLS === 'object' && CORE_RUNTIME_GLOBAL_TOOLS)
-      || (typeof cineCoreRuntimeGlobalTools === 'object' && cineCoreRuntimeGlobalTools)
-      || null;
-
-  if (
-    CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE &&
-    CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS &&
-    typeof CORE_RUNTIME_TOOL_FALLBACKS !== 'undefined' &&
-    CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS !== CORE_RUNTIME_TOOL_FALLBACKS
-  ) {
+  var CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE = (typeof CORE_RUNTIME_GLOBAL_TOOLS === "undefined" ? "undefined" : _typeof(CORE_RUNTIME_GLOBAL_TOOLS)) === 'object' && CORE_RUNTIME_GLOBAL_TOOLS || (typeof cineCoreRuntimeGlobalTools === "undefined" ? "undefined" : _typeof(cineCoreRuntimeGlobalTools)) === 'object' && cineCoreRuntimeGlobalTools || null;
+  if (CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE && CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS !== 'undefined' && CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS !== CORE_RUNTIME_TOOL_FALLBACKS) {
     CORE_RUNTIME_TOOL_FALLBACKS = CORE_RUNTIME_GLOBAL_TOOLS_BRIDGE.CORE_RUNTIME_TOOL_FALLBACKS;
   }
-
-
   var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
   var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
   var CORE_TEMPERATURE_KEY_DEFAULTS = function resolveCoreTemperatureKeyDefaults() {
@@ -1267,77 +285,104 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }();
   CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
   CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
-  function getEscapeHtmlFunction() {
-    try {
-      return typeof escapeHtml === 'function' ? escapeHtml : null;
-    } catch (maybeReferenceError) {
-      if (maybeReferenceError && maybeReferenceError.name === 'ReferenceError') {
-        return null;
+  var CORE_UI_HELPERS = function resolveCoreUiHelpers() {
+    var candidates = [];
+    if (typeof require === 'function') {
+      try {
+        var requiredHelpers = require('./app-core-ui-helpers.js');
+        if (requiredHelpers && _typeof(requiredHelpers) === 'object') {
+          candidates.push(requiredHelpers);
+        }
+      } catch (helpersError) {
+        void helpersError;
       }
-      throw maybeReferenceError;
     }
-  }
-  function escapeButtonLabelSafely(text) {
+    var scopes = [];
+    try {
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        scopes.push(CORE_GLOBAL_SCOPE);
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      scopes.push(globalThis);
+    }
+    if (typeof window !== 'undefined' && window) {
+      scopes.push(window);
+    }
+    if (typeof self !== 'undefined' && self) {
+      scopes.push(self);
+    }
+    if (typeof global !== 'undefined' && global) {
+      scopes.push(global);
+    }
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope) {
+        continue;
+      }
+      try {
+        var helpers = scope.cineCoreUiHelpers;
+        if (helpers && _typeof(helpers) === 'object') {
+          candidates.push(helpers);
+        }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
+      }
+    }
+    for (var _index = 0; _index < candidates.length; _index += 1) {
+      var candidate = candidates[_index];
+      if (candidate && _typeof(candidate) === 'object') {
+        return candidate;
+      }
+    }
+    return {};
+  }();
+  var escapeHtml = typeof CORE_UI_HELPERS.escapeHtml === 'function' ? CORE_UI_HELPERS.escapeHtml : function escapeHtmlFallback(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  var escapeButtonLabelSafelyHelper = typeof CORE_UI_HELPERS.escapeButtonLabelSafely === 'function' ? CORE_UI_HELPERS.escapeButtonLabelSafely : function escapeButtonLabelSafelyFallback(text) {
     if (typeof text !== 'string' || text === '') {
       return '';
     }
-    var escapeFn = getEscapeHtmlFunction();
-    if (escapeFn) {
-      try {
-        return escapeFn(text);
-      } catch (escapeError) {
-        void escapeError;
-      }
-    }
-    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-  function getIconMarkupFunction() {
-    try {
-      if (typeof iconMarkup === 'function') {
-        return iconMarkup;
-      }
-    } catch (maybeReferenceError) {
-      if (!(maybeReferenceError && maybeReferenceError.name === 'ReferenceError')) {
-        throw maybeReferenceError;
-      }
-    }
-    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.iconMarkup === 'function') {
-      return CORE_GLOBAL_SCOPE.iconMarkup;
-    }
-    return null;
-  }
-  function resolveButtonIconMarkup(glyph) {
-    if (!glyph) {
-      return '';
-    }
-    var iconFactory = getIconMarkupFunction();
-    if (!iconFactory) {
-      return '';
-    }
-    try {
-      return iconFactory(glyph, 'btn-icon');
-    } catch (iconError) {
-      void iconError;
-    }
-    return '';
-  }
-  var setButtonLabelWithIcon = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function' ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon : function setButtonLabelWithIcon(button, label, glyph) {
-    if (!button) {
-      return;
-    }
-    var resolvedGlyph = glyph;
-    if (resolvedGlyph === undefined && typeof ICON_GLYPHS !== 'undefined' && ICON_GLYPHS && ICON_GLYPHS.save) {
-      resolvedGlyph = ICON_GLYPHS.save;
-    }
-    var iconHtml = resolveButtonIconMarkup(resolvedGlyph);
-    var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
-    button.innerHTML = "".concat(iconHtml).concat(safeLabel);
+    return escapeHtml(text);
   };
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon !== 'function') {
+  var resolveButtonIconMarkupHelper = typeof CORE_UI_HELPERS.resolveButtonIconMarkup === 'function' ? CORE_UI_HELPERS.resolveButtonIconMarkup : function resolveButtonIconMarkupFallback() {
+    return '';
+  };
+  var setButtonLabelWithIconBinding = ensureCoreGlobalValue('setButtonLabelWithIcon', function resolveSetButtonLabelWithIconValue() {
+    if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+      return CORE_UI_HELPERS.setButtonLabelWithIcon;
+    }
+    return function setButtonLabelWithIconFallback(button, label, glyph) {
+      if (!button) {
+        return;
+      }
+      var resolvedGlyph = glyph;
+      if (typeof resolvedGlyph === 'undefined') {
+        try {
+          if (_typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+            resolvedGlyph = ICON_GLYPHS.save;
+          }
+        } catch (glyphError) {
+          void glyphError;
+        }
+      }
+      var iconHtml = resolveButtonIconMarkupHelper(resolvedGlyph);
+      var safeLabel = escapeButtonLabelSafelyHelper(typeof label === 'string' ? label : '');
+      try {
+        button.innerHTML = "".concat(iconHtml).concat(safeLabel);
+      } catch (assignError) {
+        void assignError;
+      }
+    };
+  });
+  if (CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
     try {
-      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIconBinding;
     } catch (setButtonAssignError) {
-      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIconBinding;
       void setButtonAssignError;
     }
   }
@@ -1404,7 +449,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof name !== 'string' || !name) {
       return;
     }
-    var scope = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+    var scope = CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
     if (!scope || _typeof(scope) !== 'object') {
       return;
     }
@@ -1448,7 +493,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!bindings || _typeof(bindings) !== 'object') {
       return;
     }
-    var scope = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+    var scope = CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
     if (!scope || _typeof(scope) !== 'object') {
       return;
     }
@@ -1487,7 +532,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof executor !== 'function') {
       return false;
     }
-    var scope = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+    var scope = CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
     try {
       executor.call(scope || this);
       return true;
@@ -1498,7 +543,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return false;
   }
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+  if (CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
     try {
       Object.defineProperty(CORE_GLOBAL_SCOPE, '__cineCorePart1Runner', {
         configurable: true,
@@ -1525,6 +570,52 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return null;
   }
   var CORE_SHARED = resolveCoreShared() || {};
+  function resolveCoreRuntimeHelpers() {
+    var candidates = [];
+    if (typeof CORE_PART2_RUNTIME_HELPERS !== 'undefined' && CORE_PART2_RUNTIME_HELPERS) {
+      candidates.push(CORE_PART2_RUNTIME_HELPERS);
+    }
+    if (CORE_SHARED && _typeof(CORE_SHARED.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(CORE_SHARED.cineCoreRuntimeHelpers);
+    }
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers);
+    }
+    if (typeof CORE_SHARED_SCOPE_PART2 !== 'undefined' && CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(CORE_SHARED_SCOPE_PART2.cineCoreRuntimeHelpers);
+    }
+    if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(globalThis.cineCoreRuntimeHelpers);
+    }
+    if (typeof window !== 'undefined' && window && _typeof(window.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(window.cineCoreRuntimeHelpers);
+    }
+    if (typeof self !== 'undefined' && self && _typeof(self.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(self.cineCoreRuntimeHelpers);
+    }
+    if (typeof global !== 'undefined' && global && _typeof(global.cineCoreRuntimeHelpers) === 'object') {
+      candidates.push(global.cineCoreRuntimeHelpers);
+    }
+    if (typeof require === 'function') {
+      try {
+        var required = require('./app-core-runtime-helpers.js');
+        if (required && _typeof(required) === 'object') {
+          candidates.push(required);
+        }
+      } catch (runtimeHelpersError) {
+        void runtimeHelpersError;
+      }
+    }
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (candidate && _typeof(candidate) === 'object') {
+        return candidate;
+      }
+    }
+    return null;
+  }
+  var CORE_RUNTIME_HELPERS = resolveCoreRuntimeHelpers();
+  var CORE_RUNTIME_FALLBACKS = CORE_RUNTIME_HELPERS && _typeof(CORE_RUNTIME_HELPERS) === 'object' ? CORE_RUNTIME_HELPERS : {};
   function createCoreRuntimeStateFallback(candidateScopes) {
     var scopes = [];
     var seenScopes = typeof Set === 'function' ? new Set() : null;
@@ -1558,9 +649,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (typeof callback !== 'function') {
         return;
       }
-      for (var _index = 0; _index < scopes.length; _index += 1) {
+      for (var _index2 = 0; _index2 < scopes.length; _index2 += 1) {
         try {
-          callback(scopes[_index], _index);
+          callback(scopes[_index2], _index2);
         } catch (scopeCallbackError) {
           void scopeCallbackError;
         }
@@ -1584,8 +675,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           return undefined;
         }
       }
-      for (var _index2 = 0; _index2 < scopes.length; _index2 += 1) {
-        var scope = scopes[_index2];
+      for (var _index3 = 0; _index3 < scopes.length; _index3 += 1) {
+        var scope = scopes[_index3];
         if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
           continue;
         }
@@ -1623,8 +714,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     function readValue(name) {
-      for (var _index3 = 0; _index3 < scopes.length; _index3 += 1) {
-        var scope = scopes[_index3];
+      for (var _index4 = 0; _index4 < scopes.length; _index4 += 1) {
+        var scope = scopes[_index4];
         if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
           continue;
         }
@@ -1726,10 +817,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return createCoreRuntimeStateFallback(candidateScopes);
   }
   var CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', function () {
-    var candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED : resolvedCollectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+    var candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED : resolvedCollectCoreRuntimeCandidateScopes((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
     return createCoreRuntimeState(candidateScopes);
   });
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+  if (CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
     try {
       Object.defineProperty(CORE_GLOBAL_SCOPE, '__cineCreateRuntimeState', {
         configurable: true,
@@ -1795,7 +886,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (Array.isArray(existingQueue)) {
       return existingQueue;
     }
-    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    if (CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
       var shared = CORE_GLOBAL_SCOPE.cineCoreShared;
       if (shared && _typeof(shared) === 'object') {
         var sharedQueue = shared[CORE_BOOT_QUEUE_KEY];
@@ -1857,7 +948,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var scope = CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
     if (typeof target === 'function') {
-      if (target.__cineDeferredPlaceholder__ === true) {
+      if (target.__cineSessionProxy__ === true) {
         var optionsObject = options && _typeof(options) === 'object' ? options : {};
         var attemptCount = typeof optionsObject.attempts === 'number' && Number.isFinite(optionsObject.attempts) ? optionsObject.attempts : 0;
         if (typeof enqueueCoreBootTask === 'function' && attemptCount < 3) {
@@ -1867,6 +958,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           });
           enqueueCoreBootTask(function () {
             callCoreFunctionIfAvailable(functionName, args, nextOptions);
+          });
+        }
+        if (Object.prototype.hasOwnProperty.call(optionsObject, 'defaultValue')) {
+          return optionsObject.defaultValue;
+        }
+        return undefined;
+      }
+      if (target.__cineDeferredPlaceholder__ === true) {
+        var _optionsObject = options && _typeof(options) === 'object' ? options : {};
+        var _attemptCount = typeof _optionsObject.attempts === 'number' && Number.isFinite(_optionsObject.attempts) ? _optionsObject.attempts : 0;
+        if (typeof enqueueCoreBootTask === 'function' && _attemptCount < 3) {
+          var _nextOptions = _objectSpread(_objectSpread({}, _optionsObject), {}, {
+            defer: false,
+            attempts: _attemptCount + 1
+          });
+          enqueueCoreBootTask(function () {
+            callCoreFunctionIfAvailable(functionName, args, _nextOptions);
           });
         }
         return undefined;
@@ -1908,7 +1016,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     var fallbackScopes = [];
-    var candidates = [CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+    var candidates = [CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
       if (candidate && fallbackScopes.indexOf(candidate) === -1) {
@@ -2183,60 +1291,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
   })();
-  function fallbackStableStringify(value) {
-    if (value === null) return 'null';
-    if (value === undefined) return 'undefined';
-    if (Array.isArray(value)) {
-      var serialized = '[';
-      for (var index = 0; index < value.length; index += 1) {
-        if (index > 0) {
-          serialized += ',';
-        }
-        serialized += fallbackStableStringify(value[index]);
-      }
-      serialized += ']';
-      return serialized;
+  var stableStringify = typeof CORE_SHARED.stableStringify === 'function' ? CORE_SHARED.stableStringify : typeof CORE_SHARED.fallbackStableStringify === 'function' ? CORE_SHARED.fallbackStableStringify : typeof CORE_RUNTIME_FALLBACKS.fallbackStableStringify === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackStableStringify : function fallbackStableStringifyProxy(value) {
+    try {
+      return JSON.stringify(value);
+    } catch (serializationError) {
+      void serializationError;
     }
-    if (_typeof(value) === 'object') {
-      var keys = Object.keys(value).sort();
-      var _serialized = '{';
-      for (var _index4 = 0; _index4 < keys.length; _index4 += 1) {
-        var key = keys[_index4];
-        if (_index4 > 0) {
-          _serialized += ',';
-        }
-        _serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
-      }
-      _serialized += '}';
-      return _serialized;
-    }
-    return JSON.stringify(value);
-  }
-  var FALLBACK_HUMANIZE_OVERRIDES_PART1 = {
-    powerDrawWatts: 'Power (W)',
-    capacity: 'Capacity (Wh)',
-    pinA: 'Pin A',
-    dtapA: 'D-Tap A',
-    mount_type: 'Mount',
-    screenSizeInches: 'Screen Size (in)',
-    brightnessNits: 'Brightness (nits)',
-    torqueNm: 'Torque (Nm)',
-    internalController: 'Internal Controller',
-    powerSource: 'Power Source',
-    batteryType: 'Battery Type',
-    connectivity: 'Connectivity'
+    return String(value);
   };
-  function fallbackHumanizeKey(key) {
-    if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART1, key)) {
-      return FALLBACK_HUMANIZE_OVERRIDES_PART1[key];
-    }
+  var humanizeKey = typeof CORE_SHARED.humanizeKey === 'function' ? CORE_SHARED.humanizeKey : typeof CORE_SHARED.fallbackHumanizeKey === 'function' ? CORE_SHARED.fallbackHumanizeKey : typeof CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey : function fallbackHumanizeKeyProxy(key) {
     var stringValue = typeof key === 'string' ? key : String(key || '');
-    return stringValue.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, function (c) {
-      return c.toUpperCase();
-    });
-  }
-  var stableStringify = typeof CORE_SHARED.stableStringify === 'function' ? CORE_SHARED.stableStringify : fallbackStableStringify;
-  var humanizeKey = typeof CORE_SHARED.humanizeKey === 'function' ? CORE_SHARED.humanizeKey : fallbackHumanizeKey;
+    return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
+  };
   function fallbackResolveConnectorSummaryGenerator() {
     var scopes = [];
     if (typeof globalThis !== 'undefined') scopes.push(globalThis);
@@ -2270,71 +1336,37 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return '';
     }
   };
-  function fallbackNormalizeAutoGearWeightOperator(value) {
-    if (typeof value !== 'string') return 'greater';
-    var normalized = value.trim().toLowerCase();
-    if (!normalized) return 'greater';
-    if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
-      return 'greater';
-    }
-    if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
-      return 'less';
-    }
-    if (normalized === '=' || normalized === '==' || normalized === 'equal' || normalized === 'equals' || normalized === 'exactly' || normalized === 'match' || normalized === 'matches') {
-      return 'equal';
-    }
+  var normalizeAutoGearWeightOperator = typeof CORE_SHARED.normalizeAutoGearWeightOperator === 'function' ? CORE_SHARED.normalizeAutoGearWeightOperator : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator : function normalizeAutoGearWeightOperatorFallback() {
     return 'greater';
-  }
-  var normalizeAutoGearWeightOperator = typeof CORE_SHARED.normalizeAutoGearWeightOperator === 'function' ? CORE_SHARED.normalizeAutoGearWeightOperator : fallbackNormalizeAutoGearWeightOperator;
-  var normalizeAutoGearWeightValue = typeof CORE_SHARED.normalizeAutoGearWeightValue === 'function' ? CORE_SHARED.normalizeAutoGearWeightValue : function normalizeAutoGearWeightValue(value) {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      var rounded = Math.round(value);
-      return rounded >= 0 ? rounded : null;
-    }
-    if (typeof value === 'string') {
-      var trimmed = value.trim();
-      if (!trimmed) return null;
-      var sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
-      if (!sanitized) return null;
-      var parsed = Number.parseFloat(sanitized);
-      if (!Number.isFinite(parsed)) return null;
-      var _rounded = Math.round(parsed);
-      return _rounded >= 0 ? _rounded : null;
-    }
+  };
+  var normalizeAutoGearWeightValue = typeof CORE_SHARED.normalizeAutoGearWeightValue === 'function' ? CORE_SHARED.normalizeAutoGearWeightValue : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue : function normalizeAutoGearWeightValueFallback() {
     return null;
   };
-  var normalizeAutoGearCameraWeightCondition = typeof CORE_SHARED.normalizeAutoGearCameraWeightCondition === 'function' ? CORE_SHARED.normalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightCondition() {
+  var normalizeAutoGearCameraWeightCondition = typeof CORE_SHARED.normalizeAutoGearCameraWeightCondition === 'function' ? CORE_SHARED.normalizeAutoGearCameraWeightCondition : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightConditionFallback() {
     return null;
   };
-  var formatAutoGearWeight = typeof CORE_SHARED.formatAutoGearWeight === 'function' ? CORE_SHARED.formatAutoGearWeight : function formatAutoGearWeight(value) {
-    if (!Number.isFinite(value)) return '';
-    try {
-      if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-        return new Intl.NumberFormat().format(value);
-      }
-    } catch (error) {
-      void error;
-    }
-    return String(value);
+  var formatAutoGearWeight = typeof CORE_SHARED.formatAutoGearWeight === 'function' ? CORE_SHARED.formatAutoGearWeight : typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight : function formatAutoGearWeightFallback(value) {
+    return Number.isFinite(value) ? String(value) : '';
   };
-  var getAutoGearCameraWeightOperatorLabel = typeof CORE_SHARED.getAutoGearCameraWeightOperatorLabel === 'function' ? CORE_SHARED.getAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
+  var fallbackGetAutoGearCameraWeightOperatorLabel = typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
     var textsForLang = langTexts || {};
-    var fallbackTexts = CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.texts && CORE_GLOBAL_SCOPE.texts.en || {};
     var normalized = normalizeAutoGearWeightOperator(operator);
     if (normalized === 'less') {
-      return textsForLang.autoGearCameraWeightOperatorLess || fallbackTexts.autoGearCameraWeightOperatorLess || 'Lighter than';
+      return textsForLang.autoGearCameraWeightOperatorLess || 'Lighter than';
     }
     if (normalized === 'equal') {
-      return textsForLang.autoGearCameraWeightOperatorEqual || fallbackTexts.autoGearCameraWeightOperatorEqual || 'Exactly';
+      return textsForLang.autoGearCameraWeightOperatorEqual || 'Exactly';
     }
-    return textsForLang.autoGearCameraWeightOperatorGreater || fallbackTexts.autoGearCameraWeightOperatorGreater || 'Heavier than';
+    return textsForLang.autoGearCameraWeightOperatorGreater || 'Heavier than';
   };
-  var formatAutoGearCameraWeight = typeof CORE_SHARED.formatAutoGearCameraWeight === 'function' ? CORE_SHARED.formatAutoGearCameraWeight : function formatAutoGearCameraWeight(condition, langTexts) {
+  var getAutoGearCameraWeightOperatorLabel = typeof CORE_SHARED.getAutoGearCameraWeightOperatorLabel === 'function' ? CORE_SHARED.getAutoGearCameraWeightOperatorLabel : fallbackGetAutoGearCameraWeightOperatorLabel;
+  var fallbackFormatAutoGearCameraWeight = typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight : function formatAutoGearCameraWeightFallback(condition, langTexts) {
     if (!condition || !Number.isFinite(condition.value)) return '';
     var label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
     var formattedValue = formatAutoGearWeight(condition.value);
-    return "".concat(label, " ").concat(formattedValue, " g");
+    return label ? "".concat(label, " ").concat(formattedValue, " g") : "".concat(formattedValue, " g");
   };
+  var formatAutoGearCameraWeight = typeof CORE_SHARED.formatAutoGearCameraWeight === 'function' ? CORE_SHARED.formatAutoGearCameraWeight : fallbackFormatAutoGearCameraWeight;
   var LZString = CORE_SHARED.LZString;
   if (!LZString && typeof CORE_SHARED.getLZString === 'function') {
     LZString = CORE_SHARED.getLZString();
@@ -2756,7 +1788,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var deviceSchema = null;
   function resolveCoreDeviceSchema() {
     var scopeCandidates = [];
-    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
       scopeCandidates.push(CORE_GLOBAL_SCOPE);
     }
     if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
@@ -3425,7 +2457,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function getAutoGearSelectorLabel(type) {
     var normalizedType = normalizeAutoGearSelectorType(type);
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     if (normalizedType === 'monitor') {
       return langTexts.autoGearSelectorMonitorOption || fallbackTexts.autoGearSelectorMonitorOption || 'Monitor selector';
     }
@@ -3451,17 +2483,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function getAutoGearSelectorScrollHint() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     return langTexts.autoGearSelectorScrollHint || fallbackTexts.autoGearSelectorScrollHint || 'Scroll to see more devices.';
   }
   function getAutoGearSelectorDefaultPlaceholder() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     return langTexts.autoGearSelectorDefaultPlaceholder || fallbackTexts.autoGearSelectorDefaultPlaceholder || 'Choose a default device';
   }
   function getAutoGearMonitorDefaultPlaceholder() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     return langTexts.autoGearMonitorDefaultPlaceholder || fallbackTexts.autoGearMonitorDefaultPlaceholder || 'Use recommended automatically';
   }
   function formatAutoGearSelectorValue(type, value) {
@@ -4927,14 +3959,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
     if (!button) return;
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     var isEditing = (autoGearEditorActiveItem === null || autoGearEditorActiveItem === void 0 ? void 0 : autoGearEditorActiveItem.listType) === normalizedType;
     var defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
     var defaultLabel = langTexts[defaultKey] || fallbackTexts[defaultKey] || button.textContent || '';
     var updateLabel = langTexts.autoGearUpdateItemButton || fallbackTexts.autoGearUpdateItemButton || defaultLabel;
     var label = isEditing ? updateLabel : defaultLabel;
     var glyph = isEditing ? ICON_GLYPHS.save : normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add;
-    setButtonLabelWithIcon(button, label, glyph);
+    setButtonLabelWithIconBinding(button, label, glyph);
     button.setAttribute('data-help', label);
   }
   function getAutoGearBackupEntrySignature(entry) {
@@ -5989,7 +5021,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
   }
   function collectOwnGearSuggestionInfo() {
-    var lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE;
+    var lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE_SAFE;
     if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
       return ownGearSuggestionCache;
     }
@@ -6049,7 +5081,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn('Unable to collect device catalog names for own gear suggestions', error);
     }
     try {
-      var langItems = gearItemTranslations && _typeof(gearItemTranslations) === 'object' ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE] || null : null;
+      var langItems = gearItemTranslations && _typeof(gearItemTranslations) === 'object' ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE_SAFE] || null : null;
       if (langItems && _typeof(langItems) === 'object') {
         Object.keys(langItems).forEach(function (key) {
           addName(key);
@@ -6067,7 +5099,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         addName(item.name);
       }
     });
-    var collator = typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(lang || DEFAULT_LANGUAGE, {
+    var collator = typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(lang || DEFAULT_LANGUAGE_SAFE, {
       sensitivity: 'base'
     }) : null;
     var list = Array.from(uniqueNames.values()).sort(function (a, b) {
@@ -6119,7 +5151,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return trimmed;
   }
   function formatOwnGearCountText(count, langTexts) {
-    var fallbackTexts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     var templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
     var template = langTexts && langTexts[templateKey] || fallbackTexts && fallbackTexts[templateKey] || '';
     if (!template) {
@@ -6554,13 +5586,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     if (ownGearEditingId) {
       var label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
-      setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
+      setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.save);
     } else {
       var _label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
-      setButtonLabelWithIcon(ownGearSaveButton, _label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(ownGearSaveButton, _label, ICON_GLYPHS.add);
     }
   }
   function normalizeOwnGearQuantityInput(raw) {
@@ -6599,7 +5631,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     var rawName = ownGearNameInput.value || '';
     var trimmedName = rawName.trim();
     if (!trimmedName) {
@@ -6741,7 +5773,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function applyOwnGearLocalization(lang) {
     var langTexts = getLanguageTexts(lang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     if (ownGearDialog) {
       var title = document.getElementById('ownGearDialogHeading');
       if (title) {
@@ -6829,11 +5861,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     if (ownGearResetButton) {
       var label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
-      setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
+      setButtonLabelWithIconBinding(ownGearResetButton, label, ICON_GLYPHS.reload);
     }
     if (ownGearCloseButton) {
       var _label2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
-      setButtonLabelWithIcon(ownGearCloseButton, _label2, ICON_GLYPHS.circleX);
+      setButtonLabelWithIconBinding(ownGearCloseButton, _label2, ICON_GLYPHS.circleX);
     }
     var listHeading = document.getElementById('ownGearListHeading');
     if (listHeading) {
@@ -6933,129 +5965,118 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
     scheduleLayoutInitialization();
   }
-  var escapeDiv;
-  function escapeHtml(str) {
-    if (!escapeDiv && typeof globalThis !== 'undefined' && globalThis.document) {
-      escapeDiv = globalThis.document.createElement('div');
-    }
-    if (!escapeDiv) {
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-    escapeDiv.textContent = str;
-    return escapeDiv.innerHTML;
-  }
   var VIDEO_OUTPUT_TYPES = new Set(['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI', 'DisplayPort']);
   var DEFAULT_FILTER_SIZE = '4x5.65';
-  var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-  var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+  var CORE_AUTO_BACKUP_NAMESPACE = function () {
+    if (typeof require === 'function') {
+      try {
+        return require('./app-core-auto-backup.js');
+      } catch (autoBackupRequireError) {
+        void autoBackupRequireError;
+      }
+    }
+    var loaderNamespace = fallbackRequireCoreRuntimeModule('./app-core-auto-backup.js');
+    if (loaderNamespace && _typeof(loaderNamespace) === 'object') {
+      return loaderNamespace;
+    }
+    var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var scope = candidateScopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      try {
+        if (scope.CORE_AUTO_BACKUP && _typeof(scope.CORE_AUTO_BACKUP) === 'object') {
+          return scope.CORE_AUTO_BACKUP;
+        }
+      } catch (lookupError) {
+        void lookupError;
+      }
+    }
+    return null;
+  }();
+  var AUTO_BACKUP_NAME_PREFIX = CORE_AUTO_BACKUP_NAMESPACE && typeof CORE_AUTO_BACKUP_NAMESPACE.AUTO_BACKUP_NAME_PREFIX === 'string' ? CORE_AUTO_BACKUP_NAMESPACE.AUTO_BACKUP_NAME_PREFIX : 'auto-backup-';
+  var AUTO_BACKUP_DELETION_PREFIX = CORE_AUTO_BACKUP_NAMESPACE && typeof CORE_AUTO_BACKUP_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX === 'string' ? CORE_AUTO_BACKUP_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX : 'auto-backup-before-delete-';
+  var logAutoBackupEvent = CORE_AUTO_BACKUP_NAMESPACE && typeof CORE_AUTO_BACKUP_NAMESPACE.logAutoBackupEvent === 'function' ? CORE_AUTO_BACKUP_NAMESPACE.logAutoBackupEvent : function fallbackLogAutoBackupEvent(level, message, detail, meta) {
+    var normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+    var normalizedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
+    if (typeof console === 'undefined' || !console) {
+      return;
+    }
+    var fallback = null;
+    if (normalizedLevel === 'error' && typeof console.error === 'function') {
+      fallback = console.error;
+    } else if (normalizedLevel === 'warn' && typeof console.warn === 'function') {
+      fallback = console.warn;
+    } else if (normalizedLevel === 'info' && typeof console.info === 'function') {
+      fallback = console.info;
+    } else if (normalizedLevel === 'debug' && typeof console.debug === 'function') {
+      fallback = console.debug;
+    } else if (typeof console.log === 'function') {
+      fallback = console.log;
+    }
+    if (typeof fallback === 'function') {
+      try {
+        fallback.call(console, "[auto-backup] ".concat(normalizedMessage), detail || null, meta || null);
+      } catch (fallbackError) {
+        void fallbackError;
+      }
+    }
+  };
+  var rawCloneProjectEntryForSetup = CORE_AUTO_BACKUP_NAMESPACE && typeof CORE_AUTO_BACKUP_NAMESPACE.cloneProjectEntryForSetup === 'function' ? CORE_AUTO_BACKUP_NAMESPACE.cloneProjectEntryForSetup : null;
+  var rawEnsureAutoBackupsFromProjects = CORE_AUTO_BACKUP_NAMESPACE && typeof CORE_AUTO_BACKUP_NAMESPACE.ensureAutoBackupsFromProjects === 'function' ? CORE_AUTO_BACKUP_NAMESPACE.ensureAutoBackupsFromProjects : null;
   var showAutoBackups = false;
   try {
     if (typeof localStorage !== 'undefined') {
       showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
     }
   } catch (e) {
-    console.warn('Could not load auto backup visibility preference', e);
+    logAutoBackupEvent('warn', 'Could not load auto backup visibility preference', e);
   }
   function cloneProjectEntryForSetup(projectEntry) {
+    if (rawCloneProjectEntryForSetup) {
+      return rawCloneProjectEntryForSetup(projectEntry, {
+        deepClone: CORE_DEEP_CLONE,
+        log: logAutoBackupEvent
+      });
+    }
     if (!projectEntry || _typeof(projectEntry) !== 'object') {
       return {};
     }
-    var snapshot = {};
-    var projectInfo = projectEntry.projectInfo,
-      gearList = projectEntry.gearList,
-      autoGearRules = projectEntry.autoGearRules;
-    if (projectInfo && _typeof(projectInfo) === 'object') {
-      try {
-        snapshot.projectInfo = CORE_DEEP_CLONE(projectInfo);
-      } catch (error) {
-        console.warn('Failed to clone project info for auto backup import', error);
-        snapshot.projectInfo = projectInfo;
-      }
-    }
-    if (projectEntry && _typeof(projectEntry.powerSelection) === 'object') {
-      try {
-        snapshot.powerSelection = CORE_DEEP_CLONE(projectEntry.powerSelection);
-      } catch (error) {
-        console.warn('Failed to clone project power selection for auto backup import', error);
-        snapshot.powerSelection = projectEntry.powerSelection;
-      }
-    }
-    if (typeof gearList === 'string' && gearList.trim()) {
-      snapshot.gearList = gearList;
-    }
-    if (Array.isArray(autoGearRules) && autoGearRules.length) {
-      try {
-        snapshot.autoGearRules = CORE_DEEP_CLONE(autoGearRules);
-      } catch (error) {
-        console.warn('Failed to clone auto gear rules for auto backup import', error);
-        snapshot.autoGearRules = autoGearRules.slice();
-      }
-    }
-    var metadata = projectEntry && _typeof(projectEntry) === 'object' ? projectEntry.__cineAutoBackupMetadata : null;
-    if (metadata && _typeof(metadata) === 'object') {
-      try {
-        Object.defineProperty(snapshot, '__cineAutoBackupMetadata', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: {
-            version: typeof metadata.version === 'number' ? metadata.version : 1,
-            snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
-            base: typeof metadata.base === 'string' ? metadata.base : null,
-            sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
-            createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
-            changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
-            removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : []
-          }
-        });
-      } catch (error) {
-        try {
-          snapshot.__cineAutoBackupMetadata = metadata;
-        } catch (assignmentError) {
-          void assignmentError;
+    try {
+      return CORE_DEEP_CLONE(projectEntry);
+    } catch (cloneError) {
+      logAutoBackupEvent('warn', 'Fallback auto backup project clone failed', cloneError);
+      var snapshot = {};
+      for (var key in projectEntry) {
+        if (Object.prototype.hasOwnProperty.call(projectEntry, key)) {
+          snapshot[key] = projectEntry[key];
         }
       }
+      return snapshot;
     }
-    return snapshot;
   }
   function ensureAutoBackupsFromProjects() {
-    if (typeof loadProject !== 'function') return false;
-    var projects;
-    try {
-      projects = loadProject();
-    } catch (error) {
-      console.warn('Failed to read projects while syncing auto backups', error);
+    if (!rawEnsureAutoBackupsFromProjects) {
       return false;
     }
-    if (!projects || _typeof(projects) !== 'object') {
-      return false;
-    }
-    var setups = getSetups();
-    var changed = false;
-    Object.keys(projects).forEach(function (name) {
-      if (typeof name !== 'string' || !name) return;
-      var isAutoBackup = name.startsWith(AUTO_BACKUP_NAME_PREFIX) || name.startsWith(AUTO_BACKUP_DELETION_PREFIX);
-      if (!isAutoBackup) return;
-      if (Object.prototype.hasOwnProperty.call(setups, name)) return;
-      var snapshot = cloneProjectEntryForSetup(projects[name]);
-      setups[name] = snapshot;
-      changed = true;
+    return rawEnsureAutoBackupsFromProjects({
+      loadProject: typeof loadProject === 'function' ? loadProject : null,
+      getSetups: getSetups,
+      storeSetups: storeSetups,
+      log: logAutoBackupEvent,
+      cloneProjectEntry: function cloneProjectEntry(entry) {
+        return cloneProjectEntryForSetup(entry);
+      },
+      autoBackupNamePrefix: AUTO_BACKUP_NAME_PREFIX,
+      autoBackupDeletionPrefix: AUTO_BACKUP_DELETION_PREFIX
     });
-    if (changed) {
-      try {
-        storeSetups(setups);
-      } catch (error) {
-        console.warn('Failed to persist imported auto backups from projects', error);
-        return false;
-      }
-    }
-    return changed;
   }
   if (showAutoBackups) {
     try {
       ensureAutoBackupsFromProjects();
     } catch (error) {
-      console.warn('Failed to prepare auto backups from project storage', error);
+      logAutoBackupEvent('warn', 'Failed to prepare auto backups from project storage', error);
     }
   }
   function getSetups() {
@@ -8102,7 +7123,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var label = document.getElementById('batteryLabel');
     if (!label) return;
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     var helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'batterySelectHelp', '');
     if (helpText) {
       label.setAttribute('data-help', helpText);
@@ -8343,7 +7364,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var compatElem = document.getElementById('compatWarning');
     if (!compatElem) return;
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
     var incompatible = false;
     var arr = Array.from(brands);
     if (cameraBrand === 'dji' && arr.some(function (b) {
@@ -8401,7 +7422,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
       var langTexts = getLanguageTexts(currentLang);
-      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
       var warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
       setStatusMessage(compatElem, warning);
       setStatusLevel(compatElem, 'danger');
@@ -8430,7 +7451,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     if (needController && !hasController) {
       var _langTexts = getLanguageTexts(currentLang);
-      var _fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var _fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
       var _warning = resolveTextEntryInternal(_langTexts, _fallbackTexts, 'missingFIZControllerWarning', '');
       setStatusMessage(compatElem, _warning);
       setStatusLevel(compatElem, 'danger');
@@ -8494,24 +7515,24 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return clmRegex.test(m);
     });
     if (hasCLM && !usesUMC4) {
-      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriCLMNoUMC4Warning', '');
     } else if (usesUMC4 && motors.some(function (m) {
       return !clmRegex.test(m);
     })) {
-      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriUMC4Warning', '');
     } else if ((usesRIA1 || usesRF) && motors.some(function (m) {
       return clmRegex.test(m);
     })) {
-      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriRIA1Warning', '');
     } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF || builtInController)) {
-      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'distanceControllerWarning', '');
     } else if (onlyMasterGrip && !usesRF) {
-      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'masterGripWirelessWarning', '');
     }
     if (msg) {
       setStatusMessage(compatElem, msg);
       var langTexts = getLanguageTexts(currentLang);
-      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
       var umcWarning = resolveTextEntryInternal(langTexts, fallbackTexts, 'arriUMC4Warning', '');
       if (msg === umcWarning && umcWarning) {
         setStatusLevel(compatElem, 'warning');
@@ -8521,21 +7542,88 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   var gearItemTranslations = {};
+  function resolveTranslationsRuntime() {
+    var candidateScopes = [];
+    function resolveGlobalScopeForTranslations() {
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        return globalThis;
+      }
+      if (typeof window !== 'undefined' && window) {
+        return window;
+      }
+      if (typeof self !== 'undefined' && self) {
+        return self;
+      }
+      if (typeof global !== 'undefined' && global) {
+        return global;
+      }
+      return null;
+    }
+    try {
+      candidateScopes.push(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+    candidateScopes.push(resolveGlobalScopeForTranslations());
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var scope = candidateScopes[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+      try {
+        var runtime = scope.translations;
+        if (runtime && typeof runtime.loadLanguage === 'function') {
+          return runtime;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+    if (typeof translations !== 'undefined' && translations && typeof translations.loadLanguage === 'function') {
+      return translations;
+    }
+    if (typeof require === 'function') {
+      try {
+        var requiredTranslations = require('./translations.js');
+        if (requiredTranslations && typeof requiredTranslations.loadLanguage === 'function') {
+          return requiredTranslations;
+        }
+      } catch (runtimeRequireError) {
+        console.warn('Failed to resolve translations runtime via require', runtimeRequireError);
+      }
+    }
+    return null;
+  }
+  var translationsRuntime = resolveTranslationsRuntime();
   if (typeof texts === 'undefined') {
     var translations = null;
-    var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
-    if (globalScope && globalScope.texts && globalScope.categoryNames && globalScope.gearItems) {
+    var globalScope = function resolveGlobalScopeFallback() {
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        return globalThis;
+      }
+      if (typeof window !== 'undefined' && window) {
+        return window;
+      }
+      if (typeof self !== 'undefined' && self) {
+        return self;
+      }
+      if (typeof global !== 'undefined' && global) {
+        return global;
+      }
+      return null;
+    }();
+    if (translationsRuntime && translationsRuntime.texts && translationsRuntime.categoryNames && translationsRuntime.gearItems) {
+      translations = {
+        texts: translationsRuntime.texts,
+        categoryNames: translationsRuntime.categoryNames,
+        gearItems: translationsRuntime.gearItems
+      };
+    } else if (globalScope && globalScope.texts && globalScope.categoryNames && globalScope.gearItems) {
       translations = {
         texts: globalScope.texts,
         categoryNames: globalScope.categoryNames,
         gearItems: globalScope.gearItems
       };
-    } else if (typeof require === 'function') {
-      try {
-        translations = require('./translations.js');
-      } catch (e) {
-        console.warn('Failed to load translations via require', e);
-      }
     }
     if (translations) {
       if (globalScope) {
@@ -8555,33 +7643,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   } else {
     gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
-  }
-  var SUPPORTED_LANGUAGES = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === "object" && texts !== null ? Object.keys(texts) : [DEFAULT_LANGUAGE];
-  function resolveLanguagePreference(candidate) {
-    if (!candidate) {
-      return {
-        language: DEFAULT_LANGUAGE,
-        matched: false
-      };
-    }
-    var normalized = String(candidate).toLowerCase();
-    if (SUPPORTED_LANGUAGES.includes(normalized)) {
-      return {
-        language: normalized,
-        matched: true
-      };
-    }
-    var short = normalized.slice(0, 2);
-    if (SUPPORTED_LANGUAGES.includes(short)) {
-      return {
-        language: short,
-        matched: true
-      };
-    }
-    return {
-      language: DEFAULT_LANGUAGE,
-      matched: false
-    };
   }
   var autoGearHeadingElem = document.getElementById('autoGearHeading');
   var autoGearDescriptionElem = document.getElementById('autoGearDescription');
@@ -9022,7 +8083,109 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return textsForLang.focusScaleSetting || textsForLang.lensFocusScaleLabel || fallbackTexts.focusScaleSetting || fallbackTexts.lensFocusScaleLabel || metricLabel;
   }
-  var currentLang = DEFAULT_LANGUAGE;
+  var DEFAULT_LANGUAGE_SAFE = function resolveDefaultLanguageSafe() {
+    var candidateResolvers = [function resolveFromLexicalBinding() {
+      try {
+        if (typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE) {
+          return DEFAULT_LANGUAGE;
+        }
+      } catch (defaultLanguageLookupError) {
+        void defaultLanguageLookupError;
+      }
+      return null;
+    }, function resolveFromLocaleModule() {
+      try {
+        if ((typeof LOCALE_MODULE === "undefined" ? "undefined" : _typeof(LOCALE_MODULE)) === 'object' && LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' && LOCALE_MODULE.DEFAULT_LANGUAGE) {
+          return LOCALE_MODULE.DEFAULT_LANGUAGE;
+        }
+      } catch (localeModuleResolutionError) {
+        void localeModuleResolutionError;
+      }
+      return null;
+    }, function resolveFromLocalizationAccessors() {
+      try {
+        if ((typeof ACTIVE_LOCALIZATION_ACCESSORS === "undefined" ? "undefined" : _typeof(ACTIVE_LOCALIZATION_ACCESSORS)) === 'object' && ACTIVE_LOCALIZATION_ACCESSORS && typeof ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage === 'string' && ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage) {
+          return ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage;
+        }
+      } catch (accessorResolutionError) {
+        void accessorResolutionError;
+      }
+      return null;
+    }, function resolveFromGlobalScope() {
+      try {
+        var _globalScope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+        if (_globalScope && typeof _globalScope.DEFAULT_LANGUAGE === 'string' && _globalScope.DEFAULT_LANGUAGE) {
+          return _globalScope.DEFAULT_LANGUAGE;
+        }
+        if (_globalScope && typeof _globalScope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' && _globalScope.CPP_DEFAULT_LANGUAGE_SAFE) {
+          return _globalScope.CPP_DEFAULT_LANGUAGE_SAFE;
+        }
+      } catch (globalScopeResolutionError) {
+        void globalScopeResolutionError;
+      }
+      return null;
+    }];
+    for (var index = 0; index < candidateResolvers.length; index += 1) {
+      var resolved = candidateResolvers[index]();
+      if (typeof resolved === 'string' && resolved) {
+        return resolved;
+      }
+    }
+    return 'en';
+  }();
+  if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function') {
+    try {
+      var runtimeLoadResult = translationsRuntime.loadLanguage(DEFAULT_LANGUAGE_SAFE);
+      if (runtimeLoadResult && typeof runtimeLoadResult.then === 'function') {
+        runtimeLoadResult.catch(function handleDefaultLanguageLoadError(error) {
+          console.warn('Failed to eagerly load default translations', error);
+        });
+      }
+    } catch (defaultRuntimeError) {
+      console.warn('Failed to trigger default translation load', defaultRuntimeError);
+    }
+  }
+  var SUPPORTED_LANGUAGES = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts !== null ? Object.keys(texts) : [DEFAULT_LANGUAGE_SAFE];
+  function resolveLanguagePreference(candidate) {
+    if (!candidate) {
+      return {
+        language: DEFAULT_LANGUAGE_SAFE,
+        matched: false
+      };
+    }
+    var normalized = String(candidate).toLowerCase();
+    if (SUPPORTED_LANGUAGES.includes(normalized)) {
+      return {
+        language: normalized,
+        matched: true
+      };
+    }
+    var short = normalized.slice(0, 2);
+    if (SUPPORTED_LANGUAGES.includes(short)) {
+      return {
+        language: short,
+        matched: true
+      };
+    }
+    return {
+      language: DEFAULT_LANGUAGE_SAFE,
+      matched: false
+    };
+  }
+  try {
+    var _globalScope2 = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+    if (_globalScope2 && _typeof(_globalScope2) === 'object') {
+      if (typeof _globalScope2.CPP_DEFAULT_LANGUAGE_SAFE !== 'string' || !_globalScope2.CPP_DEFAULT_LANGUAGE_SAFE) {
+        _globalScope2.CPP_DEFAULT_LANGUAGE_SAFE = DEFAULT_LANGUAGE_SAFE;
+      }
+      if (typeof _globalScope2.DEFAULT_LANGUAGE !== 'string' || !_globalScope2.DEFAULT_LANGUAGE) {
+        _globalScope2.DEFAULT_LANGUAGE = DEFAULT_LANGUAGE_SAFE;
+      }
+    }
+  } catch (assignDefaultLanguageScopeError) {
+    void assignDefaultLanguageScopeError;
+  }
+  var currentLang = DEFAULT_LANGUAGE_SAFE;
   var updateHelpQuickLinksForLanguage;
   var updateHelpResultsSummaryText;
   var lastRuntimeHours = null;
@@ -9060,3304 +8223,3210 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   } catch (setLangError) {
     void setLangError;
   }
-  function setLanguage(lang) {
-    var _texts$en27, _texts$en28, _texts$en29, _texts$en30, _texts$en31, _texts$en32, _texts$en33, _texts$en34, _texts$en35, _texts$en36, _texts$en37, _texts$en38, _texts$en39, _texts$en40, _texts$en41, _texts$en42, _texts$en43, _texts$en44, _texts$en45, _texts$en46, _texts$en48, _texts$en153, _texts$en154, _texts$lang, _texts$en155, _texts$lang2, _texts$en156, _texts$lang3, _texts$en157, _texts$lang4, _texts$en158, _texts$en220;
-    var requested = typeof lang === "string" ? lang : "";
-    var resolved = resolveLanguagePreference(requested);
-    var normalizedLang = resolved.language;
-    if (!texts[normalizedLang]) {
-      console.warn("Missing translation bundle for \"".concat(normalizedLang, "\". Falling back to ").concat(DEFAULT_LANGUAGE, "."));
-      normalizedLang = DEFAULT_LANGUAGE;
-    }
-    if (requested && normalizedLang === DEFAULT_LANGUAGE && !resolved.matched && requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE) {
-      console.warn("Unsupported language preference \"".concat(requested, "\". Falling back to ").concat(DEFAULT_LANGUAGE, "."));
-    }
-    lang = normalizedLang;
-    var previousLang = currentLang;
-    currentLang = lang;
-    ensureInstallPromptElements();
-    var shouldDispatchLanguageChange = previousLang !== lang;
-    var dispatchLanguageChange = function dispatchLanguageChange() {
-      if (typeof window !== "undefined" && typeof window.dispatchEvent === "function" && typeof Event === "function") {
-        try {
-          window.dispatchEvent(new Event("languagechange"));
-        } catch (dispatchError) {
-          console.warn("Failed to dispatch languagechange event", dispatchError);
+  function setLanguage(_x) {
+    return _setLanguage.apply(this, arguments);
+  }
+  function _setLanguage() {
+    _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
+      var _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en74, _texts$en75, _texts$en76, _texts$en77, _texts$en78, _texts$en79, _texts$en80, _texts$en81, _texts$en82, _texts$en83, _texts$en84, _texts$en85, _texts$en86, _texts$en87, _texts$en88, _texts$en90, _texts$en195, _texts$en196, _texts$lang, _texts$en197, _texts$lang2, _texts$en198, _texts$lang3, _texts$en199, _texts$lang4, _texts$en200, _texts$en262;
+      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineHelp, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en42, extraLabel, _texts$en43, heading, _texts$en44, filenameLabel, _texts$en45, confirmLabel, _texts$en46, cancelLabel, _texts$en47, _texts$en48, label, help, _texts$en49, _texts$en50, _label5, _help2, sharedImportLegendText, _texts$en51, title, _texts$en52, message, _texts$en53, _label6, _texts$en54, _label7, _texts$en55, legend, _texts$en56, _texts$en57, _label8, _help3, _texts$en58, _texts$en59, _label9, _help4, _texts$en60, _texts$en61, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en62, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en63, _texts$en64, generalLabel, generalHelp, _texts$en65, sectionHeading, _texts$en66, _sectionHeading, _texts$en67, _sectionHeading2, _texts$en68, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en89, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en92, _texts$en93, headingHelp, _texts$en94, _texts$en95, _heading, _texts$en96, _description, _texts$en98, _texts$en99, _texts$en100, _label10, _help6, _texts$en101, _label11, _texts$en102, _label12, _texts$en103, _texts$en104, _label13, _help7, _texts$en105, _texts$en106, _label14, _help8, _texts$en107, _texts$en108, _label15, _help9, _texts$en109, _texts$en110, _label16, _help0, _texts$en111, _texts$en112, _label17, _help1, _texts$en113, placeholder, _texts$en114, _texts$en115, _label18, _help10, _texts$en116, _label19, _texts$en117, _texts$en118, _description2, _texts$en119, _texts$en120, _label20, _help11, _texts$en121, hiddenText, _texts$en122, _texts$en123, _label21, _help12, _texts$en124, _label22, _texts$en125, _label23, _texts$en126, emptyText, _texts$en127, _texts$en128, _label24, _help13, _texts$en129, _texts$en130, _label25, _help14, _texts$en131, _label26, _texts$en132, _texts$en133, _label27, _help15, _texts$en134, _texts$en135, _label28, _help16, _texts$en136, _texts$en137, modeLabel, modeHelp, _texts$en138, _texts$en139, baseLabel, baseHelp, _texts$en140, _texts$en141, factorLabel, factorHelp, _texts$en142, _texts$en143, _texts$en144, _texts$en145, _texts$en146, _texts$en147, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en148, _texts$en149, _label30, _help18, _texts$en150, _texts$en151, _label31, _help19, _texts$en152, _texts$en153, _label32, _help20, _texts$en154, _texts$en155, _label33, _help21, _texts$en156, _texts$en157, _label34, _help22, _texts$en158, _texts$en159, _label35, _help23, _texts$en160, _texts$en161, _texts$en162, _texts$en163, _label36, _help24, _texts$en164, _texts$en165, _label37, _help25, _texts$en166, _label38, _texts$en167, _texts$en168, _texts$en169, greaterLabel, lessLabel, equalLabel, _texts$en170, _texts$en171, _label39, _help26, _texts$en172, _help27, _texts$en173, _texts$en174, _label40, _help28, _texts$en175, _texts$en176, _label41, _help29, _texts$en177, _texts$en178, _label42, _help30, _texts$en179, _texts$en180, _label43, _help31, _texts$en181, _texts$en182, _label44, _help32, _texts$en183, _texts$en184, _label45, _help33, _texts$en185, _texts$en186, _label46, _help34, _texts$en187, _texts$en188, _label47, _help35, _texts$en189, _texts$en190, _label48, _help36, _texts$en191, _texts$en192, _label49, _help37, _texts$en193, _texts$en194, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _label51, _help39, _placeholder3, _texts$en205, _texts$en206, _label52, hint, helpText, _texts$en207, _label53, _texts$en208, _label54, _texts$en209, _label55, _texts$en210, _label56, _texts$en211, _texts$en212, _texts$en213, _texts$en214, _texts$en215, _texts$en216, _texts$en217, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en218, _label57, _texts$en219, _label58, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _label59, _help40, _placeholder4, _texts$en224, _texts$en225, _label60, _hint, _helpText4, _texts$en226, _label61, _texts$en227, _label62, _texts$en228, _label63, _texts$en229, _label64, _texts$en230, _texts$en231, _texts$en232, _texts$en233, _texts$en234, _texts$en235, _texts$en236, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en237, _label65, _texts$en238, _label66, _texts$en239, _heading2, _texts$en240, _description3, _texts$en241, _heading3, _texts$en242, _label67, _texts$en243, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en244, _texts$en245, _headingText, _headingHelp, _texts$en246, _texts$en247, _texts$en248, requestLabel, requestHelp, _texts$en249, idleText, _texts$en250, _texts$en251, _headingText2, _headingHelp2, _texts$en252, _texts$en253, _texts$en254, backupLabel, backupHelp, _texts$en255, _texts$en256, openLabel, openHelp, _texts$en257, _texts$en258, statusHeading, statusHelp, _texts$en259, _texts$en260, _texts$en261, statusDefaultText, _texts$en263, sectionHelp, _texts$en264, _texts$en265, _headingText3, _headingHelp3, _texts$en266, _texts$en267, _filterLabel, _texts$en268, _texts$en269, _texts$en270, _texts$en271, _texts$en272, optionTexts, filterHelp, _texts$en273, namespaceLabel, _texts$en274, _texts$en275, _placeholder5, namespaceHelp, _texts$en276, historyLabel, _texts$en277, historyHelp, _texts$en278, _texts$en279, limitHelp, limitAria, _texts$en280, consoleLabel, _texts$en281, consoleHelp, _texts$en282, consoleCaptureLabel, _texts$en283, consoleCaptureHelp, _texts$en284, captureLabel, _texts$en285, captureHelp, _texts$en286, persistLabel, _texts$en287, persistHelp, _texts$en288, exportLabel, _texts$en289, exportHelp, _texts$en290, statusText, _texts$en291, _emptyText, _texts$en292, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en293, _texts$en294, _texts$en295, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en296, _texts$en297, proceedLabel, proceedHelp, _texts$en298, _texts$en299, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en300, _label69, saveHelp, _texts$en301, _cancelLabel, cancelHelp, menuToggle, _texts$en302, _texts$en303, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en304, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en305, _closeLabel3, _closeHelp, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en306, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.p = _context2.n) {
+          case 0:
+            requested = typeof lang === "string" ? lang : "";
+            resolved = resolveLanguagePreference(requested);
+            normalizedLang = resolved.language;
+            if (translationsRuntime && typeof translationsRuntime.resolveLocaleKey === 'function') {
+              try {
+                normalizedLang = translationsRuntime.resolveLocaleKey(normalizedLang);
+              } catch (resolveError) {
+                console.warn('Failed to normalize language via runtime', resolveError);
+              }
+            }
+            if (!(translationsRuntime && typeof translationsRuntime.loadLanguage === 'function')) {
+              _context2.n = 5;
+              break;
+            }
+            _context2.p = 1;
+            if (typeof translationsRuntime.showLoadingState === 'function') {
+              translationsRuntime.showLoadingState(normalizedLang);
+            }
+            loadResult = translationsRuntime.loadLanguage(normalizedLang);
+            if (!(loadResult && typeof loadResult.then === 'function')) {
+              _context2.n = 2;
+              break;
+            }
+            _context2.n = 2;
+            return loadResult;
+          case 2:
+            _context2.n = 4;
+            break;
+          case 3:
+            _context2.p = 3;
+            _t = _context2.v;
+            console.warn("Failed to load translations for \"".concat(normalizedLang, "\""), _t);
+          case 4:
+            _context2.p = 4;
+            if (typeof translationsRuntime.clearLoadingState === 'function') {
+              translationsRuntime.clearLoadingState();
+            }
+            return _context2.f(4);
+          case 5:
+            translationSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts || translationsRuntime && translationsRuntime.texts || {};
+            if (!translationSource[normalizedLang]) {
+              console.warn("Missing translation bundle for \"".concat(normalizedLang, "\". Falling back to ").concat(DEFAULT_LANGUAGE_SAFE, "."));
+              normalizedLang = DEFAULT_LANGUAGE_SAFE;
+            }
+            if (requested && normalizedLang === DEFAULT_LANGUAGE_SAFE && !resolved.matched && requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE_SAFE) {
+              console.warn("Unsupported language preference \"".concat(requested, "\". Falling back to ").concat(DEFAULT_LANGUAGE_SAFE, "."));
+            }
+            lang = normalizedLang;
+            if (!translationSource[lang] && translationSource[DEFAULT_LANGUAGE_SAFE]) {
+              translationSource[lang] = translationSource[DEFAULT_LANGUAGE_SAFE];
+            }
+            previousLang = currentLang;
+            currentLang = lang;
+            ensureInstallPromptElements();
+            shouldDispatchLanguageChange = previousLang !== lang;
+            dispatchLanguageChange = function dispatchLanguageChange() {
+              if (typeof window !== "undefined" && typeof window.dispatchEvent === "function" && typeof Event === "function") {
+                try {
+                  window.dispatchEvent(new Event("languagechange"));
+                } catch (dispatchError) {
+                  console.warn("Failed to dispatch languagechange event", dispatchError);
+                }
+              }
+            };
+            if (shouldDispatchLanguageChange) {
+              if (typeof queueMicrotask === "function") {
+                queueMicrotask(dispatchLanguageChange);
+              } else if (typeof setTimeout === "function") {
+                setTimeout(dispatchLanguageChange, 0);
+              } else {
+                dispatchLanguageChange();
+              }
+            }
+            try {
+              localStorage.setItem("language", lang);
+            } catch (e) {
+              console.warn("Could not save language to localStorage", e);
+            }
+            if (languageSelect) {
+              languageSelect.value = lang;
+            }
+            if (settingsLanguage) {
+              settingsLanguage.value = lang;
+            }
+            document.documentElement.lang = lang;
+            document.title = translationSource[lang].appTitle;
+            document.getElementById("mainTitle").textContent = translationSource[lang].appTitle;
+            document.getElementById("tagline").textContent = translationSource[lang].tagline;
+            doc = typeof document !== "undefined" ? document : null;
+            runtimeScope = getCoreGlobalObject();
+            fallbackLocale = translationSource[DEFAULT_LANGUAGE_SAFE] || {};
+            normalizeTemperatureUnitSafe = function normalizeTemperatureUnitSafe(unit) {
+              var _TEMPERATURE_UNITS5;
+              if (typeof normalizeTemperatureUnit === "function") {
+                try {
+                  return normalizeTemperatureUnit(unit);
+                } catch (normalizeError) {
+                  console.warn("normalizeTemperatureUnit helper threw an error; falling back to safe normalization", normalizeError);
+                }
+              }
+              if (typeof unit === "string") {
+                var _TEMPERATURE_UNITS, _TEMPERATURE_UNITS3;
+                var trimmed = unit.trim().toLowerCase();
+                if (trimmed === ((_TEMPERATURE_UNITS = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS === void 0 ? void 0 : _TEMPERATURE_UNITS.fahrenheit) || trimmed === "fahrenheit" || trimmed === "f") {
+                  var _TEMPERATURE_UNITS2;
+                  return ((_TEMPERATURE_UNITS2 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS2 === void 0 ? void 0 : _TEMPERATURE_UNITS2.fahrenheit) || "fahrenheit";
+                }
+                if (trimmed === ((_TEMPERATURE_UNITS3 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS3 === void 0 ? void 0 : _TEMPERATURE_UNITS3.celsius) || trimmed === "celsius" || trimmed === "c") {
+                  var _TEMPERATURE_UNITS4;
+                  return ((_TEMPERATURE_UNITS4 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS4 === void 0 ? void 0 : _TEMPERATURE_UNITS4.celsius) || "celsius";
+                }
+              }
+              return ((_TEMPERATURE_UNITS5 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS5 === void 0 ? void 0 : _TEMPERATURE_UNITS5.celsius) || "celsius";
+            };
+            FALLBACK_NORMALIZE_FOCUS_SCALE = function FALLBACK_NORMALIZE_FOCUS_SCALE(value) {
+              if (typeof value === "string") {
+                var trimmed = value.trim().toLowerCase();
+                if (trimmed === "imperial" || trimmed === "feet" || trimmed === "ft") {
+                  return "imperial";
+                }
+                if (trimmed === "metric" || trimmed === "metre" || trimmed === "meter" || trimmed === "m") {
+                  return "metric";
+                }
+              }
+              return "metric";
+            };
+            ensureNormalizeFocusScaleHelper = function ensureNormalizeFocusScaleHelper() {
+              if (typeof normalizeFocusScale === "function") {
+                return normalizeFocusScale;
+              }
+              var scope = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : typeof global !== "undefined" ? global : null;
+              if (scope && typeof scope.normalizeFocusScale === "function") {
+                return scope.normalizeFocusScale;
+              }
+              if (scope) {
+                try {
+                  Object.defineProperty(scope, "normalizeFocusScale", {
+                    value: FALLBACK_NORMALIZE_FOCUS_SCALE,
+                    writable: true,
+                    configurable: true
+                  });
+                } catch (defineError) {
+                  scope.normalizeFocusScale = FALLBACK_NORMALIZE_FOCUS_SCALE;
+                }
+              }
+              return FALLBACK_NORMALIZE_FOCUS_SCALE;
+            };
+            ensureNormalizeFocusScaleHelper();
+            normalizeFocusScaleSafe = function normalizeFocusScaleSafe(value) {
+              if (typeof normalizeFocusScale === "function") {
+                try {
+                  var normalized = normalizeFocusScale(value);
+                  if (normalized === "imperial" || normalized === "metric") {
+                    return normalized;
+                  }
+                } catch (normalizeError) {
+                  console.warn("normalizeFocusScale helper threw an error; falling back to safe normalization", normalizeError);
+                }
+              }
+              return FALLBACK_NORMALIZE_FOCUS_SCALE(value);
+            };
+            resolveFocusScalePreference = function resolveFocusScalePreference() {
+              var tryNormalize = function tryNormalize(candidate) {
+                if (typeof candidate === "string" && candidate) {
+                  return normalizeFocusScaleSafe(candidate);
+                }
+                return null;
+              };
+              var sources = [function () {
+                return typeof focusScalePreference !== "undefined" ? focusScalePreference : null;
+              }, function () {
+                return typeof sessionFocusScale !== "undefined" ? sessionFocusScale : null;
+              }, function () {
+                try {
+                  var getter = runtimeScope && runtimeScope.preferences && typeof runtimeScope.preferences.getFocusScale === "function" ? runtimeScope.preferences.getFocusScale : null;
+                  if (getter) {
+                    return getter();
+                  }
+                } catch (focusScaleError) {
+                  console.warn("Failed to resolve focus scale preference from runtime scope; using fallback", focusScaleError);
+                }
+                return null;
+              }];
+              for (var _i12 = 0, _sources = sources; _i12 < _sources.length; _i12++) {
+                var getSource = _sources[_i12];
+                var _resolved = tryNormalize(getSource());
+                if (_resolved) {
+                  return _resolved;
+                }
+              }
+              return "metric";
+            };
+            resolveLocaleString = function resolveLocaleString(key) {
+              if (!key) return "";
+              var bundle = texts[lang];
+              var value = bundle && typeof bundle[key] === "string" ? bundle[key] : null;
+              if (value && value.trim()) {
+                return value;
+              }
+              var fallbackValue = typeof fallbackLocale[key] === "string" ? fallbackLocale[key] : "";
+              return fallbackValue;
+            };
+            applyTextContent = function applyTextContent(element, key) {
+              var fallbackValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+              if (!element) return;
+              var text = resolveLocaleString(key) || fallbackValue;
+              element.textContent = text;
+            };
+            createHelpLink = function createHelpLink(href, text) {
+              var _ref77 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+                target = _ref77.target,
+                highlight = _ref77.highlight,
+                _ref77$isButton = _ref77.isButton,
+                isButton = _ref77$isButton === void 0 ? true : _ref77$isButton;
+              if (!doc) {
+                return null;
+              }
+              var link = doc.createElement("a");
+              link.className = isButton ? "help-link button-link" : "help-link";
+              link.href = href;
+              if (target) {
+                link.setAttribute("data-help-target", target);
+              }
+              if (highlight) {
+                link.setAttribute("data-help-highlight", highlight);
+              }
+              link.textContent = text;
+              return link;
+            };
+            applySuggestionTemplate = function applySuggestionTemplate(element, key) {
+              var builders = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+              if (!element || !doc) return;
+              var template = resolveLocaleString(key);
+              element.innerHTML = "";
+              if (!template) {
+                element.setAttribute("hidden", "");
+                return;
+              }
+              element.removeAttribute("hidden");
+              var fragment = doc.createDocumentFragment();
+              var regex = /%(?:(\d+)\$)?s/g;
+              var lastIndex = 0;
+              var autoIndex = 0;
+              var match;
+              while ((match = regex.exec(template)) !== null) {
+                var start = match.index;
+                if (start > lastIndex) {
+                  fragment.appendChild(doc.createTextNode(template.slice(lastIndex, start)));
+                }
+                var index = typeof match[1] === "string" ? Math.max(parseInt(match[1], 10) - 1, 0) : autoIndex++;
+                var builder = builders[index];
+                if (typeof builder === "function") {
+                  var node = builder();
+                  if (node) {
+                    fragment.appendChild(node);
+                  }
+                }
+                lastIndex = regex.lastIndex;
+              }
+              if (lastIndex < template.length) {
+                fragment.appendChild(doc.createTextNode(template.slice(lastIndex)));
+              }
+              element.appendChild(fragment);
+            };
+            applySuggestionText = function applySuggestionText(element, key) {
+              if (!element) return;
+              var text = resolveLocaleString(key);
+              element.textContent = text;
+              if (!text) {
+                element.setAttribute("hidden", "");
+              } else {
+                element.removeAttribute("hidden");
+              }
+            };
+            resolveRuntimeValue = function resolveRuntimeValue(name) {
+              if (!name) return undefined;
+              if (runtimeScope && _typeof(runtimeScope) === "object") {
+                try {
+                  if (name in runtimeScope) {
+                    return runtimeScope[name];
+                  }
+                } catch (scopeError) {
+                  void scopeError;
+                }
+              }
+              if (typeof globalThis !== "undefined" && globalThis !== runtimeScope) {
+                try {
+                  if (name in globalThis) {
+                    return globalThis[name];
+                  }
+                } catch (globalError) {
+                  void globalError;
+                }
+              }
+              return undefined;
+            };
+            registerResolvedElement = function registerResolvedElement(globalName, element) {
+              if (!globalName || !element) {
+                return element;
+              }
+              try {
+                exposeCoreRuntimeConstant(globalName, element);
+              } catch (exposeError) {
+                void exposeError;
+              }
+              return element;
+            };
+            resolveElement = function resolveElement(globalName, elementId) {
+              var existing = null;
+              try {
+                existing = resolveRuntimeValue(globalName);
+              } catch (resolveError) {
+                console.warn("Failed to resolve runtime value for \"".concat(globalName, "\""), resolveError);
+                existing = null;
+              }
+              if (existing && _typeof(existing) === "object") {
+                return existing;
+              }
+              if (doc && typeof doc.getElementById === "function" && elementId) {
+                try {
+                  var element = doc.getElementById(elementId);
+                  return registerResolvedElement(globalName, element);
+                } catch (resolveDomError) {
+                  console.warn("Failed to resolve document element \"".concat(elementId, "\""), resolveDomError);
+                  return null;
+                }
+              }
+              return null;
+            };
+            settingsShowAutoBackupsEl = resolveElement("settingsShowAutoBackups", "settingsShowAutoBackups");
+            backupSettingsButton = resolveElement("backupSettings", "backupSettings");
+            backupDiffToggleButtonEl = resolveElement("backupDiffToggleButton", "backupDiffToggleButton");
+            backupDiffHeadingEl = resolveElement("backupDiffHeading", "backupDiffHeading");
+            backupDiffIntroEl = resolveElement("backupDiffIntro", "backupDiffIntro");
+            backupDiffPrimaryLabelEl = resolveElement("backupDiffPrimaryLabel", "backupDiffPrimaryLabel");
+            backupDiffPrimarySelectEl = resolveElement("backupDiffPrimarySelect", "backupDiffPrimary");
+            backupDiffSecondaryLabelEl = resolveElement("backupDiffSecondaryLabel", "backupDiffSecondaryLabel");
+            backupDiffSecondarySelectEl = resolveElement("backupDiffSecondarySelect", "backupDiffSecondary");
+            backupDiffEmptyStateEl = resolveElement("backupDiffEmptyState", "backupDiffEmptyState");
+            backupDiffNotesLabelEl = resolveElement("backupDiffNotesLabel", "backupDiffNotesLabel");
+            backupDiffNotesEl = resolveElement("backupDiffNotes", "backupDiffNotes");
+            backupDiffExportButtonEl = resolveElement("backupDiffExportButton", "backupDiffExport");
+            backupDiffCloseButtonEl = resolveElement("backupDiffCloseButton", "backupDiffClose");
+            restoreRehearsalButton = resolveElement("restoreRehearsalButton", "restoreRehearsalButton");
+            restoreRehearsalHeading = resolveElement("restoreRehearsalHeading", "restoreRehearsalHeading");
+            restoreRehearsalIntro = resolveElement("restoreRehearsalIntro", "restoreRehearsalIntro");
+            restoreRehearsalModeLabel = resolveElement("restoreRehearsalModeLabel", "restoreRehearsalModeLabel");
+            restoreRehearsalModeBackupText = resolveElement("restoreRehearsalModeBackupText", "restoreRehearsalModeBackupText");
+            restoreRehearsalModeProjectText = resolveElement("restoreRehearsalModeProjectText", "restoreRehearsalModeProjectText");
+            restoreRehearsalFileLabel = resolveElement("restoreRehearsalFileLabel", "restoreRehearsalFileLabel");
+            restoreRehearsalBrowse = resolveElement("restoreRehearsalBrowse", "restoreRehearsalBrowse");
+            restoreRehearsalFileName = resolveElement("restoreRehearsalFileName", "restoreRehearsalFileName");
+            restoreRehearsalStatus = resolveElement("restoreRehearsalStatus", "restoreRehearsalStatus");
+            restoreRehearsalRuleHeading = resolveElement("restoreRehearsalRuleHeading", "restoreRehearsalRuleHeading");
+            restoreRehearsalRuleIntro = resolveElement("restoreRehearsalRuleIntro", "restoreRehearsalRuleIntro");
+            restoreRehearsalRuleEmpty = resolveElement("restoreRehearsalRuleEmpty", "restoreRehearsalRuleEmpty");
+            restoreRehearsalTableCaption = resolveElement("restoreRehearsalTableCaption", "restoreRehearsalTableCaption");
+            restoreRehearsalMetricHeader = resolveElement("restoreRehearsalMetricHeader", "restoreRehearsalMetricHeader");
+            restoreRehearsalLiveHeader = resolveElement("restoreRehearsalLiveHeader", "restoreRehearsalLiveHeader");
+            restoreRehearsalSandboxHeader = resolveElement("restoreRehearsalSandboxHeader", "restoreRehearsalSandboxHeader");
+            restoreRehearsalDifferenceHeader = resolveElement("restoreRehearsalDifferenceHeader", "restoreRehearsalDifferenceHeader");
+            restoreRehearsalCloseButton = resolveElement("restoreRehearsalCloseButton", "restoreRehearsalClose");
+            restoreRehearsalProceedButton = resolveElement("restoreRehearsalProceedButton", "restoreRehearsalProceed");
+            restoreRehearsalAbortButton = resolveElement("restoreRehearsalAbortButton", "restoreRehearsalAbort");
+            if (skipLink) skipLink.textContent = texts[lang].skipToContent;
+            offlineElem = document.getElementById("offlineIndicator");
+            if (offlineElem) {
+              offlineElem.textContent = texts[lang].offlineIndicator;
+              offlineHelp = texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
+              offlineElem.setAttribute("data-help", offlineHelp);
+            }
+            applyInstallTexts(lang);
+            legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
+            impressumElem = document.getElementById("impressumLink");
+            if (impressumElem) {
+              impressumElem.textContent = texts[lang].impressum;
+              if (legalLinks !== null && legalLinks !== void 0 && legalLinks.imprint) {
+                impressumElem.setAttribute("href", legalLinks.imprint);
+              }
+            }
+            privacyElem = document.getElementById("privacyLink");
+            if (privacyElem) {
+              privacyElem.textContent = texts[lang].privacy;
+              if (legalLinks !== null && legalLinks !== void 0 && legalLinks.privacy) {
+                privacyElem.setAttribute("href", legalLinks.privacy);
+              }
+            }
+            setupManageHeadingElem = document.getElementById("setupManageHeading");
+            setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
+            setupManageHeadingElem.setAttribute("data-help", texts[lang].setupManageHeadingHelp);
+            deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
+            deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
+            deviceSelectionHeadingElem.setAttribute("data-help", texts[lang].deviceSelectionHeadingHelp);
+            resultsHeadingElem = document.getElementById("resultsHeading");
+            resultsHeadingElem.textContent = texts[lang].resultsHeading;
+            resultsHeadingElem.setAttribute("data-help", texts[lang].resultsHeadingHelp);
+            deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
+            deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
+            deviceManagerHeadingElem.setAttribute("data-help", texts[lang].deviceManagerHeadingHelp);
+            batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
+            batteryComparisonDescriptionElem = document.getElementById("batteryComparisonDescription");
+            batteryTableElem = document.getElementById("batteryTable");
+            setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
+            setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
+            setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);
+            sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
+            sideMenuLinks.forEach(function (link) {
+              var navKey = link.dataset.navKey;
+              if (!navKey) {
+                return;
+              }
+              var label = texts[lang][navKey];
+              if (label) {
+                if (navKey === 'contactsNav' && typeof setButtonLabelWithIconBinding === 'function' && (link === null || link === void 0 ? void 0 : link.tagName) === 'BUTTON') {
+                  setButtonLabelWithIconBinding(link, label, _typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts ? ICON_GLYPHS.contacts : iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS));
+                } else {
+                  link.textContent = label;
+                }
+                link.setAttribute("aria-label", label);
+              }
+              var helpKey = "".concat(navKey, "Help");
+              var helpText = texts[lang][helpKey];
+              if (helpText) {
+                link.setAttribute("title", helpText);
+                link.setAttribute("data-help", helpText);
+              } else {
+                link.removeAttribute("title");
+                link.removeAttribute("data-help");
+              }
+            });
+            applyOwnGearLocalization(lang);
+            savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
+            savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
+            savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+            setupNameLabelElem = document.getElementById("setupNameLabel");
+            setupNameLabelElem.textContent = texts[lang].setupNameLabel;
+            setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
+            setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+            sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
+            sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
+            sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
+            setButtonLabelWithIconBinding(applySharedLinkBtn, texts[lang].loadSharedLinkBtn, ICON_GLYPHS.fileImport);
+            setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
+            setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
+            deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
+            deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
+            deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+            saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
+            saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
+            saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+            generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
+            generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+            generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
+            generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+            deleteGearListHelp = texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
+            if (deleteGearListProjectBtn) {
+              setButtonLabelWithIconBinding(deleteGearListProjectBtn, texts[lang].deleteGearListBtn, ICON_GLYPHS.trash);
+              deleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
+              deleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
+              deleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+            }
+            editProjectBtnElem = document.getElementById("editProjectBtn");
+            if (editProjectBtnElem) {
+              editProjectBtnElem.textContent = texts[lang].editProjectBtn;
+              editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
+              editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
+            }
+            addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
+            if (addExtraGearBtnElem) {
+              extraLabel = texts[lang].addExtraGearBtn || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.addExtraGearBtn) || "Add temporary extra gear";
+              addExtraGearBtnElem.textContent = extraLabel;
+              addExtraGearBtnElem.setAttribute("title", extraLabel);
+              addExtraGearBtnElem.setAttribute("data-help", extraLabel);
+            }
+            shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
+            shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+            if (shareDialogHeadingElem) {
+              heading = texts[lang].shareDialogTitle || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.shareDialogTitle) || shareDialogHeadingElem.textContent;
+              shareDialogHeadingElem.textContent = heading;
+            }
+            if (shareFilenameLabelElem) {
+              filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.shareFilenameLabel) || shareFilenameLabelElem.textContent;
+              shareFilenameLabelElem.textContent = filenameLabel;
+            }
+            if (shareConfirmBtn) {
+              confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.shareDialogConfirm) || shareConfirmBtn.textContent;
+              setButtonLabelWithIconBinding(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
+              shareConfirmBtn.setAttribute('title', confirmLabel);
+              shareConfirmBtn.setAttribute('aria-label', confirmLabel);
+              shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
+            }
+            if (shareCancelBtn) {
+              cancelLabel = texts[lang].shareDialogCancel || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.shareDialogCancel) || shareCancelBtn.textContent;
+              setButtonLabelWithIconBinding(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
+              shareCancelBtn.setAttribute('title', cancelLabel);
+              shareCancelBtn.setAttribute('aria-label', cancelLabel);
+            }
+            if (shareIncludeAutoGearText) {
+              label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
+              shareIncludeAutoGearText.textContent = label;
+              help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.shareIncludeAutoGearHelp) || label;
+              if (shareIncludeAutoGearLabelElem) {
+                shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
+              }
+              if (shareIncludeAutoGearCheckbox) {
+                shareIncludeAutoGearCheckbox.setAttribute('aria-label', label);
+              }
+            }
+            if (shareIncludeOwnedGearText) {
+              _label5 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
+              shareIncludeOwnedGearText.textContent = _label5;
+              _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.shareIncludeOwnedGearHelp) || _label5;
+              if (shareIncludeOwnedGearLabelElem) {
+                shareIncludeOwnedGearLabelElem.setAttribute('data-help', _help2);
+              }
+              if (shareIncludeOwnedGearCheckbox) {
+                shareIncludeOwnedGearCheckbox.setAttribute('aria-label', _label5);
+              }
+            }
+            sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
+            if (sharedImportDialogHeading) {
+              title = texts[lang].sharedImportDialogTitle || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
+              sharedImportDialogHeading.textContent = title;
+            }
+            if (sharedImportDialogMessage) {
+              message = texts[lang].sharedImportDialogMessage || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
+              sharedImportDialogMessage.textContent = message;
+              sharedImportDialogMessage.setAttribute('data-help', message);
+            }
+            if (sharedImportConfirmBtn) {
+              _label6 = texts[lang].sharedImportDialogConfirm || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
+              setButtonLabelWithIconBinding(sharedImportConfirmBtn, _label6, ICON_GLYPHS.check);
+              sharedImportConfirmBtn.setAttribute('data-help', _label6);
+            }
+            if (sharedImportCancelBtn) {
+              _label7 = texts[lang].sharedImportDialogCancel || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
+              setButtonLabelWithIconBinding(sharedImportCancelBtn, _label7, ICON_GLYPHS.circleX);
+              sharedImportCancelBtn.setAttribute('data-help', _label7);
+            }
+            if (sharedImportLegend) {
+              legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
+              sharedImportLegend.textContent = legend;
+              sharedImportLegendText = legend;
+              if (sharedImportOptions) {
+                sharedImportOptions.setAttribute('data-help', legend);
+              }
+            }
+            if (sharedImportModeSelect && sharedImportLegendText) {
+              sharedImportModeSelect.setAttribute('aria-label', sharedImportLegendText);
+              sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
+            }
+            if (sharedImportModeNoneOption) {
+              _label8 = texts[lang].sharedImportAutoGearNone || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
+              sharedImportModeNoneOption.textContent = _label8;
+              _help3 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.sharedImportAutoGearNoneHelp) || _label8;
+              sharedImportModeNoneOption.setAttribute('data-help', _help3);
+              sharedImportModeNoneOption.setAttribute('title', _help3);
+              sharedImportModeNoneOption.setAttribute('aria-label', _label8);
+            }
+            if (sharedImportModeProjectOption) {
+              _label9 = texts[lang].sharedImportAutoGearProject || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
+              sharedImportModeProjectOption.textContent = _label9;
+              _help4 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.sharedImportAutoGearProjectHelp) || _label9;
+              sharedImportModeProjectOption.setAttribute('data-help', _help4);
+              sharedImportModeProjectOption.setAttribute('title', _help4);
+              sharedImportModeProjectOption.setAttribute('aria-label', _label9);
+            }
+            if (sharedImportModeGlobalOption) {
+              _label0 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
+              sharedImportModeGlobalOption.textContent = _label0;
+              _help5 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.sharedImportAutoGearGlobalHelp) || _label0;
+              sharedImportModeGlobalOption.setAttribute('data-help', _help5);
+              sharedImportModeGlobalOption.setAttribute('title', _help5);
+              sharedImportModeGlobalOption.setAttribute('aria-label', _label0);
+            }
+            applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
+            applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
+            runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
+            runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
+            setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+            if (setupSelect.options.length > 0) {
+              setupSelect.options[0].textContent = texts[lang].newSetupOption;
+            }
+            checkSetupChanged();
+            cameraLabelElem = document.getElementById("cameraLabel");
+            cameraLabelElem.textContent = texts[lang].cameraLabel;
+            cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+            monitorLabelElem = document.getElementById("monitorLabel");
+            monitorLabelElem.textContent = texts[lang].monitorLabel;
+            monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+            videoLabelElem = document.getElementById("videoLabel");
+            videoLabelElem.textContent = texts[lang].videoLabel;
+            videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+            cageLabelElem = document.getElementById("cageLabel");
+            if (cageLabelElem) {
+              cageLabelElem.textContent = texts[lang].cageLabel;
+              cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
+            }
+            distanceLabelElem = document.getElementById("distanceLabel");
+            distanceLabelElem.textContent = texts[lang].distanceLabel;
+            distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+            batteryPlateLabelElem = document.getElementById("batteryPlateLabel");
+            batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
+            batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+            batteryHotswapLabelElem = document.getElementById("batteryHotswapLabel");
+            if (batteryHotswapLabelElem) {
+              batteryHotswapLabelElem.textContent = texts[lang].batteryHotswapLabel;
+              batteryHotswapLabelElem.setAttribute("data-help", texts[lang].batteryHotswapSelectHelp);
+            }
+            updateBatteryLabel();
+            fizLegendElem = document.getElementById("fizLegend");
+            if (fizLegendElem) {
+              fizLegendElem.textContent = texts[lang].fizLegend;
+              fizLegendElem.setAttribute("data-help", texts[lang].fizLegendHelp);
+            }
+            fizMotorsLabelElem = document.getElementById("fizMotorsLabel");
+            if (fizMotorsLabelElem) {
+              fizMotorsLabelElem.textContent = texts[lang].fizMotorsLabel;
+              fizMotorsLabelElem.setAttribute("data-help", texts[lang].fizMotorsHelp);
+            }
+            fizControllersLabelElem = document.getElementById("fizControllersLabel");
+            if (fizControllersLabelElem) {
+              fizControllersLabelElem.textContent = texts[lang].fizControllersLabel;
+              fizControllersLabelElem.setAttribute("data-help", texts[lang].fizControllersHelp);
+            }
+            document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(function (el) {
+              el.textContent = texts[lang].notesLabel;
+            });
+            cineResultsModule = (typeof cineResults === "undefined" ? "undefined" : _typeof(cineResults)) === 'object' ? cineResults : null;
+            resultsLocalizationApplied = false;
+            if (cineResultsModule && typeof cineResultsModule.localizeResultsSection === 'function') {
+              try {
+                resultsLocalizationApplied = cineResultsModule.localizeResultsSection({
+                  lang: lang,
+                  langTexts: texts[lang] || {},
+                  fallbackTexts: texts.en || {},
+                  document: document,
+                  breakdownListElem: typeof breakdownListElem !== 'undefined' && breakdownListElem ? breakdownListElem : null,
+                  elements: {
+                    totalPowerLabel: document.getElementById('totalPowerLabel'),
+                    batteryCountLabel: document.getElementById('batteryCountLabel'),
+                    pinWarning: typeof pinWarnElem !== 'undefined' ? pinWarnElem : null,
+                    dtapWarning: typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : null,
+                    hotswapWarning: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
+                    powerWarningTitle: typeof powerWarningTitleElem !== 'undefined' ? powerWarningTitleElem : null,
+                    powerWarningLimitsHeading: typeof powerWarningLimitsHeadingElem !== 'undefined' ? powerWarningLimitsHeadingElem : null,
+                    powerWarningAdvice: typeof powerWarningAdviceElem !== 'undefined' ? powerWarningAdviceElem : null,
+                    powerWarningCloseBtn: typeof powerWarningCloseBtn !== 'undefined' ? powerWarningCloseBtn : null,
+                    batteryLifeUnit: document.getElementById('batteryLifeUnit'),
+                    batteryLifeLabel: typeof batteryLifeLabelElem !== 'undefined' ? batteryLifeLabelElem : document.getElementById('batteryLifeLabel'),
+                    runtimeAverageNote: typeof runtimeAverageNoteElem !== 'undefined' ? runtimeAverageNoteElem : document.getElementById('runtimeAverageNote'),
+                    tempNote: document.getElementById('temperatureNote')
+                  },
+                  refreshTotalCurrentLabels: typeof refreshTotalCurrentLabels === 'function' ? refreshTotalCurrentLabels : null,
+                  updateMountVoltageSettingLabels: typeof updateMountVoltageSettingLabels === 'function' ? updateMountVoltageSettingLabels : null,
+                  getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+                  renderFeedbackTable: typeof renderFeedbackTable === 'function' ? renderFeedbackTable : null,
+                  dispatchTemperatureNoteRender: typeof dispatchTemperatureNoteRender === 'function' ? dispatchTemperatureNoteRender : null,
+                  refreshFeedbackTemperatureLabel: typeof refreshFeedbackTemperatureLabel === 'function' ? refreshFeedbackTemperatureLabel : null,
+                  updateFeedbackTemperatureOptions: typeof updateFeedbackTemperatureOptions === 'function' ? updateFeedbackTemperatureOptions : null,
+                  lastRuntimeHours: typeof lastRuntimeHours !== 'undefined' ? lastRuntimeHours : null,
+                  temperatureUnit: typeof temperatureUnit !== 'undefined' ? temperatureUnit : null,
+                  setButtonLabelWithIcon: typeof setButtonLabelWithIconBinding === 'function' ? setButtonLabelWithIconBinding : null,
+                  iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null
+                });
+              } catch (cineResultsError) {
+                console.warn('cineResults.localizeResultsSection failed', cineResultsError);
+                resultsLocalizationApplied = false;
+              }
+            }
+            batteryComparisonLocalized = false;
+            if (cineResultsModule && typeof cineResultsModule.localizeBatteryComparisonSection === "function") {
+              try {
+                batteryComparisonLocalized = cineResultsModule.localizeBatteryComparisonSection({
+                  lang: lang,
+                  langTexts: texts[lang] || {},
+                  fallbackTexts: texts.en || {},
+                  document: document,
+                  batteryComparisonHeading: batteryComparisonHeadingElem,
+                  batteryComparisonDescription: batteryComparisonDescriptionElem,
+                  batteryComparisonTable: batteryTableElem
+                });
+              } catch (cineResultsError) {
+                console.warn("cineResults.localizeBatteryComparisonSection failed", cineResultsError);
+                batteryComparisonLocalized = false;
+              }
+            }
+            if (!batteryComparisonLocalized) {
+              if (batteryComparisonHeadingElem) {
+                batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
+                batteryComparisonHeadingElem.setAttribute("data-help", texts[lang].batteryComparisonHeadingHelp);
+              }
+              if (batteryComparisonDescriptionElem) {
+                batteryComparisonDescriptionElem.textContent = texts[lang].batteryComparisonDescription;
+                if (texts[lang].batteryComparisonDescriptionHelp) {
+                  batteryComparisonDescriptionElem.setAttribute("data-help", texts[lang].batteryComparisonDescriptionHelp);
+                } else {
+                  batteryComparisonDescriptionElem.removeAttribute("data-help");
+                }
+              }
+              if (batteryTableElem) {
+                if (texts[lang].batteryComparisonTableHelp) {
+                  batteryTableElem.setAttribute("data-help", texts[lang].batteryComparisonTableHelp);
+                } else {
+                  batteryTableElem.removeAttribute("data-help");
+                }
+              }
+            }
+            if (!resultsLocalizationApplied) {
+              resultsPlainSummaryElem = document.getElementById("resultsPlainSummary");
+              if (resultsPlainSummaryElem) {
+                resultsPlainSummaryElem.setAttribute("data-help", texts[lang].resultsPlainSummaryHelp);
+              }
+              resultsPlainSummaryTitleElem = document.getElementById("resultsPlainSummaryTitle");
+              if (resultsPlainSummaryTitleElem) {
+                resultsPlainSummaryTitleElem.textContent = texts[lang].resultsPlainSummaryTitle;
+              }
+              resultsPlainSummaryTextElem = document.getElementById("resultsPlainSummaryText");
+              if (resultsPlainSummaryTextElem) {
+                resultsPlainSummaryTextElem.textContent = texts[lang].resultsPlainSummaryPrompt;
+              }
+              resultsPlainSummaryNoteElem = document.getElementById("resultsPlainSummaryNote");
+              if (resultsPlainSummaryNoteElem) {
+                resultsPlainSummaryNoteElem.textContent = texts[lang].resultsPlainSummaryNote;
+              }
+              breakdownListTarget = typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : document.getElementById('breakdownList');
+              if (breakdownListTarget) {
+                breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
+              }
+              totalPowerLabelElem = document.getElementById("totalPowerLabel");
+              totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
+              totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+              refreshTotalCurrentLabels(lang);
+              updateMountVoltageSettingLabels(lang);
+              batteryCountLabelElem = document.getElementById("batteryCountLabel");
+              batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
+              batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
+              if (pinWarnElem) pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
+              if (dtapWarnElem) dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
+              if (hotswapWarnElem) hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
+              if (powerWarningTitleElem) powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
+              if (powerWarningLimitsHeadingElem) powerWarningLimitsHeadingElem.textContent = texts[lang].powerWarningLimitsHeading;
+              if (powerWarningAdviceElem) powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
+              if (powerWarningCloseBtn) setButtonLabelWithIconBinding(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
+              unitElem = document.getElementById("batteryLifeUnit");
+              if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
+              fb = renderFeedbackTable(getCurrentSetupKey());
+              if (batteryLifeLabelElem) {
+                _label1 = texts[lang].batteryLifeLabel;
+                if (fb) {
+                  userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
+                  idx = _label1.indexOf(')');
+                  if (idx !== -1) {
+                    _label1 = "".concat(_label1.slice(0, idx), ", ").concat(userNote).concat(_label1.slice(idx));
+                  }
+                }
+                batteryLifeLabelElem.textContent = _label1;
+                batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
+              }
+              if (runtimeAverageNoteElem) {
+                runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
+              }
+              dispatchTemperatureNoteRender(lastRuntimeHours);
+              refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+              updateFeedbackTemperatureOptions(lang, temperatureUnit);
+              tempNoteElem = document.getElementById("temperatureNote");
+              if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
+            }
+            document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
+            document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
+            document.getElementById("subcategoryLabel").textContent = texts[lang].subcategoryLabel;
+            document.getElementById("deviceNameLabel").textContent = texts[lang].deviceNameLabel;
+            document.getElementById("consumptionLabel").textContent = texts[lang].consumptionLabel;
+            document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
+            document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
+            document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
+            document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
+            document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
+            document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
+            document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
+            document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
+            document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
+            document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
+            document.getElementById("cameraVideoOutputsLabel").textContent = texts[lang].videoOutputsLabel;
+            document.getElementById("cameraFIZConnectorLabel").textContent = texts[lang].fizConnectorLabel;
+            document.getElementById("cameraViewfinderLabel").textContent = texts[lang].viewfinderLabel;
+            document.getElementById("cameraTimecodeLabel").textContent = texts[lang].timecodeLabel;
+            document.getElementById("powerInputsHeading").textContent = texts[lang].powerInputsHeading;
+            document.getElementById("powerDistributionHeading").textContent = texts[lang].powerDistributionHeading;
+            document.getElementById("videoOutputsHeading").textContent = texts[lang].videoOutputsHeading;
+            document.getElementById("fizConnectorHeading").textContent = texts[lang].fizConnectorHeading;
+            document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
+            document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
+            document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
+            lensDeviceMountHeadingElem = document.getElementById("lensDeviceMountHeading");
+            if (lensDeviceMountHeadingElem) {
+              lensDeviceMountHeadingElem.textContent = texts[lang].lensDeviceMountHeading;
+            }
+            lensDeviceMountLabelElem = document.getElementById("lensDeviceMountLabel");
+            if (lensDeviceMountLabelElem) {
+              lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
+              lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
+            }
+            lensFocusScaleLabelElem = document.getElementById("lensFocusScaleUnitLabel");
+            if (lensFocusScaleLabelElem) {
+              focusScaleLabel = texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting;
+              focusScaleHelp = texts[lang].lensFocusScaleHelp || texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSettingHelp || focusScaleLabel;
+              lensFocusScaleLabelElem.textContent = focusScaleLabel;
+              lensFocusScaleLabelElem.setAttribute('data-help', focusScaleHelp);
+              if (lensFocusScaleSelect) {
+                lensFocusScaleSelect.setAttribute('data-help', focusScaleHelp);
+                lensFocusScaleSelect.setAttribute('aria-label', focusScaleLabel);
+              }
+            }
+            updateLensFocusScaleSelectOptions(lang);
+            document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
+            document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
+            document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
+            document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
+            document.getElementById("monitorVoltageLabel").textContent = texts[lang].monitorVoltageLabel;
+            document.getElementById("monitorPortTypeLabel").textContent = texts[lang].monitorPortTypeLabel;
+            document.getElementById("monitorVideoInputsHeading").textContent = texts[lang].monitorVideoInputsHeading;
+            document.getElementById("monitorVideoOutputsHeading").textContent = texts[lang].monitorVideoOutputsHeading;
+            document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
+            document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
+            document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
+            document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
+            document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
+            document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
+            document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
+            document.getElementById("viewfinderBrightnessLabel").textContent = texts[lang].viewfinderBrightnessLabel;
+            document.getElementById("viewfinderWattLabel").textContent = texts[lang].viewfinderWattLabel;
+            document.getElementById("viewfinderVoltageLabel").textContent = texts[lang].viewfinderVoltageLabel;
+            document.getElementById("viewfinderPortTypeLabel").textContent = texts[lang].viewfinderPortTypeLabel;
+            document.getElementById("viewfinderVideoInputsHeading").textContent = texts[lang].viewfinderVideoInputsHeading;
+            document.getElementById("viewfinderVideoOutputsHeading").textContent = texts[lang].viewfinderVideoOutputsHeading;
+            document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
+            document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
+            document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
+            document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
+            document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
+            document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
+            document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
+            document.getElementById("videoVideoOutputsLabel").textContent = texts[lang].videoVideoOutputsLabel;
+            document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
+            document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
+            addDeviceLabel = texts[lang].addDeviceBtn;
+            updateDeviceLabel = texts[lang].updateDeviceBtn;
+            if (addDeviceBtn.dataset.mode === "edit") {
+              setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
+              addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
+            } else {
+              setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
+              addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
+            }
+            setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+            cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
+            setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
+            exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
+            setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
+            importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
+            setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
+            newNameInput.placeholder = texts[lang].placeholder_deviceName;
+            newWattInput.placeholder = texts[lang].placeholder_watt;
+            newCapacityInput.placeholder = texts[lang].placeholder_capacity;
+            newPinAInput.placeholder = texts[lang].placeholder_pin;
+            newDtapAInput.placeholder = texts[lang].placeholder_dtap;
+            cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
+            monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
+            updateDeviceManagerLocalization(lang);
+            if (deviceManagerSection.classList.contains('hidden')) {
+              setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
+              toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
+              toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
+              toggleDeviceBtn.setAttribute("aria-expanded", "false");
+            } else {
+              setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
+              toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
+              toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
+              toggleDeviceBtn.setAttribute("aria-expanded", "true");
+            }
+            Array.from(newCategorySelect.options).forEach(function (opt) {
+              opt.textContent = getCategoryLabel(opt.value, lang);
+            });
+            noneMap = {
+              de: "Keine Auswahl",
+              es: "Ninguno",
+              fr: "Aucun"
+            };
+            document.querySelectorAll('select option[value="None"]').forEach(function (opt) {
+              opt.textContent = noneMap[lang] || "None";
+            });
+            try {
+              localStorage.setItem("language", lang);
+            } catch (e) {
+              console.warn("Could not save language to localStorage", e);
+            }
+            refreshDeviceLists();
+            applyFilters();
+            updateCalculations();
+            existingDevicesHeading = typeof document !== 'undefined' ? document.getElementById('existingDevicesHeading') : null;
+            if (existingDevicesHeading) {
+              existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
+            }
+            if (darkModeToggle) {
+              darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
+              darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
+              darkModeToggle.setAttribute("data-help", texts[lang].darkModeHelp || texts[lang].darkModeLabel);
+            }
+            if (pinkModeToggle) {
+              pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
+              pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
+              pinkModeToggle.setAttribute("data-help", texts[lang].pinkModeHelp || texts[lang].pinkModeLabel);
+            }
+            if (settingsButton) {
+              settingsButton.setAttribute("title", texts[lang].settingsButton);
+              settingsButton.setAttribute("aria-label", texts[lang].settingsButton);
+              settingsButton.setAttribute("data-help", texts[lang].settingsButtonHelp || texts[lang].settingsButton);
+            }
+            settingsTitleElem = document.getElementById("settingsTitle");
+            if (settingsTitleElem) {
+              settingsTitleElem.textContent = texts[lang].settingsHeading;
+              settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
+            }
+            if (settingsTablist) {
+              sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
+              settingsTablist.setAttribute('aria-label', sectionsLabel);
+            }
+            getSettingsTabLabelText = function getSettingsTabLabelText(button) {
+              var _button$querySelector2;
+              if (!button || _typeof(button) !== 'object') return '';
+              var labelNode = (_button$querySelector2 = button.querySelector) === null || _button$querySelector2 === void 0 ? void 0 : _button$querySelector2.call(button, '.settings-tab-label');
+              if (labelNode && typeof labelNode.textContent === 'string') {
+                var trimmed = labelNode.textContent.trim();
+                if (trimmed) return trimmed;
+              }
+              return typeof button.textContent === 'string' ? button.textContent.trim() : '';
+            };
+            summarizeSettingsTabHelp = function summarizeSettingsTabHelp(helpText) {
+              if (typeof helpText !== 'string') return '';
+              var trimmed = helpText.trim();
+              if (!trimmed) return '';
+              var sentenceMatch = trimmed.match(/^(?:[\0- "-\x2D\/->@-\u3001\u3003-\uD7FF\uE000-\uFF00\uFF02-\uFF1E\uFF20-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*[!\.\?\u3002\uFF01\uFF1F]/);
+              if (sentenceMatch && sentenceMatch[0]) {
+                var sentence = sentenceMatch[0].trim();
+                if (sentence.length >= 24 || trimmed.length <= 90) {
+                  return sentence;
+                }
+              }
+              if (trimmed.length <= 90) return trimmed;
+              var truncated = trimmed.slice(0, 90);
+              var cutIndex = truncated.length;
+              while (cutIndex > 0 && truncated[cutIndex - 1] && truncated[cutIndex - 1].trim() !== '') {
+                cutIndex -= 1;
+              }
+              var safeCut = cutIndex > 0 ? truncated.slice(0, cutIndex).trimEnd() : '';
+              return "".concat(safeCut || truncated.trim(), "\u2026");
+            };
+            applySettingsTabLabel = function applySettingsTabLabel(button, labelValue, helpValue) {
+              var _button$querySelector3, _button$querySelector4;
+              if (!button) return;
+              var label = (labelValue || getSettingsTabLabelText(button) || '').trim();
+              var labelElement = (_button$querySelector3 = button.querySelector) === null || _button$querySelector3 === void 0 ? void 0 : _button$querySelector3.call(button, '.settings-tab-label');
+              if (labelElement) {
+                labelElement.textContent = label;
+              } else {
+                button.textContent = label;
+              }
+              if (label) {
+                button.setAttribute('aria-label', label);
+              } else {
+                button.removeAttribute('aria-label');
+              }
+              var help = (helpValue || label || '').trim();
+              if (help) {
+                button.setAttribute('data-help', help);
+                button.setAttribute('title', help);
+              } else {
+                button.removeAttribute('data-help');
+                button.removeAttribute('title');
+              }
+              var summary = summarizeSettingsTabHelp(help);
+              if (summary) {
+                button.setAttribute('data-summary', summary);
+              } else {
+                button.removeAttribute('data-summary');
+              }
+              var captionElement = (_button$querySelector4 = button.querySelector) === null || _button$querySelector4 === void 0 ? void 0 : _button$querySelector4.call(button, '.settings-tab-caption');
+              if (captionElement) {
+                var captionText = summary || label;
+                captionElement.textContent = captionText;
+                if (captionText) {
+                  captionElement.removeAttribute('hidden');
+                } else {
+                  captionElement.setAttribute('hidden', '');
+                }
+              }
+            };
+            if (settingsTabGeneral) {
+              generalLabel = texts[lang].settingsTabGeneral || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
+              generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
+              applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
+              if (generalSettingsHeading) {
+                generalSettingsHeading.textContent = generalLabel;
+                generalSettingsHeading.setAttribute('data-help', generalHelp);
+              }
+              if (generalLanguageHeading) {
+                sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
+                generalLanguageHeading.textContent = sectionHeading;
+              }
+              if (generalAppearanceHeading) {
+                _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
+                generalAppearanceHeading.textContent = _sectionHeading;
+              }
+              if (generalTypographyHeading) {
+                _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
+                generalTypographyHeading.textContent = _sectionHeading2;
+              }
+              if (generalBrandingHeading) {
+                _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
+                generalBrandingHeading.textContent = _sectionHeading3;
+              }
+              documentationTrackerController.updateLocalization({
+                language: lang,
+                texts: texts[lang] || {},
+                fallbackTexts: texts[DEFAULT_LANGUAGE_SAFE] || texts.en || {}
+              });
+              if (documentationTrackerController.isInitialized()) {
+                documentationTrackerController.render();
+              }
+            }
+            applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearHeadingHelp));
+            applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.accessibilityHeadingHelp));
+            applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.backupHeadingHelp));
+            applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.settingsTabData) || texts[lang].dataHeading || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.dataHeadingHelp));
+            applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.aboutHeadingHelp));
+            settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
+            if (settingsLanguageLabel) {
+              settingsLanguageLabel.textContent = texts[lang].languageSetting;
+              languageHelp = texts[lang].settingsLanguageHelp || texts[lang].languageSetting;
+              settingsLanguageLabel.setAttribute("data-help", languageHelp);
+              if (settingsLanguage) {
+                settingsLanguage.setAttribute("data-help", languageHelp);
+                settingsLanguage.setAttribute("aria-label", texts[lang].languageSetting);
+              }
+            }
+            settingsDarkLabel = document.getElementById("settingsDarkModeLabel");
+            if (settingsDarkLabel) {
+              settingsDarkLabel.textContent = texts[lang].darkModeSetting;
+              darkModeHelp = texts[lang].settingsDarkModeHelp || texts[lang].darkModeSetting;
+              settingsDarkLabel.setAttribute("data-help", darkModeHelp);
+              if (settingsDarkMode) {
+                settingsDarkMode.setAttribute("data-help", darkModeHelp);
+                settingsDarkMode.setAttribute("aria-label", texts[lang].darkModeSetting);
+              }
+            }
+            settingsPinkLabel = document.getElementById("settingsPinkModeLabel");
+            if (settingsPinkLabel) {
+              settingsPinkLabel.textContent = texts[lang].pinkModeSetting;
+              pinkModeHelp = texts[lang].settingsPinkModeHelp || texts[lang].pinkModeSetting;
+              settingsPinkLabel.setAttribute("data-help", pinkModeHelp);
+              if (settingsPinkMode) {
+                settingsPinkMode.setAttribute("data-help", pinkModeHelp);
+                settingsPinkMode.setAttribute("aria-label", texts[lang].pinkModeSetting);
+              }
+            }
+            accentLabel = document.getElementById("accentColorLabel");
+            accentHelp = texts[lang].accentColorHelp || texts[lang].accentColorSetting;
+            if (accentLabel) {
+              accentLabel.textContent = texts[lang].accentColorSetting;
+              accentLabel.setAttribute("data-help", accentHelp);
+            }
+            if (accentColorInput) {
+              accentColorInput.setAttribute("data-help", accentHelp);
+              accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
+            }
+            if (cameraColorsDescription) {
+              description = texts[lang].cameraColorSettingDescription || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.cameraColorSettingDescription) || cameraColorsDescription.textContent;
+              cameraColorsDescription.textContent = description;
+            }
+            cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.cameraColorInputHelp) || '';
+            cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
+            cameraColorLabelEntries.forEach(function (_ref78) {
+              var _texts$en91;
+              var _ref79 = _slicedToArray(_ref78, 3),
+                letter = _ref79[0],
+                labelElement = _ref79[1],
+                inputElement = _ref79[2];
+              if (!labelElement) {
+                return;
+              }
+              var key = "cameraColor".concat(letter, "Label");
+              var labelText = texts[lang][key] || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91[key]) || labelElement.textContent;
+              labelElement.textContent = labelText;
+              var helpText = cameraColorHelpTemplate ? cameraColorHelpTemplate.replace('%s', letter) : '';
+              if (helpText) {
+                labelElement.setAttribute('data-help', helpText);
+              } else {
+                labelElement.removeAttribute('data-help');
+              }
+              if (inputElement) {
+                if (helpText) {
+                  inputElement.setAttribute('data-help', helpText);
+                  inputElement.setAttribute('aria-label', helpText);
+                } else {
+                  inputElement.removeAttribute('data-help');
+                  inputElement.setAttribute('aria-label', labelText);
+                }
+              }
+            });
+            if (accentColorResetButton) {
+              accentResetLabel = texts[lang] && texts[lang].accentColorReset || texts.en && texts.en.accentColorReset || accentColorResetButton.textContent || 'Reset to default';
+              accentResetHelp = texts[lang] && texts[lang].accentColorResetHelp || accentHelp;
+              accentColorResetButton.textContent = accentResetLabel;
+              accentColorResetButton.setAttribute('data-help', accentResetHelp);
+              accentColorResetButton.setAttribute('aria-label', accentResetHelp);
+              accentColorResetButton.setAttribute('title', accentResetHelp);
+            }
+            settingsTemperatureUnitLabel = document.getElementById('settingsTemperatureUnitLabel');
+            if (settingsTemperatureUnitLabel) {
+              settingsTemperatureUnitLabel.textContent = texts[lang].temperatureUnitSetting;
+              tempUnitHelp = texts[lang].temperatureUnitSettingHelp || texts[lang].temperatureUnitSetting;
+              settingsTemperatureUnitLabel.setAttribute('data-help', tempUnitHelp);
+              if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
+                settingsTemperatureUnit.setAttribute('data-help', tempUnitHelp);
+                settingsTemperatureUnit.setAttribute('aria-label', texts[lang].temperatureUnitSetting);
+                Array.from(settingsTemperatureUnit.options || []).forEach(function (option) {
+                  if (!option) return;
+                  var normalized = normalizeTemperatureUnitSafe(option.value);
+                  option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
+                });
+                settingsTemperatureUnit.value = temperatureUnit;
+              }
+            }
+            settingsFocusScaleLabel = document.getElementById('settingsFocusScaleLabel');
+            if (settingsFocusScaleLabel) {
+              settingsFocusScaleLabel.textContent = texts[lang].focusScaleSetting;
+              _focusScaleHelp = texts[lang].focusScaleSettingHelp || texts[lang].focusScaleSetting;
+              settingsFocusScaleLabel.setAttribute('data-help', _focusScaleHelp);
+              if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+                settingsFocusScale.setAttribute('data-help', _focusScaleHelp);
+                settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
+                Array.from(settingsFocusScale.options || []).forEach(function (option) {
+                  if (!option) return;
+                  var normalized = normalizeFocusScaleSafe(option.value);
+                  option.textContent = getFocusScaleLabelForLang(lang, normalized);
+                });
+                settingsFocusScale.value = resolveFocusScalePreference();
+              }
+            }
+            fontSizeLabel = document.getElementById("settingsFontSizeLabel");
+            if (fontSizeLabel) {
+              fontSizeLabel.textContent = texts[lang].fontSizeSetting;
+              sizeHelp = texts[lang].fontSizeSettingHelp || texts[lang].fontSizeSetting;
+              fontSizeLabel.setAttribute("data-help", sizeHelp);
+              if (settingsFontSize) {
+                settingsFontSize.setAttribute("data-help", sizeHelp);
+                settingsFontSize.setAttribute("aria-label", texts[lang].fontSizeSetting);
+              }
+            }
+            fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
+            if (fontFamilyLabel) {
+              fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
+              familyHelp = texts[lang].fontFamilySettingHelp || texts[lang].fontFamilySetting;
+              fontFamilyLabel.setAttribute("data-help", familyHelp);
+              if (settingsFontFamily) {
+                settingsFontFamily.setAttribute("data-help", familyHelp);
+                settingsFontFamily.setAttribute("aria-label", texts[lang].fontFamilySetting);
+              }
+            }
+            if (localFontsButton) {
+              localFontsHelp = texts[lang].localFontsButtonHelp || localFontsButton.textContent;
+              localFontsButton.setAttribute("data-help", localFontsHelp);
+              localFontsButton.setAttribute("title", localFontsHelp);
+              localFontsButton.setAttribute("aria-label", localFontsHelp);
+            }
+            if (bundledFontGroup) {
+              builtInLabel = texts[lang] && texts[lang].bundledFontsGroup || texts.en && texts.en.bundledFontsGroup || bundledFontGroup.label;
+              if (builtInLabel) bundledFontGroup.label = builtInLabel;
+            }
+            if (localFontsGroup) {
+              localLabel = texts[lang] && texts[lang].localFontsGroup || texts.en && texts.en.localFontsGroup || localFontsGroup.label;
+              if (localLabel) localFontsGroup.label = localLabel;
+            }
+            if (localFontsButton) {
+              localFontsLabel = texts[lang] && texts[lang].localFontsButton || texts.en && texts.en.localFontsButton || localFontsButton.textContent;
+              if (localFontsLabel) {
+                setButtonLabelWithIconBinding(localFontsButton, localFontsLabel, ICON_GLYPHS.add);
+                localFontsButton.setAttribute('aria-label', localFontsLabel);
+                localFontsButton.setAttribute('title', localFontsLabel);
+              }
+            }
+            if (localFontsStatus && localFontsStatus.dataset.statusKey) {
+              statusKey = localFontsStatus.dataset.statusKey;
+              arg = localFontsStatus.dataset.statusArg;
+              template = texts[lang] && texts[lang][statusKey] || texts.en && texts.en[statusKey] || '';
+              if (template && arg !== undefined && arg !== null) {
+                template = template.replace('%s', arg);
+              } else if (!template && arg !== undefined && arg !== null) {
+                template = arg;
+              }
+              localFontsStatus.textContent = template;
+            }
+            settingsLogoLabel = document.getElementById("settingsLogoLabel");
+            if (settingsLogoLabel) {
+              settingsLogoLabel.textContent = texts[lang].logoSetting;
+              logoHelp = texts[lang].logoSettingHelp || texts[lang].logoSetting;
+              settingsLogoLabel.setAttribute("data-help", logoHelp);
+              if (settingsLogo) {
+                settingsLogo.setAttribute("data-help", logoHelp);
+                settingsLogo.setAttribute("aria-label", texts[lang].logoSetting);
+              }
+            }
+            if (autoGearHeadingElem) {
+              autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearHeading) || 'Automatic Gear Rules';
+              headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearHeadingHelp);
+              if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
+            }
+            if (autoGearDescriptionElem) {
+              autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearDescription) || '';
+            }
+            if (autoGearMonitorDefaultsHeading) {
+              _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
+              autoGearMonitorDefaultsHeading.textContent = _heading;
+            }
+            if (autoGearMonitorDefaultsDescription) {
+              _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
+              autoGearMonitorDefaultsDescription.textContent = _description;
+            }
+            autoGearMonitorDefaultControls.forEach(function (control) {
+              var _texts$en97, _control$label, _control$label2;
+              if (!control) return;
+              var labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
+              var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
+              if (control.label && labelText) {
+                control.label.textContent = labelText;
+                control.label.setAttribute('data-help', labelText);
+              }
+              if (control.select && labelText) {
+                control.select.setAttribute('aria-label', labelText);
+                control.select.setAttribute('data-help', labelText);
+              }
+            });
+            callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], {
+              defer: true
+            });
+            if (autoGearPresetDescription) {
+              autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearPresetDescription) || '';
+            }
+            if (autoGearPresetLabel) {
+              _label10 = texts[lang].autoGearPresetLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearPresetLabel) || autoGearPresetLabel.textContent;
+              _help6 = texts[lang].autoGearPresetDescription || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearPresetDescription) || _label10;
+              autoGearPresetLabel.textContent = _label10;
+              autoGearPresetLabel.setAttribute('data-help', _help6);
+              if (autoGearPresetSelect) {
+                autoGearPresetSelect.setAttribute('aria-label', _label10);
+                autoGearPresetSelect.setAttribute('data-help', _help6);
+              }
+            }
+            if (autoGearSavePresetButton) {
+              _label11 = texts[lang].autoGearSavePresetButton || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
+              setButtonLabelWithIconBinding(autoGearSavePresetButton, _label11, ICON_GLYPHS.save);
+              autoGearSavePresetButton.setAttribute('data-help', _label11);
+              autoGearSavePresetButton.setAttribute('aria-label', _label11);
+            }
+            if (autoGearDeletePresetButton) {
+              _label12 = texts[lang].autoGearDeletePresetButton || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
+              setButtonLabelWithIconBinding(autoGearDeletePresetButton, _label12, ICON_GLYPHS.trash);
+              autoGearDeletePresetButton.setAttribute('data-help', _label12);
+              autoGearDeletePresetButton.setAttribute('aria-label', _label12);
+            }
+            if (autoGearAddRuleBtn) {
+              _label13 = texts[lang].autoGearAddRule || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearAddRule) || autoGearAddRuleBtn.textContent;
+              setButtonLabelWithIconBinding(autoGearAddRuleBtn, _label13, ICON_GLYPHS.add);
+              _help7 = texts[lang].autoGearHeadingHelp || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearHeadingHelp) || _label13;
+              autoGearAddRuleBtn.setAttribute('data-help', _help7);
+            }
+            if (autoGearResetFactoryButton) {
+              _label14 = texts[lang].autoGearResetFactoryButton || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
+              _help8 = texts[lang].autoGearResetFactoryHelp || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearResetFactoryHelp) || _label14;
+              setButtonLabelWithIconBinding(autoGearResetFactoryButton, _label14, ICON_GLYPHS.reload);
+              autoGearResetFactoryButton.setAttribute('data-help', _help8);
+              autoGearResetFactoryButton.setAttribute('title', _help8);
+              autoGearResetFactoryButton.setAttribute('aria-label', _label14);
+            }
+            if (autoGearExportButton) {
+              _label15 = texts[lang].autoGearExportButton || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearExportButton) || autoGearExportButton.textContent;
+              _help9 = texts[lang].autoGearExportHelp || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearExportHelp) || _label15;
+              setButtonLabelWithIconBinding(autoGearExportButton, _label15, ICON_GLYPHS.fileExport);
+              autoGearExportButton.setAttribute('data-help', _help9);
+              autoGearExportButton.setAttribute('title', _help9);
+              autoGearExportButton.setAttribute('aria-label', _label15);
+            }
+            if (autoGearImportButton) {
+              _label16 = texts[lang].autoGearImportButton || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearImportButton) || autoGearImportButton.textContent;
+              _help0 = texts[lang].autoGearImportHelp || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearImportHelp) || _label16;
+              setButtonLabelWithIconBinding(autoGearImportButton, _label16, ICON_GLYPHS.fileImport);
+              autoGearImportButton.setAttribute('data-help', _help0);
+              autoGearImportButton.setAttribute('title', _help0);
+              autoGearImportButton.setAttribute('aria-label', _label16);
+            }
+            if (autoGearSearchLabel) {
+              _label17 = texts[lang].autoGearSearchLabel || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearSearchLabel) || autoGearSearchLabel.textContent;
+              _help1 = texts[lang].autoGearSearchHelp || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearSearchHelp) || _label17;
+              autoGearSearchLabel.textContent = _label17;
+              autoGearSearchLabel.setAttribute('data-help', _help1);
+              if (autoGearSearchInput) {
+                placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
+                autoGearSearchInput.setAttribute('placeholder', placeholder);
+                autoGearSearchInput.setAttribute('aria-label', _label17);
+                autoGearSearchInput.setAttribute('data-help', _help1);
+              }
+            }
+            if (autoGearFilterScenarioLabel) {
+              _label18 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
+              _help10 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearFilterScenarioHelp) || _label18;
+              autoGearFilterScenarioLabel.textContent = _label18;
+              autoGearFilterScenarioLabel.setAttribute('data-help', _help10);
+              if (autoGearFilterScenarioSelect) {
+                autoGearFilterScenarioSelect.setAttribute('aria-label', _label18);
+                autoGearFilterScenarioSelect.setAttribute('data-help', _help10);
+              }
+            }
+            if (autoGearFilterClearButton) {
+              _label19 = texts[lang].autoGearFilterClear || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearFilterClear) || autoGearFilterClearButton.textContent;
+              setButtonLabelWithIconBinding(autoGearFilterClearButton, _label19, ICON_GLYPHS.circleX);
+              autoGearFilterClearButton.setAttribute('data-help', _label19);
+              autoGearFilterClearButton.setAttribute('aria-label', _label19);
+            }
+            refreshAutoGearScenarioFilterOptions(getAutoGearRules());
+            if (autoGearBackupsHeading) {
+              autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
+            }
+            if (autoGearBackupsDescription) {
+              _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearBackupsDescription) || '';
+              autoGearBackupsDescription.textContent = _description2;
+              if (_description2) {
+                autoGearBackupsDescription.setAttribute('data-help', _description2);
+              }
+            }
+            if (autoGearShowBackupsLabel) {
+              _label20 = texts[lang].autoGearShowBackupsLabel || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
+              _help11 = texts[lang].autoGearShowBackupsHelp || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearShowBackupsHelp) || _label20;
+              autoGearShowBackupsLabel.textContent = _label20;
+              autoGearShowBackupsLabel.setAttribute('data-help', _help11);
+              if (autoGearShowBackupsCheckbox) {
+                autoGearShowBackupsCheckbox.setAttribute('aria-label', _label20);
+                autoGearShowBackupsCheckbox.setAttribute('data-help', _help11);
+              }
+            }
+            if (autoGearBackupsHiddenNotice) {
+              hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
+              autoGearBackupsHiddenNotice.textContent = hiddenText;
+            }
+            if (autoGearBackupRetentionLabel) {
+              _label21 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
+              _help12 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearBackupRetentionHelp) || _label21;
+              autoGearBackupRetentionLabel.textContent = _label21;
+              autoGearBackupRetentionLabel.setAttribute('data-help', _help12);
+              if (autoGearBackupRetentionInput) {
+                autoGearBackupRetentionInput.setAttribute('aria-label', _label21);
+                autoGearBackupRetentionInput.setAttribute('title', _label21);
+              }
+            }
+            if (autoGearBackupRetentionSummary) {
+              callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
+                defer: true
+              });
+            }
+            if (autoGearBackupSelectLabel) {
+              _label22 = texts[lang].autoGearBackupSelectLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
+              autoGearBackupSelectLabel.textContent = _label22;
+              if (autoGearBackupSelect) {
+                autoGearBackupSelect.setAttribute('aria-label', _label22);
+                autoGearBackupSelect.setAttribute('title', _label22);
+              }
+            }
+            if (autoGearBackupRestoreButton) {
+              _label23 = texts[lang].autoGearBackupRestore || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
+              setButtonLabelWithIconBinding(autoGearBackupRestoreButton, _label23, ICON_GLYPHS.fileImport);
+              autoGearBackupRestoreButton.setAttribute('aria-label', _label23);
+              autoGearBackupRestoreButton.setAttribute('title', _label23);
+            }
+            if (autoGearBackupEmptyMessage) {
+              emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
+              autoGearBackupEmptyMessage.textContent = emptyText;
+            }
+            if (autoGearBackupSelect) {
+              callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], {
+                defer: true
+              });
+            }
+            if (autoGearRuleNameLabel) {
+              _label24 = texts[lang].autoGearRuleNameLabel || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
+              autoGearRuleNameLabel.textContent = _label24;
+              _help13 = texts[lang].autoGearRuleNameHelp || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearRuleNameHelp) || _label24;
+              autoGearRuleNameLabel.setAttribute('data-help', _help13);
+              if (autoGearRuleNameInput) {
+                autoGearRuleNameInput.setAttribute('data-help', _help13);
+                autoGearRuleNameInput.setAttribute('aria-label', _label24);
+              }
+            }
+            if (autoGearConditionSelectLabel) {
+              _label25 = texts[lang].autoGearConditionSelectLabel || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
+              _help14 = texts[lang].autoGearConditionSelectHelp || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearConditionSelectHelp) || _label25;
+              autoGearConditionSelectLabel.textContent = _label25;
+              autoGearConditionSelectLabel.setAttribute('data-help', _help14);
+              if (autoGearConditionSelect) {
+                autoGearConditionSelect.setAttribute('aria-label', _label25);
+                autoGearConditionSelect.setAttribute('data-help', _help14);
+              }
+            }
+            if (autoGearConditionAddButton) {
+              _label26 = texts[lang].autoGearAddCondition || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
+              setButtonLabelWithIconBinding(autoGearConditionAddButton, _label26, ICON_GLYPHS.add);
+              autoGearConditionAddButton.setAttribute('aria-label', _label26);
+              autoGearConditionAddButton.setAttribute('data-help', _label26);
+            }
+            if (autoGearAlwaysLabel) {
+              _label27 = texts[lang].autoGearAlwaysLabel || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
+              _help15 = texts[lang].autoGearAlwaysHelp || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearAlwaysHelp) || _label27;
+              autoGearAlwaysLabel.textContent = _label27;
+              autoGearAlwaysLabel.setAttribute('data-help', _help15);
+              if (autoGearAlwaysHelp) {
+                autoGearAlwaysHelp.textContent = _help15;
+                autoGearAlwaysHelp.setAttribute('data-help', _help15);
+              }
+            }
+            configureAutoGearConditionButtons();
+            refreshAutoGearConditionPicker();
+            updateAutoGearConditionAddButtonState();
+            if (autoGearScenariosLabel) {
+              _label28 = texts[lang].autoGearScenariosLabel || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
+              autoGearScenariosLabel.textContent = _label28;
+              _help16 = texts[lang].autoGearScenariosHelp || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearScenariosHelp) || _label28;
+              autoGearScenariosLabel.setAttribute('data-help', _help16);
+              if (autoGearScenariosSelect) {
+                autoGearScenariosSelect.setAttribute('data-help', _help16);
+                autoGearScenariosSelect.setAttribute('aria-label', _label28);
+              }
+              if (autoGearScenarioModeLabel) {
+                modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
+                modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearScenarioModeHelp) || modeLabel;
+                autoGearScenarioModeLabel.textContent = modeLabel;
+                autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
+                if (autoGearScenarioModeSelectElement) {
+                  autoGearScenarioModeSelectElement.setAttribute('data-help', modeHelp);
+                  autoGearScenarioModeSelectElement.setAttribute('aria-label', modeLabel);
+                }
+              }
+              if (autoGearScenarioBaseLabel) {
+                baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
+                baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearScenarioBaseHelp) || baseLabel;
+                autoGearScenarioBaseLabel.textContent = baseLabel;
+                autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
+                if (autoGearScenarioBaseSelect) {
+                  autoGearScenarioBaseSelect.setAttribute('data-help', baseHelp);
+                  autoGearScenarioBaseSelect.setAttribute('aria-label', baseLabel);
+                }
+              }
+              if (autoGearScenarioFactorLabel) {
+                factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
+                factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearScenarioFactorHelp) || factorLabel;
+                autoGearScenarioFactorLabel.textContent = factorLabel;
+                autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
+                if (autoGearScenarioFactorInput) {
+                  autoGearScenarioFactorInput.setAttribute('data-help', factorHelp);
+                  autoGearScenarioFactorInput.setAttribute('aria-label', factorLabel);
+                }
+              }
+            }
+            if (autoGearShootingDaysLabel) {
+              _label29 = texts[lang].autoGearShootingDaysLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
+              _help17 = texts[lang].autoGearShootingDaysHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearShootingDaysHelp) || _label29;
+              minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearShootingDaysModeMinimum) || 'Minimum';
+              maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearShootingDaysModeMaximum) || 'Maximum';
+              everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearShootingDaysModeEvery) || 'Every';
+              valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearShootingDaysValueLabel) || 'Shooting days value';
+              autoGearShootingDaysLabel.textContent = _label29;
+              autoGearShootingDaysLabel.setAttribute('data-help', _help17);
+              if (autoGearShootingDaysMode) {
+                autoGearShootingDaysMode.setAttribute('data-help', _help17);
+                autoGearShootingDaysMode.setAttribute('aria-label', _label29);
+                Array.from(autoGearShootingDaysMode.options || []).forEach(function (option) {
+                  if (!option || typeof option.value !== 'string') return;
+                  if (option.value === 'minimum') {
+                    option.textContent = minimumLabel;
+                  } else if (option.value === 'maximum') {
+                    option.textContent = maximumLabel;
+                  } else if (option.value === 'every') {
+                    option.textContent = everyLabel;
+                  }
+                });
+              }
+              if (autoGearShootingDaysValueLabel) {
+                autoGearShootingDaysValueLabel.textContent = valueLabel;
+                autoGearShootingDaysValueLabel.setAttribute('data-help', _help17);
+              }
+              if (autoGearShootingDaysInput) {
+                autoGearShootingDaysInput.setAttribute('data-help', _help17);
+                autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label29);
+              }
+              if (autoGearShootingDaysHelp) {
+                autoGearShootingDaysHelp.textContent = _help17;
+                autoGearShootingDaysHelp.setAttribute('data-help', _help17);
+              }
+            }
+            if (autoGearMatteboxLabel) {
+              _label30 = texts[lang].autoGearMatteboxLabel || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
+              autoGearMatteboxLabel.textContent = _label30;
+              _help18 = texts[lang].autoGearMatteboxHelp || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearMatteboxHelp) || _label30;
+              autoGearMatteboxLabel.setAttribute('data-help', _help18);
+              if (autoGearMatteboxSelect) {
+                autoGearMatteboxSelect.setAttribute('data-help', _help18);
+                autoGearMatteboxSelect.setAttribute('aria-label', _label30);
+              }
+            }
+            if (autoGearCameraHandleLabel) {
+              _label31 = texts[lang].autoGearCameraHandleLabel || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
+              autoGearCameraHandleLabel.textContent = _label31;
+              _help19 = texts[lang].autoGearCameraHandleHelp || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearCameraHandleHelp) || _label31;
+              autoGearCameraHandleLabel.setAttribute('data-help', _help19);
+              if (autoGearCameraHandleSelect) {
+                autoGearCameraHandleSelect.setAttribute('data-help', _help19);
+                autoGearCameraHandleSelect.setAttribute('aria-label', _label31);
+              }
+            }
+            if (autoGearViewfinderExtensionLabel) {
+              _label32 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
+              autoGearViewfinderExtensionLabel.textContent = _label32;
+              _help20 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearViewfinderExtensionHelp) || _label32;
+              autoGearViewfinderExtensionLabel.setAttribute('data-help', _help20);
+              if (autoGearViewfinderExtensionSelect) {
+                autoGearViewfinderExtensionSelect.setAttribute('data-help', _help20);
+                autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label32);
+              }
+            }
+            if (autoGearDeliveryResolutionLabel) {
+              _label33 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
+              autoGearDeliveryResolutionLabel.textContent = _label33;
+              _help21 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearDeliveryResolutionHelp) || _label33;
+              autoGearDeliveryResolutionLabel.setAttribute('data-help', _help21);
+              if (autoGearDeliveryResolutionSelect) {
+                autoGearDeliveryResolutionSelect.setAttribute('data-help', _help21);
+                autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label33);
+              }
+            }
+            if (autoGearVideoDistributionLabel) {
+              _label34 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
+              autoGearVideoDistributionLabel.textContent = _label34;
+              _help22 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearVideoDistributionHelp) || _label34;
+              autoGearVideoDistributionLabel.setAttribute('data-help', _help22);
+              if (autoGearVideoDistributionSelect) {
+                autoGearVideoDistributionSelect.setAttribute('data-help', _help22);
+                autoGearVideoDistributionSelect.setAttribute('aria-label', _label34);
+              }
+            }
+            if (autoGearCameraLabel) {
+              _label35 = texts[lang].autoGearCameraLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearCameraLabel) || autoGearCameraLabel.textContent;
+              autoGearCameraLabel.textContent = _label35;
+              _help23 = texts[lang].autoGearCameraHelp || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearCameraHelp) || _label35;
+              autoGearCameraLabel.setAttribute('data-help', _help23);
+              if (autoGearCameraSelect) {
+                autoGearCameraSelect.setAttribute('data-help', _help23);
+                autoGearCameraSelect.setAttribute('aria-label', _label35);
+              }
+            }
+            if (autoGearOwnGearLabel) {
+              _label36 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearConditionOwnGearLabel) || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
+              _help24 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearOwnGearHelp) || _label36;
+              autoGearOwnGearLabel.textContent = _label36;
+              autoGearOwnGearLabel.setAttribute('data-help', _help24);
+              if (autoGearOwnGearSelect) {
+                autoGearOwnGearSelect.setAttribute('data-help', _help24);
+                autoGearOwnGearSelect.setAttribute('aria-label', _label36);
+              }
+            }
+            if (autoGearCameraWeightLabel) {
+              _label37 = texts[lang].autoGearCameraWeightLabel || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
+              _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearCameraWeightHelp) || _label37;
+              autoGearCameraWeightLabel.textContent = _label37;
+              autoGearCameraWeightLabel.setAttribute('data-help', _help25);
+            }
+            if (autoGearCameraWeightOperatorLabel) {
+              _label38 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
+              autoGearCameraWeightOperatorLabel.textContent = _label38;
+              autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label38);
+              if (autoGearCameraWeightOperator) {
+                autoGearCameraWeightOperator.setAttribute('data-help', _label38);
+                autoGearCameraWeightOperator.setAttribute('aria-label', _label38);
+                greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearCameraWeightOperatorGreater) || 'Heavier than';
+                lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearCameraWeightOperatorLess) || 'Lighter than';
+                equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearCameraWeightOperatorEqual) || 'Exactly';
+                Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
+                  if (!option) return;
+                  if (option.value === 'greater') {
+                    option.textContent = greaterLabel;
+                  } else if (option.value === 'less') {
+                    option.textContent = lessLabel;
+                  } else if (option.value === 'equal') {
+                    option.textContent = equalLabel;
+                  }
+                });
+              }
+            }
+            if (autoGearCameraWeightValueLabel) {
+              _label39 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
+              _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearCameraWeightHelp) || _label39;
+              autoGearCameraWeightValueLabel.textContent = _label39;
+              autoGearCameraWeightValueLabel.setAttribute('data-help', _help26);
+              if (autoGearCameraWeightValueInput) {
+                autoGearCameraWeightValueInput.setAttribute('data-help', _help26);
+                autoGearCameraWeightValueInput.setAttribute('aria-label', _label39);
+              }
+            }
+            if (autoGearCameraWeightHelp) {
+              _help27 = texts[lang].autoGearCameraWeightHelp || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
+              autoGearCameraWeightHelp.textContent = _help27;
+              if (_help27) {
+                autoGearCameraWeightHelp.setAttribute('data-help', _help27);
+              }
+            }
+            if (autoGearMonitorLabel) {
+              _label40 = texts[lang].autoGearMonitorLabel || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
+              autoGearMonitorLabel.textContent = _label40;
+              _help28 = texts[lang].autoGearMonitorHelp || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearMonitorHelp) || _label40;
+              autoGearMonitorLabel.setAttribute('data-help', _help28);
+              if (autoGearMonitorSelect) {
+                autoGearMonitorSelect.setAttribute('data-help', _help28);
+                autoGearMonitorSelect.setAttribute('aria-label', _label40);
+              }
+            }
+            if (autoGearTripodHeadBrandLabel) {
+              _label41 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
+              autoGearTripodHeadBrandLabel.textContent = _label41;
+              _help29 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearTripodHeadBrandHelp) || _label41;
+              autoGearTripodHeadBrandLabel.setAttribute('data-help', _help29);
+              if (autoGearTripodHeadBrandSelect) {
+                autoGearTripodHeadBrandSelect.setAttribute('data-help', _help29);
+                autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label41);
+              }
+            }
+            if (autoGearTripodBowlLabel) {
+              _label42 = texts[lang].autoGearTripodBowlLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
+              autoGearTripodBowlLabel.textContent = _label42;
+              _help30 = texts[lang].autoGearTripodBowlHelp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearTripodBowlHelp) || _label42;
+              autoGearTripodBowlLabel.setAttribute('data-help', _help30);
+              if (autoGearTripodBowlSelect) {
+                autoGearTripodBowlSelect.setAttribute('data-help', _help30);
+                autoGearTripodBowlSelect.setAttribute('aria-label', _label42);
+              }
+            }
+            if (autoGearTripodTypesLabel) {
+              _label43 = texts[lang].autoGearTripodTypesLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
+              autoGearTripodTypesLabel.textContent = _label43;
+              _help31 = texts[lang].autoGearTripodTypesHelp || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearTripodTypesHelp) || _label43;
+              autoGearTripodTypesLabel.setAttribute('data-help', _help31);
+              if (autoGearTripodTypesSelect) {
+                autoGearTripodTypesSelect.setAttribute('data-help', _help31);
+                autoGearTripodTypesSelect.setAttribute('aria-label', _label43);
+              }
+            }
+            if (autoGearTripodSpreaderLabel) {
+              _label44 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
+              autoGearTripodSpreaderLabel.textContent = _label44;
+              _help32 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearTripodSpreaderHelp) || _label44;
+              autoGearTripodSpreaderLabel.setAttribute('data-help', _help32);
+              if (autoGearTripodSpreaderSelect) {
+                autoGearTripodSpreaderSelect.setAttribute('data-help', _help32);
+                autoGearTripodSpreaderSelect.setAttribute('aria-label', _label44);
+              }
+            }
+            if (autoGearCrewPresentLabel) {
+              _label45 = texts[lang].autoGearCrewPresentLabel || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
+              autoGearCrewPresentLabel.textContent = _label45;
+              _help33 = texts[lang].autoGearCrewPresentHelp || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearCrewPresentHelp) || _label45;
+              autoGearCrewPresentLabel.setAttribute('data-help', _help33);
+              if (autoGearCrewPresentSelect) {
+                autoGearCrewPresentSelect.setAttribute('data-help', _help33);
+                autoGearCrewPresentSelect.setAttribute('aria-label', _label45);
+              }
+            }
+            if (autoGearCrewAbsentLabel) {
+              _label46 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
+              autoGearCrewAbsentLabel.textContent = _label46;
+              _help34 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearCrewAbsentHelp) || _label46;
+              autoGearCrewAbsentLabel.setAttribute('data-help', _help34);
+              if (autoGearCrewAbsentSelect) {
+                autoGearCrewAbsentSelect.setAttribute('data-help', _help34);
+                autoGearCrewAbsentSelect.setAttribute('aria-label', _label46);
+              }
+            }
+            if (autoGearWirelessLabel) {
+              _label47 = texts[lang].autoGearWirelessLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
+              autoGearWirelessLabel.textContent = _label47;
+              _help35 = texts[lang].autoGearWirelessHelp || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearWirelessHelp) || _label47;
+              autoGearWirelessLabel.setAttribute('data-help', _help35);
+              if (autoGearWirelessSelect) {
+                autoGearWirelessSelect.setAttribute('data-help', _help35);
+                autoGearWirelessSelect.setAttribute('aria-label', _label47);
+              }
+            }
+            if (autoGearMotorsLabel) {
+              _label48 = texts[lang].autoGearMotorsLabel || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
+              autoGearMotorsLabel.textContent = _label48;
+              _help36 = texts[lang].autoGearMotorsHelp || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearMotorsHelp) || _label48;
+              autoGearMotorsLabel.setAttribute('data-help', _help36);
+              if (autoGearMotorsSelect) {
+                autoGearMotorsSelect.setAttribute('data-help', _help36);
+                autoGearMotorsSelect.setAttribute('aria-label', _label48);
+              }
+            }
+            if (autoGearControllersLabel) {
+              _label49 = texts[lang].autoGearControllersLabel || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearControllersLabel) || autoGearControllersLabel.textContent;
+              autoGearControllersLabel.textContent = _label49;
+              _help37 = texts[lang].autoGearControllersHelp || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearControllersHelp) || _label49;
+              autoGearControllersLabel.setAttribute('data-help', _help37);
+              if (autoGearControllersSelect) {
+                autoGearControllersSelect.setAttribute('data-help', _help37);
+                autoGearControllersSelect.setAttribute('aria-label', _label49);
+              }
+            }
+            if (autoGearDistanceLabel) {
+              _label50 = texts[lang].autoGearDistanceLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
+              autoGearDistanceLabel.textContent = _label50;
+              _help38 = texts[lang].autoGearDistanceHelp || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearDistanceHelp) || _label50;
+              autoGearDistanceLabel.setAttribute('data-help', _help38);
+              if (autoGearDistanceSelect) {
+                autoGearDistanceSelect.setAttribute('data-help', _help38);
+                autoGearDistanceSelect.setAttribute('aria-label', _label50);
+              }
+            }
+            logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearConditionLogicLabel) || 'Match behavior';
+            logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearConditionLogicHelp) || logicLabelText;
+            logicOptionTexts = {
+              all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearConditionLogicAll) || 'Require every selected value',
+              any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearConditionLogicAny) || 'Match any selected value',
+              none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearConditionLogicNone) || 'Require none of the selected values',
+              multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
+            };
+            Object.entries(autoGearConditionLogicSelects).forEach(function (_ref80) {
+              var _ref81 = _slicedToArray(_ref80, 2),
+                key = _ref81[0],
+                select = _ref81[1];
+              var label = autoGearConditionLogicLabels[key];
+              if (label) {
+                label.textContent = logicLabelText;
+                label.setAttribute('data-help', logicHelpText);
+              }
+              if (select) {
+                select.setAttribute('aria-label', logicLabelText);
+                select.setAttribute('data-help', logicHelpText);
+                select.setAttribute('title', logicHelpText);
+                Array.from(select.options || []).forEach(function (option) {
+                  if (!option) return;
+                  var optionText = logicOptionTexts[option.value];
+                  if (optionText) option.textContent = optionText;
+                });
+              }
+            });
+            if (autoGearAddItemsHeading) {
+              autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
+            }
+            if (autoGearAddOwnGearLabel) {
+              _label51 = texts[lang].autoGearOwnGearLabel || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
+              _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearOwnGearHelp) || _label51;
+              _placeholder3 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearOwnGearPlaceholder) || '';
+              autoGearAddOwnGearLabel.textContent = _label51;
+              autoGearAddOwnGearLabel.setAttribute('data-help', _help39);
+              if (autoGearAddOwnGearSelect) {
+                autoGearAddOwnGearSelect.setAttribute('aria-label', _label51);
+                autoGearAddOwnGearSelect.setAttribute('data-help', _help39);
+                if (_placeholder3) {
+                  autoGearAddOwnGearSelect.setAttribute('data-placeholder', _placeholder3);
+                } else {
+                  autoGearAddOwnGearSelect.removeAttribute('data-placeholder');
+                }
+              }
+            }
+            if (autoGearAddItemLabel) {
+              _label52 = texts[lang].autoGearAddItemLabel || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
+              hint = texts[lang].autoGearAddMultipleHint || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearAddMultipleHint) || '';
+              helpText = hint ? "".concat(_label52, " \u2013 ").concat(hint) : _label52;
+              autoGearAddItemLabel.textContent = _label52;
+              autoGearAddItemLabel.setAttribute('data-help', helpText);
+              if (autoGearAddNameInput) {
+                autoGearAddNameInput.setAttribute('aria-label', _label52);
+                autoGearAddNameInput.setAttribute('data-help', helpText);
+                if (hint) {
+                  autoGearAddNameInput.setAttribute('placeholder', hint);
+                } else {
+                  autoGearAddNameInput.removeAttribute('placeholder');
+                }
+              }
+            }
+            if (autoGearAddCategoryLabel) {
+              _label53 = texts[lang].autoGearAddCategoryLabel || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
+              autoGearAddCategoryLabel.textContent = _label53;
+              if (autoGearAddCategorySelect) {
+                autoGearAddCategorySelect.setAttribute('aria-label', _label53);
+              }
+            }
+            if (autoGearAddQuantityLabel) {
+              _label54 = texts[lang].autoGearAddQuantityLabel || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
+              autoGearAddQuantityLabel.textContent = _label54;
+              if (autoGearAddQuantityInput) {
+                autoGearAddQuantityInput.setAttribute('aria-label', _label54);
+              }
+            }
+            if (autoGearAddScreenSizeLabel) {
+              _label55 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
+              autoGearAddScreenSizeLabel.textContent = _label55;
+              if (autoGearAddScreenSizeInput) {
+                autoGearAddScreenSizeInput.setAttribute('aria-label', _label55);
+              }
+            }
+            if (autoGearAddSelectorTypeLabel) {
+              _label56 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
+              autoGearAddSelectorTypeLabel.textContent = _label56;
+              if (autoGearAddSelectorTypeSelect) {
+                autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label56);
+                noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.autoGearSelectorNoneOption) || 'No selector';
+                monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.autoGearSelectorMonitorOption) || 'Monitor selector';
+                directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                selectorLabels = new Map([['none', noneLabel], ['monitor', monitorLabel], ['directorMonitor', directorLabel], ['tripodHeadBrand', tripodHeadLabel], ['tripodBowl', _tripodBowlLabel], ['tripodTypes', _tripodTypesLabel], ['tripodSpreader', _tripodSpreaderLabel]]);
+                Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
+                  var text = selectorLabels.get(opt.value);
+                  if (text) opt.textContent = text;
+                });
+              }
+            }
+            if (autoGearAddSelectorDefaultLabel) {
+              _label57 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
+              autoGearAddSelectorDefaultLabel.textContent = _label57;
+              if (autoGearAddSelectorDefaultInput) {
+                autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label57);
+              }
+            }
+            if (autoGearAddNotesLabel) {
+              _label58 = texts[lang].autoGearAddNotesLabel || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
+              autoGearAddNotesLabel.textContent = _label58;
+              if (autoGearAddNotesInput) {
+                autoGearAddNotesInput.setAttribute('aria-label', _label58);
+              }
+            }
+            if (autoGearAddItemButton) {
+              if (typeof updateAutoGearItemButtonState === 'function') {
+                updateAutoGearItemButtonState('add');
+              }
+            }
+            if (autoGearRemoveItemsHeading) {
+              autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
+            }
+            if (autoGearRemoveOwnGearLabel) {
+              _label59 = texts[lang].autoGearOwnGearLabel || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
+              _help40 = texts[lang].autoGearOwnGearHelp || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.autoGearOwnGearHelp) || _label59;
+              _placeholder4 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.autoGearOwnGearPlaceholder) || '';
+              autoGearRemoveOwnGearLabel.textContent = _label59;
+              autoGearRemoveOwnGearLabel.setAttribute('data-help', _help40);
+              if (autoGearRemoveOwnGearSelect) {
+                autoGearRemoveOwnGearSelect.setAttribute('aria-label', _label59);
+                autoGearRemoveOwnGearSelect.setAttribute('data-help', _help40);
+                if (_placeholder4) {
+                  autoGearRemoveOwnGearSelect.setAttribute('data-placeholder', _placeholder4);
+                } else {
+                  autoGearRemoveOwnGearSelect.removeAttribute('data-placeholder');
+                }
+              }
+            }
+            if (autoGearRemoveItemLabel) {
+              _label60 = texts[lang].autoGearRemoveItemLabel || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
+              _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.autoGearRemoveMultipleHint) || '';
+              _helpText4 = _hint ? "".concat(_label60, " \u2013 ").concat(_hint) : _label60;
+              autoGearRemoveItemLabel.textContent = _label60;
+              autoGearRemoveItemLabel.setAttribute('data-help', _helpText4);
+              if (autoGearRemoveNameInput) {
+                autoGearRemoveNameInput.setAttribute('aria-label', _label60);
+                autoGearRemoveNameInput.setAttribute('data-help', _helpText4);
+                if (_hint) {
+                  autoGearRemoveNameInput.setAttribute('placeholder', _hint);
+                } else {
+                  autoGearRemoveNameInput.removeAttribute('placeholder');
+                }
+              }
+            }
+            if (autoGearRemoveCategoryLabel) {
+              _label61 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
+              autoGearRemoveCategoryLabel.textContent = _label61;
+              if (autoGearRemoveCategorySelect) {
+                autoGearRemoveCategorySelect.setAttribute('aria-label', _label61);
+              }
+            }
+            if (autoGearRemoveQuantityLabel) {
+              _label62 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
+              autoGearRemoveQuantityLabel.textContent = _label62;
+              if (autoGearRemoveQuantityInput) {
+                autoGearRemoveQuantityInput.setAttribute('aria-label', _label62);
+              }
+            }
+            if (autoGearRemoveScreenSizeLabel) {
+              _label63 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
+              autoGearRemoveScreenSizeLabel.textContent = _label63;
+              if (autoGearRemoveScreenSizeInput) {
+                autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label63);
+              }
+            }
+            if (autoGearRemoveSelectorTypeLabel) {
+              _label64 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
+              autoGearRemoveSelectorTypeLabel.textContent = _label64;
+              if (autoGearRemoveSelectorTypeSelect) {
+                autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label64);
+                _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.autoGearSelectorNoneOption) || 'No selector';
+                _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.autoGearSelectorMonitorOption) || 'Monitor selector';
+                _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                _selectorLabels = new Map([['none', _noneLabel], ['monitor', _monitorLabel], ['directorMonitor', _directorLabel], ['tripodHeadBrand', _tripodHeadLabel], ['tripodBowl', _tripodBowlLabel2], ['tripodTypes', _tripodTypesLabel2], ['tripodSpreader', _tripodSpreaderLabel2]]);
+                Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
+                  var text = _selectorLabels.get(opt.value);
+                  if (text) opt.textContent = text;
+                });
+              }
+            }
+            if (autoGearRemoveSelectorDefaultLabel) {
+              _label65 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
+              autoGearRemoveSelectorDefaultLabel.textContent = _label65;
+              if (autoGearRemoveSelectorDefaultInput) {
+                autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label65);
+              }
+            }
+            if (autoGearRemoveNotesLabel) {
+              _label66 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
+              autoGearRemoveNotesLabel.textContent = _label66;
+              if (autoGearRemoveNotesInput) {
+                autoGearRemoveNotesInput.setAttribute('aria-label', _label66);
+              }
+            }
+            updateAutoGearOwnGearOptions();
+            if (autoGearDraftImpactHeading) {
+              _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
+              autoGearDraftImpactHeading.textContent = _heading2;
+            }
+            if (autoGearDraftImpactDescription) {
+              _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
+              autoGearDraftImpactDescription.textContent = _description3;
+              if (autoGearDraftImpactHeading) {
+                autoGearDraftImpactHeading.setAttribute('data-help', _description3);
+              }
+              if (autoGearDraftImpactContainer) {
+                autoGearDraftImpactContainer.setAttribute('data-help', _description3);
+              }
+            }
+            if (autoGearDraftWarningHeading) {
+              _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
+              autoGearDraftWarningHeading.textContent = _heading3;
+            }
+            if (autoGearRemoveItemButton) {
+              if (typeof updateAutoGearItemButtonState === 'function') {
+                updateAutoGearItemButtonState('remove');
+              }
+            }
+            if (autoGearSaveRuleButton) {
+              _label67 = texts[lang].autoGearSaveRule || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
+              setButtonLabelWithIconBinding(autoGearSaveRuleButton, _label67);
+              autoGearSaveRuleButton.setAttribute('data-help', _label67);
+            }
+            if (autoGearCancelEditButton) {
+              _label68 = texts[lang].autoGearCancelEdit || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
+              setButtonLabelWithIconBinding(autoGearCancelEditButton, _label68, ICON_GLYPHS.circleX);
+              autoGearCancelEditButton.setAttribute('data-help', _label68);
+            }
+            if (autoGearAddCategorySelect) {
+              populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
+            }
+            if (autoGearRemoveCategorySelect) {
+              populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearRemoveCategorySelect.value);
+            }
+            syncAutoGearMonitorFieldVisibility();
+            if (autoGearScenariosSelect) {
+              refreshAutoGearScenarioOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.scenarios);
+            }
+            if (autoGearMatteboxSelect) {
+              refreshAutoGearMatteboxOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.mattebox);
+            }
+            if (autoGearCameraHandleSelect) {
+              refreshAutoGearCameraHandleOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.cameraHandle);
+            }
+            if (autoGearViewfinderExtensionSelect) {
+              refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.viewfinderExtension);
+            }
+            if (autoGearDeliveryResolutionSelect) {
+              refreshAutoGearDeliveryResolutionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.deliveryResolution);
+            }
+            if (autoGearVideoDistributionSelect) {
+              refreshAutoGearVideoDistributionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.videoDistribution);
+            }
+            callCoreFunctionIfAvailable('seedAutoGearRulesFromCurrentProject', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('renderAutoGearRulesList', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], {
+              defer: true
+            });
+            callCoreFunctionIfAvailable('applyAutoGearBackupVisibility', [], {
+              defer: true
+            });
+            contrastLabel = document.getElementById("settingsHighContrastLabel");
+            if (contrastLabel) {
+              contrastLabel.textContent = texts[lang].highContrastSetting;
+              contrastHelp = texts[lang].highContrastSettingHelp || texts[lang].highContrastSetting;
+              contrastLabel.setAttribute("data-help", contrastHelp);
+              if (settingsHighContrast) {
+                settingsHighContrast.setAttribute("data-help", contrastHelp);
+                settingsHighContrast.setAttribute("aria-label", texts[lang].highContrastSetting);
+              }
+            }
+            accessibilityHeading = document.getElementById("accessibilityHeading");
+            if (accessibilityHeading) {
+              accessibilityHeading.textContent = texts[lang].accessibilityHeading;
+              accessibilityHeading.setAttribute("data-help", texts[lang].accessibilityHeadingHelp || texts[lang].accessibilityHeading);
+            }
+            backupHeading = document.getElementById("backupHeading");
+            if (backupHeading) {
+              backupHeading.textContent = texts[lang].backupHeading;
+              backupHeading.setAttribute("data-help", texts[lang].backupHeadingHelp || texts[lang].backupHeading);
+            }
+            projectBackupsHeading = typeof document !== 'undefined' ? document.getElementById('projectBackupsHeading') : null;
+            if (projectBackupsHeading) {
+              headingText = texts[lang].projectBackupsHeading || "Project Backups";
+              projectBackupsHeading.textContent = headingText;
+              descriptionText = texts[lang].projectBackupsDescription || "";
+              if (descriptionText) {
+                projectBackupsHeading.setAttribute("data-help", descriptionText);
+              } else {
+                projectBackupsHeading.removeAttribute("data-help");
+              }
+            }
+            projectBackupsDescription = typeof document !== 'undefined' ? document.getElementById('projectBackupsDescription') : null;
+            if (projectBackupsDescription) {
+              _descriptionText = texts[lang].projectBackupsDescription || "";
+              if (_descriptionText) {
+                projectBackupsDescription.textContent = _descriptionText;
+                projectBackupsDescription.hidden = false;
+              } else {
+                projectBackupsDescription.textContent = "";
+                projectBackupsDescription.hidden = true;
+              }
+            }
+            if (dataHeading) {
+              dataHeading.textContent = texts[lang].dataHeading;
+              dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
+              dataHeading.setAttribute("data-help", dataHelp);
+            }
+            if (storageSummaryIntro) {
+              storageSummaryIntro.textContent = texts[lang].storageSummaryIntro;
+            }
+            if (storageSummaryFootnote) {
+              storageSummaryFootnote.textContent = texts[lang].storageSummaryFootnote;
+            }
+            if (storageSummaryEmpty) {
+              storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
+            }
+            if (storagePersistenceHeading) {
+              _headingText = texts[lang].storagePersistenceHeading || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.storagePersistenceHeading) || storagePersistenceHeading.textContent;
+              storagePersistenceHeading.textContent = _headingText;
+              _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.storagePersistenceHeadingHelp) || _headingText;
+              storagePersistenceHeading.setAttribute('data-help', _headingHelp);
+            }
+            if (storagePersistenceIntro) {
+              storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.storagePersistenceIntro) || storagePersistenceIntro.textContent;
+            }
+            if (storagePersistenceRequestButton) {
+              requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
+              setButtonLabelWithIconBinding(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
+              storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
+              requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.storagePersistenceRequestHelp) || requestLabel;
+              storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
+              storagePersistenceRequestButton.setAttribute('title', requestHelp);
+              storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+            }
+            if (storagePersistenceStatus) {
+              idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
+              storagePersistenceStatus.textContent = idleText;
+              storagePersistenceStatus.setAttribute('data-help', idleText);
+            }
+            callCoreFunctionIfAvailable('renderStoragePersistenceStatus', [], {
+              defer: true
+            });
+            if (storageActionsHeading) {
+              _headingText2 = texts[lang].storageActionsHeading || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.storageActionsHeading) || storageActionsHeading.textContent;
+              storageActionsHeading.textContent = _headingText2;
+              _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.storageActionsHeadingHelp) || _headingText2;
+              storageActionsHeading.setAttribute('data-help', _headingHelp2);
+            }
+            if (storageActionsIntro) {
+              storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.storageActionsIntro) || storageActionsIntro.textContent;
+            }
+            if (storageBackupNowButton) {
+              backupLabel = texts[lang].storageBackupNow || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.storageBackupNow) || storageBackupNowButton.textContent;
+              setButtonLabelWithIconBinding(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
+              backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.storageBackupNowHelp) || backupLabel;
+              storageBackupNowButton.setAttribute('data-help', backupHelp);
+              storageBackupNowButton.setAttribute('title', backupHelp);
+            }
+            if (storageOpenBackupTabButton) {
+              openLabel = texts[lang].storageOpenBackupTab || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
+              setButtonLabelWithIconBinding(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
+              openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.storageOpenBackupTabHelp) || openLabel;
+              storageOpenBackupTabButton.setAttribute('data-help', openHelp);
+              storageOpenBackupTabButton.setAttribute('title', openHelp);
+            }
+            if (storageStatusHeading) {
+              statusHeading = texts[lang].storageStatusHeading || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.storageStatusHeading) || storageStatusHeading.textContent;
+              storageStatusHeading.textContent = statusHeading;
+              statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.storageStatusHeadingHelp) || statusHeading;
+              storageStatusHeading.setAttribute('data-help', statusHelp);
+            }
+            if (storageStatusLastProjectLabel) {
+              storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
+            }
+            if (storageStatusLastAutoBackupLabel) {
+              storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
+            }
+            if (storageStatusLastFullBackupLabel) {
+              storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
+            }
+            statusDefaultText = texts[lang].storageStatusNever || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
+            if (storageStatusLastProjectValue) {
+              storageStatusLastProjectValue.textContent = statusDefaultText;
+            }
+            if (storageStatusLastAutoBackupValue) {
+              storageStatusLastAutoBackupValue.textContent = statusDefaultText;
+            }
+            if (storageStatusLastFullBackupValue) {
+              storageStatusLastFullBackupValue.textContent = statusDefaultText;
+            }
+            if (storageStatusReminder) {
+              storageStatusReminder.textContent = '';
+              storageStatusReminder.setAttribute('hidden', '');
+              storageStatusReminder.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
+              storageStatusReminder.removeAttribute('data-help');
+            }
+            if (loggingSection) {
+              sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.loggingHeadingHelp) || '';
+              if (sectionHelp) {
+                loggingSection.setAttribute('data-help', sectionHelp);
+              } else {
+                loggingSection.removeAttribute('data-help');
+              }
+            }
+            if (loggingHeading) {
+              _headingText3 = texts[lang].loggingHeading || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
+              loggingHeading.textContent = _headingText3;
+              _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.loggingHeadingHelp) || _headingText3;
+              loggingHeading.setAttribute('data-help', _headingHelp3);
+            }
+            if (loggingIntro) {
+              loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.loggingIntro) || loggingIntro.textContent;
+            }
+            if (loggingLevelFilterLabel) {
+              _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
+              loggingLevelFilterLabel.textContent = _filterLabel;
+              loggingLevelFilterLabel.setAttribute('data-help', _filterLabel);
+            }
+            if (loggingLevelFilter) {
+              optionTexts = {
+                all: texts[lang].loggingLevelFilterAll || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.loggingLevelFilterAll) || 'All levels',
+                info: texts[lang].loggingLevelFilterInfo || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.loggingLevelFilterInfo) || 'Info and above',
+                warn: texts[lang].loggingLevelFilterWarn || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.loggingLevelFilterWarn) || 'Warnings and errors',
+                error: texts[lang].loggingLevelFilterError || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.loggingLevelFilterError) || 'Errors only'
+              };
+              Array.from(loggingLevelFilter.options || []).forEach(function (option) {
+                if (!option || typeof option.value !== 'string') return;
+                var key = option.value;
+                if (Object.prototype.hasOwnProperty.call(optionTexts, key)) {
+                  option.textContent = optionTexts[key];
+                }
+              });
+              filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.loggingLevelFilterHelp) || '';
+              if (filterHelp) {
+                loggingLevelFilter.setAttribute('data-help', filterHelp);
+              } else {
+                loggingLevelFilter.removeAttribute('data-help');
+              }
+            }
+            if (loggingNamespaceFilterLabel) {
+              namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
+              loggingNamespaceFilterLabel.textContent = namespaceLabel;
+            }
+            if (loggingNamespaceFilter) {
+              _placeholder5 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.loggingNamespaceFilterPlaceholder) || '';
+              if (_placeholder5) {
+                loggingNamespaceFilter.setAttribute('placeholder', _placeholder5);
+              }
+              namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.loggingNamespaceFilterHelp) || _placeholder5;
+              if (namespaceHelp) {
+                loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
+                if (loggingNamespaceFilterLabel) {
+                  loggingNamespaceFilterLabel.setAttribute('data-help', namespaceHelp);
+                }
+              }
+              if (loggingNamespaceFilterHelp) {
+                loggingNamespaceFilterHelp.textContent = namespaceHelp;
+                if (namespaceHelp) {
+                  loggingNamespaceFilterHelp.removeAttribute('hidden');
+                } else {
+                  loggingNamespaceFilterHelp.setAttribute('hidden', '');
+                }
+              }
+            }
+            if (loggingHistoryLimitLabel) {
+              historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
+              loggingHistoryLimitLabel.textContent = historyLabel;
+            }
+            if (loggingHistoryLimitHelp) {
+              historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
+              loggingHistoryLimitHelp.textContent = historyHelp;
+            }
+            if (loggingHistoryLimit) {
+              limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.loggingHistoryLimitHelp) || '';
+              if (limitHelp) {
+                loggingHistoryLimit.setAttribute('data-help', limitHelp);
+              } else {
+                loggingHistoryLimit.removeAttribute('data-help');
+              }
+              limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.loggingHistoryLimitAria) || '';
+              if (limitAria) {
+                loggingHistoryLimit.setAttribute('aria-label', limitAria);
+              }
+            }
+            if (loggingConsoleOutputLabel) {
+              consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
+              loggingConsoleOutputLabel.textContent = consoleLabel;
+            }
+            if (loggingConsoleOutputHelp) {
+              consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
+              loggingConsoleOutputHelp.textContent = consoleHelp;
+            }
+            if (loggingCaptureConsoleLabel) {
+              consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
+              loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
+            }
+            if (loggingCaptureConsoleHelp) {
+              consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
+              loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
+            }
+            if (loggingCaptureErrorsLabel) {
+              captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
+              loggingCaptureErrorsLabel.textContent = captureLabel;
+            }
+            if (loggingCaptureErrorsHelp) {
+              captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
+              loggingCaptureErrorsHelp.textContent = captureHelp;
+            }
+            if (loggingPersistSessionLabel) {
+              persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
+              loggingPersistSessionLabel.textContent = persistLabel;
+            }
+            if (loggingPersistSessionHelp) {
+              persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
+              loggingPersistSessionHelp.textContent = persistHelp;
+            }
+            if (loggingExportButton) {
+              exportLabel = texts[lang].loggingExportButton || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.loggingExportButton) || loggingExportButton.textContent;
+              setButtonLabelWithIconBinding(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
+              loggingExportButton.setAttribute('data-help', exportLabel);
+              loggingExportButton.setAttribute('title', exportLabel);
+              loggingExportButton.setAttribute('aria-label', exportLabel);
+            }
+            if (loggingExportHelp) {
+              exportHelp = texts[lang].loggingExportHelp || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.loggingExportHelp) || loggingExportHelp.textContent;
+              loggingExportHelp.textContent = exportHelp;
+              loggingExportHelp.setAttribute('data-help', exportHelp);
+            }
+            if (loggingStatus) {
+              statusText = texts[lang].loggingStatusIdle || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.loggingStatusIdle) || '';
+              loggingStatus.textContent = statusText;
+              if (statusText) {
+                loggingStatus.setAttribute('data-help', statusText);
+              }
+            }
+            if (loggingEmpty) {
+              _emptyText = texts[lang].loggingEmptyState || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.loggingEmptyState) || loggingEmpty.textContent;
+              loggingEmpty.textContent = _emptyText;
+              if (_emptyText) {
+                loggingEmpty.setAttribute('data-help', _emptyText);
+              }
+            }
+            if (loggingUnavailable) {
+              loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.loggingUnavailable) || loggingUnavailable.textContent;
+            }
+            showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
+            if (showAutoBackupsLabel) {
+              showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
+              autoBackupsHelp = texts[lang].showAutoBackupsHelp || texts[lang].showAutoBackupsSetting;
+              showAutoBackupsLabel.setAttribute("data-help", autoBackupsHelp);
+              if (settingsShowAutoBackupsEl) {
+                settingsShowAutoBackupsEl.setAttribute("data-help", autoBackupsHelp);
+                settingsShowAutoBackupsEl.setAttribute("aria-label", texts[lang].showAutoBackupsSetting);
+              }
+            }
+            if (backupDiffToggleButtonEl) {
+              compareLabel = texts[lang].versionCompareButton || 'Compare versions';
+              setButtonLabelWithIconBinding(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
+              compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
+              backupDiffToggleButtonEl.setAttribute('data-help', compareHelp);
+              backupDiffToggleButtonEl.setAttribute('title', compareHelp);
+            }
+            if (backupDiffHeadingEl) {
+              backupDiffHeadingEl.textContent = texts[lang].versionCompareHeading || 'Version comparison';
+            }
+            if (backupDiffIntroEl) {
+              backupDiffIntroEl.textContent = texts[lang].versionCompareIntro || '';
+            }
+            if (backupDiffPrimaryLabelEl) {
+              primaryLabel = texts[lang].versionComparePrimaryLabel || 'Baseline version';
+              backupDiffPrimaryLabelEl.textContent = primaryLabel;
+              if (backupDiffPrimarySelectEl) {
+                backupDiffPrimarySelectEl.setAttribute('aria-label', primaryLabel);
+              }
+            }
+            if (backupDiffSecondaryLabelEl) {
+              compareLabelText = texts[lang].versionCompareSecondaryLabel || 'Comparison version';
+              backupDiffSecondaryLabelEl.textContent = compareLabelText;
+              if (backupDiffSecondarySelectEl) {
+                backupDiffSecondarySelectEl.setAttribute('aria-label', compareLabelText);
+              }
+            }
+            if (backupDiffEmptyStateEl) {
+              backupDiffEmptyStateEl.textContent = texts[lang].versionCompareEmpty || 'Save a project or wait for auto-backups to start comparing versions.';
+            }
+            if (backupDiffNotesLabelEl) {
+              backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
+            }
+            if (backupDiffNotesEl) {
+              _placeholder6 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
+              backupDiffNotesEl.placeholder = _placeholder6;
+            }
+            if (backupDiffExportButtonEl) {
+              _exportLabel = texts[lang].versionCompareExport || 'Export log';
+              setButtonLabelWithIconBinding(backupDiffExportButtonEl, _exportLabel, ICON_GLYPHS.fileExport);
+              _exportHelp = texts[lang].versionCompareExportHelp || _exportLabel;
+              backupDiffExportButtonEl.setAttribute('data-help', _exportHelp);
+              backupDiffExportButtonEl.setAttribute('title', _exportHelp);
+            }
+            if (backupDiffCloseButtonEl) {
+              closeLabel = texts[lang].versionCompareClose || texts[lang].cancelSettings || 'Close';
+              setButtonLabelWithIconBinding(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
+            }
+            if (backupSettingsButton) {
+              _backupLabel = texts[lang].backupSettings;
+              setButtonLabelWithIconBinding(backupSettingsButton, _backupLabel, ICON_GLYPHS.fileExport);
+              _backupHelp = texts[lang].backupSettingsHelp || _backupLabel;
+              backupSettingsButton.setAttribute("data-help", _backupHelp);
+              backupSettingsButton.setAttribute("title", _backupHelp);
+              backupSettingsButton.setAttribute("aria-label", _backupHelp);
+            }
+            if (restoreSettings) {
+              restoreLabel = texts[lang].restoreSettings;
+              setButtonLabelWithIconBinding(restoreSettings, restoreLabel, ICON_GLYPHS.fileImport);
+              restoreHelp = texts[lang].restoreSettingsHelp || restoreLabel;
+              restoreSettings.setAttribute("data-help", restoreHelp);
+              restoreSettings.setAttribute("title", restoreHelp);
+              restoreSettings.setAttribute("aria-label", restoreHelp);
+            }
+            if (restoreRehearsalButton) {
+              rehearsalLabel = texts[lang].restoreRehearsalButton || 'Restore rehearsal';
+              setButtonLabelWithIconBinding(restoreRehearsalButton, rehearsalLabel, ICON_GLYPHS.load);
+              rehearsalHelp = texts[lang].restoreRehearsalButtonHelp || rehearsalLabel;
+              restoreRehearsalButton.setAttribute('data-help', rehearsalHelp);
+              restoreRehearsalButton.setAttribute('title', rehearsalHelp);
+              restoreRehearsalButton.setAttribute('aria-label', rehearsalHelp);
+            }
+            if (restoreRehearsalHeading) {
+              restoreRehearsalHeading.textContent = texts[lang].restoreRehearsalHeading || restoreRehearsalHeading.textContent;
+            }
+            if (restoreRehearsalIntro) {
+              restoreRehearsalIntro.textContent = texts[lang].restoreRehearsalIntro || restoreRehearsalIntro.textContent;
+            }
+            if (restoreRehearsalModeLabel) {
+              restoreRehearsalModeLabel.textContent = texts[lang].restoreRehearsalModeLabel || restoreRehearsalModeLabel.textContent;
+            }
+            if (restoreRehearsalModeBackupText) {
+              restoreRehearsalModeBackupText.textContent = texts[lang].restoreRehearsalModeBackup || restoreRehearsalModeBackupText.textContent;
+            }
+            if (restoreRehearsalModeProjectText) {
+              restoreRehearsalModeProjectText.textContent = texts[lang].restoreRehearsalModeProject || restoreRehearsalModeProjectText.textContent;
+            }
+            if (restoreRehearsalFileLabel) {
+              restoreRehearsalFileLabel.textContent = texts[lang].restoreRehearsalFileLabel || restoreRehearsalFileLabel.textContent;
+            }
+            if (restoreRehearsalBrowse) {
+              browseLabel = texts[lang].restoreRehearsalFileButton || 'Choose file';
+              setButtonLabelWithIconBinding(restoreRehearsalBrowse, browseLabel, ICON_GLYPHS.fileImport);
+              restoreRehearsalBrowse.setAttribute('data-help', browseLabel);
+              restoreRehearsalBrowse.setAttribute('title', browseLabel);
+              restoreRehearsalBrowse.setAttribute('aria-label', browseLabel);
+            }
+            if (restoreRehearsalFileName) {
+              restoreRehearsalFileName.textContent = texts[lang].restoreRehearsalNoFile || restoreRehearsalFileName.textContent;
+            }
+            if (restoreRehearsalStatus) {
+              restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
+            }
+            if (restoreRehearsalRuleHeading) {
+              restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
+            }
+            if (restoreRehearsalRuleIntro) {
+              restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
+            }
+            if (restoreRehearsalRuleEmpty) {
+              restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
+            }
+            if (restoreRehearsalTableCaption) {
+              restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
+            }
+            if (restoreRehearsalMetricHeader) {
+              restoreRehearsalMetricHeader.textContent = texts[lang].restoreRehearsalMetricColumn || restoreRehearsalMetricHeader.textContent;
+            }
+            if (restoreRehearsalLiveHeader) {
+              restoreRehearsalLiveHeader.textContent = texts[lang].restoreRehearsalLiveColumn || restoreRehearsalLiveHeader.textContent;
+            }
+            if (restoreRehearsalSandboxHeader) {
+              restoreRehearsalSandboxHeader.textContent = texts[lang].restoreRehearsalSandboxColumn || restoreRehearsalSandboxHeader.textContent;
+            }
+            if (restoreRehearsalDifferenceHeader) {
+              restoreRehearsalDifferenceHeader.textContent = texts[lang].restoreRehearsalDifferenceColumn || restoreRehearsalDifferenceHeader.textContent;
+            }
+            resolvedRestoreRehearsalCloseButton = typeof restoreRehearsalCloseButton !== 'undefined' ? restoreRehearsalCloseButton : resolveElement('restoreRehearsalCloseButton', 'restoreRehearsalClose');
+            if (resolvedRestoreRehearsalCloseButton) {
+              _closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
+              setButtonLabelWithIconBinding(resolvedRestoreRehearsalCloseButton, _closeLabel, ICON_GLYPHS.circleX);
+              resolvedRestoreRehearsalCloseButton.setAttribute('title', _closeLabel);
+              resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
+            }
+            if (restoreRehearsalProceedButton) {
+              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.restoreRehearsalProceed) || 'Continue rehearsal restore';
+              proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en297 = texts.en) === null || _texts$en297 === void 0 ? void 0 : _texts$en297.restoreRehearsalProceedHelp) || proceedLabel;
+              setButtonLabelWithIconBinding(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
+              restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
+              restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
+              restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
+            }
+            if (restoreRehearsalAbortButton) {
+              abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en298 = texts.en) === null || _texts$en298 === void 0 ? void 0 : _texts$en298.restoreRehearsalAbort) || 'Abort rehearsal';
+              abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en299 = texts.en) === null || _texts$en299 === void 0 ? void 0 : _texts$en299.restoreRehearsalAbortHelp) || abortLabel;
+              setButtonLabelWithIconBinding(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
+              restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
+              restoreRehearsalAbortButton.setAttribute('title', abortHelp);
+              restoreRehearsalAbortButton.setAttribute('aria-label', abortHelp);
+            }
+            if (factoryResetButton) {
+              resetLabel = texts[lang].factoryResetButton || "Factory reset";
+              resetHelp = texts[lang].factoryResetButtonHelp || resetLabel;
+              setButtonLabelWithIconBinding(factoryResetButton, resetLabel, ICON_GLYPHS.reload);
+              factoryResetButton.setAttribute("data-help", resetHelp);
+              factoryResetButton.setAttribute("title", resetHelp);
+              factoryResetButton.setAttribute("aria-label", resetHelp);
+            }
+            aboutHeading = document.getElementById("aboutHeading");
+            if (aboutHeading) {
+              aboutHeading.textContent = texts[lang].aboutHeading;
+              aboutHeading.setAttribute("data-help", texts[lang].aboutHeadingHelp || texts[lang].aboutHeading);
+            }
+            aboutVersionElem = typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
+            if (aboutVersionElem) aboutVersionElem.textContent = "".concat(texts[lang].versionLabel, " ").concat(APP_VERSION);
+            supportLinkConfigs = [{
+              id: 'supportLink',
+              textKey: 'supportLink',
+              helpKey: 'supportLinkHelp'
+            }, {
+              id: 'reportBugLink',
+              textKey: 'reportBugLink',
+              helpKey: 'reportBugLinkHelp'
+            }, {
+              id: 'suggestFeatureLink',
+              textKey: 'suggestFeatureLink',
+              helpKey: 'suggestFeatureLinkHelp'
+            }];
+            langTexts = texts && texts[lang] || {};
+            fallbackTexts = texts && texts.en || {};
+            supportLinkConfigs.forEach(function (config) {
+              var link = typeof document !== 'undefined' ? document.getElementById(config.id) : null;
+              if (!link) {
+                return;
+              }
+              var label = typeof langTexts[config.textKey] === 'string' && langTexts[config.textKey] || typeof fallbackTexts[config.textKey] === 'string' && fallbackTexts[config.textKey] || link.textContent;
+              link.textContent = label;
+              var help = typeof langTexts[config.helpKey] === 'string' && langTexts[config.helpKey] || typeof fallbackTexts[config.helpKey] === 'string' && fallbackTexts[config.helpKey] || label;
+              link.setAttribute('data-help', help);
+              link.setAttribute('title', help);
+              link.setAttribute('aria-label', help);
+            });
+            if (settingsSave) {
+              _label69 = texts[lang].saveSettings || ((_texts$en300 = texts.en) === null || _texts$en300 === void 0 ? void 0 : _texts$en300.saveSettings) || settingsSave.textContent;
+              setButtonLabelWithIconBinding(settingsSave, _label69);
+              saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label69;
+              settingsSave.setAttribute("data-help", saveHelp);
+              settingsSave.setAttribute("title", saveHelp);
+              settingsSave.setAttribute("aria-label", saveHelp);
+            }
+            if (settingsCancel) {
+              _cancelLabel = texts[lang].cancelSettings || ((_texts$en301 = texts.en) === null || _texts$en301 === void 0 ? void 0 : _texts$en301.cancelSettings) || settingsCancel.textContent;
+              setButtonLabelWithIconBinding(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
+              cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
+              settingsCancel.setAttribute("data-help", cancelHelp);
+              settingsCancel.setAttribute("title", cancelHelp);
+              settingsCancel.setAttribute("aria-label", cancelHelp);
+            }
+            menuToggle = document.getElementById("menuToggle");
+            if (menuToggle) {
+              menuLabel = texts[lang].menuToggleLabel || ((_texts$en302 = texts.en) === null || _texts$en302 === void 0 ? void 0 : _texts$en302.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
+              _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en303 = texts.en) === null || _texts$en303 === void 0 ? void 0 : _texts$en303.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
+              closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel2;
+              menuToggle.setAttribute("title", menuLabel);
+              menuToggle.setAttribute("aria-label", menuLabel);
+              menuHelp = texts[lang].menuToggleHelp || menuLabel;
+              menuToggle.setAttribute("data-help", menuHelp);
+              menuToggle.dataset.menuLabel = menuLabel;
+              menuToggle.dataset.menuHelp = menuHelp;
+              menuToggle.dataset.closeLabel = _closeLabel2;
+              menuToggle.dataset.closeHelp = closeHelp;
+            }
+            sideMenu = document.getElementById("sideMenu");
+            if (sideMenu) {
+              sideMenuHelp = texts[lang].sideMenuHelp;
+              if (sideMenuHelp) {
+                sideMenu.setAttribute("data-help", sideMenuHelp);
+              } else {
+                sideMenu.removeAttribute("data-help");
+              }
+            }
+            sideMenuTitle = document.getElementById("sideMenuTitle");
+            if (sideMenuTitle) {
+              titleLabel = texts[lang].sideMenuTitle || ((_texts$en304 = texts.en) === null || _texts$en304 === void 0 ? void 0 : _texts$en304.sideMenuTitle) || sideMenuTitle.textContent;
+              sideMenuTitle.textContent = titleLabel;
+              titleHelp = texts[lang].sideMenuTitleHelp || texts[lang].sideMenuHelp || titleLabel;
+              sideMenuTitle.setAttribute("data-help", titleHelp);
+            }
+            closeMenuButton = document.getElementById("closeMenuButton");
+            closeMenuLabel = document.getElementById("closeMenuLabel");
+            if (closeMenuButton) {
+              _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en305 = texts.en) === null || _texts$en305 === void 0 ? void 0 : _texts$en305.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
+              _closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel3;
+              closeMenuButton.setAttribute("aria-label", _closeLabel3);
+              closeMenuButton.setAttribute("title", _closeHelp);
+              closeMenuButton.setAttribute("data-help", _closeHelp);
+              if (closeMenuLabel) {
+                closeMenuLabel.textContent = _closeLabel3;
+              }
+            }
+            if (reloadButton) {
+              reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
+              reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
+              reloadButton.setAttribute("data-help", texts[lang].reloadAppHelp || texts[lang].reloadAppLabel);
+            }
+            if (featureSearch) {
+              featureSearch.setAttribute("placeholder", texts[lang].featureSearchPlaceholder);
+              featureSearch.setAttribute("aria-label", texts[lang].featureSearchLabel);
+              featureSearch.setAttribute("data-help", texts[lang].featureSearchHelp || texts[lang].featureSearchLabel);
+            }
+            if (helpButton) {
+              helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
+              helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
+              helpButton.setAttribute("data-help", texts[lang].helpButtonHelp || texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
+              helpShortcutList = texts[lang].helpButtonShortcuts;
+              if (typeof helpShortcutList === 'string' && helpShortcutList.trim()) {
+                helpButton.setAttribute('data-shortcuts', helpShortcutList);
+              } else {
+                helpButton.removeAttribute('data-shortcuts');
+              }
+              helpAriaShortcuts = texts[lang].helpButtonAriaShortcuts || 'F1 Control+Slash Meta+Slash Shift+Slash KeyH';
+              if (typeof helpAriaShortcuts === 'string' && helpAriaShortcuts.trim()) {
+                helpButton.setAttribute('aria-keyshortcuts', helpAriaShortcuts);
+              } else {
+                helpButton.removeAttribute('aria-keyshortcuts');
+              }
+              if (hoverHelpButton) {
+                setButtonLabelWithIconBinding(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
+                hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
+                hoverHelpButton.setAttribute("data-help", texts[lang].hoverHelpButtonHelp || texts[lang].hoverHelpButtonLabel);
+              }
+              if (helpSearch) {
+                helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
+                helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
+                helpSearch.setAttribute("data-help", texts[lang].helpSearchHelp || texts[lang].helpSearchLabel);
+              }
+              if (helpSearchClear) {
+                helpSearchClear.setAttribute("title", texts[lang].helpSearchClear);
+                helpSearchClear.setAttribute("aria-label", texts[lang].helpSearchClear);
+                helpSearchClear.setAttribute("data-help", texts[lang].helpSearchClearHelp || texts[lang].helpSearchClear);
+              }
+              if (closeHelpBtn) {
+                setButtonLabelWithIconBinding(closeHelpBtn, texts[lang].helpClose, ICON_GLYPHS.circleX);
+                closeHelpBtn.setAttribute("title", texts[lang].helpClose);
+                closeHelpBtn.setAttribute("aria-label", texts[lang].helpClose);
+                closeHelpBtn.setAttribute("data-help", texts[lang].helpCloseHelp || texts[lang].helpClose);
+              }
+              if (document.getElementById("helpTitle")) {
+                document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
+              }
+              if (helpNoResults) {
+                applyTextContent(helpNoResults, "helpNoResults", "No help topics match your search. Try shorter keywords, synonyms or clear the field to browse everything.");
+              }
+              if (helpNoResultsSuggestionsHeading) {
+                applyTextContent(helpNoResultsSuggestionsHeading, "helpNoResultsSuggestionsHeading", "Need a different result?");
+              }
+              if (helpNoResultsSuggestionsIntro) {
+                applyTextContent(helpNoResultsSuggestionsIntro, "helpNoResultsSuggestionsIntro", "Try these steps to get back on track while keeping your data safe:");
+              }
+              quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
+              if (quickStartHeading) {
+                fallback = quickStartHeading.textContent || "Quick start checklist";
+                applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
+              }
+              onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
+              if (onboardingCopyElement) {
+                fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
+                applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
+              }
+              dataSafetyHeading = doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
+              if (dataSafetyHeading) {
+                _fallback = dataSafetyHeading.textContent || "Protect your work";
+                applyTextContent(dataSafetyHeading, "helpDataSafetyTitle", _fallback);
+              }
+              restoreDrillHeading = doc ? doc.getElementById("helpRestoreDrillHeading") : null;
+              if (restoreDrillHeading) {
+                _fallback2 = restoreDrillHeading.textContent || "Restore rehearsal drill";
+                applyTextContent(restoreDrillHeading, "helpRestoreDrillTitle", _fallback2);
+              }
+              restoreDrillNote = doc ? doc.getElementById("helpRestoreDrillNote") : null;
+              if (restoreDrillNote) {
+                _fallback3 = restoreDrillNote.textContent || "Record the filename, timestamp and verification results in your backup log before closing the rehearsal so every drill leaves behind a documented recovery point.";
+                applyTextContent(restoreDrillNote, "helpRestoreDrillNote", _fallback3);
+              }
+              if (helpDataAuditHeading) {
+                _fallback4 = helpDataAuditHeading.textContent || "Monthly data health check";
+                applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", _fallback4);
+              }
+              applySuggestionTemplate(helpDataAuditStep1, "helpDataAuditStep1", [function () {
+                return createHelpLink("#settingsButton", resolveLocaleString("settingsButton") || "Settings", {
+                  target: "#settingsButton"
+                });
+              }, function () {
+                return createHelpLink("#dataHeading", resolveLocaleString("dataHeading") || "Data & Storage", {
+                  target: "#dataHeading",
+                  highlight: "#settingsDialog"
+                });
+              }, function () {
+                return createHelpLink("#storageBackupNow", resolveLocaleString("storageBackupNow") || "Download full backup", {
+                  target: "#storageBackupNow",
+                  highlight: "#storageActions"
+                });
+              }, function () {
+                return createHelpLink("#storageActionsHeading", resolveLocaleString("storageActionsHeading") || "Quick safeguards", {
+                  target: "#storageActionsHeading",
+                  highlight: "#storageActions",
+                  isButton: false
+                });
+              }]);
+              applySuggestionTemplate(helpDataAuditStep2, "helpDataAuditStep2", [function () {
+                return createHelpLink("#shareSetupBtn", resolveLocaleString("shareSetupBtn") || "Export Project", {
+                  target: "#shareSetupBtn",
+                  highlight: "#setup-manager"
+                });
+              }]);
+              applySuggestionTemplate(helpDataAuditStep3, "helpDataAuditStep3", [function () {
+                return createHelpLink("#reloadButton", resolveLocaleString("reloadAppLabel") || "Force reload", {
+                  target: "#reloadButton"
+                });
+              }, function () {
+                return createHelpLink("#offlineIndicator", resolveLocaleString("offlineIndicator") || "Offline", {
+                  target: "#offlineIndicator"
+                });
+              }, function () {
+                return createHelpLink("#applySharedLinkBtn", resolveLocaleString("loadSharedLinkBtn") || "Import Project", {
+                  target: "#applySharedLinkBtn",
+                  highlight: "#setup-manager"
+                });
+              }]);
+              applySuggestionTemplate(helpDataAuditStep4, "helpDataAuditStep4", [function () {
+                return createHelpLink("#restoreRehearsalButton", resolveLocaleString("restoreRehearsalButton") || "Restore rehearsal", {
+                  target: "#restoreRehearsalButton",
+                  highlight: "#restoreRehearsalSection"
+                });
+              }, function () {
+                var code = doc.createElement("code");
+                code.textContent = "window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })";
+                return code;
+              }]);
+              if (helpDataAuditNote) {
+                _fallback5 = helpDataAuditNote.textContent || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
+                applyTextContent(helpDataAuditNote, "helpDataAuditNote", _fallback5);
+              }
+              applySuggestionTemplate(helpNoResultsSuggestionClear, "helpNoResultsSuggestionClear", [function () {
+                return createHelpLink("#helpSearchClear", resolveLocaleString("helpSearchClear") || "Clear search", {
+                  target: "#helpSearchClear",
+                  highlight: "#helpSearchContainer"
+                });
+              }]);
+              applySuggestionText(helpNoResultsSuggestionSynonyms, "helpNoResultsSuggestionSynonyms");
+              applySuggestionTemplate(helpNoResultsSuggestionQuickStart, "helpNoResultsSuggestionQuickStart", [function () {
+                return createHelpLink("#helpQuickStartGuide", resolveLocaleString("helpQuickStartChecklistTitle") || "Quick start checklist", {
+                  target: "#helpQuickStartGuide",
+                  highlight: "#helpQuickStartGuide"
+                });
+              }]);
+              applySuggestionTemplate(helpNoResultsSuggestionBackup, "helpNoResultsSuggestionBackup", [function () {
+                return createHelpLink("#helpDataSafety", resolveLocaleString("helpDataSafetyTitle") || "Protect your work", {
+                  target: "#helpDataSafety",
+                  highlight: "#helpDataSafety"
+                });
+              }, function () {
+                return createHelpLink("#helpRestoreDrillHeading", resolveLocaleString("helpRestoreDrillTitle") || "Restore rehearsal drill", {
+                  target: "#helpRestoreDrillHeading",
+                  highlight: "#helpDataSafety",
+                  isButton: false
+                });
+              }]);
+              if (typeof updateHelpResultsSummaryText === 'function') {
+                updateHelpResultsSummaryText();
+              }
+              if (typeof updateHelpQuickLinksForLanguage === 'function') {
+                updateHelpQuickLinksForLanguage(lang);
+              }
+            }
+            setButtonLabelWithIconBinding(document.getElementById("generateOverviewBtn"), texts[lang].generateOverviewBtn, ICON_GLYPHS.overview);
+            setButtonLabelWithIconBinding(document.getElementById("generateGearListBtn"), texts[lang].generateGearListBtn, ICON_GLYPHS.gearList);
+            setButtonLabelWithIconBinding(document.getElementById("shareSetupBtn"), texts[lang].shareSetupBtn, ICON_GLYPHS.fileExport);
+            exportRevert = document.getElementById("exportAndRevertBtn");
+            if (exportRevert) {
+              setButtonLabelWithIconBinding(exportRevert, texts[lang].exportAndRevertBtn, ICON_GLYPHS.reload);
+              exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
+            }
+            downloadDiagramButton = typeof downloadDiagramBtn !== 'undefined' && downloadDiagramBtn || (typeof document !== 'undefined' && document && typeof document.getElementById === 'function' ? document.getElementById('downloadDiagram') : null);
+            if (downloadDiagramButton) {
+              downloadDiagramButton.textContent = texts[lang].downloadDiagramBtn;
+              downloadDiagramButton.setAttribute("title", texts[lang].downloadDiagramBtn);
+              downloadDiagramButton.setAttribute("aria-label", texts[lang].downloadDiagramBtn);
+              downloadDiagramButton.setAttribute("data-help", texts[lang].downloadDiagramHelp);
+            }
+            if (gridSnapToggleBtn) {
+              setButtonLabelWithIconBinding(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
+              gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
+              gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
+              gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
+              snapActive = false;
+              try {
+                snapActive = Boolean(getGridSnapState());
+              } catch (gridSnapReadError) {
+                void gridSnapReadError;
+                try {
+                  snapActive = Boolean(gridSnap);
+                } catch (legacyGridSnapError) {
+                  void legacyGridSnapError;
+                }
+              }
+              gridSnapToggleBtn.setAttribute('aria-pressed', snapActive ? 'true' : 'false');
+            }
+            resetViewBtn = typeof document !== 'undefined' ? document.getElementById('resetView') : null;
+            if (resetViewBtn) {
+              setButtonLabelWithIconBinding(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
+              resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
+              resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
+              resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
+            }
+            zoomInBtn = typeof document !== 'undefined' ? document.getElementById('zoomIn') : null;
+            if (zoomInBtn) {
+              setButtonLabelWithIconBinding(zoomInBtn, '', ICON_GLYPHS.add);
+              zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
+              zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
+              zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
+            }
+            zoomOutBtn = typeof document !== 'undefined' ? document.getElementById('zoomOut') : null;
+            if (zoomOutBtn) {
+              setButtonLabelWithIconBinding(zoomOutBtn, '', ICON_GLYPHS.minus);
+              zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
+              zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
+              zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
+            }
+            diagramHint = typeof document !== 'undefined' ? document.getElementById('diagramHint') : null;
+            if (diagramHint) {
+              diagramHint.textContent = texts[lang].diagramMoveHint;
+            }
+            fallbackProjectForm = texts.en && texts.en.projectForm ? texts.en.projectForm : {};
+            projectFormTexts = texts[lang].projectForm || fallbackProjectForm;
+            if (projectFormTexts) {
+              resolveContactsDomRefs();
+              setLabelText = function setLabelText(element, key) {
+                if (!element) return;
+                var value = projectFormTexts[key] || fallbackProjectForm[key];
+                if (value) element.textContent = value;
+              };
+              setPlaceholder = function setPlaceholder(element, key) {
+                if (!element) return;
+                var value = projectFormTexts[key] || fallbackProjectForm[key];
+                if (value) element.setAttribute('placeholder', value);
+              };
+              setOptionText = function setOptionText(element, key) {
+                if (!element) return;
+                var value = projectFormTexts[key] || fallbackProjectForm[key];
+                if (value) element.textContent = value;
+              };
+              setLabelText(projectDialogHeading, 'heading');
+              setLabelText(projectNameLabel, 'projectName');
+              setLabelText(productionCompanyLabel, 'productionCompany');
+              setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
+              setLabelText(productionCompanyStreetLabel, 'productionCompanyStreet');
+              setLabelText(productionCompanyStreet2Label, 'productionCompanyStreet2');
+              setLabelText(productionCompanyCityLabel, 'productionCompanyCity');
+              setLabelText(productionCompanyRegionLabel, 'productionCompanyRegion');
+              setLabelText(productionCompanyPostalCodeLabel, 'productionCompanyPostalCode');
+              setLabelText(productionCompanyCountryLabel, 'productionCompanyCountry');
+              setPlaceholder(productionCompanyStreetInput, 'productionCompanyStreetPlaceholder');
+              setPlaceholder(productionCompanyStreet2Input, 'productionCompanyStreet2Placeholder');
+              setPlaceholder(productionCompanyCityInput, 'productionCompanyCityPlaceholder');
+              setPlaceholder(productionCompanyRegionInput, 'productionCompanyRegionPlaceholder');
+              setPlaceholder(productionCompanyPostalCodeInput, 'productionCompanyPostalCodePlaceholder');
+              setPlaceholder(productionCompanyCountryInput, 'productionCompanyCountryPlaceholder');
+              setLabelText(rentalHouseLabel, 'rentalHouse');
+              setLabelText(crewHeadingElem, 'crewHeading');
+              if (crewLabelElem) {
+                crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
+                if (crewLabelText) {
+                  crewLabelElem.textContent = "".concat(crewLabelText, ":");
+                }
+              }
+              setLabelText(prepLabelElem, 'prepLabel');
+              setLabelText(shootLabelElem, 'shootLabel');
+              setLabelText(returnLabelElem, 'returnLabel');
+              setLabelText(deliveryResolutionLabel, 'deliveryResolution');
+              setLabelText(recordingResolutionLabel, 'recordingResolution');
+              setLabelText(sensorModeLabel, 'sensorMode');
+              setLabelText(aspectRatioLabel, 'aspectRatio');
+              setLabelText(codecLabel, 'codec');
+              setLabelText(baseFrameRateLabel, 'baseFrameRate');
+              setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
+              if (recordingFrameRateHintElem) {
+                rangeTemplate = projectFormTexts.recordingFrameRateRangeHint || fallbackProjectForm.recordingFrameRateRangeHint || '';
+                defaultHint = projectFormTexts.recordingFrameRateDefaultHint || fallbackProjectForm.recordingFrameRateDefaultHint || '';
+                if (rangeTemplate) {
+                  recordingFrameRateHintElem.setAttribute('data-range-template', rangeTemplate);
+                } else {
+                  recordingFrameRateHintElem.removeAttribute('data-range-template');
+                }
+                if (defaultHint) {
+                  recordingFrameRateHintElem.setAttribute('data-default-message', defaultHint);
+                  recordingFrameRateHintElem.textContent = defaultHint;
+                  recordingFrameRateHintElem.hidden = false;
+                } else {
+                  recordingFrameRateHintElem.removeAttribute('data-default-message');
+                  recordingFrameRateHintElem.textContent = '';
+                  recordingFrameRateHintElem.hidden = true;
+                }
+              }
+              setLabelText(lensesHeadingElem, 'lensesHeading');
+              setLabelText(lensManufacturerLabel, 'lensManufacturerStep');
+              setLabelText(lensSeriesLabel, 'lensSeriesStep');
+              setLabelText(lensesLabelElem, 'lensesLabel');
+              setLabelText(lensSelectionsHeadingElem, 'lensSelectionsLabel');
+              setLabelText(lensSelectionsHintElem, 'lensSelectionsHint');
+              setOptionText(lensManufacturerPlaceholderOption, 'lensManufacturerPlaceholder');
+              setOptionText(lensSeriesPlaceholderOption, 'lensSeriesPlaceholder');
+              if (lensSeriesEmptyElem) {
+                seriesEmptyText = projectFormTexts.lensSeriesEmpty || fallbackProjectForm.lensSeriesEmpty;
+                if (seriesEmptyText) lensSeriesEmptyElem.textContent = seriesEmptyText;
+              }
+              if (lensOptionsEmptyElem) {
+                optionsEmptyText = projectFormTexts.lensOptionsEmpty || fallbackProjectForm.lensOptionsEmpty;
+                if (optionsEmptyText) lensOptionsEmptyElem.textContent = optionsEmptyText;
+              }
+              if (lensSelectionChipsElem) {
+                removeTemplate = projectFormTexts.lensRemoveLabel || fallbackProjectForm.lensRemoveLabel;
+                mountLabelText = projectFormTexts.lensMountLabel || fallbackProjectForm.lensMountLabel;
+                if (removeTemplate) lensSelectionChipsElem.setAttribute('data-remove-template', removeTemplate);
+                if (mountLabelText) lensSelectionChipsElem.setAttribute('data-mount-label', mountLabelText);
+              }
+              if (lensSelectionManager && typeof lensSelectionManager.refreshCatalog === 'function') {
+                try {
+                  lensSelectionManager.refreshCatalog({
+                    preserveSelections: true,
+                    skipEvent: true,
+                    skipDirty: true
+                  });
+                } catch (catalogRefreshError) {
+                  void catalogRefreshError;
+                }
+              }
+              setLabelText(riggingHeadingElem, 'riggingHeading');
+              setLabelText(requiredScenariosLabel, 'requiredScenarios');
+              setLabelText(cameraHandleLabel, 'cameraHandle');
+              setLabelText(viewfinderExtensionLabel, 'viewfinderExtension');
+              setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
+              setLabelText(matteboxLabel, 'mattebox');
+              setLabelText(filterLabel, 'filter');
+              setLabelText(storageHeading, 'storageHeading');
+              setLabelText(storageNeedsLabel, 'storageNeedsLabel');
+              updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm);
+              updateStorageRequirementTypeOptions();
+              setLabelText(monitoringHeadingElem, 'monitoringHeading');
+              setLabelText(monitoringConfigurationLabel, 'monitoringConfiguration');
+              setLabelText(viewfinderSettingsLabel, 'viewfinderSettings');
+              setLabelText(frameGuidesLabel, 'frameGuides');
+              setLabelText(aspectMaskOpacityLabel, 'aspectMaskOpacity');
+              setLabelText(videoDistributionLabel, 'videoDistribution');
+              setLabelText(monitorUserButtonsLabel, 'monitorUserButtons');
+              setLabelText(cameraUserButtonsLabel, 'cameraUserButtons');
+              setLabelText(viewfinderUserButtonsLabel, 'viewfinderUserButtons');
+              setLabelText(tripodPreferencesHeading, 'tripodPreferencesHeading');
+              setLabelText(tripodHeadBrandLabel, 'tripodHeadBrand');
+              setLabelText(tripodBowlLabel, 'tripodBowl');
+              setLabelText(tripodTypesLabel, 'tripodTypes');
+              setLabelText(tripodSpreaderLabel, 'tripodSpreader');
+              if (viewfinderExtensionSelect && viewfinderExtensionSelect.options.length >= 2) {
+                _noneLabel2 = projectFormTexts.viewfinderExtensionNone || fallbackProjectForm.viewfinderExtensionNone;
+                yesLabel = projectFormTexts.viewfinderExtensionYes || fallbackProjectForm.viewfinderExtensionYes;
+                if (_noneLabel2) viewfinderExtensionSelect.options[0].textContent = _noneLabel2;
+                if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
+              }
+              projectCancelButton = typeof document !== 'undefined' ? document.getElementById('projectCancel') : null;
+              cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel || (projectCancelButton ? projectCancelButton.textContent : projectDialogCloseBtn === null || projectDialogCloseBtn === void 0 ? void 0 : projectDialogCloseBtn.getAttribute('aria-label')) || 'Cancel';
+              if (projectCancelButton) {
+                setButtonLabelWithIconBinding(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
+              }
+              if (projectDialogCloseBtn) {
+                projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+                projectDialogCloseBtn.setAttribute('aria-label', cancelText);
+                projectDialogCloseBtn.setAttribute('title', cancelText);
+                projectDialogCloseBtn.setAttribute('data-help', cancelText);
+              }
+              if (projectSubmitBtn) {
+                submitText = projectFormTexts.submit || fallbackProjectForm.submit;
+                if (submitText) {
+                  setButtonLabelWithIconBinding(projectSubmitBtn, submitText, ICON_GLYPHS.check);
+                  projectSubmitBtn.setAttribute('aria-label', submitText);
+                }
+              }
+              crewPlaceholders = {
+                name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
+                phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
+                email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder,
+                website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
+              };
+              crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
+              fallbackContacts = ((_texts$en306 = texts.en) === null || _texts$en306 === void 0 ? void 0 : _texts$en306.contacts) || {};
+              contactsTexts = ((_texts$lang5 = texts[lang]) === null || _texts$lang5 === void 0 ? void 0 : _texts$lang5.contacts) || fallbackContacts;
+              if (contactsDialogHeading && contactsTexts.heading) {
+                contactsDialogHeading.textContent = contactsTexts.heading;
+              }
+              if (contactsDialogDescription && contactsTexts.description) {
+                contactsDialogDescription.textContent = contactsTexts.description;
+              }
+              if (contactsAddButtonLabel && contactsTexts.addContactButton) {
+                contactsAddButtonLabel.textContent = contactsTexts.addContactButton;
+              }
+              if (contactsAddButton && contactsTexts.addContactButton) {
+                contactsAddButton.setAttribute('aria-label', contactsTexts.addContactButton);
+                contactsAddButton.setAttribute('data-help', contactsTexts.addContactButton);
+              }
+              if (contactsImportButtonLabel && contactsTexts.importButton) {
+                contactsImportButtonLabel.textContent = contactsTexts.importButton;
+              }
+              if (contactsImportButton && contactsTexts.importButton) {
+                contactsImportButton.setAttribute('aria-label', contactsTexts.importButton);
+                contactsImportButton.setAttribute('data-help', contactsTexts.importButton);
+              }
+              if (contactsImportHint && contactsTexts.importHint) {
+                contactsImportHint.textContent = contactsTexts.importHint;
+              }
+              if (contactsEmptyState && contactsTexts.emptyState) {
+                contactsEmptyState.textContent = contactsTexts.emptyState;
+              }
+              if (userProfileHeading && contactsTexts.userProfileHeading) {
+                userProfileHeading.textContent = contactsTexts.userProfileHeading;
+              }
+              if (userProfileDescription && contactsTexts.userProfileDescription) {
+                userProfileDescription.textContent = contactsTexts.userProfileDescription;
+              }
+              if (userProfileNameLabel && contactsTexts.userProfileNameLabel) {
+                userProfileNameLabel.textContent = contactsTexts.userProfileNameLabel;
+              }
+              if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
+                userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
+              }
+              if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+                userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+              }
+              if (userProfileRoleInput) {
+                populateUserProfileRoleSelect({
+                  selected: typeof ((_userProfileState2 = userProfileState) === null || _userProfileState2 === void 0 ? void 0 : _userProfileState2.role) === 'string' ? userProfileState.role : ''
+                });
+              }
+              if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+                userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+              }
+              if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+                userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+              }
+              if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+                userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+              }
+              if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+                userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+              }
+              if (userProfileHint && contactsTexts.userProfileHint) {
+                userProfileHint.textContent = contactsTexts.userProfileHint;
+              }
+              if (userProfileAvatarButtonLabel && contactsTexts.userProfileAvatarButton) {
+                userProfileAvatarButtonLabel.textContent = contactsTexts.userProfileAvatarButton;
+              }
+              if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
+                userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
+                userProfileAvatarButton.removeAttribute('data-help');
+                userProfileAvatarButton.removeAttribute('title');
+              }
+              if (userProfileAvatarClearButton && contactsTexts.userProfileAvatarRemove) {
+                userProfileAvatarClearButton.textContent = contactsTexts.userProfileAvatarRemove;
+                userProfileAvatarClearButton.setAttribute('aria-label', contactsTexts.userProfileAvatarRemove);
+              }
+              if (avatarOptionsTitleElem && contactsTexts.avatarOptionsTitle) {
+                avatarOptionsTitleElem.textContent = contactsTexts.avatarOptionsTitle;
+              }
+              if (avatarOptionsDescriptionElem && contactsTexts.avatarOptionsDescription) {
+                avatarOptionsDescriptionElem.textContent = contactsTexts.avatarOptionsDescription;
+              }
+              if (avatarOptionsCloseLabel && contactsTexts.avatarOptionsClose) {
+                avatarOptionsCloseLabel.textContent = contactsTexts.avatarOptionsClose;
+              }
+              if (avatarOptionsCloseButton && contactsTexts.avatarOptionsClose) {
+                avatarOptionsCloseButton.setAttribute('aria-label', contactsTexts.avatarOptionsClose);
+                avatarOptionsCloseButton.setAttribute('title', contactsTexts.avatarOptionsClose);
+                avatarOptionsCloseButton.setAttribute('data-help', contactsTexts.avatarOptionsClose);
+              }
+              if (avatarOptionsDeleteButton && contactsTexts.avatarDelete) {
+                setButtonLabelWithIconBinding(avatarOptionsDeleteButton, contactsTexts.avatarDelete, ICON_GLYPHS.trash);
+                avatarOptionsDeleteButton.setAttribute('aria-label', contactsTexts.avatarDelete);
+                avatarOptionsDeleteButton.setAttribute('title', contactsTexts.avatarDelete);
+                avatarOptionsDeleteButton.setAttribute('data-help', contactsTexts.avatarDelete);
+              }
+              if (avatarOptionsEditButton && contactsTexts.avatarEditAction) {
+                setButtonLabelWithIconBinding(avatarOptionsEditButton, contactsTexts.avatarEditAction, ICON_GLYPHS.sliders);
+                avatarOptionsEditButton.setAttribute('aria-label', contactsTexts.avatarEditAction);
+                avatarOptionsEditButton.setAttribute('title', contactsTexts.avatarEditAction);
+                avatarOptionsEditButton.setAttribute('data-help', contactsTexts.avatarEditAction);
+              }
+              if (avatarOptionsChangeButton && contactsTexts.avatarChange) {
+                setButtonLabelWithIconBinding(avatarOptionsChangeButton, contactsTexts.avatarChange, ICON_GLYPHS.camera);
+                avatarOptionsChangeButton.setAttribute('aria-label', contactsTexts.avatarChange);
+                avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
+                avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
+              }
+              if (avatarEditTitle && contactsTexts.avatarEditAction) {
+                avatarEditTitle.textContent = contactsTexts.avatarEditAction;
+              }
+              if (avatarEditInstructions && contactsTexts.avatarEditInstructions) {
+                avatarEditInstructions.textContent = contactsTexts.avatarEditInstructions;
+              }
+              if (avatarEditZoomLabelElem && contactsTexts.avatarEditZoomLabel) {
+                avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
+              }
+              if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
+                setButtonLabelWithIconBinding(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
+                avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
+                avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
+                avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
+              }
+              if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
+                setButtonLabelWithIconBinding(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
+                avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
+                avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
+                avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
+              }
+              if (contactsCloseButton && contactsTexts.close) {
+                contactsCloseButton.textContent = contactsTexts.close;
+              }
+              renderContactsList();
+              document.querySelectorAll('#crewContainer .person-row').forEach(function (row) {
+                var roleSelect = row.querySelector('select');
+                if (roleSelect) {
+                  var currentValue = roleSelect.value;
+                  Array.from(roleSelect.options).forEach(function (opt) {
+                    var roleKey = opt.value;
+                    opt.textContent = crewRoleLabels[roleKey] || roleKey;
+                  });
+                  roleSelect.value = currentValue;
+                }
+                var nameInput = row.querySelector('.person-name');
+                if (nameInput && crewPlaceholders.name) nameInput.placeholder = crewPlaceholders.name;
+                var phoneInput = row.querySelector('.person-phone');
+                if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
+                var emailInput = row.querySelector('.person-email');
+                if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+                var websiteInput = row.querySelector('.person-website');
+                if (websiteInput && crewPlaceholders.website) websiteInput.placeholder = crewPlaceholders.website;
+                var contactSelect = row.querySelector('.person-contact-select');
+                if (contactSelect) {
+                  setContactSelectOptions(contactSelect, contactSelect.value);
+                }
+                var saveButton = row.querySelector('.person-save-contact');
+                if (saveButton) {
+                  setButtonLabelWithIconBinding(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+                }
+                var manageButton = row.querySelector('.person-manage-contacts');
+                if (manageButton) {
+                  setButtonLabelWithIconBinding(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+                }
+                updateRowLinkedBadge(row);
+              });
+              stripTrailingPunctuation = function stripTrailingPunctuation(value) {
+                return typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value;
+              };
+              addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
+              if (addPersonBtn) {
+                crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
+                _label70 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
+                setButtonLabelWithIconBinding(addPersonBtn, _label70, ICON_GLYPHS.add);
+                addPersonBtn.setAttribute('aria-label', _label70);
+                addPersonBtn.setAttribute('data-help', _label70);
+              }
+              if (addPrepBtn) {
+                prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
+                _label71 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
+                setButtonLabelWithIconBinding(addPrepBtn, _label71, ICON_GLYPHS.add);
+                addPrepBtn.setAttribute('aria-label', _label71);
+                addPrepBtn.setAttribute('data-help', _label71);
+              }
+              if (addShootBtn) {
+                shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
+                _label72 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
+                setButtonLabelWithIconBinding(addShootBtn, _label72, ICON_GLYPHS.add);
+                addShootBtn.setAttribute('aria-label', _label72);
+                addShootBtn.setAttribute('data-help', _label72);
+              }
+              if (addReturnBtn) {
+                returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
+                _label73 = "".concat(addEntryLabel, " ").concat(returnLabel).trim();
+                setButtonLabelWithIconBinding(addReturnBtn, _label73, ICON_GLYPHS.add);
+                addReturnBtn.setAttribute('aria-label', _label73);
+                addReturnBtn.setAttribute('data-help', _label73);
+              }
+              if (addStorageNeedBtn) {
+                storageLabelText = stripTrailingPunctuation(projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs');
+                _label74 = "".concat(addEntryLabel, " ").concat(storageLabelText).trim();
+                setButtonLabelWithIconBinding(addStorageNeedBtn, _label74, ICON_GLYPHS.add);
+                addStorageNeedBtn.setAttribute('aria-label', _label74);
+                addStorageNeedBtn.setAttribute('data-help', _label74);
+              }
+            }
+            if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
+            if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
+            if (iosPwaHelpStep1) iosPwaHelpStep1.textContent = texts[lang].iosPwaHelpStep1;
+            if (iosPwaHelpStep2) iosPwaHelpStep2.textContent = texts[lang].iosPwaHelpStep2;
+            if (iosPwaHelpStep3) iosPwaHelpStep3.textContent = texts[lang].iosPwaHelpStep3;
+            if (iosPwaHelpStep4) iosPwaHelpStep4.textContent = texts[lang].iosPwaHelpStep4;
+            if (iosPwaHelpNote) iosPwaHelpNote.textContent = texts[lang].iosPwaHelpNote;
+            if (iosPwaHelpClose) {
+              closeText = texts[lang].iosPwaHelpClose;
+              setButtonLabelWithIconBinding(iosPwaHelpClose, closeText, ICON_GLYPHS.check);
+              iosPwaHelpClose.setAttribute('aria-label', closeText);
+            }
+            document.querySelectorAll('.favorite-toggle').forEach(function (btn) {
+              btn.setAttribute('aria-label', texts[lang].favoriteToggleLabel);
+              btn.setAttribute('title', texts[lang].favoriteToggleLabel);
+              btn.setAttribute('data-help', texts[lang].favoriteToggleHelp || texts[lang].favoriteToggleLabel);
+            });
+            ensureGearListActions();
+            updateDiagramLegend();
+            updateStorageSummary();
+            callCoreFunctionIfAvailable('populateFeatureSearch', [], {
+              defer: true
+            });
+          case 6:
+            return _context2.a(2);
         }
-      }
-    };
-    if (shouldDispatchLanguageChange) {
-      if (typeof queueMicrotask === "function") {
-        queueMicrotask(dispatchLanguageChange);
-      } else if (typeof setTimeout === "function") {
-        setTimeout(dispatchLanguageChange, 0);
-      } else {
-        dispatchLanguageChange();
-      }
-    }
-    try {
-      localStorage.setItem("language", lang);
-    } catch (e) {
-      console.warn("Could not save language to localStorage", e);
-    }
-    if (languageSelect) {
-      languageSelect.value = lang;
-    }
-    if (settingsLanguage) {
-      settingsLanguage.value = lang;
-    }
-    document.documentElement.lang = lang;
-    document.title = texts[lang].appTitle;
-    document.getElementById("mainTitle").textContent = texts[lang].appTitle;
-    document.getElementById("tagline").textContent = texts[lang].tagline;
-    var doc = typeof document !== "undefined" ? document : null;
-    var runtimeScope = getCoreGlobalObject();
-    var fallbackLocale = texts[DEFAULT_LANGUAGE] || {};
-    var normalizeTemperatureUnitSafe = function normalizeTemperatureUnitSafe(unit) {
-      var _TEMPERATURE_UNITS5;
-      if (typeof normalizeTemperatureUnit === "function") {
-        try {
-          return normalizeTemperatureUnit(unit);
-        } catch (normalizeError) {
-          console.warn("normalizeTemperatureUnit helper threw an error; falling back to safe normalization", normalizeError);
-        }
-      }
-      if (typeof unit === "string") {
-        var _TEMPERATURE_UNITS, _TEMPERATURE_UNITS3;
-        var trimmed = unit.trim().toLowerCase();
-        if (trimmed === ((_TEMPERATURE_UNITS = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS === void 0 ? void 0 : _TEMPERATURE_UNITS.fahrenheit) || trimmed === "fahrenheit" || trimmed === "f") {
-          var _TEMPERATURE_UNITS2;
-          return ((_TEMPERATURE_UNITS2 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS2 === void 0 ? void 0 : _TEMPERATURE_UNITS2.fahrenheit) || "fahrenheit";
-        }
-        if (trimmed === ((_TEMPERATURE_UNITS3 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS3 === void 0 ? void 0 : _TEMPERATURE_UNITS3.celsius) || trimmed === "celsius" || trimmed === "c") {
-          var _TEMPERATURE_UNITS4;
-          return ((_TEMPERATURE_UNITS4 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS4 === void 0 ? void 0 : _TEMPERATURE_UNITS4.celsius) || "celsius";
-        }
-      }
-      return ((_TEMPERATURE_UNITS5 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS5 === void 0 ? void 0 : _TEMPERATURE_UNITS5.celsius) || "celsius";
-    };
-    var FALLBACK_NORMALIZE_FOCUS_SCALE = function FALLBACK_NORMALIZE_FOCUS_SCALE(value) {
-      if (typeof value === "string") {
-        var trimmed = value.trim().toLowerCase();
-        if (trimmed === "imperial" || trimmed === "feet" || trimmed === "ft") {
-          return "imperial";
-        }
-        if (trimmed === "metric" || trimmed === "metre" || trimmed === "meter" || trimmed === "m") {
-          return "metric";
-        }
-      }
-      return "metric";
-    };
-    var ensureNormalizeFocusScaleHelper = function ensureNormalizeFocusScaleHelper() {
-      if (typeof normalizeFocusScale === "function") {
-        return normalizeFocusScale;
-      }
-      var scope = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : typeof global !== "undefined" ? global : null;
-      if (scope && typeof scope.normalizeFocusScale === "function") {
-        return scope.normalizeFocusScale;
-      }
-      if (scope) {
-        try {
-          Object.defineProperty(scope, "normalizeFocusScale", {
-            value: FALLBACK_NORMALIZE_FOCUS_SCALE,
-            writable: true,
-            configurable: true
-          });
-        } catch (defineError) {
-          scope.normalizeFocusScale = FALLBACK_NORMALIZE_FOCUS_SCALE;
-        }
-      }
-      return FALLBACK_NORMALIZE_FOCUS_SCALE;
-    };
-    ensureNormalizeFocusScaleHelper();
-    var normalizeFocusScaleSafe = function normalizeFocusScaleSafe(value) {
-      if (typeof normalizeFocusScale === "function") {
-        try {
-          var normalized = normalizeFocusScale(value);
-          if (normalized === "imperial" || normalized === "metric") {
-            return normalized;
-          }
-        } catch (normalizeError) {
-          console.warn("normalizeFocusScale helper threw an error; falling back to safe normalization", normalizeError);
-        }
-      }
-      return FALLBACK_NORMALIZE_FOCUS_SCALE(value);
-    };
-    var resolveFocusScalePreference = function resolveFocusScalePreference() {
-      var tryNormalize = function tryNormalize(candidate) {
-        if (typeof candidate === "string" && candidate) {
-          return normalizeFocusScaleSafe(candidate);
-        }
-        return null;
-      };
-      var sources = [function () {
-        return typeof focusScalePreference !== "undefined" ? focusScalePreference : null;
-      }, function () {
-        return typeof sessionFocusScale !== "undefined" ? sessionFocusScale : null;
-      }, function () {
-        try {
-          var getter = runtimeScope && runtimeScope.preferences && typeof runtimeScope.preferences.getFocusScale === "function" ? runtimeScope.preferences.getFocusScale : null;
-          if (getter) {
-            return getter();
-          }
-        } catch (focusScaleError) {
-          console.warn("Failed to resolve focus scale preference from runtime scope; using fallback", focusScaleError);
-        }
-        return null;
-      }];
-      for (var _i7 = 0, _sources = sources; _i7 < _sources.length; _i7++) {
-        var getSource = _sources[_i7];
-        var _resolved = tryNormalize(getSource());
-        if (_resolved) {
-          return _resolved;
-        }
-      }
-      return "metric";
-    };
-    var resolveLocaleString = function resolveLocaleString(key) {
-      if (!key) return "";
-      var bundle = texts[lang];
-      var value = bundle && typeof bundle[key] === "string" ? bundle[key] : null;
-      if (value && value.trim()) {
-        return value;
-      }
-      var fallbackValue = typeof fallbackLocale[key] === "string" ? fallbackLocale[key] : "";
-      return fallbackValue;
-    };
-    var applyTextContent = function applyTextContent(element, key) {
-      var fallbackValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-      if (!element) return;
-      var text = resolveLocaleString(key) || fallbackValue;
-      element.textContent = text;
-    };
-    var createHelpLink = function createHelpLink(href, text) {
-      var _ref32 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-        target = _ref32.target,
-        highlight = _ref32.highlight,
-        _ref32$isButton = _ref32.isButton,
-        isButton = _ref32$isButton === void 0 ? true : _ref32$isButton;
-      if (!doc) {
-        return null;
-      }
-      var link = doc.createElement("a");
-      link.className = isButton ? "help-link button-link" : "help-link";
-      link.href = href;
-      if (target) {
-        link.setAttribute("data-help-target", target);
-      }
-      if (highlight) {
-        link.setAttribute("data-help-highlight", highlight);
-      }
-      link.textContent = text;
-      return link;
-    };
-    var applySuggestionTemplate = function applySuggestionTemplate(element, key) {
-      var builders = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      if (!element || !doc) return;
-      var template = resolveLocaleString(key);
-      element.innerHTML = "";
-      if (!template) {
-        element.setAttribute("hidden", "");
-        return;
-      }
-      element.removeAttribute("hidden");
-      var fragment = doc.createDocumentFragment();
-      var regex = /%(?:(\d+)\$)?s/g;
-      var lastIndex = 0;
-      var autoIndex = 0;
-      var match;
-      while ((match = regex.exec(template)) !== null) {
-        var start = match.index;
-        if (start > lastIndex) {
-          fragment.appendChild(doc.createTextNode(template.slice(lastIndex, start)));
-        }
-        var index = typeof match[1] === "string" ? Math.max(parseInt(match[1], 10) - 1, 0) : autoIndex++;
-        var builder = builders[index];
-        if (typeof builder === "function") {
-          var node = builder();
-          if (node) {
-            fragment.appendChild(node);
-          }
-        }
-        lastIndex = regex.lastIndex;
-      }
-      if (lastIndex < template.length) {
-        fragment.appendChild(doc.createTextNode(template.slice(lastIndex)));
-      }
-      element.appendChild(fragment);
-    };
-    var applySuggestionText = function applySuggestionText(element, key) {
-      if (!element) return;
-      var text = resolveLocaleString(key);
-      element.textContent = text;
-      if (!text) {
-        element.setAttribute("hidden", "");
-      } else {
-        element.removeAttribute("hidden");
-      }
-    };
-    var resolveRuntimeValue = function resolveRuntimeValue(name) {
-      if (!name) return undefined;
-      if (runtimeScope && _typeof(runtimeScope) === "object") {
-        try {
-          if (name in runtimeScope) {
-            return runtimeScope[name];
-          }
-        } catch (scopeError) {
-          void scopeError;
-        }
-      }
-      if (typeof globalThis !== "undefined" && globalThis !== runtimeScope) {
-        try {
-          if (name in globalThis) {
-            return globalThis[name];
-          }
-        } catch (globalError) {
-          void globalError;
-        }
-      }
-      return undefined;
-    };
-    var registerResolvedElement = function registerResolvedElement(globalName, element) {
-      if (!globalName || !element) {
-        return element;
-      }
-      try {
-        exposeCoreRuntimeConstant(globalName, element);
-      } catch (exposeError) {
-        void exposeError;
-      }
-      return element;
-    };
-    var resolveElement = function resolveElement(globalName, elementId) {
-      var existing = null;
-      try {
-        existing = resolveRuntimeValue(globalName);
-      } catch (resolveError) {
-        console.warn("Failed to resolve runtime value for \"".concat(globalName, "\""), resolveError);
-        existing = null;
-      }
-      if (existing && _typeof(existing) === "object") {
-        return existing;
-      }
-      if (doc && typeof doc.getElementById === "function" && elementId) {
-        try {
-          var element = doc.getElementById(elementId);
-          return registerResolvedElement(globalName, element);
-        } catch (resolveDomError) {
-          console.warn("Failed to resolve document element \"".concat(elementId, "\""), resolveDomError);
-          return null;
-        }
-      }
-      return null;
-    };
-    var settingsShowAutoBackupsEl = resolveElement("settingsShowAutoBackups", "settingsShowAutoBackups");
-    var backupSettingsButton = resolveElement("backupSettings", "backupSettings");
-    var backupDiffToggleButtonEl = resolveElement("backupDiffToggleButton", "backupDiffToggleButton");
-    var backupDiffHeadingEl = resolveElement("backupDiffHeading", "backupDiffHeading");
-    var backupDiffIntroEl = resolveElement("backupDiffIntro", "backupDiffIntro");
-    var backupDiffPrimaryLabelEl = resolveElement("backupDiffPrimaryLabel", "backupDiffPrimaryLabel");
-    var backupDiffPrimarySelectEl = resolveElement("backupDiffPrimarySelect", "backupDiffPrimary");
-    var backupDiffSecondaryLabelEl = resolveElement("backupDiffSecondaryLabel", "backupDiffSecondaryLabel");
-    var backupDiffSecondarySelectEl = resolveElement("backupDiffSecondarySelect", "backupDiffSecondary");
-    var backupDiffEmptyStateEl = resolveElement("backupDiffEmptyState", "backupDiffEmptyState");
-    var backupDiffNotesLabelEl = resolveElement("backupDiffNotesLabel", "backupDiffNotesLabel");
-    var backupDiffNotesEl = resolveElement("backupDiffNotes", "backupDiffNotes");
-    var backupDiffExportButtonEl = resolveElement("backupDiffExportButton", "backupDiffExport");
-    var backupDiffCloseButtonEl = resolveElement("backupDiffCloseButton", "backupDiffClose");
-    var restoreRehearsalButton = resolveElement("restoreRehearsalButton", "restoreRehearsalButton");
-    var restoreRehearsalHeading = resolveElement("restoreRehearsalHeading", "restoreRehearsalHeading");
-    var restoreRehearsalIntro = resolveElement("restoreRehearsalIntro", "restoreRehearsalIntro");
-    var restoreRehearsalModeLabel = resolveElement("restoreRehearsalModeLabel", "restoreRehearsalModeLabel");
-    var restoreRehearsalModeBackupText = resolveElement("restoreRehearsalModeBackupText", "restoreRehearsalModeBackupText");
-    var restoreRehearsalModeProjectText = resolveElement("restoreRehearsalModeProjectText", "restoreRehearsalModeProjectText");
-    var restoreRehearsalFileLabel = resolveElement("restoreRehearsalFileLabel", "restoreRehearsalFileLabel");
-    var restoreRehearsalBrowse = resolveElement("restoreRehearsalBrowse", "restoreRehearsalBrowse");
-    var restoreRehearsalFileName = resolveElement("restoreRehearsalFileName", "restoreRehearsalFileName");
-    var restoreRehearsalStatus = resolveElement("restoreRehearsalStatus", "restoreRehearsalStatus");
-    var restoreRehearsalRuleHeading = resolveElement("restoreRehearsalRuleHeading", "restoreRehearsalRuleHeading");
-    var restoreRehearsalRuleIntro = resolveElement("restoreRehearsalRuleIntro", "restoreRehearsalRuleIntro");
-    var restoreRehearsalRuleEmpty = resolveElement("restoreRehearsalRuleEmpty", "restoreRehearsalRuleEmpty");
-    var restoreRehearsalTableCaption = resolveElement("restoreRehearsalTableCaption", "restoreRehearsalTableCaption");
-    var restoreRehearsalMetricHeader = resolveElement("restoreRehearsalMetricHeader", "restoreRehearsalMetricHeader");
-    var restoreRehearsalLiveHeader = resolveElement("restoreRehearsalLiveHeader", "restoreRehearsalLiveHeader");
-    var restoreRehearsalSandboxHeader = resolveElement("restoreRehearsalSandboxHeader", "restoreRehearsalSandboxHeader");
-    var restoreRehearsalDifferenceHeader = resolveElement("restoreRehearsalDifferenceHeader", "restoreRehearsalDifferenceHeader");
-    var restoreRehearsalCloseButton = resolveElement("restoreRehearsalCloseButton", "restoreRehearsalClose");
-    var restoreRehearsalProceedButton = resolveElement("restoreRehearsalProceedButton", "restoreRehearsalProceed");
-    var restoreRehearsalAbortButton = resolveElement("restoreRehearsalAbortButton", "restoreRehearsalAbort");
-    if (skipLink) skipLink.textContent = texts[lang].skipToContent;
-    var offlineElem = document.getElementById("offlineIndicator");
-    if (offlineElem) {
-      offlineElem.textContent = texts[lang].offlineIndicator;
-      var offlineHelp = texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
-      offlineElem.setAttribute("data-help", offlineHelp);
-    }
-    applyInstallTexts(lang);
-    var legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
-    var impressumElem = document.getElementById("impressumLink");
-    if (impressumElem) {
-      impressumElem.textContent = texts[lang].impressum;
-      if (legalLinks !== null && legalLinks !== void 0 && legalLinks.imprint) {
-        impressumElem.setAttribute("href", legalLinks.imprint);
-      }
-    }
-    var privacyElem = document.getElementById("privacyLink");
-    if (privacyElem) {
-      privacyElem.textContent = texts[lang].privacy;
-      if (legalLinks !== null && legalLinks !== void 0 && legalLinks.privacy) {
-        privacyElem.setAttribute("href", legalLinks.privacy);
-      }
-    }
-    var setupManageHeadingElem = document.getElementById("setupManageHeading");
-    setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
-    setupManageHeadingElem.setAttribute("data-help", texts[lang].setupManageHeadingHelp);
-    var deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
-    deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
-    deviceSelectionHeadingElem.setAttribute("data-help", texts[lang].deviceSelectionHeadingHelp);
-    var resultsHeadingElem = document.getElementById("resultsHeading");
-    resultsHeadingElem.textContent = texts[lang].resultsHeading;
-    resultsHeadingElem.setAttribute("data-help", texts[lang].resultsHeadingHelp);
-    var deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
-    deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
-    deviceManagerHeadingElem.setAttribute("data-help", texts[lang].deviceManagerHeadingHelp);
-    var batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
-    var batteryComparisonDescriptionElem = document.getElementById("batteryComparisonDescription");
-    var batteryTableElem = document.getElementById("batteryTable");
-    var setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
-    setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
-    setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);
-    var sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
-    sideMenuLinks.forEach(function (link) {
-      var navKey = link.dataset.navKey;
-      if (!navKey) {
-        return;
-      }
-      var label = texts[lang][navKey];
-      if (label) {
-        if (navKey === 'contactsNav' && typeof setButtonLabelWithIcon === 'function' && (link === null || link === void 0 ? void 0 : link.tagName) === 'BUTTON') {
-          setButtonLabelWithIcon(link, label, _typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts ? ICON_GLYPHS.contacts : iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS));
-        } else {
-          link.textContent = label;
-        }
-        link.setAttribute("aria-label", label);
-      }
-      var helpKey = "".concat(navKey, "Help");
-      var helpText = texts[lang][helpKey];
-      if (helpText) {
-        link.setAttribute("title", helpText);
-        link.setAttribute("data-help", helpText);
-      } else {
-        link.removeAttribute("title");
-        link.removeAttribute("data-help");
-      }
-    });
-    applyOwnGearLocalization(lang);
-    var savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
-    savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
-    savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
-    var setupNameLabelElem = document.getElementById("setupNameLabel");
-    setupNameLabelElem.textContent = texts[lang].setupNameLabel;
-    setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-    setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
-    var sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
-    sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
-    sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
-    setButtonLabelWithIcon(applySharedLinkBtn, texts[lang].loadSharedLinkBtn, ICON_GLYPHS.fileImport);
-    setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
-    setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
-    deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
-    deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
-    deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
-    saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
-    saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
-    saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
-    generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
-    generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
-    generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
-    generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
-    var deleteGearListHelp = texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
-    if (deleteGearListProjectBtn) {
-      setButtonLabelWithIcon(deleteGearListProjectBtn, texts[lang].deleteGearListBtn, ICON_GLYPHS.trash);
-      deleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
-      deleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
-      deleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
-    }
-    var editProjectBtnElem = document.getElementById("editProjectBtn");
-    if (editProjectBtnElem) {
-      editProjectBtnElem.textContent = texts[lang].editProjectBtn;
-      editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
-      editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
-    }
-    var addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
-    if (addExtraGearBtnElem) {
-      var _texts$en2;
-      var extraLabel = texts[lang].addExtraGearBtn || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.addExtraGearBtn) || "Add temporary extra gear";
-      addExtraGearBtnElem.textContent = extraLabel;
-      addExtraGearBtnElem.setAttribute("title", extraLabel);
-      addExtraGearBtnElem.setAttribute("data-help", extraLabel);
-    }
-    shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
-    shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
-    if (shareDialogHeadingElem) {
-      var _texts$en3;
-      var heading = texts[lang].shareDialogTitle || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.shareDialogTitle) || shareDialogHeadingElem.textContent;
-      shareDialogHeadingElem.textContent = heading;
-    }
-    if (shareFilenameLabelElem) {
-      var _texts$en4;
-      var filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.shareFilenameLabel) || shareFilenameLabelElem.textContent;
-      shareFilenameLabelElem.textContent = filenameLabel;
-    }
-    if (shareConfirmBtn) {
-      var _texts$en5;
-      var confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.shareDialogConfirm) || shareConfirmBtn.textContent;
-      setButtonLabelWithIcon(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
-      shareConfirmBtn.setAttribute('title', confirmLabel);
-      shareConfirmBtn.setAttribute('aria-label', confirmLabel);
-      shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
-    }
-    if (shareCancelBtn) {
-      var _texts$en6;
-      var cancelLabel = texts[lang].shareDialogCancel || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.shareDialogCancel) || shareCancelBtn.textContent;
-      setButtonLabelWithIcon(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
-      shareCancelBtn.setAttribute('title', cancelLabel);
-      shareCancelBtn.setAttribute('aria-label', cancelLabel);
-    }
-    if (shareIncludeAutoGearText) {
-      var _texts$en7, _texts$en8;
-      var label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
-      shareIncludeAutoGearText.textContent = label;
-      var help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.shareIncludeAutoGearHelp) || label;
-      if (shareIncludeAutoGearLabelElem) {
-        shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
-      }
-      if (shareIncludeAutoGearCheckbox) {
-        shareIncludeAutoGearCheckbox.setAttribute('aria-label', label);
-      }
-    }
-    if (shareIncludeOwnedGearText) {
-      var _texts$en9, _texts$en0;
-      var _label3 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
-      shareIncludeOwnedGearText.textContent = _label3;
-      var _help = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.shareIncludeOwnedGearHelp) || _label3;
-      if (shareIncludeOwnedGearLabelElem) {
-        shareIncludeOwnedGearLabelElem.setAttribute('data-help', _help);
-      }
-      if (shareIncludeOwnedGearCheckbox) {
-        shareIncludeOwnedGearCheckbox.setAttribute('aria-label', _label3);
-      }
-    }
-    var sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
-    if (sharedImportDialogHeading) {
-      var _texts$en1;
-      var title = texts[lang].sharedImportDialogTitle || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
-      sharedImportDialogHeading.textContent = title;
-    }
-    if (sharedImportDialogMessage) {
-      var _texts$en10;
-      var message = texts[lang].sharedImportDialogMessage || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
-      sharedImportDialogMessage.textContent = message;
-      sharedImportDialogMessage.setAttribute('data-help', message);
-    }
-    if (sharedImportConfirmBtn) {
-      var _texts$en11;
-      var _label4 = texts[lang].sharedImportDialogConfirm || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
-      setButtonLabelWithIcon(sharedImportConfirmBtn, _label4, ICON_GLYPHS.check);
-      sharedImportConfirmBtn.setAttribute('data-help', _label4);
-    }
-    if (sharedImportCancelBtn) {
-      var _texts$en12;
-      var _label5 = texts[lang].sharedImportDialogCancel || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
-      setButtonLabelWithIcon(sharedImportCancelBtn, _label5, ICON_GLYPHS.circleX);
-      sharedImportCancelBtn.setAttribute('data-help', _label5);
-    }
-    if (sharedImportLegend) {
-      var _texts$en13;
-      var legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
-      sharedImportLegend.textContent = legend;
-      sharedImportLegendText = legend;
-      if (sharedImportOptions) {
-        sharedImportOptions.setAttribute('data-help', legend);
-      }
-    }
-    if (sharedImportModeSelect && sharedImportLegendText) {
-      sharedImportModeSelect.setAttribute('aria-label', sharedImportLegendText);
-      sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
-    }
-    if (sharedImportModeNoneOption) {
-      var _texts$en14, _texts$en15;
-      var _label6 = texts[lang].sharedImportAutoGearNone || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
-      sharedImportModeNoneOption.textContent = _label6;
-      var _help2 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.sharedImportAutoGearNoneHelp) || _label6;
-      sharedImportModeNoneOption.setAttribute('data-help', _help2);
-      sharedImportModeNoneOption.setAttribute('title', _help2);
-      sharedImportModeNoneOption.setAttribute('aria-label', _label6);
-    }
-    if (sharedImportModeProjectOption) {
-      var _texts$en16, _texts$en17;
-      var _label7 = texts[lang].sharedImportAutoGearProject || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
-      sharedImportModeProjectOption.textContent = _label7;
-      var _help3 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.sharedImportAutoGearProjectHelp) || _label7;
-      sharedImportModeProjectOption.setAttribute('data-help', _help3);
-      sharedImportModeProjectOption.setAttribute('title', _help3);
-      sharedImportModeProjectOption.setAttribute('aria-label', _label7);
-    }
-    if (sharedImportModeGlobalOption) {
-      var _texts$en18, _texts$en19;
-      var _label8 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
-      sharedImportModeGlobalOption.textContent = _label8;
-      var _help4 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.sharedImportAutoGearGlobalHelp) || _label8;
-      sharedImportModeGlobalOption.setAttribute('data-help', _help4);
-      sharedImportModeGlobalOption.setAttribute('title', _help4);
-      sharedImportModeGlobalOption.setAttribute('aria-label', _label8);
-    }
-    applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
-    applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
-    runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
-    runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-    setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
-    if (setupSelect.options.length > 0) {
-      setupSelect.options[0].textContent = texts[lang].newSetupOption;
-    }
-    checkSetupChanged();
-    var cameraLabelElem = document.getElementById("cameraLabel");
-    cameraLabelElem.textContent = texts[lang].cameraLabel;
-    cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
-    var monitorLabelElem = document.getElementById("monitorLabel");
-    monitorLabelElem.textContent = texts[lang].monitorLabel;
-    monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
-    var videoLabelElem = document.getElementById("videoLabel");
-    videoLabelElem.textContent = texts[lang].videoLabel;
-    videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
-    var cageLabelElem = document.getElementById("cageLabel");
-    if (cageLabelElem) {
-      cageLabelElem.textContent = texts[lang].cageLabel;
-      cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
-    }
-    var distanceLabelElem = document.getElementById("distanceLabel");
-    distanceLabelElem.textContent = texts[lang].distanceLabel;
-    distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
-    var batteryPlateLabelElem = document.getElementById("batteryPlateLabel");
-    batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
-    batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
-    var batteryHotswapLabelElem = document.getElementById("batteryHotswapLabel");
-    if (batteryHotswapLabelElem) {
-      batteryHotswapLabelElem.textContent = texts[lang].batteryHotswapLabel;
-      batteryHotswapLabelElem.setAttribute("data-help", texts[lang].batteryHotswapSelectHelp);
-    }
-    updateBatteryLabel();
-    var fizLegendElem = document.getElementById("fizLegend");
-    if (fizLegendElem) {
-      fizLegendElem.textContent = texts[lang].fizLegend;
-      fizLegendElem.setAttribute("data-help", texts[lang].fizLegendHelp);
-    }
-    var fizMotorsLabelElem = document.getElementById("fizMotorsLabel");
-    if (fizMotorsLabelElem) {
-      fizMotorsLabelElem.textContent = texts[lang].fizMotorsLabel;
-      fizMotorsLabelElem.setAttribute("data-help", texts[lang].fizMotorsHelp);
-    }
-    var fizControllersLabelElem = document.getElementById("fizControllersLabel");
-    if (fizControllersLabelElem) {
-      fizControllersLabelElem.textContent = texts[lang].fizControllersLabel;
-      fizControllersLabelElem.setAttribute("data-help", texts[lang].fizControllersHelp);
-    }
-    document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(function (el) {
-      el.textContent = texts[lang].notesLabel;
-    });
-    var cineResultsModule = (typeof cineResults === "undefined" ? "undefined" : _typeof(cineResults)) === 'object' ? cineResults : null;
-    var resultsLocalizationApplied = false;
-    if (cineResultsModule && typeof cineResultsModule.localizeResultsSection === 'function') {
-      try {
-        resultsLocalizationApplied = cineResultsModule.localizeResultsSection({
-          lang: lang,
-          langTexts: texts[lang] || {},
-          fallbackTexts: texts.en || {},
-          document: document,
-          breakdownListElem: typeof breakdownListElem !== 'undefined' && breakdownListElem ? breakdownListElem : null,
-          elements: {
-            totalPowerLabel: document.getElementById('totalPowerLabel'),
-            batteryCountLabel: document.getElementById('batteryCountLabel'),
-            pinWarning: typeof pinWarnElem !== 'undefined' ? pinWarnElem : null,
-            dtapWarning: typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : null,
-            hotswapWarning: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
-            powerWarningTitle: typeof powerWarningTitleElem !== 'undefined' ? powerWarningTitleElem : null,
-            powerWarningLimitsHeading: typeof powerWarningLimitsHeadingElem !== 'undefined' ? powerWarningLimitsHeadingElem : null,
-            powerWarningAdvice: typeof powerWarningAdviceElem !== 'undefined' ? powerWarningAdviceElem : null,
-            powerWarningCloseBtn: typeof powerWarningCloseBtn !== 'undefined' ? powerWarningCloseBtn : null,
-            batteryLifeUnit: document.getElementById('batteryLifeUnit'),
-            batteryLifeLabel: typeof batteryLifeLabelElem !== 'undefined' ? batteryLifeLabelElem : document.getElementById('batteryLifeLabel'),
-            runtimeAverageNote: typeof runtimeAverageNoteElem !== 'undefined' ? runtimeAverageNoteElem : document.getElementById('runtimeAverageNote'),
-            tempNote: document.getElementById('temperatureNote')
-          },
-          refreshTotalCurrentLabels: typeof refreshTotalCurrentLabels === 'function' ? refreshTotalCurrentLabels : null,
-          updateMountVoltageSettingLabels: typeof updateMountVoltageSettingLabels === 'function' ? updateMountVoltageSettingLabels : null,
-          getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
-          renderFeedbackTable: typeof renderFeedbackTable === 'function' ? renderFeedbackTable : null,
-          dispatchTemperatureNoteRender: typeof dispatchTemperatureNoteRender === 'function' ? dispatchTemperatureNoteRender : null,
-          refreshFeedbackTemperatureLabel: typeof refreshFeedbackTemperatureLabel === 'function' ? refreshFeedbackTemperatureLabel : null,
-          updateFeedbackTemperatureOptions: typeof updateFeedbackTemperatureOptions === 'function' ? updateFeedbackTemperatureOptions : null,
-          lastRuntimeHours: typeof lastRuntimeHours !== 'undefined' ? lastRuntimeHours : null,
-          temperatureUnit: typeof temperatureUnit !== 'undefined' ? temperatureUnit : null,
-          setButtonLabelWithIcon: typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
-          iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null
-        });
-      } catch (cineResultsError) {
-        console.warn('cineResults.localizeResultsSection failed', cineResultsError);
-        resultsLocalizationApplied = false;
-      }
-    }
-    var batteryComparisonLocalized = false;
-    if (cineResultsModule && typeof cineResultsModule.localizeBatteryComparisonSection === "function") {
-      try {
-        batteryComparisonLocalized = cineResultsModule.localizeBatteryComparisonSection({
-          lang: lang,
-          langTexts: texts[lang] || {},
-          fallbackTexts: texts.en || {},
-          document: document,
-          batteryComparisonHeading: batteryComparisonHeadingElem,
-          batteryComparisonDescription: batteryComparisonDescriptionElem,
-          batteryComparisonTable: batteryTableElem
-        });
-      } catch (cineResultsError) {
-        console.warn("cineResults.localizeBatteryComparisonSection failed", cineResultsError);
-        batteryComparisonLocalized = false;
-      }
-    }
-    if (!batteryComparisonLocalized) {
-      if (batteryComparisonHeadingElem) {
-        batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
-        batteryComparisonHeadingElem.setAttribute("data-help", texts[lang].batteryComparisonHeadingHelp);
-      }
-      if (batteryComparisonDescriptionElem) {
-        batteryComparisonDescriptionElem.textContent = texts[lang].batteryComparisonDescription;
-        if (texts[lang].batteryComparisonDescriptionHelp) {
-          batteryComparisonDescriptionElem.setAttribute("data-help", texts[lang].batteryComparisonDescriptionHelp);
-        } else {
-          batteryComparisonDescriptionElem.removeAttribute("data-help");
-        }
-      }
-      if (batteryTableElem) {
-        if (texts[lang].batteryComparisonTableHelp) {
-          batteryTableElem.setAttribute("data-help", texts[lang].batteryComparisonTableHelp);
-        } else {
-          batteryTableElem.removeAttribute("data-help");
-        }
-      }
-    }
-    if (!resultsLocalizationApplied) {
-      var resultsPlainSummaryElem = document.getElementById("resultsPlainSummary");
-      if (resultsPlainSummaryElem) {
-        resultsPlainSummaryElem.setAttribute("data-help", texts[lang].resultsPlainSummaryHelp);
-      }
-      var resultsPlainSummaryTitleElem = document.getElementById("resultsPlainSummaryTitle");
-      if (resultsPlainSummaryTitleElem) {
-        resultsPlainSummaryTitleElem.textContent = texts[lang].resultsPlainSummaryTitle;
-      }
-      var resultsPlainSummaryTextElem = document.getElementById("resultsPlainSummaryText");
-      if (resultsPlainSummaryTextElem) {
-        resultsPlainSummaryTextElem.textContent = texts[lang].resultsPlainSummaryPrompt;
-      }
-      var resultsPlainSummaryNoteElem = document.getElementById("resultsPlainSummaryNote");
-      if (resultsPlainSummaryNoteElem) {
-        resultsPlainSummaryNoteElem.textContent = texts[lang].resultsPlainSummaryNote;
-      }
-      var breakdownListTarget = typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : document.getElementById('breakdownList');
-      if (breakdownListTarget) {
-        breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
-      }
-      var totalPowerLabelElem = document.getElementById("totalPowerLabel");
-      totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
-      totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
-      refreshTotalCurrentLabels(lang);
-      updateMountVoltageSettingLabels(lang);
-      var batteryCountLabelElem = document.getElementById("batteryCountLabel");
-      batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
-      batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
-      if (pinWarnElem) pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
-      if (dtapWarnElem) dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
-      if (hotswapWarnElem) hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
-      if (powerWarningTitleElem) powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
-      if (powerWarningLimitsHeadingElem) powerWarningLimitsHeadingElem.textContent = texts[lang].powerWarningLimitsHeading;
-      if (powerWarningAdviceElem) powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
-      if (powerWarningCloseBtn) setButtonLabelWithIcon(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
-      var unitElem = document.getElementById("batteryLifeUnit");
-      if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
-      var fb = renderFeedbackTable(getCurrentSetupKey());
-      if (batteryLifeLabelElem) {
-        var _label9 = texts[lang].batteryLifeLabel;
-        if (fb) {
-          var userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
-          var idx = _label9.indexOf(')');
-          if (idx !== -1) {
-            _label9 = "".concat(_label9.slice(0, idx), ", ").concat(userNote).concat(_label9.slice(idx));
-          }
-        }
-        batteryLifeLabelElem.textContent = _label9;
-        batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
-      }
-      if (runtimeAverageNoteElem) {
-        runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
-      }
-      dispatchTemperatureNoteRender(lastRuntimeHours);
-      refreshFeedbackTemperatureLabel(lang, temperatureUnit);
-      updateFeedbackTemperatureOptions(lang, temperatureUnit);
-      var tempNoteElem = document.getElementById("temperatureNote");
-      if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
-    }
-    document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
-    document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
-    document.getElementById("subcategoryLabel").textContent = texts[lang].subcategoryLabel;
-    document.getElementById("deviceNameLabel").textContent = texts[lang].deviceNameLabel;
-    document.getElementById("consumptionLabel").textContent = texts[lang].consumptionLabel;
-    document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
-    document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
-    document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
-    document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
-    document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
-    document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
-    document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
-    document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
-    document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
-    document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
-    document.getElementById("cameraVideoOutputsLabel").textContent = texts[lang].videoOutputsLabel;
-    document.getElementById("cameraFIZConnectorLabel").textContent = texts[lang].fizConnectorLabel;
-    document.getElementById("cameraViewfinderLabel").textContent = texts[lang].viewfinderLabel;
-    document.getElementById("cameraTimecodeLabel").textContent = texts[lang].timecodeLabel;
-    document.getElementById("powerInputsHeading").textContent = texts[lang].powerInputsHeading;
-    document.getElementById("powerDistributionHeading").textContent = texts[lang].powerDistributionHeading;
-    document.getElementById("videoOutputsHeading").textContent = texts[lang].videoOutputsHeading;
-    document.getElementById("fizConnectorHeading").textContent = texts[lang].fizConnectorHeading;
-    document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
-    document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
-    document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
-    var lensDeviceMountHeadingElem = document.getElementById("lensDeviceMountHeading");
-    if (lensDeviceMountHeadingElem) {
-      lensDeviceMountHeadingElem.textContent = texts[lang].lensDeviceMountHeading;
-    }
-    var lensDeviceMountLabelElem = document.getElementById("lensDeviceMountLabel");
-    if (lensDeviceMountLabelElem) {
-      lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
-      lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
-    }
-    var lensFocusScaleLabelElem = document.getElementById("lensFocusScaleUnitLabel");
-    if (lensFocusScaleLabelElem) {
-      var focusScaleLabel = texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting;
-      var focusScaleHelp = texts[lang].lensFocusScaleHelp || texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSettingHelp || focusScaleLabel;
-      lensFocusScaleLabelElem.textContent = focusScaleLabel;
-      lensFocusScaleLabelElem.setAttribute('data-help', focusScaleHelp);
-      if (lensFocusScaleSelect) {
-        lensFocusScaleSelect.setAttribute('data-help', focusScaleHelp);
-        lensFocusScaleSelect.setAttribute('aria-label', focusScaleLabel);
-      }
-    }
-    updateLensFocusScaleSelectOptions(lang);
-    document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
-    document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
-    document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
-    document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
-    document.getElementById("monitorVoltageLabel").textContent = texts[lang].monitorVoltageLabel;
-    document.getElementById("monitorPortTypeLabel").textContent = texts[lang].monitorPortTypeLabel;
-    document.getElementById("monitorVideoInputsHeading").textContent = texts[lang].monitorVideoInputsHeading;
-    document.getElementById("monitorVideoOutputsHeading").textContent = texts[lang].monitorVideoOutputsHeading;
-    document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
-    document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
-    document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
-    document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
-    document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
-    document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
-    document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
-    document.getElementById("viewfinderBrightnessLabel").textContent = texts[lang].viewfinderBrightnessLabel;
-    document.getElementById("viewfinderWattLabel").textContent = texts[lang].viewfinderWattLabel;
-    document.getElementById("viewfinderVoltageLabel").textContent = texts[lang].viewfinderVoltageLabel;
-    document.getElementById("viewfinderPortTypeLabel").textContent = texts[lang].viewfinderPortTypeLabel;
-    document.getElementById("viewfinderVideoInputsHeading").textContent = texts[lang].viewfinderVideoInputsHeading;
-    document.getElementById("viewfinderVideoOutputsHeading").textContent = texts[lang].viewfinderVideoOutputsHeading;
-    document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
-    document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
-    document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
-    document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
-    document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
-    document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
-    document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
-    document.getElementById("videoVideoOutputsLabel").textContent = texts[lang].videoVideoOutputsLabel;
-    document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
-    document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
-    var addDeviceLabel = texts[lang].addDeviceBtn;
-    var updateDeviceLabel = texts[lang].updateDeviceBtn;
-    if (addDeviceBtn.dataset.mode === "edit") {
-      setButtonLabelWithIcon(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
-      addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
-    } else {
-      setButtonLabelWithIcon(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
-      addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
-    }
-    setButtonLabelWithIcon(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
-    setButtonLabelWithIcon(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
-    exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
-    setButtonLabelWithIcon(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
-    importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
-    setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
-    newNameInput.placeholder = texts[lang].placeholder_deviceName;
-    newWattInput.placeholder = texts[lang].placeholder_watt;
-    newCapacityInput.placeholder = texts[lang].placeholder_capacity;
-    newPinAInput.placeholder = texts[lang].placeholder_pin;
-    newDtapAInput.placeholder = texts[lang].placeholder_dtap;
-    cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
-    monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
-    updateDeviceManagerLocalization(lang);
-    if (deviceManagerSection.classList.contains('hidden')) {
-      setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
-      toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
-      toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute("aria-expanded", "false");
-    } else {
-      setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
-      toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
-      toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute("aria-expanded", "true");
-    }
-    Array.from(newCategorySelect.options).forEach(function (opt) {
-      opt.textContent = getCategoryLabel(opt.value, lang);
-    });
-    var noneMap = {
-      de: "Keine Auswahl",
-      es: "Ninguno",
-      fr: "Aucun"
-    };
-    document.querySelectorAll('select option[value="None"]').forEach(function (opt) {
-      opt.textContent = noneMap[lang] || "None";
-    });
-    try {
-      localStorage.setItem("language", lang);
-    } catch (e) {
-      console.warn("Could not save language to localStorage", e);
-    }
-    refreshDeviceLists();
-    applyFilters();
-    updateCalculations();
-    var existingDevicesHeading = typeof document !== 'undefined' ? document.getElementById('existingDevicesHeading') : null;
-    if (existingDevicesHeading) {
-      existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
-    }
-    if (darkModeToggle) {
-      darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
-      darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
-      darkModeToggle.setAttribute("data-help", texts[lang].darkModeHelp || texts[lang].darkModeLabel);
-    }
-    if (pinkModeToggle) {
-      pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
-      pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
-      pinkModeToggle.setAttribute("data-help", texts[lang].pinkModeHelp || texts[lang].pinkModeLabel);
-    }
-    if (settingsButton) {
-      settingsButton.setAttribute("title", texts[lang].settingsButton);
-      settingsButton.setAttribute("aria-label", texts[lang].settingsButton);
-      settingsButton.setAttribute("data-help", texts[lang].settingsButtonHelp || texts[lang].settingsButton);
-    }
-    var settingsTitleElem = document.getElementById("settingsTitle");
-    if (settingsTitleElem) {
-      settingsTitleElem.textContent = texts[lang].settingsHeading;
-      settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
-    }
-    if (settingsTablist) {
-      var _texts$en20;
-      var sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
-      settingsTablist.setAttribute('aria-label', sectionsLabel);
-    }
-    var getSettingsTabLabelText = function getSettingsTabLabelText(button) {
-      var _button$querySelector;
-      if (!button || _typeof(button) !== 'object') return '';
-      var labelNode = (_button$querySelector = button.querySelector) === null || _button$querySelector === void 0 ? void 0 : _button$querySelector.call(button, '.settings-tab-label');
-      if (labelNode && typeof labelNode.textContent === 'string') {
-        var trimmed = labelNode.textContent.trim();
-        if (trimmed) return trimmed;
-      }
-      return typeof button.textContent === 'string' ? button.textContent.trim() : '';
-    };
-    var summarizeSettingsTabHelp = function summarizeSettingsTabHelp(helpText) {
-      if (typeof helpText !== 'string') return '';
-      var trimmed = helpText.trim();
-      if (!trimmed) return '';
-      var sentenceMatch = trimmed.match(/^(?:[\0- "-\x2D\/->@-\u3001\u3003-\uD7FF\uE000-\uFF00\uFF02-\uFF1E\uFF20-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])*[!\.\?\u3002\uFF01\uFF1F]/);
-      if (sentenceMatch && sentenceMatch[0]) {
-        var sentence = sentenceMatch[0].trim();
-        if (sentence.length >= 24 || trimmed.length <= 90) {
-          return sentence;
-        }
-      }
-      if (trimmed.length <= 90) return trimmed;
-      var truncated = trimmed.slice(0, 90);
-      var cutIndex = truncated.length;
-      while (cutIndex > 0 && truncated[cutIndex - 1] && truncated[cutIndex - 1].trim() !== '') {
-        cutIndex -= 1;
-      }
-      var safeCut = cutIndex > 0 ? truncated.slice(0, cutIndex).trimEnd() : '';
-      return "".concat(safeCut || truncated.trim(), "\u2026");
-    };
-    var applySettingsTabLabel = function applySettingsTabLabel(button, labelValue, helpValue) {
-      var _button$querySelector2, _button$querySelector3;
-      if (!button) return;
-      var label = (labelValue || getSettingsTabLabelText(button) || '').trim();
-      var labelElement = (_button$querySelector2 = button.querySelector) === null || _button$querySelector2 === void 0 ? void 0 : _button$querySelector2.call(button, '.settings-tab-label');
-      if (labelElement) {
-        labelElement.textContent = label;
-      } else {
-        button.textContent = label;
-      }
-      if (label) {
-        button.setAttribute('aria-label', label);
-      } else {
-        button.removeAttribute('aria-label');
-      }
-      var help = (helpValue || label || '').trim();
-      if (help) {
-        button.setAttribute('data-help', help);
-        button.setAttribute('title', help);
-      } else {
-        button.removeAttribute('data-help');
-        button.removeAttribute('title');
-      }
-      var summary = summarizeSettingsTabHelp(help);
-      if (summary) {
-        button.setAttribute('data-summary', summary);
-      } else {
-        button.removeAttribute('data-summary');
-      }
-      var captionElement = (_button$querySelector3 = button.querySelector) === null || _button$querySelector3 === void 0 ? void 0 : _button$querySelector3.call(button, '.settings-tab-caption');
-      if (captionElement) {
-        var captionText = summary || label;
-        captionElement.textContent = captionText;
-        if (captionText) {
-          captionElement.removeAttribute('hidden');
-        } else {
-          captionElement.setAttribute('hidden', '');
-        }
-      }
-    };
-    if (settingsTabGeneral) {
-      var _texts$en21, _texts$en22;
-      var generalLabel = texts[lang].settingsTabGeneral || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
-      var generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
-      applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
-      if (generalSettingsHeading) {
-        generalSettingsHeading.textContent = generalLabel;
-        generalSettingsHeading.setAttribute('data-help', generalHelp);
-      }
-      if (generalLanguageHeading) {
-        var _texts$en23;
-        var sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
-        generalLanguageHeading.textContent = sectionHeading;
-      }
-      if (generalAppearanceHeading) {
-        var _texts$en24;
-        var _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
-        generalAppearanceHeading.textContent = _sectionHeading;
-      }
-      if (generalTypographyHeading) {
-        var _texts$en25;
-        var _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
-        generalTypographyHeading.textContent = _sectionHeading2;
-      }
-      if (generalBrandingHeading) {
-        var _texts$en26;
-        var _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
-        generalBrandingHeading.textContent = _sectionHeading3;
-      }
-      documentationTrackerController.updateLocalization({
-        language: lang,
-        texts: texts[lang] || {},
-        fallbackTexts: texts[DEFAULT_LANGUAGE] || texts.en || {}
-      });
-      if (documentationTrackerController.isInitialized()) {
-        documentationTrackerController.render();
-      }
-    }
-    applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.autoGearHeadingHelp));
-    applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.accessibilityHeadingHelp));
-    applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.backupHeadingHelp));
-    applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.settingsTabData) || texts[lang].dataHeading || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.dataHeadingHelp));
-    applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.aboutHeadingHelp));
-    var settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
-    if (settingsLanguageLabel) {
-      settingsLanguageLabel.textContent = texts[lang].languageSetting;
-      var languageHelp = texts[lang].settingsLanguageHelp || texts[lang].languageSetting;
-      settingsLanguageLabel.setAttribute("data-help", languageHelp);
-      if (settingsLanguage) {
-        settingsLanguage.setAttribute("data-help", languageHelp);
-        settingsLanguage.setAttribute("aria-label", texts[lang].languageSetting);
-      }
-    }
-    var settingsDarkLabel = document.getElementById("settingsDarkModeLabel");
-    if (settingsDarkLabel) {
-      settingsDarkLabel.textContent = texts[lang].darkModeSetting;
-      var darkModeHelp = texts[lang].settingsDarkModeHelp || texts[lang].darkModeSetting;
-      settingsDarkLabel.setAttribute("data-help", darkModeHelp);
-      if (settingsDarkMode) {
-        settingsDarkMode.setAttribute("data-help", darkModeHelp);
-        settingsDarkMode.setAttribute("aria-label", texts[lang].darkModeSetting);
-      }
-    }
-    var settingsPinkLabel = document.getElementById("settingsPinkModeLabel");
-    if (settingsPinkLabel) {
-      settingsPinkLabel.textContent = texts[lang].pinkModeSetting;
-      var pinkModeHelp = texts[lang].settingsPinkModeHelp || texts[lang].pinkModeSetting;
-      settingsPinkLabel.setAttribute("data-help", pinkModeHelp);
-      if (settingsPinkMode) {
-        settingsPinkMode.setAttribute("data-help", pinkModeHelp);
-        settingsPinkMode.setAttribute("aria-label", texts[lang].pinkModeSetting);
-      }
-    }
-    var accentLabel = document.getElementById("accentColorLabel");
-    var accentHelp = texts[lang].accentColorHelp || texts[lang].accentColorSetting;
-    if (accentLabel) {
-      accentLabel.textContent = texts[lang].accentColorSetting;
-      accentLabel.setAttribute("data-help", accentHelp);
-    }
-    if (accentColorInput) {
-      accentColorInput.setAttribute("data-help", accentHelp);
-      accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
-    }
-    if (cameraColorsDescription) {
-      var _texts$en47;
-      var description = texts[lang].cameraColorSettingDescription || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.cameraColorSettingDescription) || cameraColorsDescription.textContent;
-      cameraColorsDescription.textContent = description;
-    }
-    var cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.cameraColorInputHelp) || '';
-    var cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
-    cameraColorLabelEntries.forEach(function (_ref33) {
-      var _texts$en49;
-      var _ref34 = _slicedToArray(_ref33, 3),
-        letter = _ref34[0],
-        labelElement = _ref34[1],
-        inputElement = _ref34[2];
-      if (!labelElement) {
-        return;
-      }
-      var key = "cameraColor".concat(letter, "Label");
-      var labelText = texts[lang][key] || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49[key]) || labelElement.textContent;
-      labelElement.textContent = labelText;
-      var helpText = cameraColorHelpTemplate ? cameraColorHelpTemplate.replace('%s', letter) : '';
-      if (helpText) {
-        labelElement.setAttribute('data-help', helpText);
-      } else {
-        labelElement.removeAttribute('data-help');
-      }
-      if (inputElement) {
-        if (helpText) {
-          inputElement.setAttribute('data-help', helpText);
-          inputElement.setAttribute('aria-label', helpText);
-        } else {
-          inputElement.removeAttribute('data-help');
-          inputElement.setAttribute('aria-label', labelText);
-        }
-      }
-    });
-    if (accentColorResetButton) {
-      var accentResetLabel = texts[lang] && texts[lang].accentColorReset || texts.en && texts.en.accentColorReset || accentColorResetButton.textContent || 'Reset to default';
-      var accentResetHelp = texts[lang] && texts[lang].accentColorResetHelp || accentHelp;
-      accentColorResetButton.textContent = accentResetLabel;
-      accentColorResetButton.setAttribute('data-help', accentResetHelp);
-      accentColorResetButton.setAttribute('aria-label', accentResetHelp);
-      accentColorResetButton.setAttribute('title', accentResetHelp);
-    }
-    var settingsTemperatureUnitLabel = document.getElementById('settingsTemperatureUnitLabel');
-    if (settingsTemperatureUnitLabel) {
-      settingsTemperatureUnitLabel.textContent = texts[lang].temperatureUnitSetting;
-      var tempUnitHelp = texts[lang].temperatureUnitSettingHelp || texts[lang].temperatureUnitSetting;
-      settingsTemperatureUnitLabel.setAttribute('data-help', tempUnitHelp);
-      if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
-        settingsTemperatureUnit.setAttribute('data-help', tempUnitHelp);
-        settingsTemperatureUnit.setAttribute('aria-label', texts[lang].temperatureUnitSetting);
-        Array.from(settingsTemperatureUnit.options || []).forEach(function (option) {
-          if (!option) return;
-          var normalized = normalizeTemperatureUnitSafe(option.value);
-          option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
-        });
-        settingsTemperatureUnit.value = temperatureUnit;
-      }
-    }
-    var settingsFocusScaleLabel = document.getElementById('settingsFocusScaleLabel');
-    if (settingsFocusScaleLabel) {
-      settingsFocusScaleLabel.textContent = texts[lang].focusScaleSetting;
-      var _focusScaleHelp = texts[lang].focusScaleSettingHelp || texts[lang].focusScaleSetting;
-      settingsFocusScaleLabel.setAttribute('data-help', _focusScaleHelp);
-      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-        settingsFocusScale.setAttribute('data-help', _focusScaleHelp);
-        settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
-        Array.from(settingsFocusScale.options || []).forEach(function (option) {
-          if (!option) return;
-          var normalized = normalizeFocusScaleSafe(option.value);
-          option.textContent = getFocusScaleLabelForLang(lang, normalized);
-        });
-        settingsFocusScale.value = resolveFocusScalePreference();
-      }
-    }
-    var fontSizeLabel = document.getElementById("settingsFontSizeLabel");
-    if (fontSizeLabel) {
-      fontSizeLabel.textContent = texts[lang].fontSizeSetting;
-      var sizeHelp = texts[lang].fontSizeSettingHelp || texts[lang].fontSizeSetting;
-      fontSizeLabel.setAttribute("data-help", sizeHelp);
-      if (settingsFontSize) {
-        settingsFontSize.setAttribute("data-help", sizeHelp);
-        settingsFontSize.setAttribute("aria-label", texts[lang].fontSizeSetting);
-      }
-    }
-    var fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
-    if (fontFamilyLabel) {
-      fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
-      var familyHelp = texts[lang].fontFamilySettingHelp || texts[lang].fontFamilySetting;
-      fontFamilyLabel.setAttribute("data-help", familyHelp);
-      if (settingsFontFamily) {
-        settingsFontFamily.setAttribute("data-help", familyHelp);
-        settingsFontFamily.setAttribute("aria-label", texts[lang].fontFamilySetting);
-      }
-    }
-    if (localFontsButton) {
-      var localFontsHelp = texts[lang].localFontsButtonHelp || localFontsButton.textContent;
-      localFontsButton.setAttribute("data-help", localFontsHelp);
-      localFontsButton.setAttribute("title", localFontsHelp);
-      localFontsButton.setAttribute("aria-label", localFontsHelp);
-    }
-    if (bundledFontGroup) {
-      var builtInLabel = texts[lang] && texts[lang].bundledFontsGroup || texts.en && texts.en.bundledFontsGroup || bundledFontGroup.label;
-      if (builtInLabel) bundledFontGroup.label = builtInLabel;
-    }
-    if (localFontsGroup) {
-      var localLabel = texts[lang] && texts[lang].localFontsGroup || texts.en && texts.en.localFontsGroup || localFontsGroup.label;
-      if (localLabel) localFontsGroup.label = localLabel;
-    }
-    if (localFontsButton) {
-      var localFontsLabel = texts[lang] && texts[lang].localFontsButton || texts.en && texts.en.localFontsButton || localFontsButton.textContent;
-      if (localFontsLabel) {
-        setButtonLabelWithIcon(localFontsButton, localFontsLabel, ICON_GLYPHS.add);
-        localFontsButton.setAttribute('aria-label', localFontsLabel);
-        localFontsButton.setAttribute('title', localFontsLabel);
-      }
-    }
-    if (localFontsStatus && localFontsStatus.dataset.statusKey) {
-      var statusKey = localFontsStatus.dataset.statusKey;
-      var arg = localFontsStatus.dataset.statusArg;
-      var template = texts[lang] && texts[lang][statusKey] || texts.en && texts.en[statusKey] || '';
-      if (template && arg !== undefined && arg !== null) {
-        template = template.replace('%s', arg);
-      } else if (!template && arg !== undefined && arg !== null) {
-        template = arg;
-      }
-      localFontsStatus.textContent = template;
-    }
-    var settingsLogoLabel = document.getElementById("settingsLogoLabel");
-    if (settingsLogoLabel) {
-      settingsLogoLabel.textContent = texts[lang].logoSetting;
-      var logoHelp = texts[lang].logoSettingHelp || texts[lang].logoSetting;
-      settingsLogoLabel.setAttribute("data-help", logoHelp);
-      if (settingsLogo) {
-        settingsLogo.setAttribute("data-help", logoHelp);
-        settingsLogo.setAttribute("aria-label", texts[lang].logoSetting);
-      }
-    }
-    if (autoGearHeadingElem) {
-      var _texts$en50, _texts$en51;
-      autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.autoGearHeading) || 'Automatic Gear Rules';
-      var headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.autoGearHeadingHelp);
-      if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
-    }
-    if (autoGearDescriptionElem) {
-      var _texts$en52;
-      autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.autoGearDescription) || '';
-    }
-    if (autoGearMonitorDefaultsHeading) {
-      var _texts$en53;
-      var _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
-      autoGearMonitorDefaultsHeading.textContent = _heading;
-    }
-    if (autoGearMonitorDefaultsDescription) {
-      var _texts$en54;
-      var _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
-      autoGearMonitorDefaultsDescription.textContent = _description;
-    }
-    autoGearMonitorDefaultControls.forEach(function (control) {
-      var _texts$en55, _control$label, _control$label2;
-      if (!control) return;
-      var labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
-      var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
-      if (control.label && labelText) {
-        control.label.textContent = labelText;
-        control.label.setAttribute('data-help', labelText);
-      }
-      if (control.select && labelText) {
-        control.select.setAttribute('aria-label', labelText);
-        control.select.setAttribute('data-help', labelText);
-      }
-    });
-    callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], {
-      defer: true
-    });
-    if (autoGearPresetDescription) {
-      var _texts$en56;
-      autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.autoGearPresetDescription) || '';
-    }
-    if (autoGearPresetLabel) {
-      var _texts$en57, _texts$en58;
-      var _label0 = texts[lang].autoGearPresetLabel || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.autoGearPresetLabel) || autoGearPresetLabel.textContent;
-      var _help5 = texts[lang].autoGearPresetDescription || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearPresetDescription) || _label0;
-      autoGearPresetLabel.textContent = _label0;
-      autoGearPresetLabel.setAttribute('data-help', _help5);
-      if (autoGearPresetSelect) {
-        autoGearPresetSelect.setAttribute('aria-label', _label0);
-        autoGearPresetSelect.setAttribute('data-help', _help5);
-      }
-    }
-    if (autoGearSavePresetButton) {
-      var _texts$en59;
-      var _label1 = texts[lang].autoGearSavePresetButton || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
-      setButtonLabelWithIcon(autoGearSavePresetButton, _label1, ICON_GLYPHS.save);
-      autoGearSavePresetButton.setAttribute('data-help', _label1);
-      autoGearSavePresetButton.setAttribute('aria-label', _label1);
-    }
-    if (autoGearDeletePresetButton) {
-      var _texts$en60;
-      var _label10 = texts[lang].autoGearDeletePresetButton || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
-      setButtonLabelWithIcon(autoGearDeletePresetButton, _label10, ICON_GLYPHS.trash);
-      autoGearDeletePresetButton.setAttribute('data-help', _label10);
-      autoGearDeletePresetButton.setAttribute('aria-label', _label10);
-    }
-    if (autoGearAddRuleBtn) {
-      var _texts$en61, _texts$en62;
-      var _label11 = texts[lang].autoGearAddRule || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.autoGearAddRule) || autoGearAddRuleBtn.textContent;
-      setButtonLabelWithIcon(autoGearAddRuleBtn, _label11, ICON_GLYPHS.add);
-      var _help6 = texts[lang].autoGearHeadingHelp || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.autoGearHeadingHelp) || _label11;
-      autoGearAddRuleBtn.setAttribute('data-help', _help6);
-    }
-    if (autoGearResetFactoryButton) {
-      var _texts$en63, _texts$en64;
-      var _label12 = texts[lang].autoGearResetFactoryButton || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
-      var _help7 = texts[lang].autoGearResetFactoryHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.autoGearResetFactoryHelp) || _label12;
-      setButtonLabelWithIcon(autoGearResetFactoryButton, _label12, ICON_GLYPHS.reload);
-      autoGearResetFactoryButton.setAttribute('data-help', _help7);
-      autoGearResetFactoryButton.setAttribute('title', _help7);
-      autoGearResetFactoryButton.setAttribute('aria-label', _label12);
-    }
-    if (autoGearExportButton) {
-      var _texts$en65, _texts$en66;
-      var _label13 = texts[lang].autoGearExportButton || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.autoGearExportButton) || autoGearExportButton.textContent;
-      var _help8 = texts[lang].autoGearExportHelp || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.autoGearExportHelp) || _label13;
-      setButtonLabelWithIcon(autoGearExportButton, _label13, ICON_GLYPHS.fileExport);
-      autoGearExportButton.setAttribute('data-help', _help8);
-      autoGearExportButton.setAttribute('title', _help8);
-      autoGearExportButton.setAttribute('aria-label', _label13);
-    }
-    if (autoGearImportButton) {
-      var _texts$en67, _texts$en68;
-      var _label14 = texts[lang].autoGearImportButton || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.autoGearImportButton) || autoGearImportButton.textContent;
-      var _help9 = texts[lang].autoGearImportHelp || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.autoGearImportHelp) || _label14;
-      setButtonLabelWithIcon(autoGearImportButton, _label14, ICON_GLYPHS.fileImport);
-      autoGearImportButton.setAttribute('data-help', _help9);
-      autoGearImportButton.setAttribute('title', _help9);
-      autoGearImportButton.setAttribute('aria-label', _label14);
-    }
-    if (autoGearSearchLabel) {
-      var _texts$en69, _texts$en70;
-      var _label15 = texts[lang].autoGearSearchLabel || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.autoGearSearchLabel) || autoGearSearchLabel.textContent;
-      var _help0 = texts[lang].autoGearSearchHelp || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearSearchHelp) || _label15;
-      autoGearSearchLabel.textContent = _label15;
-      autoGearSearchLabel.setAttribute('data-help', _help0);
-      if (autoGearSearchInput) {
-        var _texts$en71;
-        var placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
-        autoGearSearchInput.setAttribute('placeholder', placeholder);
-        autoGearSearchInput.setAttribute('aria-label', _label15);
-        autoGearSearchInput.setAttribute('data-help', _help0);
-      }
-    }
-    if (autoGearFilterScenarioLabel) {
-      var _texts$en72, _texts$en73;
-      var _label16 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
-      var _help1 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.autoGearFilterScenarioHelp) || _label16;
-      autoGearFilterScenarioLabel.textContent = _label16;
-      autoGearFilterScenarioLabel.setAttribute('data-help', _help1);
-      if (autoGearFilterScenarioSelect) {
-        autoGearFilterScenarioSelect.setAttribute('aria-label', _label16);
-        autoGearFilterScenarioSelect.setAttribute('data-help', _help1);
-      }
-    }
-    if (autoGearFilterClearButton) {
-      var _texts$en74;
-      var _label17 = texts[lang].autoGearFilterClear || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.autoGearFilterClear) || autoGearFilterClearButton.textContent;
-      setButtonLabelWithIcon(autoGearFilterClearButton, _label17, ICON_GLYPHS.circleX);
-      autoGearFilterClearButton.setAttribute('data-help', _label17);
-      autoGearFilterClearButton.setAttribute('aria-label', _label17);
-    }
-    refreshAutoGearScenarioFilterOptions(getAutoGearRules());
-    if (autoGearBackupsHeading) {
-      var _texts$en75;
-      autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
-    }
-    if (autoGearBackupsDescription) {
-      var _texts$en76;
-      var _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.autoGearBackupsDescription) || '';
-      autoGearBackupsDescription.textContent = _description2;
-      if (_description2) {
-        autoGearBackupsDescription.setAttribute('data-help', _description2);
-      }
-    }
-    if (autoGearShowBackupsLabel) {
-      var _texts$en77, _texts$en78;
-      var _label18 = texts[lang].autoGearShowBackupsLabel || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
-      var _help10 = texts[lang].autoGearShowBackupsHelp || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearShowBackupsHelp) || _label18;
-      autoGearShowBackupsLabel.textContent = _label18;
-      autoGearShowBackupsLabel.setAttribute('data-help', _help10);
-      if (autoGearShowBackupsCheckbox) {
-        autoGearShowBackupsCheckbox.setAttribute('aria-label', _label18);
-        autoGearShowBackupsCheckbox.setAttribute('data-help', _help10);
-      }
-    }
-    if (autoGearBackupsHiddenNotice) {
-      var _texts$en79;
-      var hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
-      autoGearBackupsHiddenNotice.textContent = hiddenText;
-    }
-    if (autoGearBackupRetentionLabel) {
-      var _texts$en80, _texts$en81;
-      var _label19 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
-      var _help11 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearBackupRetentionHelp) || _label19;
-      autoGearBackupRetentionLabel.textContent = _label19;
-      autoGearBackupRetentionLabel.setAttribute('data-help', _help11);
-      if (autoGearBackupRetentionInput) {
-        autoGearBackupRetentionInput.setAttribute('aria-label', _label19);
-        autoGearBackupRetentionInput.setAttribute('title', _label19);
-      }
-    }
-    if (autoGearBackupRetentionSummary) {
-      callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
-        defer: true
-      });
-    }
-    if (autoGearBackupSelectLabel) {
-      var _texts$en82;
-      var _label20 = texts[lang].autoGearBackupSelectLabel || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
-      autoGearBackupSelectLabel.textContent = _label20;
-      if (autoGearBackupSelect) {
-        autoGearBackupSelect.setAttribute('aria-label', _label20);
-        autoGearBackupSelect.setAttribute('title', _label20);
-      }
-    }
-    if (autoGearBackupRestoreButton) {
-      var _texts$en83;
-      var _label21 = texts[lang].autoGearBackupRestore || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
-      setButtonLabelWithIcon(autoGearBackupRestoreButton, _label21, ICON_GLYPHS.fileImport);
-      autoGearBackupRestoreButton.setAttribute('aria-label', _label21);
-      autoGearBackupRestoreButton.setAttribute('title', _label21);
-    }
-    if (autoGearBackupEmptyMessage) {
-      var _texts$en84;
-      var emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
-      autoGearBackupEmptyMessage.textContent = emptyText;
-    }
-    if (autoGearBackupSelect) {
-      callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], {
-        defer: true
-      });
-    }
-    if (autoGearRuleNameLabel) {
-      var _texts$en85, _texts$en86;
-      var _label22 = texts[lang].autoGearRuleNameLabel || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
-      autoGearRuleNameLabel.textContent = _label22;
-      var _help12 = texts[lang].autoGearRuleNameHelp || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearRuleNameHelp) || _label22;
-      autoGearRuleNameLabel.setAttribute('data-help', _help12);
-      if (autoGearRuleNameInput) {
-        autoGearRuleNameInput.setAttribute('data-help', _help12);
-        autoGearRuleNameInput.setAttribute('aria-label', _label22);
-      }
-    }
-    if (autoGearConditionSelectLabel) {
-      var _texts$en87, _texts$en88;
-      var _label23 = texts[lang].autoGearConditionSelectLabel || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
-      var _help13 = texts[lang].autoGearConditionSelectHelp || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearConditionSelectHelp) || _label23;
-      autoGearConditionSelectLabel.textContent = _label23;
-      autoGearConditionSelectLabel.setAttribute('data-help', _help13);
-      if (autoGearConditionSelect) {
-        autoGearConditionSelect.setAttribute('aria-label', _label23);
-        autoGearConditionSelect.setAttribute('data-help', _help13);
-      }
-    }
-    if (autoGearConditionAddButton) {
-      var _texts$en89;
-      var _label24 = texts[lang].autoGearAddCondition || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
-      setButtonLabelWithIcon(autoGearConditionAddButton, _label24, ICON_GLYPHS.add);
-      autoGearConditionAddButton.setAttribute('aria-label', _label24);
-      autoGearConditionAddButton.setAttribute('data-help', _label24);
-    }
-    if (autoGearAlwaysLabel) {
-      var _texts$en90, _texts$en91;
-      var _label25 = texts[lang].autoGearAlwaysLabel || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
-      var _help14 = texts[lang].autoGearAlwaysHelp || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearAlwaysHelp) || _label25;
-      autoGearAlwaysLabel.textContent = _label25;
-      autoGearAlwaysLabel.setAttribute('data-help', _help14);
-      if (autoGearAlwaysHelp) {
-        autoGearAlwaysHelp.textContent = _help14;
-        autoGearAlwaysHelp.setAttribute('data-help', _help14);
-      }
-    }
-    configureAutoGearConditionButtons();
-    refreshAutoGearConditionPicker();
-    updateAutoGearConditionAddButtonState();
-    if (autoGearScenariosLabel) {
-      var _texts$en92, _texts$en93;
-      var _label26 = texts[lang].autoGearScenariosLabel || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
-      autoGearScenariosLabel.textContent = _label26;
-      var _help15 = texts[lang].autoGearScenariosHelp || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearScenariosHelp) || _label26;
-      autoGearScenariosLabel.setAttribute('data-help', _help15);
-      if (autoGearScenariosSelect) {
-        autoGearScenariosSelect.setAttribute('data-help', _help15);
-        autoGearScenariosSelect.setAttribute('aria-label', _label26);
-      }
-      if (autoGearScenarioModeLabel) {
-        var _texts$en94, _texts$en95;
-        var modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
-        var modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearScenarioModeHelp) || modeLabel;
-        autoGearScenarioModeLabel.textContent = modeLabel;
-        autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
-        if (autoGearScenarioModeSelectElement) {
-          autoGearScenarioModeSelectElement.setAttribute('data-help', modeHelp);
-          autoGearScenarioModeSelectElement.setAttribute('aria-label', modeLabel);
-        }
-      }
-      if (autoGearScenarioBaseLabel) {
-        var _texts$en96, _texts$en97;
-        var baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
-        var baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearScenarioBaseHelp) || baseLabel;
-        autoGearScenarioBaseLabel.textContent = baseLabel;
-        autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
-        if (autoGearScenarioBaseSelect) {
-          autoGearScenarioBaseSelect.setAttribute('data-help', baseHelp);
-          autoGearScenarioBaseSelect.setAttribute('aria-label', baseLabel);
-        }
-      }
-      if (autoGearScenarioFactorLabel) {
-        var _texts$en98, _texts$en99;
-        var factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
-        var factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearScenarioFactorHelp) || factorLabel;
-        autoGearScenarioFactorLabel.textContent = factorLabel;
-        autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
-        if (autoGearScenarioFactorInput) {
-          autoGearScenarioFactorInput.setAttribute('data-help', factorHelp);
-          autoGearScenarioFactorInput.setAttribute('aria-label', factorLabel);
-        }
-      }
-    }
-    if (autoGearShootingDaysLabel) {
-      var _texts$en100, _texts$en101, _texts$en102, _texts$en103, _texts$en104, _texts$en105;
-      var _label27 = texts[lang].autoGearShootingDaysLabel || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
-      var _help16 = texts[lang].autoGearShootingDaysHelp || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearShootingDaysHelp) || _label27;
-      var minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearShootingDaysModeMinimum) || 'Minimum';
-      var maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearShootingDaysModeMaximum) || 'Maximum';
-      var everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearShootingDaysModeEvery) || 'Every';
-      var valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearShootingDaysValueLabel) || 'Shooting days value';
-      autoGearShootingDaysLabel.textContent = _label27;
-      autoGearShootingDaysLabel.setAttribute('data-help', _help16);
-      if (autoGearShootingDaysMode) {
-        autoGearShootingDaysMode.setAttribute('data-help', _help16);
-        autoGearShootingDaysMode.setAttribute('aria-label', _label27);
-        Array.from(autoGearShootingDaysMode.options || []).forEach(function (option) {
-          if (!option || typeof option.value !== 'string') return;
-          if (option.value === 'minimum') {
-            option.textContent = minimumLabel;
-          } else if (option.value === 'maximum') {
-            option.textContent = maximumLabel;
-          } else if (option.value === 'every') {
-            option.textContent = everyLabel;
-          }
-        });
-      }
-      if (autoGearShootingDaysValueLabel) {
-        autoGearShootingDaysValueLabel.textContent = valueLabel;
-        autoGearShootingDaysValueLabel.setAttribute('data-help', _help16);
-      }
-      if (autoGearShootingDaysInput) {
-        autoGearShootingDaysInput.setAttribute('data-help', _help16);
-        autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label27);
-      }
-      if (autoGearShootingDaysHelp) {
-        autoGearShootingDaysHelp.textContent = _help16;
-        autoGearShootingDaysHelp.setAttribute('data-help', _help16);
-      }
-    }
-    if (autoGearMatteboxLabel) {
-      var _texts$en106, _texts$en107;
-      var _label28 = texts[lang].autoGearMatteboxLabel || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
-      autoGearMatteboxLabel.textContent = _label28;
-      var _help17 = texts[lang].autoGearMatteboxHelp || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearMatteboxHelp) || _label28;
-      autoGearMatteboxLabel.setAttribute('data-help', _help17);
-      if (autoGearMatteboxSelect) {
-        autoGearMatteboxSelect.setAttribute('data-help', _help17);
-        autoGearMatteboxSelect.setAttribute('aria-label', _label28);
-      }
-    }
-    if (autoGearCameraHandleLabel) {
-      var _texts$en108, _texts$en109;
-      var _label29 = texts[lang].autoGearCameraHandleLabel || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
-      autoGearCameraHandleLabel.textContent = _label29;
-      var _help18 = texts[lang].autoGearCameraHandleHelp || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearCameraHandleHelp) || _label29;
-      autoGearCameraHandleLabel.setAttribute('data-help', _help18);
-      if (autoGearCameraHandleSelect) {
-        autoGearCameraHandleSelect.setAttribute('data-help', _help18);
-        autoGearCameraHandleSelect.setAttribute('aria-label', _label29);
-      }
-    }
-    if (autoGearViewfinderExtensionLabel) {
-      var _texts$en110, _texts$en111;
-      var _label30 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
-      autoGearViewfinderExtensionLabel.textContent = _label30;
-      var _help19 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearViewfinderExtensionHelp) || _label30;
-      autoGearViewfinderExtensionLabel.setAttribute('data-help', _help19);
-      if (autoGearViewfinderExtensionSelect) {
-        autoGearViewfinderExtensionSelect.setAttribute('data-help', _help19);
-        autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label30);
-      }
-    }
-    if (autoGearDeliveryResolutionLabel) {
-      var _texts$en112, _texts$en113;
-      var _label31 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
-      autoGearDeliveryResolutionLabel.textContent = _label31;
-      var _help20 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearDeliveryResolutionHelp) || _label31;
-      autoGearDeliveryResolutionLabel.setAttribute('data-help', _help20);
-      if (autoGearDeliveryResolutionSelect) {
-        autoGearDeliveryResolutionSelect.setAttribute('data-help', _help20);
-        autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label31);
-      }
-    }
-    if (autoGearVideoDistributionLabel) {
-      var _texts$en114, _texts$en115;
-      var _label32 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
-      autoGearVideoDistributionLabel.textContent = _label32;
-      var _help21 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearVideoDistributionHelp) || _label32;
-      autoGearVideoDistributionLabel.setAttribute('data-help', _help21);
-      if (autoGearVideoDistributionSelect) {
-        autoGearVideoDistributionSelect.setAttribute('data-help', _help21);
-        autoGearVideoDistributionSelect.setAttribute('aria-label', _label32);
-      }
-    }
-    if (autoGearCameraLabel) {
-      var _texts$en116, _texts$en117;
-      var _label33 = texts[lang].autoGearCameraLabel || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearCameraLabel) || autoGearCameraLabel.textContent;
-      autoGearCameraLabel.textContent = _label33;
-      var _help22 = texts[lang].autoGearCameraHelp || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearCameraHelp) || _label33;
-      autoGearCameraLabel.setAttribute('data-help', _help22);
-      if (autoGearCameraSelect) {
-        autoGearCameraSelect.setAttribute('data-help', _help22);
-        autoGearCameraSelect.setAttribute('aria-label', _label33);
-      }
-    }
-    if (autoGearOwnGearLabel) {
-      var _texts$en118, _texts$en119, _texts$en120, _texts$en121;
-      var _label34 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearConditionOwnGearLabel) || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
-      var _help23 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearOwnGearHelp) || _label34;
-      autoGearOwnGearLabel.textContent = _label34;
-      autoGearOwnGearLabel.setAttribute('data-help', _help23);
-      if (autoGearOwnGearSelect) {
-        autoGearOwnGearSelect.setAttribute('data-help', _help23);
-        autoGearOwnGearSelect.setAttribute('aria-label', _label34);
-      }
-    }
-    if (autoGearCameraWeightLabel) {
-      var _texts$en122, _texts$en123;
-      var _label35 = texts[lang].autoGearCameraWeightLabel || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
-      var _help24 = texts[lang].autoGearCameraWeightHelp || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearCameraWeightHelp) || _label35;
-      autoGearCameraWeightLabel.textContent = _label35;
-      autoGearCameraWeightLabel.setAttribute('data-help', _help24);
-    }
-    if (autoGearCameraWeightOperatorLabel) {
-      var _texts$en124;
-      var _label36 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
-      autoGearCameraWeightOperatorLabel.textContent = _label36;
-      autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label36);
-      if (autoGearCameraWeightOperator) {
-        var _texts$en125, _texts$en126, _texts$en127;
-        autoGearCameraWeightOperator.setAttribute('data-help', _label36);
-        autoGearCameraWeightOperator.setAttribute('aria-label', _label36);
-        var greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearCameraWeightOperatorGreater) || 'Heavier than';
-        var lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearCameraWeightOperatorLess) || 'Lighter than';
-        var equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearCameraWeightOperatorEqual) || 'Exactly';
-        Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
-          if (!option) return;
-          if (option.value === 'greater') {
-            option.textContent = greaterLabel;
-          } else if (option.value === 'less') {
-            option.textContent = lessLabel;
-          } else if (option.value === 'equal') {
-            option.textContent = equalLabel;
-          }
-        });
-      }
-    }
-    if (autoGearCameraWeightValueLabel) {
-      var _texts$en128, _texts$en129;
-      var _label37 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
-      var _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearCameraWeightHelp) || _label37;
-      autoGearCameraWeightValueLabel.textContent = _label37;
-      autoGearCameraWeightValueLabel.setAttribute('data-help', _help25);
-      if (autoGearCameraWeightValueInput) {
-        autoGearCameraWeightValueInput.setAttribute('data-help', _help25);
-        autoGearCameraWeightValueInput.setAttribute('aria-label', _label37);
-      }
-    }
-    if (autoGearCameraWeightHelp) {
-      var _texts$en130;
-      var _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
-      autoGearCameraWeightHelp.textContent = _help26;
-      if (_help26) {
-        autoGearCameraWeightHelp.setAttribute('data-help', _help26);
-      }
-    }
-    if (autoGearMonitorLabel) {
-      var _texts$en131, _texts$en132;
-      var _label38 = texts[lang].autoGearMonitorLabel || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
-      autoGearMonitorLabel.textContent = _label38;
-      var _help27 = texts[lang].autoGearMonitorHelp || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearMonitorHelp) || _label38;
-      autoGearMonitorLabel.setAttribute('data-help', _help27);
-      if (autoGearMonitorSelect) {
-        autoGearMonitorSelect.setAttribute('data-help', _help27);
-        autoGearMonitorSelect.setAttribute('aria-label', _label38);
-      }
-    }
-    if (autoGearTripodHeadBrandLabel) {
-      var _texts$en133, _texts$en134;
-      var _label39 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
-      autoGearTripodHeadBrandLabel.textContent = _label39;
-      var _help28 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearTripodHeadBrandHelp) || _label39;
-      autoGearTripodHeadBrandLabel.setAttribute('data-help', _help28);
-      if (autoGearTripodHeadBrandSelect) {
-        autoGearTripodHeadBrandSelect.setAttribute('data-help', _help28);
-        autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label39);
-      }
-    }
-    if (autoGearTripodBowlLabel) {
-      var _texts$en135, _texts$en136;
-      var _label40 = texts[lang].autoGearTripodBowlLabel || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
-      autoGearTripodBowlLabel.textContent = _label40;
-      var _help29 = texts[lang].autoGearTripodBowlHelp || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearTripodBowlHelp) || _label40;
-      autoGearTripodBowlLabel.setAttribute('data-help', _help29);
-      if (autoGearTripodBowlSelect) {
-        autoGearTripodBowlSelect.setAttribute('data-help', _help29);
-        autoGearTripodBowlSelect.setAttribute('aria-label', _label40);
-      }
-    }
-    if (autoGearTripodTypesLabel) {
-      var _texts$en137, _texts$en138;
-      var _label41 = texts[lang].autoGearTripodTypesLabel || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
-      autoGearTripodTypesLabel.textContent = _label41;
-      var _help30 = texts[lang].autoGearTripodTypesHelp || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearTripodTypesHelp) || _label41;
-      autoGearTripodTypesLabel.setAttribute('data-help', _help30);
-      if (autoGearTripodTypesSelect) {
-        autoGearTripodTypesSelect.setAttribute('data-help', _help30);
-        autoGearTripodTypesSelect.setAttribute('aria-label', _label41);
-      }
-    }
-    if (autoGearTripodSpreaderLabel) {
-      var _texts$en139, _texts$en140;
-      var _label42 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
-      autoGearTripodSpreaderLabel.textContent = _label42;
-      var _help31 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearTripodSpreaderHelp) || _label42;
-      autoGearTripodSpreaderLabel.setAttribute('data-help', _help31);
-      if (autoGearTripodSpreaderSelect) {
-        autoGearTripodSpreaderSelect.setAttribute('data-help', _help31);
-        autoGearTripodSpreaderSelect.setAttribute('aria-label', _label42);
-      }
-    }
-    if (autoGearCrewPresentLabel) {
-      var _texts$en141, _texts$en142;
-      var _label43 = texts[lang].autoGearCrewPresentLabel || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
-      autoGearCrewPresentLabel.textContent = _label43;
-      var _help32 = texts[lang].autoGearCrewPresentHelp || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearCrewPresentHelp) || _label43;
-      autoGearCrewPresentLabel.setAttribute('data-help', _help32);
-      if (autoGearCrewPresentSelect) {
-        autoGearCrewPresentSelect.setAttribute('data-help', _help32);
-        autoGearCrewPresentSelect.setAttribute('aria-label', _label43);
-      }
-    }
-    if (autoGearCrewAbsentLabel) {
-      var _texts$en143, _texts$en144;
-      var _label44 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
-      autoGearCrewAbsentLabel.textContent = _label44;
-      var _help33 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearCrewAbsentHelp) || _label44;
-      autoGearCrewAbsentLabel.setAttribute('data-help', _help33);
-      if (autoGearCrewAbsentSelect) {
-        autoGearCrewAbsentSelect.setAttribute('data-help', _help33);
-        autoGearCrewAbsentSelect.setAttribute('aria-label', _label44);
-      }
-    }
-    if (autoGearWirelessLabel) {
-      var _texts$en145, _texts$en146;
-      var _label45 = texts[lang].autoGearWirelessLabel || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
-      autoGearWirelessLabel.textContent = _label45;
-      var _help34 = texts[lang].autoGearWirelessHelp || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearWirelessHelp) || _label45;
-      autoGearWirelessLabel.setAttribute('data-help', _help34);
-      if (autoGearWirelessSelect) {
-        autoGearWirelessSelect.setAttribute('data-help', _help34);
-        autoGearWirelessSelect.setAttribute('aria-label', _label45);
-      }
-    }
-    if (autoGearMotorsLabel) {
-      var _texts$en147, _texts$en148;
-      var _label46 = texts[lang].autoGearMotorsLabel || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
-      autoGearMotorsLabel.textContent = _label46;
-      var _help35 = texts[lang].autoGearMotorsHelp || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearMotorsHelp) || _label46;
-      autoGearMotorsLabel.setAttribute('data-help', _help35);
-      if (autoGearMotorsSelect) {
-        autoGearMotorsSelect.setAttribute('data-help', _help35);
-        autoGearMotorsSelect.setAttribute('aria-label', _label46);
-      }
-    }
-    if (autoGearControllersLabel) {
-      var _texts$en149, _texts$en150;
-      var _label47 = texts[lang].autoGearControllersLabel || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearControllersLabel) || autoGearControllersLabel.textContent;
-      autoGearControllersLabel.textContent = _label47;
-      var _help36 = texts[lang].autoGearControllersHelp || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearControllersHelp) || _label47;
-      autoGearControllersLabel.setAttribute('data-help', _help36);
-      if (autoGearControllersSelect) {
-        autoGearControllersSelect.setAttribute('data-help', _help36);
-        autoGearControllersSelect.setAttribute('aria-label', _label47);
-      }
-    }
-    if (autoGearDistanceLabel) {
-      var _texts$en151, _texts$en152;
-      var _label48 = texts[lang].autoGearDistanceLabel || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
-      autoGearDistanceLabel.textContent = _label48;
-      var _help37 = texts[lang].autoGearDistanceHelp || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearDistanceHelp) || _label48;
-      autoGearDistanceLabel.setAttribute('data-help', _help37);
-      if (autoGearDistanceSelect) {
-        autoGearDistanceSelect.setAttribute('data-help', _help37);
-        autoGearDistanceSelect.setAttribute('aria-label', _label48);
-      }
-    }
-    var logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearConditionLogicLabel) || 'Match behavior';
-    var logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearConditionLogicHelp) || logicLabelText;
-    var logicOptionTexts = {
-      all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearConditionLogicAll) || 'Require every selected value',
-      any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearConditionLogicAny) || 'Match any selected value',
-      none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearConditionLogicNone) || 'Require none of the selected values',
-      multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
-    };
-    Object.entries(autoGearConditionLogicSelects).forEach(function (_ref35) {
-      var _ref36 = _slicedToArray(_ref35, 2),
-        key = _ref36[0],
-        select = _ref36[1];
-      var label = autoGearConditionLogicLabels[key];
-      if (label) {
-        label.textContent = logicLabelText;
-        label.setAttribute('data-help', logicHelpText);
-      }
-      if (select) {
-        select.setAttribute('aria-label', logicLabelText);
-        select.setAttribute('data-help', logicHelpText);
-        select.setAttribute('title', logicHelpText);
-        Array.from(select.options || []).forEach(function (option) {
-          if (!option) return;
-          var optionText = logicOptionTexts[option.value];
-          if (optionText) option.textContent = optionText;
-        });
-      }
-    });
-    if (autoGearAddItemsHeading) {
-      var _texts$en159;
-      autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
-    }
-    if (autoGearAddOwnGearLabel) {
-      var _texts$en160, _texts$en161, _texts$en162;
-      var _label49 = texts[lang].autoGearOwnGearLabel || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
-      var _help38 = texts[lang].autoGearOwnGearHelp || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearOwnGearHelp) || _label49;
-      var _placeholder3 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearOwnGearPlaceholder) || '';
-      autoGearAddOwnGearLabel.textContent = _label49;
-      autoGearAddOwnGearLabel.setAttribute('data-help', _help38);
-      if (autoGearAddOwnGearSelect) {
-        autoGearAddOwnGearSelect.setAttribute('aria-label', _label49);
-        autoGearAddOwnGearSelect.setAttribute('data-help', _help38);
-        if (_placeholder3) {
-          autoGearAddOwnGearSelect.setAttribute('data-placeholder', _placeholder3);
-        } else {
-          autoGearAddOwnGearSelect.removeAttribute('data-placeholder');
-        }
-      }
-    }
-    if (autoGearAddItemLabel) {
-      var _texts$en163, _texts$en164;
-      var _label50 = texts[lang].autoGearAddItemLabel || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
-      var hint = texts[lang].autoGearAddMultipleHint || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearAddMultipleHint) || '';
-      var helpText = hint ? "".concat(_label50, " \u2013 ").concat(hint) : _label50;
-      autoGearAddItemLabel.textContent = _label50;
-      autoGearAddItemLabel.setAttribute('data-help', helpText);
-      if (autoGearAddNameInput) {
-        autoGearAddNameInput.setAttribute('aria-label', _label50);
-        autoGearAddNameInput.setAttribute('data-help', helpText);
-        if (hint) {
-          autoGearAddNameInput.setAttribute('placeholder', hint);
-        } else {
-          autoGearAddNameInput.removeAttribute('placeholder');
-        }
-      }
-    }
-    if (autoGearAddCategoryLabel) {
-      var _texts$en165;
-      var _label51 = texts[lang].autoGearAddCategoryLabel || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
-      autoGearAddCategoryLabel.textContent = _label51;
-      if (autoGearAddCategorySelect) {
-        autoGearAddCategorySelect.setAttribute('aria-label', _label51);
-      }
-    }
-    if (autoGearAddQuantityLabel) {
-      var _texts$en166;
-      var _label52 = texts[lang].autoGearAddQuantityLabel || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
-      autoGearAddQuantityLabel.textContent = _label52;
-      if (autoGearAddQuantityInput) {
-        autoGearAddQuantityInput.setAttribute('aria-label', _label52);
-      }
-    }
-    if (autoGearAddScreenSizeLabel) {
-      var _texts$en167;
-      var _label53 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
-      autoGearAddScreenSizeLabel.textContent = _label53;
-      if (autoGearAddScreenSizeInput) {
-        autoGearAddScreenSizeInput.setAttribute('aria-label', _label53);
-      }
-    }
-    if (autoGearAddSelectorTypeLabel) {
-      var _texts$en168;
-      var _label54 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
-      autoGearAddSelectorTypeLabel.textContent = _label54;
-      if (autoGearAddSelectorTypeSelect) {
-        var _texts$en169, _texts$en170, _texts$en171, _texts$en172, _texts$en173, _texts$en174, _texts$en175;
-        autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label54);
-        var noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearSelectorNoneOption) || 'No selector';
-        var monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearSelectorMonitorOption) || 'Monitor selector';
-        var directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearSelectorDirectorOption) || 'Director monitor selector';
-        var tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-        var _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-        var _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-        var _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
-        var selectorLabels = new Map([['none', noneLabel], ['monitor', monitorLabel], ['directorMonitor', directorLabel], ['tripodHeadBrand', tripodHeadLabel], ['tripodBowl', _tripodBowlLabel], ['tripodTypes', _tripodTypesLabel], ['tripodSpreader', _tripodSpreaderLabel]]);
-        Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
-          var text = selectorLabels.get(opt.value);
-          if (text) opt.textContent = text;
-        });
-      }
-    }
-    if (autoGearAddSelectorDefaultLabel) {
-      var _texts$en176;
-      var _label55 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
-      autoGearAddSelectorDefaultLabel.textContent = _label55;
-      if (autoGearAddSelectorDefaultInput) {
-        autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label55);
-      }
-    }
-    if (autoGearAddNotesLabel) {
-      var _texts$en177;
-      var _label56 = texts[lang].autoGearAddNotesLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
-      autoGearAddNotesLabel.textContent = _label56;
-      if (autoGearAddNotesInput) {
-        autoGearAddNotesInput.setAttribute('aria-label', _label56);
-      }
-    }
-    if (autoGearAddItemButton) {
-      if (typeof updateAutoGearItemButtonState === 'function') {
-        updateAutoGearItemButtonState('add');
-      }
-    }
-    if (autoGearRemoveItemsHeading) {
-      var _texts$en178;
-      autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
-    }
-    if (autoGearRemoveOwnGearLabel) {
-      var _texts$en179, _texts$en180, _texts$en181;
-      var _label57 = texts[lang].autoGearOwnGearLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
-      var _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearOwnGearHelp) || _label57;
-      var _placeholder4 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearOwnGearPlaceholder) || '';
-      autoGearRemoveOwnGearLabel.textContent = _label57;
-      autoGearRemoveOwnGearLabel.setAttribute('data-help', _help39);
-      if (autoGearRemoveOwnGearSelect) {
-        autoGearRemoveOwnGearSelect.setAttribute('aria-label', _label57);
-        autoGearRemoveOwnGearSelect.setAttribute('data-help', _help39);
-        if (_placeholder4) {
-          autoGearRemoveOwnGearSelect.setAttribute('data-placeholder', _placeholder4);
-        } else {
-          autoGearRemoveOwnGearSelect.removeAttribute('data-placeholder');
-        }
-      }
-    }
-    if (autoGearRemoveItemLabel) {
-      var _texts$en182, _texts$en183;
-      var _label58 = texts[lang].autoGearRemoveItemLabel || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
-      var _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearRemoveMultipleHint) || '';
-      var _helpText4 = _hint ? "".concat(_label58, " \u2013 ").concat(_hint) : _label58;
-      autoGearRemoveItemLabel.textContent = _label58;
-      autoGearRemoveItemLabel.setAttribute('data-help', _helpText4);
-      if (autoGearRemoveNameInput) {
-        autoGearRemoveNameInput.setAttribute('aria-label', _label58);
-        autoGearRemoveNameInput.setAttribute('data-help', _helpText4);
-        if (_hint) {
-          autoGearRemoveNameInput.setAttribute('placeholder', _hint);
-        } else {
-          autoGearRemoveNameInput.removeAttribute('placeholder');
-        }
-      }
-    }
-    if (autoGearRemoveCategoryLabel) {
-      var _texts$en184;
-      var _label59 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
-      autoGearRemoveCategoryLabel.textContent = _label59;
-      if (autoGearRemoveCategorySelect) {
-        autoGearRemoveCategorySelect.setAttribute('aria-label', _label59);
-      }
-    }
-    if (autoGearRemoveQuantityLabel) {
-      var _texts$en185;
-      var _label60 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
-      autoGearRemoveQuantityLabel.textContent = _label60;
-      if (autoGearRemoveQuantityInput) {
-        autoGearRemoveQuantityInput.setAttribute('aria-label', _label60);
-      }
-    }
-    if (autoGearRemoveScreenSizeLabel) {
-      var _texts$en186;
-      var _label61 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
-      autoGearRemoveScreenSizeLabel.textContent = _label61;
-      if (autoGearRemoveScreenSizeInput) {
-        autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label61);
-      }
-    }
-    if (autoGearRemoveSelectorTypeLabel) {
-      var _texts$en187;
-      var _label62 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
-      autoGearRemoveSelectorTypeLabel.textContent = _label62;
-      if (autoGearRemoveSelectorTypeSelect) {
-        var _texts$en188, _texts$en189, _texts$en190, _texts$en191, _texts$en192, _texts$en193, _texts$en194;
-        autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label62);
-        var _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearSelectorNoneOption) || 'No selector';
-        var _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearSelectorMonitorOption) || 'Monitor selector';
-        var _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearSelectorDirectorOption) || 'Director monitor selector';
-        var _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-        var _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-        var _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-        var _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
-        var _selectorLabels = new Map([['none', _noneLabel], ['monitor', _monitorLabel], ['directorMonitor', _directorLabel], ['tripodHeadBrand', _tripodHeadLabel], ['tripodBowl', _tripodBowlLabel2], ['tripodTypes', _tripodTypesLabel2], ['tripodSpreader', _tripodSpreaderLabel2]]);
-        Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
-          var text = _selectorLabels.get(opt.value);
-          if (text) opt.textContent = text;
-        });
-      }
-    }
-    if (autoGearRemoveSelectorDefaultLabel) {
-      var _texts$en195;
-      var _label63 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
-      autoGearRemoveSelectorDefaultLabel.textContent = _label63;
-      if (autoGearRemoveSelectorDefaultInput) {
-        autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label63);
-      }
-    }
-    if (autoGearRemoveNotesLabel) {
-      var _texts$en196;
-      var _label64 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
-      autoGearRemoveNotesLabel.textContent = _label64;
-      if (autoGearRemoveNotesInput) {
-        autoGearRemoveNotesInput.setAttribute('aria-label', _label64);
-      }
-    }
-    updateAutoGearOwnGearOptions();
-    if (autoGearDraftImpactHeading) {
-      var _texts$en197;
-      var _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
-      autoGearDraftImpactHeading.textContent = _heading2;
-    }
-    if (autoGearDraftImpactDescription) {
-      var _texts$en198;
-      var _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
-      autoGearDraftImpactDescription.textContent = _description3;
-      if (autoGearDraftImpactHeading) {
-        autoGearDraftImpactHeading.setAttribute('data-help', _description3);
-      }
-      if (autoGearDraftImpactContainer) {
-        autoGearDraftImpactContainer.setAttribute('data-help', _description3);
-      }
-    }
-    if (autoGearDraftWarningHeading) {
-      var _texts$en199;
-      var _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
-      autoGearDraftWarningHeading.textContent = _heading3;
-    }
-    if (autoGearRemoveItemButton) {
-      if (typeof updateAutoGearItemButtonState === 'function') {
-        updateAutoGearItemButtonState('remove');
-      }
-    }
-    if (autoGearSaveRuleButton) {
-      var _texts$en200;
-      var _label65 = texts[lang].autoGearSaveRule || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
-      setButtonLabelWithIcon(autoGearSaveRuleButton, _label65);
-      autoGearSaveRuleButton.setAttribute('data-help', _label65);
-    }
-    if (autoGearCancelEditButton) {
-      var _texts$en201;
-      var _label66 = texts[lang].autoGearCancelEdit || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
-      setButtonLabelWithIcon(autoGearCancelEditButton, _label66, ICON_GLYPHS.circleX);
-      autoGearCancelEditButton.setAttribute('data-help', _label66);
-    }
-    if (autoGearAddCategorySelect) {
-      populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
-    }
-    if (autoGearRemoveCategorySelect) {
-      populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearRemoveCategorySelect.value);
-    }
-    syncAutoGearMonitorFieldVisibility();
-    if (autoGearScenariosSelect) {
-      refreshAutoGearScenarioOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.scenarios);
-    }
-    if (autoGearMatteboxSelect) {
-      refreshAutoGearMatteboxOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.mattebox);
-    }
-    if (autoGearCameraHandleSelect) {
-      refreshAutoGearCameraHandleOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.cameraHandle);
-    }
-    if (autoGearViewfinderExtensionSelect) {
-      refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.viewfinderExtension);
-    }
-    if (autoGearDeliveryResolutionSelect) {
-      refreshAutoGearDeliveryResolutionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.deliveryResolution);
-    }
-    if (autoGearVideoDistributionSelect) {
-      refreshAutoGearVideoDistributionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.videoDistribution);
-    }
-    callCoreFunctionIfAvailable('seedAutoGearRulesFromCurrentProject', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('renderAutoGearRulesList', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('applyAutoGearBackupVisibility', [], {
-      defer: true
-    });
-    var contrastLabel = document.getElementById("settingsHighContrastLabel");
-    if (contrastLabel) {
-      contrastLabel.textContent = texts[lang].highContrastSetting;
-      var contrastHelp = texts[lang].highContrastSettingHelp || texts[lang].highContrastSetting;
-      contrastLabel.setAttribute("data-help", contrastHelp);
-      if (settingsHighContrast) {
-        settingsHighContrast.setAttribute("data-help", contrastHelp);
-        settingsHighContrast.setAttribute("aria-label", texts[lang].highContrastSetting);
-      }
-    }
-    var accessibilityHeading = document.getElementById("accessibilityHeading");
-    if (accessibilityHeading) {
-      accessibilityHeading.textContent = texts[lang].accessibilityHeading;
-      accessibilityHeading.setAttribute("data-help", texts[lang].accessibilityHeadingHelp || texts[lang].accessibilityHeading);
-    }
-    var backupHeading = document.getElementById("backupHeading");
-    if (backupHeading) {
-      backupHeading.textContent = texts[lang].backupHeading;
-      backupHeading.setAttribute("data-help", texts[lang].backupHeadingHelp || texts[lang].backupHeading);
-    }
-    var projectBackupsHeading = typeof document !== 'undefined' ? document.getElementById('projectBackupsHeading') : null;
-    if (projectBackupsHeading) {
-      var headingText = texts[lang].projectBackupsHeading || "Project Backups";
-      projectBackupsHeading.textContent = headingText;
-      var descriptionText = texts[lang].projectBackupsDescription || "";
-      if (descriptionText) {
-        projectBackupsHeading.setAttribute("data-help", descriptionText);
-      } else {
-        projectBackupsHeading.removeAttribute("data-help");
-      }
-    }
-    var projectBackupsDescription = typeof document !== 'undefined' ? document.getElementById('projectBackupsDescription') : null;
-    if (projectBackupsDescription) {
-      var _descriptionText = texts[lang].projectBackupsDescription || "";
-      if (_descriptionText) {
-        projectBackupsDescription.textContent = _descriptionText;
-        projectBackupsDescription.hidden = false;
-      } else {
-        projectBackupsDescription.textContent = "";
-        projectBackupsDescription.hidden = true;
-      }
-    }
-    if (dataHeading) {
-      dataHeading.textContent = texts[lang].dataHeading;
-      var dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
-      dataHeading.setAttribute("data-help", dataHelp);
-    }
-    if (storageSummaryIntro) {
-      storageSummaryIntro.textContent = texts[lang].storageSummaryIntro;
-    }
-    if (storageSummaryFootnote) {
-      storageSummaryFootnote.textContent = texts[lang].storageSummaryFootnote;
-    }
-    if (storageSummaryEmpty) {
-      storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
-    }
-    if (storagePersistenceHeading) {
-      var _texts$en202, _texts$en203;
-      var _headingText = texts[lang].storagePersistenceHeading || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.storagePersistenceHeading) || storagePersistenceHeading.textContent;
-      storagePersistenceHeading.textContent = _headingText;
-      var _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.storagePersistenceHeadingHelp) || _headingText;
-      storagePersistenceHeading.setAttribute('data-help', _headingHelp);
-    }
-    if (storagePersistenceIntro) {
-      var _texts$en204;
-      storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.storagePersistenceIntro) || storagePersistenceIntro.textContent;
-    }
-    if (storagePersistenceRequestButton) {
-      var _texts$en205, _texts$en206;
-      var requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
-      setButtonLabelWithIcon(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
-      storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
-      var requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.storagePersistenceRequestHelp) || requestLabel;
-      storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
-      storagePersistenceRequestButton.setAttribute('title', requestHelp);
-      storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
-    }
-    if (storagePersistenceStatus) {
-      var _texts$en207;
-      var idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
-      storagePersistenceStatus.textContent = idleText;
-      storagePersistenceStatus.setAttribute('data-help', idleText);
-    }
-    callCoreFunctionIfAvailable('renderStoragePersistenceStatus', [], {
-      defer: true
-    });
-    if (storageActionsHeading) {
-      var _texts$en208, _texts$en209;
-      var _headingText2 = texts[lang].storageActionsHeading || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.storageActionsHeading) || storageActionsHeading.textContent;
-      storageActionsHeading.textContent = _headingText2;
-      var _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.storageActionsHeadingHelp) || _headingText2;
-      storageActionsHeading.setAttribute('data-help', _headingHelp2);
-    }
-    if (storageActionsIntro) {
-      var _texts$en210;
-      storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.storageActionsIntro) || storageActionsIntro.textContent;
-    }
-    if (storageBackupNowButton) {
-      var _texts$en211, _texts$en212;
-      var backupLabel = texts[lang].storageBackupNow || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.storageBackupNow) || storageBackupNowButton.textContent;
-      setButtonLabelWithIcon(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
-      var backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.storageBackupNowHelp) || backupLabel;
-      storageBackupNowButton.setAttribute('data-help', backupHelp);
-      storageBackupNowButton.setAttribute('title', backupHelp);
-    }
-    if (storageOpenBackupTabButton) {
-      var _texts$en213, _texts$en214;
-      var openLabel = texts[lang].storageOpenBackupTab || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
-      setButtonLabelWithIcon(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
-      var openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.storageOpenBackupTabHelp) || openLabel;
-      storageOpenBackupTabButton.setAttribute('data-help', openHelp);
-      storageOpenBackupTabButton.setAttribute('title', openHelp);
-    }
-    if (storageStatusHeading) {
-      var _texts$en215, _texts$en216;
-      var statusHeading = texts[lang].storageStatusHeading || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.storageStatusHeading) || storageStatusHeading.textContent;
-      storageStatusHeading.textContent = statusHeading;
-      var statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.storageStatusHeadingHelp) || statusHeading;
-      storageStatusHeading.setAttribute('data-help', statusHelp);
-    }
-    if (storageStatusLastProjectLabel) {
-      var _texts$en217;
-      storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
-    }
-    if (storageStatusLastAutoBackupLabel) {
-      var _texts$en218;
-      storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
-    }
-    if (storageStatusLastFullBackupLabel) {
-      var _texts$en219;
-      storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
-    }
-    var statusDefaultText = texts[lang].storageStatusNever || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
-    if (storageStatusLastProjectValue) {
-      storageStatusLastProjectValue.textContent = statusDefaultText;
-    }
-    if (storageStatusLastAutoBackupValue) {
-      storageStatusLastAutoBackupValue.textContent = statusDefaultText;
-    }
-    if (storageStatusLastFullBackupValue) {
-      storageStatusLastFullBackupValue.textContent = statusDefaultText;
-    }
-    if (storageStatusReminder) {
-      storageStatusReminder.textContent = '';
-      storageStatusReminder.setAttribute('hidden', '');
-      storageStatusReminder.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
-      storageStatusReminder.removeAttribute('data-help');
-    }
-    if (loggingSection) {
-      var _texts$en221;
-      var sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.loggingHeadingHelp) || '';
-      if (sectionHelp) {
-        loggingSection.setAttribute('data-help', sectionHelp);
-      } else {
-        loggingSection.removeAttribute('data-help');
-      }
-    }
-    if (loggingHeading) {
-      var _texts$en222, _texts$en223;
-      var _headingText3 = texts[lang].loggingHeading || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
-      loggingHeading.textContent = _headingText3;
-      var _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.loggingHeadingHelp) || _headingText3;
-      loggingHeading.setAttribute('data-help', _headingHelp3);
-    }
-    if (loggingIntro) {
-      var _texts$en224;
-      loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.loggingIntro) || loggingIntro.textContent;
-    }
-    if (loggingLevelFilterLabel) {
-      var _texts$en225;
-      var _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
-      loggingLevelFilterLabel.textContent = _filterLabel;
-      loggingLevelFilterLabel.setAttribute('data-help', _filterLabel);
-    }
-    if (loggingLevelFilter) {
-      var _texts$en226, _texts$en227, _texts$en228, _texts$en229, _texts$en230;
-      var optionTexts = {
-        all: texts[lang].loggingLevelFilterAll || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.loggingLevelFilterAll) || 'All levels',
-        info: texts[lang].loggingLevelFilterInfo || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.loggingLevelFilterInfo) || 'Info and above',
-        warn: texts[lang].loggingLevelFilterWarn || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.loggingLevelFilterWarn) || 'Warnings and errors',
-        error: texts[lang].loggingLevelFilterError || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.loggingLevelFilterError) || 'Errors only'
-      };
-      Array.from(loggingLevelFilter.options || []).forEach(function (option) {
-        if (!option || typeof option.value !== 'string') return;
-        var key = option.value;
-        if (Object.prototype.hasOwnProperty.call(optionTexts, key)) {
-          option.textContent = optionTexts[key];
-        }
-      });
-      var filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.loggingLevelFilterHelp) || '';
-      if (filterHelp) {
-        loggingLevelFilter.setAttribute('data-help', filterHelp);
-      } else {
-        loggingLevelFilter.removeAttribute('data-help');
-      }
-    }
-    if (loggingNamespaceFilterLabel) {
-      var _texts$en231;
-      var namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
-      loggingNamespaceFilterLabel.textContent = namespaceLabel;
-    }
-    if (loggingNamespaceFilter) {
-      var _texts$en232, _texts$en233;
-      var _placeholder5 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.loggingNamespaceFilterPlaceholder) || '';
-      if (_placeholder5) {
-        loggingNamespaceFilter.setAttribute('placeholder', _placeholder5);
-      }
-      var namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.loggingNamespaceFilterHelp) || _placeholder5;
-      if (namespaceHelp) {
-        loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
-        if (loggingNamespaceFilterLabel) {
-          loggingNamespaceFilterLabel.setAttribute('data-help', namespaceHelp);
-        }
-      }
-      if (loggingNamespaceFilterHelp) {
-        loggingNamespaceFilterHelp.textContent = namespaceHelp;
-        if (namespaceHelp) {
-          loggingNamespaceFilterHelp.removeAttribute('hidden');
-        } else {
-          loggingNamespaceFilterHelp.setAttribute('hidden', '');
-        }
-      }
-    }
-    if (loggingHistoryLimitLabel) {
-      var _texts$en234;
-      var historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
-      loggingHistoryLimitLabel.textContent = historyLabel;
-    }
-    if (loggingHistoryLimitHelp) {
-      var _texts$en235;
-      var historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
-      loggingHistoryLimitHelp.textContent = historyHelp;
-    }
-    if (loggingHistoryLimit) {
-      var _texts$en236, _texts$en237;
-      var limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.loggingHistoryLimitHelp) || '';
-      if (limitHelp) {
-        loggingHistoryLimit.setAttribute('data-help', limitHelp);
-      } else {
-        loggingHistoryLimit.removeAttribute('data-help');
-      }
-      var limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.loggingHistoryLimitAria) || '';
-      if (limitAria) {
-        loggingHistoryLimit.setAttribute('aria-label', limitAria);
-      }
-    }
-    if (loggingConsoleOutputLabel) {
-      var _texts$en238;
-      var consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
-      loggingConsoleOutputLabel.textContent = consoleLabel;
-    }
-    if (loggingConsoleOutputHelp) {
-      var _texts$en239;
-      var consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
-      loggingConsoleOutputHelp.textContent = consoleHelp;
-    }
-    if (loggingCaptureConsoleLabel) {
-      var _texts$en240;
-      var consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
-      loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
-    }
-    if (loggingCaptureConsoleHelp) {
-      var _texts$en241;
-      var consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
-      loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
-    }
-    if (loggingCaptureErrorsLabel) {
-      var _texts$en242;
-      var captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
-      loggingCaptureErrorsLabel.textContent = captureLabel;
-    }
-    if (loggingCaptureErrorsHelp) {
-      var _texts$en243;
-      var captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
-      loggingCaptureErrorsHelp.textContent = captureHelp;
-    }
-    if (loggingPersistSessionLabel) {
-      var _texts$en244;
-      var persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
-      loggingPersistSessionLabel.textContent = persistLabel;
-    }
-    if (loggingPersistSessionHelp) {
-      var _texts$en245;
-      var persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
-      loggingPersistSessionHelp.textContent = persistHelp;
-    }
-    if (loggingExportButton) {
-      var _texts$en246;
-      var exportLabel = texts[lang].loggingExportButton || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.loggingExportButton) || loggingExportButton.textContent;
-      setButtonLabelWithIcon(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
-      loggingExportButton.setAttribute('data-help', exportLabel);
-      loggingExportButton.setAttribute('title', exportLabel);
-      loggingExportButton.setAttribute('aria-label', exportLabel);
-    }
-    if (loggingExportHelp) {
-      var _texts$en247;
-      var exportHelp = texts[lang].loggingExportHelp || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.loggingExportHelp) || loggingExportHelp.textContent;
-      loggingExportHelp.textContent = exportHelp;
-      loggingExportHelp.setAttribute('data-help', exportHelp);
-    }
-    if (loggingStatus) {
-      var _texts$en248;
-      var statusText = texts[lang].loggingStatusIdle || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.loggingStatusIdle) || '';
-      loggingStatus.textContent = statusText;
-      if (statusText) {
-        loggingStatus.setAttribute('data-help', statusText);
-      }
-    }
-    if (loggingEmpty) {
-      var _texts$en249;
-      var _emptyText = texts[lang].loggingEmptyState || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.loggingEmptyState) || loggingEmpty.textContent;
-      loggingEmpty.textContent = _emptyText;
-      if (_emptyText) {
-        loggingEmpty.setAttribute('data-help', _emptyText);
-      }
-    }
-    if (loggingUnavailable) {
-      var _texts$en250;
-      loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.loggingUnavailable) || loggingUnavailable.textContent;
-    }
-    var showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
-    if (showAutoBackupsLabel) {
-      showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
-      var autoBackupsHelp = texts[lang].showAutoBackupsHelp || texts[lang].showAutoBackupsSetting;
-      showAutoBackupsLabel.setAttribute("data-help", autoBackupsHelp);
-      if (settingsShowAutoBackupsEl) {
-        settingsShowAutoBackupsEl.setAttribute("data-help", autoBackupsHelp);
-        settingsShowAutoBackupsEl.setAttribute("aria-label", texts[lang].showAutoBackupsSetting);
-      }
-    }
-    if (backupDiffToggleButtonEl) {
-      var compareLabel = texts[lang].versionCompareButton || 'Compare versions';
-      setButtonLabelWithIcon(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
-      var compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
-      backupDiffToggleButtonEl.setAttribute('data-help', compareHelp);
-      backupDiffToggleButtonEl.setAttribute('title', compareHelp);
-    }
-    if (backupDiffHeadingEl) {
-      backupDiffHeadingEl.textContent = texts[lang].versionCompareHeading || 'Version comparison';
-    }
-    if (backupDiffIntroEl) {
-      backupDiffIntroEl.textContent = texts[lang].versionCompareIntro || '';
-    }
-    if (backupDiffPrimaryLabelEl) {
-      var primaryLabel = texts[lang].versionComparePrimaryLabel || 'Baseline version';
-      backupDiffPrimaryLabelEl.textContent = primaryLabel;
-      if (backupDiffPrimarySelectEl) {
-        backupDiffPrimarySelectEl.setAttribute('aria-label', primaryLabel);
-      }
-    }
-    if (backupDiffSecondaryLabelEl) {
-      var compareLabelText = texts[lang].versionCompareSecondaryLabel || 'Comparison version';
-      backupDiffSecondaryLabelEl.textContent = compareLabelText;
-      if (backupDiffSecondarySelectEl) {
-        backupDiffSecondarySelectEl.setAttribute('aria-label', compareLabelText);
-      }
-    }
-    if (backupDiffEmptyStateEl) {
-      backupDiffEmptyStateEl.textContent = texts[lang].versionCompareEmpty || 'Save a project or wait for auto-backups to start comparing versions.';
-    }
-    if (backupDiffNotesLabelEl) {
-      backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
-    }
-    if (backupDiffNotesEl) {
-      var _placeholder6 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
-      backupDiffNotesEl.placeholder = _placeholder6;
-    }
-    if (backupDiffExportButtonEl) {
-      var _exportLabel = texts[lang].versionCompareExport || 'Export log';
-      setButtonLabelWithIcon(backupDiffExportButtonEl, _exportLabel, ICON_GLYPHS.fileExport);
-      var _exportHelp = texts[lang].versionCompareExportHelp || _exportLabel;
-      backupDiffExportButtonEl.setAttribute('data-help', _exportHelp);
-      backupDiffExportButtonEl.setAttribute('title', _exportHelp);
-    }
-    if (backupDiffCloseButtonEl) {
-      var closeLabel = texts[lang].versionCompareClose || texts[lang].cancelSettings || 'Close';
-      setButtonLabelWithIcon(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
-    }
-    if (backupSettingsButton) {
-      var _backupLabel = texts[lang].backupSettings;
-      setButtonLabelWithIcon(backupSettingsButton, _backupLabel, ICON_GLYPHS.fileExport);
-      var _backupHelp = texts[lang].backupSettingsHelp || _backupLabel;
-      backupSettingsButton.setAttribute("data-help", _backupHelp);
-      backupSettingsButton.setAttribute("title", _backupHelp);
-      backupSettingsButton.setAttribute("aria-label", _backupHelp);
-    }
-    if (restoreSettings) {
-      var restoreLabel = texts[lang].restoreSettings;
-      setButtonLabelWithIcon(restoreSettings, restoreLabel, ICON_GLYPHS.fileImport);
-      var restoreHelp = texts[lang].restoreSettingsHelp || restoreLabel;
-      restoreSettings.setAttribute("data-help", restoreHelp);
-      restoreSettings.setAttribute("title", restoreHelp);
-      restoreSettings.setAttribute("aria-label", restoreHelp);
-    }
-    if (restoreRehearsalButton) {
-      var rehearsalLabel = texts[lang].restoreRehearsalButton || 'Restore rehearsal';
-      setButtonLabelWithIcon(restoreRehearsalButton, rehearsalLabel, ICON_GLYPHS.load);
-      var rehearsalHelp = texts[lang].restoreRehearsalButtonHelp || rehearsalLabel;
-      restoreRehearsalButton.setAttribute('data-help', rehearsalHelp);
-      restoreRehearsalButton.setAttribute('title', rehearsalHelp);
-      restoreRehearsalButton.setAttribute('aria-label', rehearsalHelp);
-    }
-    if (restoreRehearsalHeading) {
-      restoreRehearsalHeading.textContent = texts[lang].restoreRehearsalHeading || restoreRehearsalHeading.textContent;
-    }
-    if (restoreRehearsalIntro) {
-      restoreRehearsalIntro.textContent = texts[lang].restoreRehearsalIntro || restoreRehearsalIntro.textContent;
-    }
-    if (restoreRehearsalModeLabel) {
-      restoreRehearsalModeLabel.textContent = texts[lang].restoreRehearsalModeLabel || restoreRehearsalModeLabel.textContent;
-    }
-    if (restoreRehearsalModeBackupText) {
-      restoreRehearsalModeBackupText.textContent = texts[lang].restoreRehearsalModeBackup || restoreRehearsalModeBackupText.textContent;
-    }
-    if (restoreRehearsalModeProjectText) {
-      restoreRehearsalModeProjectText.textContent = texts[lang].restoreRehearsalModeProject || restoreRehearsalModeProjectText.textContent;
-    }
-    if (restoreRehearsalFileLabel) {
-      restoreRehearsalFileLabel.textContent = texts[lang].restoreRehearsalFileLabel || restoreRehearsalFileLabel.textContent;
-    }
-    if (restoreRehearsalBrowse) {
-      var browseLabel = texts[lang].restoreRehearsalFileButton || 'Choose file';
-      setButtonLabelWithIcon(restoreRehearsalBrowse, browseLabel, ICON_GLYPHS.fileImport);
-      restoreRehearsalBrowse.setAttribute('data-help', browseLabel);
-      restoreRehearsalBrowse.setAttribute('title', browseLabel);
-      restoreRehearsalBrowse.setAttribute('aria-label', browseLabel);
-    }
-    if (restoreRehearsalFileName) {
-      restoreRehearsalFileName.textContent = texts[lang].restoreRehearsalNoFile || restoreRehearsalFileName.textContent;
-    }
-    if (restoreRehearsalStatus) {
-      restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
-    }
-    if (restoreRehearsalRuleHeading) {
-      var _texts$en251;
-      restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
-    }
-    if (restoreRehearsalRuleIntro) {
-      var _texts$en252;
-      restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
-    }
-    if (restoreRehearsalRuleEmpty) {
-      var _texts$en253;
-      restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
-    }
-    if (restoreRehearsalTableCaption) {
-      restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
-    }
-    if (restoreRehearsalMetricHeader) {
-      restoreRehearsalMetricHeader.textContent = texts[lang].restoreRehearsalMetricColumn || restoreRehearsalMetricHeader.textContent;
-    }
-    if (restoreRehearsalLiveHeader) {
-      restoreRehearsalLiveHeader.textContent = texts[lang].restoreRehearsalLiveColumn || restoreRehearsalLiveHeader.textContent;
-    }
-    if (restoreRehearsalSandboxHeader) {
-      restoreRehearsalSandboxHeader.textContent = texts[lang].restoreRehearsalSandboxColumn || restoreRehearsalSandboxHeader.textContent;
-    }
-    if (restoreRehearsalDifferenceHeader) {
-      restoreRehearsalDifferenceHeader.textContent = texts[lang].restoreRehearsalDifferenceColumn || restoreRehearsalDifferenceHeader.textContent;
-    }
-    var resolvedRestoreRehearsalCloseButton = typeof restoreRehearsalCloseButton !== 'undefined' ? restoreRehearsalCloseButton : resolveElement('restoreRehearsalCloseButton', 'restoreRehearsalClose');
-    if (resolvedRestoreRehearsalCloseButton) {
-      var _closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
-      setButtonLabelWithIcon(resolvedRestoreRehearsalCloseButton, _closeLabel, ICON_GLYPHS.circleX);
-      resolvedRestoreRehearsalCloseButton.setAttribute('title', _closeLabel);
-      resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
-    }
-    if (restoreRehearsalProceedButton) {
-      var _texts$en254, _texts$en255;
-      var proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.restoreRehearsalProceed) || 'Continue rehearsal restore';
-      var proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.restoreRehearsalProceedHelp) || proceedLabel;
-      setButtonLabelWithIcon(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
-      restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
-      restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
-      restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
-    }
-    if (restoreRehearsalAbortButton) {
-      var _texts$en256, _texts$en257;
-      var abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.restoreRehearsalAbort) || 'Abort rehearsal';
-      var abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.restoreRehearsalAbortHelp) || abortLabel;
-      setButtonLabelWithIcon(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
-      restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
-      restoreRehearsalAbortButton.setAttribute('title', abortHelp);
-      restoreRehearsalAbortButton.setAttribute('aria-label', abortHelp);
-    }
-    if (factoryResetButton) {
-      var resetLabel = texts[lang].factoryResetButton || "Factory reset";
-      var resetHelp = texts[lang].factoryResetButtonHelp || resetLabel;
-      setButtonLabelWithIcon(factoryResetButton, resetLabel, ICON_GLYPHS.reload);
-      factoryResetButton.setAttribute("data-help", resetHelp);
-      factoryResetButton.setAttribute("title", resetHelp);
-      factoryResetButton.setAttribute("aria-label", resetHelp);
-    }
-    var aboutHeading = document.getElementById("aboutHeading");
-    if (aboutHeading) {
-      aboutHeading.textContent = texts[lang].aboutHeading;
-      aboutHeading.setAttribute("data-help", texts[lang].aboutHeadingHelp || texts[lang].aboutHeading);
-    }
-    var aboutVersionElem = typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
-    if (aboutVersionElem) aboutVersionElem.textContent = "".concat(texts[lang].versionLabel, " ").concat(APP_VERSION);
-    var supportLinkConfigs = [
-      { id: 'supportLink', textKey: 'supportLink', helpKey: 'supportLinkHelp' },
-      { id: 'reportBugLink', textKey: 'reportBugLink', helpKey: 'reportBugLinkHelp' },
-      { id: 'suggestFeatureLink', textKey: 'suggestFeatureLink', helpKey: 'suggestFeatureLinkHelp' }
-    ];
-    var langTexts = texts && texts[lang] ? texts[lang] : {};
-    var fallbackTexts = texts && texts.en ? texts.en : {};
-    supportLinkConfigs.forEach(function (config) {
-      var link = typeof document !== 'undefined' ? document.getElementById(config.id) : null;
-      if (!link) {
-        return;
-      }
-      var label =
-        (typeof langTexts[config.textKey] === 'string' && langTexts[config.textKey]) ||
-        (typeof fallbackTexts[config.textKey] === 'string' && fallbackTexts[config.textKey]) ||
-        link.textContent;
-      link.textContent = label;
-      var help =
-        (typeof langTexts[config.helpKey] === 'string' && langTexts[config.helpKey]) ||
-        (typeof fallbackTexts[config.helpKey] === 'string' && fallbackTexts[config.helpKey]) ||
-        label;
-      link.setAttribute('data-help', help);
-      link.setAttribute('title', help);
-      link.setAttribute('aria-label', help);
-    });
-    if (settingsSave) {
-      var _texts$en258;
-      var _label67 = texts[lang].saveSettings || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.saveSettings) || settingsSave.textContent;
-      setButtonLabelWithIcon(settingsSave, _label67);
-      var saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label67;
-      settingsSave.setAttribute("data-help", saveHelp);
-      settingsSave.setAttribute("title", saveHelp);
-      settingsSave.setAttribute("aria-label", saveHelp);
-    }
-    if (settingsCancel) {
-      var _texts$en259;
-      var _cancelLabel = texts[lang].cancelSettings || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.cancelSettings) || settingsCancel.textContent;
-      setButtonLabelWithIcon(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
-      var cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
-      settingsCancel.setAttribute("data-help", cancelHelp);
-      settingsCancel.setAttribute("title", cancelHelp);
-      settingsCancel.setAttribute("aria-label", cancelHelp);
-    }
-    var menuToggle = document.getElementById("menuToggle");
-    if (menuToggle) {
-      var _texts$en260, _texts$en261;
-      var menuLabel = texts[lang].menuToggleLabel || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
-      var _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
-      var closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel2;
-      menuToggle.setAttribute("title", menuLabel);
-      menuToggle.setAttribute("aria-label", menuLabel);
-      var menuHelp = texts[lang].menuToggleHelp || menuLabel;
-      menuToggle.setAttribute("data-help", menuHelp);
-      menuToggle.dataset.menuLabel = menuLabel;
-      menuToggle.dataset.menuHelp = menuHelp;
-      menuToggle.dataset.closeLabel = _closeLabel2;
-      menuToggle.dataset.closeHelp = closeHelp;
-    }
-    var sideMenu = document.getElementById("sideMenu");
-    if (sideMenu) {
-      var sideMenuHelp = texts[lang].sideMenuHelp;
-      if (sideMenuHelp) {
-        sideMenu.setAttribute("data-help", sideMenuHelp);
-      } else {
-        sideMenu.removeAttribute("data-help");
-      }
-    }
-    var sideMenuTitle = document.getElementById("sideMenuTitle");
-    if (sideMenuTitle) {
-      var _texts$en262;
-      var titleLabel = texts[lang].sideMenuTitle || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.sideMenuTitle) || sideMenuTitle.textContent;
-      sideMenuTitle.textContent = titleLabel;
-      var titleHelp = texts[lang].sideMenuTitleHelp || texts[lang].sideMenuHelp || titleLabel;
-      sideMenuTitle.setAttribute("data-help", titleHelp);
-    }
-    var closeMenuButton = document.getElementById("closeMenuButton");
-    var closeMenuLabel = document.getElementById("closeMenuLabel");
-    if (closeMenuButton) {
-      var _texts$en263;
-      var _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
-      var _closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel3;
-      closeMenuButton.setAttribute("aria-label", _closeLabel3);
-      closeMenuButton.setAttribute("title", _closeHelp);
-      closeMenuButton.setAttribute("data-help", _closeHelp);
-      if (closeMenuLabel) {
-        closeMenuLabel.textContent = _closeLabel3;
-      }
-    }
-    if (reloadButton) {
-      reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
-      reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
-      reloadButton.setAttribute("data-help", texts[lang].reloadAppHelp || texts[lang].reloadAppLabel);
-    }
-    if (featureSearch) {
-      featureSearch.setAttribute("placeholder", texts[lang].featureSearchPlaceholder);
-      featureSearch.setAttribute("aria-label", texts[lang].featureSearchLabel);
-      featureSearch.setAttribute("data-help", texts[lang].featureSearchHelp || texts[lang].featureSearchLabel);
-    }
-    if (helpButton) {
-      helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
-      helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
-      helpButton.setAttribute("data-help", texts[lang].helpButtonHelp || texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
-      var helpShortcutList = texts[lang].helpButtonShortcuts;
-      if (typeof helpShortcutList === 'string' && helpShortcutList.trim()) {
-        helpButton.setAttribute('data-shortcuts', helpShortcutList);
-      } else {
-        helpButton.removeAttribute('data-shortcuts');
-      }
-      var helpAriaShortcuts = texts[lang].helpButtonAriaShortcuts || 'F1 Control+Slash Meta+Slash Shift+Slash KeyH';
-      if (typeof helpAriaShortcuts === 'string' && helpAriaShortcuts.trim()) {
-        helpButton.setAttribute('aria-keyshortcuts', helpAriaShortcuts);
-      } else {
-        helpButton.removeAttribute('aria-keyshortcuts');
-      }
-      if (hoverHelpButton) {
-        setButtonLabelWithIcon(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
-        hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
-        hoverHelpButton.setAttribute("data-help", texts[lang].hoverHelpButtonHelp || texts[lang].hoverHelpButtonLabel);
-      }
-      if (helpSearch) {
-        helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
-        helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
-        helpSearch.setAttribute("data-help", texts[lang].helpSearchHelp || texts[lang].helpSearchLabel);
-      }
-      if (helpSearchClear) {
-        helpSearchClear.setAttribute("title", texts[lang].helpSearchClear);
-        helpSearchClear.setAttribute("aria-label", texts[lang].helpSearchClear);
-        helpSearchClear.setAttribute("data-help", texts[lang].helpSearchClearHelp || texts[lang].helpSearchClear);
-      }
-      if (closeHelpBtn) {
-        setButtonLabelWithIcon(closeHelpBtn, texts[lang].helpClose, ICON_GLYPHS.circleX);
-        closeHelpBtn.setAttribute("title", texts[lang].helpClose);
-        closeHelpBtn.setAttribute("aria-label", texts[lang].helpClose);
-        closeHelpBtn.setAttribute("data-help", texts[lang].helpCloseHelp || texts[lang].helpClose);
-      }
-      if (document.getElementById("helpTitle")) {
-        document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
-      }
-      if (helpNoResults) {
-        applyTextContent(helpNoResults, "helpNoResults", "No help topics match your search. Try shorter keywords, synonyms or clear the field to browse everything.");
-      }
-      if (helpNoResultsSuggestionsHeading) {
-        applyTextContent(helpNoResultsSuggestionsHeading, "helpNoResultsSuggestionsHeading", "Need a different result?");
-      }
-      if (helpNoResultsSuggestionsIntro) {
-        applyTextContent(helpNoResultsSuggestionsIntro, "helpNoResultsSuggestionsIntro", "Try these steps to get back on track while keeping your data safe:");
-      }
-      var quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
-      if (quickStartHeading) {
-        var fallback = quickStartHeading.textContent || "Quick start checklist";
-        applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
-      }
-      var onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
-      if (onboardingCopyElement) {
-        var fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
-        applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
-      }
-      var dataSafetyHeading = doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
-      if (dataSafetyHeading) {
-        var _fallback = dataSafetyHeading.textContent || "Protect your work";
-        applyTextContent(dataSafetyHeading, "helpDataSafetyTitle", _fallback);
-      }
-      var restoreDrillHeading = doc ? doc.getElementById("helpRestoreDrillHeading") : null;
-      if (restoreDrillHeading) {
-        var _fallback2 = restoreDrillHeading.textContent || "Restore rehearsal drill";
-        applyTextContent(restoreDrillHeading, "helpRestoreDrillTitle", _fallback2);
-      }
-      var restoreDrillNote = doc ? doc.getElementById("helpRestoreDrillNote") : null;
-      if (restoreDrillNote) {
-        var _fallback3 = restoreDrillNote.textContent || "Record the filename, timestamp and verification results in your backup log before closing the rehearsal so every drill leaves behind a documented recovery point.";
-        applyTextContent(restoreDrillNote, "helpRestoreDrillNote", _fallback3);
-      }
-      if (helpDataAuditHeading) {
-        var _fallback4 = helpDataAuditHeading.textContent || "Monthly data health check";
-        applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", _fallback4);
-      }
-      applySuggestionTemplate(helpDataAuditStep1, "helpDataAuditStep1", [function () {
-        return createHelpLink("#settingsButton", resolveLocaleString("settingsButton") || "Settings", {
-          target: "#settingsButton"
-        });
-      }, function () {
-        return createHelpLink("#dataHeading", resolveLocaleString("dataHeading") || "Data & Storage", {
-          target: "#dataHeading",
-          highlight: "#settingsDialog"
-        });
-      }, function () {
-        return createHelpLink("#storageBackupNow", resolveLocaleString("storageBackupNow") || "Download full backup", {
-          target: "#storageBackupNow",
-          highlight: "#storageActions"
-        });
-      }, function () {
-        return createHelpLink("#storageActionsHeading", resolveLocaleString("storageActionsHeading") || "Quick safeguards", {
-          target: "#storageActionsHeading",
-          highlight: "#storageActions",
-          isButton: false
-        });
-      }]);
-      applySuggestionTemplate(helpDataAuditStep2, "helpDataAuditStep2", [function () {
-        return createHelpLink("#shareSetupBtn", resolveLocaleString("shareSetupBtn") || "Export Project", {
-          target: "#shareSetupBtn",
-          highlight: "#setup-manager"
-        });
-      }]);
-      applySuggestionTemplate(helpDataAuditStep3, "helpDataAuditStep3", [function () {
-        return createHelpLink("#reloadButton", resolveLocaleString("reloadAppLabel") || "Force reload", {
-          target: "#reloadButton"
-        });
-      }, function () {
-        return createHelpLink("#offlineIndicator", resolveLocaleString("offlineIndicator") || "Offline", {
-          target: "#offlineIndicator"
-        });
-      }, function () {
-        return createHelpLink("#applySharedLinkBtn", resolveLocaleString("loadSharedLinkBtn") || "Import Project", {
-          target: "#applySharedLinkBtn",
-          highlight: "#setup-manager"
-        });
-      }]);
-      applySuggestionTemplate(helpDataAuditStep4, "helpDataAuditStep4", [function () {
-        return createHelpLink("#restoreRehearsalButton", resolveLocaleString("restoreRehearsalButton") || "Restore rehearsal", {
-          target: "#restoreRehearsalButton",
-          highlight: "#restoreRehearsalSection"
-        });
-      }, function () {
-        var code = doc.createElement("code");
-        code.textContent = "window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })";
-        return code;
-      }]);
-      if (helpDataAuditNote) {
-        var _fallback5 = helpDataAuditNote.textContent || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
-        applyTextContent(helpDataAuditNote, "helpDataAuditNote", _fallback5);
-      }
-      applySuggestionTemplate(helpNoResultsSuggestionClear, "helpNoResultsSuggestionClear", [function () {
-        return createHelpLink("#helpSearchClear", resolveLocaleString("helpSearchClear") || "Clear search", {
-          target: "#helpSearchClear",
-          highlight: "#helpSearchContainer"
-        });
-      }]);
-      applySuggestionText(helpNoResultsSuggestionSynonyms, "helpNoResultsSuggestionSynonyms");
-      applySuggestionTemplate(helpNoResultsSuggestionQuickStart, "helpNoResultsSuggestionQuickStart", [function () {
-        return createHelpLink("#helpQuickStartGuide", resolveLocaleString("helpQuickStartChecklistTitle") || "Quick start checklist", {
-          target: "#helpQuickStartGuide",
-          highlight: "#helpQuickStartGuide"
-        });
-      }]);
-      applySuggestionTemplate(helpNoResultsSuggestionBackup, "helpNoResultsSuggestionBackup", [function () {
-        return createHelpLink("#helpDataSafety", resolveLocaleString("helpDataSafetyTitle") || "Protect your work", {
-          target: "#helpDataSafety",
-          highlight: "#helpDataSafety"
-        });
-      }, function () {
-        return createHelpLink("#helpRestoreDrillHeading", resolveLocaleString("helpRestoreDrillTitle") || "Restore rehearsal drill", {
-          target: "#helpRestoreDrillHeading",
-          highlight: "#helpDataSafety",
-          isButton: false
-        });
-      }]);
-      if (typeof updateHelpResultsSummaryText === 'function') {
-        updateHelpResultsSummaryText();
-      }
-      if (typeof updateHelpQuickLinksForLanguage === 'function') {
-        updateHelpQuickLinksForLanguage(lang);
-      }
-    }
-    setButtonLabelWithIcon(document.getElementById("generateOverviewBtn"), texts[lang].generateOverviewBtn, ICON_GLYPHS.overview);
-    setButtonLabelWithIcon(document.getElementById("generateGearListBtn"), texts[lang].generateGearListBtn, ICON_GLYPHS.gearList);
-    setButtonLabelWithIcon(document.getElementById("shareSetupBtn"), texts[lang].shareSetupBtn, ICON_GLYPHS.fileExport);
-    var exportRevert = document.getElementById("exportAndRevertBtn");
-    if (exportRevert) {
-      setButtonLabelWithIcon(exportRevert, texts[lang].exportAndRevertBtn, ICON_GLYPHS.reload);
-      exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
-    }
-    var downloadDiagramButton = typeof downloadDiagramBtn !== 'undefined' && downloadDiagramBtn || (typeof document !== 'undefined' && document && typeof document.getElementById === 'function' ? document.getElementById('downloadDiagram') : null);
-    if (downloadDiagramButton) {
-      downloadDiagramButton.textContent = texts[lang].downloadDiagramBtn;
-      downloadDiagramButton.setAttribute("title", texts[lang].downloadDiagramBtn);
-      downloadDiagramButton.setAttribute("aria-label", texts[lang].downloadDiagramBtn);
-      downloadDiagramButton.setAttribute("data-help", texts[lang].downloadDiagramHelp);
-    }
-    if (gridSnapToggleBtn) {
-      setButtonLabelWithIcon(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
-      gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
-      gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
-      gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
-      var snapActive = false;
-      try {
-        snapActive = Boolean(getGridSnapState());
-      } catch (gridSnapReadError) {
-        void gridSnapReadError;
-        try {
-          snapActive = Boolean(gridSnap);
-        } catch (legacyGridSnapError) {
-          void legacyGridSnapError;
-        }
-      }
-      gridSnapToggleBtn.setAttribute('aria-pressed', snapActive ? 'true' : 'false');
-    }
-    var resetViewBtn = typeof document !== 'undefined' ? document.getElementById('resetView') : null;
-    if (resetViewBtn) {
-      setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
-      resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
-      resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
-      resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
-    }
-    var zoomInBtn = typeof document !== 'undefined' ? document.getElementById('zoomIn') : null;
-    if (zoomInBtn) {
-      setButtonLabelWithIcon(zoomInBtn, '', ICON_GLYPHS.add);
-      zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
-      zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
-      zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
-    }
-    var zoomOutBtn = typeof document !== 'undefined' ? document.getElementById('zoomOut') : null;
-    if (zoomOutBtn) {
-      setButtonLabelWithIcon(zoomOutBtn, '', ICON_GLYPHS.minus);
-      zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
-      zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
-      zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
-    }
-    var diagramHint = typeof document !== 'undefined' ? document.getElementById('diagramHint') : null;
-    if (diagramHint) {
-      diagramHint.textContent = texts[lang].diagramMoveHint;
-    }
-    var fallbackProjectForm = texts.en && texts.en.projectForm ? texts.en.projectForm : {};
-    var projectFormTexts = texts[lang].projectForm || fallbackProjectForm;
-    if (projectFormTexts) {
-      var _texts$en264, _texts$lang5;
-      resolveContactsDomRefs();
-      var setLabelText = function setLabelText(element, key) {
-        if (!element) return;
-        var value = projectFormTexts[key] || fallbackProjectForm[key];
-        if (value) element.textContent = value;
-      };
-      var setPlaceholder = function setPlaceholder(element, key) {
-        if (!element) return;
-        var value = projectFormTexts[key] || fallbackProjectForm[key];
-        if (value) element.setAttribute('placeholder', value);
-      };
-      var setOptionText = function setOptionText(element, key) {
-        if (!element) return;
-        var value = projectFormTexts[key] || fallbackProjectForm[key];
-        if (value) element.textContent = value;
-      };
-      setLabelText(projectDialogHeading, 'heading');
-      setLabelText(projectNameLabel, 'projectName');
-      setLabelText(productionCompanyLabel, 'productionCompany');
-      setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
-      setLabelText(productionCompanyStreetLabel, 'productionCompanyStreet');
-      setLabelText(productionCompanyStreet2Label, 'productionCompanyStreet2');
-      setLabelText(productionCompanyCityLabel, 'productionCompanyCity');
-      setLabelText(productionCompanyRegionLabel, 'productionCompanyRegion');
-      setLabelText(productionCompanyPostalCodeLabel, 'productionCompanyPostalCode');
-      setLabelText(productionCompanyCountryLabel, 'productionCompanyCountry');
-      setPlaceholder(productionCompanyStreetInput, 'productionCompanyStreetPlaceholder');
-      setPlaceholder(productionCompanyStreet2Input, 'productionCompanyStreet2Placeholder');
-      setPlaceholder(productionCompanyCityInput, 'productionCompanyCityPlaceholder');
-      setPlaceholder(productionCompanyRegionInput, 'productionCompanyRegionPlaceholder');
-      setPlaceholder(productionCompanyPostalCodeInput, 'productionCompanyPostalCodePlaceholder');
-      setPlaceholder(productionCompanyCountryInput, 'productionCompanyCountryPlaceholder');
-      setLabelText(rentalHouseLabel, 'rentalHouse');
-      setLabelText(crewHeadingElem, 'crewHeading');
-      if (crewLabelElem) {
-        var crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
-        if (crewLabelText) {
-          crewLabelElem.textContent = "".concat(crewLabelText, ":");
-        }
-      }
-      setLabelText(prepLabelElem, 'prepLabel');
-      setLabelText(shootLabelElem, 'shootLabel');
-      setLabelText(returnLabelElem, 'returnLabel');
-      setLabelText(deliveryResolutionLabel, 'deliveryResolution');
-      setLabelText(recordingResolutionLabel, 'recordingResolution');
-      setLabelText(sensorModeLabel, 'sensorMode');
-      setLabelText(aspectRatioLabel, 'aspectRatio');
-      setLabelText(codecLabel, 'codec');
-      setLabelText(baseFrameRateLabel, 'baseFrameRate');
-      setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
-      if (recordingFrameRateHintElem) {
-        var rangeTemplate = projectFormTexts.recordingFrameRateRangeHint || fallbackProjectForm.recordingFrameRateRangeHint || '';
-        var defaultHint = projectFormTexts.recordingFrameRateDefaultHint || fallbackProjectForm.recordingFrameRateDefaultHint || '';
-        if (rangeTemplate) {
-          recordingFrameRateHintElem.setAttribute('data-range-template', rangeTemplate);
-        } else {
-          recordingFrameRateHintElem.removeAttribute('data-range-template');
-        }
-        if (defaultHint) {
-          recordingFrameRateHintElem.setAttribute('data-default-message', defaultHint);
-          recordingFrameRateHintElem.textContent = defaultHint;
-          recordingFrameRateHintElem.hidden = false;
-        } else {
-          recordingFrameRateHintElem.removeAttribute('data-default-message');
-          recordingFrameRateHintElem.textContent = '';
-          recordingFrameRateHintElem.hidden = true;
-        }
-      }
-      setLabelText(lensesHeadingElem, 'lensesHeading');
-      setLabelText(lensManufacturerLabel, 'lensManufacturerStep');
-      setLabelText(lensSeriesLabel, 'lensSeriesStep');
-      setLabelText(lensesLabelElem, 'lensesLabel');
-      setLabelText(lensSelectionsHeadingElem, 'lensSelectionsLabel');
-      setLabelText(lensSelectionsHintElem, 'lensSelectionsHint');
-      setOptionText(lensManufacturerPlaceholderOption, 'lensManufacturerPlaceholder');
-      setOptionText(lensSeriesPlaceholderOption, 'lensSeriesPlaceholder');
-      if (lensSeriesEmptyElem) {
-        var seriesEmptyText = projectFormTexts.lensSeriesEmpty || fallbackProjectForm.lensSeriesEmpty;
-        if (seriesEmptyText) lensSeriesEmptyElem.textContent = seriesEmptyText;
-      }
-      if (lensOptionsEmptyElem) {
-        var optionsEmptyText = projectFormTexts.lensOptionsEmpty || fallbackProjectForm.lensOptionsEmpty;
-        if (optionsEmptyText) lensOptionsEmptyElem.textContent = optionsEmptyText;
-      }
-      if (lensSelectionChipsElem) {
-        var removeTemplate = projectFormTexts.lensRemoveLabel || fallbackProjectForm.lensRemoveLabel;
-        var mountLabelText = projectFormTexts.lensMountLabel || fallbackProjectForm.lensMountLabel;
-        if (removeTemplate) lensSelectionChipsElem.setAttribute('data-remove-template', removeTemplate);
-        if (mountLabelText) lensSelectionChipsElem.setAttribute('data-mount-label', mountLabelText);
-      }
-      if (lensSelectionManager && typeof lensSelectionManager.refreshCatalog === 'function') {
-        try {
-          lensSelectionManager.refreshCatalog({
-            preserveSelections: true,
-            skipEvent: true,
-            skipDirty: true
-          });
-        } catch (catalogRefreshError) {
-          void catalogRefreshError;
-        }
-      }
-      setLabelText(riggingHeadingElem, 'riggingHeading');
-      setLabelText(requiredScenariosLabel, 'requiredScenarios');
-      setLabelText(cameraHandleLabel, 'cameraHandle');
-      setLabelText(viewfinderExtensionLabel, 'viewfinderExtension');
-      setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
-      setLabelText(matteboxLabel, 'mattebox');
-      setLabelText(filterLabel, 'filter');
-      setLabelText(storageHeading, 'storageHeading');
-      setLabelText(storageNeedsLabel, 'storageNeedsLabel');
-      updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm);
-      updateStorageRequirementTypeOptions();
-      setLabelText(monitoringHeadingElem, 'monitoringHeading');
-      setLabelText(monitoringConfigurationLabel, 'monitoringConfiguration');
-      setLabelText(viewfinderSettingsLabel, 'viewfinderSettings');
-      setLabelText(frameGuidesLabel, 'frameGuides');
-      setLabelText(aspectMaskOpacityLabel, 'aspectMaskOpacity');
-      setLabelText(videoDistributionLabel, 'videoDistribution');
-      setLabelText(monitorUserButtonsLabel, 'monitorUserButtons');
-      setLabelText(cameraUserButtonsLabel, 'cameraUserButtons');
-      setLabelText(viewfinderUserButtonsLabel, 'viewfinderUserButtons');
-      setLabelText(tripodPreferencesHeading, 'tripodPreferencesHeading');
-      setLabelText(tripodHeadBrandLabel, 'tripodHeadBrand');
-      setLabelText(tripodBowlLabel, 'tripodBowl');
-      setLabelText(tripodTypesLabel, 'tripodTypes');
-      setLabelText(tripodSpreaderLabel, 'tripodSpreader');
-      if (viewfinderExtensionSelect && viewfinderExtensionSelect.options.length >= 2) {
-        var _noneLabel2 = projectFormTexts.viewfinderExtensionNone || fallbackProjectForm.viewfinderExtensionNone;
-        var yesLabel = projectFormTexts.viewfinderExtensionYes || fallbackProjectForm.viewfinderExtensionYes;
-        if (_noneLabel2) viewfinderExtensionSelect.options[0].textContent = _noneLabel2;
-        if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
-      }
-      var projectCancelButton = typeof document !== 'undefined' ? document.getElementById('projectCancel') : null;
-      var cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel || (projectCancelButton ? projectCancelButton.textContent : projectDialogCloseBtn === null || projectDialogCloseBtn === void 0 ? void 0 : projectDialogCloseBtn.getAttribute('aria-label')) || 'Cancel';
-      if (projectCancelButton) {
-        setButtonLabelWithIcon(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
-      }
-      if (projectDialogCloseBtn) {
-        projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
-        projectDialogCloseBtn.setAttribute('aria-label', cancelText);
-        projectDialogCloseBtn.setAttribute('title', cancelText);
-        projectDialogCloseBtn.setAttribute('data-help', cancelText);
-      }
-      if (projectSubmitBtn) {
-        var submitText = projectFormTexts.submit || fallbackProjectForm.submit;
-        if (submitText) {
-          setButtonLabelWithIcon(projectSubmitBtn, submitText, ICON_GLYPHS.check);
-          projectSubmitBtn.setAttribute('aria-label', submitText);
-        }
-      }
-      var crewPlaceholders = {
-        name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
-        phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
-        email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder,
-        website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
-      };
-      var crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
-      var fallbackContacts = ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.contacts) || {};
-      var contactsTexts = ((_texts$lang5 = texts[lang]) === null || _texts$lang5 === void 0 ? void 0 : _texts$lang5.contacts) || fallbackContacts;
-      if (contactsDialogHeading && contactsTexts.heading) {
-        contactsDialogHeading.textContent = contactsTexts.heading;
-      }
-      if (contactsDialogDescription && contactsTexts.description) {
-        contactsDialogDescription.textContent = contactsTexts.description;
-      }
-      if (contactsAddButtonLabel && contactsTexts.addContactButton) {
-        contactsAddButtonLabel.textContent = contactsTexts.addContactButton;
-      }
-      if (contactsAddButton && contactsTexts.addContactButton) {
-        contactsAddButton.setAttribute('aria-label', contactsTexts.addContactButton);
-        contactsAddButton.setAttribute('data-help', contactsTexts.addContactButton);
-      }
-      if (contactsImportButtonLabel && contactsTexts.importButton) {
-        contactsImportButtonLabel.textContent = contactsTexts.importButton;
-      }
-      if (contactsImportButton && contactsTexts.importButton) {
-        contactsImportButton.setAttribute('aria-label', contactsTexts.importButton);
-        contactsImportButton.setAttribute('data-help', contactsTexts.importButton);
-      }
-      if (contactsImportHint && contactsTexts.importHint) {
-        contactsImportHint.textContent = contactsTexts.importHint;
-      }
-      if (contactsEmptyState && contactsTexts.emptyState) {
-        contactsEmptyState.textContent = contactsTexts.emptyState;
-      }
-      if (userProfileHeading && contactsTexts.userProfileHeading) {
-        userProfileHeading.textContent = contactsTexts.userProfileHeading;
-      }
-      if (userProfileDescription && contactsTexts.userProfileDescription) {
-        userProfileDescription.textContent = contactsTexts.userProfileDescription;
-      }
-      if (userProfileNameLabel && contactsTexts.userProfileNameLabel) {
-        userProfileNameLabel.textContent = contactsTexts.userProfileNameLabel;
-      }
-      if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
-        userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
-      }
-      if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
-        userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
-      }
-      if (userProfileRoleInput) {
-        var _userProfileState;
-        populateUserProfileRoleSelect({
-          selected: typeof ((_userProfileState = userProfileState) === null || _userProfileState === void 0 ? void 0 : _userProfileState.role) === 'string' ? userProfileState.role : ''
-        });
-      }
-      if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
-        userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
-      }
-      if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
-        userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
-      }
-      if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
-        userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
-      }
-      if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
-        userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
-      }
-      if (userProfileHint && contactsTexts.userProfileHint) {
-        userProfileHint.textContent = contactsTexts.userProfileHint;
-      }
-      if (userProfileAvatarButtonLabel && contactsTexts.userProfileAvatarButton) {
-        userProfileAvatarButtonLabel.textContent = contactsTexts.userProfileAvatarButton;
-      }
-      if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
-        userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
-        userProfileAvatarButton.removeAttribute('data-help');
-        userProfileAvatarButton.removeAttribute('title');
-      }
-      if (userProfileAvatarClearButton && contactsTexts.userProfileAvatarRemove) {
-        userProfileAvatarClearButton.textContent = contactsTexts.userProfileAvatarRemove;
-        userProfileAvatarClearButton.setAttribute('aria-label', contactsTexts.userProfileAvatarRemove);
-      }
-      if (avatarOptionsTitleElem && contactsTexts.avatarOptionsTitle) {
-        avatarOptionsTitleElem.textContent = contactsTexts.avatarOptionsTitle;
-      }
-      if (avatarOptionsDescriptionElem && contactsTexts.avatarOptionsDescription) {
-        avatarOptionsDescriptionElem.textContent = contactsTexts.avatarOptionsDescription;
-      }
-      if (avatarOptionsCloseLabel && contactsTexts.avatarOptionsClose) {
-        avatarOptionsCloseLabel.textContent = contactsTexts.avatarOptionsClose;
-      }
-      if (avatarOptionsCloseButton && contactsTexts.avatarOptionsClose) {
-        avatarOptionsCloseButton.setAttribute('aria-label', contactsTexts.avatarOptionsClose);
-        avatarOptionsCloseButton.setAttribute('title', contactsTexts.avatarOptionsClose);
-        avatarOptionsCloseButton.setAttribute('data-help', contactsTexts.avatarOptionsClose);
-      }
-      if (avatarOptionsDeleteButton && contactsTexts.avatarDelete) {
-        setButtonLabelWithIcon(avatarOptionsDeleteButton, contactsTexts.avatarDelete, ICON_GLYPHS.trash);
-        avatarOptionsDeleteButton.setAttribute('aria-label', contactsTexts.avatarDelete);
-        avatarOptionsDeleteButton.setAttribute('title', contactsTexts.avatarDelete);
-        avatarOptionsDeleteButton.setAttribute('data-help', contactsTexts.avatarDelete);
-      }
-      if (avatarOptionsEditButton && contactsTexts.avatarEditAction) {
-        setButtonLabelWithIcon(avatarOptionsEditButton, contactsTexts.avatarEditAction, ICON_GLYPHS.sliders);
-        avatarOptionsEditButton.setAttribute('aria-label', contactsTexts.avatarEditAction);
-        avatarOptionsEditButton.setAttribute('title', contactsTexts.avatarEditAction);
-        avatarOptionsEditButton.setAttribute('data-help', contactsTexts.avatarEditAction);
-      }
-      if (avatarOptionsChangeButton && contactsTexts.avatarChange) {
-        setButtonLabelWithIcon(avatarOptionsChangeButton, contactsTexts.avatarChange, ICON_GLYPHS.camera);
-        avatarOptionsChangeButton.setAttribute('aria-label', contactsTexts.avatarChange);
-        avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
-        avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
-      }
-      if (avatarEditTitle && contactsTexts.avatarEditAction) {
-        avatarEditTitle.textContent = contactsTexts.avatarEditAction;
-      }
-      if (avatarEditInstructions && contactsTexts.avatarEditInstructions) {
-        avatarEditInstructions.textContent = contactsTexts.avatarEditInstructions;
-      }
-      if (avatarEditZoomLabelElem && contactsTexts.avatarEditZoomLabel) {
-        avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
-      }
-      if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
-        setButtonLabelWithIcon(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
-        avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
-        avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
-        avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
-      }
-      if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
-        setButtonLabelWithIcon(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
-        avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
-        avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
-        avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
-      }
-      if (contactsCloseButton && contactsTexts.close) {
-        contactsCloseButton.textContent = contactsTexts.close;
-      }
-      renderContactsList();
-      document.querySelectorAll('#crewContainer .person-row').forEach(function (row) {
-        var roleSelect = row.querySelector('select');
-        if (roleSelect) {
-          var currentValue = roleSelect.value;
-          Array.from(roleSelect.options).forEach(function (opt) {
-            var roleKey = opt.value;
-            opt.textContent = crewRoleLabels[roleKey] || roleKey;
-          });
-          roleSelect.value = currentValue;
-        }
-        var nameInput = row.querySelector('.person-name');
-        if (nameInput && crewPlaceholders.name) nameInput.placeholder = crewPlaceholders.name;
-        var phoneInput = row.querySelector('.person-phone');
-        if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
-        var emailInput = row.querySelector('.person-email');
-        if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
-        var websiteInput = row.querySelector('.person-website');
-        if (websiteInput && crewPlaceholders.website) websiteInput.placeholder = crewPlaceholders.website;
-        var contactSelect = row.querySelector('.person-contact-select');
-        if (contactSelect) {
-          setContactSelectOptions(contactSelect, contactSelect.value);
-        }
-        var saveButton = row.querySelector('.person-save-contact');
-        if (saveButton) {
-          setButtonLabelWithIcon(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
-        }
-        var manageButton = row.querySelector('.person-manage-contacts');
-        if (manageButton) {
-          setButtonLabelWithIcon(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
-        }
-        updateRowLinkedBadge(row);
-      });
-      var stripTrailingPunctuation = function stripTrailingPunctuation(value) {
-        return typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value;
-      };
-      var addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
-      if (addPersonBtn) {
-        var crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
-        var _label68 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
-        setButtonLabelWithIcon(addPersonBtn, _label68, ICON_GLYPHS.add);
-        addPersonBtn.setAttribute('aria-label', _label68);
-        addPersonBtn.setAttribute('data-help', _label68);
-      }
-      if (addPrepBtn) {
-        var prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
-        var _label69 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
-        setButtonLabelWithIcon(addPrepBtn, _label69, ICON_GLYPHS.add);
-        addPrepBtn.setAttribute('aria-label', _label69);
-        addPrepBtn.setAttribute('data-help', _label69);
-      }
-      if (addShootBtn) {
-        var shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
-        var _label70 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
-        setButtonLabelWithIcon(addShootBtn, _label70, ICON_GLYPHS.add);
-        addShootBtn.setAttribute('aria-label', _label70);
-        addShootBtn.setAttribute('data-help', _label70);
-      }
-      if (addReturnBtn) {
-        var returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
-        var _label71 = "".concat(addEntryLabel, " ").concat(returnLabel).trim();
-        setButtonLabelWithIcon(addReturnBtn, _label71, ICON_GLYPHS.add);
-        addReturnBtn.setAttribute('aria-label', _label71);
-        addReturnBtn.setAttribute('data-help', _label71);
-      }
-      if (addStorageNeedBtn) {
-        var storageLabelText = stripTrailingPunctuation(projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs');
-        var _label72 = "".concat(addEntryLabel, " ").concat(storageLabelText).trim();
-        setButtonLabelWithIcon(addStorageNeedBtn, _label72, ICON_GLYPHS.add);
-        addStorageNeedBtn.setAttribute('aria-label', _label72);
-        addStorageNeedBtn.setAttribute('data-help', _label72);
-      }
-    }
-    if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
-    if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
-    if (iosPwaHelpStep1) iosPwaHelpStep1.textContent = texts[lang].iosPwaHelpStep1;
-    if (iosPwaHelpStep2) iosPwaHelpStep2.textContent = texts[lang].iosPwaHelpStep2;
-    if (iosPwaHelpStep3) iosPwaHelpStep3.textContent = texts[lang].iosPwaHelpStep3;
-    if (iosPwaHelpStep4) iosPwaHelpStep4.textContent = texts[lang].iosPwaHelpStep4;
-    if (iosPwaHelpNote) iosPwaHelpNote.textContent = texts[lang].iosPwaHelpNote;
-    if (iosPwaHelpClose) {
-      var closeText = texts[lang].iosPwaHelpClose;
-      setButtonLabelWithIcon(iosPwaHelpClose, closeText, ICON_GLYPHS.check);
-      iosPwaHelpClose.setAttribute('aria-label', closeText);
-    }
-    document.querySelectorAll('.favorite-toggle').forEach(function (btn) {
-      btn.setAttribute('aria-label', texts[lang].favoriteToggleLabel);
-      btn.setAttribute('title', texts[lang].favoriteToggleLabel);
-      btn.setAttribute('data-help', texts[lang].favoriteToggleHelp || texts[lang].favoriteToggleLabel);
-    });
-    ensureGearListActions();
-    updateDiagramLegend();
-    updateStorageSummary();
-    callCoreFunctionIfAvailable('populateFeatureSearch', [], {
-      defer: true
-    });
+      }, _callee2, null, [[1, 3, 4, 5]]);
+    }));
+    return _setLanguage.apply(this, arguments);
   }
   var cameraSelect = document.getElementById("cameraSelect");
   var monitorSelect = document.getElementById("monitorSelect");
@@ -12576,7 +11645,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return ((_texts3 = texts) === null || _texts3 === void 0 || (_texts3 = _texts3[lang]) === null || _texts3 === void 0 ? void 0 : _texts3.crewRoles) || ((_texts4 = texts) === null || _texts4 === void 0 || (_texts4 = _texts4.en) === null || _texts4 === void 0 ? void 0 : _texts4.crewRoles) || {};
   }
   function populateUserProfileRoleSelect() {
-    var _userProfileState2;
+    var _userProfileState;
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     resolveContactsDomRefs();
     if (!userProfileRoleInput) return;
@@ -12585,7 +11654,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var roleLabels = getCrewRoleLabels();
     var placeholderDefault = getContactsText('rolePlaceholder', 'Select role');
     var placeholderText = getContactsText('userProfileRolePlaceholder', placeholderDefault) || placeholderDefault;
-    var selectedValue = options && typeof options.selected === 'string' ? options.selected : typeof ((_userProfileState2 = userProfileState) === null || _userProfileState2 === void 0 ? void 0 : _userProfileState2.role) === 'string' ? userProfileState.role : '';
+    var selectedValue = options && typeof options.selected === 'string' ? options.selected : typeof ((_userProfileState = userProfileState) === null || _userProfileState === void 0 ? void 0 : _userProfileState.role) === 'string' ? userProfileState.role : '';
     var previousScrollTop = userProfileRoleInput.scrollTop;
     userProfileRoleInput.textContent = '';
     var placeholderOption = doc.createElement('option');
@@ -12696,33 +11765,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   } catch (assignSelectIconError) {
     console.warn('Failed to expose updateSelectIconBoxes globally', assignSelectIconError);
   }
-  setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label) {
-    var glyph = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ICON_GLYPHS.save;
-    if (!button) return;
-    while (button.firstChild) button.removeChild(button.firstChild);
-    var iconHtml = resolveButtonIconMarkup(glyph);
-    if (iconHtml && typeof globalThis !== 'undefined' && globalThis.document) {
-      var tmp = document.createElement('span');
-      tmp.innerHTML = iconHtml;
-      while (tmp.firstChild) {
-        button.appendChild(tmp.firstChild);
-      }
-    }
-    var safeLabel = typeof label === 'string' ? label : '';
-    if (typeof globalThis !== 'undefined' && globalThis.document) {
-      button.appendChild(document.createTextNode(safeLabel));
-    } else {
-      button.textContent = safeLabel;
-    }
-  };
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
-    try {
-      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
-    } catch (setButtonLabelAssignError) {
-      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
-      void setButtonLabelAssignError;
-    }
-  }
   function getLocalizedPathText(path) {
     var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     if (!path) return fallback;
@@ -12751,14 +11793,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function configureIconOnlyButton(button, glyph) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!button) return;
-    var _ref37 = options || {},
-      _ref37$contextPaths = _ref37.contextPaths,
-      contextPaths = _ref37$contextPaths === void 0 ? [] : _ref37$contextPaths,
-      _ref37$fallbackContex = _ref37.fallbackContext,
-      fallbackContext = _ref37$fallbackContex === void 0 ? '' : _ref37$fallbackContex,
-      _ref37$actionKey = _ref37.actionKey,
-      actionKey = _ref37$actionKey === void 0 ? 'addEntry' : _ref37$actionKey;
-    setButtonLabelWithIcon(button, '', glyph || ICON_GLYPHS.add);
+    var _ref32 = options || {},
+      _ref32$contextPaths = _ref32.contextPaths,
+      contextPaths = _ref32$contextPaths === void 0 ? [] : _ref32$contextPaths,
+      _ref32$fallbackContex = _ref32.fallbackContext,
+      fallbackContext = _ref32$fallbackContex === void 0 ? '' : _ref32$fallbackContex,
+      _ref32$actionKey = _ref32.actionKey,
+      actionKey = _ref32$actionKey === void 0 ? 'addEntry' : _ref32$actionKey;
+    setButtonLabelWithIconBinding(button, '', glyph || ICON_GLYPHS.add);
     var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
     var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
     var contextLabel = '';
@@ -13045,10 +12087,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }) || null;
     }
     if (existing) {
-      var _label73 = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(existing) || baseName : existing.name || baseName;
+      var _label3 = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(existing) || baseName : existing.name || baseName;
       return {
         value: "contact:".concat(existing.id),
-        label: _label73,
+        label: _label3,
         contact: existing
       };
     }
@@ -13088,9 +12130,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       optionLang = document.documentElement.lang || '';
     }
     if (!optionLang) {
-      optionLang = currentLang || DEFAULT_LANGUAGE;
+      optionLang = currentLang || DEFAULT_LANGUAGE_SAFE;
     }
-    var optionDirection = select.dir || resolveDocumentDirection(optionLang || currentLang || DEFAULT_LANGUAGE);
+    var optionDirection = select.dir || resolveDocumentDirection(optionLang || currentLang || DEFAULT_LANGUAGE_SAFE);
     while (select.firstChild) {
       select.removeChild(select.firstChild);
     }
@@ -13213,9 +12255,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function stopAvatarEditing() {
     var _avatarOptionsContext2, _avatarOptionsContext3;
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref38 = options || {},
-      _ref38$restoreFocus = _ref38.restoreFocus,
-      restoreFocus = _ref38$restoreFocus === void 0 ? false : _ref38$restoreFocus;
+    var _ref33 = options || {},
+      _ref33$restoreFocus = _ref33.restoreFocus,
+      restoreFocus = _ref33$restoreFocus === void 0 ? false : _ref33$restoreFocus;
     if (avatarEditSection) {
       avatarEditSection.classList.add('hidden');
     }
@@ -13567,6 +12609,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       restoreFocus: true
     });
   }
+  function handleAvatarOptionsDialogPointerDown(event) {
+    if (!avatarOptionsDialog || !isDialogOpen(avatarOptionsDialog)) return;
+    if (event && typeof event.button === 'number' && event.button !== 0) return;
+    var target = (event === null || event === void 0 ? void 0 : event.target) || null;
+    var elementTarget = typeof Element !== 'undefined' && target instanceof Element ? target : null;
+    var path = typeof (event === null || event === void 0 ? void 0 : event.composedPath) === 'function' ? event.composedPath() : null;
+    if (avatarOptionsForm) {
+      if (elementTarget && avatarOptionsForm.contains(elementTarget)) {
+        return;
+      }
+      if (Array.isArray(path) && path.includes(avatarOptionsForm)) {
+        return;
+      }
+    }
+    if (avatarEditState && avatarEditState.active) {
+      applyAvatarEditChanges();
+      return;
+    }
+    closeAvatarOptionsDialog();
+  }
   function dispatchGearProviderDataChanged(reason) {
     if (typeof document === 'undefined') return;
     try {
@@ -13861,9 +12923,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function handleUserProfileAvatarInputChange() {
     if (!userProfileAvatarInput) return;
-    var _ref39 = userProfileAvatarInput.files || [],
-      _ref40 = _slicedToArray(_ref39, 1),
-      file = _ref40[0];
+    var _ref34 = userProfileAvatarInput.files || [],
+      _ref35 = _slicedToArray(_ref34, 1),
+      file = _ref35[0];
     if (!file) {
       return;
     }
@@ -13897,9 +12959,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function detachCrewRowContact(row) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!row) return;
-    var _ref41 = options || {},
-      _ref41$preserveSelect = _ref41.preserveSelect,
-      preserveSelect = _ref41$preserveSelect === void 0 ? false : _ref41$preserveSelect;
+    var _ref36 = options || {},
+      _ref36$preserveSelect = _ref36.preserveSelect,
+      preserveSelect = _ref36$preserveSelect === void 0 ? false : _ref36$preserveSelect;
     delete row.dataset.contactId;
     if (!preserveSelect) {
       var contactSelect = row.querySelector('.person-contact-select');
@@ -14101,11 +13163,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function applyContactToCrewRow(row, contact) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!row || !contact) return;
-    var _ref42 = options || {},
-      _ref42$skipDirty = _ref42.skipDirty,
-      skipDirty = _ref42$skipDirty === void 0 ? false : _ref42$skipDirty,
-      _ref42$skipAnnounceme = _ref42.skipAnnouncement,
-      skipAnnouncement = _ref42$skipAnnounceme === void 0 ? false : _ref42$skipAnnounceme;
+    var _ref37 = options || {},
+      _ref37$skipDirty = _ref37.skipDirty,
+      skipDirty = _ref37$skipDirty === void 0 ? false : _ref37$skipDirty,
+      _ref37$skipAnnounceme = _ref37.skipAnnouncement,
+      skipAnnouncement = _ref37$skipAnnounceme === void 0 ? false : _ref37$skipAnnounceme;
     row.dataset.syncingContact = '1';
     try {
       var roleSel = row.querySelector('select[name="crewRole"]');
@@ -14560,7 +13622,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     actions.className = 'contact-card-actions';
     var useButton = document.createElement('button');
     useButton.type = 'button';
-    setButtonLabelWithIcon(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
     useButton.addEventListener('click', function () {
       createCrewRow(_objectSpread(_objectSpread({}, contact), {}, {
         contactId: contact.id
@@ -14571,7 +13633,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     actions.appendChild(useButton);
     var deleteButton = document.createElement('button');
     deleteButton.type = 'button';
-    setButtonLabelWithIcon(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
+    setButtonLabelWithIconBinding(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
     deleteButton.addEventListener('click', function () {
       var confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
       if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
@@ -14664,9 +13726,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarInput.addEventListener('change', function () {
-      var _ref43 = avatarInput.files || [],
-        _ref44 = _slicedToArray(_ref43, 1),
-        file = _ref44[0];
+      var _ref38 = avatarInput.files || [],
+        _ref39 = _slicedToArray(_ref38, 1),
+        file = _ref39[0];
       if (!file) return;
       readAvatarFile(file, function (dataUrl) {
         contact.avatar = dataUrl;
@@ -14694,9 +13756,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     resolveContactsDomRefs();
     if (!contactsList) return;
-    var _ref45 = options || {},
-      _ref45$focusContactId = _ref45.focusContactId,
-      focusContactId = _ref45$focusContactId === void 0 ? null : _ref45$focusContactId;
+    var _ref40 = options || {},
+      _ref40$focusContactId = _ref40.focusContactId,
+      focusContactId = _ref40$focusContactId === void 0 ? null : _ref40$focusContactId;
     while (contactsList.firstChild) {
       contactsList.removeChild(contactsList.firstChild);
     }
@@ -14722,7 +13784,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function initializeContactsModule() {
-    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDeleteB, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
+    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDeleteB, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
     resolveContactsDomRefs();
     if (contactsInitialized) return;
     contactsInitialized = true;
@@ -14784,9 +13846,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return contactsImportInput.click();
       });
       contactsImportInput.addEventListener('change', function () {
-        var _ref46 = contactsImportInput.files || [],
-          _ref47 = _slicedToArray(_ref46, 1),
-          file = _ref47[0];
+        var _ref41 = contactsImportInput.files || [],
+          _ref42 = _slicedToArray(_ref41, 1),
+          file = _ref42[0];
         if (!file) return;
         file.text().then(function (text) {
           return mergeImportedContacts(parseVCard(text));
@@ -14808,6 +13870,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       closeAvatarOptionsDialog();
     });
     (_avatarOptionsDialog2 = avatarOptionsDialog) === null || _avatarOptionsDialog2 === void 0 || _avatarOptionsDialog2.addEventListener('close', handleAvatarOptionsDialogClosed);
+    (_avatarOptionsDialog3 = avatarOptionsDialog) === null || _avatarOptionsDialog3 === void 0 || _avatarOptionsDialog3.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
     (_avatarOptionsDeleteB = avatarOptionsDeleteButton) === null || _avatarOptionsDeleteB === void 0 || _avatarOptionsDeleteB.addEventListener('click', handleAvatarDeleteAction);
     (_avatarOptionsChangeB = avatarOptionsChangeButton) === null || _avatarOptionsChangeB === void 0 || _avatarOptionsChangeB.addEventListener('click', handleAvatarChangeAction);
     (_avatarOptionsEditBut = avatarOptionsEditButton) === null || _avatarOptionsEditBut === void 0 || _avatarOptionsEditBut.addEventListener('click', handleAvatarEditAction);
@@ -14837,7 +13900,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function createCrewRow() {
-    var _texts$en265, _texts$currentLang2, _texts$currentLang3, _texts$en266, _texts$currentLang4, _texts$en267, _texts$currentLang5, _texts$en268;
+    var _texts$en2, _texts$currentLang2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4, _texts$currentLang5, _texts$en5;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!crewContainer) return;
     var row = document.createElement('div');
@@ -14846,12 +13909,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof document !== 'undefined' && document && document.documentElement) {
       documentLang = document.documentElement.lang || '';
     }
-    var rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE;
+    var rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE_SAFE;
     var rowDirection = resolveDocumentDirection(rowLanguage);
     applyLocaleMetadata(row, rowLanguage, rowDirection);
-    var fallbackProjectForm = ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.projectForm) || {};
+    var fallbackProjectForm = ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.projectForm) || {};
     var projectFormTexts = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.projectForm) || fallbackProjectForm;
-    var roleLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.crewRoles) || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.crewRoles) || {};
+    var roleLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.crewRoles) || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.crewRoles) || {};
     var crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
     var crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
     var crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
@@ -14946,22 +14009,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var saveContactBtn = document.createElement('button');
     saveContactBtn.type = 'button';
     saveContactBtn.className = 'person-save-contact';
-    setButtonLabelWithIcon(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+    setButtonLabelWithIconBinding(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
     saveContactBtn.addEventListener('click', function () {
       return saveCrewRowAsContact(row);
     });
     var manageContactsBtn = document.createElement('button');
     manageContactsBtn.type = 'button';
     manageContactsBtn.className = 'person-manage-contacts';
-    setButtonLabelWithIcon(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+    setButtonLabelWithIconBinding(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
     manageContactsBtn.addEventListener('click', function () {
       return openDialog(contactsDialog);
     });
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'person-remove-btn';
-    var removeBase = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.removeEntry) || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 || (_texts$en267 = _texts$en267.projectForm) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.removeEntry) || 'Remove';
-    var crewHeading = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.crewHeading) || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 || (_texts$en268 = _texts$en268.projectForm) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.crewHeading) || 'Crew';
+    var removeBase = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.removeEntry) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 || (_texts$en4 = _texts$en4.projectForm) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.removeEntry) || 'Remove';
+    var crewHeading = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.crewHeading) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 || (_texts$en5 = _texts$en5.projectForm) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.crewHeading) || 'Crew';
     var removeCrewLabel = "".concat(removeBase, " ").concat(crewHeading).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeCrewLabel);
@@ -15041,9 +14104,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarFileInput.addEventListener('change', function () {
-      var _ref48 = avatarFileInput.files || [],
-        _ref49 = _slicedToArray(_ref48, 1),
-        file = _ref49[0];
+      var _ref43 = avatarFileInput.files || [],
+        _ref44 = _slicedToArray(_ref43, 1),
+        file = _ref44[0];
       if (file) {
         handleAvatarFileSelection(row, file);
       }
@@ -15090,7 +14153,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createPrepRow() {
-    var _texts$currentLang6, _texts$en269, _texts$currentLang7, _texts$en270;
+    var _texts$currentLang6, _texts$en6, _texts$currentLang7, _texts$en7;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!prepContainer) return;
     var row = document.createElement('div');
@@ -15111,8 +14174,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'prepLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.removeEntry) || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 || (_texts$en269 = _texts$en269.projectForm) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.removeEntry) || 'Remove';
-    var prepLabelText = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.prepLabel) || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 || (_texts$en270 = _texts$en270.projectForm) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.prepLabel) || 'Prep';
+    var removeBase = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.removeEntry) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 || (_texts$en6 = _texts$en6.projectForm) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.removeEntry) || 'Remove';
+    var prepLabelText = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.prepLabel) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 || (_texts$en7 = _texts$en7.projectForm) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.prepLabel) || 'Prep';
     var removePrepLabel = "".concat(removeBase, " ").concat(prepLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removePrepLabel);
@@ -15132,7 +14195,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createShootRow() {
-    var _texts$currentLang8, _texts$en271, _texts$currentLang9, _texts$en272;
+    var _texts$currentLang8, _texts$en8, _texts$currentLang9, _texts$en9;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!shootContainer) return;
     var row = document.createElement('div');
@@ -15153,8 +14216,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'shootLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.removeEntry) || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 || (_texts$en271 = _texts$en271.projectForm) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.removeEntry) || 'Remove';
-    var shootLabelText = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 || (_texts$currentLang9 = _texts$currentLang9.projectForm) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.shootLabel) || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 || (_texts$en272 = _texts$en272.projectForm) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.shootLabel) || 'Shoot';
+    var removeBase = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.removeEntry) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 || (_texts$en8 = _texts$en8.projectForm) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.removeEntry) || 'Remove';
+    var shootLabelText = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 || (_texts$currentLang9 = _texts$currentLang9.projectForm) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.shootLabel) || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 || (_texts$en9 = _texts$en9.projectForm) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.shootLabel) || 'Shoot';
     var removeShootLabel = "".concat(removeBase, " ").concat(shootLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeShootLabel);
@@ -15174,7 +14237,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createReturnRow() {
-    var _texts$currentLang0, _texts$en273, _texts$currentLang1, _texts$en274;
+    var _texts$currentLang0, _texts$en0, _texts$currentLang1, _texts$en1;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!returnContainer) return;
     var row = document.createElement('div');
@@ -15195,8 +14258,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'returnLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.projectForm) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.removeEntry) || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 || (_texts$en273 = _texts$en273.projectForm) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.removeEntry) || 'Remove';
-    var returnLabelText = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 || (_texts$currentLang1 = _texts$currentLang1.projectForm) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.returnLabel) || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 || (_texts$en274 = _texts$en274.projectForm) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.returnLabel) || 'Return Day';
+    var removeBase = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.projectForm) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.removeEntry) || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 || (_texts$en0 = _texts$en0.projectForm) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.removeEntry) || 'Remove';
+    var returnLabelText = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 || (_texts$currentLang1 = _texts$currentLang1.projectForm) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.returnLabel) || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 || (_texts$en1 = _texts$en1.projectForm) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.returnLabel) || 'Return Day';
     var removeReturnLabel = "".concat(removeBase, " ").concat(returnLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeReturnLabel);
@@ -15274,10 +14337,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (selectedName && cameraDb[selectedName]) {
       addCameraTypes(cameraDb[selectedName]);
     }
-    Object.entries(cameraDb).forEach(function (_ref50) {
-      var _ref51 = _slicedToArray(_ref50, 2),
-        name = _ref51[0],
-        cam = _ref51[1];
+    Object.entries(cameraDb).forEach(function (_ref45) {
+      var _ref46 = _slicedToArray(_ref45, 2),
+        name = _ref46[0],
+        cam = _ref46[1];
       if (name === selectedName) return;
       addCameraTypes(cam);
     });
@@ -15318,10 +14381,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
       seen.add(value);
     };
-    Object.entries(mediaDb).forEach(function (_ref52) {
-      var _ref53 = _slicedToArray(_ref52, 2),
-        name = _ref53[0],
-        info = _ref53[1];
+    Object.entries(mediaDb).forEach(function (_ref47) {
+      var _ref48 = _slicedToArray(_ref47, 2),
+        name = _ref48[0],
+        info = _ref48[1];
       if (!name) return;
       var fields = [name, info === null || info === void 0 ? void 0 : info.model, info === null || info === void 0 ? void 0 : info.interface];
       var matches = fields.some(function (field) {
@@ -15707,38 +14770,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function showPowerWarningDialog(context) {
-    var _texts$en275, _texts$en276, _texts$en277;
+    var _texts$en10, _texts$en11, _texts$en12;
     if (!powerWarningDialog) return;
-    var _ref54 = context || {},
-      batteryName = _ref54.batteryName,
-      current = _ref54.current,
-      hasPinLimit = _ref54.hasPinLimit,
-      pinLimit = _ref54.pinLimit,
-      hasDtapRating = _ref54.hasDtapRating,
-      dtapLimit = _ref54.dtapLimit,
-      dtapAllowed = _ref54.dtapAllowed;
+    var _ref49 = context || {},
+      batteryName = _ref49.batteryName,
+      current = _ref49.current,
+      hasPinLimit = _ref49.hasPinLimit,
+      pinLimit = _ref49.pinLimit,
+      hasDtapRating = _ref49.hasDtapRating,
+      dtapLimit = _ref49.dtapLimit,
+      dtapAllowed = _ref49.dtapAllowed;
     var safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect === null || batterySelect === void 0 ? void 0 : batterySelect.value) || '';
     var formattedCurrent = formatCurrentValue(Number(current) || 0);
     var langTexts = texts[currentLang] || texts.en || {};
-    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.powerWarningMessage) || '';
+    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.powerWarningMessage) || '';
     var message = messageTemplate ? messageTemplate.replace(/\{battery\}/g, safeBatteryName).replace(/\{current\}/g, formattedCurrent) : "".concat(safeBatteryName, " exceeds every available output (").concat(formattedCurrent, "A).");
     if (powerWarningMessageElem) {
       powerWarningMessageElem.textContent = message;
     }
-    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
+    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
     if (powerWarningPinsDetailElem) {
       powerWarningPinsDetailElem.textContent = pinsDetail;
     }
     var dtapDetail = '';
     if (hasDtapRating && dtapAllowed) {
-      var _texts$en278;
-      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
+      var _texts$en13;
+      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
     } else if (hasDtapRating && !dtapAllowed) {
-      var _texts$en279;
-      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
+      var _texts$en14;
+      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
     } else {
-      var _texts$en280;
-      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
+      var _texts$en15;
+      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
     }
     if (powerWarningDtapDetailElem) {
       powerWarningDtapDetailElem.textContent = dtapDetail;
@@ -16108,21 +15171,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return '';
   }
   function getSharedImportPresetLabel(sharedData) {
-    var _texts$en281, _texts$en282;
+    var _texts$en16, _texts$en17;
     var langTexts = texts[currentLang] || texts.en || {};
-    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     var projectName = getSharedImportProjectName(sharedData);
     if (!projectName) {
       return fallback;
     }
-    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.sharedImportAutoGearPresetName) || '%s';
+    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.sharedImportAutoGearPresetName) || '%s';
     if (template.includes('%s')) {
       return formatWithPlaceholdersSafe(template, projectName);
     }
     return "".concat(template, " ").concat(projectName).trim();
   }
   function ensureSharedAutoGearPreset(rules, sharedData) {
-    var _texts$currentLang10, _texts$en283;
+    var _texts$currentLang10, _texts$en18;
     var normalizedRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
     if (!normalizedRules.length) return null;
     var label = getSharedImportPresetLabel(sharedData);
@@ -16130,7 +15193,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var preset = autoGearPresets.find(function (entry) {
       return entry.fingerprint === fingerprint;
     }) || null;
-    var fallback = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.sharedImportAutoGearPresetFallback) || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.sharedImportAutoGearPresetFallback) || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     if (preset) {
       if (label && preset.label !== label && preset.label === fallback) {
         preset = _objectSpread(_objectSpread({}, preset), {}, {
@@ -16606,10 +15669,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (Array.isArray(node.attributes)) {
         addCategory(path.join('.'));
       }
-      Object.entries(node).forEach(function (_ref55) {
-        var _ref56 = _slicedToArray(_ref55, 2),
-          childKey = _ref56[0],
-          value = _ref56[1];
+      Object.entries(node).forEach(function (_ref50) {
+        var _ref51 = _slicedToArray(_ref50, 2),
+          childKey = _ref51[0],
+          value = _ref51[1];
         if (childKey === 'attributes') return;
         if (value && _typeof(value) === 'object') {
           _traverseSchema(value, path.concat(childKey));
@@ -16621,16 +15684,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var addFromData = function addFromData(data) {
       if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-      Object.entries(data).forEach(function (_ref57) {
-        var _ref58 = _slicedToArray(_ref57, 2),
-          key = _ref58[0],
-          value = _ref58[1];
+      Object.entries(data).forEach(function (_ref52) {
+        var _ref53 = _slicedToArray(_ref52, 2),
+          key = _ref53[0],
+          value = _ref53[1];
         if (key === 'accessories') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref59) {
-              var _ref60 = _slicedToArray(_ref59, 2),
-                subKey = _ref60[0],
-                subValue = _ref60[1];
+            Object.entries(value).forEach(function (_ref54) {
+              var _ref55 = _slicedToArray(_ref54, 2),
+                subKey = _ref55[0],
+                subValue = _ref55[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("accessories.".concat(subKey));
               }
@@ -16638,10 +15701,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         } else if (key === 'fiz') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref61) {
-              var _ref62 = _slicedToArray(_ref61, 2),
-                subKey = _ref62[0],
-                subValue = _ref62[1];
+            Object.entries(value).forEach(function (_ref56) {
+              var _ref57 = _slicedToArray(_ref56, 2),
+                subKey = _ref57[0],
+                subValue = _ref57[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("fiz.".concat(subKey));
               }
@@ -16884,8 +15947,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
     if (deviceSchema) {
       if (deviceSchema.accessories) {
-        for (var _i8 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i8 < _Object$entries6.length; _i8++) {
-          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i8], 2),
+        for (var _i7 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i7 < _Object$entries6.length; _i7++) {
+          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
             _sub = _Object$entries6$_i[0],
             obj = _Object$entries6$_i[1];
           if (_sub === 'cables') {
@@ -16895,16 +15958,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         }
       }
-      for (var _i9 = 0, _Object$entries7 = Object.entries(deviceSchema); _i9 < _Object$entries7.length; _i9++) {
-        var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i9], 2),
+      for (var _i8 = 0, _Object$entries7 = Object.entries(deviceSchema); _i8 < _Object$entries7.length; _i8++) {
+        var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i8], 2),
           _key7 = _Object$entries7$_i[0],
           _obj = _Object$entries7$_i[1];
         if (_key7 === 'accessories' || _key7 === 'fiz') continue;
         if (_obj && _obj.attributes) addOpt(_key7);
       }
       if (deviceSchema.fiz) {
-        for (var _i0 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i0 < _Object$entries8.length; _i0++) {
-          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i0], 2),
+        for (var _i9 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i9 < _Object$entries8.length; _i9++) {
+          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i9], 2),
             _sub2 = _Object$entries8$_i[0],
             _obj2 = _Object$entries8$_i[1];
           if (_obj2 && _obj2.attributes) addOpt("fiz.".concat(_sub2));
@@ -16921,18 +15984,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           existing.add(val);
         }
       };
-      for (var _i1 = 0, _Object$entries9 = Object.entries(devices); _i1 < _Object$entries9.length; _i1++) {
-        var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i1], 2),
+      for (var _i0 = 0, _Object$entries9 = Object.entries(devices); _i0 < _Object$entries9.length; _i0++) {
+        var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i0], 2),
           _key8 = _Object$entries9$_i[0],
           _obj3 = _Object$entries9$_i[1];
         if (_key8 === 'accessories') {
-          for (var _i10 = 0, _Object$keys = Object.keys(_obj3 || {}); _i10 < _Object$keys.length; _i10++) {
-            var _sub3 = _Object$keys[_i10];
+          for (var _i1 = 0, _Object$keys = Object.keys(_obj3 || {}); _i1 < _Object$keys.length; _i1++) {
+            var _sub3 = _Object$keys[_i1];
             addIfMissing("accessories.".concat(_sub3));
           }
         } else if (_key8 === 'fiz') {
-          for (var _i11 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i11 < _Object$keys2.length; _i11++) {
-            var _sub4 = _Object$keys2[_i11];
+          for (var _i10 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i10 < _Object$keys2.length; _i10++) {
+            var _sub4 = _Object$keys2[_i10];
             addIfMissing("fiz.".concat(_sub4));
           }
         } else if (_obj3 && _typeof(_obj3) === 'object' && !Array.isArray(_obj3)) {
@@ -16944,9 +16007,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   _populateCategoryOptions();
   function getCategoryContainer(categoryKey, subcategory) {
-    var _ref63 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref63$create = _ref63.create,
-      create = _ref63$create === void 0 ? false : _ref63$create;
+    var _ref58 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref58$create = _ref58.create,
+      create = _ref58$create === void 0 ? false : _ref58$create;
     if (!categoryKey) {
       return null;
     }
@@ -17051,7 +16114,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof temperatureUnit !== 'undefined') {
       fallbackUnitCandidates.push(temperatureUnit);
     }
-    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
       fallbackUnitCandidates.push(CORE_GLOBAL_SCOPE.temperatureUnit);
     }
     if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
@@ -17114,12 +16177,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function formatTemperatureForDisplay(celsius) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref64 = options || {},
-      unit = _ref64.unit,
-      _ref64$lang = _ref64.lang,
-      lang = _ref64$lang === void 0 ? currentLang : _ref64$lang,
-      _ref64$includeSign = _ref64.includeSign,
-      includeSign = _ref64$includeSign === void 0 ? true : _ref64$includeSign;
+    var _ref59 = options || {},
+      unit = _ref59.unit,
+      _ref59$lang = _ref59.lang,
+      lang = _ref59$lang === void 0 ? currentLang : _ref59$lang,
+      _ref59$includeSign = _ref59.includeSign,
+      includeSign = _ref59$includeSign === void 0 ? true : _ref59$includeSign;
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
     var converted = convertCelsiusToUnit(celsius, resolvedUnit);
     if (!Number.isFinite(converted)) {
@@ -17306,10 +16369,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var viewfinderInputsContainerEl = resolveContainer('viewfinderVideoInputsContainer');
     var viewfinderOutputsContainerEl = resolveContainer('viewfinderVideoOutputsContainer');
     var ensureContainers = [['setViewfinders', viewfinderContainerEl], ['getViewfinders', viewfinderContainerEl], ['clearViewfinders', viewfinderContainerEl]];
-    var missingRequiredContainer = ensureContainers.some(function (_ref65) {
-      var _ref66 = _slicedToArray(_ref65, 2),
-        name = _ref66[0],
-        container = _ref66[1];
+    var missingRequiredContainer = ensureContainers.some(function (_ref60) {
+      var _ref61 = _slicedToArray(_ref60, 2),
+        name = _ref61[0],
+        container = _ref61[1];
       if (container) {
         return false;
       }
@@ -17748,9 +16811,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function updateLensFocusScaleSelectOptions() {
     var _texts13;
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-    var _ref67 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref67$preserveValue = _ref67.preserveValue,
-      preserveValue = _ref67$preserveValue === void 0 ? true : _ref67$preserveValue;
+    var _ref62 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref62$preserveValue = _ref62.preserveValue,
+      preserveValue = _ref62$preserveValue === void 0 ? true : _ref62$preserveValue;
     if (!lensFocusScaleSelect) {
       return;
     }
@@ -18003,10 +17066,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (inputType === 'boolean') {
       var _row = document.createElement('div');
       _row.className = 'form-row schema-form-row';
-      var _label74 = document.createElement('label');
-      _label74.setAttribute('for', attrId);
-      _label74.textContent = labelText;
-      _row.appendChild(_label74);
+      var _label4 = document.createElement('label');
+      _label4.setAttribute('for', attrId);
+      _label4.textContent = labelText;
+      _row.appendChild(_label4);
       var _controlContainer = document.createElement('div');
       _controlContainer.className = 'schema-control schema-control--checkbox';
       var _inlineWrap = document.createElement('div');
@@ -18071,10 +17134,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     controlContainer.appendChild(inlineWrap);
     if (config.help) {
-      var _help40 = document.createElement('p');
-      _help40.className = 'schema-field-help';
-      _help40.textContent = config.help;
-      controlContainer.appendChild(_help40);
+      var _help = document.createElement('p');
+      _help.className = 'schema-field-help';
+      _help.textContent = config.help;
+      controlContainer.appendChild(_help);
     }
     row.appendChild(controlContainer);
     return row;
@@ -18121,8 +17184,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       _iterator5.f();
     }
     if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
-      for (var _i12 = 0, _Object$keys3 = Object.keys(data); _i12 < _Object$keys3.length; _i12++) {
-        var _key0 = _Object$keys3[_i12];
+      for (var _i11 = 0, _Object$keys3 = Object.keys(data); _i11 < _Object$keys3.length; _i11++) {
+        var _key0 = _Object$keys3[_i11];
         if (skip(_key0)) continue;
         seen.add(_key0);
         attrs.push(_key0);
@@ -18207,14 +17270,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function collectDynamicFieldValues(category) {
     var exclude = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var attrs = [];
+    var rawDynamicFieldAttrs = '';
+    var excludeSnapshot = Array.isArray(exclude) ? exclude.slice() : exclude;
     if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
+      rawDynamicFieldAttrs = String(dynamicFieldsDiv.dataset.attrs);
       try {
-        var parsed = JSON.parse(dynamicFieldsDiv.dataset.attrs);
+        var parsed = JSON.parse(rawDynamicFieldAttrs);
         if (Array.isArray(parsed)) {
           attrs = parsed;
         }
       } catch (err) {
-        console.warn('Failed to parse dynamic field attributes', err);
+        var LOG_ATTR_SNIPPET_LIMIT = 500;
+        var rawAttrsSnippet = rawDynamicFieldAttrs.slice(0, LOG_ATTR_SNIPPET_LIMIT);
+        console.warn('Failed to parse dynamic field attributes', {
+          error: err,
+          rawAttrsSnippet: rawAttrsSnippet,
+          rawAttrsTruncated: rawDynamicFieldAttrs.length > LOG_ATTR_SNIPPET_LIMIT,
+          category: category,
+          exclude: excludeSnapshot
+        });
       }
     }
     if (!attrs.length) {
@@ -18499,8 +17573,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       lowLabel: document.getElementById('mountVoltageBLowLabel')
     }
   };
-  if (typeof setMountVoltageDomReferences === 'function') {
-    setMountVoltageDomReferences({
+  var mountVoltageNamespace = typeof setMountVoltageDomReferences === 'function' ? {
+    setDomReferences: setMountVoltageDomReferences
+  } : CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE.cineCoreMountVoltage && typeof CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences === 'function' ? {
+    setDomReferences: CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences
+  } : null;
+  if (mountVoltageNamespace && typeof mountVoltageNamespace.setDomReferences === 'function') {
+    mountVoltageNamespace.setDomReferences({
       section: mountVoltageSectionElem,
       heading: mountVoltageHeadingElem,
       description: mountVoltageDescriptionElem,
@@ -18509,7 +17588,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       titles: mountVoltageTitleElems,
       inputs: mountVoltageInputs
     });
-  } else if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+  } else if (CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
     try {
       CORE_GLOBAL_SCOPE.mountVoltageInputs = mountVoltageInputs;
     } catch (mountVoltageInputsAssignError) {
@@ -18943,8 +18022,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var dismissLabel = langTexts.installBannerDismiss || fallbackTexts.installBannerDismiss || closeLabel || '';
     if (installPromptBannerDismiss) {
       var labelText = dismissLabel || '';
-      if (typeof setButtonLabelWithIcon === 'function') {
-        setButtonLabelWithIcon(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
+      if (typeof setButtonLabelWithIconBinding === 'function') {
+        setButtonLabelWithIconBinding(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
       }
       Array.from(installPromptBannerDismiss.querySelectorAll('.visually-hidden')).forEach(function (node) {
         if (node && node.parentNode === installPromptBannerDismiss) {
@@ -18964,8 +18043,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (installGuideClose) {
-      if (closeLabel && typeof setButtonLabelWithIcon === 'function') {
-        setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
+      if (closeLabel && typeof setButtonLabelWithIconBinding === 'function') {
+        setButtonLabelWithIconBinding(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
         installGuideClose.setAttribute('aria-label', closeLabel);
         installGuideClose.setAttribute('title', closeLabel);
       } else if (!closeLabel) {
@@ -19205,13 +18284,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var settingsTabData = document.getElementById('settingsTab-data');
   var settingsTabAbout = document.getElementById('settingsTab-about');
   var settingsTabIconAssignments = [[settingsTabGeneral, ICON_GLYPHS.settingsGeneral], [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear], [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility], [settingsTabBackup, ICON_GLYPHS.settingsBackup], [settingsTabData, ICON_GLYPHS.settingsData], [settingsTabAbout, ICON_GLYPHS.settingsAbout]];
-  settingsTabIconAssignments.forEach(function (_ref68) {
-    var _button$querySelector4;
-    var _ref69 = _slicedToArray(_ref68, 2),
-      button = _ref69[0],
-      glyph = _ref69[1];
+  settingsTabIconAssignments.forEach(function (_ref63) {
+    var _button$querySelector;
+    var _ref64 = _slicedToArray(_ref63, 2),
+      button = _ref64[0],
+      glyph = _ref64[1];
     if (!button || !glyph) return;
-    var iconElement = (_button$querySelector4 = button.querySelector) === null || _button$querySelector4 === void 0 ? void 0 : _button$querySelector4.call(button, '.settings-tab-icon');
+    var iconElement = (_button$querySelector = button.querySelector) === null || _button$querySelector === void 0 ? void 0 : _button$querySelector.call(button, '.settings-tab-icon');
     if (!iconElement) return;
     applyIconGlyph(iconElement, glyph);
     iconElement.setAttribute('aria-hidden', 'true');
@@ -19323,9 +18402,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function activateSettingsTab(tabId) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!settingsTabButtons.length) return;
-    var _ref70 = options || {},
-      _ref70$focusTab = _ref70.focusTab,
-      focusTab = _ref70$focusTab === void 0 ? false : _ref70$focusTab;
+    var _ref65 = options || {},
+      _ref65$focusTab = _ref65.focusTab,
+      focusTab = _ref65$focusTab === void 0 ? false : _ref65$focusTab;
     var target = settingsTabButtons.find(function (button) {
       return button.id === tabId;
     });
@@ -19516,10 +18595,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return autoGearActiveConditions.has(key);
   }
   function refreshAutoGearConditionPicker() {
-    var _texts$currentLang11, _texts$en284;
+    var _texts$currentLang11, _texts$en19;
     if (!autoGearConditionSelect) return;
     var previousValue = autoGearConditionSelect.value || '';
-    var placeholderLabel = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionPlaceholder) || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.autoGearConditionPlaceholder) || 'Choose a condition';
+    var placeholderLabel = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionPlaceholder) || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.autoGearConditionPlaceholder) || 'Choose a condition';
     autoGearConditionSelect.innerHTML = '';
     var placeholder = document.createElement('option');
     placeholder.value = '';
@@ -19582,9 +18661,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var section = config.section,
       select = config.select;
-    var _ref71 = options || {},
-      _ref71$flash = _ref71.flash,
-      flash = _ref71$flash === void 0 ? false : _ref71$flash;
+    var _ref66 = options || {},
+      _ref66$flash = _ref66.flash,
+      flash = _ref66$flash === void 0 ? false : _ref66$flash;
     if (section.hidden) {
       section.hidden = false;
       section.setAttribute('aria-hidden', 'false');
@@ -19607,11 +18686,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function notifyAutoGearConditionRepeat(key) {
-    var _texts$currentLang12, _texts$en285;
+    var _texts$currentLang12, _texts$en20;
     if (typeof showNotification !== 'function') {
       return;
     }
-    var template = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearConditionRepeatHint) || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.autoGearConditionRepeatHint) || '';
+    var template = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearConditionRepeatHint) || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.autoGearConditionRepeatHint) || '';
     if (!template) return;
     var label = getAutoGearConditionLabel(key);
     var message;
@@ -19646,20 +18725,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     focusAutoGearConditionPicker();
   }
   function configureAutoGearConditionButtons() {
-    var _texts$currentLang13, _texts$en286, _texts$currentLang14, _texts$en287;
-    var addLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearConditionAddShortcut) || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.autoGearConditionAddShortcut) || 'Add another condition';
-    var removeLabel = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearConditionRemove) || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.autoGearConditionRemove) || 'Remove this condition';
+    var _texts$currentLang13, _texts$en21, _texts$currentLang14, _texts$en22;
+    var addLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearConditionAddShortcut) || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.autoGearConditionAddShortcut) || 'Add another condition';
+    var removeLabel = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearConditionRemove) || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.autoGearConditionRemove) || 'Remove this condition';
     AUTO_GEAR_CONDITION_KEYS.forEach(function (key) {
       var config = getAutoGearConditionConfig(key);
       if (!config) return;
       if (config.addShortcut) {
-        setButtonLabelWithIcon(config.addShortcut, '', ICON_GLYPHS.add);
+        setButtonLabelWithIconBinding(config.addShortcut, '', ICON_GLYPHS.add);
         config.addShortcut.setAttribute('aria-label', addLabel);
         config.addShortcut.setAttribute('title', addLabel);
         config.addShortcut.setAttribute('data-help', addLabel);
       }
       if (config.removeButton) {
-        setButtonLabelWithIcon(config.removeButton, '', ICON_GLYPHS.minus);
+        setButtonLabelWithIconBinding(config.removeButton, '', ICON_GLYPHS.minus);
         config.removeButton.setAttribute('aria-label', removeLabel);
         config.removeButton.setAttribute('title', removeLabel);
         config.removeButton.setAttribute('data-help', removeLabel);
@@ -19832,9 +18911,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function clearAllAutoGearConditions() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref72 = options || {},
-      _ref72$preserveDraft = _ref72.preserveDraft,
-      preserveDraft = _ref72$preserveDraft === void 0 ? false : _ref72$preserveDraft;
+    var _ref67 = options || {},
+      _ref67$preserveDraft = _ref67.preserveDraft,
+      preserveDraft = _ref67$preserveDraft === void 0 ? false : _ref67$preserveDraft;
     Array.from(autoGearActiveConditions).forEach(function (key) {
       removeAutoGearCondition(key, {
         preserveDraft: preserveDraft,
@@ -20010,10 +19089,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
     autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
   }
-  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref73) {
-    var _ref74 = _slicedToArray(_ref73, 2),
-      key = _ref74[0],
-      select = _ref74[1];
+  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref68) {
+    var _ref69 = _slicedToArray(_ref68, 2),
+      key = _ref69[0],
+      select = _ref69[1];
     if (!select) return;
     var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
     var handleLogicChange = function handleLogicChange() {
@@ -20288,12 +19367,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function computeAutoGearMultiSelectSize(optionCount) {
-    var _ref75 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      fallback = _ref75.fallback,
-      _ref75$minRows = _ref75.minRows,
-      minRows = _ref75$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref75$minRows,
-      _ref75$maxRows = _ref75.maxRows,
-      maxRows = _ref75$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref75$maxRows;
+    var _ref70 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      fallback = _ref70.fallback,
+      _ref70$minRows = _ref70.minRows,
+      minRows = _ref70$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref70$minRows,
+      _ref70$maxRows = _ref70.maxRows,
+      maxRows = _ref70$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref70$maxRows;
     var effectiveFallback = Number.isFinite(fallback) && fallback >= minRows ? fallback : minRows;
     if (!Number.isFinite(optionCount) || optionCount <= 0) {
       return effectiveFallback;
@@ -20363,9 +19442,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       haystack.push(rule.label);
     }
     if (rule && rule.always) {
-      var _texts$currentLang15, _texts$en288;
+      var _texts$currentLang15, _texts$en23;
       haystack.push('always');
-      var alwaysText = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearAlwaysMeta) || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.autoGearAlwaysMeta) || 'Always active';
+      var alwaysText = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearAlwaysMeta) || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.autoGearAlwaysMeta) || 'Always active';
       if (alwaysText) {
         haystack.push(alwaysText);
       }
@@ -20386,11 +19465,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     pushValues(rule === null || rule === void 0 ? void 0 : rule.distance);
     var shootingCondition = normalizeAutoGearShootingDaysCondition(rule === null || rule === void 0 ? void 0 : rule.shootingDays);
     if (shootingCondition) {
-      var _texts$currentLang16, _texts$en289, _texts$currentLang17, _texts$en290, _texts$currentLang18, _texts$en291, _texts$currentLang19, _texts$en292;
-      var shootingLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysLabel) || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.autoGearShootingDaysLabel) || 'Shooting days condition';
-      var minimumLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearShootingDaysModeMinimum) || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.autoGearShootingDaysModeMinimum) || 'Minimum';
-      var maximumLabel = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearShootingDaysModeMaximum) || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.autoGearShootingDaysModeMaximum) || 'Maximum';
-      var everyLabel = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearShootingDaysModeEvery) || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.autoGearShootingDaysModeEvery) || 'Every';
+      var _texts$currentLang16, _texts$en24, _texts$currentLang17, _texts$en25, _texts$currentLang18, _texts$en26, _texts$currentLang19, _texts$en27;
+      var shootingLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysLabel) || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.autoGearShootingDaysLabel) || 'Shooting days condition';
+      var minimumLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearShootingDaysModeMinimum) || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.autoGearShootingDaysModeMinimum) || 'Minimum';
+      var maximumLabel = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearShootingDaysModeMaximum) || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.autoGearShootingDaysModeMaximum) || 'Maximum';
+      var everyLabel = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearShootingDaysModeEvery) || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.autoGearShootingDaysModeEvery) || 'Every';
       if (shootingLabel) {
         haystack.push(shootingLabel);
       }
@@ -20526,18 +19605,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!options.size) {
-      getAutoGearScenarioFallbackOptions().forEach(function (_ref76) {
-        var value = _ref76.value,
-          label = _ref76.label;
+      getAutoGearScenarioFallbackOptions().forEach(function (_ref71) {
+        var value = _ref71.value,
+          label = _ref71.label;
         if (!options.has(value)) {
           options.set(value, label);
         }
       });
     }
-    return Array.from(options.entries()).map(function (_ref77) {
-      var _ref78 = _slicedToArray(_ref77, 2),
-        value = _ref78[0],
-        label = _ref78[1];
+    return Array.from(options.entries()).map(function (_ref72) {
+      var _ref73 = _slicedToArray(_ref72, 2),
+        value = _ref73[0],
+        label = _ref73[1];
       return {
         value: value,
         label: label
@@ -20547,18 +19626,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function refreshAutoGearScenarioFilterOptions(rules) {
-    var _texts$currentLang20, _texts$en293;
+    var _texts$currentLang20, _texts$en28;
     if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
     var options = collectAutoGearScenarioFilterOptions(rules);
-    var anyLabel = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearFilterScenarioAny) || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.autoGearFilterScenarioAny) || 'All scenarios';
+    var anyLabel = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearFilterScenarioAny) || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.autoGearFilterScenarioAny) || 'All scenarios';
     autoGearFilterScenarioSelect.innerHTML = '';
     var anyOption = document.createElement('option');
     anyOption.value = 'all';
     anyOption.textContent = anyLabel;
     autoGearFilterScenarioSelect.appendChild(anyOption);
-    options.forEach(function (_ref79) {
-      var value = _ref79.value,
-        label = _ref79.label;
+    options.forEach(function (_ref74) {
+      var value = _ref74.value,
+        label = _ref74.label;
       var option = document.createElement('option');
       option.value = value;
       option.textContent = label;
@@ -20765,10 +19844,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang21, _texts$en294;
+      var _texts$currentLang21, _texts$en29;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioPlaceholder) || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.autoGearScenarioPlaceholder) || 'Select scenarios';
+      placeholder.textContent = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioPlaceholder) || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.autoGearScenarioPlaceholder) || 'Select scenarios';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearScenariosSelect.appendChild(placeholder);
@@ -20810,11 +19889,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var uniqueValues = Array.from(new Set(values));
     var desiredMode = autoGearEditorDraft ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic) : normalizeAutoGearScenarioLogic((_autoGearScenarioMode = autoGearScenarioModeSelectElement) === null || _autoGearScenarioMode === void 0 ? void 0 : _autoGearScenarioMode.value);
     if (autoGearScenarioModeSelectElement) {
-      var _texts$currentLang22, _texts$en295, _texts$currentLang23, _texts$en296, _texts$currentLang24, _texts$en297;
+      var _texts$currentLang22, _texts$en30, _texts$currentLang23, _texts$en31, _texts$currentLang24, _texts$en32;
       var modeLabels = {
-        all: ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearScenarioModeAll) || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.autoGearScenarioModeAll) || 'Require every selected scenario',
-        any: ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearScenarioModeAny) || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.autoGearScenarioModeAny) || 'Match any selected scenario',
-        multiplier: ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearScenarioModeMultiplier) || ((_texts$en297 = texts.en) === null || _texts$en297 === void 0 ? void 0 : _texts$en297.autoGearScenarioModeMultiplier) || 'Multiply when combined'
+        all: ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearScenarioModeAll) || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.autoGearScenarioModeAll) || 'Require every selected scenario',
+        any: ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearScenarioModeAny) || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.autoGearScenarioModeAny) || 'Match any selected scenario',
+        multiplier: ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearScenarioModeMultiplier) || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.autoGearScenarioModeMultiplier) || 'Multiply when combined'
       };
       Array.from(autoGearScenarioModeSelectElement.options || []).forEach(function (option) {
         if (!option) return;
@@ -20869,10 +19948,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var previousValue = autoGearScenarioBaseSelect.value || '';
     autoGearScenarioBaseSelect.innerHTML = '';
     if (forceDisable || !uniqueValues.length) {
-      var _texts$currentLang25, _texts$en298;
+      var _texts$currentLang25, _texts$en33;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearScenarioBasePlaceholder) || ((_texts$en298 = texts.en) === null || _texts$en298 === void 0 ? void 0 : _texts$en298.autoGearScenarioBasePlaceholder) || 'Select a base scenario';
+      placeholder.textContent = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearScenarioBasePlaceholder) || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.autoGearScenarioBasePlaceholder) || 'Select a base scenario';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearScenarioBaseSelect.appendChild(placeholder);
@@ -20937,10 +20016,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang26, _texts$en299;
+      var _texts$currentLang26, _texts$en34;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearMatteboxPlaceholder) || ((_texts$en299 = texts.en) === null || _texts$en299 === void 0 ? void 0 : _texts$en299.autoGearMatteboxPlaceholder) || 'Select mattebox options';
+      placeholder.textContent = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearMatteboxPlaceholder) || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.autoGearMatteboxPlaceholder) || 'Select mattebox options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearMatteboxSelect.appendChild(placeholder);
@@ -20991,10 +20070,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang27, _texts$en300;
+      var _texts$currentLang27, _texts$en35;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearCameraHandlePlaceholder) || ((_texts$en300 = texts.en) === null || _texts$en300 === void 0 ? void 0 : _texts$en300.autoGearCameraHandlePlaceholder) || 'Select camera handles';
+      placeholder.textContent = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearCameraHandlePlaceholder) || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.autoGearCameraHandlePlaceholder) || 'Select camera handles';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearCameraHandleSelect.appendChild(placeholder);
@@ -21026,15 +20105,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function getViewfinderFallbackLabel(value) {
     if (value === '__none__') {
-      var _texts$currentLang28, _texts$en301;
-      return ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.viewfinderExtensionNone) || ((_texts$en301 = texts.en) === null || _texts$en301 === void 0 ? void 0 : _texts$en301.viewfinderExtensionNone) || 'No';
+      var _texts$currentLang28, _texts$en36;
+      return ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.viewfinderExtensionNone) || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.viewfinderExtensionNone) || 'No';
     }
     return value;
   }
   function getVideoDistributionFallbackLabel(value) {
     if (value === '__none__') {
-      var _texts$currentLang29, _texts$en302;
-      return ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearVideoDistributionNone) || ((_texts$en302 = texts.en) === null || _texts$en302 === void 0 ? void 0 : _texts$en302.autoGearVideoDistributionNone) || 'No video distribution selected';
+      var _texts$currentLang29, _texts$en37;
+      return ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearVideoDistributionNone) || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.autoGearVideoDistributionNone) || 'No video distribution selected';
     }
     return value;
   }
@@ -21072,10 +20151,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang30, _texts$en303;
+      var _texts$currentLang30, _texts$en38;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearViewfinderExtensionPlaceholder) || ((_texts$en303 = texts.en) === null || _texts$en303 === void 0 ? void 0 : _texts$en303.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
+      placeholder.textContent = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearViewfinderExtensionPlaceholder) || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearViewfinderExtensionSelect.appendChild(placeholder);
@@ -21131,10 +20210,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (!seen.has(value)) addOption(value, value);
     });
     if (!autoGearDeliveryResolutionSelect.options.length) {
-      var _texts$currentLang31, _texts$en304;
+      var _texts$currentLang31, _texts$en39;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearDeliveryResolutionPlaceholder) || ((_texts$en304 = texts.en) === null || _texts$en304 === void 0 ? void 0 : _texts$en304.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
+      placeholder.textContent = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearDeliveryResolutionPlaceholder) || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearDeliveryResolutionSelect.appendChild(placeholder);
@@ -21186,10 +20265,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang32, _texts$en305;
+      var _texts$currentLang32, _texts$en40;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearVideoDistributionPlaceholder) || ((_texts$en305 = texts.en) === null || _texts$en305 === void 0 ? void 0 : _texts$en305.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
+      placeholder.textContent = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearVideoDistributionPlaceholder) || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearVideoDistributionSelect.appendChild(placeholder);
@@ -21223,15 +20302,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }).filter(Boolean)));
   }
   function getCrewRoleEntries() {
-    var _texts$en306;
+    var _texts$en41;
     var langTexts = texts[currentLang] || texts.en || {};
-    var crewRoleMap = langTexts.crewRoles || ((_texts$en306 = texts.en) === null || _texts$en306 === void 0 ? void 0 : _texts$en306.crewRoles) || {};
+    var crewRoleMap = langTexts.crewRoles || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.crewRoles) || {};
     var seen = new Set();
     var entries = [];
-    Object.entries(crewRoleMap).forEach(function (_ref80) {
-      var _ref81 = _slicedToArray(_ref80, 2),
-        value = _ref81[0],
-        label = _ref81[1];
+    Object.entries(crewRoleMap).forEach(function (_ref75) {
+      var _ref76 = _slicedToArray(_ref75, 2),
+        value = _ref76[0],
+        label = _ref76[1];
       if (typeof value !== 'string') return;
       var trimmedValue = value.trim();
       if (!trimmedValue) return;

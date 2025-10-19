@@ -307,6 +307,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (isNodeProcessReference(value)) {
       return true;
     }
+    if (_typeof(value) === 'object' && value && typeof value.id === 'string' && typeof value.filename === 'string' && (typeof value.loaded === 'boolean' || Array.isArray(value.children))) {
+      return true;
+    }
     if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
       return true;
     }
