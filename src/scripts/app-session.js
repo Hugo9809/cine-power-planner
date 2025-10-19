@@ -7599,6 +7599,26 @@ if (autoGearAddItemButton) {
 
 syncAutoGearMonitorFieldVisibility();
 
+const removeNode = (node) => {
+  if (!node || typeof node !== 'object') {
+    return;
+  }
+  try {
+    if (typeof node.remove === 'function') {
+      node.remove();
+      return;
+    }
+  } catch (removeError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to remove node via native remove()', removeError);
+    }
+  }
+  const parent = node.parentNode;
+  if (parent && typeof parent.removeChild === 'function') {
+    parent.removeChild(node);
+  }
+};
+
 const createAccentTint = (alpha = 0.16) => {
   const accentFallback = typeof accentColor === 'string'
     ? accentColor
@@ -7760,9 +7780,9 @@ function showNotification(type, message) {
   note.style.color = textColor;
   container.appendChild(note);
   setTimeout(() => {
-    note.remove();
+    removeNode(note);
     if (!container.children.length) {
-      container.remove();
+      removeNode(container);
     }
   }, 4000);
 }
@@ -7839,9 +7859,9 @@ const showAutoBackupActivityIndicator = (message) => {
   return () => {
     autoBackupIndicatorRefCount = Math.max(0, autoBackupIndicatorRefCount - 1);
     if (autoBackupIndicatorRefCount === 0) {
-      indicator.remove();
+      removeNode(indicator);
       if (!container.children.length) {
-        container.remove();
+        removeNode(container);
       }
     }
   };
@@ -8128,9 +8148,9 @@ const showGlobalLoadingIndicator = (message) => {
           console.warn('Failed to clear bootstrap loading indicator busy state', bootstrapBusyResetError);
         }
       }
-      indicator.remove();
+      removeNode(indicator);
       if (!container.children.length) {
-        container.remove();
+        removeNode(container);
       }
       if (bootstrapNotice && typeof bootstrapNotice === 'object') {
         bootstrapNotice.indicator = null;
@@ -14185,7 +14205,7 @@ if (helpButton && helpDialog) {
     const applyGrouping = () => {
       helpQuickLinksList
         .querySelectorAll('li[data-quick-link-spacer="true"]')
-        .forEach(node => node.remove());
+        .forEach(removeNode);
       const items = Array.from(helpQuickLinksList.children);
       if (!items.length) return;
 
@@ -15678,7 +15698,7 @@ if (helpButton && helpDialog) {
     hoverHelpActive = false;
     hoverHelpCurrentTarget = null;
     if (hoverHelpTooltip) {
-      hoverHelpTooltip.remove();
+      removeNode(hoverHelpTooltip);
       hoverHelpTooltip = null;
     }
     clearHoverHelpHighlight();

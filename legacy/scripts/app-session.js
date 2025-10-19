@@ -6501,6 +6501,25 @@ if (settingsButton && settingsDialog) {
   }
 }
 syncAutoGearMonitorFieldVisibility();
+var removeNode = function removeNode(node) {
+  if (!node || _typeof(node) !== 'object') {
+    return;
+  }
+  try {
+    if (typeof node.remove === 'function') {
+      node.remove();
+      return;
+    }
+  } catch (removeError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to remove node via native remove()', removeError);
+    }
+  }
+  var parent = node.parentNode;
+  if (parent && typeof parent.removeChild === 'function') {
+    parent.removeChild(node);
+  }
+};
 var createAccentTint = function createAccentTint() {
   var alpha = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.16;
   var accentFallback = typeof accentColor === 'string' ? accentColor : DEFAULT_ACCENT_COLOR;
@@ -6645,9 +6664,9 @@ function showNotification(type, message) {
   note.style.color = textColor;
   container.appendChild(note);
   setTimeout(function () {
-    note.remove();
+    removeNode(note);
     if (!container.children.length) {
-      container.remove();
+      removeNode(container);
     }
   }, 4000);
 }
@@ -6714,9 +6733,9 @@ var showAutoBackupActivityIndicator = function showAutoBackupActivityIndicator(m
   return function () {
     autoBackupIndicatorRefCount = Math.max(0, autoBackupIndicatorRefCount - 1);
     if (autoBackupIndicatorRefCount === 0) {
-      indicator.remove();
+      removeNode(indicator);
       if (!container.children.length) {
-        container.remove();
+        removeNode(container);
       }
     }
   };
@@ -6951,9 +6970,9 @@ var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
           console.warn('Failed to clear bootstrap loading indicator busy state', bootstrapBusyResetError);
         }
       }
-      indicator.remove();
+      removeNode(indicator);
       if (!container.children.length) {
-        container.remove();
+        removeNode(container);
       }
       if (bootstrapNotice && _typeof(bootstrapNotice) === 'object') {
         bootstrapNotice.indicator = null;
@@ -12538,7 +12557,7 @@ if (helpButton && helpDialog) {
     }
     var applyGrouping = function applyGrouping() {
       helpQuickLinksList.querySelectorAll('li[data-quick-link-spacer="true"]').forEach(function (node) {
-        return node.remove();
+        return removeNode(node);
       });
       var items = Array.from(helpQuickLinksList.children);
       if (!items.length) return;
@@ -13864,7 +13883,7 @@ if (helpButton && helpDialog) {
     hoverHelpActive = false;
     hoverHelpCurrentTarget = null;
     if (hoverHelpTooltip) {
-      hoverHelpTooltip.remove();
+      removeNode(hoverHelpTooltip);
       hoverHelpTooltip = null;
     }
     clearHoverHelpHighlight();
