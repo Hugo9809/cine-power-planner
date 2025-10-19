@@ -1134,6 +1134,27 @@
         return layer;
       }
 
+      function readScrollExtent(target) {
+        if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+          return null;
+        }
+
+        let value = null;
+
+        try {
+          value = target.scrollHeight;
+        } catch (error) {
+          void error;
+          return null;
+        }
+
+        if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+          return value;
+        }
+
+        return null;
+      }
+
       function resolvePinkModeScrollHeight(host) {
         const globalDocument = typeof document !== 'undefined' ? document : null;
         const candidateHost =
@@ -1149,10 +1170,7 @@
           return null;
         }
 
-        const directValue =
-          typeof candidateHost.scrollHeight === 'number'
-            ? candidateHost.scrollHeight
-            : null;
+        const directValue = readScrollExtent(candidateHost);
         if (typeof directValue === 'number' && directValue > 0) {
           return directValue;
         }
@@ -1176,8 +1194,7 @@
           if (!fallback || typeof fallback !== 'object' || fallback === candidateHost) {
             continue;
           }
-          const fallbackHeight =
-            typeof fallback.scrollHeight === 'number' ? fallback.scrollHeight : null;
+          const fallbackHeight = readScrollExtent(fallback);
           if (typeof fallbackHeight === 'number' && fallbackHeight > 0) {
             return fallbackHeight;
           }
