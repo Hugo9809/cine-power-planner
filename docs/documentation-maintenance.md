@@ -7,7 +7,8 @@ runtime. Offline crews rely on these instructions to protect user data.
 
 - Persistence logic changes (`storage.js`, `modules/persistence.js`).
 - UI tweaks that affect save/share/import/backup/restore workflows.
-- New locales or updates to `src/scripts/translations.js`.
+- New locales or updates to the modules in `src/scripts/translations/` (and the
+  loader in `src/scripts/translations.js`).
 - Service worker or offline cache adjustments.
 - Any change to verification evidence exported with releases.
 

@@ -477,9 +477,14 @@ Puedes previsualizar nuevas traducciones sin build:
   antes de enviar paquetes sin conexión.
 
 1. Duplica el README más cercano como `README.<lang>.md` y tradúcelo.
-2. Añade cadenas en `translations.js`, manteniendo los marcadores como `%s`.
-3. Copia y traduce las páginas estáticas (privacidad, aviso legal).
-4. Ejecuta `npm test` antes de enviar un pull request.
+2. Actualiza el módulo del idioma en `src/scripts/translations/<lang>.js` (copia
+   un archivo existente si creas un nuevo idioma) y traduce cada valor. Mantén
+   marcadores como `%s` o `{name}`.
+3. Registra el idioma en `src/scripts/translations.js` añadiéndolo a
+   `LOCALE_SCRIPTS` y `LOCALE_LOADING_MESSAGES` para que el cargador recupere el
+   módulo sin conexión.
+4. Copia y traduce las páginas estáticas (privacidad, aviso legal).
+5. Ejecuta `npm test` antes de enviar un pull request.
 
 ## Instalación como app
 

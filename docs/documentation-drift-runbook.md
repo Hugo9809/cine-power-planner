@@ -24,8 +24,9 @@ whenever QA spots mismatched wording, outdated screenshots or missing locales.
 ## Remediation workflow
 
 1. **Source of truth review**
-   - Compare UI strings from `src/scripts/translations.js` and help topics from
-     `src/scripts/modules/help.js` to the docs in question.
+   - Compare UI strings from the locale modules in `src/scripts/translations/`
+     (confirm `src/scripts/translations.js` still lists each locale) and help
+     topics from `src/scripts/modules/help.js` to the docs in question.
    - Update `docs/schema-inventory.md` if persistence shapes changed.
 2. **Doc updates**
    - Revise the affected markdown files, README translations and help overlay

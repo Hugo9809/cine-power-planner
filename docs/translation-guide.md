@@ -5,11 +5,14 @@ offline bundles safe and documentation consistent.
 
 ## Locale files
 
-- All strings live in `src/scripts/translations.js`.
-- Each locale exports the same structure (English, German, French, Italian,
-  Spanish).
+- Each locale ships in its own module under
+  `src/scripts/translations/<locale>.js` so bundles stay readable and easy to
+  diff offline.
+- The loader at `src/scripts/translations.js` registers every module via
+  `LOCALE_SCRIPTS` and `LOCALE_LOADING_MESSAGES`; update both maps whenever you
+  add a locale or adjust its offline loading message.
 - Never rely on remote translation services; edits happen locally and are
-  reviewed offline.
+  reviewed offline so installers and backups remain self-contained.
 
 ## Workflow
 
@@ -17,12 +20,18 @@ offline bundles safe and documentation consistent.
    - List UI strings affected by the feature/documentation update.
    - Identify docs (READMEs, guides) requiring translated updates.
 2. **Edit safely**
-   - Update `translations.js` entries for each locale.
-   - Keep placeholders, keyboard shortcuts and punctuation consistent.
+   - Update every affected locale module in `src/scripts/translations/<locale>.js`
+     (copy an existing file if you are introducing a new language).
+   - Keep placeholders, keyboard shortcuts and punctuation consistent across
+     modules; mirror JSON keys exactly so offline diffs remain reviewable.
+   - Adjust `LOCALE_SCRIPTS` and `LOCALE_LOADING_MESSAGES` in
+     `src/scripts/translations.js` if a locale is added or renamed.
    - Confirm long strings still fit UI components by testing offline.
 3. **Synchronise docs**
-   - Mirror changes in `README.<locale>.md` and relevant docs if they include
-     locale-specific guidance.
+   - Mirror changes in `README.<locale>.md`, the primary README and relevant docs
+     if they include locale-specific guidance.
+   - Record cross-locale notes inside the doc while edits are in progress so
+     reviewers can verify parity offline.
    - Update screenshots using the same locale.
 4. **Review**
    - Use bilingual reviewers to validate accuracy.
