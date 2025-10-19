@@ -85,6 +85,14 @@
 // pre-attached namespaces first and then fall back to CommonJS style requires.
 // This defensive dance keeps offline builds and automated backups aligned.
 
+// Ensure the safe default language token always exists before any runtime code
+// attempts to access it. The loader executes several modules in parallel and a
+// missing binding here would surface as a ReferenceError long before the
+// localisation helpers finish initialising. Using `var` keeps backwards
+// compatibility with legacy bundles while still allowing the value to be
+// resolved accurately later on.
+var DEFAULT_LANGUAGE_SAFE = 'en';
+
 function fallbackResolveRuntimeModuleLoader() {
   if (typeof require === 'function') {
     try {
@@ -9721,7 +9729,7 @@ function getFocusScaleLabelForLang(lang = currentLang, scale) {
   );
 }
 
-const DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
+DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
   const candidateResolvers = [
     function resolveFromLexicalBinding() {
       try {

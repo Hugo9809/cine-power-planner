@@ -41,6 +41,7 @@
 
   var registryKey = '__cineTranslations';
   var loaderStateKey = '__cineTranslationsLoaderState';
+  var defaultLocaleSnapshot = null;
 
   function ensureRegistry() {
     if (scope[registryKey] && typeof scope[registryKey] === 'object') {
@@ -268,14 +269,60 @@
       : {};
 
     if (locale === DEFAULT_LANGUAGE || !loaderState.defaultLocale) {
-      loaderState.defaultLocale = {
+      var snapshot = {
         texts: cloneTranslationValue(localeTexts),
         categoryNames: cloneTranslationValue(localeCategoryNames),
         gearItems: cloneTranslationValue(localeGearItems),
       };
+
+      defaultLocaleSnapshot = snapshot;
+
+      var assigned = false;
+      try {
+        loaderState.defaultLocale = snapshot;
+        assigned = loaderState.defaultLocale === snapshot;
+      } catch (assignError) {
+        void assignError;
+      }
+
+      if (!assigned) {
+        var existingDefault = null;
+        try {
+          existingDefault = loaderState.defaultLocale;
+        } catch (existingReadError) {
+          void existingReadError;
+          existingDefault = null;
+        }
+
+        if (existingDefault && typeof existingDefault === 'object') {
+          existingDefault.texts = snapshot.texts;
+          existingDefault.categoryNames = snapshot.categoryNames;
+          existingDefault.gearItems = snapshot.gearItems;
+          defaultLocaleSnapshot = existingDefault;
+        } else if (typeof Object.defineProperty === 'function') {
+          try {
+            Object.defineProperty(loaderState, 'defaultLocale', {
+              configurable: true,
+              enumerable: true,
+              writable: true,
+              value: snapshot,
+            });
+            if (loaderState.defaultLocale === snapshot) {
+              defaultLocaleSnapshot = snapshot;
+              assigned = true;
+            }
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+
+        if (!assigned && (!defaultLocaleSnapshot || typeof defaultLocaleSnapshot !== 'object')) {
+          defaultLocaleSnapshot = snapshot;
+        }
+      }
     }
 
-    var reference = loaderState.defaultLocale || {
+    var reference = loaderState.defaultLocale || defaultLocaleSnapshot || {
       texts: {},
       categoryNames: {},
       gearItems: {},
@@ -453,6 +500,10 @@
     var loaderState = ensureLoaderState();
     if (loaderState.defaultLocale && loaderState.defaultLocale.texts) {
       return loaderState.defaultLocale;
+    }
+
+    if (defaultLocaleSnapshot && defaultLocaleSnapshot.texts) {
+      return defaultLocaleSnapshot;
     }
 
     var existing = getLocaleData(DEFAULT_LANGUAGE);
