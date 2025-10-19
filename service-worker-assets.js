@@ -230,6 +230,7 @@
   "./src/scripts/globalthis-polyfill.js",
   "./src/scripts/legal-topbar.js",
   "./src/scripts/loader.js",
+  "./src/scripts/loading-indicator-bootstrap.js",
   "./src/scripts/modern-support-check.js",
   "./src/scripts/modern-support-check.mjs",
   "./src/scripts/modules/app-core/bootstrap.js",
