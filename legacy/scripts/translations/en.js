@@ -1615,7 +1615,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "",
             "body": "",
             "hero": {
-              "heading": "",
+              "heading": "Step 1 · Welcome aboard",
               "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
               "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
