@@ -1605,6 +1605,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var LEGACY_BUNDLE_STORAGE_KEY = 'cameraPowerPlanner_forceLegacyBundle';
   var LEGACY_BUNDLE_RETRY_SESSION_KEY = 'cameraPowerPlanner_forceLegacyBundleRetry';
   var LEGACY_BUNDLE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+  var legacyReloadPending = false;
   function nowMilliseconds() {
     if (typeof Date !== 'function' || typeof Date.now !== 'function') {
       return null;
@@ -1714,6 +1715,28 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     }
     return marked;
+  }
+  function clearLegacyBundleRetryAttempt() {
+    var storages = getLegacyRetryStorages();
+    if (!storages.length) {
+      return false;
+    }
+    var cleared = false;
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      try {
+        if (typeof storage.removeItem === 'function') {
+          storage.removeItem(LEGACY_BUNDLE_RETRY_SESSION_KEY);
+          cleared = true;
+        }
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+    return cleared;
   }
   function clearLegacyBundlePreference() {
     var storages = getLegacyFlagStorages();
@@ -2952,6 +2975,9 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return loadScriptsSequentially(bundle.core, {
       onError: settings.onError,
       onComplete: function handleBundleComplete() {
+        if (!legacyReloadPending) {
+          clearLegacyBundleRetryAttempt();
+        }
         if (bundle.deferred && bundle.deferred.length) {
           scheduleDeferredScripts(bundle.deferred);
         }
@@ -2978,27 +3004,31 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
   };
   function startLoading() {
-    if (shouldForceLegacyBundle()) {
+    var legacyRetryPending = hasLegacyBundleRetryAttempt();
+    var forcedLegacy = shouldForceLegacyBundle();
+    if (forcedLegacy || legacyRetryPending) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;
-      if (hasLegacyBundleRetryAttempt()) {
+      if (legacyRetryPending) {
         loadScriptBundle(legacyScriptBundle);
         return;
       }
-      supportsModernFeatures(function (supportsModern) {
-        if (supportsModern) {
-          var cleared = clearLegacyBundlePreference();
-          if (cleared) {
-            if (triggerLegacyBundleReload({
-              rememberPreference: false,
-              markRetry: true
-            })) {
-              return;
+      if (forcedLegacy) {
+        supportsModernFeatures(function (supportsModern) {
+          if (supportsModern) {
+            var cleared = clearLegacyBundlePreference();
+            if (cleared) {
+              if (triggerLegacyBundleReload({
+                rememberPreference: false,
+                markRetry: true
+              })) {
+                return;
+              }
             }
           }
-        }
-        loadScriptBundle(legacyScriptBundle);
-      });
-      return;
+          loadScriptBundle(legacyScriptBundle);
+        });
+        return;
+      }
     }
     supportsModernFeatures(function (supportsModern) {
       var activeBundle = supportsModern ? modernScriptBundle : legacyScriptBundle;
@@ -3021,11 +3051,16 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           var syntaxError = isSyntaxErrorEvent(errorEvent);
           var fallbackReason = syntaxError ? 'syntax-error' : 'transient-error';
           var fallbackMessage = extractLegacyFallbackMessage(errorEvent);
-          if (syntaxError) {
-            if (triggerLegacyBundleReload({
+          var alreadyRetried = hasLegacyBundleRetryAttempt();
+          if (!alreadyRetried) {
+            var reloadTriggered = triggerLegacyBundleReload({
               reason: fallbackReason,
-              message: fallbackMessage
-            })) {
+              message: fallbackMessage,
+              rememberPreference: syntaxError ? undefined : false,
+              markRetry: true
+            });
+            if (reloadTriggered) {
+              legacyReloadPending = true;
               return true;
             }
           }
