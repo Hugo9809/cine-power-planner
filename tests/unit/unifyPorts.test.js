@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const { execFileSync } = require('child_process');
+
 const {
   normalizeMonitor,
   normalizeVideoPorts,
@@ -211,5 +215,30 @@ describe('normalizeVideoPorts', () => {
     expect(device.videoOutputs).toEqual([
       { type: 'USB-C', notes: 'Alt mode' }
     ]);
+  });
+});
+
+describe('unifyPorts CLI integration', () => {
+  const dataIndexPath = path.resolve(__dirname, '../../src/data/index.js');
+  const scriptPath = path.resolve(__dirname, '../../tools/unifyPorts.js');
+  let originalIndexContent;
+
+  beforeAll(() => {
+    originalIndexContent = fs.readFileSync(dataIndexPath, 'utf8');
+  });
+
+  afterAll(() => {
+    fs.writeFileSync(dataIndexPath, originalIndexContent);
+    const dataModulePath = require.resolve('../../src/data');
+    delete require.cache[dataModulePath];
+  });
+
+  it('keeps rentalHouses attached to exported data', () => {
+    execFileSync(process.execPath, [scriptPath], { stdio: 'pipe' });
+    const dataModulePath = require.resolve('../../src/data');
+    delete require.cache[dataModulePath];
+    const data = require('../../src/data');
+    expect(Array.isArray(data.rentalHouses)).toBe(true);
+    expect(data.rentalHouses.length).toBeGreaterThan(0);
   });
 });
