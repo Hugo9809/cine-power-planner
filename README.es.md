@@ -494,7 +494,7 @@ Cine Power Planner es una aplicación web progresiva:
 
 ## Flujo de datos de dispositivos
 
-Los catálogos viven en `devices/`. Cada archivo agrupa equipos relacionados para facilitar las auditorías. Ejecuta los siguientes scripts antes de hacer commit:
+Los catálogos viven en `src/data/devices/`. Cada archivo agrupa equipos relacionados para facilitar las auditorías. Ejecuta los siguientes scripts antes de hacer commit:
 
 ```bash
 npm run normalize

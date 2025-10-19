@@ -1256,7 +1256,7 @@ Cine Power Planner is a Progressive Web App:
 
 ## Device Data Workflow
 
-Device catalogs live under `devices/`. Each file groups related equipment so
+Device catalogs live under `src/data/devices/`. Each file groups related equipment so
 changes are easy to audit in version control and inside the app. When editing
 the dataset, run helper scripts before committing:
 

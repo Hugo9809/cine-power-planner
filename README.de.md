@@ -496,7 +496,7 @@ Cine Power Planner ist eine Progressive Web App:
 
 ## Gerätedaten-Workflow
 
-Gerätekataloge liegen unter `devices/`. Jede Datei bündelt verwandte Ausrüstung, damit Änderungen in Versionierung und App nachvollziehbar bleiben. Vor Commits helfen folgende Skripte:
+Gerätekataloge liegen unter `src/data/devices/`. Jede Datei bündelt verwandte Ausrüstung, damit Änderungen in Versionierung und App nachvollziehbar bleiben. Vor Commits helfen folgende Skripte:
 
 ```bash
 npm run normalize
