@@ -21063,6 +21063,51 @@ var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
 const createDeferredAutoGearRefresher = functionName => selected =>
   callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
 
+const refreshAutoGearShootingDaysValue =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
+    : function refreshAutoGearShootingDaysValue() {};
+
+const refreshAutoGearScenarioOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions
+    : function refreshAutoGearScenarioOptions() {};
+
+const refreshAutoGearScenarioBaseSelect =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect
+    : function refreshAutoGearScenarioBaseSelect() {};
+
+const refreshAutoGearMatteboxOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions
+    : function refreshAutoGearMatteboxOptions() {};
+
+const refreshAutoGearCameraHandleOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions
+    : function refreshAutoGearCameraHandleOptions() {};
+
+const refreshAutoGearViewfinderExtensionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions
+    : function refreshAutoGearViewfinderExtensionOptions() {};
+
+const refreshAutoGearDeliveryResolutionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions
+    : function refreshAutoGearDeliveryResolutionOptions() {};
+
+const refreshAutoGearVideoDistributionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions
+    : function refreshAutoGearVideoDistributionOptions() {};
+
+const collectAutoGearSelectedValues =
+  typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues
+    : function collectAutoGearSelectedValues() { return []; };
+
 var autoGearConditionRefreshers = {
   always: null,
   scenarios: refreshAutoGearScenarioOptions,
@@ -22390,50 +22435,6 @@ function createAutoGearDraft(rule) {
   };
 }
 
-const refreshAutoGearShootingDaysValue =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
-    : function refreshAutoGearShootingDaysValue() {};
-
-const refreshAutoGearScenarioOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions
-    : function refreshAutoGearScenarioOptions() {};
-
-const refreshAutoGearScenarioBaseSelect =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect
-    : function refreshAutoGearScenarioBaseSelect() {};
-
-const refreshAutoGearMatteboxOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions
-    : function refreshAutoGearMatteboxOptions() {};
-
-const refreshAutoGearCameraHandleOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions
-    : function refreshAutoGearCameraHandleOptions() {};
-
-const refreshAutoGearViewfinderExtensionOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions
-    : function refreshAutoGearViewfinderExtensionOptions() {};
-
-const refreshAutoGearDeliveryResolutionOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions
-    : function refreshAutoGearDeliveryResolutionOptions() {};
-
-const refreshAutoGearVideoDistributionOptions =
-  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions
-    : function refreshAutoGearVideoDistributionOptions() {};
-
-const collectAutoGearSelectedValues =
-  typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function'
-    ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues
-    : function collectAutoGearSelectedValues() { return []; };
 function getCrewRoleEntries() {
   const langTexts = texts[currentLang] || texts.en || {};
   const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
