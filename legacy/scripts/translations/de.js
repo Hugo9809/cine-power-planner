@@ -1745,7 +1745,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "projectRequirements": {
             "title": "Projektanforderungs-Boxen verfeinern",
-            "body": "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing—Produktionsfirma, Rentalhaus-Präferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
+            "body": "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing — Produktionsfirma, Rentalhaus-Präferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
           },
           "gearList": {
             "title": "Generierte Gear-Liste prüfen",
