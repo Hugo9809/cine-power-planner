@@ -928,6 +928,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     };
   }
+  var PINK_MODE_SUPPORT_MODULE_ID = 'modules/core/pink-mode-support.js';
+  function hasOwn(source, key) {
+    if (!source) {
+      return false;
+    }
+    return Object.prototype.hasOwnProperty.call(source, key);
+  }
   function createSafeResolvedPromise(value) {
     if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
       return Promise.resolve(value);
@@ -1011,6 +1018,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     register(typeof global !== 'undefined' ? global : null);
     return scopes;
   }
+  function extractPinkModeSupportModule(candidate) {
+    if (!isObject(candidate)) {
+      return null;
+    }
+    if (typeof candidate.resolvePinkModeSupport === 'function') {
+      return candidate;
+    }
+    if (hasOwn(candidate, PINK_MODE_SUPPORT_MODULE_ID) && isObject(candidate[PINK_MODE_SUPPORT_MODULE_ID])) {
+      return candidate[PINK_MODE_SUPPORT_MODULE_ID];
+    }
+    if (hasOwn(candidate, 'modules') && isObject(candidate.modules) && hasOwn(candidate.modules, PINK_MODE_SUPPORT_MODULE_ID) && isObject(candidate.modules[PINK_MODE_SUPPORT_MODULE_ID])) {
+      return candidate.modules[PINK_MODE_SUPPORT_MODULE_ID];
+    }
+    return null;
+  }
   function resolveSupportModule(options, fallbackSupport) {
     var requireFn = ensureRequireFn(options && options.requireFn);
     var runtimeScope = ensureScope(options && options.runtimeScope);
@@ -1019,7 +1041,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var support = null;
     if (resolveCoreSupportModule) {
       try {
-        support = resolveCoreSupportModule('cineCorePinkModeSupport', './modules/core/pink-mode-support.js');
+        support = extractPinkModeSupportModule(resolveCoreSupportModule('cineCorePinkModeSupport', './modules/core/pink-mode.js'));
       } catch (pinkModeSupportResolveError) {
         void pinkModeSupportResolveError;
         support = null;
@@ -1027,7 +1049,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (!isObject(support) && typeof requireFn === 'function') {
       try {
-        var requiredSupport = requireFn('./modules/core/pink-mode-support.js');
+        var requiredSupport = extractPinkModeSupportModule(requireFn('./modules/core/pink-mode.js'));
         if (isObject(requiredSupport)) {
           support = requiredSupport;
         }
@@ -1045,6 +1067,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var candidate = scope && scope.cineCorePinkModeSupport;
         if (isObject(candidate)) {
           return candidate;
+        }
+        if (scope && isObject(scope.cineCorePinkModeModules) && isObject(scope.cineCorePinkModeModules[PINK_MODE_SUPPORT_MODULE_ID])) {
+          return scope.cineCorePinkModeModules[PINK_MODE_SUPPORT_MODULE_ID];
         }
       } catch (pinkModeSupportLookupError) {
         void pinkModeSupportLookupError;

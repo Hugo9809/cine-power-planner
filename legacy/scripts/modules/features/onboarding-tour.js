@@ -2028,7 +2028,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (target && typeof target.closest === 'function') {
       try {
-        var overlayMatch = target.closest('#' + OVERLAY_ID);
+        var overlayMatch = target.closest("#".concat(OVERLAY_ID));
         if (overlayMatch) {
           return true;
         }
@@ -2036,7 +2036,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cine.features.onboardingTour could not evaluate scroll event target.closest.', closestError);
       }
     }
-    if (overlayRoot && typeof overlayRoot.contains === 'function' && target && typeof target === 'object') {
+    if (overlayRoot && typeof overlayRoot.contains === 'function' && target && _typeof(target) === 'object') {
       try {
         if (overlayRoot.contains(target)) {
           return true;
@@ -2663,6 +2663,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     activeTargetElements = [];
   }
   var DEFAULT_HIGHLIGHT_PADDING = 12;
+  var EXTRA_ONBOARDING_CARD_VIEWPORT_TOP_MARGIN = 20;
+  var EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP = 20;
   function normalizeHighlightPaddingValue(value, fallback) {
     if (typeof value === 'number' && Number.isFinite(value)) {
       return Math.max(0, value);
@@ -2758,9 +2760,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       offsetTop = _getOverlayMetrics.offsetTop;
     var left = combinedRect.left + offsetLeft - padding.left;
     var top = combinedRect.top + offsetTop - padding.top;
+    var normalizedLeft = Number.isFinite(left) ? left : 0;
+    var normalizedTop = Number.isFinite(top) ? top : 0;
     highlightEl.style.width = "".concat(width, "px");
     highlightEl.style.height = "".concat(height, "px");
-    highlightEl.style.transform = "translate(".concat(Math.max(0, left), "px, ").concat(Math.max(0, top), "px)");
+    highlightEl.style.transform = "translate(".concat(normalizedLeft, "px, ").concat(normalizedTop, "px)");
     highlightEl.style.opacity = '1';
     positionCard(highlightElements[0] || null, combinedRect);
   }
@@ -2810,14 +2814,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         margin = Math.min(margin, responsiveMargin);
       }
     }
-    var topPlacementMargin = margin + Math.max(8, margin * 0.5);
+    var viewportTopMargin = margin + EXTRA_ONBOARDING_CARD_VIEWPORT_TOP_MARGIN;
+    var topPlacementMargin = margin + Math.max(8, margin * 0.5) + EXTRA_ONBOARDING_CARD_TOP_PLACEMENT_GAP;
     var viewportRight = scrollX + viewportWidth;
     var viewportBottom = scrollY + viewportHeight;
     var minLeft = scrollX + margin;
-    var minTop = scrollY + margin;
+    var minTop = scrollY + viewportTopMargin;
     var maxLeft = Math.max(minLeft, viewportRight - cardRect.width - margin);
     var maxTop = Math.max(minTop, viewportBottom - cardRect.height - margin);
-    var top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
+    var top = scrollY + Math.max(viewportTopMargin, (viewportHeight - cardRect.height) / 2);
     var left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     var placement = 'floating';
     if (!forceFloating && targetElement && resolvedRect) {
@@ -3501,7 +3506,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
       try {
-        GLOBAL_SCOPE.setLanguage(candidate);
+        var _result = GLOBAL_SCOPE.setLanguage(candidate);
+        if (_result && typeof _result.then === 'function') {
+          _result.catch(function (error) {
+            safeWarn('cine.features.onboardingTour async language sync failed.', error);
+          });
+        }
         applied = true;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not sync language preference.', error);

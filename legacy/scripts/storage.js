@@ -342,6 +342,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     suppressionNoticeShown: false
   };
   var ensureConsoleMethodsWritable = null;
+  var storageLoggingResolverCache = null;
+  var storageLoggerCache = null;
+  var storageLoggerResolutionAttempted = false;
   if (typeof require === 'function') {
     try {
       var consoleHelpers = require('./console-helpers.js');
@@ -360,6 +363,204 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   if (typeof ensureConsoleMethodsWritable === 'function') {
     ensureConsoleMethodsWritable(['warn', 'info']);
   }
+  function collectStorageLoggingScopes() {
+    var scopes = [];
+    var enqueue = function enqueue(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    };
+    enqueue(GLOBAL_SCOPE);
+    enqueue(typeof globalThis !== 'undefined' ? globalThis : null);
+    enqueue(typeof window !== 'undefined' ? window : null);
+    enqueue(typeof self !== 'undefined' ? self : null);
+    enqueue(typeof global !== 'undefined' ? global : null);
+    return scopes;
+  }
+  function resolveStorageLoggingResolver() {
+    if (storageLoggingResolverCache) {
+      return storageLoggingResolverCache;
+    }
+    if (typeof require === 'function') {
+      try {
+        var required = require('./modules/logging-resolver.js');
+        if (required && typeof required.resolveLogger === 'function') {
+          storageLoggingResolverCache = required;
+          return storageLoggingResolverCache;
+        }
+      } catch (loggingResolverError) {
+        void loggingResolverError;
+      }
+    }
+    var scopes = collectStorageLoggingScopes();
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      try {
+        var resolver = scope.cineLoggingResolver;
+        if (resolver && typeof resolver.resolveLogger === 'function') {
+          storageLoggingResolverCache = resolver;
+          return storageLoggingResolverCache;
+        }
+      } catch (scopeResolverError) {
+        void scopeResolverError;
+      }
+    }
+    storageLoggingResolverCache = null;
+    return storageLoggingResolverCache;
+  }
+  function resolveStorageLogger() {
+    if (storageLoggerCache || storageLoggerResolutionAttempted) {
+      return storageLoggerCache;
+    }
+    storageLoggerResolutionAttempted = true;
+    var resolver = resolveStorageLoggingResolver();
+    if (resolver && typeof resolver.resolveLogger === 'function') {
+      try {
+        var logger = resolver.resolveLogger('storage', {
+          meta: {
+            source: 'storage-module'
+          }
+        });
+        if (logger) {
+          storageLoggerCache = logger;
+          return storageLoggerCache;
+        }
+      } catch (resolverError) {
+        void resolverError;
+      }
+    }
+    storageLoggerCache = null;
+    return storageLoggerCache;
+  }
+  function sanitizeStorageError(error) {
+    if (!error) {
+      return null;
+    }
+    if (typeof error === 'string') {
+      return {
+        message: error
+      };
+    }
+    var result = {};
+    if (typeof error.name === 'string' && error.name) {
+      result.name = error.name;
+    }
+    if (typeof error.message === 'string' && error.message) {
+      result.message = error.message;
+    }
+    if (typeof error.stack === 'string' && error.stack) {
+      result.stack = error.stack;
+    }
+    if (!Object.keys(result).length) {
+      try {
+        result.message = String(error);
+      } catch (stringifyError) {
+        void stringifyError;
+        return null;
+      }
+    }
+    return result;
+  }
+  function getActiveStorageType(storage) {
+    if (storage && typeof safeLocalStorageInfo !== 'undefined' && safeLocalStorageInfo && safeLocalStorageInfo.storage === storage) {
+      return safeLocalStorageInfo && typeof safeLocalStorageInfo.type === 'string' ? safeLocalStorageInfo.type : 'unknown';
+    }
+    if (storage && GLOBAL_SCOPE) {
+      try {
+        if (GLOBAL_SCOPE.localStorage && storage === GLOBAL_SCOPE.localStorage) {
+          return 'local';
+        }
+      } catch (localStorageCompareError) {
+        void localStorageCompareError;
+      }
+      try {
+        if (GLOBAL_SCOPE.sessionStorage && storage === GLOBAL_SCOPE.sessionStorage) {
+          return 'session';
+        }
+      } catch (sessionStorageCompareError) {
+        void sessionStorageCompareError;
+      }
+    }
+    if (typeof safeLocalStorageInfo !== 'undefined' && safeLocalStorageInfo && typeof safeLocalStorageInfo.type === 'string') {
+      return safeLocalStorageInfo.type;
+    }
+    return 'unknown';
+  }
+  function logStorageEvent(level, message, detail, meta, consoleCallback) {
+    var normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+    var normalizedMessage = typeof message === 'string' && message ? message : 'Storage event';
+    var logger = resolveStorageLogger();
+    var handled = false;
+    var resolvedMeta = {
+      module: 'storage'
+    };
+    if (meta && _typeof(meta) === 'object') {
+      resolvedMeta = {
+        module: 'storage'
+      };
+      var metaKeys = Object.keys(meta);
+      for (var metaIndex = 0; metaIndex < metaKeys.length; metaIndex += 1) {
+        var metaKey = metaKeys[metaIndex];
+        resolvedMeta[metaKey] = meta[metaKey];
+      }
+    }
+    if (logger) {
+      if (typeof logger[normalizedLevel] === 'function') {
+        try {
+          logger[normalizedLevel](normalizedMessage, detail, resolvedMeta);
+          handled = true;
+        } catch (loggingError) {
+          handled = false;
+          void loggingError;
+        }
+      } else if (typeof logger.log === 'function') {
+        try {
+          logger.log(normalizedLevel, normalizedMessage, detail, resolvedMeta);
+          handled = true;
+        } catch (loggerLogError) {
+          handled = false;
+          void loggerLogError;
+        }
+      }
+    }
+    if (typeof consoleCallback === 'function') {
+      try {
+        consoleCallback();
+      } catch (consoleCallbackError) {
+        void consoleCallbackError;
+      }
+      return handled;
+    }
+    if (typeof console === 'undefined' || !console) {
+      return handled;
+    }
+    var fallback = null;
+    if (normalizedLevel === 'error' && typeof console.error === 'function') {
+      fallback = console.error;
+    } else if (normalizedLevel === 'warn' && typeof console.warn === 'function') {
+      fallback = console.warn;
+    } else if (normalizedLevel === 'info' && typeof console.info === 'function') {
+      fallback = console.info;
+    } else if (normalizedLevel === 'debug' && typeof console.debug === 'function') {
+      fallback = console.debug;
+    } else if (typeof console.log === 'function') {
+      fallback = console.log;
+    }
+    if (typeof fallback === 'function') {
+      try {
+        fallback.call(console, normalizedMessage, detail || null);
+      } catch (fallbackError) {
+        void fallbackError;
+      }
+    }
+    return handled;
+  }
   function getCompressionLogTimestamp() {
     if (typeof Date === 'undefined') {
       return null;
@@ -375,9 +576,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   function logCompressionSavingsEvent(kind, identifier, message, savings, percent) {
-    if (typeof console === 'undefined') {
-      return;
-    }
     var entryKey = typeof kind === 'string' && kind ? kind : 'generic';
     var keyLabel = null;
     if (typeof identifier === 'string' && identifier) {
@@ -390,88 +588,109 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void stringifyError;
       }
     }
-    var registry = compressionWarningRegistry;
-    var entry = registry.entries[entryKey];
-    var now = getCompressionLogTimestamp();
-    if (!entry) {
-      entry = {
-        kind: entryKey,
-        occurrences: 0,
-        totalSavings: 0,
-        lastPercent: null,
-        lastKey: null,
-        uniqueKeys: Object.create(null),
-        uniqueKeyCount: 0,
-        firstLoggedAt: now,
-        lastLoggedAt: now,
-        lastSummaryAt: null,
-        suppressedTotal: 0,
-        suppressedSinceSummary: 0
-      };
-      registry.entries[entryKey] = entry;
-    }
-    entry.occurrences += 1;
-    entry.lastLoggedAt = now;
-    if (keyLabel) {
-      entry.lastKey = keyLabel;
-      if (!entry.uniqueKeys[keyLabel]) {
-        entry.uniqueKeys[keyLabel] = true;
-        entry.uniqueKeyCount += 1;
-      }
-    }
+    var detail = {
+      event: 'compression-savings',
+      kind: entryKey,
+      key: keyLabel,
+      storageType: getActiveStorageType()
+    };
     if (typeof savings === 'number' && Number.isFinite(savings)) {
-      entry.totalSavings += savings;
+      detail.savings = savings;
     }
     if (typeof percent === 'number' && Number.isFinite(percent)) {
-      entry.lastPercent = percent;
+      detail.percent = percent;
     }
-    if (registry.totalWarnings < COMPRESSION_WARNING_LIMIT) {
-      if (typeof ensureConsoleMethodsWritable === 'function') {
-        ensureConsoleMethodsWritable('warn');
+    var consoleLogger = function logCompressionToConsole() {
+      if (typeof console === 'undefined') {
+        return;
       }
-      if (typeof console.warn === 'function' && message) {
-        console.warn(message);
+      var registry = compressionWarningRegistry;
+      var entry = registry.entries[entryKey];
+      var now = getCompressionLogTimestamp();
+      if (!entry) {
+        entry = {
+          kind: entryKey,
+          occurrences: 0,
+          totalSavings: 0,
+          lastPercent: null,
+          lastKey: null,
+          uniqueKeys: Object.create(null),
+          uniqueKeyCount: 0,
+          firstLoggedAt: now,
+          lastLoggedAt: now,
+          lastSummaryAt: null,
+          suppressedTotal: 0,
+          suppressedSinceSummary: 0
+        };
+        registry.entries[entryKey] = entry;
       }
-      registry.totalWarnings += 1;
-      return;
-    }
-    entry.suppressedTotal += 1;
-    entry.suppressedSinceSummary += 1;
-    if (!registry.suppressionNoticeShown && typeof console.info === 'function') {
-      if (typeof ensureConsoleMethodsWritable === 'function') {
-        ensureConsoleMethodsWritable('info');
+      entry.occurrences += 1;
+      entry.lastLoggedAt = now;
+      if (keyLabel) {
+        entry.lastKey = keyLabel;
+        if (!entry.uniqueKeys[keyLabel]) {
+          entry.uniqueKeys[keyLabel] = true;
+          entry.uniqueKeyCount += 1;
+        }
       }
-      console.info('Additional storage compression warnings are being batched to keep diagnostics readable.', {
-        limit: COMPRESSION_WARNING_LIMIT,
-        batchSize: COMPRESSION_WARNING_BATCH_SIZE
-      });
-      registry.suppressionNoticeShown = true;
-    }
-    var shouldSummarize = false;
-    if (!entry.lastSummaryAt) {
-      shouldSummarize = true;
-    } else if (entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
-      shouldSummarize = true;
-    } else if (now !== null && entry.lastSummaryAt !== null && entry.suppressedSinceSummary > 0 && now - entry.lastSummaryAt >= COMPRESSION_LOG_SUMMARY_WINDOW_MS) {
-      shouldSummarize = true;
-    }
-    if (shouldSummarize && typeof console.info === 'function') {
-      if (typeof ensureConsoleMethodsWritable === 'function') {
-        ensureConsoleMethodsWritable('info');
+      if (typeof savings === 'number' && Number.isFinite(savings)) {
+        entry.totalSavings += savings;
       }
-      console.info('Suppressed repeated storage compression warnings.', {
-        kind: entry.kind,
-        mostRecentKey: entry.lastKey,
-        suppressedSinceSummary: entry.suppressedSinceSummary,
-        suppressedTotal: entry.suppressedTotal,
-        totalOccurrences: entry.occurrences,
-        totalSavings: entry.totalSavings,
-        lastPercent: entry.lastPercent,
-        uniqueKeys: entry.uniqueKeyCount
-      });
-      entry.lastSummaryAt = now;
-      entry.suppressedSinceSummary = 0;
-    }
+      if (typeof percent === 'number' && Number.isFinite(percent)) {
+        entry.lastPercent = percent;
+      }
+      if (registry.totalWarnings < COMPRESSION_WARNING_LIMIT) {
+        if (typeof ensureConsoleMethodsWritable === 'function') {
+          ensureConsoleMethodsWritable('warn');
+        }
+        if (typeof console.warn === 'function' && message) {
+          console.warn(message);
+        }
+        registry.totalWarnings += 1;
+        return;
+      }
+      entry.suppressedTotal += 1;
+      entry.suppressedSinceSummary += 1;
+      if (!registry.suppressionNoticeShown && typeof console.info === 'function') {
+        if (typeof ensureConsoleMethodsWritable === 'function') {
+          ensureConsoleMethodsWritable('info');
+        }
+        console.info('Additional storage compression warnings are being batched to keep diagnostics readable.', {
+          limit: COMPRESSION_WARNING_LIMIT,
+          batchSize: COMPRESSION_WARNING_BATCH_SIZE
+        });
+        registry.suppressionNoticeShown = true;
+      }
+      var shouldSummarize = false;
+      if (!entry.lastSummaryAt) {
+        shouldSummarize = true;
+      } else if (entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
+        shouldSummarize = true;
+      } else if (now !== null && entry.lastSummaryAt !== null && entry.suppressedSinceSummary > 0 && now - entry.lastSummaryAt >= COMPRESSION_LOG_SUMMARY_WINDOW_MS) {
+        shouldSummarize = true;
+      }
+      if (shouldSummarize && typeof console.info === 'function') {
+        if (typeof ensureConsoleMethodsWritable === 'function') {
+          ensureConsoleMethodsWritable('info');
+        }
+        console.info('Suppressed repeated storage compression warnings.', {
+          kind: entry.kind,
+          mostRecentKey: entry.lastKey,
+          suppressedSinceSummary: entry.suppressedSinceSummary,
+          suppressedTotal: entry.suppressedTotal,
+          totalOccurrences: entry.occurrences,
+          totalSavings: entry.totalSavings,
+          lastPercent: entry.lastPercent,
+          uniqueKeys: entry.uniqueKeyCount
+        });
+        entry.lastSummaryAt = now;
+        entry.suppressedSinceSummary = 0;
+      }
+    };
+    logStorageEvent('info', message, detail, {
+      event: 'compression-savings',
+      kind: entryKey
+    }, consoleLogger);
   }
   function getCompressionLogSnapshot() {
     var entries = {};
@@ -2340,24 +2559,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         entries.push(variantEntry);
       }
     };
-    for (var i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
-      var provider = CRITICAL_BACKUP_KEY_PROVIDERS[i];
-      if (typeof provider !== 'function') {
-        continue;
-      }
-      var result = void 0;
-      try {
-        result = provider(options);
-      } catch (providerError) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Critical storage key provider failed', providerError);
+    var _loop = function _loop() {
+        var provider = CRITICAL_BACKUP_KEY_PROVIDERS[i];
+        if (typeof provider !== 'function') {
+          return 0;
         }
-        continue;
-      }
-      var entry = createCriticalStorageEntry(result, options);
-      if (entry) {
-        pushEntry(entry);
-      }
+        var result;
+        try {
+          result = provider(options);
+        } catch (providerError) {
+          providerDetail = {
+            event: 'critical-storage',
+            action: 'collect-keys',
+            reason: 'provider-error',
+            storageType: getActiveStorageType(options && options.storage ? options.storage : null),
+            error: sanitizeStorageError(providerError)
+          };
+          logStorageEvent('warn', 'Critical storage key provider failed', providerDetail, {
+            event: 'critical-storage',
+            stage: 'gather'
+          }, function logProviderErrorToConsole() {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Critical storage key provider failed', providerError);
+            }
+          });
+          return 0;
+        }
+        var entry = createCriticalStorageEntry(result, options);
+        if (entry) {
+          pushEntry(entry);
+        }
+      },
+      providerDetail,
+      _ret;
+    for (var i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
+      _ret = _loop();
+      if (_ret === 0) continue;
     }
     return entries;
   }
@@ -2389,9 +2626,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       try {
         safeStorage = getSafeLocalStorage();
       } catch (guardError) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Unable to resolve safe storage while ensuring backups', guardError);
-        }
+        var guardDetail = {
+          event: 'critical-storage',
+          action: 'resolve-storage',
+          reason: 'resolve-failed',
+          storageType: getActiveStorageType(options && options.storage ? options.storage : null),
+          error: sanitizeStorageError(guardError)
+        };
+        logStorageEvent('warn', 'Unable to resolve safe storage while ensuring backups', guardDetail, {
+          event: 'critical-storage',
+          stage: 'ensure'
+        }, function logGuardErrorToConsole() {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Unable to resolve safe storage while ensuring backups', guardError);
+          }
+        });
         safeStorage = null;
       }
     }
@@ -2404,7 +2653,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var entries = gatherCriticalStorageEntries(options);
     var targetStorage = safeStorage && typeof safeStorage.getItem === 'function' ? safeStorage : null;
-    var _loop = function _loop() {
+    var _loop2 = function _loop2() {
         var entry = entries[index];
         var storage = entry.storage && typeof entry.storage.getItem === 'function' ? entry.storage : targetStorage;
         if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
@@ -2423,9 +2672,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             reason: 'read-failed',
             error: readError
           });
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn("Critical storage guard could not inspect ".concat(entry.key), readError);
-          }
+          primaryReadDetail = {
+            event: 'critical-storage',
+            action: 'inspect-primary',
+            key: entry.key,
+            storageType: getActiveStorageType(storage),
+            reason: 'read-failed',
+            error: sanitizeStorageError(readError)
+          };
+          logStorageEvent('warn', 'Critical storage guard could not inspect ' + entry.key, primaryReadDetail, {
+            event: 'critical-storage',
+            stage: 'ensure'
+          }, function logPrimaryReadFailureToConsole() {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Critical storage guard could not inspect ' + entry.key, readError);
+            }
+          });
           return 0;
         }
         if (primaryValue === null || primaryValue === undefined) {
@@ -2444,9 +2706,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             reason: 'backup-read-failed',
             error: backupReadError
           });
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn("Critical storage guard could not read backup for ".concat(entry.key), backupReadError);
-          }
+          backupReadDetail = {
+            event: 'critical-storage',
+            action: 'inspect-backup',
+            key: entry.key,
+            backupKey: entry.backupKey,
+            storageType: getActiveStorageType(storage),
+            reason: 'backup-read-failed',
+            error: sanitizeStorageError(backupReadError)
+          };
+          logStorageEvent('warn', 'Critical storage guard could not read backup for ' + entry.key, backupReadDetail, {
+            event: 'critical-storage',
+            stage: 'ensure'
+          }, function logBackupReadFailureToConsole() {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Critical storage guard could not read backup for ' + entry.key, backupReadError);
+            }
+          });
           return 0;
         }
         if (typeof backupValue === 'string') {
@@ -2478,9 +2754,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             reason: reason,
             error: error
           });
-          if (typeof console !== 'undefined' && typeof console.error === 'function') {
-            console.error("Critical storage guard could not mirror ".concat(entry.key), error);
+          var mirrorDetail = {
+            event: 'critical-storage',
+            action: 'mirror-backup',
+            key: entry.key,
+            backupKey: entry.backupKey,
+            storageType: getActiveStorageType(storage),
+            reason: reason,
+            error: sanitizeStorageError(error)
+          };
+          if (compressionInfo) {
+            mirrorDetail.compressed = true;
           }
+          logStorageEvent('error', 'Critical storage guard could not mirror ' + entry.key, mirrorDetail, {
+            event: 'critical-storage',
+            stage: 'ensure'
+          }, function logMirrorErrorToConsole() {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+              console.error('Critical storage guard could not mirror ' + entry.key, error);
+            }
+          });
         };
         var shouldAttemptCompression = typeof stringPrimaryValue === 'string' && stringPrimaryValue && !stringPrimaryValue.includes("\"".concat(STORAGE_COMPRESSION_FLAG_KEY, "\":true")) && !isDeviceStorageKeyVariant(entry.key);
         var candidateValue = stringPrimaryValue;
@@ -2538,26 +2831,71 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           logCompressionSavingsEvent('critical-backup', entry.key, message, savings, percent);
         }
       },
-      _ret;
+      primaryReadDetail,
+      backupReadDetail,
+      _ret2;
     for (var index = 0; index < entries.length; index += 1) {
-      _ret = _loop();
-      if (_ret === 0) continue;
+      _ret2 = _loop2();
+      if (_ret2 === 0) continue;
     }
     registerCriticalStorageGuardResult(summary);
-    if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
-      var mirroredDetails = summary.ensured.map(function (entry) {
-        return {
-          key: entry.key,
-          backupKey: entry.backupKey
-        };
-      });
-      console.info('Critical storage guard mirrored backup copies', {
+    if (summary.ensured.length) {
+      var ensuredDetail = {
+        event: 'critical-storage',
+        action: 'mirror-summary',
+        storageType: summary.storageType || getActiveStorageType(),
         count: summary.ensured.length,
-        entries: mirroredDetails
+        timestamp: summary.timestamp,
+        entries: summary.ensured.map(function mapEnsured(entry) {
+          return {
+            key: entry.key,
+            backupKey: entry.backupKey,
+            compressed: Boolean(entry.compressed)
+          };
+        })
+      };
+      logStorageEvent('info', 'Critical storage guard mirrored backup copies', ensuredDetail, {
+        event: 'critical-storage',
+        stage: 'ensure'
+      }, function logEnsuredSummaryToConsole() {
+        if (typeof console !== 'undefined' && typeof console.info === 'function') {
+          var mirroredDetails = summary.ensured.map(function (entry) {
+            return {
+              key: entry.key,
+              backupKey: entry.backupKey
+            };
+          });
+          console.info('Critical storage guard mirrored backup copies', {
+            count: summary.ensured.length,
+            entries: mirroredDetails
+          });
+        }
       });
     }
-    if (summary.errors.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Critical storage guard encountered issues', summary.errors);
+    if (summary.errors.length) {
+      var errorDetail = {
+        event: 'critical-storage',
+        action: 'mirror-summary',
+        storageType: summary.storageType || getActiveStorageType(),
+        count: summary.errors.length,
+        timestamp: summary.timestamp,
+        reason: 'errors-detected',
+        entries: summary.errors.map(function mapErrors(entry) {
+          return {
+            key: entry && entry.key,
+            reason: entry && entry.reason,
+            error: sanitizeStorageError(entry && entry.error)
+          };
+        })
+      };
+      logStorageEvent('warn', 'Critical storage guard encountered issues', errorDetail, {
+        event: 'critical-storage',
+        stage: 'ensure'
+      }, function logErrorSummaryToConsole() {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Critical storage guard encountered issues', summary.errors);
+        }
+      });
     }
     return summary;
   }
@@ -6396,7 +6734,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return Boolean(sweepResult && sweepResult.success);
     };
     var attempts = 0;
-    var _loop2 = function _loop2() {
+    var _loop3 = function _loop3() {
         attempts += 1;
         var serialized = getSerializedForAttempt();
         if (typeof serialized !== 'string') {
@@ -6659,12 +6997,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           v: void 0
         };
       },
-      _ret2;
+      _ret3;
     while (attempts < MAX_SAVE_ATTEMPTS) {
-      _ret2 = _loop2();
-      if (_ret2 === 0) break;
-      if (_ret2 === 1) continue;
-      if (_ret2) return _ret2.v;
+      _ret3 = _loop3();
+      if (_ret3 === 0) break;
+      if (_ret3 === 1) continue;
+      if (_ret3) return _ret3.v;
     }
     if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
       try {

@@ -93,14 +93,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var doc = detectDocument(options.document);
     var scope = resolveGlobalScope();
+    var elementSelectors = {
+      card: 'documentationTrackerCard',
+      heading: 'documentationTrackerHeading',
+      description: 'documentationTrackerDescription',
+      addButton: 'documentationTrackerAddRelease',
+      list: 'documentationTrackerList',
+      emptyState: 'documentationTrackerEmpty',
+      summary: 'documentationTrackerSummary'
+    };
+    var elementOptionsProvided = {
+      card: !!options.card,
+      heading: !!options.heading,
+      description: !!options.description,
+      addButton: !!options.addButton,
+      list: !!options.list,
+      emptyState: !!options.emptyState,
+      summary: !!options.summary
+    };
     var elements = {
-      card: options.card || (doc ? doc.getElementById('documentationTrackerCard') : null),
-      heading: options.heading || (doc ? doc.getElementById('documentationTrackerHeading') : null),
-      description: options.description || (doc ? doc.getElementById('documentationTrackerDescription') : null),
-      addButton: options.addButton || (doc ? doc.getElementById('documentationTrackerAddRelease') : null),
-      list: options.list || (doc ? doc.getElementById('documentationTrackerList') : null),
-      emptyState: options.emptyState || (doc ? doc.getElementById('documentationTrackerEmpty') : null),
-      summary: options.summary || (doc ? doc.getElementById('documentationTrackerSummary') : null)
+      card: options.card || (doc ? doc.getElementById(elementSelectors.card) : null),
+      heading: options.heading || (doc ? doc.getElementById(elementSelectors.heading) : null),
+      description: options.description || (doc ? doc.getElementById(elementSelectors.description) : null),
+      addButton: options.addButton || (doc ? doc.getElementById(elementSelectors.addButton) : null),
+      list: options.list || (doc ? doc.getElementById(elementSelectors.list) : null),
+      emptyState: options.emptyState || (doc ? doc.getElementById(elementSelectors.emptyState) : null),
+      summary: options.summary || (doc ? doc.getElementById(elementSelectors.summary) : null)
     };
     var sectionOrder = ensureArray(options.sectionOrder).length ? ensureArray(options.sectionOrder) : DEFAULT_SECTION_ORDER.slice();
     var sectionConfig = isObject(options.sectionConfig) ? options.sectionConfig : DEFAULT_SECTION_CONFIG;
@@ -115,6 +133,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var focusTargetId = '';
     var pendingHighlightId = '';
     var initialized = false;
+    function refreshDocumentationTrackerElements() {
+      if (!doc) {
+        return false;
+      }
+      var refreshed = false;
+      Object.keys(elementSelectors).forEach(function (key) {
+        if (elementOptionsProvided[key]) {
+          return;
+        }
+        var current = elements[key];
+        if (current && _typeof(current) === 'object') {
+          if (typeof current.isConnected === 'boolean') {
+            if (current.isConnected) {
+              return;
+            }
+          } else if (doc.contains && typeof doc.contains === 'function') {
+            if (doc.contains(current)) {
+              return;
+            }
+          }
+        }
+        if (current) {
+          var replacement = doc.getElementById(elementSelectors[key]);
+          if (replacement && replacement !== current) {
+            elements[key] = replacement;
+            refreshed = true;
+          }
+          return;
+        }
+        var found = doc.getElementById(elementSelectors[key]);
+        if (found) {
+          elements[key] = found;
+          refreshed = true;
+        }
+      });
+      return refreshed;
+    }
     function resolveLocaleString(key) {
       if (!key) {
         return '';
@@ -695,6 +750,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return container;
     }
     function renderDocumentationTracker() {
+      refreshDocumentationTrackerElements();
       if (!elements.list) {
         return;
       }
@@ -985,11 +1041,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       elements.list.removeEventListener('blur', handleDocumentationTrackerBlur, true);
       elements.list.removeEventListener('click', handleDocumentationTrackerClick);
     }
+    var domReadyInitializationScheduled = false;
+    function scheduleDomReadyInitialization() {
+      if (domReadyInitializationScheduled || !doc) {
+        return;
+      }
+      if (doc.readyState === 'loading' && typeof doc.addEventListener === 'function') {
+        domReadyInitializationScheduled = true;
+        doc.addEventListener('DOMContentLoaded', handleDomReadyInitialization, {
+          once: true
+        });
+      }
+    }
+    function handleDomReadyInitialization() {
+      domReadyInitializationScheduled = false;
+      initialize();
+    }
     function initialize() {
       if (initialized) {
         return;
       }
+      refreshDocumentationTrackerElements();
       if (!elements.card || !elements.list) {
+        scheduleDomReadyInitialization();
         return;
       }
       initialized = true;
@@ -1002,6 +1076,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     function updateLocalization() {
       var localization = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      refreshDocumentationTrackerElements();
       if (localization && typeof localization.language === 'string') {
         currentLanguage = localization.language;
       }
@@ -1037,6 +1112,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     function destroy() {
       detachEventListeners();
+      if (domReadyInitializationScheduled && doc && typeof doc.removeEventListener === 'function') {
+        doc.removeEventListener('DOMContentLoaded', handleDomReadyInitialization);
+        domReadyInitializationScheduled = false;
+      }
       initialized = false;
     }
     return {

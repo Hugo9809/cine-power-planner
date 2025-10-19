@@ -1,55 +1,4 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-
-function resolveRuntimeModuleLoader() {
-  if (typeof require === 'function') {
-    try {
-      var requiredLoader = require('./modules/core/runtime-module-loader.js');
-      if (requiredLoader && _typeof(requiredLoader) === 'object') {
-        return requiredLoader;
-      }
-    } catch (runtimeLoaderError) {
-      void runtimeLoaderError;
-    }
-  }
-
-  if (
-    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-    cineCoreRuntimeModuleLoader &&
-    _typeof(cineCoreRuntimeModuleLoader) === 'object'
-  ) {
-    return cineCoreRuntimeModuleLoader;
-  }
-
-  var scope =
-    typeof globalThis !== 'undefined' && globalThis ?
-      globalThis :
-    typeof window !== 'undefined' && window ?
-      window :
-    typeof self !== 'undefined' && self ?
-      self :
-    typeof global !== 'undefined' && global ?
-      global :
-      null;
-
-  if (scope && _typeof(scope.cineCoreRuntimeModuleLoader) === 'object') {
-    return scope.cineCoreRuntimeModuleLoader;
-  }
-
-  return null;
-}
-
-function requireCoreRuntimeModule(moduleId, options) {
-  var loader = resolveRuntimeModuleLoader();
-  if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
-    try {
-      return loader.resolveCoreRuntimeModule(moduleId, options);
-    } catch (moduleResolutionError) {
-      void moduleResolutionError;
-    }
-  }
-
-  return null;
-}
 function resolveCoreDeviceSchemaNamespace() {
   var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
@@ -85,6 +34,62 @@ function resolveCoreDeviceSchemaNamespace() {
   return null;
 }
 var CORE_DEVICE_SCHEMA = resolveCoreDeviceSchemaNamespace();
+function resolveRuntimeModuleLoader() {
+  function readLoaderFromScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+    try {
+      var loader = scope.cineCoreRuntimeModuleLoader;
+      return loader && _typeof(loader) === 'object' ? loader : null;
+    } catch (loaderLookupError) {
+      void loaderLookupError;
+    }
+    return null;
+  }
+  if (typeof cineCoreRuntimeModuleLoader !== 'undefined' && cineCoreRuntimeModuleLoader && (typeof cineCoreRuntimeModuleLoader === "undefined" ? "undefined" : _typeof(cineCoreRuntimeModuleLoader)) === 'object') {
+    return cineCoreRuntimeModuleLoader;
+  }
+  var candidates = collectRuntimeScopeCandidates();
+  for (var index = 0; index < candidates.length; index += 1) {
+    var loader = readLoaderFromScope(candidates[index]);
+    if (loader) {
+      return loader;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var requiredLoader = require('./modules/core/runtime-module-loader.js');
+      if (requiredLoader && _typeof(requiredLoader) === 'object') {
+        return requiredLoader;
+      }
+    } catch (runtimeLoaderError) {
+      void runtimeLoaderError;
+    }
+  }
+  for (var _index = 0; _index < candidates.length; _index += 1) {
+    var _loader = readLoaderFromScope(candidates[_index]);
+    if (_loader) {
+      return _loader;
+    }
+  }
+  return null;
+}
+function requireCoreRuntimeModule(moduleId, options) {
+  var loader = resolveRuntimeModuleLoader();
+  if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
+    try {
+      var resolved = loader.resolveCoreRuntimeModule(moduleId, options);
+      if (resolved && _typeof(resolved) === 'object') {
+        return resolved;
+      }
+      return resolved;
+    } catch (moduleResolutionError) {
+      void moduleResolutionError;
+    }
+  }
+  return null;
+}
 var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
   var namespaceName = 'cineCoreRuntimeSupportBootstrap';
   function readFromScope(candidateScope) {
@@ -106,15 +111,14 @@ var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
       return bootstrap;
     }
   }
-  var requiredBootstrap = requireCoreRuntimeModule(
-    'modules/core/runtime-support-bootstrap.js',
-    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
-  );
+  var requiredBootstrap = requireCoreRuntimeModule('modules/core/runtime-support-bootstrap.js', {
+    primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+  });
   if (requiredBootstrap && _typeof(requiredBootstrap) === 'object') {
     return requiredBootstrap;
   }
-  for (var _index = 0; _index < candidates.length; _index += 1) {
-    var _bootstrap = readFromScope(candidates[_index]);
+  for (var _index2 = 0; _index2 < candidates.length; _index2 += 1) {
+    var _bootstrap = readFromScope(candidates[_index2]);
     if (_bootstrap) {
       return _bootstrap;
     }
@@ -142,15 +146,14 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
       return resolution;
     }
   }
-  var requiredResolution = requireCoreRuntimeModule(
-    'modules/core/runtime-support-resolution.js',
-    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
-  );
+  var requiredResolution = requireCoreRuntimeModule('modules/core/runtime-support-resolution.js', {
+    primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+  });
   if (requiredResolution && _typeof(requiredResolution) === 'object') {
     return requiredResolution;
   }
-  for (var _index2 = 0; _index2 < candidates.length; _index2 += 1) {
-    var _resolution = readFromScope(candidates[_index2]);
+  for (var _index3 = 0; _index3 < candidates.length; _index3 += 1) {
+    var _resolution = readFromScope(candidates[_index3]);
     if (_resolution) {
       return _resolution;
     }
@@ -291,8 +294,8 @@ var resolveTextEntryInternal = function ensureResolveTextEntryAvailability(resol
   } catch (globalLookupError) {
     void globalLookupError;
   }
-  for (var _index3 = 0; _index3 < candidateScopes.length; _index3 += 1) {
-    var _scope = candidateScopes[_index3];
+  for (var _index4 = 0; _index4 < candidateScopes.length; _index4 += 1) {
+    var _scope = candidateScopes[_index4];
     if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
       continue;
     }
@@ -384,8 +387,8 @@ var CORE_TEMPERATURE_STORAGE_KEY = PREEXISTING_TEMPERATURE_STORAGE_KEY || resolv
   }).filter(function (sharedScopeCandidate) {
     return sharedScopeCandidate;
   });
-  for (var _index4 = 0; _index4 < sharedCandidates.length; _index4 += 1) {
-    var sharedScope = sharedCandidates[_index4];
+  for (var _index5 = 0; _index5 < sharedCandidates.length; _index5 += 1) {
+    var sharedScope = sharedCandidates[_index5];
     if (!sharedScope || _typeof(sharedScope) !== 'object') {
       continue;
     }
@@ -420,15 +423,14 @@ var CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = function resolveRuntimeSupportDefa
       return defaults;
     }
   }
-  var requiredDefaults = requireCoreRuntimeModule(
-    'modules/core/runtime-support-defaults.js',
-    { primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE }
-  );
+  var requiredDefaults = requireCoreRuntimeModule('modules/core/runtime-support-defaults.js', {
+    primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+  });
   if (requiredDefaults && _typeof(requiredDefaults) === 'object') {
     return requiredDefaults;
   }
-  for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
-    var _defaults = readFromScope(candidates[_index5]);
+  for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
+    var _defaults = readFromScope(candidates[_index6]);
     if (_defaults) {
       return _defaults;
     }
@@ -507,3 +509,79 @@ var resolveCoreSupportModule = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CO
 } : function resolveCoreSupportModule(namespaceName, requirePath) {
   return fallbackResolveCoreSupportModule(namespaceName, requirePath, CORE_PART1_RUNTIME_SCOPE);
 };
+var CORE_RUNTIME_SUPPORT_EXPORTS = function ensureRuntimeSupportExportsNamespace() {
+  var namespaceName = 'cineCoreRuntimeSupportExports';
+  function readNamespace(candidateScope) {
+    if (!candidateScope || _typeof(candidateScope) !== 'object' && typeof candidateScope !== 'function') {
+      return null;
+    }
+    try {
+      var _namespace = candidateScope[namespaceName];
+      return _namespace && _typeof(_namespace) === 'object' ? _namespace : null;
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
+    }
+    return null;
+  }
+  var candidateScopes = collectRuntimeScopeCandidates([(typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null]);
+  var namespace = null;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var existing = readNamespace(candidateScopes[index]);
+    if (existing) {
+      namespace = existing;
+      break;
+    }
+  }
+  if (!namespace || _typeof(namespace) !== 'object') {
+    namespace = {};
+  } else {
+    var isExtensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(namespace) : true;
+    var isSealed = typeof Object.isSealed === 'function' && Object.isSealed(namespace);
+    if (!isExtensible || isSealed) {
+      namespace = Object.assign({}, namespace);
+    }
+  }
+  function assignExport(target, key, value) {
+    if (!target || _typeof(target) !== 'object') {
+      return;
+    }
+    try {
+      target[key] = value;
+      if (target[key] === value) {
+        return;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+    try {
+      Object.defineProperty(target, key, {
+        configurable: true,
+        writable: true,
+        value: value
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+  assignExport(namespace, 'resolveRuntimeModuleLoader', resolveRuntimeModuleLoader);
+  assignExport(namespace, 'requireCoreRuntimeModule', requireCoreRuntimeModule);
+  for (var _index7 = 0; _index7 < candidateScopes.length; _index7 += 1) {
+    var scope = candidateScopes[_index7];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      scope[namespaceName] = namespace;
+    } catch (namespaceAssignError) {
+      void namespaceAssignError;
+    }
+  }
+  if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && _typeof(module.exports) === 'object') {
+    try {
+      module.exports = namespace;
+    } catch (moduleExportError) {
+      void moduleExportError;
+    }
+  }
+  return namespace;
+}();

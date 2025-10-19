@@ -47,19 +47,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void runtimeLoaderError;
       }
     }
-    if (
-      typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-      cineCoreRuntimeModuleLoader &&
-      _typeof(cineCoreRuntimeModuleLoader) === 'object'
-    ) {
+    if (typeof cineCoreRuntimeModuleLoader !== 'undefined' && cineCoreRuntimeModuleLoader && (typeof cineCoreRuntimeModuleLoader === "undefined" ? "undefined" : _typeof(cineCoreRuntimeModuleLoader)) === 'object') {
       return cineCoreRuntimeModuleLoader;
     }
     var scope = detectScope();
-    if (
-      scope &&
-      _typeof(scope.cineCoreRuntimeModuleLoader) === 'object' &&
-      scope.cineCoreRuntimeModuleLoader
-    ) {
+    if (scope && _typeof(scope.cineCoreRuntimeModuleLoader) === 'object' && scope.cineCoreRuntimeModuleLoader) {
       return scope.cineCoreRuntimeModuleLoader;
     }
     return null;
@@ -2098,10 +2090,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void candidateScopeResolveError;
       }
     }
-    var loaderCandidateScopes = requireCoreRuntimeModule(
-      'modules/core/runtime-candidate-scopes.js',
-      { primaryScope: runtimeScope || coreGlobalScope }
-    );
+    var loaderCandidateScopes = requireCoreRuntimeModule('modules/core/runtime-candidate-scopes.js', {
+      primaryScope: runtimeScope || coreGlobalScope
+    });
     if (isObject(loaderCandidateScopes)) {
       return loaderCandidateScopes;
     }

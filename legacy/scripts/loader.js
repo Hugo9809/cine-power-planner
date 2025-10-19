@@ -1094,6 +1094,60 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   fallback: null
 });
 CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'cineDeferredScriptsReady',
+  validator: function validator(value) {
+    return !!(value && _typeof(value) === 'object' && typeof value.then === 'function');
+  },
+  fallback: function fallback() {
+    if (typeof Promise === 'function') {
+      return Promise.resolve();
+    }
+    return {
+      then: function then(onFulfilled) {
+        if (typeof onFulfilled === 'function') {
+          try {
+            onFulfilled();
+          } catch (handlerError) {
+            void handlerError;
+          }
+        }
+        return this;
+      },
+      catch: function _catch() {
+        return this;
+      }
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'cineEnsureDeferredScriptsLoaded',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function () {
+      if (typeof Promise === 'function') {
+        return Promise.resolve();
+      }
+      return {
+        then: function then(onFulfilled) {
+          if (typeof onFulfilled === 'function') {
+            try {
+              onFulfilled();
+            } catch (handlerError) {
+              void handlerError;
+            }
+          }
+          return this;
+        },
+        catch: function _catch() {
+          return this;
+        }
+      };
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'ICON_FONT_KEYS',
   validator: function validator(value) {
     return value && _typeof(value) === 'object' && typeof value.ESSENTIAL === 'string' && typeof value.FILM === 'string' && typeof value.GADGET === 'string' && typeof value.UICONS === 'string' && typeof value.TEXT === 'string';
@@ -1321,7 +1375,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return function loaderFallbackSetLanguage(candidate) {
       var scope = resolveCriticalGlobalScope();
       var requested = typeof candidate === 'string' && candidate ? candidate : 'en';
-      var translations = scope && scope.texts && _typeof(scope.texts) === 'object' ? scope.texts : {};
+      var runtime = scope && scope.translations && _typeof(scope.translations) === 'object' ? scope.translations : null;
+      var translations = runtime && runtime.texts && _typeof(runtime.texts) === 'object' ? runtime.texts : scope && scope.texts && _typeof(scope.texts) === 'object' ? scope.texts : {};
       var normalized = requested;
       if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
         var lowerCase = requested.toLowerCase();
@@ -1338,6 +1393,25 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
       if (scope) {
         scope.currentLang = normalized;
+      }
+      if (runtime && typeof runtime.loadLanguage === 'function') {
+        try {
+          var loadResult = runtime.loadLanguage(normalized);
+          if (loadResult && typeof loadResult.then === 'function') {
+            loadResult.catch(function fallbackLanguageLoadError(error) {
+              if (scope && scope.console && typeof scope.console.warn === 'function') {
+                scope.console.warn('Fallback language loader failed', error);
+              }
+            });
+          }
+        } catch (runtimeError) {
+          if (scope && scope.console && typeof scope.console.warn === 'function') {
+            scope.console.warn('Fallback language loader threw', runtimeError);
+          }
+        }
+        if (runtime.texts && _typeof(runtime.texts) === 'object') {
+          translations = runtime.texts;
+        }
       }
       if (scope && scope.localStorage && typeof scope.localStorage.setItem === 'function') {
         try {
@@ -2504,17 +2578,43 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     };
   }
+  function dispatchLoaderEvent(name, detail) {
+    if (typeof document === 'undefined' || typeof document.dispatchEvent !== 'function') {
+      return;
+    }
+    try {
+      var payload = detail || {};
+      var event;
+      if (typeof CustomEvent === 'function') {
+        event = new CustomEvent(name, {
+          detail: payload
+        });
+      } else if (typeof document.createEvent === 'function') {
+        event = document.createEvent('CustomEvent');
+        event.initCustomEvent(name, false, false, payload);
+      }
+      if (event) {
+        document.dispatchEvent(event);
+      }
+    } catch (eventError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to dispatch loader event', name, eventError);
+      }
+    }
+  }
   function loadScriptsSequentially(items, options) {
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
     var aborted = false;
     var completed = false;
     var settings = options || {};
+    var totalCount = Array.isArray(items) ? items.length : 0;
     function finalize() {
       if (completed) {
         return;
       }
       completed = true;
+      dispatchLoaderEvent('cine-loader-complete');
       if (typeof settings.onComplete === 'function') {
         try {
           settings.onComplete();
@@ -2568,6 +2668,11 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
       var resolvedUrl = resolveAssetUrl(currentUrl);
+      dispatchLoaderEvent('cine-loader-progress', {
+        total: totalCount,
+        index: currentIndex,
+        url: currentUrl
+      });
       var script = document.createElement('script');
       script.src = resolvedUrl;
       script.async = false;
@@ -2612,25 +2717,229 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     };
   }
-  function scheduleDeferredScripts(urls) {
-    if (!urls || urls.length === 0) {
-      return;
+  function createDeferredScriptsState(urls) {
+    var state = {
+      urls: Array.isArray(urls) ? urls.slice() : [],
+      status: urls && urls.length ? 'scheduled' : 'idle',
+      loader: null,
+      started: false,
+      promise: null,
+      error: null,
+      result: null
+    };
+    var settled = false;
+    var fallbackHandlers = [];
+    var settleType = null;
+    var settleValue = null;
+    function scheduleFallbackNotify(handler, value) {
+      try {
+        handler(value);
+      } catch (handlerError) {
+        void handlerError;
+      }
     }
-    function startDeferredLoad() {
-      loadScriptsSequentially(urls);
-    }
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(startDeferredLoad);
-      return;
+    function flushFallbackHandlers(type, value) {
+      if (!fallbackHandlers.length) {
+        return;
+      }
+      var handlers = fallbackHandlers.slice();
+      fallbackHandlers.length = 0;
+      for (var index = 0; index < handlers.length; index += 1) {
+        var entry = handlers[index];
+        if (!entry) {
+          continue;
+        }
+        if (type === 'fulfilled') {
+          if (typeof entry.onFulfilled === 'function') {
+            scheduleFallbackNotify(entry.onFulfilled, value);
+          }
+        } else if (typeof entry.onRejected === 'function') {
+          scheduleFallbackNotify(entry.onRejected, value);
+        }
+      }
     }
     if (typeof Promise === 'function') {
-      Promise.resolve().then(startDeferredLoad).catch(function (error) {
-        console.warn('Deferred script microtask scheduling failed. Loading immediately.', error);
-        startDeferredLoad();
+      state.promise = new Promise(function (resolve, reject) {
+        state._resolve = resolve;
+        state._reject = reject;
       });
+    } else {
+      state.promise = {
+        then: function then(onFulfilled, onRejected) {
+          var handler = {
+            onFulfilled: typeof onFulfilled === 'function' ? onFulfilled : null,
+            onRejected: typeof onRejected === 'function' ? onRejected : null
+          };
+          if (settled) {
+            if (settleType === 'fulfilled' && handler.onFulfilled) {
+              scheduleFallbackNotify(handler.onFulfilled, settleValue);
+            } else if (settleType === 'rejected' && handler.onRejected) {
+              scheduleFallbackNotify(handler.onRejected, settleValue);
+            }
+            return state.promise;
+          }
+          fallbackHandlers.push(handler);
+          return state.promise;
+        },
+        catch: function _catch(onRejected) {
+          return state.promise.then(null, onRejected);
+        }
+      };
+      state._resolve = function (value) {
+        settled = true;
+        settleType = 'fulfilled';
+        settleValue = value;
+        flushFallbackHandlers('fulfilled', value);
+      };
+      state._reject = function (error) {
+        settled = true;
+        settleType = 'rejected';
+        settleValue = error;
+        flushFallbackHandlers('rejected', error);
+      };
+    }
+    state.resolve = function (value) {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      state.status = 'loaded';
+      state.error = null;
+      state.result = value;
+      try {
+        state._resolve(value);
+      } catch (resolveError) {
+        void resolveError;
+      }
+    };
+    state.reject = function (error) {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      state.status = 'error';
+      state.error = error || null;
+      if (typeof state._reject === 'function') {
+        try {
+          state._reject(error);
+        } catch (rejectError) {
+          void rejectError;
+        }
+      } else if (typeof state._resolve === 'function') {
+        try {
+          state._resolve();
+        } catch (fallbackError) {
+          void fallbackError;
+        }
+      }
+    };
+    state.ensureStart = function () {
+      if (state.started) {
+        return state.loader;
+      }
+      state.started = true;
+      return null;
+    };
+    return state;
+  }
+  function publishDeferredScriptsState(state, ensureFn) {
+    var scope = getGlobalScope();
+    if (!scope) {
       return;
     }
-    startDeferredLoad();
+    try {
+      scope.__cineDeferredScriptsState = state;
+    } catch (assignStateError) {
+      void assignStateError;
+    }
+    try {
+      scope.cineDeferredScriptsReady = state.promise;
+    } catch (assignPromiseError) {
+      void assignPromiseError;
+    }
+    try {
+      scope.cineEnsureDeferredScriptsLoaded = function (context) {
+        void context;
+        try {
+          return ensureFn();
+        } catch (ensureError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Failed to force deferred script loading', ensureError);
+          }
+          return state.promise;
+        }
+      };
+    } catch (assignEnsureError) {
+      void assignEnsureError;
+    }
+  }
+  function scheduleDeferredScripts(urls) {
+    var normalized = Array.isArray(urls) ? urls.filter(Boolean) : [];
+    if (!normalized.length) {
+      var emptyState = createDeferredScriptsState([]);
+      publishDeferredScriptsState(emptyState, function () {
+        return emptyState.promise;
+      });
+      emptyState.resolve({
+        urls: []
+      });
+      return emptyState.promise;
+    }
+    var state = createDeferredScriptsState(normalized);
+    function startDeferredLoad() {
+      if (state.loader) {
+        return state.loader;
+      }
+      state.ensureStart();
+      state.status = 'loading';
+      state.loader = loadScriptsSequentially(normalized, {
+        onComplete: function handleDeferredComplete() {
+          state.resolve({
+            urls: normalized.slice()
+          });
+        },
+        onError: function handleDeferredError(context) {
+          var error = null;
+          if (context && context.event && context.event.error) {
+            error = context.event.error;
+          } else if (context && context.url) {
+            error = new Error('Failed to load deferred script: ' + context.url);
+          } else {
+            error = new Error('Deferred script failed to load.');
+          }
+          state.reject(error);
+          return false;
+        }
+      });
+      return state.loader;
+    }
+    publishDeferredScriptsState(state, function ensureDeferredLoad() {
+      startDeferredLoad();
+      return state.promise;
+    });
+    function scheduleWithTimeout() {
+      try {
+        setTimeout(startDeferredLoad, 1200);
+      } catch (timeoutError) {
+        void timeoutError;
+        startDeferredLoad();
+      }
+    }
+    if (typeof requestIdleCallback === 'function') {
+      try {
+        requestIdleCallback(function () {
+          startDeferredLoad();
+        }, {
+          timeout: 2400
+        });
+      } catch (idleError) {
+        void idleError;
+        scheduleWithTimeout();
+      }
+    } else {
+      scheduleWithTimeout();
+    }
+    return state.promise;
   }
   function loadScriptBundle(bundle, options) {
     if (!bundle || !bundle.core || bundle.core.length === 0) {
@@ -2659,7 +2968,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var modernScriptBundle = {
     core: ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/rental-houses.js', {
       parallel: ['src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js']
-    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/runtime.js', 'src/scripts/modules/core/localization.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/pink-mode.js', 'src/scripts/modules/app-core/localization.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-runtime-helpers.js', 'src/scripts/app-core-environment.js', 'src/scripts/app-core-bootstrap.js', 'src/scripts/app-core-runtime-shared.js', 'src/scripts/app-core-pink-mode.js', 'src/scripts/app-core-runtime-candidate-scopes.js', 'src/scripts/app-core-runtime-global-tools.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-localization-accessors.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+    }, 'src/scripts/storage.js', 'src/scripts/translations/en.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/runtime.js', 'src/scripts/modules/core/localization.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/bootstrap.js', 'src/scripts/modules/app-core/pink-mode.js', 'src/scripts/modules/app-core/localization.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-runtime-helpers.js', 'src/scripts/app-core-environment.js', 'src/scripts/app-core-bootstrap.js', 'src/scripts/app-core-runtime-shared.js', 'src/scripts/app-core-pink-mode.js', 'src/scripts/app-core-runtime-candidate-scopes.js', 'src/scripts/app-core-runtime-global-tools.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-localization-accessors.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
     deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js']
   };
   var legacyScriptBundle = {

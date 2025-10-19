@@ -55,29 +55,189 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
     var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
-    var CORE_PART2_HELPERS = typeof CORE_PART2_RUNTIME_HELPERS === 'object' && CORE_PART2_RUNTIME_HELPERS ? CORE_PART2_RUNTIME_HELPERS : null;
+    function resolveCoreRuntimeHelpersPart2() {
+      var candidates = [];
+      if (typeof CORE_PART2_RUNTIME_HELPERS !== 'undefined' && CORE_PART2_RUNTIME_HELPERS) {
+        candidates.push(CORE_PART2_RUNTIME_HELPERS);
+      }
+      if (CORE_SHARED_LOCAL && _typeof(CORE_SHARED_LOCAL.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(CORE_SHARED_LOCAL.cineCoreRuntimeHelpers);
+      }
+      if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(CORE_PART2_RUNTIME_SCOPE.cineCoreRuntimeHelpers);
+      }
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(CORE_GLOBAL_SCOPE.cineCoreRuntimeHelpers);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(globalThis.cineCoreRuntimeHelpers);
+      }
+      if (typeof window !== 'undefined' && window && _typeof(window.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(window.cineCoreRuntimeHelpers);
+      }
+      if (typeof self !== 'undefined' && self && _typeof(self.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(self.cineCoreRuntimeHelpers);
+      }
+      if (typeof global !== 'undefined' && global && _typeof(global.cineCoreRuntimeHelpers) === 'object') {
+        candidates.push(global.cineCoreRuntimeHelpers);
+      }
+      if (typeof require === 'function') {
+        try {
+          var required = require('./app-core-runtime-helpers.js');
+          if (required && _typeof(required) === 'object') {
+            candidates.push(required);
+          }
+        } catch (runtimeHelpersError) {
+          void runtimeHelpersError;
+        }
+      }
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (candidate && _typeof(candidate) === 'object') {
+          return candidate;
+        }
+      }
+      return null;
+    }
+    var CORE_PART2_HELPERS = (typeof CORE_PART2_RUNTIME_HELPERS === "undefined" ? "undefined" : _typeof(CORE_PART2_RUNTIME_HELPERS)) === 'object' && CORE_PART2_RUNTIME_HELPERS ? CORE_PART2_RUNTIME_HELPERS : null;
+    var CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
+    var CORE_UI_HELPERS = function resolveCoreUiHelpersPart2() {
+      var candidates = [];
+      if (typeof require === 'function') {
+        try {
+          var required = require('./app-core-ui-helpers.js');
+          if (required && _typeof(required) === 'object') {
+            candidates.push(required);
+          }
+        } catch (uiHelpersError) {
+          void uiHelpersError;
+        }
+      }
+      var scopes = [];
+      try {
+        if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+          scopes.push(CORE_GLOBAL_SCOPE);
+        }
+      } catch (coreScopeError) {
+        void coreScopeError;
+      }
+      try {
+        if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE) {
+          scopes.push(CORE_PART2_RUNTIME_SCOPE);
+        }
+      } catch (runtimeScopeError) {
+        void runtimeScopeError;
+      }
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        scopes.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && window) {
+        scopes.push(window);
+      }
+      if (typeof self !== 'undefined' && self) {
+        scopes.push(self);
+      }
+      if (typeof global !== 'undefined' && global) {
+        scopes.push(global);
+      }
+      for (var index = 0; index < scopes.length; index += 1) {
+        var scope = scopes[index];
+        if (!scope) {
+          continue;
+        }
+        try {
+          var helpers = scope.cineCoreUiHelpers;
+          if (helpers && _typeof(helpers) === 'object') {
+            candidates.push(helpers);
+          }
+        } catch (scopeLookupError) {
+          void scopeLookupError;
+        }
+      }
+      for (var _index = 0; _index < candidates.length; _index += 1) {
+        var candidate = candidates[_index];
+        if (candidate && _typeof(candidate) === 'object') {
+          return candidate;
+        }
+      }
+      return {};
+    }();
+    var escapeHtml = typeof CORE_UI_HELPERS.escapeHtml === 'function' ? CORE_UI_HELPERS.escapeHtml : function escapeHtmlFallback(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+    var setButtonLabelWithIcon = function resolveSetButtonLabelWithIcon() {
+      if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+        return CORE_UI_HELPERS.setButtonLabelWithIcon;
+      }
+      var candidates = [];
+      try {
+        if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+          candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+        }
+      } catch (coreScopeError) {
+        void coreScopeError;
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.setButtonLabelWithIcon === 'function') {
+        candidates.push(globalThis.setButtonLabelWithIcon);
+      }
+      if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+        candidates.push(window.setButtonLabelWithIcon);
+      }
+      if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+        candidates.push(self.setButtonLabelWithIcon);
+      }
+      if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+        candidates.push(global.setButtonLabelWithIcon);
+      }
+      if (candidates.length > 0) {
+        return candidates[0];
+      }
+      return function setButtonLabelWithIconFallback(button, label) {
+        if (!button) {
+          return;
+        }
+        try {
+          button.textContent = typeof label === 'string' ? label : '';
+        } catch (assignError) {
+          void assignError;
+        }
+      };
+    }();
     var autoGearHelpers = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function' ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
       coreShared: CORE_SHARED_LOCAL,
       globalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null
     }) : null;
-    var fallbackNormalizeAutoGearWeightOperator = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator === 'function' ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightOperator : function normalizeAutoGearWeightOperatorFallback() {
+    var fallbackNormalizeAutoGearWeightOperator = typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator : function normalizeAutoGearWeightOperatorFallback() {
       return 'greater';
     };
-    var fallbackNormalizeAutoGearWeightValue = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue === 'function' ? CORE_PART2_HELPERS.fallbackNormalizeAutoGearWeightValue : function normalizeAutoGearWeightValueFallback() {
+    var fallbackNormalizeAutoGearWeightValue = typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue : function normalizeAutoGearWeightValueFallback() {
       return null;
     };
-    var fallbackFormatAutoGearWeight = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackFormatAutoGearWeight === 'function' ? CORE_PART2_HELPERS.fallbackFormatAutoGearWeight : function formatAutoGearWeightFallback() {
+    var fallbackFormatAutoGearWeight = typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight : function formatAutoGearWeightFallback() {
       return '';
     };
-    var fallbackGetAutoGearCameraWeightOperatorLabel = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function' ? CORE_PART2_HELPERS.fallbackGetAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabelFallback() {
-      return '';
+    var fallbackGetAutoGearCameraWeightOperatorLabel = typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
+      var textsForLang = langTexts || {};
+      var normalized = fallbackNormalizeAutoGearWeightOperator(operator);
+      if (normalized === 'less') {
+        return textsForLang.autoGearCameraWeightOperatorLess || '';
+      }
+      if (normalized === 'equal') {
+        return textsForLang.autoGearCameraWeightOperatorEqual || '';
+      }
+      return textsForLang.autoGearCameraWeightOperatorGreater || '';
     };
-    var fallbackFormatAutoGearCameraWeight = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight === 'function' ? CORE_PART2_HELPERS.fallbackFormatAutoGearCameraWeight : function formatAutoGearCameraWeightFallback() {
-      return '';
+    var fallbackFormatAutoGearCameraWeight = typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight : function formatAutoGearCameraWeightFallback(condition, langTexts) {
+      if (!condition || !Number.isFinite(condition.value)) {
+        return '';
+      }
+      var label = fallbackGetAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+      var formattedValue = fallbackFormatAutoGearWeight(condition.value);
+      return label ? "".concat(label, " ").concat(formattedValue, " g") : "".concat(formattedValue, " g");
     };
     var normalizeAutoGearWeightOperator = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightOperator === 'function' ? autoGearHelpers.normalizeAutoGearWeightOperator : fallbackNormalizeAutoGearWeightOperator;
     var normalizeAutoGearWeightValue = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightValue === 'function' ? autoGearHelpers.normalizeAutoGearWeightValue : fallbackNormalizeAutoGearWeightValue;
-    var normalizeAutoGearCameraWeightCondition = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearCameraWeightCondition === 'function' ? autoGearHelpers.normalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightCondition() {
+    var normalizeAutoGearCameraWeightCondition = autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearCameraWeightCondition === 'function' ? autoGearHelpers.normalizeAutoGearCameraWeightCondition : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightConditionFallback() {
       return null;
     };
     var formatAutoGearWeight = autoGearHelpers && typeof autoGearHelpers.formatAutoGearWeight === 'function' ? autoGearHelpers.formatAutoGearWeight : fallbackFormatAutoGearWeight;
@@ -204,61 +364,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    function fallbackStableStringify(value) {
-      if (value === null) return 'null';
-      if (value === undefined) return 'undefined';
-      if (Array.isArray(value)) {
-        var serialized = '[';
-        for (var index = 0; index < value.length; index += 1) {
-          if (index > 0) {
-            serialized += ',';
-          }
-          serialized += fallbackStableStringify(value[index]);
-        }
-        serialized += ']';
-        return serialized;
-      }
-      if (_typeof(value) === 'object') {
-        var keys = Object.keys(value).sort();
-        var _serialized = '{';
-        for (var _index = 0; _index < keys.length; _index += 1) {
-          var key = keys[_index];
-          if (_index > 0) {
-            _serialized += ',';
-          }
-          _serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
-        }
-        _serialized += '}';
-        return _serialized;
-      }
-      return JSON.stringify(value);
-    }
-    var FALLBACK_HUMANIZE_OVERRIDES_PART2 = {
-      powerDrawWatts: 'Power (W)',
-      capacity: 'Capacity (Wh)',
-      pinA: 'Pin A',
-      dtapA: 'D-Tap A',
-      mount_type: 'Mount',
-      screenSizeInches: 'Screen Size (in)',
-      brightnessNits: 'Brightness (nits)',
-      torqueNm: 'Torque (Nm)',
-      internalController: 'Internal Controller',
-      powerSource: 'Power Source',
-      batteryType: 'Battery Type',
-      connectivity: 'Connectivity'
-    };
     var AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
-    function fallbackHumanizeKey(key) {
-      if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART2, key)) {
-        return FALLBACK_HUMANIZE_OVERRIDES_PART2[key];
+    var coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function' ? CORE_SHARED_LOCAL.stableStringify : typeof CORE_SHARED_LOCAL.fallbackStableStringify === 'function' ? CORE_SHARED_LOCAL.fallbackStableStringify : typeof CORE_RUNTIME_FALLBACKS.fallbackStableStringify === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackStableStringify : function fallbackStableStringifyProxy(value) {
+      try {
+        return JSON.stringify(value);
+      } catch (serializationError) {
+        void serializationError;
       }
+      return String(value);
+    };
+    var coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function' ? CORE_SHARED_LOCAL.humanizeKey : typeof CORE_SHARED_LOCAL.fallbackHumanizeKey === 'function' ? CORE_SHARED_LOCAL.fallbackHumanizeKey : typeof CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey === 'function' ? CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey : function fallbackHumanizeKeyProxy(key) {
       var stringValue = typeof key === 'string' ? key : String(key || '');
-      return stringValue.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, function (c) {
-        return c.toUpperCase();
-      });
-    }
-    var coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function' ? CORE_SHARED_LOCAL.stableStringify : fallbackStableStringify;
-    var coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function' ? CORE_SHARED_LOCAL.humanizeKey : fallbackHumanizeKey;
+      return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
+    };
     var sharedDeviceManagerLists = function () {
       var candidates = [CORE_PART2_RUNTIME_SCOPE && (typeof CORE_PART2_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART2_RUNTIME_SCOPE)) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
       for (var index = 0; index < candidates.length; index += 1) {
@@ -1630,17 +1748,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleAutoGearSavePreset() {
       _handleAutoGearSavePreset = _asyncToGenerator(_regenerator().m(function _callee3() {
-        var _texts$currentLang82, _texts$en187, _texts$currentLang83, _texts$en188, _texts$currentLang86, _texts$en191;
-        var rules, activePreset, previousAutoPresetId, promptTemplate, defaultName, requiredMessage, response, trimmed, normalizedName, existingByName, targetId, _texts$currentLang84, _texts$en189, overwriteTemplate, overwriteMessage, overwriteConfirmed, presetId, normalizedPreset, _texts$currentLang85, _texts$en190, _requiredMessage, existingIndex, autoPresetIndex, savedMessage;
+        var _texts$currentLang85, _texts$en190, _texts$currentLang86, _texts$en191, _texts$currentLang89, _texts$en194;
+        var rules, activePreset, previousAutoPresetId, promptTemplate, defaultName, requiredMessage, response, trimmed, normalizedName, existingByName, targetId, _texts$currentLang87, _texts$en192, overwriteTemplate, overwriteMessage, overwriteConfirmed, presetId, normalizedPreset, _texts$currentLang88, _texts$en193, _requiredMessage, existingIndex, autoPresetIndex, savedMessage;
         return _regenerator().w(function (_context3) {
           while (1) switch (_context3.n) {
             case 0:
               rules = getAutoGearRules();
               activePreset = getAutoGearPresetById(activeAutoGearPresetId);
               previousAutoPresetId = autoGearAutoPresetIdState;
-              promptTemplate = ((_texts$currentLang82 = texts[currentLang]) === null || _texts$currentLang82 === void 0 ? void 0 : _texts$currentLang82.autoGearPresetNamePrompt) || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearPresetNamePrompt) || 'Name this preset';
+              promptTemplate = ((_texts$currentLang85 = texts[currentLang]) === null || _texts$currentLang85 === void 0 ? void 0 : _texts$currentLang85.autoGearPresetNamePrompt) || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearPresetNamePrompt) || 'Name this preset';
               defaultName = activePreset ? activePreset.label : '';
-              requiredMessage = ((_texts$currentLang83 = texts[currentLang]) === null || _texts$currentLang83 === void 0 ? void 0 : _texts$currentLang83.autoGearPresetNameRequired) || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+              requiredMessage = ((_texts$currentLang86 = texts[currentLang]) === null || _texts$currentLang86 === void 0 ? void 0 : _texts$currentLang86.autoGearPresetNameRequired) || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
               _context3.n = 1;
               return requestAutoGearPresetName(promptTemplate, defaultName, requiredMessage);
             case 1:
@@ -1670,7 +1788,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 _context3.n = 5;
                 break;
               }
-              overwriteTemplate = ((_texts$currentLang84 = texts[currentLang]) === null || _texts$currentLang84 === void 0 ? void 0 : _texts$currentLang84.autoGearPresetOverwriteConfirm) || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearPresetOverwriteConfirm) || "Replace the existing preset \"".concat(normalizedName, "\"?");
+              overwriteTemplate = ((_texts$currentLang87 = texts[currentLang]) === null || _texts$currentLang87 === void 0 ? void 0 : _texts$currentLang87.autoGearPresetOverwriteConfirm) || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearPresetOverwriteConfirm) || "Replace the existing preset \"".concat(normalizedName, "\"?");
               overwriteMessage = overwriteTemplate.includes('%s') ? formatWithPlaceholders(overwriteTemplate, normalizedName) : overwriteTemplate;
               overwriteConfirmed = true;
               if (typeof window.confirm === 'function') {
@@ -1694,7 +1812,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 _context3.n = 6;
                 break;
               }
-              _requiredMessage = ((_texts$currentLang85 = texts[currentLang]) === null || _texts$currentLang85 === void 0 ? void 0 : _texts$currentLang85.autoGearPresetNameRequired) || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+              _requiredMessage = ((_texts$currentLang88 = texts[currentLang]) === null || _texts$currentLang88 === void 0 ? void 0 : _texts$currentLang88.autoGearPresetNameRequired) || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
               if (typeof window.alert === 'function') {
                 window.alert(_requiredMessage);
               }
@@ -1729,7 +1847,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 skipRender: true
               });
               renderAutoGearPresetsControls();
-              savedMessage = ((_texts$currentLang86 = texts[currentLang]) === null || _texts$currentLang86 === void 0 ? void 0 : _texts$currentLang86.autoGearPresetSaved) || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearPresetSaved) || 'Automatic gear preset saved.';
+              savedMessage = ((_texts$currentLang89 = texts[currentLang]) === null || _texts$currentLang89 === void 0 ? void 0 : _texts$currentLang89.autoGearPresetSaved) || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearPresetSaved) || 'Automatic gear preset saved.';
               showNotification('success', savedMessage);
             case 7:
               return _context3.a(2);
@@ -5026,6 +5144,117 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return null;
       }
     }
+    function formatAutoGearPresetExportFilename(date) {
+      var _formatFullBackupFile2 = formatFullBackupFilename(date),
+        iso = _formatFullBackupFile2.iso;
+      var safeIso = iso.replace(/[:]/g, '-');
+      return "".concat(safeIso, " auto gear presets.json");
+    }
+    function normalizeAutoGearPresetForExport(preset) {
+      if (!preset || _typeof(preset) !== 'object') {
+        return null;
+      }
+      var label = typeof preset.label === 'string' ? preset.label : '';
+      if (!label) {
+        return null;
+      }
+      var id = typeof preset.id === 'string' && preset.id ? preset.id : generateAutoGearId('preset');
+      var sourceRules = Array.isArray(preset.rules) ? preset.rules : [];
+      var rules = [];
+      if (sourceRules.length === 0) {
+        rules = [];
+      } else {
+        try {
+          rules = JSON.parse(JSON.stringify(sourceRules));
+        } catch (cloneError) {
+          void cloneError;
+          rules = sourceRules.map(function (entry) {
+            if (!entry || _typeof(entry) !== 'object') {
+              return entry;
+            }
+            return _objectSpread({}, entry);
+          });
+        }
+      }
+      var fingerprint = typeof preset.fingerprint === 'string' && preset.fingerprint ? preset.fingerprint : createAutoGearRulesFingerprint(rules);
+      return {
+        id: id,
+        label: label,
+        rules: rules,
+        fingerprint: fingerprint
+      };
+    }
+    function exportAutoGearPresets() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var config = _typeof(options) === 'object' && options !== null ? options : {};
+      var notifySuccess = config.notifySuccess !== false;
+      var notifyFailure = config.notifyFailure !== false;
+      var presetSource = Array.isArray(autoGearPresets) ? autoGearPresets : [];
+      var presets = presetSource.map(normalizeAutoGearPresetForExport).filter(Boolean);
+      if (!presets.length) {
+        return {
+          status: 'skipped',
+          reason: 'empty'
+        };
+      }
+      if (typeof document === 'undefined' || typeof Blob !== 'function' || !URL || typeof URL.createObjectURL !== 'function') {
+        if (notifyFailure) {
+          var _texts$currentLang70, _texts$en164;
+          var message = ((_texts$currentLang70 = texts[currentLang]) === null || _texts$currentLang70 === void 0 ? void 0 : _texts$currentLang70.autoGearPresetExportError) || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearPresetExportError) || 'Automatic gear preset export failed.';
+          showNotification('error', message);
+        }
+        return {
+          status: 'failed',
+          reason: 'unsupported'
+        };
+      }
+      try {
+        var payload = {
+          type: 'camera-power-planner/auto-gear-presets',
+          version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
+          createdAt: new Date().toISOString(),
+          presets: presets,
+          activePresetId: typeof activeAutoGearPresetId === 'string' ? activeAutoGearPresetId : '',
+          autoPresetId: typeof autoGearAutoPresetIdState === 'string' ? autoGearAutoPresetIdState : ''
+        };
+        var json = JSON.stringify(payload, null, 2);
+        var blob = new Blob([json], {
+          type: 'application/json'
+        });
+        var url = URL.createObjectURL(blob);
+        var anchor = document.createElement('a');
+        anchor.href = url;
+        var fileName = formatAutoGearPresetExportFilename(new Date());
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        if (typeof URL.revokeObjectURL === 'function') {
+          URL.revokeObjectURL(url);
+        }
+        if (notifySuccess) {
+          var _texts$currentLang71, _texts$en165;
+          var _message7 = ((_texts$currentLang71 = texts[currentLang]) === null || _texts$currentLang71 === void 0 ? void 0 : _texts$currentLang71.autoGearPresetExportSuccess) || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearPresetExportSuccess) || 'Automatic gear presets downloaded.';
+          showNotification('success', _message7);
+        }
+        return {
+          status: 'exported',
+          fileName: fileName
+        };
+      } catch (error) {
+        console.warn('Automatic gear preset export failed', error);
+        if (notifyFailure) {
+          var _texts$currentLang72, _texts$en166;
+          var _message8 = ((_texts$currentLang72 = texts[currentLang]) === null || _texts$currentLang72 === void 0 ? void 0 : _texts$currentLang72.autoGearPresetExportError) || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearPresetExportError) || 'Automatic gear preset export failed.';
+          showNotification('error', _message8);
+        }
+        return {
+          status: 'failed',
+          reason: 'error',
+          error: error
+        };
+      }
+    }
     function captureAutoGearBackupSnapshot() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var config = _typeof(options) === 'object' && options !== null ? options : {};
@@ -5073,8 +5302,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearBackupControls();
         renderAutoGearBackupRetentionControls();
         if (notifySuccess) {
-          var _texts$currentLang70, _texts$en164;
-          var message = ((_texts$currentLang70 = texts[currentLang]) === null || _texts$currentLang70 === void 0 ? void 0 : _texts$currentLang70.autoGearBackupSaved) || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearBackupSaved) || 'Automatic gear backup saved.';
+          var _texts$currentLang73, _texts$en167;
+          var message = ((_texts$currentLang73 = texts[currentLang]) === null || _texts$currentLang73 === void 0 ? void 0 : _texts$currentLang73.autoGearBackupSaved) || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearBackupSaved) || 'Automatic gear backup saved.';
           showNotification('success', message);
         }
         return {
@@ -5085,9 +5314,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         console.warn('Automatic gear backup failed', error);
         autoGearRulesDirtySinceBackup = true;
         if (notifyFailure) {
-          var _texts$currentLang71, _texts$en165;
-          var _message7 = ((_texts$currentLang71 = texts[currentLang]) === null || _texts$currentLang71 === void 0 ? void 0 : _texts$currentLang71.autoGearBackupFailed) || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearBackupFailed) || 'Automatic gear backup failed.';
-          showNotification('error', _message7);
+          var _texts$currentLang74, _texts$en168;
+          var _message9 = ((_texts$currentLang74 = texts[currentLang]) === null || _texts$currentLang74 === void 0 ? void 0 : _texts$currentLang74.autoGearBackupFailed) || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearBackupFailed) || 'Automatic gear backup failed.';
+          showNotification('error', _message9);
         }
         return {
           status: 'error',
@@ -5101,18 +5330,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return result.status === 'created';
     }
     function restoreAutoGearBackup(backupId) {
-      var _texts$currentLang72, _texts$en166;
+      var _texts$currentLang75, _texts$en169;
       if (!backupId) return false;
       var backup = autoGearBackups.find(function (entry) {
         return entry.id === backupId;
       });
       if (!backup) return false;
-      var confirmation = ((_texts$currentLang72 = texts[currentLang]) === null || _texts$currentLang72 === void 0 ? void 0 : _texts$currentLang72.autoGearBackupRestoreConfirm) || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearBackupRestoreConfirm) || 'Replace your automatic gear rules with this backup?';
+      var confirmation = ((_texts$currentLang75 = texts[currentLang]) === null || _texts$currentLang75 === void 0 ? void 0 : _texts$currentLang75.autoGearBackupRestoreConfirm) || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearBackupRestoreConfirm) || 'Replace your automatic gear rules with this backup?';
       if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
         if (!window.confirm(confirmation)) return false;
       }
       try {
-        var _texts$currentLang73, _texts$en167;
+        var _texts$currentLang76, _texts$en170;
         setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
         if (backup.monitorDefaults) {
           setAutoGearMonitorDefaults(backup.monitorDefaults, {
@@ -5129,23 +5358,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearRulesLastBackupSignature = getAutoGearConfigurationSignature(backup.rules, backup.monitorDefaults);
         autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
         autoGearRulesDirtySinceBackup = false;
-        var message = ((_texts$currentLang73 = texts[currentLang]) === null || _texts$currentLang73 === void 0 ? void 0 : _texts$currentLang73.autoGearBackupRestoreSuccess) || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearBackupRestoreSuccess) || 'Automatic gear backup restored.';
+        var message = ((_texts$currentLang76 = texts[currentLang]) === null || _texts$currentLang76 === void 0 ? void 0 : _texts$currentLang76.autoGearBackupRestoreSuccess) || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearBackupRestoreSuccess) || 'Automatic gear backup restored.';
         showNotification('success', message);
         return true;
       } catch (error) {
-        var _texts$currentLang74, _texts$en168;
+        var _texts$currentLang77, _texts$en171;
         console.warn('Failed to restore automatic gear backup', error);
-        var _message8 = ((_texts$currentLang74 = texts[currentLang]) === null || _texts$currentLang74 === void 0 ? void 0 : _texts$currentLang74.autoGearBackupRestoreError) || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearBackupRestoreError) || 'Automatic gear backup restore failed.';
-        showNotification('error', _message8);
+        var _message0 = ((_texts$currentLang77 = texts[currentLang]) === null || _texts$currentLang77 === void 0 ? void 0 : _texts$currentLang77.autoGearBackupRestoreError) || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearBackupRestoreError) || 'Automatic gear backup restore failed.';
+        showNotification('error', _message0);
         return false;
       }
     }
     function handleAutoGearImportSelection(event) {
-      var _texts$currentLang75, _texts$en169;
+      var _texts$currentLang78, _texts$en172;
       var input = event === null || event === void 0 ? void 0 : event.target;
       var file = input && input.files && input.files[0];
       if (!file) return;
-      var confirmation = ((_texts$currentLang75 = texts[currentLang]) === null || _texts$currentLang75 === void 0 ? void 0 : _texts$currentLang75.autoGearImportConfirm) || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearImportConfirm) || 'Replace your automatic gear rules with the imported file?';
+      var confirmation = ((_texts$currentLang78 = texts[currentLang]) === null || _texts$currentLang78 === void 0 ? void 0 : _texts$currentLang78.autoGearImportConfirm) || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearImportConfirm) || 'Replace your automatic gear rules with the imported file?';
       if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
         if (!window.confirm(confirmation)) {
           if (input) input.value = '';
@@ -5153,8 +5382,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       if (typeof FileReader === 'undefined') {
-        var _texts$currentLang76, _texts$en170;
-        var errorMsg = ((_texts$currentLang76 = texts[currentLang]) === null || _texts$currentLang76 === void 0 ? void 0 : _texts$currentLang76.autoGearImportError) || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+        var _texts$currentLang79, _texts$en173;
+        var errorMsg = ((_texts$currentLang79 = texts[currentLang]) === null || _texts$currentLang79 === void 0 ? void 0 : _texts$currentLang79.autoGearImportError) || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
         showNotification('error', errorMsg);
         if (input) input.value = '';
         return;
@@ -5167,12 +5396,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var parsed = JSON.parse(typeof text === 'string' ? text : '');
           importAutoGearRulesFromData(parsed);
         } catch (error) {
-          var _texts$currentLang77, _texts$en171;
+          var _texts$currentLang80, _texts$en174;
           console.warn('Automatic gear rules import failed', error);
           if (Array.isArray(error === null || error === void 0 ? void 0 : error.validationWarnings) && error.validationWarnings.length) {
             displayAutoGearImportWarnings(error.validationWarnings, error.validationMetadata || null);
           }
-          var fallbackErrorMsg = ((_texts$currentLang77 = texts[currentLang]) === null || _texts$currentLang77 === void 0 ? void 0 : _texts$currentLang77.autoGearImportError) || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+          var fallbackErrorMsg = ((_texts$currentLang80 = texts[currentLang]) === null || _texts$currentLang80 === void 0 ? void 0 : _texts$currentLang80.autoGearImportError) || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
           var _errorMsg = typeof (error === null || error === void 0 ? void 0 : error.userMessage) === 'string' && error.userMessage.trim() ? error.userMessage : fallbackErrorMsg;
           showNotification('error', _errorMsg);
         } finally {
@@ -5180,8 +5409,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       };
       reader.onerror = function () {
-        var _texts$currentLang78, _texts$en172;
-        var errorMsg = ((_texts$currentLang78 = texts[currentLang]) === null || _texts$currentLang78 === void 0 ? void 0 : _texts$currentLang78.autoGearImportError) || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+        var _texts$currentLang81, _texts$en175;
+        var errorMsg = ((_texts$currentLang81 = texts[currentLang]) === null || _texts$currentLang81 === void 0 ? void 0 : _texts$currentLang81.autoGearImportError) || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
         showNotification('error', errorMsg);
         if (input) input.value = '';
       };
@@ -7333,14 +7562,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     function formatSizeText(lang, langTexts, bytes) {
-      var _texts$en174;
+      var _texts$en177;
       var resolved = resolveLanguageCode(lang);
       if (!Number.isFinite(bytes) || bytes <= 0) {
-        var _texts$en173;
+        var _texts$en176;
         var zero = formatNumberForLang(resolved, 0, {
           maximumFractionDigits: 0
         });
-        var _template9 = langTexts.storageTotalSizeValue || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.storageTotalSizeValue) || '~%s KB';
+        var _template9 = langTexts.storageTotalSizeValue || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.storageTotalSizeValue) || '~%s KB';
         return _template9.replace('%s', zero);
       }
       var kilobytes = bytes / 1024;
@@ -7361,7 +7590,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         };
       }
       var formatted = formatNumberForLang(resolved, kilobytes, options);
-      var template = langTexts.storageTotalSizeValue || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.storageTotalSizeValue) || '~%s KB';
+      var template = langTexts.storageTotalSizeValue || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.storageTotalSizeValue) || '~%s KB';
       return template.replace('%s', formatted);
     }
     function formatDeviceCategories(lang, categories) {
@@ -7390,8 +7619,32 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return formatListForLang(resolved, items);
     }
-    var STORAGE_SUMMARY_AUTO_BACKUP_PREFIX = 'auto-backup-';
-    var STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+    var AUTO_BACKUP_HELPERS_NAMESPACE = function () {
+      if (typeof require === 'function') {
+        try {
+          return require('./app-core-auto-backup.js');
+        } catch (autoBackupRequireError) {
+          void autoBackupRequireError;
+        }
+      }
+      var candidateScopes = [typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+      for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
+        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+          continue;
+        }
+        try {
+          if (scope.CORE_AUTO_BACKUP && _typeof(scope.CORE_AUTO_BACKUP) === 'object') {
+            return scope.CORE_AUTO_BACKUP;
+          }
+        } catch (lookupError) {
+          void lookupError;
+        }
+      }
+      return null;
+    }();
+    var STORAGE_SUMMARY_AUTO_BACKUP_PREFIX = AUTO_BACKUP_HELPERS_NAMESPACE && typeof AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_NAME_PREFIX === 'string' ? AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_NAME_PREFIX : 'auto-backup-';
+    var STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX = AUTO_BACKUP_HELPERS_NAMESPACE && typeof AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX === 'string' ? AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX : 'auto-backup-before-delete-';
     var STORAGE_TIMESTAMP_KEYS = new Set(['timestamp', 'createdat', 'created_at', 'savedat', 'saved_at', 'updatedat', 'updated_at', 'generatedat', 'generated_at', 'generatedon', 'generated_on', 'exportedat', 'exported_at', 'modifiedat', 'modified_at', 'iso']);
     var ISO_TIMESTAMP_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
     function isAutomaticBackupName(name) {
@@ -7649,27 +7902,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     function formatStatusTimestamp(date, lang, langTexts) {
-      var _texts$en176;
+      var _texts$en179;
       if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
         return '';
       }
       var absolute = formatAbsoluteTimestamp(date, lang);
       var relative = formatRelativeTimestamp(date, lang);
       if (relative) {
-        var _texts$en175;
-        var template = langTexts.storageStatusTimestamp || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.storageStatusTimestamp) || '{relative} ({absolute})';
+        var _texts$en178;
+        var template = langTexts.storageStatusTimestamp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.storageStatusTimestamp) || '{relative} ({absolute})';
         return template.replace('{relative}', relative).replace('{absolute}', absolute);
       }
-      var fallbackTemplate = langTexts.storageStatusTimestampAbsolute || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.storageStatusTimestampAbsolute) || '{absolute}';
+      var fallbackTemplate = langTexts.storageStatusTimestampAbsolute || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.storageStatusTimestampAbsolute) || '{absolute}';
       return fallbackTemplate.replace('{absolute}', absolute);
     }
     function applyStorageStatus(element, info, lang, langTexts, hasAny) {
-      var _texts$en180;
+      var _texts$en183;
       if (!element) return;
       if (info && info.date instanceof Date && !Number.isNaN(info.date.getTime())) {
-        var _texts$en177;
+        var _texts$en180;
         var timeText = formatStatusTimestamp(info.date, lang, langTexts);
-        var display = info.name ? (langTexts.storageStatusWithName || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.storageStatusWithName) || '{name} — {time}').replace('{name}', info.name).replace('{time}', timeText) : timeText;
+        var display = info.name ? (langTexts.storageStatusWithName || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.storageStatusWithName) || '{name} — {time}').replace('{name}', info.name).replace('{time}', timeText) : timeText;
         element.textContent = display;
         if (display) {
           element.setAttribute('data-help', display);
@@ -7685,8 +7938,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       if (hasAny) {
-        var _texts$en178, _texts$en179;
-        var fallback = langTexts.storageStatusStoredWithoutTimestamp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.storageStatusStoredWithoutTimestamp) || langTexts.storageStatusNever || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.storageStatusNever) || '';
+        var _texts$en181, _texts$en182;
+        var fallback = langTexts.storageStatusStoredWithoutTimestamp || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.storageStatusStoredWithoutTimestamp) || langTexts.storageStatusNever || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.storageStatusNever) || '';
         element.textContent = fallback;
         if (fallback) {
           element.setAttribute('data-help', fallback);
@@ -7696,7 +7949,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         element.removeAttribute('title');
         return;
       }
-      var emptyText = langTexts.storageStatusNever || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.storageStatusNever) || '';
+      var emptyText = langTexts.storageStatusNever || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.storageStatusNever) || '';
       element.textContent = emptyText;
       if (emptyText) {
         element.setAttribute('data-help', emptyText);
@@ -7877,7 +8130,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
     function updateStorageSummary() {
-      var _texts$en181, _texts$en182, _texts$en183;
+      var _texts$en184, _texts$en185, _texts$en186;
       if (!storageSummaryList) return;
       while (storageSummaryList.firstChild) {
         storageSummaryList.removeChild(storageSummaryList.firstChild);
@@ -7959,7 +8212,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         label: langTexts.storageKeyDevices || 'Custom or modified devices',
         value: formatCountText(lang, langTexts, 'storageDevicesCount', deviceSummary.total),
         description: langTexts.storageKeyDevicesDesc || '',
-        extra: deviceSummary.total > 0 && deviceSummary.categories.length ? (langTexts.storageDeviceCategories || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.storageDeviceCategories) || 'Affected categories: %s').replace('%s', formatDeviceCategories(lang, deviceSummary.categories)) : null
+        extra: deviceSummary.total > 0 && deviceSummary.categories.length ? (langTexts.storageDeviceCategories || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.storageDeviceCategories) || 'Affected categories: %s').replace('%s', formatDeviceCategories(lang, deviceSummary.categories)) : null
       }, {
         storageKey: 'cameraPowerPlanner_favorites',
         label: langTexts.storageKeyFavorites || 'Pinned favorites',
@@ -7973,7 +8226,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }, {
         storageKey: 'cameraPowerPlanner_session',
         label: langTexts.storageKeySession || 'Unsaved session',
-        value: hasSession ? langTexts.storageSessionStored || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.storageSessionNotStored) || 'Not stored',
+        value: hasSession ? langTexts.storageSessionStored || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.storageSessionNotStored) || 'Not stored',
         description: langTexts.storageKeySessionDesc || ''
       }, {
         storageKey: 'cameraPowerPlanner_fullBackups',
@@ -10508,7 +10761,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee8(fileList) {
-        var added, unsupported, failed, persistFailure, _i12, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i12, _Array$from, file, dataUrl, result, message, _message1, _message10, _t7;
         return _regenerator().w(function (_context8) {
           while (1) switch (_context8.p = _context8.n) {
             case 0:
@@ -10593,15 +10846,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 }
               }
               if (unsupported.length > 0 && added.length > 0) {
-                _message9 = getLocalizedText('localFontsUnsupportedFiles');
-                if (_message9) {
-                  showNotification('warning', _message9.replace('%s', unsupported.join(', ')));
+                _message1 = getLocalizedText('localFontsUnsupportedFiles');
+                if (_message1) {
+                  showNotification('warning', _message1.replace('%s', unsupported.join(', ')));
                 }
               }
               if (failed.length > 0) {
-                _message0 = getLocalizedText('localFontsError');
-                if (_message0) {
-                  showNotification('error', _message0);
+                _message10 = getLocalizedText('localFontsError');
+                if (_message10) {
+                  showNotification('error', _message10);
                 }
               }
               if (localFontsButtonElement) {
@@ -12336,8 +12589,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
     var feedbackSubmitBtn = document.getElementById("fbSubmit");
     if (feedbackCancelBtn) {
-      var _feedbackCancelBtn$te, _texts$currentLang79, _texts$en184;
-      var cancelLabel = ((_feedbackCancelBtn$te = feedbackCancelBtn.textContent) === null || _feedbackCancelBtn$te === void 0 ? void 0 : _feedbackCancelBtn$te.trim()) || ((_texts$currentLang79 = texts[currentLang]) === null || _texts$currentLang79 === void 0 ? void 0 : _texts$currentLang79.cancelEditBtn) || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.cancelEditBtn) || 'Cancel';
+      var _feedbackCancelBtn$te, _texts$currentLang82, _texts$en187;
+      var cancelLabel = ((_feedbackCancelBtn$te = feedbackCancelBtn.textContent) === null || _feedbackCancelBtn$te === void 0 ? void 0 : _feedbackCancelBtn$te.trim()) || ((_texts$currentLang82 = texts[currentLang]) === null || _texts$currentLang82 === void 0 ? void 0 : _texts$currentLang82.cancelEditBtn) || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.cancelEditBtn) || 'Cancel';
       setButtonLabelWithIcon(feedbackCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
     }
     if (feedbackUseLocationBtn) {
@@ -12346,8 +12599,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setButtonLabelWithIcon(feedbackUseLocationBtn, locationLabel, ICON_GLYPHS.pin);
     }
     if (feedbackSubmitBtn) {
-      var _feedbackSubmitBtn$te, _texts$currentLang80, _texts$en185;
-      var submitLabel = ((_feedbackSubmitBtn$te = feedbackSubmitBtn.textContent) === null || _feedbackSubmitBtn$te === void 0 ? void 0 : _feedbackSubmitBtn$te.trim()) || ((_texts$currentLang80 = texts[currentLang]) === null || _texts$currentLang80 === void 0 ? void 0 : _texts$currentLang80.feedbackSubmit) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.feedbackSubmit) || 'Save & Submit';
+      var _feedbackSubmitBtn$te, _texts$currentLang83, _texts$en188;
+      var submitLabel = ((_feedbackSubmitBtn$te = feedbackSubmitBtn.textContent) === null || _feedbackSubmitBtn$te === void 0 ? void 0 : _feedbackSubmitBtn$te.trim()) || ((_texts$currentLang83 = texts[currentLang]) === null || _texts$currentLang83 === void 0 ? void 0 : _texts$currentLang83.feedbackSubmit) || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.feedbackSubmit) || 'Save & Submit';
       setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
     }
     var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : function () {
@@ -15127,7 +15380,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     function renderFeedbackTable(currentKey) {
-      var _devices3, _cameraSelect, _devices4, _monitorSelect, _devices5, _videoSelect, _devices8, _distanceSelect, _devices9, _monitorSelect2, _texts$currentLang81, _texts$en186;
+      var _devices3, _cameraSelect, _devices4, _monitorSelect, _devices5, _videoSelect, _devices8, _distanceSelect, _devices9, _monitorSelect2, _texts$currentLang84, _texts$en189;
       var container = document.getElementById('feedbackTableContainer');
       var table = document.getElementById('userFeedbackTable');
       var feedbackData = loadFeedbackSafe();
@@ -15292,7 +15545,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var html = '<tr>' + columns.map(function (c) {
         return "<th>".concat(escapeHtml(c.label), "</th>");
       }).join('') + '<th></th></tr>';
-      var deleteFeedbackLabel = ((_texts$currentLang81 = texts[currentLang]) === null || _texts$currentLang81 === void 0 ? void 0 : _texts$currentLang81.deleteSetupBtn) || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.deleteSetupBtn) || 'Delete';
+      var deleteFeedbackLabel = ((_texts$currentLang84 = texts[currentLang]) === null || _texts$currentLang84 === void 0 ? void 0 : _texts$currentLang84.deleteSetupBtn) || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.deleteSetupBtn) || 'Delete';
       entries.forEach(function (entry, index) {
         html += '<tr>';
         columns.forEach(function (c) {
@@ -15641,6 +15894,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearCrewOptions: refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions: refreshAutoGearDistanceOptions,
       exportAutoGearRules: exportAutoGearRules,
+      exportAutoGearPresets: exportAutoGearPresets,
       updateAutoGearCameraWeightDraft: updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft: updateAutoGearShootingDaysDraft,
       checkSetupChanged: checkSetupChanged,
@@ -16118,7 +16372,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var MODULE_EXPORTS = {
         cineCoreProject: ['deriveProjectInfo', 'updateCalculations', 'checkSetupChanged', 'currentProjectInfo', 'setCurrentProjectInfo', 'getCurrentProjectInfo', 'collectProjectFormData', 'populateProjectForm', 'renderFilterDetails', 'collectFilterSelections', 'collectFilterTokens', 'parseFilterTokens', 'applyFilterSelectionsToGearList', 'normalizeSpellingVariants', 'normalizeSearchValue', 'getPowerSelectionSnapshot', 'applyStoredPowerSelection', 'getGearListSelectors', 'applyGearListSelectors'],
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
-        cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
+        cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'exportAutoGearPresets', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
       Object.entries(MODULE_EXPORTS).forEach(function (_ref45) {
         var _ref46 = _slicedToArray(_ref45, 2),

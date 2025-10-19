@@ -1,5 +1,4 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-
 function resolveRuntimeModuleLoader() {
   if (typeof require === 'function') {
     try {
@@ -11,33 +10,23 @@ function resolveRuntimeModuleLoader() {
       void runtimeLoaderError;
     }
   }
-
-  if (
-    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-    cineCoreRuntimeModuleLoader &&
-    _typeof(cineCoreRuntimeModuleLoader) === 'object'
-  ) {
+  if (typeof cineCoreRuntimeModuleLoader !== 'undefined' && cineCoreRuntimeModuleLoader && (typeof cineCoreRuntimeModuleLoader === "undefined" ? "undefined" : _typeof(cineCoreRuntimeModuleLoader)) === 'object') {
     return cineCoreRuntimeModuleLoader;
   }
-
-  var scope =
-    typeof globalThis !== 'undefined' && globalThis ?
-      globalThis :
-    typeof window !== 'undefined' && window ?
-      window :
-    typeof self !== 'undefined' && self ?
-      self :
-    typeof global !== 'undefined' && global ?
-      global :
-      null;
-
-  if (scope && _typeof(scope.cineCoreRuntimeModuleLoader) === 'object') {
-    return scope.cineCoreRuntimeModuleLoader;
+  if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis.cineCoreRuntimeModuleLoader) === 'object') {
+    return globalThis.cineCoreRuntimeModuleLoader;
   }
-
+  if (typeof window !== 'undefined' && window && _typeof(window.cineCoreRuntimeModuleLoader) === 'object') {
+    return window.cineCoreRuntimeModuleLoader;
+  }
+  if (typeof self !== 'undefined' && self && _typeof(self.cineCoreRuntimeModuleLoader) === 'object') {
+    return self.cineCoreRuntimeModuleLoader;
+  }
+  if (typeof global !== 'undefined' && global && _typeof(global.cineCoreRuntimeModuleLoader) === 'object') {
+    return global.cineCoreRuntimeModuleLoader;
+  }
   return null;
 }
-
 function requireCoreRuntimeModule(moduleId, options) {
   var loader = resolveRuntimeModuleLoader();
   if (loader && typeof loader.resolveCoreRuntimeModule === 'function') {
@@ -47,7 +36,6 @@ function requireCoreRuntimeModule(moduleId, options) {
       void moduleResolutionError;
     }
   }
-
   return null;
 }
 if (typeof CORE_TEMPERATURE_QUEUE_KEY === 'undefined') {
@@ -162,22 +150,14 @@ var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUN
   if (typeof resolveCoreSupportModule === 'function') {
     shared = resolveCoreSupportModule('cineCoreRuntimeShared', './modules/core/runtime-shared.js');
   }
-        if (!shared) {
-          var loaderShared = requireCoreRuntimeModule(
-            'modules/core/runtime-shared.js',
-            {
-              primaryScope:
-                typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
-                CORE_GLOBAL_SCOPE &&
-                _typeof(CORE_GLOBAL_SCOPE) === 'object'
-                  ? CORE_GLOBAL_SCOPE
-                  : null,
-            }
-          );
-          if (loaderShared && _typeof(loaderShared) === 'object') {
-            shared = loaderShared;
-          }
-        }
+  if (!shared) {
+    var loaderShared = requireCoreRuntimeModule('modules/core/runtime-shared.js', {
+      primaryScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null
+    });
+    if (loaderShared && _typeof(loaderShared) === 'object') {
+      shared = loaderShared;
+    }
+  }
   if (shared) {
     return shared;
   }

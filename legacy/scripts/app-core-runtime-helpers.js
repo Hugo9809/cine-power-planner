@@ -1,4 +1,56 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var FALLBACK_HUMANIZE_OVERRIDES = {
+  powerDrawWatts: 'Power (W)',
+  capacity: 'Capacity (Wh)',
+  pinA: 'Pin A',
+  dtapA: 'D-Tap A',
+  mount_type: 'Mount',
+  screenSizeInches: 'Screen Size (in)',
+  brightnessNits: 'Brightness (nits)',
+  torqueNm: 'Torque (Nm)',
+  internalController: 'Internal Controller',
+  powerSource: 'Power Source',
+  batteryType: 'Battery Type',
+  connectivity: 'Connectivity'
+};
+function fallbackStableStringify(value) {
+  if (value === null) return 'null';
+  if (typeof value === 'undefined') return 'undefined';
+  if (Array.isArray(value)) {
+    var serialized = '[';
+    for (var index = 0; index < value.length; index += 1) {
+      if (index > 0) {
+        serialized += ',';
+      }
+      serialized += fallbackStableStringify(value[index]);
+    }
+    serialized += ']';
+    return serialized;
+  }
+  if (_typeof(value) === 'object' && value) {
+    var keys = Object.keys(value).sort();
+    var _serialized = '{';
+    for (var _index = 0; _index < keys.length; _index += 1) {
+      var key = keys[_index];
+      if (_index > 0) {
+        _serialized += ',';
+      }
+      _serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
+    }
+    _serialized += '}';
+    return _serialized;
+  }
+  return JSON.stringify(value);
+}
+function fallbackHumanizeKey(key) {
+  if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES, key)) {
+    return FALLBACK_HUMANIZE_OVERRIDES[key];
+  }
+  var stringValue = typeof key === 'string' ? key : String(key || '');
+  return stringValue.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, function (c) {
+    return c.toUpperCase();
+  });
+}
 function createArrayFromCandidates(primary, shared, globalScope) {
   var candidates = [];
   if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
@@ -202,7 +254,7 @@ function resolveAutoGearWeightHelpers(options) {
     }
     return fallbackNormalizeAutoGearWeightValue(value);
   } : fallbackNormalizeAutoGearWeightValue;
-  var normalizeCameraWeightCondition = shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function' ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
+  var normalizeAutoGearCameraWeightCondition = shared && typeof shared.normalizeAutoGearCameraWeightCondition === 'function' ? function safeNormalizeAutoGearCameraWeightCondition(condition) {
     try {
       var normalized = shared.normalizeAutoGearCameraWeightCondition(condition);
       return normalized || null;
@@ -256,7 +308,13 @@ function resolveAutoGearWeightHelpers(options) {
     getAutoGearCameraWeightOperatorLabel: getOperatorLabel,
     formatAutoGearCameraWeight: formatCameraWeight,
     fallbackGetAutoGearCameraWeightOperatorLabel: fallbackGetOperatorLabel,
-    fallbackFormatAutoGearCameraWeight: fallbackFormatCameraWeight
+    fallbackFormatAutoGearCameraWeight: fallbackFormatCameraWeight,
+    fallbackNormalizeAutoGearCameraWeightCondition: function fallbackNormalizeAutoGearCameraWeightCondition(condition) {
+      if (!condition || _typeof(condition) !== 'object') {
+        return null;
+      }
+      return null;
+    }
   };
 }
 function resolveRuntimeScopeTools(options) {
@@ -321,9 +379,17 @@ var CORE_PART2_RUNTIME_HELPERS = function initialisePart2RuntimeHelpers() {
   return {
     resolveAutoGearWeightHelpers: resolveAutoGearWeightHelpers,
     resolveRuntimeScopeTools: resolveRuntimeScopeTools,
+    fallbackStableStringify: fallbackStableStringify,
+    fallbackHumanizeKey: fallbackHumanizeKey,
     fallbackNormalizeAutoGearWeightOperator: fallbackNormalizeAutoGearWeightOperator,
     fallbackNormalizeAutoGearWeightValue: fallbackNormalizeAutoGearWeightValue,
     fallbackFormatAutoGearWeight: fallbackFormatAutoGearWeight,
+    fallbackNormalizeAutoGearCameraWeightCondition: function fallbackNormalizeAutoGearCameraWeightCondition(condition) {
+      if (!condition || _typeof(condition) !== 'object') {
+        return null;
+      }
+      return null;
+    },
     fallbackGetAutoGearCameraWeightOperatorLabel: createFallbackGetAutoGearCameraWeightOperatorLabel(fallbackNormalizeAutoGearWeightOperator, function fallbackTexts() {
       return createDefaultLanguageTexts(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
     }),
@@ -363,6 +429,36 @@ var CORE_PART2_RUNTIME_HELPERS = function initialisePart2RuntimeHelpers() {
       scope.cineCorePart2RuntimeHelpers = namespace;
     } catch (exposeError) {
       void exposeError;
+    }
+  }
+})(CORE_PART2_RUNTIME_HELPERS);
+(function exposeRuntimeHelpersOnSharedNamespace(namespace) {
+  if (!namespace || _typeof(namespace) !== 'object') {
+    return;
+  }
+  var candidateScopes = createArrayFromCandidates(typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_SHARED_SCOPE_PART2 !== 'undefined' ? CORE_SHARED_SCOPE_PART2 : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      if (scope.cineCoreShared && _typeof(scope.cineCoreShared) === 'object') {
+        var sharedHelpers = scope.cineCoreShared.cineCoreRuntimeHelpers;
+        if (!sharedHelpers || _typeof(sharedHelpers) !== 'object') {
+          scope.cineCoreShared.cineCoreRuntimeHelpers = namespace;
+        } else if (typeof Object.assign === 'function') {
+          Object.assign(sharedHelpers, namespace);
+        } else {
+          for (var key in namespace) {
+            if (Object.prototype.hasOwnProperty.call(namespace, key)) {
+              sharedHelpers[key] = namespace[key];
+            }
+          }
+        }
+      }
+    } catch (assignError) {
+      void assignError;
     }
   }
 })(CORE_PART2_RUNTIME_HELPERS);
