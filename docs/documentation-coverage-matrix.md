@@ -21,7 +21,7 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 
 1. After implementing a change, update the relevant row(s) with the review date
    and attach links to evidence stored in the offline release archive.
-2. Confirm every referenced artefact exists in the verification packet before
+2. Confirm every referenced artifact exists in the verification packet before
    distributing new bundles.
 3. During audits, walk through this matrix to locate supporting material without
    reconnecting to the internet.
