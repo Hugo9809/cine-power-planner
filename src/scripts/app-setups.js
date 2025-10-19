@@ -9802,6 +9802,30 @@ function openGearItemEditor(element, options = {}) {
     }
   }
   const data = getGearItemData(element);
+  const gearDialogContext = (() => {
+    const rawId = data && Object.prototype.hasOwnProperty.call(data, 'id') ? data.id : '';
+    const normalizedId = typeof rawId === 'string' ? rawId : (rawId === null || rawId === undefined ? '' : String(rawId));
+    const rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
+    const normalizedName = typeof rawName === 'string' ? rawName.slice(0, 120) : '';
+    const dataset = element && element.dataset ? element.dataset : {};
+    const category = typeof dataset.category === 'string' ? dataset.category : '';
+    const isCustomItem = Boolean(element && element.classList && element.classList.contains('gear-custom-item'));
+    const optionFlags = {
+      allowRentalToggle: options && Object.prototype.hasOwnProperty.call(options, 'allowRentalToggle')
+        ? Boolean(options.allowRentalToggle)
+        : undefined,
+      focusField: options && typeof options.focusField === 'string'
+        ? options.focusField.slice(0, 60)
+        : undefined,
+    };
+    return {
+      id: normalizedId,
+      name: normalizedName,
+      category,
+      custom: isCustomItem,
+      options: optionFlags,
+    };
+  })();
   activeGearItemEditTarget = { element, options: options || {} };
   context.resetDefaults = getGearItemResetDefaults(element);
   context.currentAttributes = typeof data.attributes === 'string'
@@ -9945,7 +9969,7 @@ function openGearItemEditor(element, options = {}) {
       context.dialog.hidden = false;
     }
   } catch (error) {
-    console.warn('Failed to open gear item edit dialog', error);
+    console.warn('Failed to open gear item edit dialog', error, gearDialogContext);
     activeGearItemEditTarget = null;
     return false;
   }
