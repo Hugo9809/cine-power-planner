@@ -448,7 +448,7 @@ const fizData = {
       "powerSource": "Internal Battery (ARRI LBP-3500) or External (LCS)",
       "batteryType": "ARRI LBP-3500",
       "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LCS)",
-      "notes": "Single-axis wireless control unit.",
+      "notes": "Single-axis wireless control unit."
     },
     "Arri WCU-4": {
       "powerDrawWatts": 8,

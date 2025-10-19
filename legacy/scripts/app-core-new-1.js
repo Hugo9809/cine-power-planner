@@ -5966,6 +5966,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     scheduleLayoutInitialization();
   }
   var VIDEO_OUTPUT_TYPES = new Set(['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI', 'DisplayPort']);
+  var NORMALIZED_FLAG_KEY = '__normalized';
   var DEFAULT_FILTER_SIZE = '4x5.65';
   var CORE_AUTO_BACKUP_NAMESPACE = function () {
     if (typeof require === 'function') {
@@ -6090,6 +6091,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function storeDevices(deviceData) {
     saveDeviceData(deviceData);
   }
+  exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
   function loadSession() {
     return typeof loadSessionState === 'function' ? loadSessionState() : null;
   }
@@ -6327,9 +6329,33 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!collection || _typeof(collection) !== 'object') return;
     Object.values(collection).forEach(fixPowerInput);
   }
-  function unifyDevices(devicesData) {
+  function hasNormalizedDevicesMarker(bundle) {
+    return Boolean(bundle && Object.prototype.hasOwnProperty.call(bundle, NORMALIZED_FLAG_KEY) && bundle[NORMALIZED_FLAG_KEY]);
+  }
+  function markDevicesNormalized(bundle) {
+    if (!bundle || _typeof(bundle) !== 'object') {
+      return bundle;
+    }
+    try {
+      Object.defineProperty(bundle, NORMALIZED_FLAG_KEY, {
+        configurable: true,
+        enumerable: false,
+        value: true,
+        writable: true
+      });
+    } catch (defineNormalizedError) {
+      void defineNormalizedError;
+      bundle[NORMALIZED_FLAG_KEY] = true;
+    }
+    return bundle;
+  }
+  function unifyDevices(devicesData, options) {
     var _devicesData$fiz, _devicesData$fiz2;
-    if (!devicesData || _typeof(devicesData) !== 'object') return;
+    if (!devicesData || _typeof(devicesData) !== 'object') return devicesData;
+    var force = Boolean(options && options.force);
+    if (!force && hasNormalizedDevicesMarker(devicesData)) {
+      return devicesData;
+    }
     Object.values(devicesData.cameras || {}).forEach(function (cam) {
       var _cam$power, _cam$power2;
       if ((_cam$power = cam.power) !== null && _cam$power !== void 0 && _cam$power.input && cam.power.input.powerDrawWatts !== undefined) {
@@ -6610,6 +6636,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         c.fizConnectors = [];
       }
     });
+    markDevicesNormalized(devicesData);
+    return devicesData;
+  }
+  function normalizeDevicesForPersistence(devicesData) {
+    return unifyDevices(devicesData, {
+      force: true
+    });
   }
   function resolveUpdateDevicesReferenceFunction() {
     var directReference = null;
@@ -6671,6 +6704,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   if (window.defaultDevices === undefined) {
     window.defaultDevices = CORE_DEEP_CLONE(devices);
+    markDevicesNormalized(window.defaultDevices);
     unifyDevices(window.defaultDevices);
   }
   var storedDevices = loadDeviceData();
@@ -6706,7 +6740,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
   }
-  unifyDevices(devices);
+  unifyDevices(devices, {
+    force: true
+  });
   function getBatteryPlateSupport(name) {
     var cam = devices.cameras[name];
     if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];

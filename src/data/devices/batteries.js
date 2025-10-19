@@ -492,7 +492,6 @@ const batteryData = {
   "IDX CUE-J150 (V-Mount)": {
     "capacity": 146,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 890
   },
@@ -513,49 +512,42 @@ const batteryData = {
   "PAG PAGlink HC-PL150T (Gold Mount)": {
     "capacity": 150,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "Gold-Mount",
     "weight_g": 735
   },
   "PAG PAGlink HC-PL150T (V-Mount)": {
     "capacity": 150,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 770
   },
   "PAG Mini PAGlink MPL50 (Gold Mount)": {
     "capacity": 50,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "Gold-Mount",
     "weight_g": 620
   },
   "PAG Mini PAGlink MPL50 (V-Mount)": {
     "capacity": 50,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 620
   },
   "PAG L90 Slim (V-Mount)": {
     "capacity": 90,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 567
   },
   "Rolux Dynasty III 150Wh (V-Mount)": {
     "capacity": 150,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 900
   },
   "ZGCINE ZG-S150 (V-Mount)": {
     "capacity": 150,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 940
   },
@@ -761,14 +753,12 @@ const batteryData = {
   "SWIT PB-S220A (Gold-Mount)": {
     "capacity": 220,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "Gold-Mount",
     "weight_g": 1435
   },
   "SWIT PB-S220S (V-Mount)": {
     "capacity": 220,
     "pinA": null,
-    "dtapA": null,
     "mount_type": "V-Mount",
     "weight_g": 1440
   },

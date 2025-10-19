@@ -8,7 +8,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -36,7 +38,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": true,
@@ -65,7 +69,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -95,7 +101,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -123,7 +131,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": true,
@@ -152,7 +162,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -182,7 +194,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -210,7 +224,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": true,
@@ -239,7 +255,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -269,7 +287,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -290,7 +310,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -318,7 +340,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": true,
@@ -347,7 +371,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -377,7 +403,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "12-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -405,7 +433,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -433,7 +463,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": true,
@@ -462,7 +494,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -492,7 +526,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -520,7 +556,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -541,7 +579,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -574,7 +612,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "portType": "DC Barrel"
+        "type": [
+          "DC Barrel"
+        ]
       }
     },
     "wirelessTx": true,
@@ -601,7 +641,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -634,7 +674,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": [
+        "type": [
           "4-pin Aviation",
           "NP-F"
         ]
@@ -668,7 +708,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": [
+        "type": [
           "4-pin Aviation",
           "NP-F"
         ]
@@ -699,7 +739,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": [
+        "type": [
           "4-pin Aviation",
           "NP-F"
         ]
@@ -733,7 +773,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": [
+        "type": [
           "4-pin Aviation",
           "NP-F"
         ]
@@ -761,7 +801,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -792,7 +832,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -823,7 +863,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -850,7 +890,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -881,7 +921,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": [
+        "type": [
           "DC Barrel",
           "NP-F"
         ]
@@ -913,7 +953,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "portType": "NP-F"
+        "type": [
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -944,7 +986,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "portType": "NP-F"
+        "type": [
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -969,7 +1013,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "portType": "NP-F"
+        "type": [
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -994,7 +1040,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "portType": "NP-F"
+        "type": [
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -1019,16 +1067,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "12",
-        "portType": "Mini XLR 3-pin"
+        "type": [
+          "Mini XLR 3-pin"
+        ]
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "portType": "HDMI" },
-      { "portType": "3G-SDI" }
+      {
+        "portType": "HDMI"
+      },
+      {
+        "portType": "3G-SDI"
+      }
     ],
     "videoOutputs": [
-      { "portType": "3G-SDI" }
+      {
+        "portType": "3G-SDI"
+      }
     ]
   },
   "TVLogic VFM-058W": {
@@ -1038,7 +1094,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6.8-12",
-        "portType": [
+        "type": [
           "DC Barrel",
           "D-Tap"
         ]
@@ -1046,12 +1102,20 @@ const monitorData = {
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "portType": "HDMI" },
-      { "portType": "3G-SDI" }
+      {
+        "portType": "HDMI"
+      },
+      {
+        "portType": "3G-SDI"
+      }
     ],
     "videoOutputs": [
-      { "portType": "HDMI" },
-      { "portType": "3G-SDI" }
+      {
+        "portType": "HDMI"
+      },
+      {
+        "portType": "3G-SDI"
+      }
     ]
   },
   "SmallHD 703 UltraBright": {
@@ -1061,7 +1125,9 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
@@ -1086,16 +1152,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "12-24",
-        "portType": "Mini XLR 3-pin"
+        "type": [
+          "Mini XLR 3-pin"
+        ]
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "portType": "HDMI" },
-      { "portType": "3G-SDI" }
+      {
+        "portType": "HDMI"
+      },
+      {
+        "portType": "3G-SDI"
+      }
     ],
     "videoOutputs": [
-      { "portType": "3G-SDI" }
+      {
+        "portType": "3G-SDI"
+      }
     ]
   },
   "TVLogic F-7H mkII": {
@@ -1105,16 +1179,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-17",
-        "portType": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "portType": "HDMI" },
-      { "portType": "3G-SDI" }
+      {
+        "portType": "HDMI"
+      },
+      {
+        "portType": "3G-SDI"
+      }
     ],
     "videoOutputs": [
-      { "portType": "3G-SDI" }
+      {
+        "portType": "3G-SDI"
+      }
     ]
   },
   "None": {
@@ -1122,8 +1204,11 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": null,
-        "portType": "N/A",
-        "notes": "Placeholder entry representing no dedicated monitor"
+        "notes": "Placeholder entry representing no dedicated monitor",
+        "type": [
+          "N",
+          "A"
+        ]
       }
     },
     "wirelessTx": false,

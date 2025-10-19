@@ -4373,7 +4373,7 @@ if (exportAndRevertBtn) {
       if (typeof updateGlobalDevicesReference === 'function') {
         updateGlobalDevicesReference(devices);
       }
-      unifyDevices(devices);
+      unifyDevices(devices, { force: true });
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);

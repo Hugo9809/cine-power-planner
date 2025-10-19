@@ -1124,6 +1124,19 @@
 
   exposeLoaderInterface(scope, loaderInterface);
 
+  if (typeof document === 'undefined' && typeof require === 'function') {
+    Object.keys(LOCALE_SCRIPTS).forEach(function preloadLocale(locale) {
+      if (locale === DEFAULT_LANGUAGE) {
+        return;
+      }
+      try {
+        loaderInterface.loadLanguage(locale);
+      } catch (preloadError) {
+        void preloadError;
+      }
+    });
+  }
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = loaderInterface;
   }

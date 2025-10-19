@@ -16594,7 +16594,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     
-      unifyDevices(devices);
+      unifyDevices(devices, { force: true });
       storeDevices(devices);
       refreshDeviceLists();
       updateMountTypeOptions();

@@ -20,8 +20,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -48,14 +50,20 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": [
+            "LEMO 2-pin"
+          ]
         },
         {
-          "type": "Gold-Mount"
+          "type": [
+            "Gold-Mount"
+          ]
         },
         {
-          "type": "V-Mount"
+          "type": [
+            "V-Mount"
+          ]
         }
       ]
     }
@@ -83,14 +91,20 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": [
+            "LEMO 2-pin"
+          ]
         },
         {
-          "type": "Gold-Mount"
+          "type": [
+            "Gold-Mount"
+          ]
         },
         {
-          "type": "V-Mount"
+          "type": [
+            "V-Mount"
+          ]
         }
       ]
     }
@@ -114,8 +128,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -142,14 +158,20 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": [
+            "LEMO 2-pin"
+          ]
         },
         {
-          "type": "Gold-Mount"
+          "type": [
+            "Gold-Mount"
+          ]
         },
         {
-          "type": "V-Mount"
+          "type": [
+            "V-Mount"
+          ]
         }
       ]
     }
@@ -173,8 +195,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -197,8 +221,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -221,8 +247,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -245,8 +273,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -269,8 +299,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -293,8 +325,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -317,8 +351,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -341,8 +377,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "notes": "6-28V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -369,15 +407,21 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V-12V"
+          "notes": "5V-12V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F"
+          "type": [
+            "NP-F"
+          ]
         },
         {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "notes": "6-16V",
+          "type": [
+            "DC Barrel"
+          ]
         }
       ]
     }
@@ -399,11 +443,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5-12V"
+          "notes": "5-12V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F"
+          "type": [
+            "NP-F"
+          ]
         }
       ]
     }
@@ -431,15 +479,21 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5-12V"
+          "notes": "5-12V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F"
+          "type": [
+            "NP-F"
+          ]
         },
         {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "notes": "6-16V",
+          "type": [
+            "DC Barrel"
+          ]
         }
       ]
     }
@@ -467,14 +521,20 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "DC-",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": [
+            "DC-"
+          ]
         },
         {
-          "type": "NP-F"
+          "type": [
+            "NP-F"
+          ]
         },
         {
-          "type": "WB37"
+          "type": [
+            "WB37"
+          ]
         }
       ]
     }
@@ -501,8 +561,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "notes": "6-18V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -528,8 +590,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "notes": "6-18V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -555,8 +619,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "notes": "6-18V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -582,8 +648,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "notes": "6-18V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -607,11 +675,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -633,11 +705,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -665,11 +741,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -697,11 +777,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -723,11 +807,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -755,11 +843,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": [
+            "USB-C"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -787,11 +879,15 @@ const videoData = {
     "power": {
       "input": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "7.4-16.8V"
+          "notes": "7.4-16.8V",
+          "type": [
+            "LEMO 2-pin"
+          ]
         },
         {
-          "type": "NP-F battery"
+          "type": [
+            "NP-F battery"
+          ]
         }
       ]
     }
@@ -813,8 +909,10 @@ const videoData = {
     "latencyMs": "< 1ms",
     "power": {
       "input": {
-        "type": "LEMO 2-pin",
-        "notes": "10.5-34V"
+        "notes": "10.5-34V",
+        "type": [
+          "LEMO 2-pin"
+        ]
       }
     }
   },
@@ -823,7 +921,7 @@ const videoData = {
     "power": {
       "input": {
         "voltageRange": "",
-        "type": ""
+        "type": []
       }
     },
     "videoInputs": [],
