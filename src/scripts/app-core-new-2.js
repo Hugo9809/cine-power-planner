@@ -8239,8 +8239,51 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return formatListForLang(resolved, items);
     }
     
-    const STORAGE_SUMMARY_AUTO_BACKUP_PREFIX = 'auto-backup-';
-    const STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+    const AUTO_BACKUP_HELPERS_NAMESPACE = (() => {
+      if (typeof require === 'function') {
+        try {
+          return require('./app-core-auto-backup.js');
+        } catch (autoBackupRequireError) {
+          void autoBackupRequireError;
+        }
+      }
+
+      const candidateScopes = [
+        typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' ? CORE_PART2_RUNTIME_SCOPE : null,
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+      ];
+
+      for (let index = 0; index < candidateScopes.length; index += 1) {
+        const scope = candidateScopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          continue;
+        }
+
+        try {
+          if (scope.CORE_AUTO_BACKUP && typeof scope.CORE_AUTO_BACKUP === 'object') {
+            return scope.CORE_AUTO_BACKUP;
+          }
+        } catch (lookupError) {
+          void lookupError;
+        }
+      }
+
+      return null;
+    })();
+
+    const STORAGE_SUMMARY_AUTO_BACKUP_PREFIX =
+      AUTO_BACKUP_HELPERS_NAMESPACE && typeof AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_NAME_PREFIX === 'string'
+        ? AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_NAME_PREFIX
+        : 'auto-backup-';
+    const STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX =
+      AUTO_BACKUP_HELPERS_NAMESPACE
+        && typeof AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX === 'string'
+        ? AUTO_BACKUP_HELPERS_NAMESPACE.AUTO_BACKUP_DELETION_PREFIX
+        : 'auto-backup-before-delete-';
     const STORAGE_TIMESTAMP_KEYS = new Set([
       'timestamp',
       'createdat',
