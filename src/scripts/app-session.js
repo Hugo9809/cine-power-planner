@@ -6867,17 +6867,17 @@ const mountVoltageResetButtonRef = (() => {
     updateStorageSummary();
     if (autoGearEditor) {
       closeAutoGearEditor();
-      refreshAutoGearScenarioOptions();
-      refreshAutoGearMatteboxOptions();
-      refreshAutoGearCameraHandleOptions();
-      refreshAutoGearViewfinderExtensionOptions();
-      refreshAutoGearVideoDistributionOptions();
+      callSessionCoreFunction('refreshAutoGearScenarioOptions');
+      callSessionCoreFunction('refreshAutoGearMatteboxOptions');
+      callSessionCoreFunction('refreshAutoGearCameraHandleOptions');
+      callSessionCoreFunction('refreshAutoGearViewfinderExtensionOptions');
+      callSessionCoreFunction('refreshAutoGearVideoDistributionOptions');
       callSessionCoreFunction('refreshAutoGearCameraOptions', [], { defer: true });
-      refreshAutoGearMonitorOptions();
-      refreshAutoGearWirelessOptions();
-      refreshAutoGearMotorsOptions();
-      refreshAutoGearControllersOptions();
-      refreshAutoGearDistanceOptions();
+      callSessionCoreFunction('refreshAutoGearMonitorOptions');
+      callSessionCoreFunction('refreshAutoGearWirelessOptions');
+      callSessionCoreFunction('refreshAutoGearMotorsOptions');
+      callSessionCoreFunction('refreshAutoGearControllersOptions');
+      callSessionCoreFunction('refreshAutoGearDistanceOptions');
       populateAutoGearCategorySelect(autoGearAddCategorySelect, '');
       populateAutoGearCategorySelect(autoGearRemoveCategorySelect, '');
       renderAutoGearRulesList();
