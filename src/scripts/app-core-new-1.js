@@ -1005,101 +1005,130 @@ const CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefault
 CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
 CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 
-function getEscapeHtmlFunction() {
-  try {
-    return typeof escapeHtml === 'function' ? escapeHtml : null;
-  } catch (maybeReferenceError) {
-    if (maybeReferenceError && maybeReferenceError.name === 'ReferenceError') {
-      return null;
-    }
-    throw maybeReferenceError;
-  }
-}
+const CORE_UI_HELPERS = (function resolveCoreUiHelpers() {
+  const candidates = [];
 
-function escapeButtonLabelSafely(text) {
-  if (typeof text !== 'string' || text === '') {
-    return '';
-  }
-  const escapeFn = getEscapeHtmlFunction();
-  if (escapeFn) {
+  if (typeof require === 'function') {
     try {
-      return escapeFn(text);
-    } catch (escapeError) {
-      void escapeError;
+      const requiredHelpers = require('./app-core-ui-helpers.js');
+      if (requiredHelpers && typeof requiredHelpers === 'object') {
+        candidates.push(requiredHelpers);
+      }
+    } catch (helpersError) {
+      void helpersError;
     }
   }
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
-function getIconMarkupFunction() {
+  const scopes = [];
+
   try {
-    if (typeof iconMarkup === 'function') {
-      return iconMarkup;
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
     }
-  } catch (maybeReferenceError) {
-    if (!(maybeReferenceError && maybeReferenceError.name === 'ReferenceError')) {
-      throw maybeReferenceError;
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      const helpers = scope.cineCoreUiHelpers;
+      if (helpers && typeof helpers === 'object') {
+        candidates.push(helpers);
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
     }
   }
-  if (
-    CORE_GLOBAL_SCOPE &&
-    typeof CORE_GLOBAL_SCOPE === 'object' &&
-    typeof CORE_GLOBAL_SCOPE.iconMarkup === 'function'
-  ) {
-    return CORE_GLOBAL_SCOPE.iconMarkup;
-  }
-  return null;
-}
 
-function resolveButtonIconMarkup(glyph) {
-  if (!glyph) {
-    return '';
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = candidates[index];
+    if (candidate && typeof candidate === 'object') {
+      return candidate;
+    }
   }
-  const iconFactory = getIconMarkupFunction();
-  if (!iconFactory) {
-    return '';
-  }
-  try {
-    return iconFactory(glyph, 'btn-icon');
-  } catch (iconError) {
-    void iconError;
-  }
-  return '';
-}
 
-var setButtonLabelWithIcon =
-  CORE_GLOBAL_SCOPE &&
-  typeof CORE_GLOBAL_SCOPE === 'object' &&
-  typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
-    ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon
-    : function setButtonLabelWithIcon(button, label, glyph) {
+  return {};
+})();
+
+const escapeHtml =
+  typeof CORE_UI_HELPERS.escapeHtml === 'function'
+    ? CORE_UI_HELPERS.escapeHtml
+    : function escapeHtmlFallback(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
+
+const escapeButtonLabelSafely =
+  typeof CORE_UI_HELPERS.escapeButtonLabelSafely === 'function'
+    ? CORE_UI_HELPERS.escapeButtonLabelSafely
+    : function escapeButtonLabelSafelyFallback(text) {
+        if (typeof text !== 'string' || text === '') {
+          return '';
+        }
+        return escapeHtml(text);
+      };
+
+const resolveButtonIconMarkup =
+  typeof CORE_UI_HELPERS.resolveButtonIconMarkup === 'function'
+    ? CORE_UI_HELPERS.resolveButtonIconMarkup
+    : function resolveButtonIconMarkupFallback() {
+        return '';
+      };
+
+const setButtonLabelWithIcon =
+  typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function'
+    ? CORE_UI_HELPERS.setButtonLabelWithIcon
+    : function setButtonLabelWithIconFallback(button, label, glyph) {
         if (!button) {
           return;
         }
+
         let resolvedGlyph = glyph;
-        if (
-          resolvedGlyph === undefined &&
-          typeof ICON_GLYPHS !== 'undefined' &&
-          ICON_GLYPHS &&
-          ICON_GLYPHS.save
-        ) {
-          resolvedGlyph = ICON_GLYPHS.save;
+        if (typeof resolvedGlyph === 'undefined') {
+          try {
+            if (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+              resolvedGlyph = ICON_GLYPHS.save;
+            }
+          } catch (glyphError) {
+            void glyphError;
+          }
         }
+
         const iconHtml = resolveButtonIconMarkup(resolvedGlyph);
         const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
-        button.innerHTML = `${iconHtml}${safeLabel}`;
+
+        try {
+          button.innerHTML = `${iconHtml}${safeLabel}`;
+        } catch (assignError) {
+          void assignError;
+        }
       };
 
-if (
-  CORE_GLOBAL_SCOPE &&
-  typeof CORE_GLOBAL_SCOPE === 'object' &&
-  typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon !== 'function'
-) {
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   try {
     CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
   } catch (setButtonAssignError) {
@@ -7452,34 +7481,6 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   };
 
   scheduleLayoutInitialization();
-}
-
-/**
- * Escape a string for safe insertion into HTML.
- *
- * The helper delays touching the DOM until first use to avoid
- * ReferenceErrors in environments where `document` is defined as an
- * uninitialised `let` binding (e.g. Safari). When no DOM is present the
- * original string is returned unchanged.
- *
- * @param {string} str - Text that may contain HTML characters.
- * @returns {string} The escaped string.
- */
-let escapeDiv;
-function escapeHtml(str) {
-  if (!escapeDiv && typeof globalThis !== 'undefined' && globalThis.document) {
-    escapeDiv = globalThis.document.createElement('div');
-  }
-  if (!escapeDiv) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-  escapeDiv.textContent = str;
-  return escapeDiv.innerHTML;
 }
 
 // Use a Set for O(1) lookups when validating video output types
@@ -14492,39 +14493,6 @@ try {
   }
 } catch (assignSelectIconError) {
   console.warn('Failed to expose updateSelectIconBoxes globally', assignSelectIconError);
-}
-
-setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
-  if (!button) return;
-  // Clear all children
-  while (button.firstChild) button.removeChild(button.firstChild);
-  // Insert icon markup, if present and environment supports it
-  const iconHtml = resolveButtonIconMarkup(glyph);
-  if (iconHtml && typeof globalThis !== 'undefined' && globalThis.document) {
-    // Insert icon using innerHTML, but in an isolated element for safety
-    const tmp = document.createElement('span');
-    tmp.innerHTML = iconHtml;
-    while (tmp.firstChild) {
-      button.appendChild(tmp.firstChild);
-    }
-  }
-  // Insert label as a text node only, never as HTML
-  const safeLabel = typeof label === 'string' ? label : '';
-  if (typeof globalThis !== 'undefined' && globalThis.document) {
-    button.appendChild(document.createTextNode(safeLabel));
-  } else {
-    // fallback for non-DOM environment
-    button.textContent = safeLabel;
-  }
-};
-
-if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-  try {
-    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
-  } catch (setButtonLabelAssignError) {
-    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
-    void setButtonLabelAssignError;
-  }
 }
 
 function getLocalizedPathText(path, fallback = '') {

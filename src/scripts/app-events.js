@@ -1,5 +1,5 @@
 // --- EVENT LISTENERS ---
-/* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
+/* global CORE_GLOBAL_SCOPE, updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
@@ -12,6 +12,116 @@
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
           normalizeFocusScale */
+
+const UI_HELPERS = (function resolveUiHelpersForEvents() {
+  if (typeof require === 'function') {
+    try {
+      const required = require('./app-core-ui-helpers.js');
+      if (required && typeof required === 'object') {
+        return required;
+      }
+    } catch (uiHelpersError) {
+      void uiHelpersError;
+    }
+  }
+
+  const scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      const helpers = scope.cineCoreUiHelpers;
+      if (helpers && typeof helpers === 'object') {
+        return helpers;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+
+  return {};
+})();
+
+const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForEvents() {
+  if (typeof UI_HELPERS.setButtonLabelWithIcon === 'function') {
+    return UI_HELPERS.setButtonLabelWithIcon;
+  }
+
+  const candidates = [];
+
+  try {
+    if (
+      typeof CORE_GLOBAL_SCOPE === 'object' &&
+      CORE_GLOBAL_SCOPE &&
+      typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
+    ) {
+      candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis &&
+    typeof globalThis.setButtonLabelWithIcon === 'function'
+  ) {
+    candidates.push(globalThis.setButtonLabelWithIcon);
+  }
+
+  if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+    candidates.push(window.setButtonLabelWithIcon);
+  }
+
+  if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+    candidates.push(self.setButtonLabelWithIcon);
+  }
+
+  if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+    candidates.push(global.setButtonLabelWithIcon);
+  }
+
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+
+  return function setButtonLabelWithIconFallback(button, label) {
+    if (!button) {
+      return;
+    }
+    try {
+      button.textContent = typeof label === 'string' ? label : '';
+    } catch (assignError) {
+      void assignError;
+    }
+  };
+})();
 
 // Locate a logging helper without assuming a specific runtime. The application
 // runs in browsers, service workers and occasionally Node based tooling, so we
