@@ -17,6 +17,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/registry.js',
     'modules/context.js',
     'modules/environment-bridge.js',
+    'modules/runtime-environment-helpers.js',
     'modules/globals.js',
     'modules/localization.js',
     'modules/offline.js',
