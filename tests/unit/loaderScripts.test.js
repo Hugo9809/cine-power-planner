@@ -26,6 +26,11 @@ describe('loader script bundles', () => {
     expect(loaderSource).toContain('legacy/scripts/modules/features/onboarding-tour.js');
   });
 
+  test('modern bundle loads runtime environment helpers', () => {
+    expect(loaderSource).toContain('src/scripts/modules/runtime-environment-helpers.js');
+    expect(loaderSource).toContain('legacy/scripts/modules/runtime-environment-helpers.js');
+  });
+
   test('legacy bundle migrates auto gear retention storage keys', () => {
     expect(legacyLoaderSource).toContain("autoGearBackupRetention");
     expect(legacyLoaderSource).toContain("cameraPowerPlanner_autoGearBackupRetention");
@@ -34,6 +39,11 @@ describe('loader script bundles', () => {
   test('legacy loader includes onboarding tutorial module', () => {
     expect(legacyLoaderSource).toContain('src/scripts/modules/features/onboarding-tour.js');
     expect(legacyLoaderSource).toContain('legacy/scripts/modules/features/onboarding-tour.js');
+  });
+
+  test('legacy loader includes runtime environment helpers', () => {
+    expect(legacyLoaderSource).toContain('src/scripts/modules/runtime-environment-helpers.js');
+    expect(legacyLoaderSource).toContain('legacy/scripts/modules/runtime-environment-helpers.js');
   });
 
   test('modern bundle migrates auto gear monitor defaults keys', () => {
