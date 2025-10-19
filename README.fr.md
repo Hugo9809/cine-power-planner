@@ -294,7 +294,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Recherche globale** (`/`, `Ctrl+K`, `⌘K`) pour accéder à toute fonctionnalité, liste ou thème d’aide, même navigation repliée.
   Les suggestions mettent désormais en avant les correspondances directes avec les fonctionnalités et appareils avant les sujets
   d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles. Les expressions exactes passent désormais en
-  tête : saisir le libellé complet d’un contrôle comme « battery health » met cette fonctionnalité en avant avant des correspondances
+  tête : saisir le libellé complet d’un contrôle comme « battery health » met cette fonctionnalité en avant, devant des correspondances
   plus larges. Lorsque le champ est vidé, les correspondances récemment utilisées remontent en tête afin de répéter les routines
   d’équipe en un clin d’œil. Commencez une requête par `recent` ou `history` pour filtrer d’abord les raccourcis utilisés récemment
   avant de parcourir tout le catalogue.
