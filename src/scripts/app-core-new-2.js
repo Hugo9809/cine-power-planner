@@ -390,6 +390,231 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
 
+    function resolveRuntimeScopeFunction(name, exclude) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+
+      const exclusions = [];
+      if (Array.isArray(exclude)) {
+        for (let index = 0; index < exclude.length; index += 1) {
+          const item = exclude[index];
+          if (typeof item === 'function') {
+            exclusions.push(item);
+          }
+        }
+      } else if (typeof exclude === 'function') {
+        exclusions.push(exclude);
+      }
+
+      const inspectCandidate = candidate => {
+        if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+          return null;
+        }
+
+        try {
+          const value = candidate[name];
+          if (typeof value === 'function') {
+            for (let idx = 0; idx < exclusions.length; idx += 1) {
+              if (value === exclusions[idx]) {
+                return null;
+              }
+            }
+            return value;
+          }
+        } catch (candidateError) {
+          void candidateError;
+        }
+
+        return null;
+      };
+
+      const directSources = [
+        CORE_RUNTIME_UI_BRIDGE,
+        CORE_RUNTIME_FALLBACKS,
+        CORE_PART2_HELPERS,
+      ];
+
+      for (let index = 0; index < directSources.length; index += 1) {
+        const resolved = inspectCandidate(directSources[index]);
+        if (resolved) {
+          return resolved;
+        }
+      }
+
+      if (Array.isArray(CORE_RUNTIME_SCOPE_CANDIDATES)) {
+        for (let index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+          const candidate = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+          const resolved = inspectCandidate(candidate);
+          if (resolved) {
+            return resolved;
+          }
+        }
+      }
+
+      const scopeCandidates = [];
+
+      if (
+        typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' &&
+        CORE_PART2_RUNTIME_SCOPE &&
+        (typeof CORE_PART2_RUNTIME_SCOPE === 'object' || typeof CORE_PART2_RUNTIME_SCOPE === 'function')
+      ) {
+        scopeCandidates.push(CORE_PART2_RUNTIME_SCOPE);
+      }
+
+      if (
+        CORE_SHARED_SCOPE_PART2 &&
+        (typeof CORE_SHARED_SCOPE_PART2 === 'object' || typeof CORE_SHARED_SCOPE_PART2 === 'function')
+      ) {
+        scopeCandidates.push(CORE_SHARED_SCOPE_PART2);
+      }
+
+      if (
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+        CORE_GLOBAL_SCOPE &&
+        (typeof CORE_GLOBAL_SCOPE === 'object' || typeof CORE_GLOBAL_SCOPE === 'function')
+      ) {
+        scopeCandidates.push(CORE_GLOBAL_SCOPE);
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        scopeCandidates.push(globalThis);
+      }
+
+      if (typeof window !== 'undefined' && window) {
+        scopeCandidates.push(window);
+      }
+
+      if (typeof self !== 'undefined' && self) {
+        scopeCandidates.push(self);
+      }
+
+      if (typeof global !== 'undefined' && global) {
+        scopeCandidates.push(global);
+      }
+
+      for (let index = 0; index < scopeCandidates.length; index += 1) {
+        const resolved = inspectCandidate(scopeCandidates[index]);
+        if (resolved) {
+          return resolved;
+        }
+      }
+
+      return null;
+    }
+
+    function createDynamicScopeFunctionResolver(name, fallback) {
+      const fallbackFn = typeof fallback === 'function'
+        ? fallback
+        : function identityFallback(value) {
+            return value;
+          };
+
+      function dynamicResolverProxy() {
+        const args = Array.prototype.slice.call(arguments);
+        const resolved = resolveRuntimeScopeFunction(name, dynamicResolverProxy);
+        if (typeof resolved === 'function') {
+          try {
+            return resolved.apply(this, args);
+          } catch (resolvedError) {
+            void resolvedError;
+          }
+        }
+        return fallbackFn.apply(this, args);
+      }
+
+      return dynamicResolverProxy;
+    }
+
+    function fallbackGetViewfinderFallbackLabelLocal(value) {
+      if (value === '__none__') {
+        const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+        const textSource =
+          typeof texts === 'object' && texts
+            ? texts[activeLang] || texts.en || {}
+            : {};
+        return (
+          textSource.viewfinderExtensionNone
+          || textSource.autoGearViewfinderExtensionNone
+          || 'No'
+        );
+      }
+      return typeof value === 'string' ? value : '';
+    }
+
+    function fallbackGetVideoDistributionFallbackLabelLocal(value) {
+      if (value === '__none__') {
+        const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+        const textSource =
+          typeof texts === 'object' && texts
+            ? texts[activeLang] || texts.en || {}
+            : {};
+        return (
+          textSource.autoGearVideoDistributionNone
+          || 'No video distribution selected'
+        );
+      }
+      return typeof value === 'string' ? value : '';
+    }
+
+    const getViewfinderFallbackLabel = createDynamicScopeFunctionResolver(
+      'getViewfinderFallbackLabel',
+      fallbackGetViewfinderFallbackLabelLocal,
+    );
+
+    const getVideoDistributionFallbackLabel = createDynamicScopeFunctionResolver(
+      'getVideoDistributionFallbackLabel',
+      fallbackGetVideoDistributionFallbackLabelLocal,
+    );
+
+    function ensureGlobalFunctionBinding(name, fn) {
+      if (typeof name !== 'string' || !name || typeof fn !== 'function') {
+        return;
+      }
+
+      const assignToScope = scope => {
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          return;
+        }
+        try {
+          if (typeof scope[name] !== 'function') {
+            scope[name] = fn;
+          }
+        } catch (assignError) {
+          void assignError;
+        }
+      };
+
+      if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE) {
+        assignToScope(CORE_PART2_RUNTIME_SCOPE);
+      }
+
+      assignToScope(CORE_SHARED_SCOPE_PART2);
+
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        assignToScope(CORE_GLOBAL_SCOPE);
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        assignToScope(globalThis);
+      }
+
+      if (typeof window !== 'undefined' && window) {
+        assignToScope(window);
+      }
+
+      if (typeof self !== 'undefined' && self) {
+        assignToScope(self);
+      }
+
+      if (typeof global !== 'undefined' && global) {
+        assignToScope(global);
+      }
+    }
+
+    ensureGlobalFunctionBinding('getViewfinderFallbackLabel', getViewfinderFallbackLabel);
+    ensureGlobalFunctionBinding('getVideoDistributionFallbackLabel', getVideoDistributionFallbackLabel);
+
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
