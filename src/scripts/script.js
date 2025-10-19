@@ -58,6 +58,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-runtime-candidate-scopes.js',
     'app-core-runtime-global-tools.js',
     'app-core-runtime-ui.js',
+    'app-core-auto-gear-ui.js',
     'app-core-new-1.js',
     'app-core-localization-accessors.js',
     'app-core-new-2.js',
