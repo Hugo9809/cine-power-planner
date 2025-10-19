@@ -218,4 +218,6 @@ if (typeof result.status === 'number') {
   process.exit(result.status);
 }
 
-process.exit(result.error ? 1 : 0);
+// If Jest exited due to a signal, status will be null. Treat this as a failure so
+// the runner preserves the non-zero exit semantics of the previous implementation.
+process.exit(1);
