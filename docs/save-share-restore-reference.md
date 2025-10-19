@@ -19,8 +19,7 @@ workstations.
   `getLastCriticalStorageGuardResult()` when compiling verification packets to
   document the guard run and the mirrored keys.
 - **Autosave cadence:** Fires after ~50 changes or 10 minutes of inactivity.
-  Each run logs to the autosave ledger accessible from **Settings → Safeguards**
-  alongside the latest guard evidence.
+  Each run logs to the autosave ledger accessible from **Settings → Data & Storage → Latest activity**, where the **Latest activity** timeline lists timestamps for manual saves, autosaves and guardian events alongside the latest guard evidence.
 - **Redundant mirrors:** `storage.js` keeps timestamped mirrors so reverting to a
   previous autosave never touches live data directly.
 
