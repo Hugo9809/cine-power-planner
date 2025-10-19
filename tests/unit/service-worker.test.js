@@ -4,6 +4,16 @@ const {
   __private__: { shouldBypassCache },
 } = require('../../service-worker.js');
 
+const createHeaders = entries => ({
+  get: key => {
+    if (Object.prototype.hasOwnProperty.call(entries, key)) {
+      return entries[key];
+    }
+
+    return null;
+  },
+});
+
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./src/styles/overview.css', './src/styles/overview-print.css', './src/scripts/overview.js']));
@@ -74,12 +84,37 @@ describe('service worker configuration', () => {
   test('treats forceReload navigation requests as cache bypass candidates', () => {
     const mockRequest = {
       cache: 'default',
-      headers: {
-        get: () => null,
-      },
+      headers: createHeaders({}),
     };
     const url = new URL('https://example.test/app?forceReload=abc123');
 
     expect(shouldBypassCache(mockRequest, url)).toBe(true);
+  });
+
+  test('treats reload navigation requests as cache bypass candidates', () => {
+    const mockRequest = {
+      cache: 'reload',
+      headers: createHeaders({}),
+    };
+
+    expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
+  });
+
+  test('treats Cache-Control no-store headers as cache bypass candidates', () => {
+    const mockRequest = {
+      cache: 'default',
+      headers: createHeaders({ 'Cache-Control': 'no-store' }),
+    };
+
+    expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
+  });
+
+  test('treats Pragma no-cache headers as cache bypass candidates', () => {
+    const mockRequest = {
+      cache: 'default',
+      headers: createHeaders({ Pragma: 'no-cache' }),
+    };
+
+    expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
   });
 });
