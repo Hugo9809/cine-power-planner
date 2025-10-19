@@ -1099,34 +1099,40 @@ const resolveButtonIconMarkup =
         return '';
       };
 
-const setButtonLabelWithIcon =
-  typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function'
-    ? CORE_UI_HELPERS.setButtonLabelWithIcon
-    : function setButtonLabelWithIconFallback(button, label, glyph) {
-        if (!button) {
-          return;
-        }
+const setButtonLabelWithIcon = ensureCoreGlobalValue(
+  'setButtonLabelWithIcon',
+  function resolveSetButtonLabelWithIconValue() {
+    if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+      return CORE_UI_HELPERS.setButtonLabelWithIcon;
+    }
 
-        let resolvedGlyph = glyph;
-        if (typeof resolvedGlyph === 'undefined') {
-          try {
-            if (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
-              resolvedGlyph = ICON_GLYPHS.save;
-            }
-          } catch (glyphError) {
-            void glyphError;
-          }
-        }
+    return function setButtonLabelWithIconFallback(button, label, glyph) {
+      if (!button) {
+        return;
+      }
 
-        const iconHtml = resolveButtonIconMarkup(resolvedGlyph);
-        const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
-
+      let resolvedGlyph = glyph;
+      if (typeof resolvedGlyph === 'undefined') {
         try {
-          button.innerHTML = `${iconHtml}${safeLabel}`;
-        } catch (assignError) {
-          void assignError;
+          if (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+            resolvedGlyph = ICON_GLYPHS.save;
+          }
+        } catch (glyphError) {
+          void glyphError;
         }
-      };
+      }
+
+      const iconHtml = resolveButtonIconMarkup(resolvedGlyph);
+      const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+
+      try {
+        button.innerHTML = `${iconHtml}${safeLabel}`;
+      } catch (assignError) {
+        void assignError;
+      }
+    };
+  },
+);
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   try {
@@ -9189,42 +9195,6 @@ if (typeof texts === 'undefined') {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
 
-if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function') {
-  try {
-    var runtimeLoadResult = translationsRuntime.loadLanguage(DEFAULT_LANGUAGE_SAFE);
-    if (runtimeLoadResult && typeof runtimeLoadResult.then === 'function') {
-      runtimeLoadResult.catch(function handleDefaultLanguageLoadError(error) {
-        console.warn('Failed to eagerly load default translations', error);
-      });
-    }
-  } catch (defaultRuntimeError) {
-    console.warn('Failed to trigger default translation load', defaultRuntimeError);
-  }
-}
-
-const SUPPORTED_LANGUAGES =
-  typeof texts === "object" && texts !== null
-    ? Object.keys(texts)
-    : [DEFAULT_LANGUAGE_SAFE];
-
-function resolveLanguagePreference(candidate) {
-  if (!candidate) {
-    return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
-  }
-
-  const normalized = String(candidate).toLowerCase();
-  if (SUPPORTED_LANGUAGES.includes(normalized)) {
-    return { language: normalized, matched: true };
-  }
-
-  const short = normalized.slice(0, 2);
-  if (SUPPORTED_LANGUAGES.includes(short)) {
-    return { language: short, matched: true };
-  }
-
-  return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
-}
-
 var autoGearHeadingElem = document.getElementById('autoGearHeading');
 var autoGearDescriptionElem = document.getElementById('autoGearDescription');
 var autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
@@ -9831,6 +9801,42 @@ const DEFAULT_LANGUAGE_SAFE = (function resolveDefaultLanguageSafe() {
 
   return 'en';
 })();
+
+if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function') {
+  try {
+    var runtimeLoadResult = translationsRuntime.loadLanguage(DEFAULT_LANGUAGE_SAFE);
+    if (runtimeLoadResult && typeof runtimeLoadResult.then === 'function') {
+      runtimeLoadResult.catch(function handleDefaultLanguageLoadError(error) {
+        console.warn('Failed to eagerly load default translations', error);
+      });
+    }
+  } catch (defaultRuntimeError) {
+    console.warn('Failed to trigger default translation load', defaultRuntimeError);
+  }
+}
+
+const SUPPORTED_LANGUAGES =
+  typeof texts === 'object' && texts !== null
+    ? Object.keys(texts)
+    : [DEFAULT_LANGUAGE_SAFE];
+
+function resolveLanguagePreference(candidate) {
+  if (!candidate) {
+    return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
+  }
+
+  const normalized = String(candidate).toLowerCase();
+  if (SUPPORTED_LANGUAGES.includes(normalized)) {
+    return { language: normalized, matched: true };
+  }
+
+  const short = normalized.slice(0, 2);
+  if (SUPPORTED_LANGUAGES.includes(short)) {
+    return { language: short, matched: true };
+  }
+
+  return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
+}
 
 try {
   const globalScope =
