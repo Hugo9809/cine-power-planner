@@ -56,6 +56,143 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
     var CORE_PART2_HELPERS = typeof CORE_PART2_RUNTIME_HELPERS === 'object' && CORE_PART2_RUNTIME_HELPERS ? CORE_PART2_RUNTIME_HELPERS : null;
+    var CORE_RUNTIME_UI_BRIDGE = function resolveCoreRuntimeUiBridgePart2Legacy() {
+      var candidates = [];
+
+      if (typeof require === 'function') {
+        try {
+          var requiredBridge = require('./app-core-runtime-ui.js');
+          if (requiredBridge && typeof requiredBridge === 'object') {
+            candidates.push(requiredBridge);
+          }
+        } catch (bridgeRequireError) {
+          void bridgeRequireError;
+        }
+      }
+
+      var scopes = [];
+
+      try {
+        if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE) {
+          scopes.push(CORE_PART2_RUNTIME_SCOPE);
+        }
+      } catch (runtimeScopeError) {
+        void runtimeScopeError;
+      }
+
+      try {
+        if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+          scopes.push(CORE_GLOBAL_SCOPE);
+        }
+      } catch (coreScopeError) {
+        void coreScopeError;
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        scopes.push(globalThis);
+      }
+
+      if (typeof window !== 'undefined' && window) {
+        scopes.push(window);
+      }
+
+      if (typeof self !== 'undefined' && self) {
+        scopes.push(self);
+      }
+
+      if (typeof global !== 'undefined' && global) {
+        scopes.push(global);
+      }
+
+      for (var index = 0; index < scopes.length; index += 1) {
+        var scope = scopes[index];
+        if (!scope) {
+          continue;
+        }
+
+        try {
+          var bridge = scope.cineCoreRuntimeUiBridge;
+          if (bridge && typeof bridge === 'object') {
+            candidates.push(bridge);
+          }
+        } catch (scopeLookupError) {
+          void scopeLookupError;
+        }
+      }
+
+      for (var cIndex = 0; cIndex < candidates.length; cIndex += 1) {
+        var candidate = candidates[cIndex];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      }
+
+      return null;
+    }();
+
+    var CORE_UI_HELPERS = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.helpers === 'object' ? CORE_RUNTIME_UI_BRIDGE.helpers : {};
+
+    var escapeHtml = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeHtml : function escapeHtmlFallback(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    var setButtonLabelWithIcon = function resolveSetButtonLabelWithIconPart2() {
+      if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function') {
+        return CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon;
+      }
+
+      var candidates = [];
+
+      try {
+        if (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+          candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+        }
+      } catch (coreScopeError) {
+        void coreScopeError;
+      }
+
+      try {
+        if (typeof CORE_PART2_RUNTIME_SCOPE === 'object' && CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE.setButtonLabelWithIcon === 'function') {
+          candidates.push(CORE_PART2_RUNTIME_SCOPE.setButtonLabelWithIcon);
+        }
+      } catch (runtimeScopeError) {
+        void runtimeScopeError;
+      }
+
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.setButtonLabelWithIcon === 'function') {
+        candidates.push(globalThis.setButtonLabelWithIcon);
+      }
+
+      if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+        candidates.push(window.setButtonLabelWithIcon);
+      }
+
+      if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+        candidates.push(self.setButtonLabelWithIcon);
+      }
+
+      if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+        candidates.push(global.setButtonLabelWithIcon);
+      }
+
+      if (candidates.length > 0) {
+        return candidates[0];
+      }
+
+      return function setButtonLabelWithIconFallback(button, label) {
+        if (!button) {
+          return;
+        }
+
+        try {
+          button.textContent = typeof label === 'string' ? label : '';
+        } catch (assignError) {
+          void assignError;
+        }
+      };
+    }();
+
+
     var autoGearHelpers = CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function' ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
       coreShared: CORE_SHARED_LOCAL,
       globalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null

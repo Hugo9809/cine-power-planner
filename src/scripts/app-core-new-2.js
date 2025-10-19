@@ -114,29 +114,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
 
-    const CORE_UI_HELPERS = (function resolveCoreUiHelpersPart2() {
+    const CORE_RUNTIME_UI_BRIDGE = (function resolveCoreRuntimeUiBridgePart2() {
       const candidates = [];
 
       if (typeof require === 'function') {
         try {
-          const required = require('./app-core-ui-helpers.js');
-          if (required && typeof required === 'object') {
-            candidates.push(required);
+          const requiredBridge = require('./app-core-runtime-ui.js');
+          if (requiredBridge && typeof requiredBridge === 'object') {
+            candidates.push(requiredBridge);
           }
-        } catch (uiHelpersError) {
-          void uiHelpersError;
+        } catch (bridgeRequireError) {
+          void bridgeRequireError;
         }
       }
 
       const scopes = [];
-
-      try {
-        if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
-          scopes.push(CORE_GLOBAL_SCOPE);
-        }
-      } catch (coreScopeError) {
-        void coreScopeError;
-      }
 
       try {
         if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE) {
@@ -144,6 +136,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       } catch (runtimeScopeError) {
         void runtimeScopeError;
+      }
+
+      try {
+        if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+          scopes.push(CORE_GLOBAL_SCOPE);
+        }
+      } catch (coreScopeError) {
+        void coreScopeError;
       }
 
       if (typeof globalThis !== 'undefined' && globalThis) {
@@ -167,10 +167,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!scope) {
           continue;
         }
+
         try {
-          const helpers = scope.cineCoreUiHelpers;
-          if (helpers && typeof helpers === 'object') {
-            candidates.push(helpers);
+          const bridge = scope.cineCoreRuntimeUiBridge;
+          if (bridge && typeof bridge === 'object') {
+            candidates.push(bridge);
           }
         } catch (scopeLookupError) {
           void scopeLookupError;
@@ -184,12 +185,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
 
-      return {};
+      return null;
     })();
 
+    const CORE_UI_HELPERS =
+      CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.helpers === 'object'
+        ? CORE_RUNTIME_UI_BRIDGE.helpers
+        : {};
+
     const escapeHtml =
-      typeof CORE_UI_HELPERS.escapeHtml === 'function'
-        ? CORE_UI_HELPERS.escapeHtml
+      CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
+        ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
         : function escapeHtmlFallback(str) {
             return String(str)
               .replace(/&/g, '&amp;')
@@ -200,8 +206,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           };
 
     const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIcon() {
-      if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
-        return CORE_UI_HELPERS.setButtonLabelWithIcon;
+      if (
+        CORE_RUNTIME_UI_BRIDGE &&
+        typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function'
+      ) {
+        return CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon;
       }
 
       const candidates = [];
@@ -216,6 +225,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       } catch (coreScopeError) {
         void coreScopeError;
+      }
+
+      try {
+        if (
+          typeof CORE_PART2_RUNTIME_SCOPE === 'object' &&
+          CORE_PART2_RUNTIME_SCOPE &&
+          typeof CORE_PART2_RUNTIME_SCOPE.setButtonLabelWithIcon === 'function'
+        ) {
+          candidates.push(CORE_PART2_RUNTIME_SCOPE.setButtonLabelWithIcon);
+        }
+      } catch (runtimeScopeError) {
+        void runtimeScopeError;
       }
 
       if (

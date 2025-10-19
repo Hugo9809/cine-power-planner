@@ -1267,72 +1267,177 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }();
   CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
   CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
-  function getEscapeHtmlFunction() {
-    try {
-      return typeof escapeHtml === 'function' ? escapeHtml : null;
-    } catch (maybeReferenceError) {
-      if (maybeReferenceError && maybeReferenceError.name === 'ReferenceError') {
-        return null;
+  var CORE_RUNTIME_UI_BRIDGE = function resolveCoreRuntimeUiBridgeLegacy() {
+    var candidates = [];
+
+    if (typeof require === 'function') {
+      try {
+        var requiredBridge = require('./app-core-runtime-ui.js');
+        if (requiredBridge && typeof requiredBridge === 'object') {
+          candidates.push(requiredBridge);
+        }
+      } catch (bridgeRequireError) {
+        void bridgeRequireError;
       }
-      throw maybeReferenceError;
     }
-  }
+
+    try {
+      if (typeof cineCoreRuntimeUiBridge !== 'undefined' && cineCoreRuntimeUiBridge && typeof cineCoreRuntimeUiBridge === 'object') {
+        candidates.push(cineCoreRuntimeUiBridge);
+      }
+    } catch (bridgeScopeError) {
+      void bridgeScopeError;
+    }
+
+    var scopes = [];
+
+    try {
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        scopes.push(CORE_GLOBAL_SCOPE);
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      scopes.push(globalThis);
+    }
+
+    if (typeof window !== 'undefined' && window) {
+      scopes.push(window);
+    }
+
+    if (typeof self !== 'undefined' && self) {
+      scopes.push(self);
+    }
+
+    if (typeof global !== 'undefined' && global) {
+      scopes.push(global);
+    }
+
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope) {
+        continue;
+      }
+
+      try {
+        var bridge = scope.cineCoreRuntimeUiBridge;
+        if (bridge && typeof bridge === 'object') {
+          candidates.push(bridge);
+        }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
+      }
+    }
+
+    for (var cIndex = 0; cIndex < candidates.length; cIndex += 1) {
+      var candidate = candidates[cIndex];
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    }
+
+    return null;
+  }();
+
+  var CORE_UI_HELPERS = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.helpers === 'object' ? CORE_RUNTIME_UI_BRIDGE.helpers : {};
+
+  var escapeHtml = CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeHtml : function escapeHtmlFallback(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+
   function escapeButtonLabelSafely(text) {
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely === 'function') {
+      try {
+        return CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely(text);
+      } catch (escapeBridgeError) {
+        void escapeBridgeError;
+      }
+    }
+
     if (typeof text !== 'string' || text === '') {
       return '';
     }
-    var escapeFn = getEscapeHtmlFunction();
-    if (escapeFn) {
+
+    return escapeHtml(text);
+  }
+
+  function resolveButtonIconMarkup(glyph) {
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup === 'function') {
       try {
-        return escapeFn(text);
-      } catch (escapeError) {
-        void escapeError;
+        return CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup(glyph);
+      } catch (resolveBridgeError) {
+        void resolveBridgeError;
       }
     }
-    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-  function getIconMarkupFunction() {
+
+    if (!glyph) {
+      return '';
+    }
+
     try {
       if (typeof iconMarkup === 'function') {
-        return iconMarkup;
+        return iconMarkup(glyph, 'btn-icon');
       }
     } catch (maybeReferenceError) {
       if (!(maybeReferenceError && maybeReferenceError.name === 'ReferenceError')) {
         throw maybeReferenceError;
       }
     }
+
     if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.iconMarkup === 'function') {
-      return CORE_GLOBAL_SCOPE.iconMarkup;
+      try {
+        return CORE_GLOBAL_SCOPE.iconMarkup(glyph, 'btn-icon');
+      } catch (coreIconError) {
+        void coreIconError;
+      }
     }
-    return null;
-  }
-  function resolveButtonIconMarkup(glyph) {
-    if (!glyph) {
-      return '';
-    }
-    var iconFactory = getIconMarkupFunction();
-    if (!iconFactory) {
-      return '';
-    }
-    try {
-      return iconFactory(glyph, 'btn-icon');
-    } catch (iconError) {
-      void iconError;
-    }
+
     return '';
   }
-  var setButtonLabelWithIcon = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function' ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon : function setButtonLabelWithIcon(button, label, glyph) {
-    if (!button) {
-      return;
+
+  var setButtonLabelWithIcon = function resolveSetButtonLabelWithIconLegacy() {
+    if (CORE_RUNTIME_UI_BRIDGE && typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function') {
+      return CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon;
     }
-    var resolvedGlyph = glyph;
-    if (resolvedGlyph === undefined && typeof ICON_GLYPHS !== 'undefined' && ICON_GLYPHS && ICON_GLYPHS.save) {
-      resolvedGlyph = ICON_GLYPHS.save;
+
+    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+      return CORE_GLOBAL_SCOPE.setButtonLabelWithIcon;
     }
-    var iconHtml = resolveButtonIconMarkup(resolvedGlyph);
-    var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
-    button.innerHTML = "".concat(iconHtml).concat(safeLabel);
-  };
+
+    return function setButtonLabelWithIconFallback(button, label, glyph) {
+      if (!button) {
+        return;
+      }
+
+      var resolvedGlyph = glyph;
+      if (resolvedGlyph === undefined) {
+        try {
+          if (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+            resolvedGlyph = ICON_GLYPHS.save;
+          }
+        } catch (glyphError) {
+          void glyphError;
+        }
+      }
+
+      var iconHtml = resolveButtonIconMarkup(resolvedGlyph);
+      var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+
+      try {
+        button.innerHTML = ''.concat(iconHtml).concat(safeLabel);
+      } catch (assignError) {
+        void assignError;
+        try {
+          button.textContent = safeLabel;
+        } catch (textAssignError) {
+          void textAssignError;
+        }
+      }
+    };
+  }();
+
   if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon !== 'function') {
     try {
       CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
@@ -1341,6 +1446,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       void setButtonAssignError;
     }
   }
+
   var gridSnap = ensureCoreGlobalValue('gridSnap', function () {
     return false;
   });
