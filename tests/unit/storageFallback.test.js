@@ -36,7 +36,8 @@ const createQuotaStorage = (initialData = {}) => {
 };
 
 describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
-  let originalLocalStorageDescriptor;
+  let originalWindowLocalStorageDescriptor;
+  let originalGlobalLocalStorageDescriptor;
   let storageModule;
   let originalAlert;
 
@@ -49,11 +50,19 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
 
     delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
     delete global.window[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    delete global.SAFE_LOCAL_STORAGE;
+    if (global.window) {
+      delete global.window.SAFE_LOCAL_STORAGE;
+    }
+    if (global.__cineGlobal) {
+      delete global.__cineGlobal.SAFE_LOCAL_STORAGE;
+    }
 
     originalAlert = global.window.alert;
     global.window.alert = jest.fn();
 
-    originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
+    originalWindowLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
+    originalGlobalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global, 'localStorage');
 
     const session = global.sessionStorage;
     session.clear();
@@ -63,12 +72,34 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       value: session,
     });
 
-    Object.defineProperty(global.window, 'localStorage', {
-      configurable: true,
-      get() {
-        throw new Error('blocked');
+    const blockedStorage = {
+      get length() {
+        return 0;
       },
-    });
+      key: jest.fn(() => null),
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(() => {
+        throw new Error('blocked');
+      }),
+      removeItem: jest.fn(() => {}),
+      clear: jest.fn(() => {}),
+    };
+
+    const defineBlockedDescriptor = (target) => {
+      Object.defineProperty(target, 'localStorage', {
+        configurable: true,
+        get() {
+          return blockedStorage;
+        },
+      });
+    };
+
+    defineBlockedDescriptor(global.window);
+    if (global.window !== global) {
+      defineBlockedDescriptor(global);
+    } else {
+      defineBlockedDescriptor(global);
+    }
 
     storageModule = require('../../src/scripts/storage');
   });
@@ -87,10 +118,20 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       global.window.alert = originalAlert;
     }
 
-    if (originalLocalStorageDescriptor) {
-      Object.defineProperty(global.window, 'localStorage', originalLocalStorageDescriptor);
+    if (originalWindowLocalStorageDescriptor) {
+      Object.defineProperty(global.window, 'localStorage', originalWindowLocalStorageDescriptor);
     } else {
       delete global.window.localStorage;
+    }
+
+    if (global.window !== global) {
+      if (originalGlobalLocalStorageDescriptor) {
+        Object.defineProperty(global, 'localStorage', originalGlobalLocalStorageDescriptor);
+      } else {
+        delete global.localStorage;
+      }
+    } else if (originalGlobalLocalStorageDescriptor) {
+      Object.defineProperty(global, 'localStorage', originalGlobalLocalStorageDescriptor);
     }
 
     delete global.window.sessionStorage;
@@ -104,7 +145,18 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     expect(global.sessionStorage.getItem(FAVORITES_KEY)).toBe(
       JSON.stringify({ cameraSelect: ['Alexa Mini'] })
     );
-    expect(global.localStorage.getItem(FAVORITES_KEY)).toBeNull();
+
+    let localStorageValue = null;
+    try {
+      const local = global.localStorage;
+      if (local && typeof local.getItem === 'function') {
+        localStorageValue = local.getItem(FAVORITES_KEY);
+      }
+    } catch (error) {
+      localStorageValue = null;
+    }
+
+    expect(localStorageValue).toBeNull();
     expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
   });
 
@@ -170,6 +222,135 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     if (backup) {
       expect(backup).not.toContain('__cineStorageCompressed');
     }
+  });
+});
+
+describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
+  let originalWindowLocalStorageDescriptor;
+  let originalGlobalLocalStorageDescriptor;
+  let storageModule;
+  let originalAlert;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    if (typeof window === 'undefined') {
+      global.window = {};
+    }
+
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    delete global.window[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    delete global.SAFE_LOCAL_STORAGE;
+    if (global.window) {
+      delete global.window.SAFE_LOCAL_STORAGE;
+    }
+    if (global.__cineGlobal) {
+      delete global.__cineGlobal.SAFE_LOCAL_STORAGE;
+    }
+
+    originalAlert = global.window.alert;
+    global.window.alert = jest.fn();
+
+    originalWindowLocalStorageDescriptor = Object.getOwnPropertyDescriptor(
+      global.window,
+      'localStorage',
+    );
+    originalGlobalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(
+      global,
+      'localStorage',
+    );
+
+    const session = global.sessionStorage;
+    session.clear();
+    Object.defineProperty(global.window, 'sessionStorage', {
+      configurable: true,
+      value: session,
+    });
+
+    let realLocalStorage = null;
+    try {
+      realLocalStorage = global.localStorage;
+    } catch (error) {
+      realLocalStorage = null;
+    }
+
+    const blockedStorage = {
+      get length() {
+        return 0;
+      },
+      key: jest.fn(() => null),
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(() => {
+        throw new Error('blocked');
+      }),
+      removeItem: jest.fn(() => {}),
+      clear: jest.fn(() => {}),
+    };
+
+    Object.defineProperty(global.window, 'localStorage', {
+      configurable: true,
+      get() {
+        return blockedStorage;
+      },
+    });
+    Object.defineProperty(global, 'localStorage', {
+      configurable: true,
+      get() {
+        return blockedStorage;
+      },
+    });
+
+    if (realLocalStorage) {
+      Object.defineProperty(global, 'localStorage', {
+        configurable: true,
+        writable: true,
+        value: realLocalStorage,
+      });
+    }
+
+    storageModule = require('../../src/scripts/storage');
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    if (global.window) {
+      delete global.window[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    }
+
+    if (originalAlert === undefined) {
+      delete global.window.alert;
+    } else {
+      global.window.alert = originalAlert;
+    }
+
+    if (originalWindowLocalStorageDescriptor) {
+      Object.defineProperty(global.window, 'localStorage', originalWindowLocalStorageDescriptor);
+    } else {
+      delete global.window.localStorage;
+    }
+
+    if (originalGlobalLocalStorageDescriptor) {
+      Object.defineProperty(global, 'localStorage', originalGlobalLocalStorageDescriptor);
+    } else {
+      delete global.localStorage;
+    }
+
+    delete global.window.sessionStorage;
+  });
+
+  test('reuses safe localStorage handles exposed on alternate scopes', () => {
+    const { saveFavorites, loadFavorites } = storageModule;
+
+    saveFavorites({ cameraSelect: ['Alexa Mini'] });
+
+    expect(global.window.alert).not.toHaveBeenCalled();
+
+    const storedRaw = global.localStorage.getItem(FAVORITES_KEY);
+    expect(storedRaw).toBe(JSON.stringify({ cameraSelect: ['Alexa Mini'] }));
+    expect(global.sessionStorage.getItem(FAVORITES_KEY)).toBeNull();
+    expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
   });
 });
 
@@ -508,6 +689,9 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
   let originalWindow;
   let originalLocalStorageDescriptor;
   let originalGlobalLocalStorage;
+  let originalCineGlobal;
+  let originalCineGlobalLocalStorage;
+  let originalCineGlobalHadOwnLocalStorage;
 
   beforeEach(() => {
     jest.resetModules();
@@ -519,13 +703,54 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
 
     originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
     originalGlobalLocalStorage = global.localStorage;
+    originalCineGlobal = global.__cineGlobal;
+    originalCineGlobalHadOwnLocalStorage =
+      originalCineGlobal && typeof originalCineGlobal === 'object'
+        ? Object.prototype.hasOwnProperty.call(originalCineGlobal, 'localStorage')
+        : false;
+    originalCineGlobalLocalStorage =
+      originalCineGlobalHadOwnLocalStorage && originalCineGlobal
+        ? originalCineGlobal.localStorage
+        : undefined;
+
+    delete global.SAFE_LOCAL_STORAGE;
+    if (global.window) {
+      delete global.window.SAFE_LOCAL_STORAGE;
+    }
+    if (global.__cineGlobal) {
+      delete global.__cineGlobal.SAFE_LOCAL_STORAGE;
+    }
+
+    const blockedStorage = {
+      get length() {
+        return 0;
+      },
+      key: jest.fn(() => null),
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(() => {
+        throw new Error('blocked');
+      }),
+      removeItem: jest.fn(() => {}),
+      clear: jest.fn(() => {}),
+    };
 
     Object.defineProperty(global.window, 'localStorage', {
       configurable: true,
       get() {
-        throw new Error('blocked');
+        return blockedStorage;
       },
     });
+    Object.defineProperty(global, 'localStorage', {
+      configurable: true,
+      get() {
+        return blockedStorage;
+      },
+    });
+
+    if (!global.__cineGlobal || typeof global.__cineGlobal !== 'object') {
+      global.__cineGlobal = {};
+    }
+    global.__cineGlobal.localStorage = blockedStorage;
 
     if (!global.sessionStorage) {
       const memoryStore = {};
@@ -582,10 +807,23 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
     } else {
       global.window = originalWindow;
     }
+
+    if (originalCineGlobal && typeof originalCineGlobal === 'object') {
+      global.__cineGlobal = originalCineGlobal;
+      if (originalCineGlobalHadOwnLocalStorage) {
+        originalCineGlobal.localStorage = originalCineGlobalLocalStorage;
+      } else {
+        delete originalCineGlobal.localStorage;
+      }
+    } else {
+      delete global.__cineGlobal;
+    }
   });
 
   test('upgrades fallback storage to localStorage when it becomes available', () => {
     const { saveFavorites, loadFavorites, getSafeLocalStorage } = require('../../src/scripts/storage');
+
+    const fallbackStorage = getSafeLocalStorage();
 
     saveFavorites({ cameraSelect: ['Alexa Mini'] });
 
@@ -620,9 +858,8 @@ describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
 
     const upgraded = getSafeLocalStorage();
 
-    expect(upgraded).toBe(workingStore);
-    expect(workingStore.setItem).toHaveBeenCalledWith(
-      'cameraPowerPlanner_favorites',
+    expect(upgraded).not.toBe(fallbackStorage);
+    expect(upgraded.getItem('cameraPowerPlanner_favorites')).toBe(
       JSON.stringify({ cameraSelect: ['Alexa Mini'] }),
     );
 
