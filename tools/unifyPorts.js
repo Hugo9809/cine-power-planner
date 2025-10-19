@@ -368,12 +368,23 @@ if (require.main === module) {
   normalizeCollection(devices.fiz.controllers, normalizeFiz);
   normalizeCollection(devices.fiz.distance, normalizeFiz);
   deepClean(devices);
-  fs.writeFileSync(
-    path.join(__dirname, '../src/data/index.js'),
-    'let devices=' +
-      JSON.stringify(devices, null, 2) +
-      ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n'
-  );
+  const serializedDevices = JSON.stringify(devices, null, 2);
+  const output = `const devices = ${serializedDevices};
+const rentalHouses = require('./rental-houses');
+
+if (devices && !Object.prototype.hasOwnProperty.call(devices, 'rentalHouses')) {
+  Object.defineProperty(devices, 'rentalHouses', {
+    configurable: false,
+    enumerable: false,
+    value: rentalHouses,
+    writable: false
+  });
+}
+
+module.exports = devices;
+`;
+
+  fs.writeFileSync(path.join(__dirname, '../src/data/index.js'), output);
 }
 
 if (typeof module !== 'undefined' && module.exports) {
