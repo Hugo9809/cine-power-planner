@@ -1082,7 +1082,7 @@ const escapeHtml =
           .replace(/'/g, '&#39;');
       };
 
-const escapeButtonLabelSafely =
+const escapeButtonLabelSafelyHelper =
   typeof CORE_UI_HELPERS.escapeButtonLabelSafely === 'function'
     ? CORE_UI_HELPERS.escapeButtonLabelSafely
     : function escapeButtonLabelSafelyFallback(text) {
@@ -1092,14 +1092,14 @@ const escapeButtonLabelSafely =
         return escapeHtml(text);
       };
 
-const resolveButtonIconMarkup =
+const resolveButtonIconMarkupHelper =
   typeof CORE_UI_HELPERS.resolveButtonIconMarkup === 'function'
     ? CORE_UI_HELPERS.resolveButtonIconMarkup
     : function resolveButtonIconMarkupFallback() {
         return '';
       };
 
-const setButtonLabelWithIcon = ensureCoreGlobalValue(
+const setButtonLabelWithIconBinding = ensureCoreGlobalValue(
   'setButtonLabelWithIcon',
   function resolveSetButtonLabelWithIconValue() {
     if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
@@ -1122,8 +1122,10 @@ const setButtonLabelWithIcon = ensureCoreGlobalValue(
         }
       }
 
-      const iconHtml = resolveButtonIconMarkup(resolvedGlyph);
-      const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+      const iconHtml = resolveButtonIconMarkupHelper(resolvedGlyph);
+      const safeLabel = escapeButtonLabelSafelyHelper(
+        typeof label === 'string' ? label : '',
+      );
 
       try {
         button.innerHTML = `${iconHtml}${safeLabel}`;
@@ -1136,9 +1138,9 @@ const setButtonLabelWithIcon = ensureCoreGlobalValue(
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   try {
-    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIconBinding;
   } catch (setButtonAssignError) {
-    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIconBinding;
     void setButtonAssignError;
   }
 }
@@ -5416,7 +5418,7 @@ function updateAutoGearItemButtonState(type) {
   const glyph = isEditing
     ? ICON_GLYPHS.save
     : (normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add);
-  setButtonLabelWithIcon(button, label, glyph);
+  setButtonLabelWithIconBinding(button, label, glyph);
   button.setAttribute('data-help', label);
 }
 function getAutoGearBackupEntrySignature(entry) {
@@ -7113,10 +7115,10 @@ function updateOwnGearSaveButtonState() {
   const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
   if (ownGearEditingId) {
     const label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
-    setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
+    setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.save);
   } else {
     const label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
-    setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.add);
   }
 }
 
@@ -7379,11 +7381,11 @@ function applyOwnGearLocalization(lang) {
   }
   if (ownGearResetButton) {
     const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
-    setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
+    setButtonLabelWithIconBinding(ownGearResetButton, label, ICON_GLYPHS.reload);
   }
   if (ownGearCloseButton) {
     const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
-    setButtonLabelWithIcon(ownGearCloseButton, label, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(ownGearCloseButton, label, ICON_GLYPHS.circleX);
   }
   const listHeading = document.getElementById('ownGearListHeading');
   if (listHeading) {
@@ -10493,10 +10495,10 @@ async function setLanguage(lang) {
     if (label) {
       if (
         navKey === 'contactsNav' &&
-        typeof setButtonLabelWithIcon === 'function' &&
+        typeof setButtonLabelWithIconBinding === 'function' &&
         link?.tagName === 'BUTTON'
       ) {
-        setButtonLabelWithIcon(
+        setButtonLabelWithIconBinding(
           link,
           label,
           (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts)
@@ -10526,11 +10528,11 @@ async function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+  setButtonLabelWithIconBinding(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
-  setButtonLabelWithIcon(
+  setButtonLabelWithIconBinding(
     applySharedLinkBtn,
     texts[lang].loadSharedLinkBtn,
     ICON_GLYPHS.fileImport
@@ -10557,7 +10559,7 @@ async function setLanguage(lang) {
   const deleteGearListHelp =
     texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
   if (deleteGearListProjectBtn) {
-    setButtonLabelWithIcon(
+    setButtonLabelWithIconBinding(
       deleteGearListProjectBtn,
       texts[lang].deleteGearListBtn,
       ICON_GLYPHS.trash
@@ -10602,7 +10604,7 @@ async function setLanguage(lang) {
     const confirmLabel = texts[lang].shareDialogConfirm
       || texts.en?.shareDialogConfirm
       || shareConfirmBtn.textContent;
-    setButtonLabelWithIcon(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
     shareConfirmBtn.setAttribute('title', confirmLabel);
     shareConfirmBtn.setAttribute('aria-label', confirmLabel);
     shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
@@ -10612,7 +10614,7 @@ async function setLanguage(lang) {
     const cancelLabel = texts[lang].shareDialogCancel
       || texts.en?.shareDialogCancel
       || shareCancelBtn.textContent;
-    setButtonLabelWithIcon(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
     shareCancelBtn.setAttribute('title', cancelLabel);
     shareCancelBtn.setAttribute('aria-label', cancelLabel);
   }
@@ -10667,14 +10669,14 @@ async function setLanguage(lang) {
     const label = texts[lang].sharedImportDialogConfirm
       || texts.en?.sharedImportDialogConfirm
       || sharedImportConfirmBtn.textContent;
-    setButtonLabelWithIcon(sharedImportConfirmBtn, label, ICON_GLYPHS.check);
+    setButtonLabelWithIconBinding(sharedImportConfirmBtn, label, ICON_GLYPHS.check);
     sharedImportConfirmBtn.setAttribute('data-help', label);
   }
   if (sharedImportCancelBtn) {
     const label = texts[lang].sharedImportDialogCancel
       || texts.en?.sharedImportDialogCancel
       || sharedImportCancelBtn.textContent;
-    setButtonLabelWithIcon(sharedImportCancelBtn, label, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(sharedImportCancelBtn, label, ICON_GLYPHS.circleX);
     sharedImportCancelBtn.setAttribute('data-help', label);
   }
   if (sharedImportLegend) {
@@ -10733,7 +10735,7 @@ async function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
+  setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -10867,7 +10869,9 @@ async function setLanguage(lang) {
         temperatureUnit:
           typeof temperatureUnit !== 'undefined' ? temperatureUnit : null,
         setButtonLabelWithIcon:
-          typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+          typeof setButtonLabelWithIconBinding === 'function'
+            ? setButtonLabelWithIconBinding
+            : null,
         iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
       });
     } catch (cineResultsError) {
@@ -10985,7 +10989,7 @@ async function setLanguage(lang) {
   if (powerWarningAdviceElem)
     powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
   if (powerWarningCloseBtn)
-    setButtonLabelWithIcon(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
+    setButtonLabelWithIconBinding(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -11101,17 +11105,17 @@ async function setLanguage(lang) {
   const addDeviceLabel = texts[lang].addDeviceBtn;
   const updateDeviceLabel = texts[lang].updateDeviceBtn;
   if (addDeviceBtn.dataset.mode === "edit") {
-    setButtonLabelWithIcon(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
+    setButtonLabelWithIconBinding(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
     addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
   } else {
-    setButtonLabelWithIcon(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
     addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
   }
-  setButtonLabelWithIcon(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+  setButtonLabelWithIconBinding(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
   cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
-  setButtonLabelWithIcon(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
+  setButtonLabelWithIconBinding(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
   exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
-  setButtonLabelWithIcon(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
+  setButtonLabelWithIconBinding(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
   importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
   // Placeholders for inputs
   setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
@@ -11125,12 +11129,12 @@ async function setLanguage(lang) {
   updateDeviceManagerLocalization(lang);
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.classList.contains('hidden')) {
-    setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
+    setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
     toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
     toggleDeviceBtn.setAttribute("aria-expanded", "false");
   } else {
-    setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
+    setButtonLabelWithIconBinding(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
     toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
     toggleDeviceBtn.setAttribute("aria-expanded", "true");
@@ -11561,7 +11565,7 @@ async function setLanguage(lang) {
       (texts.en && texts.en.localFontsButton) ||
       localFontsButton.textContent;
     if (localFontsLabel) {
-      setButtonLabelWithIcon(localFontsButton, localFontsLabel, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(localFontsButton, localFontsLabel, ICON_GLYPHS.add);
       localFontsButton.setAttribute('aria-label', localFontsLabel);
       localFontsButton.setAttribute('title', localFontsLabel);
     }
@@ -11652,7 +11656,7 @@ async function setLanguage(lang) {
     const label = texts[lang].autoGearSavePresetButton
       || texts.en?.autoGearSavePresetButton
       || autoGearSavePresetButton.textContent;
-    setButtonLabelWithIcon(autoGearSavePresetButton, label, ICON_GLYPHS.save);
+    setButtonLabelWithIconBinding(autoGearSavePresetButton, label, ICON_GLYPHS.save);
     autoGearSavePresetButton.setAttribute('data-help', label);
     autoGearSavePresetButton.setAttribute('aria-label', label);
   }
@@ -11660,13 +11664,13 @@ async function setLanguage(lang) {
     const label = texts[lang].autoGearDeletePresetButton
       || texts.en?.autoGearDeletePresetButton
       || autoGearDeletePresetButton.textContent;
-    setButtonLabelWithIcon(autoGearDeletePresetButton, label, ICON_GLYPHS.trash);
+    setButtonLabelWithIconBinding(autoGearDeletePresetButton, label, ICON_GLYPHS.trash);
     autoGearDeletePresetButton.setAttribute('data-help', label);
     autoGearDeletePresetButton.setAttribute('aria-label', label);
   }
   if (autoGearAddRuleBtn) {
     const label = texts[lang].autoGearAddRule || texts.en?.autoGearAddRule || autoGearAddRuleBtn.textContent;
-    setButtonLabelWithIcon(autoGearAddRuleBtn, label, ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(autoGearAddRuleBtn, label, ICON_GLYPHS.add);
     const help = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp || label;
     autoGearAddRuleBtn.setAttribute('data-help', help);
   }
@@ -11677,7 +11681,7 @@ async function setLanguage(lang) {
     const help = texts[lang].autoGearResetFactoryHelp
       || texts.en?.autoGearResetFactoryHelp
       || label;
-    setButtonLabelWithIcon(autoGearResetFactoryButton, label, ICON_GLYPHS.reload);
+    setButtonLabelWithIconBinding(autoGearResetFactoryButton, label, ICON_GLYPHS.reload);
     autoGearResetFactoryButton.setAttribute('data-help', help);
     autoGearResetFactoryButton.setAttribute('title', help);
     autoGearResetFactoryButton.setAttribute('aria-label', label);
@@ -11689,7 +11693,7 @@ async function setLanguage(lang) {
     const help = texts[lang].autoGearExportHelp
       || texts.en?.autoGearExportHelp
       || label;
-    setButtonLabelWithIcon(autoGearExportButton, label, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(autoGearExportButton, label, ICON_GLYPHS.fileExport);
     autoGearExportButton.setAttribute('data-help', help);
     autoGearExportButton.setAttribute('title', help);
     autoGearExportButton.setAttribute('aria-label', label);
@@ -11701,7 +11705,7 @@ async function setLanguage(lang) {
     const help = texts[lang].autoGearImportHelp
       || texts.en?.autoGearImportHelp
       || label;
-    setButtonLabelWithIcon(autoGearImportButton, label, ICON_GLYPHS.fileImport);
+    setButtonLabelWithIconBinding(autoGearImportButton, label, ICON_GLYPHS.fileImport);
     autoGearImportButton.setAttribute('data-help', help);
     autoGearImportButton.setAttribute('title', help);
     autoGearImportButton.setAttribute('aria-label', label);
@@ -11743,7 +11747,7 @@ async function setLanguage(lang) {
     const label = texts[lang].autoGearFilterClear
       || texts.en?.autoGearFilterClear
       || autoGearFilterClearButton.textContent;
-    setButtonLabelWithIcon(autoGearFilterClearButton, label, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(autoGearFilterClearButton, label, ICON_GLYPHS.circleX);
     autoGearFilterClearButton.setAttribute('data-help', label);
     autoGearFilterClearButton.setAttribute('aria-label', label);
   }
@@ -11813,7 +11817,7 @@ async function setLanguage(lang) {
     const label = texts[lang].autoGearBackupRestore
       || texts.en?.autoGearBackupRestore
       || autoGearBackupRestoreButton.textContent;
-    setButtonLabelWithIcon(autoGearBackupRestoreButton, label, ICON_GLYPHS.fileImport);
+    setButtonLabelWithIconBinding(autoGearBackupRestoreButton, label, ICON_GLYPHS.fileImport);
     autoGearBackupRestoreButton.setAttribute('aria-label', label);
     autoGearBackupRestoreButton.setAttribute('title', label);
   }
@@ -11856,7 +11860,7 @@ async function setLanguage(lang) {
       || texts.en?.autoGearAddCondition
       || autoGearConditionAddButton.textContent
       || 'Add condition';
-    setButtonLabelWithIcon(autoGearConditionAddButton, label, ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(autoGearConditionAddButton, label, ICON_GLYPHS.add);
     autoGearConditionAddButton.setAttribute('aria-label', label);
     autoGearConditionAddButton.setAttribute('data-help', label);
   }
@@ -12529,12 +12533,12 @@ async function setLanguage(lang) {
   }
   if (autoGearSaveRuleButton) {
     const label = texts[lang].autoGearSaveRule || texts.en?.autoGearSaveRule || autoGearSaveRuleButton.textContent;
-    setButtonLabelWithIcon(autoGearSaveRuleButton, label);
+    setButtonLabelWithIconBinding(autoGearSaveRuleButton, label);
     autoGearSaveRuleButton.setAttribute('data-help', label);
   }
   if (autoGearCancelEditButton) {
     const label = texts[lang].autoGearCancelEdit || texts.en?.autoGearCancelEdit || autoGearCancelEditButton.textContent;
-    setButtonLabelWithIcon(autoGearCancelEditButton, label, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(autoGearCancelEditButton, label, ICON_GLYPHS.circleX);
     autoGearCancelEditButton.setAttribute('data-help', label);
   }
   if (autoGearAddCategorySelect) {
@@ -12663,7 +12667,7 @@ async function setLanguage(lang) {
     const requestLabel = texts[lang].storagePersistenceRequest
       || texts.en?.storagePersistenceRequest
       || storagePersistenceRequestButton.textContent;
-    setButtonLabelWithIcon(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
+    setButtonLabelWithIconBinding(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
     storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
     const requestHelp = texts[lang].storagePersistenceRequestHelp
       || texts.en?.storagePersistenceRequestHelp
@@ -12699,7 +12703,7 @@ async function setLanguage(lang) {
     const backupLabel = texts[lang].storageBackupNow
       || texts.en?.storageBackupNow
       || storageBackupNowButton.textContent;
-    setButtonLabelWithIcon(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
     const backupHelp = texts[lang].storageBackupNowHelp
       || texts.en?.storageBackupNowHelp
       || backupLabel;
@@ -12710,7 +12714,7 @@ async function setLanguage(lang) {
     const openLabel = texts[lang].storageOpenBackupTab
       || texts.en?.storageOpenBackupTab
       || storageOpenBackupTabButton.textContent;
-    setButtonLabelWithIcon(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
+    setButtonLabelWithIconBinding(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
     const openHelp = texts[lang].storageOpenBackupTabHelp
       || texts.en?.storageOpenBackupTabHelp
       || openLabel;
@@ -12928,7 +12932,7 @@ async function setLanguage(lang) {
     const exportLabel = texts[lang].loggingExportButton
       || texts.en?.loggingExportButton
       || loggingExportButton.textContent;
-    setButtonLabelWithIcon(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
     loggingExportButton.setAttribute('data-help', exportLabel);
     loggingExportButton.setAttribute('title', exportLabel);
     loggingExportButton.setAttribute('aria-label', exportLabel);
@@ -12979,7 +12983,7 @@ async function setLanguage(lang) {
   }
   if (backupDiffToggleButtonEl) {
     const compareLabel = texts[lang].versionCompareButton || 'Compare versions';
-    setButtonLabelWithIcon(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
+    setButtonLabelWithIconBinding(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
     const compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
     backupDiffToggleButtonEl.setAttribute('data-help', compareHelp);
     backupDiffToggleButtonEl.setAttribute('title', compareHelp);
@@ -13019,7 +13023,7 @@ async function setLanguage(lang) {
   }
   if (backupDiffExportButtonEl) {
     const exportLabel = texts[lang].versionCompareExport || 'Export log';
-    setButtonLabelWithIcon(backupDiffExportButtonEl, exportLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(backupDiffExportButtonEl, exportLabel, ICON_GLYPHS.fileExport);
     const exportHelp = texts[lang].versionCompareExportHelp || exportLabel;
     backupDiffExportButtonEl.setAttribute('data-help', exportHelp);
     backupDiffExportButtonEl.setAttribute('title', exportHelp);
@@ -13028,11 +13032,11 @@ async function setLanguage(lang) {
     const closeLabel = texts[lang].versionCompareClose
       || texts[lang].cancelSettings
       || 'Close';
-    setButtonLabelWithIcon(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
   }
   if (backupSettingsButton) {
     const backupLabel = texts[lang].backupSettings;
-    setButtonLabelWithIcon(backupSettingsButton, backupLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIconBinding(backupSettingsButton, backupLabel, ICON_GLYPHS.fileExport);
     const backupHelp =
       texts[lang].backupSettingsHelp || backupLabel;
     backupSettingsButton.setAttribute("data-help", backupHelp);
@@ -13041,7 +13045,7 @@ async function setLanguage(lang) {
   }
   if (restoreSettings) {
     const restoreLabel = texts[lang].restoreSettings;
-    setButtonLabelWithIcon(restoreSettings, restoreLabel, ICON_GLYPHS.fileImport);
+    setButtonLabelWithIconBinding(restoreSettings, restoreLabel, ICON_GLYPHS.fileImport);
     const restoreHelp =
       texts[lang].restoreSettingsHelp || restoreLabel;
     restoreSettings.setAttribute("data-help", restoreHelp);
@@ -13050,7 +13054,7 @@ async function setLanguage(lang) {
   }
   if (restoreRehearsalButton) {
     const rehearsalLabel = texts[lang].restoreRehearsalButton || 'Restore rehearsal';
-    setButtonLabelWithIcon(restoreRehearsalButton, rehearsalLabel, ICON_GLYPHS.load);
+    setButtonLabelWithIconBinding(restoreRehearsalButton, rehearsalLabel, ICON_GLYPHS.load);
     const rehearsalHelp = texts[lang].restoreRehearsalButtonHelp || rehearsalLabel;
     restoreRehearsalButton.setAttribute('data-help', rehearsalHelp);
     restoreRehearsalButton.setAttribute('title', rehearsalHelp);
@@ -13076,7 +13080,7 @@ async function setLanguage(lang) {
   }
   if (restoreRehearsalBrowse) {
     const browseLabel = texts[lang].restoreRehearsalFileButton || 'Choose file';
-    setButtonLabelWithIcon(restoreRehearsalBrowse, browseLabel, ICON_GLYPHS.fileImport);
+    setButtonLabelWithIconBinding(restoreRehearsalBrowse, browseLabel, ICON_GLYPHS.fileImport);
     restoreRehearsalBrowse.setAttribute('data-help', browseLabel);
     restoreRehearsalBrowse.setAttribute('title', browseLabel);
     restoreRehearsalBrowse.setAttribute('aria-label', browseLabel);
@@ -13124,7 +13128,7 @@ async function setLanguage(lang) {
 
   if (resolvedRestoreRehearsalCloseButton) {
     const closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
-    setButtonLabelWithIcon(resolvedRestoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(resolvedRestoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
     resolvedRestoreRehearsalCloseButton.setAttribute('title', closeLabel);
     resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', closeLabel);
   }
@@ -13135,7 +13139,7 @@ async function setLanguage(lang) {
     const proceedHelp = texts[lang].restoreRehearsalProceedHelp
       || texts.en?.restoreRehearsalProceedHelp
       || proceedLabel;
-    setButtonLabelWithIcon(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
+    setButtonLabelWithIconBinding(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
     restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
     restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
     restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
@@ -13147,7 +13151,7 @@ async function setLanguage(lang) {
     const abortHelp = texts[lang].restoreRehearsalAbortHelp
       || texts.en?.restoreRehearsalAbortHelp
       || abortLabel;
-    setButtonLabelWithIcon(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
     restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
     restoreRehearsalAbortButton.setAttribute('title', abortHelp);
     restoreRehearsalAbortButton.setAttribute('aria-label', abortHelp);
@@ -13156,7 +13160,7 @@ async function setLanguage(lang) {
     const resetLabel = texts[lang].factoryResetButton || "Factory reset";
     const resetHelp =
       texts[lang].factoryResetButtonHelp || resetLabel;
-    setButtonLabelWithIcon(factoryResetButton, resetLabel, ICON_GLYPHS.reload);
+    setButtonLabelWithIconBinding(factoryResetButton, resetLabel, ICON_GLYPHS.reload);
     factoryResetButton.setAttribute("data-help", resetHelp);
     factoryResetButton.setAttribute("title", resetHelp);
     factoryResetButton.setAttribute("aria-label", resetHelp);
@@ -13201,7 +13205,7 @@ async function setLanguage(lang) {
   });
   if (settingsSave) {
     const label = texts[lang].saveSettings || texts.en?.saveSettings || settingsSave.textContent;
-    setButtonLabelWithIcon(settingsSave, label);
+    setButtonLabelWithIconBinding(settingsSave, label);
     const saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || label;
     settingsSave.setAttribute("data-help", saveHelp);
     settingsSave.setAttribute("title", saveHelp);
@@ -13210,7 +13214,7 @@ async function setLanguage(lang) {
   if (settingsCancel) {
     const cancelLabel =
       texts[lang].cancelSettings || texts.en?.cancelSettings || settingsCancel.textContent;
-    setButtonLabelWithIcon(settingsCancel, cancelLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIconBinding(settingsCancel, cancelLabel, ICON_GLYPHS.circleX);
     const cancelHelp =
       texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || cancelLabel;
     settingsCancel.setAttribute("data-help", cancelHelp);
@@ -13320,7 +13324,7 @@ async function setLanguage(lang) {
         helpButton.removeAttribute('aria-keyshortcuts');
       }
     if (hoverHelpButton) {
-    setButtonLabelWithIcon(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
+    setButtonLabelWithIconBinding(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
     hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
     hoverHelpButton.setAttribute(
       "data-help",
@@ -13344,7 +13348,7 @@ async function setLanguage(lang) {
       );
     }
     if (closeHelpBtn) {
-      setButtonLabelWithIcon(closeHelpBtn, texts[lang].helpClose, ICON_GLYPHS.circleX);
+      setButtonLabelWithIconBinding(closeHelpBtn, texts[lang].helpClose, ICON_GLYPHS.circleX);
       closeHelpBtn.setAttribute("title", texts[lang].helpClose);
       closeHelpBtn.setAttribute("aria-label", texts[lang].helpClose);
       closeHelpBtn.setAttribute(
@@ -13589,24 +13593,24 @@ async function setLanguage(lang) {
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
-  setButtonLabelWithIcon(
+  setButtonLabelWithIconBinding(
     document.getElementById("generateOverviewBtn"),
     texts[lang].generateOverviewBtn,
     ICON_GLYPHS.overview
   );
-  setButtonLabelWithIcon(
+  setButtonLabelWithIconBinding(
     document.getElementById("generateGearListBtn"),
     texts[lang].generateGearListBtn,
     ICON_GLYPHS.gearList
   );
-  setButtonLabelWithIcon(
+  setButtonLabelWithIconBinding(
     document.getElementById("shareSetupBtn"),
     texts[lang].shareSetupBtn,
     ICON_GLYPHS.fileExport
   );
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) {
-    setButtonLabelWithIcon(exportRevert, texts[lang].exportAndRevertBtn, ICON_GLYPHS.reload);
+    setButtonLabelWithIconBinding(exportRevert, texts[lang].exportAndRevertBtn, ICON_GLYPHS.reload);
     exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
   }
 
@@ -13627,7 +13631,7 @@ async function setLanguage(lang) {
     downloadDiagramButton.setAttribute("data-help", texts[lang].downloadDiagramHelp);
   }
   if (gridSnapToggleBtn) {
-    setButtonLabelWithIcon(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
+    setButtonLabelWithIconBinding(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
@@ -13647,7 +13651,7 @@ async function setLanguage(lang) {
   const resetViewBtn =
     typeof document !== 'undefined' ? document.getElementById('resetView') : null;
   if (resetViewBtn) {
-    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
+    setButtonLabelWithIconBinding(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -13655,7 +13659,7 @@ async function setLanguage(lang) {
   const zoomInBtn =
     typeof document !== 'undefined' ? document.getElementById('zoomIn') : null;
   if (zoomInBtn) {
-    setButtonLabelWithIcon(zoomInBtn, '', ICON_GLYPHS.add);
+    setButtonLabelWithIconBinding(zoomInBtn, '', ICON_GLYPHS.add);
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
@@ -13663,7 +13667,7 @@ async function setLanguage(lang) {
   const zoomOutBtn =
     typeof document !== 'undefined' ? document.getElementById('zoomOut') : null;
   if (zoomOutBtn) {
-    setButtonLabelWithIcon(zoomOutBtn, '', ICON_GLYPHS.minus);
+    setButtonLabelWithIconBinding(zoomOutBtn, '', ICON_GLYPHS.minus);
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
@@ -13822,7 +13826,7 @@ async function setLanguage(lang) {
           : projectDialogCloseBtn?.getAttribute('aria-label')) ||
         'Cancel';
       if (projectCancelButton) {
-        setButtonLabelWithIcon(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
+        setButtonLabelWithIconBinding(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
       }
     if (projectDialogCloseBtn) {
       projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
@@ -13833,7 +13837,7 @@ async function setLanguage(lang) {
     if (projectSubmitBtn) {
       const submitText = projectFormTexts.submit || fallbackProjectForm.submit;
       if (submitText) {
-        setButtonLabelWithIcon(projectSubmitBtn, submitText, ICON_GLYPHS.check);
+        setButtonLabelWithIconBinding(projectSubmitBtn, submitText, ICON_GLYPHS.check);
         projectSubmitBtn.setAttribute('aria-label', submitText);
       }
     }
@@ -13934,19 +13938,19 @@ async function setLanguage(lang) {
       avatarOptionsCloseButton.setAttribute('data-help', contactsTexts.avatarOptionsClose);
     }
     if (avatarOptionsDeleteButton && contactsTexts.avatarDelete) {
-      setButtonLabelWithIcon(avatarOptionsDeleteButton, contactsTexts.avatarDelete, ICON_GLYPHS.trash);
+      setButtonLabelWithIconBinding(avatarOptionsDeleteButton, contactsTexts.avatarDelete, ICON_GLYPHS.trash);
       avatarOptionsDeleteButton.setAttribute('aria-label', contactsTexts.avatarDelete);
       avatarOptionsDeleteButton.setAttribute('title', contactsTexts.avatarDelete);
       avatarOptionsDeleteButton.setAttribute('data-help', contactsTexts.avatarDelete);
     }
     if (avatarOptionsEditButton && contactsTexts.avatarEditAction) {
-      setButtonLabelWithIcon(avatarOptionsEditButton, contactsTexts.avatarEditAction, ICON_GLYPHS.sliders);
+      setButtonLabelWithIconBinding(avatarOptionsEditButton, contactsTexts.avatarEditAction, ICON_GLYPHS.sliders);
       avatarOptionsEditButton.setAttribute('aria-label', contactsTexts.avatarEditAction);
       avatarOptionsEditButton.setAttribute('title', contactsTexts.avatarEditAction);
       avatarOptionsEditButton.setAttribute('data-help', contactsTexts.avatarEditAction);
     }
     if (avatarOptionsChangeButton && contactsTexts.avatarChange) {
-      setButtonLabelWithIcon(avatarOptionsChangeButton, contactsTexts.avatarChange, ICON_GLYPHS.camera);
+      setButtonLabelWithIconBinding(avatarOptionsChangeButton, contactsTexts.avatarChange, ICON_GLYPHS.camera);
       avatarOptionsChangeButton.setAttribute('aria-label', contactsTexts.avatarChange);
       avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
       avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
@@ -13961,13 +13965,13 @@ async function setLanguage(lang) {
       avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
     }
     if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
-      setButtonLabelWithIcon(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
+      setButtonLabelWithIconBinding(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
       avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
       avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
       avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
     }
     if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
-      setButtonLabelWithIcon(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
+      setButtonLabelWithIconBinding(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
       avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
       avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
       avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
@@ -14000,11 +14004,11 @@ async function setLanguage(lang) {
       }
       const saveButton = row.querySelector('.person-save-contact');
       if (saveButton) {
-        setButtonLabelWithIcon(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+        setButtonLabelWithIconBinding(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
       }
       const manageButton = row.querySelector('.person-manage-contacts');
       if (manageButton) {
-        setButtonLabelWithIcon(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+        setButtonLabelWithIconBinding(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
       }
       updateRowLinkedBadge(row);
     });
@@ -14013,28 +14017,28 @@ async function setLanguage(lang) {
     if (addPersonBtn) {
       const crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
       const label = `${addEntryLabel} ${crewLabel}`.trim();
-      setButtonLabelWithIcon(addPersonBtn, label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(addPersonBtn, label, ICON_GLYPHS.add);
       addPersonBtn.setAttribute('aria-label', label);
       addPersonBtn.setAttribute('data-help', label);
     }
     if (addPrepBtn) {
       const prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
       const label = `${addEntryLabel} ${prepLabel}`.trim();
-      setButtonLabelWithIcon(addPrepBtn, label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(addPrepBtn, label, ICON_GLYPHS.add);
       addPrepBtn.setAttribute('aria-label', label);
       addPrepBtn.setAttribute('data-help', label);
     }
     if (addShootBtn) {
       const shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
       const label = `${addEntryLabel} ${shootLabel}`.trim();
-      setButtonLabelWithIcon(addShootBtn, label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(addShootBtn, label, ICON_GLYPHS.add);
       addShootBtn.setAttribute('aria-label', label);
       addShootBtn.setAttribute('data-help', label);
     }
     if (addReturnBtn) {
       const returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
       const label = `${addEntryLabel} ${returnLabel}`.trim();
-      setButtonLabelWithIcon(addReturnBtn, label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(addReturnBtn, label, ICON_GLYPHS.add);
       addReturnBtn.setAttribute('aria-label', label);
       addReturnBtn.setAttribute('data-help', label);
     }
@@ -14043,7 +14047,7 @@ async function setLanguage(lang) {
         projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs'
       );
       const label = `${addEntryLabel} ${storageLabelText}`.trim();
-      setButtonLabelWithIcon(addStorageNeedBtn, label, ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(addStorageNeedBtn, label, ICON_GLYPHS.add);
       addStorageNeedBtn.setAttribute('aria-label', label);
       addStorageNeedBtn.setAttribute('data-help', label);
     }
@@ -14057,7 +14061,7 @@ async function setLanguage(lang) {
   if (iosPwaHelpNote) iosPwaHelpNote.textContent = texts[lang].iosPwaHelpNote;
   if (iosPwaHelpClose) {
     const closeText = texts[lang].iosPwaHelpClose;
-    setButtonLabelWithIcon(iosPwaHelpClose, closeText, ICON_GLYPHS.check);
+    setButtonLabelWithIconBinding(iosPwaHelpClose, closeText, ICON_GLYPHS.check);
     iosPwaHelpClose.setAttribute('aria-label', closeText);
   }
 
@@ -14511,7 +14515,7 @@ function configureIconOnlyButton(button, glyph, options = {}) {
     fallbackContext = '',
     actionKey = 'addEntry'
   } = options || {};
-  setButtonLabelWithIcon(button, '', glyph || ICON_GLYPHS.add);
+  setButtonLabelWithIconBinding(button, '', glyph || ICON_GLYPHS.add);
   const actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
   const paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
   let contextLabel = '';
@@ -16363,7 +16367,7 @@ function createContactCard(contact) {
 
   const useButton = document.createElement('button');
   useButton.type = 'button';
-  setButtonLabelWithIcon(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
+  setButtonLabelWithIconBinding(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
   useButton.addEventListener('click', () => {
     createCrewRow({ ...contact, contactId: contact.id });
     closeDialog(contactsDialog);
@@ -16373,7 +16377,7 @@ function createContactCard(contact) {
 
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
-  setButtonLabelWithIcon(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
+  setButtonLabelWithIconBinding(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
   deleteButton.addEventListener('click', () => {
     const confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
     if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
@@ -16748,13 +16752,13 @@ function createCrewRow(data = {}) {
   const saveContactBtn = document.createElement('button');
   saveContactBtn.type = 'button';
   saveContactBtn.className = 'person-save-contact';
-  setButtonLabelWithIcon(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+  setButtonLabelWithIconBinding(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
   saveContactBtn.addEventListener('click', () => saveCrewRowAsContact(row));
 
   const manageContactsBtn = document.createElement('button');
   manageContactsBtn.type = 'button';
   manageContactsBtn.className = 'person-manage-contacts';
-  setButtonLabelWithIcon(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+  setButtonLabelWithIconBinding(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
   manageContactsBtn.addEventListener('click', () => openDialog(contactsDialog));
 
   const removeBtn = document.createElement('button');
@@ -20947,8 +20951,8 @@ function applyInstallTexts(lang) {
 
   if (installPromptBannerDismiss) {
     const labelText = dismissLabel || '';
-    if (typeof setButtonLabelWithIcon === 'function') {
-      setButtonLabelWithIcon(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
+    if (typeof setButtonLabelWithIconBinding === 'function') {
+      setButtonLabelWithIconBinding(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
     }
     Array.from(installPromptBannerDismiss.querySelectorAll('.visually-hidden')).forEach(node => {
       if (node && node.parentNode === installPromptBannerDismiss) {
@@ -20969,8 +20973,8 @@ function applyInstallTexts(lang) {
   }
 
   if (installGuideClose) {
-    if (closeLabel && typeof setButtonLabelWithIcon === 'function') {
-      setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
+    if (closeLabel && typeof setButtonLabelWithIconBinding === 'function') {
+      setButtonLabelWithIconBinding(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
       installGuideClose.setAttribute('aria-label', closeLabel);
       installGuideClose.setAttribute('title', closeLabel);
     } else if (!closeLabel) {
@@ -21723,13 +21727,13 @@ function configureAutoGearConditionButtons() {
     const config = getAutoGearConditionConfig(key);
     if (!config) return;
     if (config.addShortcut) {
-      setButtonLabelWithIcon(config.addShortcut, '', ICON_GLYPHS.add);
+      setButtonLabelWithIconBinding(config.addShortcut, '', ICON_GLYPHS.add);
       config.addShortcut.setAttribute('aria-label', addLabel);
       config.addShortcut.setAttribute('title', addLabel);
       config.addShortcut.setAttribute('data-help', addLabel);
     }
     if (config.removeButton) {
-      setButtonLabelWithIcon(config.removeButton, '', ICON_GLYPHS.minus);
+      setButtonLabelWithIconBinding(config.removeButton, '', ICON_GLYPHS.minus);
       config.removeButton.setAttribute('aria-label', removeLabel);
       config.removeButton.setAttribute('title', removeLabel);
       config.removeButton.setAttribute('data-help', removeLabel);
