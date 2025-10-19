@@ -1068,13 +1068,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return layer;
         }
+        function readScrollExtent(target) {
+          if (!target || (_typeof(target) !== 'object' && _typeof(target) !== 'function')) {
+            return null;
+          }
+          var value = null;
+          try {
+            value = target.scrollHeight;
+          } catch (error) {
+            void error;
+            return null;
+          }
+          if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+            return value;
+          }
+          return null;
+        }
+
         function resolvePinkModeScrollHeight(host) {
           var globalDocument = typeof document !== 'undefined' ? document : null;
           var candidateHost = host && _typeof(host) === 'object' ? host : globalDocument && globalDocument.body ? globalDocument.body : globalDocument && globalDocument.documentElement ? globalDocument.documentElement : null;
           if (!candidateHost || _typeof(candidateHost) !== 'object') {
             return null;
           }
-          var directValue = typeof candidateHost.scrollHeight === 'number' ? candidateHost.scrollHeight : null;
+          var directValue = readScrollExtent(candidateHost);
           if (typeof directValue === 'number' && directValue > 0) {
             return directValue;
           }
@@ -1088,7 +1105,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!fallback || _typeof(fallback) !== 'object' || fallback === candidateHost) {
               continue;
             }
-            var fallbackHeight = typeof fallback.scrollHeight === 'number' ? fallback.scrollHeight : null;
+            var fallbackHeight = readScrollExtent(fallback);
             if (typeof fallbackHeight === 'number' && fallbackHeight > 0) {
               return fallbackHeight;
             }
