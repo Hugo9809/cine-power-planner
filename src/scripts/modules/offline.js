@@ -937,11 +937,6 @@
     if (!normalisedVendor.includes('apple')) {
       return false;
     }
-
-    if (!normalisedUserAgent.includes('safari')) {
-      return false;
-    }
-
     const exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
     for (let index = 0; index < exclusionTokens.length; index += 1) {
       const token = exclusionTokens[index];
@@ -950,7 +945,30 @@
       }
     }
 
-    return true;
+    if (normalisedUserAgent.includes('safari')) {
+      return true;
+    }
+
+    let standalone = false;
+
+    if (nav && typeof nav.standalone === 'boolean') {
+      standalone = nav.standalone;
+    } else if (win && win.navigator && typeof win.navigator.standalone === 'boolean') {
+      standalone = win.navigator.standalone;
+    }
+
+    if (!standalone && win && typeof win.matchMedia === 'function') {
+      try {
+        const standaloneQuery = win.matchMedia('(display-mode: standalone)');
+        if (standaloneQuery && standaloneQuery.matches) {
+          standalone = true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return standalone;
   }
 
   function shouldPreferXmlHttpWarmup(nav, windowLike) {
