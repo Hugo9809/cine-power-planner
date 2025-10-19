@@ -1123,6 +1123,38 @@ function resolveSettingsButton() {
   return null;
 }
 
+function ensureDeferredScriptsLoaded(reason) {
+  const scope = (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (!scope) return null;
+
+  let result = null;
+
+  try {
+    if (typeof scope.cineEnsureDeferredScriptsLoaded === 'function') {
+      result = scope.cineEnsureDeferredScriptsLoaded({ reason });
+    }
+  } catch (ensureError) {
+    void ensureError;
+    result = null;
+  }
+
+  if (!result) {
+    try {
+      result = scope.cineDeferredScriptsReady;
+    } catch (readError) {
+      void readError;
+      result = null;
+    }
+  }
+
+  return result;
+}
+
 function requestSettingsOpen(context) {
   const dialog = resolveSettingsDialog();
   const trigger = resolveSettingsButton();
@@ -1133,6 +1165,7 @@ function requestSettingsOpen(context) {
   if (typeof detail.openBefore !== 'boolean') {
     detail.openBefore = openBefore;
   }
+  ensureDeferredScriptsLoaded('settings-open');
   if (trigger && typeof trigger.click === 'function') {
     prepareSettingsOpenContext(detail);
     try {

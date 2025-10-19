@@ -2708,6 +2708,52 @@ function parseBatteryCurrentLimit(value) {
     return null;
 }
 
+function ensureDeferredScriptsReady(reason, callback) {
+    if (typeof callback !== 'function') return;
+
+    const scope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+    let ready = null;
+
+    if (scope) {
+        try {
+            if (typeof scope.cineEnsureDeferredScriptsLoaded === 'function') {
+                ready = scope.cineEnsureDeferredScriptsLoaded({ reason });
+            }
+        } catch (ensureError) {
+            void ensureError;
+        }
+
+        if (!ready) {
+            try {
+                ready = scope.cineDeferredScriptsReady;
+            } catch (readError) {
+                void readError;
+            }
+        }
+    }
+
+    if (!ready || typeof ready.then !== 'function') {
+        callback();
+        return;
+    }
+
+    ready
+        .then(() => {
+            callback();
+        })
+        .catch(error => {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error('Deferred scripts failed to load before generating an overview.', error);
+            }
+            callback();
+        });
+}
+
 // Generate a printable overview of the current selected setup in a new tab
 if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
     generateOverviewBtn.addEventListener('click', () => {
@@ -2715,7 +2761,14 @@ if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
             alert(texts[currentLang].alertSelectSetupForOverview);
             return;
         }
-        generatePrintableOverview();
+
+        ensureDeferredScriptsReady('overview-dialog', () => {
+            if (typeof generatePrintableOverview === 'function') {
+                generatePrintableOverview();
+            } else if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error('generatePrintableOverview is unavailable after deferred loading.');
+            }
+        });
     });
 }
 
