@@ -7610,6 +7610,17 @@ const ensureNotificationContainer = () => {
   const id = 'backupNotificationContainer';
   let container = document.getElementById(id);
   let isNew = false;
+  if (!container && typeof window !== 'undefined') {
+    const bootstrapNotice = window.__cineLoadingNotice;
+    if (bootstrapNotice && typeof bootstrapNotice.ensureContainer === 'function') {
+      try {
+        container = bootstrapNotice.ensureContainer();
+      } catch (noticeError) {
+        console.warn('Failed to reuse bootstrap notification container', noticeError);
+        container = null;
+      }
+    }
+  }
   if (!container) {
     container = document.createElement('div');
     container.id = id;
@@ -7617,6 +7628,13 @@ const ensureNotificationContainer = () => {
     container.style.right = '1rem';
     container.style.zIndex = '10000';
     isNew = true;
+  }
+
+  if (container.classList && !container.classList.contains('cine-notification-stack')) {
+    container.classList.add('cine-notification-stack');
+  }
+  if (container.dataset && container.dataset.bootstrap) {
+    delete container.dataset.bootstrap;
   }
 
   const preferredParent = (typeof document.body !== 'undefined' && document.body)
@@ -7644,6 +7662,13 @@ const ensureNotificationContainer = () => {
       }, { once: true });
     } else {
       scheduleNotificationContainerEnsure();
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const bootstrapNotice = window.__cineLoadingNotice;
+    if (bootstrapNotice && typeof bootstrapNotice === 'object') {
+      bootstrapNotice.container = container;
     }
   }
 
@@ -7758,6 +7783,13 @@ const showAutoBackupActivityIndicator = (message) => {
 
 const GLOBAL_LOADING_INDICATOR_ID = 'cineGlobalLoadingIndicator';
 let globalLoadingIndicatorRefCount = 0;
+const GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS = {
+  default: 'globalLoadingIndicator',
+  preparing: 'globalLoadingIndicatorPreparing',
+  modules: 'globalLoadingIndicatorModules',
+  data: 'globalLoadingIndicatorData',
+  almost: 'globalLoadingIndicatorAlmostReady',
+};
 
 const resolveGlobalLoadingIndicatorMessage = (fallbackMessage) => {
   if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
@@ -7782,6 +7814,59 @@ const resolveGlobalLoadingIndicatorMessage = (fallbackMessage) => {
   return 'Loading…';
 };
 
+const resolveGlobalLoadingIndicatorMessageByKey = (key, fallbackMessage) => {
+  const normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : '';
+  const translationKey = normalizedKey && GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey]
+    ? GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey]
+    : GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS.default;
+
+  const langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang]
+    ? texts[currentLang]
+    : null;
+  const fallbackTexts = texts && typeof texts.en === 'object' && texts.en ? texts.en : null;
+
+  let localized = '';
+  if (translationKey && langTexts && typeof langTexts[translationKey] === 'string') {
+    localized = langTexts[translationKey].trim();
+  }
+  if (!localized && translationKey && fallbackTexts && typeof fallbackTexts[translationKey] === 'string') {
+    localized = fallbackTexts[translationKey].trim();
+  }
+
+  const fallback = typeof fallbackMessage === 'string' && fallbackMessage.trim()
+    ? fallbackMessage.trim()
+    : '';
+  if (!localized && fallback) {
+    localized = fallback;
+  }
+
+  if (!localized) {
+    localized = resolveGlobalLoadingIndicatorMessage(fallback);
+  }
+
+  return localized || 'Loading…';
+};
+
+const syncBootstrapLoadingNoticeLocalization = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const notice = window.__cineLoadingNotice;
+  if (!notice || typeof notice.applyLocalization !== 'function') {
+    return;
+  }
+  const fallback = typeof notice.getFallbackMessages === 'function'
+    ? notice.getFallbackMessages()
+    : {};
+
+  notice.applyLocalization({
+    preparing: resolveGlobalLoadingIndicatorMessageByKey('preparing', fallback.preparing || ''),
+    modules: resolveGlobalLoadingIndicatorMessageByKey('modules', fallback.modules || ''),
+    data: resolveGlobalLoadingIndicatorMessageByKey('data', fallback.data || ''),
+    almost: resolveGlobalLoadingIndicatorMessageByKey('almost', fallback.almost || ''),
+  });
+};
+
 const refreshGlobalLoadingIndicatorText = () => {
   if (typeof document === 'undefined') {
     return;
@@ -7794,11 +7879,22 @@ const refreshGlobalLoadingIndicatorText = () => {
   if (!textTarget) {
     return;
   }
+  syncBootstrapLoadingNoticeLocalization();
   const mode = indicator.dataset.messageMode || 'auto';
   if (mode === 'custom') {
     const customMessage = indicator.dataset.customMessage || '';
     if (customMessage) {
       textTarget.textContent = customMessage;
+    }
+    return;
+  }
+  if (mode === 'key') {
+    const messageKey = indicator.dataset.messageKey || 'default';
+    const fallback = indicator.dataset.fallbackMessage || '';
+    const message = resolveGlobalLoadingIndicatorMessageByKey(messageKey, fallback);
+    if (message) {
+      textTarget.textContent = message;
+      indicator.dataset.currentMessage = message;
     }
     return;
   }
@@ -7808,6 +7904,31 @@ const refreshGlobalLoadingIndicatorText = () => {
 };
 
 const GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = 260;
+
+const setGlobalLoadingIndicatorMessageByKey = (key, fallbackMessage) => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  const indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator) {
+    return;
+  }
+  const normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : 'default';
+  const resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(normalizedKey, fallbackMessage || '');
+  const textTarget = indicator.querySelector('.global-loading-indicator-text');
+  indicator.dataset.messageMode = 'key';
+  indicator.dataset.messageKey = normalizedKey;
+  if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
+    indicator.dataset.fallbackMessage = fallbackMessage.trim();
+  } else {
+    delete indicator.dataset.fallbackMessage;
+  }
+  indicator.dataset.currentMessage = resolvedMessage;
+  if (textTarget) {
+    textTarget.textContent = resolvedMessage;
+  }
+  syncBootstrapLoadingNoticeLocalization();
+};
 
 const getHighResolutionTimestamp = () => {
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -7826,53 +7947,95 @@ const showGlobalLoadingIndicator = (message) => {
   }
   ensureAutoBackupSpinnerStyles();
 
+  const bootstrapNotice = typeof window !== 'undefined' ? window.__cineLoadingNotice : null;
   let indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator && bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
+    try {
+      indicator = bootstrapNotice.ensureIndicator();
+    } catch (bootstrapIndicatorError) {
+      console.warn('Failed to adopt bootstrap loading indicator', bootstrapIndicatorError);
+      indicator = null;
+    }
+  }
   if (!indicator) {
     indicator = document.createElement('div');
     indicator.id = GLOBAL_LOADING_INDICATOR_ID;
-    indicator.style.display = 'flex';
-    indicator.style.alignItems = 'center';
-    indicator.style.gap = '0.75rem';
-    indicator.style.padding = '0.75rem 1.25rem';
-    indicator.style.marginTop = '0.5rem';
-    indicator.style.borderRadius = '0.75rem';
-    indicator.style.border = 'none';
-    indicator.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-    indicator.style.background = 'rgba(32, 40, 62, 0.92)';
-    indicator.style.color = '#ffffff';
-    indicator.setAttribute('role', 'status');
-    indicator.setAttribute('aria-live', 'polite');
+  }
 
-    const spinner = document.createElement('span');
-    spinner.style.display = 'inline-block';
-    spinner.style.width = '1.5rem';
-    spinner.style.height = '1.5rem';
-    spinner.style.borderRadius = '50%';
-    spinner.style.border = '0.2rem solid rgba(255, 255, 255, 0.3)';
-    spinner.style.borderTopColor = '#ffffff';
-    spinner.style.animation = 'cineAutoBackupSpinnerRotate 1s linear infinite';
+  indicator.setAttribute('role', 'status');
+  indicator.setAttribute('aria-live', 'polite');
+  indicator.setAttribute('aria-busy', 'true');
+  if (indicator.dataset && indicator.dataset.bootstrap) {
+    delete indicator.dataset.bootstrap;
+  }
+
+  if (indicator.classList) {
+    indicator.classList.add('cine-notification', 'cine-notification--loading');
+  } else {
+    indicator.className = [
+      indicator.className || '',
+      'cine-notification',
+      'cine-notification--loading',
+    ]
+      .join(' ')
+      .trim();
+  }
+
+  let spinner = indicator.querySelector('.cine-notification__spinner');
+  if (!spinner) {
+    spinner = document.createElement('span');
+    spinner.className = 'cine-notification__spinner';
     spinner.setAttribute('aria-hidden', 'true');
-    indicator.appendChild(spinner);
+    indicator.insertBefore(spinner, indicator.firstChild);
+  }
 
-    const textNode = document.createElement('span');
-    textNode.className = 'global-loading-indicator-text';
-    indicator.appendChild(textNode);
+  let textTarget = indicator.querySelector('.global-loading-indicator-text');
+  if (!textTarget) {
+    textTarget = document.createElement('span');
+    textTarget.className = 'global-loading-indicator-text';
+    indicator.appendChild(textTarget);
+  }
 
+  if (indicator.parentNode !== container) {
     container.appendChild(indicator);
   }
 
-  const resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
+  if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
+    try {
+      bootstrapNotice.setBusy(true);
+    } catch (bootstrapBusyError) {
+      console.warn('Failed to mark bootstrap loading indicator busy', bootstrapBusyError);
+    }
+  }
+
+  syncBootstrapLoadingNoticeLocalization();
+
   const isCustomMessage = Boolean(message && typeof message === 'string' && message.trim());
-  const textTarget = indicator.querySelector('.global-loading-indicator-text');
+  let resolvedMessage;
+  if (isCustomMessage) {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
+    indicator.dataset.messageMode = 'custom';
+    indicator.dataset.customMessage = resolvedMessage;
+  } else if (indicator.dataset.messageMode === 'key' && indicator.dataset.messageKey) {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(
+      indicator.dataset.messageKey,
+      indicator.dataset.fallbackMessage || '',
+    );
+    indicator.dataset.currentMessage = resolvedMessage;
+    indicator.dataset.customMessage = '';
+  } else {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessage();
+    indicator.dataset.messageMode = 'auto';
+    indicator.dataset.customMessage = '';
+    indicator.dataset.currentMessage = resolvedMessage;
+  }
+
   if (textTarget) {
     textTarget.textContent = resolvedMessage;
   }
-  indicator.dataset.messageMode = isCustomMessage ? 'custom' : 'auto';
-  if (isCustomMessage) {
-    indicator.dataset.customMessage = resolvedMessage;
-  } else {
-    indicator.dataset.customMessage = '';
-    indicator.dataset.currentMessage = resolvedMessage;
+
+  if (bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
+    bootstrapNotice.indicator = indicator;
   }
 
   globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount);
@@ -7891,9 +8054,20 @@ const showGlobalLoadingIndicator = (message) => {
     globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
     indicator.dataset.count = String(globalLoadingIndicatorRefCount);
     if (globalLoadingIndicatorRefCount === 0) {
+      indicator.setAttribute('aria-busy', 'false');
+      if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
+        try {
+          bootstrapNotice.setBusy(false);
+        } catch (bootstrapBusyResetError) {
+          console.warn('Failed to clear bootstrap loading indicator busy state', bootstrapBusyResetError);
+        }
+      }
       indicator.remove();
       if (!container.children.length) {
         container.remove();
+      }
+      if (bootstrapNotice && typeof bootstrapNotice === 'object') {
+        bootstrapNotice.indicator = null;
       }
     }
   };
@@ -7921,6 +8095,7 @@ try {
   if (scope) {
     scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
     scope.__cineShowGlobalLoadingIndicator = showGlobalLoadingIndicator;
+    scope.__cineSetGlobalLoadingIndicatorMessageKey = setGlobalLoadingIndicatorMessageByKey;
   }
 } catch (indicatorExposeError) {
   console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);

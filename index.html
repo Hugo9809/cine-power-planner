@@ -36,6 +36,28 @@
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
   <div id="offlineIndicator" role="status" aria-live="polite" hidden>Offline</div>
   <div
+    id="backupNotificationContainer"
+    class="cine-notification-stack"
+    data-bootstrap="true"
+    role="presentation"
+  >
+    <div
+      id="cineGlobalLoadingIndicator"
+      class="cine-notification cine-notification--loading"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      data-bootstrap="true"
+      data-message-mode="key"
+      data-message-key="preparing"
+      data-fallback-message="Preparing planner…"
+      data-current-message="Preparing planner…"
+    >
+      <span class="cine-notification__spinner" aria-hidden="true"></span>
+      <span class="global-loading-indicator-text">Preparing planner…</span>
+    </div>
+  </div>
+  <div
     id="installPromptBanner"
     class="install-banner"
     hidden
@@ -7955,6 +7977,7 @@
   <script src="src/scripts/commonjs-shim.js"></script>
   <script src="src/scripts/globals-legacy-shim.js"></script>
   <script src="src/scripts/globals-bootstrap.js"></script>
+  <script src="src/scripts/loading-indicator-bootstrap.js"></script>
   <script src="src/scripts/loader.js"></script>
 </body>
 </html>

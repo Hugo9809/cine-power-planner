@@ -2952,6 +2952,29 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     };
   }
 
+  function dispatchLoaderEvent(name, detail) {
+    if (typeof document === 'undefined' || typeof document.dispatchEvent !== 'function') {
+      return;
+    }
+    try {
+      var payload = detail || {};
+      var event;
+      if (typeof CustomEvent === 'function') {
+        event = new CustomEvent(name, { detail: payload });
+      } else if (typeof document.createEvent === 'function') {
+        event = document.createEvent('CustomEvent');
+        event.initCustomEvent(name, false, false, payload);
+      }
+      if (event) {
+        document.dispatchEvent(event);
+      }
+    } catch (eventError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to dispatch loader event', name, eventError);
+      }
+    }
+  }
+
   function loadScriptsSequentially(items, options) {
     var head =
       document.head || document.getElementsByTagName('head')[0] || document.documentElement;
@@ -2959,6 +2982,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     var aborted = false;
     var completed = false;
     var settings = options || {};
+    var totalCount = Array.isArray(items) ? items.length : 0;
 
     function finalize() {
       if (completed) {
@@ -2966,6 +2990,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
 
       completed = true;
+
+      dispatchLoaderEvent('cine-loader-complete');
 
       if (typeof settings.onComplete === 'function') {
         try {
@@ -3027,6 +3053,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
       var resolvedUrl = resolveAssetUrl(currentUrl);
+
+      dispatchLoaderEvent('cine-loader-progress', {
+        total: totalCount,
+        index: currentIndex,
+        url: currentUrl,
+      });
+
       var script = document.createElement('script');
       script.src = resolvedUrl;
       script.async = false;
