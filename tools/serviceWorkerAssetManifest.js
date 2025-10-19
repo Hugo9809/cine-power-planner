@@ -32,6 +32,7 @@ const DIRECTORY_RULES = [
   { dir: path.join('src', 'illustrations'), recursive: true },
   { dir: path.join('src', 'animations'), recursive: true },
   { dir: 'animated icons 3', recursive: true },
+  { dir: 'docs', recursive: true },
   {
     dir: 'tools',
     recursive: false,
