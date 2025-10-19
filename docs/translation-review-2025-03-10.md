@@ -4,7 +4,7 @@ This audit captures UI copy that still appears in English or uses inconsistent t
 
 ## Italian (`it`)
 
-- [ ] Localise the monitor button labels that remain in English:
+- [x] Localise the monitor button labels that remain in English:
   - `projectForm.userButtonFunctions.surroundView` currently reads "Surround View". Provide an Italian label consistent with the monitor UI. 【F:src/scripts/translations/it.js†L569-L596】
   - `projectForm.userButtonFunctions.vectorscope` still shows "Vectorscope". Translate the scope name (Spanish already uses "Vectorscopio" as a reference). 【F:src/scripts/translations/it.js†L569-L596】
   - `projectForm.userButtonFunctions.frameGrab` remains "Frame Grab" while other locales translate it. Supply an Italian alternative (for example "Cattura fotogramma"). 【F:src/scripts/translations/it.js†L569-L596】
