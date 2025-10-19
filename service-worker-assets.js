@@ -2,7 +2,6 @@
 (function createServiceWorkerAssetManifest(globalScope) {
   const assets = [
   "./",
-  "./app-version.js",
   "./animated icons 3/camera.json",
   "./animated icons 3/director-chair.json",
   "./animated icons 3/dog.json",
@@ -15,6 +14,7 @@
   "./animated icons 3/pinata.json",
   "./animated icons 3/script.json",
   "./animated icons 3/video-camera.json",
+  "./app-version.js",
   "./docs/architecture/app-core-modules.md",
   "./docs/architecture/module-registry.md",
   "./docs/auto-gear-rule-options.md",
