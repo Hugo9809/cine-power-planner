@@ -15,6 +15,7 @@ describe('feature search engine module', () => {
     expect(engine.searchKey('5\'8" rig plate')).toBe('5ft8inchrigplate');
     expect(engine.searchKey('0\t\t\t backdrop')).toBe('0backdrop');
     expect(engine.searchKey("12\t\t' rig")).toBe('12ftrig');
+    expect(engine.searchKey('Twenty-One Adapter')).toBe('21adapter');
   });
 
   test('collects search tokens with synonyms and numeric variants', () => {
@@ -29,6 +30,9 @@ describe('feature search engine module', () => {
 
     const measurements = engine.searchTokens('5" monitor mount with 6\' stand');
     expect(measurements).toEqual(expect.arrayContaining(['inch', 'in', 'ft', 'foot']));
+
+    const spelledNumbers = engine.searchTokens('twenty-one batteries');
+    expect(spelledNumbers).toEqual(expect.arrayContaining(['21', 'batteries']));
   });
 
   test('parses mark suffixes with roman numerals', () => {
