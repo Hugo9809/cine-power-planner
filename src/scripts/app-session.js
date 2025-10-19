@@ -10603,6 +10603,27 @@ function renderLoggingHistory() {
     }
   } catch (error) {
     console.warn('Unable to read logging history', error);
+    const filtersDetail = {};
+    if (Object.prototype.hasOwnProperty.call(loggingState, 'levelFilter')) {
+      const levelValue = loggingState.levelFilter;
+      filtersDetail.level = typeof levelValue === 'undefined' ? null : levelValue;
+    }
+    if (Object.prototype.hasOwnProperty.call(loggingState, 'namespaceFilter')) {
+      const namespaceValue = loggingState.namespaceFilter;
+      filtersDetail.namespace = typeof namespaceValue === 'undefined' ? null : namespaceValue;
+    }
+    const detail = {
+      message: describeError(error),
+    };
+    if (Object.keys(filtersDetail).length > 0) {
+      detail.filters = filtersDetail;
+    }
+    logSettingsEvent(
+      'error',
+      'Failed to read diagnostics history',
+      detail,
+      { namespace: 'logging-panel' },
+    );
     setLoggingStatusKey('loggingStatusError');
     history = [];
   }
