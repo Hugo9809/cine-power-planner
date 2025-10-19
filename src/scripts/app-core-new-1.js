@@ -9202,23 +9202,84 @@ if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function
   }
 }
 
-const SUPPORTED_LANGUAGES =
-  typeof texts === "object" && texts !== null
-    ? Object.keys(texts)
-    : [DEFAULT_LANGUAGE_SAFE];
+function normalizeLanguageList(list) {
+  var normalized = [];
+  var seen = Object.create(null);
+
+  if (Array.isArray(list)) {
+    for (var index = 0; index < list.length; index += 1) {
+      var entry = list[index];
+      if (!entry) {
+        continue;
+      }
+
+      var key = String(entry).toLowerCase();
+      if (!key || seen[key]) {
+        continue;
+      }
+
+      seen[key] = true;
+      normalized.push(key);
+    }
+  }
+
+  if (!seen[DEFAULT_LANGUAGE_SAFE]) {
+    normalized.push(DEFAULT_LANGUAGE_SAFE);
+    seen[DEFAULT_LANGUAGE_SAFE] = true;
+  }
+
+  return normalized;
+}
+
+function getSupportedLanguages() {
+  var languageCandidates = [];
+
+  if (
+    translationsRuntime &&
+    typeof translationsRuntime.getAvailableLanguages === 'function'
+  ) {
+    try {
+      var runtimeLanguages = translationsRuntime.getAvailableLanguages();
+      if (Array.isArray(runtimeLanguages) && runtimeLanguages.length > 0) {
+        languageCandidates = languageCandidates.concat(runtimeLanguages);
+      }
+    } catch (runtimeLanguagesError) {
+      console.warn(
+        'Failed to resolve available languages from translations runtime',
+        runtimeLanguagesError
+      );
+    }
+  }
+
+  if (!languageCandidates.length) {
+    var runtimeTexts =
+      translationsRuntime && typeof translationsRuntime.texts === 'object'
+        ? translationsRuntime.texts
+        : null;
+    var languageSource = runtimeTexts || texts;
+
+    if (languageSource && typeof languageSource === 'object') {
+      languageCandidates = languageCandidates.concat(Object.keys(languageSource));
+    }
+  }
+
+  return normalizeLanguageList(languageCandidates);
+}
 
 function resolveLanguagePreference(candidate) {
+  var supportedLanguages = getSupportedLanguages();
+
   if (!candidate) {
     return { language: DEFAULT_LANGUAGE_SAFE, matched: false };
   }
 
   const normalized = String(candidate).toLowerCase();
-  if (SUPPORTED_LANGUAGES.includes(normalized)) {
+  if (supportedLanguages.includes(normalized)) {
     return { language: normalized, matched: true };
   }
 
   const short = normalized.slice(0, 2);
-  if (SUPPORTED_LANGUAGES.includes(short)) {
+  if (supportedLanguages.includes(short)) {
     return { language: short, matched: true };
   }
 
