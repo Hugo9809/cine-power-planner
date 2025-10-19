@@ -13,7 +13,7 @@
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
           normalizeFocusScale */
 
-const UI_HELPERS = (function resolveUiHelpersForEvents() {
+const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   if (typeof require === 'function') {
     try {
       const required = require('./app-core-ui-helpers.js');
@@ -68,9 +68,9 @@ const UI_HELPERS = (function resolveUiHelpersForEvents() {
   return {};
 })();
 
-const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForEvents() {
-  if (typeof UI_HELPERS.setButtonLabelWithIcon === 'function') {
-    return UI_HELPERS.setButtonLabelWithIcon;
+var setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForEvents() {
+  if (typeof EVENTS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+    return EVENTS_UI_HELPERS.setButtonLabelWithIcon;
   }
 
   const candidates = [];

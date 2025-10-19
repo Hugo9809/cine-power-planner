@@ -356,8 +356,55 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       createLocaleFallbacks: createLocaleFallbacks
     };
   }
+  function createLocalizationBootstrapWiring(options) {
+    var bootstrapResult = options && isObject(options.localizationBootstrapResult) ? options.localizationBootstrapResult : null;
+    var localizationSupport = bootstrapResult && isObject(bootstrapResult.localizationSupport) ? bootstrapResult.localizationSupport : null;
+    var localizationRuntimeEnvironment = bootstrapResult && isObject(bootstrapResult.localizationRuntimeEnvironment) ? bootstrapResult.localizationRuntimeEnvironment : null;
+    var localizationBridge = bootstrapResult && isObject(bootstrapResult.localizationBridge) ? bootstrapResult.localizationBridge : null;
+    var localizationFallbacks = bootstrapResult && isObject(bootstrapResult.localizationFallbacks) ? bootstrapResult.localizationFallbacks : null;
+    var inlineLocalizationFallbacks = bootstrapResult && isObject(bootstrapResult.inlineLocalizationFallbacks) ? bootstrapResult.inlineLocalizationFallbacks : null;
+    var localizationFallbackSupport = bootstrapResult && typeof bootstrapResult.localizationFallbackSupport !== 'undefined' ? bootstrapResult.localizationFallbackSupport : null;
+    var createBasicLocalizationFallbackResolvers = bootstrapResult && typeof bootstrapResult.createBasicLocalizationFallbackResolvers === 'function' ? bootstrapResult.createBasicLocalizationFallbackResolvers : function createBasicLocalizationFallbackResolversProxy() {
+      return null;
+    };
+    var localizationFallbackRegistry = bootstrapResult && isObject(bootstrapResult.localizationFallbackRegistry) ? bootstrapResult.localizationFallbackRegistry : {
+      createFallbackResolvers: function createFallbackResolvers(fallbackOptions) {
+        return createBasicLocalizationFallbackResolvers(fallbackOptions);
+      }
+    };
+    var localizationFallbackResolvers = bootstrapResult && isObject(bootstrapResult.localizationFallbackResolvers) ? bootstrapResult.localizationFallbackResolvers : localizationFallbackRegistry && typeof localizationFallbackRegistry.createFallbackResolvers === 'function' ? localizationFallbackRegistry.createFallbackResolvers({
+      directNamespace: localizationFallbacks,
+      inlineNamespace: inlineLocalizationFallbacks
+    }) : createBasicLocalizationFallbackResolvers({
+      directNamespace: localizationFallbacks,
+      inlineNamespace: inlineLocalizationFallbacks
+    });
+    var localizationFallbackNamespace = bootstrapResult && typeof bootstrapResult.localizationFallbackNamespace !== 'undefined' ? bootstrapResult.localizationFallbackNamespace : null;
+    var fallbackResolveLocaleModule = bootstrapResult && typeof bootstrapResult.fallbackResolveLocaleModule === 'function' ? bootstrapResult.fallbackResolveLocaleModule : function fallbackResolveLocaleModuleProxy() {
+      return null;
+    };
+    var createLocaleFallbacks = bootstrapResult && typeof bootstrapResult.createLocaleFallbacks === 'function' ? bootstrapResult.createLocaleFallbacks : function createLocaleFallbacksProxy() {
+      return null;
+    };
+    return {
+      localizationBootstrapResult: bootstrapResult,
+      localizationSupport: localizationSupport,
+      localizationRuntimeEnvironment: localizationRuntimeEnvironment,
+      localizationBridge: localizationBridge,
+      localizationFallbacks: localizationFallbacks,
+      inlineLocalizationFallbacks: inlineLocalizationFallbacks,
+      localizationFallbackSupport: localizationFallbackSupport,
+      createBasicLocalizationFallbackResolvers: createBasicLocalizationFallbackResolvers,
+      localizationFallbackRegistry: localizationFallbackRegistry,
+      localizationFallbackResolvers: localizationFallbackResolvers,
+      localizationFallbackNamespace: localizationFallbackNamespace,
+      fallbackResolveLocaleModule: fallbackResolveLocaleModule,
+      createLocaleFallbacks: createLocaleFallbacks
+    };
+  }
   var namespace = {
-    createLocalizationBootstrapResult: createLocalizationBootstrapResult
+    createLocalizationBootstrapResult: createLocalizationBootstrapResult,
+    createLocalizationBootstrapWiring: createLocalizationBootstrapWiring
   };
   var globalScope = detectScope();
   var namespaceName = 'cineCoreAppLocalizationBootstrap';

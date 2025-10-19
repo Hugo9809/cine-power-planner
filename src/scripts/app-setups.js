@@ -15,7 +15,7 @@
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
 
-const UI_HELPERS = (function resolveUiHelpersForSetups() {
+const SETUPS_UI_HELPERS = (function resolveUiHelpersForSetups() {
     if (typeof require === 'function') {
         try {
             const required = require('./app-core-ui-helpers.js');
@@ -72,8 +72,8 @@ const UI_HELPERS = (function resolveUiHelpersForSetups() {
 })();
 
 const escapeHtml =
-    typeof UI_HELPERS.escapeHtml === 'function'
-        ? UI_HELPERS.escapeHtml
+    typeof SETUPS_UI_HELPERS.escapeHtml === 'function'
+        ? SETUPS_UI_HELPERS.escapeHtml
         : function escapeHtmlFallback(str) {
               return String(str)
                   .replace(/&/g, '&amp;')
@@ -83,9 +83,9 @@ const escapeHtml =
                   .replace(/'/g, '&#39;');
           };
 
-const setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForSetups() {
-    if (typeof UI_HELPERS.setButtonLabelWithIcon === 'function') {
-        return UI_HELPERS.setButtonLabelWithIcon;
+var setButtonLabelWithIcon = (function resolveSetButtonLabelWithIconForSetups() {
+    if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+        return SETUPS_UI_HELPERS.setButtonLabelWithIcon;
     }
 
     const candidates = [];

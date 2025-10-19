@@ -16,6 +16,94 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var SETUPS_UI_HELPERS = function resolveUiHelpersForSetups() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./app-core-ui-helpers.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+    } catch (uiHelpersError) {
+      void uiHelpersError;
+    }
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      var helpers = scope.cineCoreUiHelpers;
+      if (helpers && _typeof(helpers) === 'object') {
+        return helpers;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  return {};
+}();
+var escapeHtml = typeof SETUPS_UI_HELPERS.escapeHtml === 'function' ? SETUPS_UI_HELPERS.escapeHtml : function escapeHtmlFallback(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+};
+var setButtonLabelWithIcon = function resolveSetButtonLabelWithIconForSetups() {
+  if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+    return SETUPS_UI_HELPERS.setButtonLabelWithIcon;
+  }
+  var candidates = [];
+  try {
+    if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+      candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.setButtonLabelWithIcon === 'function') {
+    candidates.push(globalThis.setButtonLabelWithIcon);
+  }
+  if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+    candidates.push(window.setButtonLabelWithIcon);
+  }
+  if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+    candidates.push(self.setButtonLabelWithIcon);
+  }
+  if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+    candidates.push(global.setButtonLabelWithIcon);
+  }
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+  return function setButtonLabelWithIconFallback(button, label) {
+    if (!button) {
+      return;
+    }
+    try {
+      button.textContent = typeof label === 'string' ? label : '';
+    } catch (assignError) {
+      void assignError;
+    }
+  };
+}();
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
 function resolveSetupRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
@@ -2254,13 +2342,54 @@ function parseBatteryCurrentLimit(value) {
   }
   return null;
 }
+function ensureDeferredScriptsReady(reason, callback) {
+  if (typeof callback !== 'function') return;
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  var ready = null;
+  if (scope) {
+    try {
+      if (typeof scope.cineEnsureDeferredScriptsLoaded === 'function') {
+        ready = scope.cineEnsureDeferredScriptsLoaded({
+          reason: reason
+        });
+      }
+    } catch (ensureError) {
+      void ensureError;
+    }
+    if (!ready) {
+      try {
+        ready = scope.cineDeferredScriptsReady;
+      } catch (readError) {
+        void readError;
+      }
+    }
+  }
+  if (!ready || typeof ready.then !== 'function') {
+    callback();
+    return;
+  }
+  ready.then(function () {
+    callback();
+  }).catch(function (error) {
+    if (typeof console !== 'undefined' && typeof console.error === 'function') {
+      console.error('Deferred scripts failed to load before generating an overview.', error);
+    }
+    callback();
+  });
+}
 if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
   generateOverviewBtn.addEventListener('click', function () {
     if (!setupSelect.value) {
       alert(texts[currentLang].alertSelectSetupForOverview);
       return;
     }
-    generatePrintableOverview();
+    ensureDeferredScriptsReady('overview-dialog', function () {
+      if (typeof generatePrintableOverview === 'function') {
+        generatePrintableOverview();
+      } else if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('generatePrintableOverview is unavailable after deferred loading.');
+      }
+    });
   });
 }
 function batteryPinsSufficient() {
@@ -2698,11 +2827,42 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
   if (metadata && _typeof(metadata) === 'object') {
     currentSetup.metadata = metadata;
   }
+  var shareDiagnostics = function () {
+    var metadataFlags = {};
+    if (metadata && _typeof(metadata) === 'object') {
+      Object.keys(metadata).forEach(function (keyName) {
+        var value = metadata[keyName];
+        if (value === null || value === undefined) {
+          metadataFlags[keyName] = value;
+        } else if (typeof value === 'string') {
+          metadataFlags[keyName] = value.length > 120 ? "".concat(value.slice(0, 117), "\u2026") : value;
+        } else if (_typeof(value) === 'object') {
+          metadataFlags[keyName] = Array.isArray(value) ? {
+            type: 'array',
+            length: value.length
+          } : {
+            type: 'object',
+            keys: Object.keys(value).length
+          };
+        } else {
+          metadataFlags[keyName] = value;
+        }
+      });
+    }
+    return {
+      setupName: typeof setupName === 'string' ? setupName : '',
+      setupKey: typeof key === 'string' ? key : '',
+      includeAutoGear: Boolean(includeAutoGear),
+      includeOwnedGear: Boolean(includeOwnedGear),
+      ownedGearMarkerCount: Array.isArray(ownedGearMarkers) ? ownedGearMarkers.length : 0,
+      metadata: metadataFlags
+    };
+  }();
   var notifyShareFailure = function notifyShareFailure(error) {
     if (error) {
-      console.warn('Project export failed', error);
+      console.warn('Project export failed', shareDiagnostics, error);
     } else {
-      console.warn('Project export failed');
+      console.warn('Project export failed', shareDiagnostics);
     }
     var failureMessage = getLocalizedText('shareExportFailed') || 'Project export failed.';
     if (shareLinkMessage) {
@@ -9144,6 +9304,26 @@ function openGearItemEditor(element) {
     }
   }
   var data = getGearItemData(element);
+  var gearDialogContext = function () {
+    var rawId = data && Object.prototype.hasOwnProperty.call(data, 'id') ? data.id : '';
+    var normalizedId = typeof rawId === 'string' ? rawId : rawId === null || rawId === undefined ? '' : String(rawId);
+    var rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
+    var normalizedName = typeof rawName === 'string' ? rawName.slice(0, 120) : '';
+    var dataset = element && element.dataset ? element.dataset : {};
+    var category = typeof dataset.category === 'string' ? dataset.category : '';
+    var isCustomItem = Boolean(element && element.classList && element.classList.contains('gear-custom-item'));
+    var optionFlags = {
+      allowRentalToggle: options && Object.prototype.hasOwnProperty.call(options, 'allowRentalToggle') ? Boolean(options.allowRentalToggle) : undefined,
+      focusField: options && typeof options.focusField === 'string' ? options.focusField.slice(0, 60) : undefined
+    };
+    return {
+      id: normalizedId,
+      name: normalizedName,
+      category: category,
+      custom: isCustomItem,
+      options: optionFlags
+    };
+  }();
   activeGearItemEditTarget = {
     element: element,
     options: options || {}
@@ -9281,7 +9461,7 @@ function openGearItemEditor(element) {
       context.dialog.hidden = false;
     }
   } catch (error) {
-    console.warn('Failed to open gear item edit dialog', error);
+    console.warn('Failed to open gear item edit dialog', error, gearDialogContext);
     activeGearItemEditTarget = null;
     return false;
   }

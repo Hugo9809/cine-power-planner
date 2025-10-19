@@ -1,0 +1,2 @@
+INFO: Critical storage guard mirrored backup copies {count: 2, entries: Array(2)}
+WARNING: Stored compressed value for cameraPowerPlanner_autoGearPresets to reduce storage usage by 78635 characters (86%).

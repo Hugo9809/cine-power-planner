@@ -645,9 +645,53 @@ function resolveKnownAppVersion(explicitVersion) {
   return null;
 }
 var ACTIVE_APP_VERSION = resolveKnownAppVersion(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+function resolveMountVoltageNamespace() {
+  var scopes = getSessionRuntimeScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      var namespace = scope.cineCoreMountVoltage;
+      if (namespace && _typeof(namespace) === 'object') {
+        return namespace;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+function resolveMountVoltageRuntimeExports() {
+  var scopes = getSessionRuntimeScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      var exports = scope.MOUNT_VOLTAGE_RUNTIME_EXPORTS;
+      if (exports && _typeof(exports) === 'object') {
+        return exports;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
     return null;
+  }
+  var mountNamespace = resolveMountVoltageNamespace();
+  if (mountNamespace && typeof mountNamespace[name] === 'function') {
+    return mountNamespace[name];
+  }
+  var mountRuntimeExports = resolveMountVoltageRuntimeExports();
+  if (mountRuntimeExports && typeof mountRuntimeExports[name] === 'function') {
+    return mountRuntimeExports[name];
   }
   var scopes = getSessionRuntimeScopes();
   for (var index = 0; index < scopes.length; index += 1) {
@@ -827,6 +871,30 @@ function resolveSettingsButton() {
   }
   return null;
 }
+function ensureDeferredScriptsLoaded(reason) {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (!scope) return null;
+  var result = null;
+  try {
+    if (typeof scope.cineEnsureDeferredScriptsLoaded === 'function') {
+      result = scope.cineEnsureDeferredScriptsLoaded({
+        reason: reason
+      });
+    }
+  } catch (ensureError) {
+    void ensureError;
+    result = null;
+  }
+  if (!result) {
+    try {
+      result = scope.cineDeferredScriptsReady;
+    } catch (readError) {
+      void readError;
+      result = null;
+    }
+  }
+  return result;
+}
 function requestSettingsOpen(context) {
   var dialog = resolveSettingsDialog();
   var trigger = resolveSettingsButton();
@@ -835,6 +903,7 @@ function requestSettingsOpen(context) {
   if (typeof detail.openBefore !== 'boolean') {
     detail.openBefore = openBefore;
   }
+  ensureDeferredScriptsLoaded('settings-open');
   if (trigger && typeof trigger.click === 'function') {
     prepareSettingsOpenContext(detail);
     try {
@@ -1682,12 +1751,27 @@ function callSessionCoreFunction(functionName) {
 function ensureSessionRuntimeFunction(functionName) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   return ensureSessionRuntimePlaceholder(functionName, function () {
-    return function () {
+    var proxy = function proxy() {
       for (var _len = arguments.length, invocationArgs = new Array(_len), _key2 = 0; _key2 < _len; _key2++) {
         invocationArgs[_key2] = arguments[_key2];
       }
       return callSessionCoreFunction(functionName, invocationArgs, options);
     };
+    try {
+      Object.defineProperty(proxy, '__cineSessionProxy__', {
+        value: true,
+        writable: false,
+        enumerable: false
+      });
+    } catch (defineProxyFlagError) {
+      void defineProxyFlagError;
+      try {
+        proxy.__cineSessionProxy__ = true;
+      } catch (assignProxyFlagError) {
+        void assignProxyFlagError;
+      }
+    }
+    return proxy;
   });
 }
 var AUTO_GEAR_RUNTIME_HANDLERS = ['handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'handleAutoGearShowBackupsToggle', 'handleAutoGearConditionShortcut', 'saveAutoGearRuleFromEditor'];
@@ -5822,175 +5906,165 @@ if (settingsButton && settingsDialog) {
       settingsDialog.setAttribute('hidden', '');
     });
   }
+  var applySettingsAndCloseDialog = function applySettingsAndCloseDialog() {
+    if (!settingsDialog) {
+      return;
+    }
+    if (settingsLanguage) {
+      applySetLanguage(settingsLanguage.value);
+      if (typeof populateUserButtonDropdowns === 'function') {
+        try {
+          populateUserButtonDropdowns();
+        } catch (userButtonError) {
+          console.warn('Failed to refresh user button selectors after language change', userButtonError);
+        }
+      }
+    }
+    if (settingsDarkMode) {
+      setThemePreference(settingsDarkMode.checked, {
+        persist: true
+      });
+    }
+    if (settingsPinkMode) {
+      persistPinkModePreference(settingsPinkMode.checked);
+    }
+    if (settingsHighContrast) {
+      var enabled = settingsHighContrast.checked;
+      applyHighContrast(enabled);
+      try {
+        localStorage.setItem('highContrast', enabled);
+      } catch (e) {
+        console.warn('Could not save high contrast preference', e);
+      }
+    }
+    if (settingsReduceMotion) {
+      var _enabled = settingsReduceMotion.checked;
+      applyReduceMotion(_enabled);
+      try {
+        localStorage.setItem('reduceMotion', _enabled);
+      } catch (e) {
+        console.warn('Could not save reduce motion preference', e);
+      }
+    }
+    if (settingsRelaxedSpacing) {
+      var _enabled2 = settingsRelaxedSpacing.checked;
+      applyRelaxedSpacing(_enabled2);
+      try {
+        localStorage.setItem('relaxedSpacing', _enabled2);
+      } catch (e) {
+        console.warn('Could not save relaxed spacing preference', e);
+      }
+    }
+    if (settingsShowAutoBackups) {
+      applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+    }
+    var autoGearShowBackupsToggle = typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('autoGearShowBackups') : null;
+    if (autoGearShowBackupsToggle) {
+      callSessionCoreFunction('setAutoGearBackupsVisible', [Boolean(autoGearShowBackupsToggle.checked)]);
+    }
+    if (accentColorInput) {
+      var color = accentColorInput.value;
+      if (!document.body.classList.contains('pink-mode')) {
+        applyAccentColor(color);
+      }
+      try {
+        if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
+          localStorage.removeItem('accentColor');
+        } else {
+          localStorage.setItem('accentColor', color);
+        }
+      } catch (e) {
+        console.warn('Could not save accent color', e);
+      }
+      accentColor = color;
+      prevAccentColor = color;
+      if (typeof updateAccentColorResetButtonState === 'function') {
+        updateAccentColorResetButtonState();
+      }
+    }
+    var cameraPalette = collectCameraColorInputValues();
+    var normalizedPalette = applyCameraLetterColors(cameraPalette);
+    var colorEntries = getCameraColorInputElements();
+    colorEntries.forEach(function (entry) {
+      var normalized = normalizedPalette[entry.letter];
+      if (normalized) {
+        entry.element.value = normalized;
+      }
+    });
+    if (settingsTemperatureUnit) {
+      var selectedTemperatureUnit = typeof settingsTemperatureUnit.value === 'string' ? settingsTemperatureUnit.value : 'celsius';
+      applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
+      rememberSettingsTemperatureUnitBaseline();
+    }
+    if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+      if (typeof applyFocusScalePreference === 'function') {
+        applyFocusScalePreference(settingsFocusScale.value);
+      }
+      rememberSettingsFocusScaleBaseline();
+      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
+    }
+    applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
+      persist: true,
+      triggerUpdate: true
+    });
+    rememberSettingsMountVoltagesBaseline();
+    if (settingsFontSize) {
+      var size = settingsFontSize.value;
+      applyFontSizeSafe(size);
+      try {
+        localStorage.setItem('fontSize', size);
+      } catch (e) {
+        console.warn('Could not save font size', e);
+      }
+      fontSize = size;
+    }
+    if (settingsFontFamily) {
+      var family = settingsFontFamily.value;
+      applyFontFamilySafe(family);
+      try {
+        localStorage.setItem('fontFamily', family);
+      } catch (e) {
+        console.warn('Could not save font family', e);
+      }
+      fontFamily = family;
+    }
+    if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
+      var file = settingsLogo.files[0];
+      if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            localStorage.setItem('customLogo', reader.result);
+          } catch (e) {
+            console.warn('Could not save custom logo', e);
+          }
+          renderSettingsLogoPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+        if (settingsLogo) settingsLogo.value = '';
+        safeLoadStoredLogoPreview();
+      }
+    }
+    closeAutoGearEditor();
+    collapseBackupDiffSection();
+    rememberSettingsPinkModeBaseline();
+    rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsFocusScaleBaseline();
+    rememberSettingsShowAutoBackupsBaseline();
+    rememberSettingsMountVoltagesBaseline();
+    closeDialog(settingsDialog);
+    settingsDialog.setAttribute('hidden', '');
+  };
   if (settingsSave) {
     settingsSave.addEventListener('click', function () {
-      if (settingsLanguage) {
-        applySetLanguage(settingsLanguage.value);
-        if (typeof populateUserButtonDropdowns === 'function') {
-          try {
-            populateUserButtonDropdowns();
-          } catch (userButtonError) {
-            console.warn('Failed to refresh user button selectors after language change', userButtonError);
-          }
-        }
-      }
-      if (settingsDarkMode) {
-        setThemePreference(settingsDarkMode.checked, {
-          persist: true
-        });
-      }
-      if (settingsPinkMode) {
-        persistPinkModePreference(settingsPinkMode.checked);
-      }
-      if (settingsHighContrast) {
-        var enabled = settingsHighContrast.checked;
-        applyHighContrast(enabled);
-        try {
-          localStorage.setItem('highContrast', enabled);
-        } catch (e) {
-          console.warn('Could not save high contrast preference', e);
-        }
-      }
-      if (settingsReduceMotion) {
-        var _enabled = settingsReduceMotion.checked;
-        applyReduceMotion(_enabled);
-        try {
-          localStorage.setItem('reduceMotion', _enabled);
-        } catch (e) {
-          console.warn('Could not save reduce motion preference', e);
-        }
-      }
-      if (settingsRelaxedSpacing) {
-        var _enabled2 = settingsRelaxedSpacing.checked;
-        applyRelaxedSpacing(_enabled2);
-        try {
-          localStorage.setItem('relaxedSpacing', _enabled2);
-        } catch (e) {
-          console.warn('Could not save relaxed spacing preference', e);
-        }
-      }
-      if (settingsShowAutoBackups) {
-        applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
-      }
-      var autoGearShowBackupsToggle = typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('autoGearShowBackups') : null;
-      if (autoGearShowBackupsToggle) {
-        callSessionCoreFunction('setAutoGearBackupsVisible', [Boolean(autoGearShowBackupsToggle.checked)]);
-      }
-      if (accentColorInput) {
-        var color = accentColorInput.value;
-        if (!document.body.classList.contains('pink-mode')) {
-          applyAccentColor(color);
-        }
-        try {
-          if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
-            localStorage.removeItem('accentColor');
-          } else {
-            localStorage.setItem('accentColor', color);
-          }
-        } catch (e) {
-          console.warn('Could not save accent color', e);
-        }
-        accentColor = color;
-        prevAccentColor = color;
-        if (typeof updateAccentColorResetButtonState === 'function') {
-          updateAccentColorResetButtonState();
-        }
-      }
-      var cameraPalette = collectCameraColorInputValues();
-      var normalizedPalette = applyCameraLetterColors(cameraPalette);
-      var colorEntries = getCameraColorInputElements();
-      colorEntries.forEach(function (entry) {
-        var normalized = normalizedPalette[entry.letter];
-        if (normalized) {
-          entry.element.value = normalized;
-        }
-      });
-      if (settingsTemperatureUnit) {
-        var selectedTemperatureUnit = typeof settingsTemperatureUnit.value === 'string' ? settingsTemperatureUnit.value : 'celsius';
-        applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
-        rememberSettingsTemperatureUnitBaseline();
-      }
-      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-        if (typeof applyFocusScalePreference === 'function') {
-          applyFocusScalePreference(settingsFocusScale.value);
-        }
-        rememberSettingsFocusScaleBaseline();
-        sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
-      }
-      applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
-        persist: true,
-        triggerUpdate: true
-      });
-      rememberSettingsMountVoltagesBaseline();
-      if (settingsFontSize) {
-        var size = settingsFontSize.value;
-        applyFontSizeSafe(size);
-        try {
-          localStorage.setItem('fontSize', size);
-        } catch (e) {
-          console.warn('Could not save font size', e);
-        }
-        fontSize = size;
-      }
-      if (settingsFontFamily) {
-        var family = settingsFontFamily.value;
-        applyFontFamilySafe(family);
-        try {
-          localStorage.setItem('fontFamily', family);
-        } catch (e) {
-          console.warn('Could not save font family', e);
-        }
-        fontFamily = family;
-      }
-      if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
-        var file = settingsLogo.files[0];
-        if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
-          var reader = new FileReader();
-          reader.onload = function () {
-            try {
-              localStorage.setItem('customLogo', reader.result);
-            } catch (e) {
-              console.warn('Could not save custom logo', e);
-            }
-            renderSettingsLogoPreview(reader.result);
-          };
-          reader.readAsDataURL(file);
-        } else {
-          showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-          if (settingsLogo) settingsLogo.value = '';
-          safeLoadStoredLogoPreview();
-        }
-      }
-      closeAutoGearEditor();
-      collapseBackupDiffSection();
-      rememberSettingsPinkModeBaseline();
-      rememberSettingsTemperatureUnitBaseline();
-      rememberSettingsFocusScaleBaseline();
-      rememberSettingsShowAutoBackupsBaseline();
-      rememberSettingsMountVoltagesBaseline();
-      closeDialog(settingsDialog);
-      settingsDialog.setAttribute('hidden', '');
+      applySettingsAndCloseDialog();
     });
   }
   settingsDialog.addEventListener('click', function (e) {
     if (e.target === settingsDialog) {
-      revertSettingsPinkModeIfNeeded();
-      rememberSettingsPinkModeBaseline();
-      revertSettingsTemperatureUnitIfNeeded();
-      rememberSettingsTemperatureUnitBaseline();
-      revertSettingsFocusScaleIfNeeded();
-      rememberSettingsFocusScaleBaseline();
-      revertSettingsShowAutoBackupsIfNeeded();
-      rememberSettingsShowAutoBackupsBaseline();
-      revertSettingsMountVoltagesIfNeeded();
-      rememberSettingsMountVoltagesBaseline();
-      invokeSessionRevertAccentColor();
-      if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) safeLoadStoredLogoPreview();
-      closeAutoGearEditor();
-      collapseBackupDiffSection();
-      closeDialog(settingsDialog);
-      settingsDialog.setAttribute('hidden', '');
+      applySettingsAndCloseDialog();
     }
   });
   settingsDialog.addEventListener('cancel', function (e) {
@@ -6495,6 +6569,17 @@ var _ensureNotificationContainer = function ensureNotificationContainer() {
   var id = 'backupNotificationContainer';
   var container = document.getElementById(id);
   var isNew = false;
+  if (!container && typeof window !== 'undefined') {
+    var bootstrapNotice = window.__cineLoadingNotice;
+    if (bootstrapNotice && typeof bootstrapNotice.ensureContainer === 'function') {
+      try {
+        container = bootstrapNotice.ensureContainer();
+      } catch (noticeError) {
+        console.warn('Failed to reuse bootstrap notification container', noticeError);
+        container = null;
+      }
+    }
+  }
   if (!container) {
     container = document.createElement('div');
     container.id = id;
@@ -6502,6 +6587,12 @@ var _ensureNotificationContainer = function ensureNotificationContainer() {
     container.style.right = '1rem';
     container.style.zIndex = '10000';
     isNew = true;
+  }
+  if (container.classList && !container.classList.contains('cine-notification-stack')) {
+    container.classList.add('cine-notification-stack');
+  }
+  if (container.dataset && container.dataset.bootstrap) {
+    delete container.dataset.bootstrap;
   }
   var preferredParent = typeof document.body !== 'undefined' && document.body ? document.body : typeof document.documentElement !== 'undefined' ? document.documentElement : null;
   if (preferredParent) {
@@ -6525,6 +6616,12 @@ var _ensureNotificationContainer = function ensureNotificationContainer() {
       });
     } else {
       scheduleNotificationContainerEnsure();
+    }
+  }
+  if (typeof window !== 'undefined') {
+    var _bootstrapNotice = window.__cineLoadingNotice;
+    if (_bootstrapNotice && _typeof(_bootstrapNotice) === 'object') {
+      _bootstrapNotice.container = container;
     }
   }
   return container;
@@ -6626,6 +6723,13 @@ var showAutoBackupActivityIndicator = function showAutoBackupActivityIndicator(m
 };
 var GLOBAL_LOADING_INDICATOR_ID = 'cineGlobalLoadingIndicator';
 var globalLoadingIndicatorRefCount = 0;
+var GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS = {
+  default: 'globalLoadingIndicator',
+  preparing: 'globalLoadingIndicatorPreparing',
+  modules: 'globalLoadingIndicatorModules',
+  data: 'globalLoadingIndicatorData',
+  almost: 'globalLoadingIndicatorAlmostReady'
+};
 var resolveGlobalLoadingIndicatorMessage = function resolveGlobalLoadingIndicatorMessage(fallbackMessage) {
   if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
     return fallbackMessage.trim();
@@ -6642,6 +6746,43 @@ var resolveGlobalLoadingIndicatorMessage = function resolveGlobalLoadingIndicato
   }
   return 'Loading…';
 };
+var resolveGlobalLoadingIndicatorMessageByKey = function resolveGlobalLoadingIndicatorMessageByKey(key, fallbackMessage) {
+  var normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : '';
+  var translationKey = normalizedKey && GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey] ? GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS[normalizedKey] : GLOBAL_LOADING_INDICATOR_MESSAGE_KEYS.default;
+  var langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang] ? texts[currentLang] : null;
+  var fallbackTexts = texts && _typeof(texts.en) === 'object' && texts.en ? texts.en : null;
+  var localized = '';
+  if (translationKey && langTexts && typeof langTexts[translationKey] === 'string') {
+    localized = langTexts[translationKey].trim();
+  }
+  if (!localized && translationKey && fallbackTexts && typeof fallbackTexts[translationKey] === 'string') {
+    localized = fallbackTexts[translationKey].trim();
+  }
+  var fallback = typeof fallbackMessage === 'string' && fallbackMessage.trim() ? fallbackMessage.trim() : '';
+  if (!localized && fallback) {
+    localized = fallback;
+  }
+  if (!localized) {
+    localized = resolveGlobalLoadingIndicatorMessage(fallback);
+  }
+  return localized || 'Loading…';
+};
+var syncBootstrapLoadingNoticeLocalization = function syncBootstrapLoadingNoticeLocalization() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  var notice = window.__cineLoadingNotice;
+  if (!notice || typeof notice.applyLocalization !== 'function') {
+    return;
+  }
+  var fallback = typeof notice.getFallbackMessages === 'function' ? notice.getFallbackMessages() : {};
+  notice.applyLocalization({
+    preparing: resolveGlobalLoadingIndicatorMessageByKey('preparing', fallback.preparing || ''),
+    modules: resolveGlobalLoadingIndicatorMessageByKey('modules', fallback.modules || ''),
+    data: resolveGlobalLoadingIndicatorMessageByKey('data', fallback.data || ''),
+    almost: resolveGlobalLoadingIndicatorMessageByKey('almost', fallback.almost || '')
+  });
+};
 var refreshGlobalLoadingIndicatorText = function refreshGlobalLoadingIndicatorText() {
   if (typeof document === 'undefined') {
     return;
@@ -6654,6 +6795,7 @@ var refreshGlobalLoadingIndicatorText = function refreshGlobalLoadingIndicatorTe
   if (!textTarget) {
     return;
   }
+  syncBootstrapLoadingNoticeLocalization();
   var mode = indicator.dataset.messageMode || 'auto';
   if (mode === 'custom') {
     var customMessage = indicator.dataset.customMessage || '';
@@ -6662,11 +6804,45 @@ var refreshGlobalLoadingIndicatorText = function refreshGlobalLoadingIndicatorTe
     }
     return;
   }
+  if (mode === 'key') {
+    var messageKey = indicator.dataset.messageKey || 'default';
+    var fallback = indicator.dataset.fallbackMessage || '';
+    var _message = resolveGlobalLoadingIndicatorMessageByKey(messageKey, fallback);
+    if (_message) {
+      textTarget.textContent = _message;
+      indicator.dataset.currentMessage = _message;
+    }
+    return;
+  }
   var message = resolveGlobalLoadingIndicatorMessage();
   textTarget.textContent = message;
   indicator.dataset.currentMessage = message;
 };
 var GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = 260;
+var setGlobalLoadingIndicatorMessageByKey = function setGlobalLoadingIndicatorMessageByKey(key, fallbackMessage) {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  var indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator) {
+    return;
+  }
+  var normalizedKey = typeof key === 'string' && key.trim() ? key.trim() : 'default';
+  var resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(normalizedKey, fallbackMessage || '');
+  var textTarget = indicator.querySelector('.global-loading-indicator-text');
+  indicator.dataset.messageMode = 'key';
+  indicator.dataset.messageKey = normalizedKey;
+  if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
+    indicator.dataset.fallbackMessage = fallbackMessage.trim();
+  } else {
+    delete indicator.dataset.fallbackMessage;
+  }
+  indicator.dataset.currentMessage = resolvedMessage;
+  if (textTarget) {
+    textTarget.textContent = resolvedMessage;
+  }
+  syncBootstrapLoadingNoticeLocalization();
+};
 var getHighResolutionTimestamp = function getHighResolutionTimestamp() {
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
     return performance.now();
@@ -6682,49 +6858,76 @@ var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
     return function () {};
   }
   ensureAutoBackupSpinnerStyles();
+  var bootstrapNotice = typeof window !== 'undefined' ? window.__cineLoadingNotice : null;
   var indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator && bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
+    try {
+      indicator = bootstrapNotice.ensureIndicator();
+    } catch (bootstrapIndicatorError) {
+      console.warn('Failed to adopt bootstrap loading indicator', bootstrapIndicatorError);
+      indicator = null;
+    }
+  }
   if (!indicator) {
     indicator = document.createElement('div');
     indicator.id = GLOBAL_LOADING_INDICATOR_ID;
-    indicator.style.display = 'flex';
-    indicator.style.alignItems = 'center';
-    indicator.style.gap = '0.75rem';
-    indicator.style.padding = '0.75rem 1.25rem';
-    indicator.style.marginTop = '0.5rem';
-    indicator.style.borderRadius = '0.75rem';
-    indicator.style.border = 'none';
-    indicator.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-    indicator.style.background = 'rgba(32, 40, 62, 0.92)';
-    indicator.style.color = '#ffffff';
-    indicator.setAttribute('role', 'status');
-    indicator.setAttribute('aria-live', 'polite');
-    var spinner = document.createElement('span');
-    spinner.style.display = 'inline-block';
-    spinner.style.width = '1.5rem';
-    spinner.style.height = '1.5rem';
-    spinner.style.borderRadius = '50%';
-    spinner.style.border = '0.2rem solid rgba(255, 255, 255, 0.3)';
-    spinner.style.borderTopColor = '#ffffff';
-    spinner.style.animation = 'cineAutoBackupSpinnerRotate 1s linear infinite';
+  }
+  indicator.setAttribute('role', 'status');
+  indicator.setAttribute('aria-live', 'polite');
+  indicator.setAttribute('aria-busy', 'true');
+  if (indicator.dataset && indicator.dataset.bootstrap) {
+    delete indicator.dataset.bootstrap;
+  }
+  if (indicator.classList) {
+    indicator.classList.add('cine-notification', 'cine-notification--loading');
+  } else {
+    indicator.className = [indicator.className || '', 'cine-notification', 'cine-notification--loading'].join(' ').trim();
+  }
+  var spinner = indicator.querySelector('.cine-notification__spinner');
+  if (!spinner) {
+    spinner = document.createElement('span');
+    spinner.className = 'cine-notification__spinner';
     spinner.setAttribute('aria-hidden', 'true');
-    indicator.appendChild(spinner);
-    var textNode = document.createElement('span');
-    textNode.className = 'global-loading-indicator-text';
-    indicator.appendChild(textNode);
+    indicator.insertBefore(spinner, indicator.firstChild);
+  }
+  var textTarget = indicator.querySelector('.global-loading-indicator-text');
+  if (!textTarget) {
+    textTarget = document.createElement('span');
+    textTarget.className = 'global-loading-indicator-text';
+    indicator.appendChild(textTarget);
+  }
+  if (indicator.parentNode !== container) {
     container.appendChild(indicator);
   }
-  var resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
+  if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
+    try {
+      bootstrapNotice.setBusy(true);
+    } catch (bootstrapBusyError) {
+      console.warn('Failed to mark bootstrap loading indicator busy', bootstrapBusyError);
+    }
+  }
+  syncBootstrapLoadingNoticeLocalization();
   var isCustomMessage = Boolean(message && typeof message === 'string' && message.trim());
-  var textTarget = indicator.querySelector('.global-loading-indicator-text');
+  var resolvedMessage;
+  if (isCustomMessage) {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
+    indicator.dataset.messageMode = 'custom';
+    indicator.dataset.customMessage = resolvedMessage;
+  } else if (indicator.dataset.messageMode === 'key' && indicator.dataset.messageKey) {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessageByKey(indicator.dataset.messageKey, indicator.dataset.fallbackMessage || '');
+    indicator.dataset.currentMessage = resolvedMessage;
+    indicator.dataset.customMessage = '';
+  } else {
+    resolvedMessage = resolveGlobalLoadingIndicatorMessage();
+    indicator.dataset.messageMode = 'auto';
+    indicator.dataset.customMessage = '';
+    indicator.dataset.currentMessage = resolvedMessage;
+  }
   if (textTarget) {
     textTarget.textContent = resolvedMessage;
   }
-  indicator.dataset.messageMode = isCustomMessage ? 'custom' : 'auto';
-  if (isCustomMessage) {
-    indicator.dataset.customMessage = resolvedMessage;
-  } else {
-    indicator.dataset.customMessage = '';
-    indicator.dataset.currentMessage = resolvedMessage;
+  if (bootstrapNotice && typeof bootstrapNotice.ensureIndicator === 'function') {
+    bootstrapNotice.indicator = indicator;
   }
   globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount);
   globalLoadingIndicatorRefCount += 1;
@@ -6740,9 +6943,20 @@ var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
     globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
     indicator.dataset.count = String(globalLoadingIndicatorRefCount);
     if (globalLoadingIndicatorRefCount === 0) {
+      indicator.setAttribute('aria-busy', 'false');
+      if (bootstrapNotice && typeof bootstrapNotice.setBusy === 'function') {
+        try {
+          bootstrapNotice.setBusy(false);
+        } catch (bootstrapBusyResetError) {
+          console.warn('Failed to clear bootstrap loading indicator busy state', bootstrapBusyResetError);
+        }
+      }
       indicator.remove();
       if (!container.children.length) {
         container.remove();
+      }
+      if (bootstrapNotice && _typeof(bootstrapNotice) === 'object') {
+        bootstrapNotice.indicator = null;
       }
     }
   };
@@ -6766,6 +6980,7 @@ try {
   if (scope) {
     scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
     scope.__cineShowGlobalLoadingIndicator = showGlobalLoadingIndicator;
+    scope.__cineSetGlobalLoadingIndicatorMessageKey = setGlobalLoadingIndicatorMessageByKey;
   }
 } catch (indicatorExposeError) {
   console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
@@ -7980,6 +8195,64 @@ function applyPreferencesFromStorage(safeGetItem) {
       console.warn('Failed to apply restored temperature unit preference', error);
     }
   }
+  var focusScaleStorageKey = typeof FOCUS_SCALE_STORAGE_KEY_NAME === 'string' && FOCUS_SCALE_STORAGE_KEY_NAME || typeof globalThis !== 'undefined' && globalThis && typeof globalThis.FOCUS_SCALE_STORAGE_KEY_NAME === 'string' && globalThis.FOCUS_SCALE_STORAGE_KEY_NAME || 'cameraPowerPlanner_focusScale';
+  var storedFocusScale = safeGetItem(focusScaleStorageKey);
+  var restoredFocusScale = null;
+  if (storedFocusScale) {
+    var normalizedFocusScale = null;
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        normalizedFocusScale = normalizeFocusScale(storedFocusScale);
+      } catch (error) {
+        console.warn('Failed to normalize restored focus scale preference', error);
+      }
+    }
+    if (typeof normalizedFocusScale !== 'string' || !normalizedFocusScale) {
+      normalizedFocusScale = typeof storedFocusScale === 'string' ? storedFocusScale.trim().toLowerCase() : '';
+    }
+    if (normalizedFocusScale === 'metric' || normalizedFocusScale === 'imperial') {
+      restoredFocusScale = normalizedFocusScale;
+      try {
+        if (typeof applyFocusScalePreference === 'function') {
+          applyFocusScalePreference(normalizedFocusScale, {
+            persist: false,
+            forceUpdate: true
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to apply restored focus scale preference', error);
+      }
+      sessionFocusScale = normalizedFocusScale;
+      try {
+        if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+          settingsFocusScale.value = normalizedFocusScale;
+        }
+      } catch (error) {
+        console.warn('Failed to sync restored focus scale selection', error);
+      }
+      if (typeof rememberSettingsFocusScaleBaseline === 'function') {
+        try {
+          rememberSettingsFocusScaleBaseline();
+        } catch (error) {
+          console.warn('Failed to update focus scale baseline after restore', error);
+        }
+      }
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        try {
+          globalThis.focusScalePreference = normalizedFocusScale;
+        } catch (error) {
+          console.warn('Failed to update global focus scale preference', error);
+        }
+      }
+      if (typeof focusScalePreference !== 'undefined') {
+        try {
+          focusScalePreference = normalizedFocusScale;
+        } catch (error) {
+          console.warn('Failed to update scoped focus scale preference', error);
+        }
+      }
+    }
+  }
   try {
     setThemePreference(safeGetItem('darkMode') === 'true', {
       persist: true
@@ -8065,7 +8338,8 @@ function applyPreferencesFromStorage(safeGetItem) {
   return {
     showAutoBackups: showBackups,
     accentColor: color || null,
-    language: language || null
+    language: language || null,
+    focusScale: restoredFocusScale
   };
 }
 function captureSetupSelection() {
@@ -8412,10 +8686,10 @@ function collectFullBackupData() {
         }
       } catch (error) {
         console.warn('Failed to capture automatic gear rules from state for full backup', error);
-        var _message = describeError(error);
+        var _message2 = describeError(error);
         recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
           source: 'getBaseAutoGearRules',
-          message: _message
+          message: _message2
         });
       }
     }
@@ -8425,10 +8699,10 @@ function collectFullBackupData() {
         storedRules = loadAutoGearRules();
       } catch (error) {
         console.warn('Failed to load automatic gear rules from storage for full backup', error);
-        var _message2 = describeError(error);
+        var _message3 = describeError(error);
         recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
           source: 'loadAutoGearRules',
-          message: _message2
+          message: _message3
         });
       }
     }
@@ -9041,6 +9315,24 @@ function renderLoggingHistory() {
     }
   } catch (error) {
     console.warn('Unable to read logging history', error);
+    var filtersDetail = {};
+    if (Object.prototype.hasOwnProperty.call(loggingState, 'levelFilter')) {
+      var levelValue = loggingState.levelFilter;
+      filtersDetail.level = typeof levelValue === 'undefined' ? null : levelValue;
+    }
+    if (Object.prototype.hasOwnProperty.call(loggingState, 'namespaceFilter')) {
+      var namespaceValue = loggingState.namespaceFilter;
+      filtersDetail.namespace = typeof namespaceValue === 'undefined' ? null : namespaceValue;
+    }
+    var detail = {
+      message: describeError(error)
+    };
+    if (Object.keys(filtersDetail).length > 0) {
+      detail.filters = filtersDetail;
+    }
+    logSettingsEvent('error', 'Failed to read diagnostics history', detail, {
+      namespace: 'logging-panel'
+    });
     setLoggingStatusKey('loggingStatusError');
     history = [];
   }
@@ -9103,10 +9395,10 @@ function renderLoggingHistory() {
       namespaceRow.className = 'log-entry-meta-row';
       var namespaceLabel = document.createElement('dt');
       namespaceLabel.textContent = langTexts.loggingEntryNamespaceLabel || fallbackTexts.loggingEntryNamespaceLabel || 'Namespace';
-      var namespaceValue = document.createElement('dd');
-      namespaceValue.textContent = namespace;
+      var _namespaceValue = document.createElement('dd');
+      _namespaceValue.textContent = namespace;
       namespaceRow.appendChild(namespaceLabel);
-      namespaceRow.appendChild(namespaceValue);
+      namespaceRow.appendChild(_namespaceValue);
       metaList.appendChild(namespaceRow);
     }
     listItem.appendChild(metaList);
@@ -9183,6 +9475,55 @@ function applyLoggingConfig(config) {
   setToggleState(loggingCaptureErrorsInput, config.captureGlobalErrors !== false);
   setToggleState(loggingPersistSessionInput, config.persistSession !== false);
 }
+function sanitizeLoggingConfigPartial(partial) {
+  if (!partial || _typeof(partial) !== 'object') {
+    return null;
+  }
+  var MAX_STRING_LENGTH = 64;
+  var summary = {};
+  try {
+    var keys = Object.keys(partial);
+    summary.keys = keys.slice(0, 20);
+    summary.values = summary.keys.reduce(function (accumulator, key) {
+      var value = partial[key];
+      if (value == null || typeof value === 'boolean') {
+        accumulator[key] = value;
+        return accumulator;
+      }
+      if (typeof value === 'number') {
+        accumulator[key] = Number.isFinite(value) ? value : '[number]';
+        return accumulator;
+      }
+      if (typeof value === 'string') {
+        var trimmed = value.length > MAX_STRING_LENGTH ? "".concat(value.slice(0, MAX_STRING_LENGTH), "\u2026") : value;
+        accumulator[key] = trimmed;
+        if (value.length > MAX_STRING_LENGTH) {
+          accumulator["".concat(key, "Length")] = value.length;
+        }
+        return accumulator;
+      }
+      if (Array.isArray(value)) {
+        accumulator[key] = "[array:".concat(value.length, "]");
+        return accumulator;
+      }
+      if (_typeof(value) === 'object') {
+        var objectSize = null;
+        try {
+          objectSize = Object.keys(value).length;
+        } catch (objectSizeError) {
+          void objectSizeError;
+        }
+        accumulator[key] = "[object".concat(objectSize != null ? ":".concat(objectSize) : '', "]");
+        return accumulator;
+      }
+      accumulator[key] = "[".concat(_typeof(value), "]");
+      return accumulator;
+    }, {});
+  } catch (sanitizationError) {
+    summary.error = describeError(sanitizationError);
+  }
+  return summary;
+}
 function updateLoggingConfig(partial) {
   var logging = resolveLoggingApi();
   if (!logging || typeof logging.setConfig !== 'function' || !partial || _typeof(partial) !== 'object') {
@@ -9192,6 +9533,12 @@ function updateLoggingConfig(partial) {
     logging.setConfig(partial);
   } catch (error) {
     console.warn('Unable to update logging config', error);
+    logSettingsEvent('error', 'Failed to update diagnostics logging config', {
+      message: describeError(error),
+      partial: sanitizeLoggingConfigPartial(partial)
+    }, {
+      namespace: 'logging-config'
+    });
     setLoggingStatusKey('loggingStatusError');
   }
 }

@@ -1891,15 +1891,49 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function resetAutoGearRulesToFactoryAdditions() {
     var _texts$en;
     var langTexts = texts[currentLang] || texts.en || {};
+    var fallbackTexts = texts.en || {};
     var confirmation = langTexts.autoGearResetFactoryConfirm || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.autoGearResetFactoryConfirm) || 'Replace your automatic gear rules with the default additions?';
     if (typeof confirm === 'function' && !confirm(confirmation)) {
+      return;
+    }
+    var exportFailureMessage = langTexts.autoGearResetFactoryExportFailed || fallbackTexts.autoGearResetFactoryExportFailed || 'Automatic gear preset export failed. Reset cancelled.';
+    var presetExportOutcome = {
+      status: 'skipped',
+      reason: 'empty'
+    };
+    if (typeof exportAutoGearPresets === 'function') {
+      try {
+        var result = exportAutoGearPresets({
+          reason: 'reset-auto-gear'
+        });
+        presetExportOutcome = result || {
+          status: 'failed',
+          reason: 'unknown'
+        };
+      } catch (exportError) {
+        console.error('Failed to export automatic gear presets before reset', exportError);
+        presetExportOutcome = {
+          status: 'failed',
+          reason: 'exception',
+          error: exportError
+        };
+      }
+    } else {
+      presetExportOutcome = {
+        status: 'failed',
+        reason: 'unavailable'
+      };
+    }
+    if (!presetExportOutcome || presetExportOutcome.status === 'failed' || presetExportOutcome.status === 'skipped' && presetExportOutcome.reason !== 'empty') {
+      if (typeof showNotification === 'function') {
+        showNotification('error', exportFailureMessage);
+      }
       return;
     }
     var backupName = ensureAutoBackupBeforeDeletion('reset automatic gear rules');
     if (!backupName) {
       return;
     }
-    var fallbackTexts = texts.en || {};
     var successMessage = langTexts.autoGearResetFactoryDone || fallbackTexts.autoGearResetFactoryDone || 'Automatic gear rules restored to factory additions.';
     var emptyMessage = langTexts.autoGearResetFactoryEmpty || fallbackTexts.autoGearResetFactoryEmpty || 'Factory additions unavailable. Automatic gear rules cleared.';
     var failureMessage = langTexts.autoGearResetFactoryError || fallbackTexts.autoGearResetFactoryError || 'Reset failed. Please try again.';

@@ -11,6 +11,91 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./app-core-ui-helpers.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+    } catch (uiHelpersError) {
+      void uiHelpersError;
+    }
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      var helpers = scope.cineCoreUiHelpers;
+      if (helpers && _typeof(helpers) === 'object') {
+        return helpers;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  return {};
+}();
+var setButtonLabelWithIcon = function resolveSetButtonLabelWithIconForEvents() {
+  if (typeof EVENTS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
+    return EVENTS_UI_HELPERS.setButtonLabelWithIcon;
+  }
+  var candidates = [];
+  try {
+    if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function') {
+      candidates.push(CORE_GLOBAL_SCOPE.setButtonLabelWithIcon);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.setButtonLabelWithIcon === 'function') {
+    candidates.push(globalThis.setButtonLabelWithIcon);
+  }
+  if (typeof window !== 'undefined' && window && typeof window.setButtonLabelWithIcon === 'function') {
+    candidates.push(window.setButtonLabelWithIcon);
+  }
+  if (typeof self !== 'undefined' && self && typeof self.setButtonLabelWithIcon === 'function') {
+    candidates.push(self.setButtonLabelWithIcon);
+  }
+  if (typeof global !== 'undefined' && global && typeof global.setButtonLabelWithIcon === 'function') {
+    candidates.push(global.setButtonLabelWithIcon);
+  }
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+  return function setButtonLabelWithIconFallback(button, label) {
+    if (!button) {
+      return;
+    }
+    try {
+      button.textContent = typeof label === 'string' ? label : '';
+    } catch (assignError) {
+      void assignError;
+    }
+  };
+}();
 function collectLoggingResolverScopes() {
   var scopes = [];
   var primary = getGlobalScope();
@@ -177,10 +262,52 @@ function resolveConsoleMethodForLevel(level) {
   }
   return 'log';
 }
+function resolveCoreAutoBackupNamespace() {
+  if (typeof require === 'function') {
+    try {
+      return require('./app-core-auto-backup.js');
+    } catch (autoBackupRequireError) {
+      void autoBackupRequireError;
+    }
+  }
+  var candidateScopes = [getGlobalScope(), typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      if (scope.CORE_AUTO_BACKUP && _typeof(scope.CORE_AUTO_BACKUP) === 'object') {
+        return scope.CORE_AUTO_BACKUP;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+  return null;
+}
+var AUTO_BACKUP_LOGGER_NAMESPACE = resolveCoreAutoBackupNamespace();
+var delegatedAutoBackupLogger = AUTO_BACKUP_LOGGER_NAMESPACE && typeof AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent === 'function' ? AUTO_BACKUP_LOGGER_NAMESPACE.logAutoBackupEvent : null;
 function logAutoBackupEvent(level, message, detail, metaOverrides) {
   var resolvedLevel = typeof level === 'string' && level ? level : 'info';
   var resolvedMessage = typeof message === 'string' && message ? message : 'Auto backup event';
   var meta = metaOverrides && _typeof(metaOverrides) === 'object' ? _objectSpread(_objectSpread({}, AUTO_BACKUP_LOG_META), metaOverrides) : AUTO_BACKUP_LOG_META;
+  var delegateHandled = false;
+  if (delegatedAutoBackupLogger) {
+    try {
+      delegatedAutoBackupLogger(resolvedLevel, resolvedMessage, detail, meta);
+      delegateHandled = true;
+    } catch (delegateError) {
+      delegateHandled = false;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        try {
+          console.warn('Auto backup delegate logging failed', delegateError);
+        } catch (delegateConsoleError) {
+          void delegateConsoleError;
+        }
+      }
+    }
+  }
   var handledByLogger = false;
   if (eventsLogger && typeof eventsLogger[resolvedLevel] === 'function') {
     try {
@@ -199,7 +326,7 @@ function logAutoBackupEvent(level, message, detail, metaOverrides) {
       }
     }
   }
-  if (!handledByLogger && typeof console !== 'undefined' && console) {
+  if (!(handledByLogger || delegateHandled) && typeof console !== 'undefined' && console) {
     var consoleMethod = resolveConsoleMethodForLevel(resolvedLevel);
     var fallback = typeof console[consoleMethod] === 'function' ? console[consoleMethod] : console.log;
     if (typeof fallback === 'function') {
