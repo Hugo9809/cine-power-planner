@@ -76,4 +76,20 @@ describe('project compression respects recent activity window', () => {
     const parsed = JSON.parse(storage.getItem(PROJECT_KEY));
     expect(typeof parsed.Aged).toBe('string');
   });
+
+  test('projects loaded through bulk read stay uncompressed briefly afterwards', () => {
+    const storage = createInMemoryStorage();
+    const api = bootstrapStorageModule(storage);
+
+    api.saveProject('Bulk', { gearList: bigPayload });
+
+    jest.setSystemTime(new Date(baseTime.getTime() + 65 * 60 * 1000));
+    api.loadProject();
+
+    jest.setSystemTime(new Date(baseTime.getTime() + 70 * 60 * 1000));
+    api.saveProject('Other', { gearList: bigPayload });
+
+    const parsed = JSON.parse(storage.getItem(PROJECT_KEY));
+    expect(typeof parsed.Bulk).toBe('object');
+  });
 });
