@@ -22,8 +22,9 @@ instructions.
       cadence or storage updates needed to match the new behaviour.
 - [ ] Run the [Backup Rotation Rehearsal Drill](backup-rotation-guide.md#rehearsal-drill):
       perform a manual save, export the planner backup, export two project
-      bundles, restore inside the sandbox, promote the sandbox project back to
-      live data and confirm autosave history. Capture all required evidence
+      bundles, delete the active project to verify recovery, restore inside the
+      sandbox, promote the sandbox project back to live data and confirm
+      autosave history. Capture all required evidence
       (diff logs, checksum logs and sandbox screenshots) and stage it for the
       verification packet before proceeding.
 - [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
