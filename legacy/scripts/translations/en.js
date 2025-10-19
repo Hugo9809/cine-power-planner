@@ -1612,7 +1612,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "skipConfirmationCancel": "Continue tutorial",
         "steps": {
           "intro": {
-            "title": "Welcome to Cine Power Planner",
+            "title": "",
             "body": "",
             "hero": {
               "heading": "",

@@ -471,7 +471,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var DEFAULT_STEP_TEXTS = {
     intro: {
-      title: 'Welcome to Cine Power Planner',
+      title: '',
       body: '',
       hero: {
         heading: 'Step 1 · Welcome aboard',

@@ -1619,7 +1619,7 @@
       "skipConfirmationCancel": "Continue tutorial",
       "steps": {
         "intro": {
-          "title": "Welcome to Cine Power Planner",
+          "title": "",
           "body": "",
           "hero": {
             "heading": "",
