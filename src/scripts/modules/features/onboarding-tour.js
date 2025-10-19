@@ -584,7 +584,7 @@
 
   const DEFAULT_STEP_TEXTS = {
     intro: {
-      title: 'Welcome to Cine Power Planner',
+      title: '',
       body: '',
       hero: {
         heading: 'Step 1 · Welcome aboard',
