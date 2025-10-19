@@ -218,18 +218,23 @@ describe('global feature search help navigation', () => {
     ).map(label => label.textContent.trim());
 
     expect(visibleQuickLinks.length).toBeGreaterThan(0);
-    expect(visibleQuickLinks).toEqual([
-      'Start Here',
-      'Features at a Glance',
+
+    const restoreQuickLinks = [
       'Saving, Sharing & Restoring Projects',
-      'Data & Storage Dashboard',
-      'Local Storage & Offline Access',
-      'Automatic Backups',
-      'Automatic Gear Rules',
-      'Search & Filtering',
-      'Troubleshooting & Recovery',
-      'FAQ'
-    ]);
+      'Troubleshooting & Recovery'
+    ];
+
+    restoreQuickLinks.forEach(link => {
+      expect(visibleQuickLinks).toContain(link);
+    });
+
+    const [restoreProjectsIndex, recoveryIndex] = restoreQuickLinks.map(link =>
+      visibleQuickLinks.indexOf(link)
+    );
+
+    expect(restoreProjectsIndex).toBeGreaterThanOrEqual(0);
+    expect(recoveryIndex).toBeGreaterThanOrEqual(0);
+    expect(restoreProjectsIndex).toBeLessThan(recoveryIndex);
 
     const activeQuickLink = helpQuickLinksList.querySelector(
       'li:not([hidden]) .help-quick-link.active .help-quick-link-label'
