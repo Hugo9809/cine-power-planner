@@ -264,9 +264,41 @@
   }
 
   document.addEventListener('cine-loader-progress', handleProgress);
-  document.addEventListener('cine-loader-complete', handleComplete, {
-    once: true,
-  });
+
+  function registerLoaderCompleteListener(target, listener) {
+    if (!target || typeof target.addEventListener !== 'function' || typeof listener !== 'function') {
+      return;
+    }
+
+    var fallbackRequired = false;
+
+    try {
+      target.addEventListener('cine-loader-complete', listener, { once: true });
+    } catch (error) {
+      fallbackRequired = true;
+      void error;
+    }
+
+    if (!fallbackRequired) {
+      return;
+    }
+
+    var handled = false;
+    function fallbackListener(event) {
+      if (handled) {
+        return;
+      }
+      handled = true;
+      if (typeof target.removeEventListener === 'function') {
+        target.removeEventListener('cine-loader-complete', fallbackListener, false);
+      }
+      listener(event);
+    }
+
+    target.addEventListener('cine-loader-complete', fallbackListener, false);
+  }
+
+  registerLoaderCompleteListener(document, handleComplete);
 
   scope.__cineLoadingNotice = {
     container: container,
