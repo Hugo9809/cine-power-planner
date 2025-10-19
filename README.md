@@ -1226,7 +1226,7 @@ experience:
 | `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog stays searchable while you type elsewhere. |
 | `D` | Toggle dark mode. | Also available from **Settings → Themes**; all theme controls (header, onboarding and Settings) stay synchronized automatically. |
 | `P` | Toggle the pink accent theme. | Works alongside light, dark or high-contrast modes. |
-| 🔄 button | Force reload cached assets. | Also accessible via **Settings → Force reload** without erasing projects. |
+| 🔄 button | Force reload cached assets. | Also lives in the toolbar’s help & status menu so you can clear cached files without touching saved projects. |
 
 ## Localization
 
