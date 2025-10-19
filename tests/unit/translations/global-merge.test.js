@@ -16,7 +16,7 @@ describe('translations global merging', () => {
     delete global.gearItems;
   });
 
-  test('onboarding tour translations become available when globals exist', () => {
+  test('onboarding tour translations become available when globals exist', async () => {
     global.texts = {
       en: {
         onboardingTour: {
@@ -25,7 +25,9 @@ describe('translations global merging', () => {
       },
     };
 
-    const { texts } = require(translationsPath);
+    const translations = require(translationsPath);
+    await translations.loadLanguage('de');
+    const { texts } = translations;
 
     expect(global.texts).toBeDefined();
     expect(global.texts.de).toBeDefined();

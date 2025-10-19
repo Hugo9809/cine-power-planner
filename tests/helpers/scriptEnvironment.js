@@ -122,6 +122,18 @@ function restoreReadyState(descriptor) {
 
 function applyTranslations() {
   if (!translations || typeof window === 'undefined') return;
+  if (typeof translations.loadLanguage === 'function') {
+    try {
+      const pending = translations.loadLanguage(translations.defaultLanguage || 'en');
+      if (pending && typeof pending.then === 'function') {
+        pending.catch(error => {
+          console.warn('Failed to prepare translations for script environment', error);
+        });
+      }
+    } catch (loadError) {
+      console.warn('Unable to prepare translations for script environment', loadError);
+    }
+  }
   if (!window.texts) {
     window.texts = translations.texts;
   }

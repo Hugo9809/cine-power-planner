@@ -1264,15 +1264,30 @@ function enqueueCineUiRegistration(callback) {
 enqueueCineUiRegistration(registerEventsCineUiInternal);
 
 // Language selection
-addSafeEventListener(languageSelect, "change", (event) => {
-  setLanguage(event.target.value);
-  if (typeof populateUserButtonDropdowns === 'function') {
-    try {
-      populateUserButtonDropdowns();
-    } catch (userButtonError) {
-      console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+addSafeEventListener(languageSelect, "change", event => {
+  const updateDropdowns = () => {
+    if (typeof populateUserButtonDropdowns === 'function') {
+      try {
+        populateUserButtonDropdowns();
+      } catch (userButtonError) {
+        console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+      }
     }
+  };
+
+  try {
+    const result = setLanguage(event.target.value);
+    if (result && typeof result.then === 'function') {
+      result.then(updateDropdowns).catch(error => {
+        console.warn('Language selection update failed', error);
+      });
+      return;
+    }
+  } catch (languageError) {
+    console.warn('Language selection handler threw', languageError);
   }
+
+  updateDropdowns();
 });
 
 addSafeEventListener(skipLink, "click", () => {

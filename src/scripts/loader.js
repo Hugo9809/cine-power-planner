@@ -1655,7 +1655,14 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return function loaderFallbackSetLanguage(candidate) {
       var scope = resolveCriticalGlobalScope();
       var requested = typeof candidate === 'string' && candidate ? candidate : 'en';
-      var translations = scope && scope.texts && typeof scope.texts === 'object' ? scope.texts : {};
+      var runtime = scope && scope.translations && typeof scope.translations === 'object'
+        ? scope.translations
+        : null;
+      var translations = runtime && runtime.texts && typeof runtime.texts === 'object'
+        ? runtime.texts
+        : scope && scope.texts && typeof scope.texts === 'object'
+          ? scope.texts
+          : {};
       var normalized = requested;
 
       if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
@@ -1674,6 +1681,26 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
       if (scope) {
         scope.currentLang = normalized;
+      }
+
+      if (runtime && typeof runtime.loadLanguage === 'function') {
+        try {
+          var loadResult = runtime.loadLanguage(normalized);
+          if (loadResult && typeof loadResult.then === 'function') {
+            loadResult.catch(function fallbackLanguageLoadError(error) {
+              if (scope && scope.console && typeof scope.console.warn === 'function') {
+                scope.console.warn('Fallback language loader failed', error);
+              }
+            });
+          }
+        } catch (runtimeError) {
+          if (scope && scope.console && typeof scope.console.warn === 'function') {
+            scope.console.warn('Fallback language loader threw', runtimeError);
+          }
+        }
+        if (runtime.texts && typeof runtime.texts === 'object') {
+          translations = runtime.texts;
+        }
       }
 
       if (scope && scope.localStorage && typeof scope.localStorage.setItem === 'function') {
@@ -3475,6 +3502,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         'src/data/devices/wirelessReceivers.js',
       ] },
       'src/scripts/storage.js',
+      'src/scripts/translations/en.js',
       'src/scripts/translations.js',
       'src/vendor/lz-string.min.js',
       'src/scripts/auto-gear-weight.js',

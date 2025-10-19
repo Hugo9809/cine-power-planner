@@ -4096,7 +4096,12 @@
 
     if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
       try {
-        GLOBAL_SCOPE.setLanguage(candidate);
+        const result = GLOBAL_SCOPE.setLanguage(candidate);
+        if (result && typeof result.then === 'function') {
+          result.catch(error => {
+            safeWarn('cine.features.onboardingTour async language sync failed.', error);
+          });
+        }
         applied = true;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not sync language preference.', error);

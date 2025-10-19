@@ -9068,32 +9068,105 @@ function checkArriCompatibility() {
 }
 
 var gearItemTranslations = {};
+
+function resolveTranslationsRuntime() {
+  var candidateScopes = [];
+
+  function resolveGlobalScopeForTranslations() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  }
+
+  try { candidateScopes.push(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch (coreScopeError) { void coreScopeError; }
+  candidateScopes.push(resolveGlobalScopeForTranslations());
+
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    try {
+      var runtime = scope.translations;
+      if (runtime && typeof runtime.loadLanguage === 'function') {
+        return runtime;
+      }
+    } catch (scopeError) {
+      void scopeError;
+    }
+  }
+
+  if (typeof translations !== 'undefined' && translations && typeof translations.loadLanguage === 'function') {
+    return translations;
+  }
+
+  if (typeof require === 'function') {
+    try {
+      var requiredTranslations = require('./translations.js');
+      if (requiredTranslations && typeof requiredTranslations.loadLanguage === 'function') {
+        return requiredTranslations;
+      }
+    } catch (runtimeRequireError) {
+      console.warn('Failed to resolve translations runtime via require', runtimeRequireError);
+    }
+  }
+
+  return null;
+}
+
+var translationsRuntime = resolveTranslationsRuntime();
+
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
-  let translations = null;
-  const globalScope =
-    typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof self !== 'undefined'
-          ? self
-          : typeof global !== 'undefined'
-            ? global
-            : null;
+  var translations = null;
+  var globalScope = (function resolveGlobalScopeFallback() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  })();
 
-  if (globalScope && globalScope.texts && globalScope.categoryNames && globalScope.gearItems) {
+  if (
+    translationsRuntime &&
+    translationsRuntime.texts &&
+    translationsRuntime.categoryNames &&
+    translationsRuntime.gearItems
+  ) {
+    translations = {
+      texts: translationsRuntime.texts,
+      categoryNames: translationsRuntime.categoryNames,
+      gearItems: translationsRuntime.gearItems,
+    };
+  } else if (
+    globalScope &&
+    globalScope.texts &&
+    globalScope.categoryNames &&
+    globalScope.gearItems
+  ) {
     translations = {
       texts: globalScope.texts,
       categoryNames: globalScope.categoryNames,
       gearItems: globalScope.gearItems,
     };
-  } else if (typeof require === 'function') {
-    try {
-      translations = require('./translations.js');
-    } catch (e) {
-      console.warn('Failed to load translations via require', e);
-    }
   }
 
   if (translations) {
@@ -9115,6 +9188,20 @@ if (typeof texts === 'undefined') {
 } else {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
+
+if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function') {
+  try {
+    var runtimeLoadResult = translationsRuntime.loadLanguage(DEFAULT_LANGUAGE_SAFE);
+    if (runtimeLoadResult && typeof runtimeLoadResult.then === 'function') {
+      runtimeLoadResult.catch(function handleDefaultLanguageLoadError(error) {
+        console.warn('Failed to eagerly load default translations', error);
+      });
+    }
+  } catch (defaultRuntimeError) {
+    console.warn('Failed to trigger default translation load', defaultRuntimeError);
+  }
+}
+
 const SUPPORTED_LANGUAGES =
   typeof texts === "object" && texts !== null
     ? Object.keys(texts)
@@ -9805,11 +9892,46 @@ try {
 }
 
 // Helper to apply translations to all UI text
-function setLanguage(lang) {
+async function setLanguage(lang) {
   const requested = typeof lang === "string" ? lang : "";
   const resolved = resolveLanguagePreference(requested);
   let normalizedLang = resolved.language;
-  if (!texts[normalizedLang]) {
+
+  if (
+    translationsRuntime &&
+    typeof translationsRuntime.resolveLocaleKey === 'function'
+  ) {
+    try {
+      normalizedLang = translationsRuntime.resolveLocaleKey(normalizedLang);
+    } catch (resolveError) {
+      console.warn('Failed to normalize language via runtime', resolveError);
+    }
+  }
+
+  if (translationsRuntime && typeof translationsRuntime.loadLanguage === 'function') {
+    try {
+      if (typeof translationsRuntime.showLoadingState === 'function') {
+        translationsRuntime.showLoadingState(normalizedLang);
+      }
+      const loadResult = translationsRuntime.loadLanguage(normalizedLang);
+      if (loadResult && typeof loadResult.then === 'function') {
+        await loadResult;
+      }
+    } catch (loadError) {
+      console.warn(`Failed to load translations for "${normalizedLang}"`, loadError);
+    } finally {
+      if (typeof translationsRuntime.clearLoadingState === 'function') {
+        translationsRuntime.clearLoadingState();
+      }
+    }
+  }
+
+  const translationSource =
+    (typeof texts === 'object' && texts) ||
+    (translationsRuntime && translationsRuntime.texts) ||
+    {};
+
+  if (!translationSource[normalizedLang]) {
     console.warn(
       `Missing translation bundle for "${normalizedLang}". Falling back to ${DEFAULT_LANGUAGE_SAFE}.`
     );
@@ -9827,6 +9949,9 @@ function setLanguage(lang) {
   }
 
   lang = normalizedLang;
+  if (!translationSource[lang] && translationSource[DEFAULT_LANGUAGE_SAFE]) {
+    translationSource[lang] = translationSource[DEFAULT_LANGUAGE_SAFE];
+  }
   const previousLang = currentLang;
   currentLang = lang;
   ensureInstallPromptElements();
@@ -9869,12 +9994,12 @@ function setLanguage(lang) {
   // update html lang attribute for better persistence
   document.documentElement.lang = lang;
   // Document title and main heading share the same text
-  document.title = texts[lang].appTitle;
-  document.getElementById("mainTitle").textContent = texts[lang].appTitle;
-  document.getElementById("tagline").textContent = texts[lang].tagline;
+  document.title = translationSource[lang].appTitle;
+  document.getElementById("mainTitle").textContent = translationSource[lang].appTitle;
+  document.getElementById("tagline").textContent = translationSource[lang].tagline;
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
-  const fallbackLocale = texts[DEFAULT_LANGUAGE_SAFE] || {};
+  const fallbackLocale = translationSource[DEFAULT_LANGUAGE_SAFE] || {};
   const normalizeTemperatureUnitSafe = unit => {
     if (typeof normalizeTemperatureUnit === "function") {
       try {
