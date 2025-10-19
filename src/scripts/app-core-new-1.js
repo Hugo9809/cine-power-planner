@@ -20173,14 +20173,25 @@ function removeClearedDynamicAttributes(target, attrs, values) {
 
 function collectDynamicFieldValues(category, exclude = []) {
   let attrs = [];
+  let rawDynamicFieldAttrs = '';
+  const excludeSnapshot = Array.isArray(exclude) ? exclude.slice() : exclude;
   if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
+    rawDynamicFieldAttrs = String(dynamicFieldsDiv.dataset.attrs);
     try {
-      const parsed = JSON.parse(dynamicFieldsDiv.dataset.attrs);
+      const parsed = JSON.parse(rawDynamicFieldAttrs);
       if (Array.isArray(parsed)) {
         attrs = parsed;
       }
     } catch (err) {
-      console.warn('Failed to parse dynamic field attributes', err);
+      const LOG_ATTR_SNIPPET_LIMIT = 500;
+      const rawAttrsSnippet = rawDynamicFieldAttrs.slice(0, LOG_ATTR_SNIPPET_LIMIT);
+      console.warn('Failed to parse dynamic field attributes', {
+        error: err,
+        rawAttrsSnippet,
+        rawAttrsTruncated: rawDynamicFieldAttrs.length > LOG_ATTR_SNIPPET_LIMIT,
+        category,
+        exclude: excludeSnapshot,
+      });
     }
   }
   if (!attrs.length) {
