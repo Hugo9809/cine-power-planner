@@ -3223,6 +3223,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/app-core-text.js',
       'src/scripts/app-core-runtime-scopes.js',
       'src/scripts/app-core-runtime-support.js',
+      'src/scripts/app-core-runtime-fallbacks.js',
       'src/scripts/app-core-runtime-helpers.js',
       'src/scripts/app-core-environment.js',
       'src/scripts/app-core-bootstrap.js',

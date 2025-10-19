@@ -114,6 +114,69 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
 
+    const CORE_INLINE_RUNTIME_FALLBACKS = (function resolveInlineRuntimeFallbackNamespace() {
+      const candidates = [];
+
+      const scopeCandidates = [
+        CORE_RUNTIME_FALLBACKS,
+        CORE_SHARED_LOCAL,
+        CORE_PART2_RUNTIME_SCOPE,
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+      ];
+
+      for (let index = 0; index < scopeCandidates.length; index += 1) {
+        const candidateScope = scopeCandidates[index];
+        if (!candidateScope || typeof candidateScope !== 'object') {
+          continue;
+        }
+
+        try {
+          const namespace = candidateScope.cineCoreRuntimeFallbacks;
+          if (namespace && typeof namespace === 'object') {
+            candidates.push(namespace);
+          }
+        } catch (inlineNamespaceError) {
+          void inlineNamespaceError;
+        }
+      }
+
+      if (typeof require === 'function') {
+        try {
+          const requiredFallbacks = require('./app-core-runtime-fallbacks.js');
+          if (requiredFallbacks && typeof requiredFallbacks === 'object') {
+            candidates.push(requiredFallbacks);
+          }
+        } catch (inlineFallbackRequireError) {
+          void inlineFallbackRequireError;
+        }
+      }
+
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      }
+
+      return null;
+    })();
+
+    const ensureInlineCoreGlobalValue =
+      CORE_INLINE_RUNTIME_FALLBACKS &&
+      typeof CORE_INLINE_RUNTIME_FALLBACKS.fallbackEnsureCoreGlobalValue === 'function'
+        ? CORE_INLINE_RUNTIME_FALLBACKS.fallbackEnsureCoreGlobalValue
+        : null;
+
+    const detectInlineCoreScope =
+      CORE_INLINE_RUNTIME_FALLBACKS &&
+      typeof CORE_INLINE_RUNTIME_FALLBACKS.fallbackDetectScope === 'function'
+        ? CORE_INLINE_RUNTIME_FALLBACKS.fallbackDetectScope
+        : null;
+
     const autoGearHelpers =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
         ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
@@ -13763,6 +13826,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (typeof directEnsure === 'function') {
           ensureElementIdResolver = directEnsure;
           return ensureElementIdResolver;
+        }
+
+        if (typeof ensureInlineCoreGlobalValue === 'function') {
+          try {
+            const scopeCandidate =
+              typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+                ? CORE_GLOBAL_SCOPE
+                : detectInlineCoreScope
+                  ? detectInlineCoreScope()
+                  : null;
+            const ensured = ensureInlineCoreGlobalValue(
+              'ensureElementId',
+              () => fallbackEnsureElementId,
+              scopeCandidate
+            );
+            if (typeof ensured === 'function') {
+              ensureElementIdResolver = ensured;
+              return ensureElementIdResolver;
+            }
+          } catch (inlineEnsureError) {
+            void inlineEnsureError;
+          }
         }
 
         ensureElementIdResolver = fallbackEnsureElementId;
