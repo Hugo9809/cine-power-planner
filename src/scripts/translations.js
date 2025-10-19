@@ -127,6 +127,55 @@
     return value;
   }
 
+  function freezeTranslationTree(value, seen) {
+    if (!value || typeof value !== 'object') {
+      return value;
+    }
+
+    var tracker = seen;
+    var useWeakMap = typeof WeakMap === 'function';
+
+    if (!tracker) {
+      tracker = useWeakMap ? new WeakMap() : [];
+    }
+
+    if (useWeakMap) {
+      if (tracker.has(value)) {
+        return value;
+      }
+      tracker.set(value, true);
+    } else {
+      for (var index = 0; index < tracker.length; index += 1) {
+        if (tracker[index] === value) {
+          return value;
+        }
+      }
+      tracker.push(value);
+    }
+
+    if (Array.isArray(value)) {
+      for (var arrayIndex = 0; arrayIndex < value.length; arrayIndex += 1) {
+        freezeTranslationTree(value[arrayIndex], tracker);
+      }
+    } else {
+      var keys = Object.keys(value);
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        var key = keys[keyIndex];
+        freezeTranslationTree(value[key], tracker);
+      }
+    }
+
+    try {
+      if (typeof Object.isFrozen !== 'function' || !Object.isFrozen(value)) {
+        Object.freeze(value);
+      }
+    } catch (freezeError) {
+      void freezeError;
+    }
+
+    return value;
+  }
+
   function alignTranslationValue(referenceValue, translationValue) {
     var referenceType = Array.isArray(referenceValue)
       ? 'array'
@@ -267,28 +316,37 @@
       ? data.gearItems
       : {};
 
-    if (locale === DEFAULT_LANGUAGE || !loaderState.defaultLocale) {
-      loaderState.defaultLocale = {
-        texts: cloneTranslationValue(localeTexts),
-        categoryNames: cloneTranslationValue(localeCategoryNames),
-        gearItems: cloneTranslationValue(localeGearItems),
+    var isDefaultLocale = locale === DEFAULT_LANGUAGE;
+    var defaultLocale = loaderState.defaultLocale;
+
+    if (isDefaultLocale || !defaultLocale) {
+      var frozenTexts = freezeTranslationTree(localeTexts);
+      var frozenCategoryNames = freezeTranslationTree(localeCategoryNames);
+      var frozenGearItems = freezeTranslationTree(localeGearItems);
+
+      defaultLocale = {
+        texts: frozenTexts,
+        categoryNames: frozenCategoryNames,
+        gearItems: frozenGearItems,
       };
+
+      loaderState.defaultLocale = defaultLocale;
     }
 
-    var reference = loaderState.defaultLocale || {
+    var reference = defaultLocale || {
       texts: {},
       categoryNames: {},
       gearItems: {},
     };
 
-    var alignedTexts = locale === DEFAULT_LANGUAGE
-      ? cloneTranslationValue(localeTexts)
+    var alignedTexts = isDefaultLocale
+      ? reference.texts
       : alignDataset(reference.texts, localeTexts);
-    var alignedCategoryNames = locale === DEFAULT_LANGUAGE
-      ? cloneTranslationValue(localeCategoryNames)
+    var alignedCategoryNames = isDefaultLocale
+      ? reference.categoryNames
       : alignDataset(reference.categoryNames, localeCategoryNames);
-    var alignedGearItems = locale === DEFAULT_LANGUAGE
-      ? cloneTranslationValue(localeGearItems)
+    var alignedGearItems = isDefaultLocale
+      ? reference.gearItems
       : alignDataset(reference.gearItems, localeGearItems);
 
     textsContainer[locale] = alignedTexts;
