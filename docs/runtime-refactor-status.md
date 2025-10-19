@@ -53,8 +53,8 @@
 
 *Notes:*
 
-- The Data & Storage dashboard now sources its headings, button labels, and helper copy from the shared localisation tables so every language mirrors the storage protections overview and quick safeguard actions.【F:src/scripts/app-core-new-1.js†L12544-L12619】【F:src/scripts/translations.js†L878-L909】
-- README entries across languages highlight the refreshed Storage & Media grid behaviour so offline crews know duplicate buttons and media presets are available during the refactor.【F:README.md†L512-L528】【F:README.es.md†L154-L158】【F:README.fr.md†L154-L158】【F:README.it.md†L154-L158】【F:README.de.md†L154-L158】
+- The Data & Storage dashboard now sources its headings, button labels, and helper copy from the locale modules exposed by the translations loader so every language mirrors the storage protections overview and quick safeguard actions.【F:src/scripts/app-core-new-1.js†L13283-L13336】【F:src/scripts/translations.js†L5-L32】【F:src/scripts/translations/en.js†L1289-L1334】【F:src/scripts/translations/it.js†L560-L597】【F:src/scripts/translations/de.js†L560-L596】
+- README entries across languages highlight the refreshed Storage & Media grid behaviour so offline crews know duplicate buttons and media presets are available during the refactor.【F:README.md†L502-L527】【F:README.es.md†L140-L179】【F:README.fr.md†L140-L179】【F:README.it.md†L140-L179】【F:README.de.md†L140-L179】
 - The storage summary layout gained dedicated utility classes to keep the requirement key/value rows legible while the runtime split continues, preserving readability in offline builds without introducing new assets.【F:src/styles/style.css†L5433-L5484】
 
 ## Step 5 – Regression checks
