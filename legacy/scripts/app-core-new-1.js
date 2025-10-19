@@ -285,16 +285,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }();
   CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
   CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
-  var CORE_UI_HELPERS = function resolveCoreUiHelpers() {
+  var CORE_RUNTIME_UI_BRIDGE = function resolveCoreRuntimeUiBridge() {
     var candidates = [];
     if (typeof require === 'function') {
       try {
-        var requiredHelpers = require('./app-core-ui-helpers.js');
-        if (requiredHelpers && _typeof(requiredHelpers) === 'object') {
-          candidates.push(requiredHelpers);
+        var requiredBridge = require('./app-core-runtime-ui.js');
+        if (requiredBridge && _typeof(requiredBridge) === 'object') {
+          candidates.push(requiredBridge);
         }
-      } catch (helpersError) {
-        void helpersError;
+      } catch (bridgeError) {
+        void bridgeError;
       }
     }
     var scopes = [];
@@ -323,9 +323,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         continue;
       }
       try {
-        var helpers = scope.cineCoreUiHelpers;
-        if (helpers && _typeof(helpers) === 'object') {
-          candidates.push(helpers);
+        var bridge = scope.cineCoreRuntimeUiBridge;
+        if (bridge && _typeof(bridge) === 'object') {
+          candidates.push(bridge);
         }
       } catch (scopeLookupError) {
         void scopeLookupError;
@@ -339,21 +339,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return {};
   }();
-  var escapeHtml = typeof CORE_UI_HELPERS.escapeHtml === 'function' ? CORE_UI_HELPERS.escapeHtml : function escapeHtmlFallback(str) {
+  var escapeHtml = typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeHtml : function escapeHtmlFallback(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   };
-  var escapeButtonLabelSafelyHelper = typeof CORE_UI_HELPERS.escapeButtonLabelSafely === 'function' ? CORE_UI_HELPERS.escapeButtonLabelSafely : function escapeButtonLabelSafelyFallback(text) {
+  var escapeButtonLabelSafelyHelper = typeof CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely === 'function' ? CORE_RUNTIME_UI_BRIDGE.escapeButtonLabelSafely : function escapeButtonLabelSafelyFallback(text) {
     if (typeof text !== 'string' || text === '') {
       return '';
     }
     return escapeHtml(text);
   };
-  var resolveButtonIconMarkupHelper = typeof CORE_UI_HELPERS.resolveButtonIconMarkup === 'function' ? CORE_UI_HELPERS.resolveButtonIconMarkup : function resolveButtonIconMarkupFallback() {
+  var resolveButtonIconMarkupHelper = typeof CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup === 'function' ? CORE_RUNTIME_UI_BRIDGE.resolveButtonIconMarkup : function resolveButtonIconMarkupFallback() {
     return '';
   };
   var setButtonLabelWithIconBinding = ensureCoreGlobalValue('setButtonLabelWithIcon', function resolveSetButtonLabelWithIconValue() {
-    if (typeof CORE_UI_HELPERS.setButtonLabelWithIcon === 'function') {
-      return CORE_UI_HELPERS.setButtonLabelWithIcon;
+    if (typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function') {
+      return CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon;
     }
     return function setButtonLabelWithIconFallback(button, label, glyph) {
       if (!button) {
