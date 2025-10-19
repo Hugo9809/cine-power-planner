@@ -731,8 +731,12 @@ const wirelessReceiversData = {
     "powerDrawWatts": 7,
     "videoInputs": [],
     "videoOutputs": [
-      { "type": "3G-SDI" },
-      { "type": "3G-SDI" }
+      {
+        "type": "3G-SDI"
+      },
+      {
+        "type": "3G-SDI"
+      }
     ],
     "frequency": "5 GHz",
     "latencyMs": "< 1ms",
@@ -753,7 +757,9 @@ const wirelessReceiversData = {
     "powerDrawWatts": 7,
     "videoInputs": [],
     "videoOutputs": [
-      { "type": "3G-SDI" }
+      {
+        "type": "3G-SDI"
+      }
     ],
     "frequency": "5 GHz",
     "latencyMs": "< 1ms",
@@ -771,6 +777,7 @@ const wirelessReceiversData = {
     }
   }
 };
+
 if (typeof registerDevice === 'function') {
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = registerDevice('wirelessReceivers', wirelessReceiversData);

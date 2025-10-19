@@ -7030,6 +7030,8 @@ const VIDEO_OUTPUT_TYPES = new Set([
   'DisplayPort'
 ]);
 
+const NORMALIZED_FLAG_KEY = '__normalized';
+
 var DEFAULT_FILTER_SIZE = '4x5.65';
 const CORE_AUTO_BACKUP_NAMESPACE = (() => {
   if (typeof require === 'function') {
@@ -7199,6 +7201,8 @@ exposeCoreRuntimeConstant('storeSetups', storeSetups);
 function storeDevices(deviceData) {
   saveDeviceData(deviceData);
 }
+
+exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
 
 function loadSession() {
   return typeof loadSessionState === 'function' ? loadSessionState() : null;
@@ -7464,10 +7468,41 @@ function applyFixPowerInput(collection) {
 }
 
 
+function hasNormalizedDevicesMarker(bundle) {
+  return Boolean(
+    bundle &&
+    Object.prototype.hasOwnProperty.call(bundle, NORMALIZED_FLAG_KEY) &&
+    bundle[NORMALIZED_FLAG_KEY]
+  );
+}
+
+function markDevicesNormalized(bundle) {
+  if (!bundle || typeof bundle !== 'object') {
+    return bundle;
+  }
+  try {
+    Object.defineProperty(bundle, NORMALIZED_FLAG_KEY, {
+      configurable: true,
+      enumerable: false,
+      value: true,
+      writable: true
+    });
+  } catch (defineNormalizedError) {
+    void defineNormalizedError;
+    bundle[NORMALIZED_FLAG_KEY] = true;
+  }
+  return bundle;
+}
+
+
 // Normalize various camera properties so downstream logic works with
 // consistent structures and value formats.
-function unifyDevices(devicesData) {
-  if (!devicesData || typeof devicesData !== 'object') return;
+function unifyDevices(devicesData, options) {
+  if (!devicesData || typeof devicesData !== 'object') return devicesData;
+  const force = Boolean(options && options.force);
+  if (!force && hasNormalizedDevicesMarker(devicesData)) {
+    return devicesData;
+  }
   Object.values(devicesData.cameras || {}).forEach(cam => {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
@@ -7692,6 +7727,13 @@ function unifyDevices(devicesData) {
       c.fizConnectors = [];
     }
   });
+
+  markDevicesNormalized(devicesData);
+  return devicesData;
+}
+
+function normalizeDevicesForPersistence(devicesData) {
+  return unifyDevices(devicesData, { force: true });
 }
 
 function resolveUpdateDevicesReferenceFunction() {
@@ -7770,6 +7812,7 @@ function resolveUpdateDevicesReferenceFunction() {
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
   window.defaultDevices = CORE_DEEP_CLONE(devices);
+  markDevicesNormalized(window.defaultDevices);
   unifyDevices(window.defaultDevices);
 }
 
@@ -7806,7 +7849,7 @@ if (storedDevices) {
     }
   }
 }
-unifyDevices(devices);
+unifyDevices(devices, { force: true });
 
 function getBatteryPlateSupport(name) {
   const cam = devices.cameras[name];

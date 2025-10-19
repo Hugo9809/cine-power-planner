@@ -98,12 +98,20 @@ const gear = {
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ]
     },
     "SmallHD Cine 24\" 4K High-Bright Monitor": {
@@ -121,12 +129,20 @@ const gear = {
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ]
     },
     "Sony PVM-A170 17\" OLED": {
@@ -144,11 +160,17 @@ const gear = {
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" }
+        {
+          "type": "3G-SDI"
+        }
       ]
     },
     "SmallHD 1303 HDR": {
@@ -159,20 +181,32 @@ const gear = {
       "powerDrawWatts": 39,
       "power": {
         "input": [
-          { "type": "XLR" },
-          { "type": "D-Tap" }
+          {
+            "type": "XLR"
+          },
+          {
+            "type": "D-Tap"
+          }
         ],
         "output": null
       },
       "notes": "Typical draw ranges from 25-39 W depending on load.",
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "3G-SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "3G-SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ]
     },
     "SmallHD Cine 13 UHD 4K": {
@@ -183,20 +217,34 @@ const gear = {
       "powerDrawWatts": 36.7,
       "power": {
         "input": [
-          { "type": "XLR 4-pin" },
-          { "type": "V-Mount" },
-          { "type": "Gold-Mount" }
+          {
+            "type": "XLR 4-pin"
+          },
+          {
+            "type": "V-Mount"
+          },
+          {
+            "type": "Gold-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "12G-SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ],
       "videoOutputs": [
-        { "type": "12G-SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ]
     },
     "SEETEC P133-9HSD": {
@@ -207,21 +255,37 @@ const gear = {
       "powerDrawWatts": 12,
       "power": {
         "input": [
-          { "type": "DC" },
-          { "type": "Battery Plate" }
+          {
+            "type": "DC"
+          },
+          {
+            "type": "Battery Plate"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI" },
-        { "type": "HDMI" },
-        { "type": "Composite" },
-        { "type": "DVI-I" }
+        {
+          "type": "3G-SDI"
+        },
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "Composite"
+        },
+        {
+          "type": "DVI-I"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "3G-SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ]
     },
     "SWIT BM-U175": {
@@ -232,20 +296,37 @@ const gear = {
       "powerDrawWatts": 85,
       "power": {
         "input": [
-          { "type": "XLR 4-pin" },
-          { "type": "AC" },
-          { "type": "V-Mount" }
+          {
+            "type": "XLR 4-pin"
+          },
+          {
+            "type": "AC"
+          },
+          {
+            "type": "V-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "12G-SDI", "notes": "4x" },
-        { "type": "HDMI 2.0" },
-        { "type": "SFP Fiber", "notes": "optional" }
+        {
+          "type": "12G-SDI",
+          "notes": "4x"
+        },
+        {
+          "type": "HDMI 2.0"
+        },
+        {
+          "type": "SFP Fiber",
+          "notes": "optional"
+        }
       ],
       "videoOutputs": [
-        { "type": "12G-SDI", "notes": "4x" }
+        {
+          "type": "12G-SDI",
+          "notes": "4x"
+        }
       ]
     },
     "SWIT S-1173F": {
@@ -256,23 +337,46 @@ const gear = {
       "powerDrawWatts": 32,
       "power": {
         "input": [
-          { "type": "XLR 4-pin" },
-          { "type": "V-Mount" },
-          { "type": "Gold-Mount" }
+          {
+            "type": "XLR 4-pin"
+          },
+          {
+            "type": "V-Mount"
+          },
+          {
+            "type": "Gold-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI", "notes": "2x" },
-        { "type": "HDMI" },
-        { "type": "Y/Pb/Pr" },
-        { "type": "VGA" },
-        { "type": "CVBS" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x"
+        },
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "Y/Pb/Pr"
+        },
+        {
+          "type": "VGA"
+        },
+        {
+          "type": "CVBS"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI", "notes": "loop" },
-        { "type": "HDMI", "notes": "loop" }
+        {
+          "type": "3G-SDI",
+          "notes": "loop"
+        },
+        {
+          "type": "HDMI",
+          "notes": "loop"
+        }
       ]
     },
     "SWIT K15": {
@@ -283,21 +387,39 @@ const gear = {
       "powerDrawWatts": null,
       "power": {
         "input": [
-          { "type": "AC" },
-          { "type": "XLR" },
-          { "type": "V-Mount" }
+          {
+            "type": "AC"
+          },
+          {
+            "type": "XLR"
+          },
+          {
+            "type": "V-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI", "notes": "2x in" },
-        { "type": "HDMI 1.4" },
-        { "type": "USB-A" },
-        { "type": "USB-C" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x in"
+        },
+        {
+          "type": "HDMI 1.4"
+        },
+        {
+          "type": "USB-A"
+        },
+        {
+          "type": "USB-C"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI", "notes": "2x out" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x out"
+        }
       ]
     },
     "SWIT K21": {
@@ -308,22 +430,43 @@ const gear = {
       "powerDrawWatts": null,
       "power": {
         "input": [
-          { "type": "AC" },
-          { "type": "XLR" },
-          { "type": "V-Mount" }
+          {
+            "type": "AC"
+          },
+          {
+            "type": "XLR"
+          },
+          {
+            "type": "V-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI", "notes": "2x in" },
-        { "type": "HDMI 1.4" },
-        { "type": "USB-A" },
-        { "type": "USB-C" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x in"
+        },
+        {
+          "type": "HDMI 1.4"
+        },
+        {
+          "type": "USB-A"
+        },
+        {
+          "type": "USB-C"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI", "notes": "2x loop" },
-        { "type": "HDMI", "notes": "loop" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x loop"
+        },
+        {
+          "type": "HDMI",
+          "notes": "loop"
+        }
       ]
     },
     "Sony PVM-X1800": {
@@ -333,13 +476,19 @@ const gear = {
       "brightnessNits": 1000,
       "powerDrawWatts": 98,
       "power": {
-        "input": { "type": "AC" },
+        "input": {
+          "type": "AC"
+        },
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "SDI" },
-        { "type": "HDMI" }
+        {
+          "type": "SDI"
+        },
+        {
+          "type": "HDMI"
+        }
       ],
       "videoOutputs": []
     },
@@ -351,16 +500,26 @@ const gear = {
       "powerDrawWatts": 42,
       "power": {
         "input": [
-          { "type": "AC" },
-          { "type": "DC" }
+          {
+            "type": "AC"
+          },
+          {
+            "type": "DC"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI" },
-        { "type": "HDMI" },
-        { "type": "Composite/Component" }
+        {
+          "type": "3G-SDI"
+        },
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "Composite/Component"
+        }
       ],
       "videoOutputs": []
     },
@@ -371,13 +530,19 @@ const gear = {
       "brightnessNits": null,
       "powerDrawWatts": null,
       "power": {
-        "input": { "type": "AC" },
+        "input": {
+          "type": "AC"
+        },
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "RGB" },
-        { "type": "Composite" }
+        {
+          "type": "RGB"
+        },
+        {
+          "type": "Composite"
+        }
       ],
       "videoOutputs": []
     },
@@ -388,18 +553,30 @@ const gear = {
       "brightnessNits": 400,
       "powerDrawWatts": 35,
       "power": {
-        "input": { "type": "AC" },
+        "input": {
+          "type": "AC"
+        },
         "output": null
       },
       "notes": "Rated 23-35 W depending on settings.",
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI", "notes": "2x" },
-        { "type": "DisplayPort" },
-        { "type": "DVI-D" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x"
+        },
+        {
+          "type": "DisplayPort"
+        },
+        {
+          "type": "DVI-D"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI", "notes": "2x" }
+        {
+          "type": "3G-SDI",
+          "notes": "2x"
+        }
       ]
     },
     "Flanders Scientific DM170": {
@@ -409,13 +586,17 @@ const gear = {
       "brightnessNits": null,
       "powerDrawWatts": 32,
       "power": {
-        "input": { "type": "AC" },
+        "input": {
+          "type": "AC"
+        },
         "output": null
       },
       "notes": "Rated 21-32 W depending on configuration.",
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "3G-SDI" }
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": []
     },
@@ -427,18 +608,30 @@ const gear = {
       "powerDrawWatts": 220,
       "power": {
         "input": [
-          { "type": "XLR 4-pin", "notes": "24V DC" },
-          { "type": "V-Mount", "notes": "optional plate" }
+          {
+            "type": "XLR 4-pin",
+            "notes": "24V DC"
+          },
+          {
+            "type": "V-Mount",
+            "notes": "optional plate"
+          }
         ],
         "output": null
       },
       "notes": "Consumes approximately 35-220 W depending on HDR mode.",
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "12G-SDI", "notes": "4x" }
+        {
+          "type": "12G-SDI",
+          "notes": "4x"
+        }
       ],
       "videoOutputs": [
-        { "type": "12G-SDI", "notes": "4x loop" }
+        {
+          "type": "12G-SDI",
+          "notes": "4x loop"
+        }
       ]
     },
     "Tarion BM120-4KS": {
@@ -449,21 +642,38 @@ const gear = {
       "powerDrawWatts": 23,
       "power": {
         "input": [
-          { "voltageRange": "10-24", "type": "DC" },
-          { "type": "V-Mount" }
+          {
+            "voltageRange": "10-24",
+            "type": "DC"
+          },
+          {
+            "type": "V-Mount"
+          }
         ],
         "output": null
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "SDI" },
-        { "type": "VGA" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "SDI"
+        },
+        {
+          "type": "VGA"
+        }
       ],
       "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "SDI" },
-        { "type": "VGA" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "SDI"
+        },
+        {
+          "type": "VGA"
+        }
       ]
     },
     "None": {
@@ -534,6 +744,8 @@ const gear = {
       "notes": "Streams to iOS devices for on-set monitoring; includes Link AX Wi-Fi router/access point"
     }
   },
+  "videoAssist": {},
+  "media": {},
   "accessories": {
     "powerPlates": {
       "ARRI B-Mount Battery Adapter": {
@@ -4495,7 +4707,9 @@ const gear = {
       "Angelbird CFexpress Type A Reader": {
         "brand": "Angelbird",
         "model": "CFexpress Type A Reader",
-        "supportedMedia": ["CFexpress Type A"],
+        "supportedMedia": [
+          "CFexpress Type A"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4504,7 +4718,10 @@ const gear = {
       "Angelbird CFexpress Type B & CFast 2.0 Reader": {
         "brand": "Angelbird",
         "model": "CFexpress Type B & CFast Reader",
-        "supportedMedia": ["CFexpress Type B", "CFast 2.0"],
+        "supportedMedia": [
+          "CFexpress Type B",
+          "CFast 2.0"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4513,7 +4730,9 @@ const gear = {
       "Angelbird CFexpress Type B Card Reader (USB 4.0)": {
         "brand": "Angelbird",
         "model": "CFexpress Type B Card Reader (USB 4.0)",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB 4.0 Gen 3x2 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4523,7 +4742,9 @@ const gear = {
         "brand": "ARRI",
         "model": "Codex Compact Drive Reader",
         "kNumber": "K2.0024130",
-        "supportedMedia": ["Codex Compact Drive"],
+        "supportedMedia": [
+          "Codex Compact Drive"
+        ],
         "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4532,7 +4753,11 @@ const gear = {
       "Lexar Professional CFexpress Type A / SD USB 3.2 Reader": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type A / SD Reader",
-        "supportedMedia": ["CFexpress Type A", "SD UHS-II", "SD UHS-I"],
+        "supportedMedia": [
+          "CFexpress Type A",
+          "SD UHS-II",
+          "SD UHS-I"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4541,7 +4766,9 @@ const gear = {
       "Lexar Workflow CFexpress Type B Reader (USB 4.0)": {
         "brand": "Lexar",
         "model": "Workflow CFexpress Type B Reader (USB 4.0)",
-        "supportedMedia": ["CFexpress 4.0 Type B"],
+        "supportedMedia": [
+          "CFexpress 4.0 Type B"
+        ],
         "interface": "USB 4.0 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4550,7 +4777,9 @@ const gear = {
       "Lexar Workflow CFexpress Type A Reader (USB 4.0)": {
         "brand": "Lexar",
         "model": "Workflow CFexpress Type A Reader (USB 4.0)",
-        "supportedMedia": ["CFexpress 4.0 Type A"],
+        "supportedMedia": [
+          "CFexpress 4.0 Type A"
+        ],
         "interface": "USB 4.0 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4559,7 +4788,11 @@ const gear = {
       "Lexar microSD Express Card Reader": {
         "brand": "Lexar",
         "model": "microSD Express Card Reader",
-        "supportedMedia": ["microSD Express", "microSD UHS-I", "microSD UHS-II"],
+        "supportedMedia": [
+          "microSD Express",
+          "microSD UHS-I",
+          "microSD UHS-II"
+        ],
         "interface": "USB 3.2 Gen 2 (10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4568,7 +4801,9 @@ const gear = {
       "Lexar Professional CFexpress Type B USB 3.2 Gen 2x2 Reader": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type B USB 3.2 Gen 2x2 Reader",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB 3.2 Gen 2x2 (20 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4577,7 +4812,9 @@ const gear = {
       "Lexar Professional XQD 2.0 USB 3.0 Reader": {
         "brand": "Lexar",
         "model": "Professional XQD 2.0",
-        "supportedMedia": ["XQD"],
+        "supportedMedia": [
+          "XQD"
+        ],
         "interface": "USB 3.0 (USB 3.1 Gen 1 Micro-B)",
         "slots": 1,
         "busPowered": true,
@@ -4586,7 +4823,10 @@ const gear = {
       "Panasonic AU-XPD3 ExpressP2 / microP2 Reader": {
         "brand": "Panasonic",
         "model": "AU-XPD3",
-        "supportedMedia": ["ExpressP2", "microP2"],
+        "supportedMedia": [
+          "ExpressP2",
+          "microP2"
+        ],
         "interface": "Thunderbolt 3 (40 Gb/s)",
         "slots": 2,
         "busPowered": false,
@@ -4595,7 +4835,10 @@ const gear = {
       "RED Station CFexpress Type B (USB-C)": {
         "brand": "RED",
         "model": "RED Station CFexpress Type B",
-        "supportedMedia": ["RED CFexpress", "CFexpress Type B"],
+        "supportedMedia": [
+          "RED CFexpress",
+          "CFexpress Type B"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4604,7 +4847,9 @@ const gear = {
       "RED Station RED MINI-MAG (USB-C)": {
         "brand": "RED",
         "model": "RED Station RED MINI-MAG",
-        "supportedMedia": ["RED MINI-MAG"],
+        "supportedMedia": [
+          "RED MINI-MAG"
+        ],
         "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4614,7 +4859,9 @@ const gear = {
         "brand": "Sony",
         "model": "AXS-AR1",
         "kNumber": "AXS-AR1",
-        "supportedMedia": ["Sony AXS"],
+        "supportedMedia": [
+          "Sony AXS"
+        ],
         "interface": "USB 3.0 (USB 3.1 Gen 1 Type-B)",
         "slots": 1,
         "busPowered": true,
@@ -4623,7 +4870,11 @@ const gear = {
       "Sony SBAC-US30 SxS Reader": {
         "brand": "Sony",
         "model": "SBAC-US30",
-        "supportedMedia": ["SxS PRO+", "SxS PRO X", "SxS-1"],
+        "supportedMedia": [
+          "SxS PRO+",
+          "SxS PRO X",
+          "SxS-1"
+        ],
         "interface": "USB 3.0 (USB 3.1 Gen 1 Micro-B)",
         "slots": 1,
         "busPowered": true,
@@ -4632,7 +4883,11 @@ const gear = {
       "Sony MRW-G2 CFexpress Type A / SD Reader": {
         "brand": "Sony",
         "model": "MRW-G2",
-        "supportedMedia": ["CFexpress Type A", "SD UHS-II", "SD UHS-I"],
+        "supportedMedia": [
+          "CFexpress Type A",
+          "SD UHS-II",
+          "SD UHS-I"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C)",
         "slots": 2,
         "busPowered": true,
@@ -4641,7 +4896,10 @@ const gear = {
       "Sony MRW-G3 CFexpress Type A Reader": {
         "brand": "Sony",
         "model": "MRW-G3",
-        "supportedMedia": ["CFexpress Type A", "SDXC UHS-II"],
+        "supportedMedia": [
+          "CFexpress Type A",
+          "SDXC UHS-II"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4650,7 +4908,11 @@ const gear = {
       "ProGrade Digital CFexpress Type B & SD Reader (Thunderbolt 4)": {
         "brand": "ProGrade",
         "model": "PG04",
-        "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+        "supportedMedia": [
+          "CFexpress Type B",
+          "SD UHS-II",
+          "SD UHS-I"
+        ],
         "interface": "Thunderbolt 4 (40 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4659,7 +4921,12 @@ const gear = {
       "SanDisk Professional PRO-READER SD & microSD": {
         "brand": "SanDisk Professional",
         "model": "PRO-READER SD and microSD",
-        "supportedMedia": ["SD UHS-II", "SD UHS-I", "microSD UHS-I", "microSD UHS-II"],
+        "supportedMedia": [
+          "SD UHS-II",
+          "SD UHS-I",
+          "microSD UHS-I",
+          "microSD UHS-II"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4668,7 +4935,9 @@ const gear = {
       "Blackmagic Design USB-C CFast 2.0 Reader": {
         "brand": "Blackmagic Design",
         "model": "CFast 2.0 Reader",
-        "supportedMedia": ["CFast 2.0"],
+        "supportedMedia": [
+          "CFast 2.0"
+        ],
         "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4677,7 +4946,9 @@ const gear = {
       "DJI CINESSD Station (Thunderbolt 3)": {
         "brand": "DJI",
         "model": "CINESSD Station Thunderbolt 3",
-        "supportedMedia": ["DJI CINESSD"],
+        "supportedMedia": [
+          "DJI CINESSD"
+        ],
         "interface": "Thunderbolt 3 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4686,7 +4957,9 @@ const gear = {
       "Panasonic AJ-PCD30 Triple P2 Reader": {
         "brand": "Panasonic",
         "model": "AJ-PCD30",
-        "supportedMedia": ["P2"],
+        "supportedMedia": [
+          "P2"
+        ],
         "interface": "USB 3.0 (USB 3.1 Gen 1, 5 Gb/s)",
         "slots": 3,
         "busPowered": false,
@@ -4695,7 +4968,11 @@ const gear = {
       "Sony SBAC-T40 Dual SxS Reader": {
         "brand": "Sony",
         "model": "SBAC-T40",
-        "supportedMedia": ["SxS PRO+", "SxS PRO X", "SxS-1"],
+        "supportedMedia": [
+          "SxS PRO+",
+          "SxS PRO X",
+          "SxS-1"
+        ],
         "interface": "Thunderbolt 3 (40 Gb/s)",
         "slots": 2,
         "busPowered": false,
@@ -4704,7 +4981,10 @@ const gear = {
       "Sonnet SF3 Series – CFexpress/XQD Pro Card Reader": {
         "brand": "Sonnet",
         "model": "SF3 Series CFexpress/XQD Pro Card Reader",
-        "supportedMedia": ["CFexpress Type B", "XQD"],
+        "supportedMedia": [
+          "CFexpress Type B",
+          "XQD"
+        ],
         "interface": "Thunderbolt 3 (40 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4713,7 +4993,9 @@ const gear = {
       "SanDisk Professional PRO-READER CFexpress Type B": {
         "brand": "SanDisk Professional",
         "model": "PRO-READER CFexpress Type B",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4722,7 +5004,11 @@ const gear = {
       "Wise Advanced CFexpress Type B & SD Dual Reader": {
         "brand": "Wise Advanced",
         "model": "CFexpress Type B & SD Dual Reader",
-        "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+        "supportedMedia": [
+          "CFexpress Type B",
+          "SD UHS-II",
+          "SD UHS-I"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4731,7 +5017,11 @@ const gear = {
       "Delkin Devices CFexpress Type B & SD UHS-II Reader": {
         "brand": "Delkin Devices",
         "model": "DDREADER-54",
-        "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+        "supportedMedia": [
+          "CFexpress Type B",
+          "SD UHS-II",
+          "SD UHS-I"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 2,
         "busPowered": true,
@@ -4740,7 +5030,10 @@ const gear = {
       "Atomos USB-C 3.1 Docking Station": {
         "brand": "Atomos",
         "model": "Docking Station USB-C 3.1",
-        "supportedMedia": ["AtomX SSDmini", "Master Caddy II"],
+        "supportedMedia": [
+          "AtomX SSDmini",
+          "Master Caddy II"
+        ],
         "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4749,7 +5042,14 @@ const gear = {
       "Blackjet UX-1 Cinema Dock": {
         "brand": "Blackjet",
         "model": "UX-1 Cinema Dock",
-        "supportedMedia": ["CFast 2.0", "XQD", "SxS", "Red MINI-MAG", "SD UHS-II", "microSD UHS-I"],
+        "supportedMedia": [
+          "CFast 2.0",
+          "XQD",
+          "SxS",
+          "Red MINI-MAG",
+          "SD UHS-II",
+          "microSD UHS-I"
+        ],
         "interface": "Thunderbolt 3 (40 Gb/s)",
         "slots": 6,
         "busPowered": false,
@@ -4758,7 +5058,9 @@ const gear = {
       "OWC Atlas CFexpress Type B Card Reader": {
         "brand": "OWC",
         "model": "Atlas CFexpress Type B Card Reader",
-        "supportedMedia": ["CFexpress 4.0 Type B"],
+        "supportedMedia": [
+          "CFexpress 4.0 Type B"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4767,7 +5069,9 @@ const gear = {
       "OWC Atlas FXR CFexpress Type B Reader": {
         "brand": "OWC",
         "model": "Atlas FXR",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4776,7 +5080,9 @@ const gear = {
       "Wise Advanced RD-40CXB CFexpress Type B Reader": {
         "brand": "Wise Advanced",
         "model": "RD-40CXB CFexpress Type B Reader",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4785,7 +5091,9 @@ const gear = {
       "Nextorage NX-SA1PRO CFexpress Type A Reader": {
         "brand": "Nextorage",
         "model": "NX-SA1PRO CFexpress Type A Reader",
-        "supportedMedia": ["CFexpress Type A"],
+        "supportedMedia": [
+          "CFexpress Type A"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4794,7 +5102,9 @@ const gear = {
       "Nextorage NX-SB1PRO CFexpress Type B Reader": {
         "brand": "Nextorage",
         "model": "NX-SB1PRO CFexpress Type B Reader",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4803,7 +5113,9 @@ const gear = {
       "ProGrade Digital PGM12 Mobile CFexpress Type A Reader": {
         "brand": "ProGrade",
         "model": "PGM12 Mobile CFexpress Type A Reader",
-        "supportedMedia": ["CFexpress Type A"],
+        "supportedMedia": [
+          "CFexpress Type A"
+        ],
         "interface": "USB 3.2 Gen 2 (10 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4812,7 +5124,9 @@ const gear = {
       "Exascend Nitro CFexpress Type B Reader": {
         "brand": "Exascend",
         "model": "Nitro CFexpress Type B Reader",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB4 (40 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4821,7 +5135,9 @@ const gear = {
       "Exascend CFexpress Type B Reader 20 Gbps": {
         "brand": "Exascend",
         "model": "CFexpress Type B Reader 20 Gbps",
-        "supportedMedia": ["CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type B"
+        ],
         "interface": "USB 3.2 Gen 2x2 (20 Gb/s)",
         "slots": 1,
         "busPowered": true,
@@ -4830,5117 +5146,16 @@ const gear = {
       "Chipfancier CFexpress Type-A/B 2-in-1 Card Reader": {
         "brand": "Chipfancier",
         "model": "CFexpress Type-A/B 2-in-1 Card Reader",
-        "supportedMedia": ["CFexpress Type A", "CFexpress Type B"],
+        "supportedMedia": [
+          "CFexpress Type A",
+          "CFexpress Type B"
+        ],
         "interface": "USB4 / Thunderbolt 3/4 (40 Gb/s)",
         "slots": 2,
         "busPowered": true,
         "notes": "Dual-slot reader that runs at 40 Gbps via USB4 or Thunderbolt; falls back to 20 Gbps on USB 3.2 Gen2x2"
       }
     },
-    "lenses": {
-        "ZEISS High Speed MK III 18mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 95,
-          "minFocusMeters": 0.28,
-          "weight_g": 1600,
-          "notes": "Front Ø80 mm; S35; T1.3-T16"
-        },
-        "ZEISS High Speed MK III 20mm T2.1": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "ZEISS High Speed MK III 25mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 75,
-          "minFocusMeters": 0.25,
-          "weight_g": 1100,
-          "notes": "Front Ø80 mm; S35"
-        },
-        "ZEISS High Speed MK III 35mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 64,
-          "minFocusMeters": 0.3,
-          "weight_g": 700,
-          "notes": "Front Ø80 mm; S35"
-        },
-        "ZEISS High Speed MK III 50mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 62,
-          "minFocusMeters": 0.6,
-          "weight_g": 700,
-          "notes": "Front Ø80 mm; S35"
-        },
-        "ZEISS High Speed MK III 65mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 75,
-          "minFocusMeters": 0.7,
-          "weight_g": 1250,
-          "notes": "Front Ø80 mm; S35"
-        },
-        "ZEISS High Speed MK III 85mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "mount": "PL",
-          "lengthMm": 85,
-          "minFocusMeters": 0.91,
-          "weight_g": 1400,
-          "notes": "Front Ø80 mm; S35"
-        },
-        "ZEISS High Speed MK III 135mm T1.3": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Tokina Vista One 18mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.7,
-          "minFocusMeters": 0.28,
-          "weight_g": 2300,
-          "notes": "Single-coated Vista One edition; 300° focus rotation and large-format coverage"
-        },
-        "Tokina Vista One 25mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.7,
-          "minFocusMeters": 0.35,
-          "weight_g": 2200,
-          "notes": "Large-format Vista One prime with character single coating and matching 114 mm fronts"
-        },
-        "Tokina Vista One 35mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.7,
-          "minFocusMeters": 0.38,
-          "weight_g": 2100,
-          "notes": "Covers VistaVision sensors; single-coated for flare control and gentle halation"
-        },
-        "Tokina Vista One 50mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.7,
-          "minFocusMeters": 0.45,
-          "weight_g": 2100,
-          "notes": "Vista One 50 mm maintains T1.5 speed with unified gear positions"
-        },
-        "IB/E Raptor Macro 60mm T2.9": {
-          "brand": "IB/E Optics",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 50,
-          "minFocusMeters": 0.24,
-          "weight_g": 1600,
-          "notes": "Full-frame 1:1 macro prime; includes LDS metadata contacts"
-        },
-        "IB/E Raptor Macro 100mm T2.9": {
-          "brand": "IB/E Optics",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 50,
-          "minFocusMeters": 0.31,
-          "weight_g": 1750,
-          "notes": "Full-frame macro with user-swappable mount options and 300° focus rotation"
-        },
-        "IB/E Raptor Macro 150mm T3.5": {
-          "brand": "IB/E Optics",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 3.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 50,
-          "minFocusMeters": 0.41,
-          "weight_g": 1900,
-          "notes": "Long macro prime covering full frame with extended close focus"
-        },
-        "Angénieux Optimo 15-40mm T2.6": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.6,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.61,
-          "weight_g": 1920,
-          "imageCircleMm": 31.4,
-          "lengthMm": 186,
-          "notes": "Compact Optimo zoom with S35+ coverage (≈31.4 mm diagonal)."
-        },
-        "Angénieux Optimo 45-120mm T2.8": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.94,
-          "weight_g": 1950,
-          "imageCircleMm": 31.4,
-          "lengthMm": 203,
-          "notes": "Matches the 15-40mm Optimo compact zoom; S35+ coverage."
-        },
-        "Angenieux Optimo 25-250mm T3.5 (PL)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 3.5,
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 7300,
-          "imageCircleMm": 31.4,
-          "lengthMm": 377.4
-        },
-        "LOMO Anamorphic RF 35mm T2.5": {
-          "brand": "LOMO",
-          "frontDiameterMm": 141,
-          "clampOn": true,
-          "tStop": 2.5,
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "LOMO Anamorphic RF 50mm T2.4": {
-          "brand": "LOMO",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "LOMO Anamorphic RF 75mm T2.4": {
-          "brand": "LOMO",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "LOMO Anamorphic RF 100mm T3.2": {
-          "brand": "LOMO",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3.2,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Canon CN7x17 17-120mm T2.95-3.9": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.95,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.4,
-          "minFocusMeters": 0.85,
-          "weight_g": 2900,
-          "lengthMm": 254.9,
-          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area (≈31.4 mm image circle)."
-        },
-        "Canon CN-E Flex Zoom 14-35mm T1.7": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.7,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.4,
-          "minFocusMeters": 0.6,
-          "weight_g": 3400,
-          "lengthMm": 233.3,
-          "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 241.3 mm / 3.4 kg."
-        },
-        "Canon CN-E Flex Zoom 31.5-95mm T1.7": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.7,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.4,
-          "minFocusMeters": 1,
-          "weight_g": 3500,
-          "lengthMm": 238.4,
-          "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 246.4 mm / 3.5 kg."
-        },
-        "Canon Sumire Prime 14mm T3.1": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3.1,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.203,
-          "weight_g": 1200,
-          "imageCircleMm": 43.3,
-          "notes": "Sumire 14mm T3.1 FP X. Series constant Ø114 mm, 300° focus rotation. 14 mm has no 105 mm front thread."
-        },
-        "Canon Sumire Prime 20mm T1.5": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1200,
-          "imageCircleMm": 43.3,
-          "lengthMm": 102,
-          "notes": "Sumire Prime 20mm T1.5 FP X. Series uses Ø114 mm fronts; per Canon spec weight ≈1.2 kg."
-        },
-        "Canon Sumire Prime 24mm T1.5": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1200,
-          "imageCircleMm": 43.3,
-          "lengthMm": 102,
-          "notes": "Sumire Prime 24mm T1.5 FP X. Canon table lists 1.2 kg weight and 1' close focus."
-        },
-        "Canon Sumire Prime 35mm T1.5": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.46,
-          "weight_g": 1100,
-          "imageCircleMm": 43.3,
-          "lengthMm": 115,
-          "notes": "Sumire Prime 35mm T1.5 FP X. Canon table: 1.1 kg; CF 1'6\"."
-        },
-        "Canon Sumire Prime 50mm T1.3": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.46,
-          "weight_g": 1100,
-          "imageCircleMm": 43.3,
-          "lengthMm": 115,
-          "notes": "Sumire Prime 50mm T1.3 FP X. Canon table: 1.1 kg; CF 1'6\"."
-        },
-        "Canon Sumire Prime 85mm T1.3": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.95,
-          "weight_g": 1300,
-          "imageCircleMm": 43.3,
-          "lengthMm": 118,
-          "notes": "Sumire Prime 85mm T1.3 FP X. Canon table: 1.3 kg; CF 3'2\"."
-        },
-        "Canon Sumire Prime 135mm T2.2": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1400,
-          "imageCircleMm": 43.3,
-          "lengthMm": 118,
-          "notes": "Sumire Prime 135mm T2.2 FP X. Canon table: 1.4 kg; CF 3'3\"."
-        },
-        "Angénieux Ultra Compact FF 37-102mm T2.9": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2600,
-          "imageCircleMm": 46.3,
-          "lengthMm": 235,
-          "notes": "Full-frame/VV coverage with Cooke /i metadata; 114 mm front."
-        },
-        "Angénieux Ultra Compact FF 21-56mm T2.9": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 162,
-          "clampOn": true,
-          "tStop": 4.2,
-          "mount": "PL / LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.52,
-          "weight_g": 12750,
-          "imageCircleMm": 46.3,
-          "lengthMm": 523,
-          "notes": "Front Ø162 mm; weight and length are the full-frame specification. Data from Angénieux Optimo Ultra 12x technical literature."
-        },
-        "Angénieux Optimo Ultra 12x 24-290mm T2.8 (S35)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 162,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 12600,
-          "imageCircleMm": 31.1,
-          "lengthMm": 472,
-          "notes": "Super 35 mode for the Optimo Ultra 12x system. Data from Angénieux Optimo Ultra 12x technical literature."
-        },
-        "Angénieux Optimo Ultra 12x 26-320mm T3.1 (Ultra 35)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 162,
-          "clampOn": true,
-          "tStop": 3.1,
-          "mount": "PL / LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.24,
-          "weight_g": 12750,
-          "imageCircleMm": 34.6,
-          "lengthMm": 480,
-          "notes": "Ultra 35 mode for the Optimo Ultra 12x system. Data from Angénieux Optimo Ultra 12x technical literature."
-        },
-        "Angénieux Type EZ-1 30-90mm T2.0 (S35)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2150,
-          "imageCircleMm": 30,
-          "lengthMm": 226,
-          "notes": "Optimo Type EZ-1 in Super 35 configuration. Ships in PL with Angénieux IRO support for EF/E/RF mounts and converts to the FF/VV 45-135mm block without tools."
-        },
-        "Angénieux Type EZ-1 45-135mm T3.0 (FF)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2200,
-          "imageCircleMm": 46.3,
-          "lengthMm": 231,
-          "notes": "Full-frame/VV IRO block for the Optimo Type EZ-1. Maintains the same Ø114 mm front and close focus while stretching coverage to 46.3 mm."
-        },
-        "Angénieux Type EZ-2 15-40mm T2.0 (S35)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2100,
-          "imageCircleMm": 30,
-          "lengthMm": 226,
-          "notes": "Optimo Type EZ-2 wide zoom covering Super 35. Shares the Angénieux IRO quick-swap system for EF/E/RF mounts and drop-in rear filters."
-        },
-        "Angénieux Type EZ-2 22-60mm T3.0 (FF)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2150,
-          "imageCircleMm": 46.3,
-          "lengthMm": 231,
-          "notes": "Full-frame/VV configuration for the Optimo Type EZ-2. Retains Ø114 mm fronts and the same close-focus distance when converted with the IRO kit."
-        },
-        "Angénieux Type EZ-3 45-165mm T2.3-3.0 (S35)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 2600,
-          "imageCircleMm": 30.4,
-          "lengthMm": 265,
-          "notes": "Convertible Type EZ-3 using Angénieux IRO: S35 block covers 30.4 mm image circle. Ships in PL with swaps to EF/E/RF."
-        },
-        "Angénieux Type EZ-3 68-250mm T3.5-4.5 (FF)": {
-          "brand": "Angénieux",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 2600,
-          "imageCircleMm": 46.3,
-          "lengthMm": 265,
-          "notes": "Convertible Type EZ-3 using Angénieux IRO: FF/VV block covers 46.3 mm image circle. Ships in PL with swaps to EF/E/RF."
-        },
-        "ARRI Signature Prime 12mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 134,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 25,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2800,
-          "imageCircleMm": 44.7,
-          "lengthMm": 239,
-          "notes": "From ARRI Signature Prime technical data: MOD 0.35 m, length 239 mm, front Ø 134 mm."
-        },
-        "ARRI Signature Prime 15mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 156,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2800,
-          "imageCircleMm": 44.7,
-          "lengthMm": 197,
-          "notes": "From ARRI data: length 197 mm, front Ø 156 mm."
-        },
-        "ARRI Signature Prime 18mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2000,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "ARRI specs: length 178 mm, front Ø 114 mm."
-        },
-        "ARRI Signature Prime 21mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1900,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI table: same length as 18mm, front Ø same."
-        },
-        "ARRI Signature Prime 25mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1900,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI spec: 25 mm same length as 18/21 mm."
-        },
-        "ARRI Signature Prime 29mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1800,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI spec."
-        },
-        "ARRI Signature Prime 35mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1700,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "ARRI spec: same as others, length 178 mm."
-        },
-        "ARRI Signature Prime 40mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1800,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI spec."
-        },
-        "ARRI Signature Prime 47mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "weight_g": 1814,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "B&H listing: front 114 mm, weight 4 lb (~1814 g), close focus 9\" (~0.23 m) from lens front."
-        },
-        "ARRI Signature Prime 58mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "weight_g": 2000,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI spec table."
-        },
-        "ARRI Signature Prime 75mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.65,
-          "weight_g": 1900,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "ARRI spec table lists weight 1.9 kg."
-        },
-        "ARRI Signature Prime 95mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 1900,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "ARRI spec table gives MOD 0.85 m."
-        },
-        "ARRI Signature Prime 125mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 2300,
-          "imageCircleMm": 44.7,
-          "lengthMm": 178,
-          "notes": "From ARRI spec."
-        },
-        "ARRI Signature Prime 150mm T1.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "tStopRange": "T1.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.5,
-          "weight_g": 3250,
-          "imageCircleMm": 44.7,
-          "lengthMm": 208,
-          "notes": "ARRI spec: length 208 mm, weight 3.25 kg."
-        },
-        "ARRI Signature Prime 200mm T2.5": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.5,
-          "tStopRange": "T2.5–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.8,
-          "weight_g": 3100,
-          "imageCircleMm": 44.7,
-          "lengthMm": 218,
-          "notes": "From ARRI spec: length 218 mm for 200 mm T2.5."
-        },
-        "ARRI Signature Prime 280mm T2.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 134,
-          "clampOn": true,
-          "tStop": 2.8,
-          "tStopRange": "T2.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 25,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 2.5,
-          "weight_g": 4300,
-          "imageCircleMm": 44.7,
-          "lengthMm": 278,
-          "notes": "ARRI spec: length 278 mm, front Ø 134 mm."
-        },
-        "ARRI Signature Zoom 16-32mm T2.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "tStopRange": "T2.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "weight_g": 3200,
-          "imageCircleMm": 46,
-          "lengthMm": 195,
-          "notes": "From ARRI technical data: 16-32 mm, MOD = 0.45 m."
-        },
-        "ARRI Signature Zoom 24-75mm T2.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "tStopRange": "T2.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.7,
-          "weight_g": 3700,
-          "imageCircleMm": 46,
-          "lengthMm": 244,
-          "notes": "ARRI technical data for length, weight, and MOD; LDS-2/Cooke /i metadata compatible."
-        },
-        "ARRI Signature Zoom 45-135mm T2.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "tStopRange": "T2.8–T22",
-          "mount": "LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 3600,
-          "imageCircleMm": 46,
-          "lengthMm": 300,
-          "notes": "ARRI technical data for 1 m MOD, 300 mm length, and 3.6 kg weight; LDS-2/Cooke /i metadata compatible."
-        },
-        "ARRI Signature Zoom 65-300mm T2.8": {
-          "brand": "ARRI",
-          "frontDiameterMm": 156,
-          "clampOn": true,
-          "tStop": 2.8,
-          "tStopRange": "T2.8–T22",
-          "mount": "LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.8,
-          "weight_g": 8100,
-          "imageCircleMm": 46,
-          "lengthMm": 420,
-          "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
-        },
-        "ARRI/FUJINON Alura 15.5-45mm T2.8": {
-          "brand": "ARRI/FUJINON",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.5,
-          "minFocusMeters": 0.6,
-          "lengthMm": 228,
-          "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support."
-        },
-        "ARRI/FUJINON Alura 30-80mm T2.8": {
-          "brand": "ARRI/FUJINON",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 31.5,
-          "minFocusMeters": 0.6,
-          "lengthMm": 228,
-          "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8."
-        },
-        "ARRI/ZEISS Ultra Prime 8mm T2.8": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 134,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 0.35,
-          "weight_g": 2000,
-          "lengthMm": 130,
-          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
-        },
-        "ARRI/ZEISS Ultra Prime 10mm T2.1": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 156,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 0.35,
-          "weight_g": 2900,
-          "lengthMm": 172,
-          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
-        },
-        "ARRI/ZEISS Ultra Prime 12mm T2.0": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 156,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 0.3,
-          "weight_g": 2000,
-          "lengthMm": 140,
-          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
-        },
-        "ARRI/ZEISS Ultra Prime 14mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 0.22,
-          "weight_g": 1800,
-          "lengthMm": 112
-        },
-        "ARRI/ZEISS Ultra Prime 16mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 1200,
-          "lengthMm": 94,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 20mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.28,
-          "weight_g": 1200,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 24mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1000,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 28mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.28,
-          "weight_g": 1000,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1,
-          "notes": "ZEISS technical table lists 0.28 m MOD, 91 mm length, 1.0 kg weight, and PL reference for Ultra Prime 28 mm."
-        },
-        "ARRI/ZEISS Ultra Prime 32mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1100,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 40mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.38,
-          "weight_g": 1000,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 50mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 1000,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 65mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.65,
-          "weight_g": 1200,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 85mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.9,
-          "weight_g": 1200,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 100mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1200,
-          "lengthMm": 91,
-          "imageCircleMm": 31.1
-        },
-        "ARRI/ZEISS Ultra Prime 135mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 1.5,
-          "weight_g": 1600,
-          "lengthMm": 119,
-          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
-        },
-        "ARRI/ZEISS Ultra Prime 180mm T1.9": {
-          "brand": "ARRI/ZEISS",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "minFocusMeters": 2.6,
-          "weight_g": 2600,
-          "lengthMm": 166
-        },
-        "ZEISS Master Prime 12mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 156,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.4,
-          "weight_g": 2900,
-          "imageCircleMm": 46.3,
-          "lengthMm": 197,
-          "notes": "Front Ø156 mm; close focus measured from image plane. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 14mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.3,
-          "lengthMm": 172,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 16mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2200,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 18mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2200,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 21mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 25mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2300,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 27mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "ZEISS Master Prime 40mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "ZEISS Master Prime 50mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.5,
-          "weight_g": 2700,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 65mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "ZEISS Master Prime 75mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL / LDS",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "weight_g": 2800,
-          "imageCircleMm": 46.3,
-          "lengthMm": 153,
-          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
-        },
-        "ZEISS Master Prime 100mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 2900,
-          "imageCircleMm": 31.14,
-          "lengthMm": 205,
-          "notes": "ZEISS lists ≥31.14 mm image circle; optimized for Super 35 coverage."
-        },
-        "ZEISS Master Prime 135mm T1.3": {
-          "brand": "ZEISS/ARRI",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.55,
-          "weight_g": 2600,
-          "imageCircleMm": 43.3,
-          "lengthMm": 198,
-          "notes": "Full-frame coverage; T2.9–22. Source: ZEISS Cinema Zoom brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
-        },
-        "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.83,
-          "weight_g": 2500,
-          "imageCircleMm": 43.3,
-          "lengthMm": 196,
-          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Sources: ZEISS brochure (accessed 2025-09-14); internal list. Interchangeable Mount System supports PL/EF/F/E/MFT."
-        },
-        "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.52,
-          "weight_g": 2800,
-          "imageCircleMm": 43.3,
-          "lengthMm": 250,
-          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Source: ZEISS brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
-        },
-        "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "weight_g": 2000,
-          "imageCircleMm": 31.1,
-          "lengthMm": 226,
-          "notes": "ANSI Super 35 coverage; 11 iris blades; T2.9–22; front Ø 114 mm. Source: ZEISS technical data (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
-        },
-        "ZEISS Nano Prime 18mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Nano Prime 24mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Nano Prime 35mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Nano Prime 50mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Nano Prime 75mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Nano Prime 100mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "ZEISS Supreme Prime Radiance 18mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2270,
-          "imageCircleMm": 46.3,
-          "lengthMm": 163,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 21mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1500,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 25mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.26,
-          "weight_g": 1420,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 29mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.33,
-          "weight_g": 1610,
-          "imageCircleMm": 46.3,
-          "lengthMm": 121,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 35mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.32,
-          "weight_g": 1400,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 40mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.42,
-          "weight_g": 1490,
-          "imageCircleMm": 46.3,
-          "lengthMm": 121,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 50mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.457,
-          "weight_g": 1220,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 65mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 1630,
-          "imageCircleMm": 46.3,
-          "lengthMm": 121,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 85mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.84,
-          "weight_g": 1420,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 100mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1700,
-          "imageCircleMm": 46.3,
-          "lengthMm": 119,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "ZEISS Supreme Prime Radiance 135mm T1.5": {
-          "brand": "ZEISS",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.4,
-          "weight_g": 2270,
-          "imageCircleMm": 46.3,
-          "lengthMm": 146,
-          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
-        },
-        "Leitz Summicron-C 15mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 118,
-          "minFocusMeters": 0.3,
-          "weight_g": 1800,
-          "notes": "Front Ø95 mm"
-        },
-        "Leitz Summicron-C 18mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 101,
-          "minFocusMeters": 0.3,
-          "weight_g": 1300,
-          "notes": "Front Ø95 mm"
-        },
-        "Leitz Summicron-C 21mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 101,
-          "minFocusMeters": 0.3,
-          "weight_g": 1300,
-          "notes": "Front Ø95 mm"
-        },
-        "Leitz Summicron-C 25mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 101,
-          "minFocusMeters": 0.3,
-          "weight_g": 1500,
-          "notes": "Front Ø95 mm"
-        },
-        "Leitz Summicron-C 29mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 101,
-          "minFocusMeters": 0.3,
-          "weight_g": 1300,
-          "notes": "Leitz technical table lists 0.3 m MOD, 101 mm length, and 1.3 kg weight for the 29 mm Summicron-C."
-        },
-        "Leitz Summicron-C 35mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36
-        },
-        "Leitz Summicron-C 40mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 101,
-          "minFocusMeters": 0.45,
-          "weight_g": 1300,
-          "notes": "Leitz technical table lists 0.45 m MOD, 101 mm length, and 1.3 kg weight for the 40 mm Summicron-C."
-        },
-        "Leitz Summicron-C 50mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 1500,
-          "lengthMm": 101,
-          "imageCircleMm": 36
-        },
-        "Leitz Summicron-C 75mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "weight_g": 1200,
-          "lengthMm": 101,
-          "imageCircleMm": 36
-        },
-        "Leitz Summicron-C 100mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36
-        },
-        "Leitz Summicron-C 135mm T2.0": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 36,
-          "lengthMm": 118,
-          "minFocusMeters": 1.35,
-          "weight_g": 1800,
-          "notes": "Leitz technical table lists 1.35 m MOD, 118 mm length, and 1.8 kg weight for the 135 mm Summicron-C."
-        },
-        "Leitz Elsie 15mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 15mm T2.1. No front thread on 15–25 mm; 160 mm length per Leitz technical table."
-        },
-        "Leitz Elsie 18mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 18mm T2.1. No front thread on 15–25 mm."
-        },
-        "Leitz Elsie 21mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 21mm T2.1. No front thread on 15–25 mm."
-        },
-        "Leitz Elsie 25mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2400,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 25mm T2.1. No front thread on 15–25 mm; 160 mm length per Leitz technical table."
-        },
-        "Leitz Elsie 29mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 29mm T2.1. Front filter M92×1 on 29–100 mm."
-        },
-        "Leitz Elsie 35mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 35mm T2.1. Front filter M92×1."
-        },
-        "Leitz Elsie 40mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 40mm T2.1. Front filter M92×1."
-        },
-        "Leitz Elsie 50mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.508,
-          "weight_g": 1996,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 50mm T2.1. BandPro listing notes 20\" (0.508 m) MOD, 160 mm length, and ~4.4 lb (1996 g)."
-        },
-        "Leitz Elsie 65mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.65,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 65mm T2.1. Front filter M92×1."
-        },
-        "Leitz Elsie 75mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.75,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 75mm T2.1. Front filter M92×1."
-        },
-        "Leitz Elsie 100mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 2100,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 100mm T2.1. Front filter M92×1."
-        },
-        "Leitz Elsie 125mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.27,
-          "weight_g": 2404,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 125mm T2.1. BandPro listing notes 50\" (1.27 m) MOD, 160 mm length, and ~5.3 lb (2404 g)."
-        },
-        "Leitz Elsie 150mm T2.1": {
-          "brand": "Leitz",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "LPL (Cooke /i, LDS-2)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.5,
-          "weight_g": 2400,
-          "imageCircleMm": 46.5,
-          "lengthMm": 160,
-          "notes": "ELSIE 150mm T2.1. Front filter M112×1.5 on 125–150 mm."
-        },
-        "Leitz HUGO 18mm T1.5": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "LPL / Leica L / Leica M",
-          "rodStandard": "15mm",
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.22,
-          "weight_g": 1040,
-          "imageCircleMm": 43.3,
-          "lengthMm": 71,
-          "notes": "Specs from B&H: 2.8\" / 71 mm length, 95 mm front, 1040 g weight."
-        },
-        "Leitz HUGO 24mm T1.5": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "LPL / Leica L / Leica M",
-          "rodStandard": "15mm",
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 860,
-          "imageCircleMm": 43.3,
-          "lengthMm": 68,
-          "notes": "Band Pro listing: 2.7\" / 68 mm length, approximately 860 g weight."
-        },
-        "Leitz HUGO 40mm T1.5": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "LPL / Leica L / Leica M",
-          "rodStandard": "15mm",
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.36,
-          "weight_g": 870,
-          "imageCircleMm": 43.3,
-          "lengthMm": 68,
-          "notes": "Announced specifications: 2.7\" / 68 mm length, 0.87 kg weight, close focus 0.36 m."
-        },
-        "Leitz HUGO 135mm T1.9": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "LPL / Leica L / Leica M",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1590,
-          "imageCircleMm": 43.3,
-          "lengthMm": 121,
-          "notes": "Manufacturer specs: 4.8\" / 121 mm length, 1.59 kg weight, close focus 1 m."
-        },
-        "Leitz Thalia 24mm T3.6": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 3.6,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 124.5,
-          "minFocusMeters": 0.2,
-          "weight_g": 1420,
-          "notes": "Thalia prime set; 92 mm thread except wides; 270° focus rotation. Specs from Leitz THALIA datasheet."
-        },
-        "Leitz Thalia 30mm T2.9": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 131.5,
-          "minFocusMeters": 0.5,
-          "weight_g": 1500,
-          "notes": "Thalia 30 mm; datasheet lists close focus 0.5 m."
-        },
-        "Leitz Thalia 35mm T2.6": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.6,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 131.5,
-          "minFocusMeters": 0.55,
-          "weight_g": 1400,
-          "notes": "Thalia 35 mm; close focus 0.55 m per spec."
-        },
-        "Leitz Thalia 45mm T2.9": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 131.5,
-          "minFocusMeters": 0.6,
-          "weight_g": 1460,
-          "notes": "Thalia 45 mm; close focus 0.6 m per spec."
-        },
-        "Leitz Thalia 55mm T2.8": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 154.5,
-          "minFocusMeters": 0.3,
-          "weight_g": 1640,
-          "notes": "Thalia 55 mm macro; spec gives close focus 0.3 m."
-        },
-        "Leitz Thalia 70mm T2.6": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.6,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 124.5,
-          "minFocusMeters": 0.5,
-          "weight_g": 1060,
-          "notes": "Thalia 70 mm; spec gives length 124.5 mm and close focus 0.5 m."
-        },
-        "Leitz Thalia 90mm T2.2 (Thalia-T variant)": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 124.5,
-          "minFocusMeters": 0.9,
-          "weight_g": 1050,
-          "notes": "Thalia-T 90 mm variant with dual \"soft/hard\" character. Datasheet lists 0.9 m close focus."
-        },
-        "Leitz Thalia 100mm T2.2": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 124.5,
-          "minFocusMeters": 0.7,
-          "weight_g": 1160,
-          "notes": "Thalia 100 mm; spec gives close focus 0.7 m."
-        },
-        "Leitz Thalia 120mm T2.6": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.6,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 175,
-          "minFocusMeters": 0.57,
-          "weight_g": 1660,
-          "notes": "Thalia 120 mm macro; spec length 175 mm and close focus 0.57 m."
-        },
-        "Leitz Thalia 180mm T3.6": {
-          "brand": "Leitz",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 3.6,
-          "mount": "PL / LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 60,
-          "lengthMm": 154.5,
-          "minFocusMeters": 1.5,
-          "weight_g": 1620,
-          "notes": "Thalia 180 mm; spec gives length 154.5 mm and close focus 1.5 m."
-        },
-        "Cooke S7/i FF 25mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "lengthMm": 182,
-          "minFocusMeters": 0.36,
-          "weight_g": 3300,
-          "imageCircleMm": 46.31
-        },
-        "Cooke S7/i FF 27mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 3300,
-          "imageCircleMm": 46.3,
-          "lengthMm": 182,
-          "notes": "Cooke spec lists 0.35 m close focus, 182 mm length, Ø110 mm front, and PL or LPL mount options."
-        },
-        "Cooke S7/i FF 32mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "lengthMm": 189,
-          "minFocusMeters": 0.35,
-          "weight_g": 3400,
-          "imageCircleMm": 46.31
-        },
-        "Cooke S7/i FF 40mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "lengthMm": 189,
-          "minFocusMeters": 0.45,
-          "weight_g": 3500,
-          "imageCircleMm": 46.31
-        },
-        "Cooke S7/i FF 50mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S7/i FF 60mm T2.5": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.5,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "lengthMm": 160,
-          "minFocusMeters": 0.056,
-          "weight_g": 2200,
-          "imageCircleMm": 46.3,
-          "notes": "T2.5-T22"
-        },
-        "Cooke S7/i FF 75mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.475,
-          "weight_g": 3300,
-          "lengthMm": 189,
-          "imageCircleMm": 46.31,
-          "notes": "T2.0-T22"
-        },
-        "Cooke S7/i FF 100mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S7/i FF 300mm T3.3": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 3.3,
-          "mount": "PL or LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 2.1,
-          "weight_g": 4400,
-          "imageCircleMm": 46.3,
-          "lengthMm": 256,
-          "notes": "Cooke spec states 2.1 m close focus, 256 mm length, ~4.4 kg weight, Ø110 mm front, and includes a support bracket."
-        },
-        "Cooke S8/i FF 18mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 3400,
-          "imageCircleMm": 43.3,
-          "lengthMm": 200,
-          "notes": "Cooke S8/i FF 18mm T1.4 ships with a support bracket; Cooke warns of Ø136 mm clamp-on vignette risk."
-        },
-        "Cooke S8/i FF 25mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S8/i FF 27mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2600,
-          "imageCircleMm": 46.3,
-          "lengthMm": 162,
-          "notes": "Cooke S8/i FF 27mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.6 m MOD."
-        },
-        "Cooke S8/i FF 32mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S8/i FF 40mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S8/i FF 50mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S8/i FF 65mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.75,
-          "weight_g": 2600,
-          "imageCircleMm": 46.3,
-          "lengthMm": 157,
-          "notes": "Cooke S8/i FF 65mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.75 m MOD."
-        },
-        "Cooke S8/i FF 75mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke S8/i FF 100mm T1.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 104,
-          "clampOn": true,
-          "tStop": 1.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.31
-        },
-        "Cooke Varotal/i FF 19-40mm T2.9": {
-          "brand": "Cooke",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 3500,
-          "imageCircleMm": 46.3,
-          "lengthMm": 280,
-          "notes": "Cooke Varotal/i FF wide zoom with /i metadata, matched Ø114 mm front and 11-blade iris across the set."
-        },
-        "Cooke Varotal/i FF 30-95mm T2.9": {
-          "brand": "Cooke",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL or LPL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "weight_g": 3700,
-          "imageCircleMm": 46.3,
-          "lengthMm": 290,
-          "notes": "Mid-range Varotal/i FF zoom covering full frame/VV with consistent mechanics and Cooke /i data contacts."
-        },
-        "Cooke Varotal/i FF 85-215mm T2.9": {
-          "brand": "Cooke",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL or LPL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 4100,
-          "imageCircleMm": 46.3,
-          "lengthMm": 320,
-          "notes": "Tele Varotal/i FF zoom matched to the 19-40 and 30-95mm lenses; supports Cooke /i metadata and full-frame coverage."
-        },
-        "Fujinon Premista 19-45mm T2.9": {
-          "brand": "Fujinon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 3300,
-          "imageCircleMm": 46.3,
-          "lengthMm": 228,
-          "notes": "Front Ø114 mm; full-frame/VV coverage."
-        },
-        "Fujinon Premista 28-100mm T2.9": {
-          "brand": "Fujinon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "weight_g": 3800,
-          "imageCircleMm": 46.3,
-          "lengthMm": 255,
-          "notes": "Front Ø114 mm; full-frame/VV coverage."
-        },
-        "Fujinon Premista 80-250mm T2.9-3.5": {
-          "brand": "Fujinon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.5,
-          "weight_g": 3800,
-          "imageCircleMm": 46.3,
-          "lengthMm": 255,
-          "notes": "Front Ø114 mm; full-frame/VV coverage."
-        },
-        "Fujinon MK18-55mm T2.9": {
-          "brand": "Fujinon",
-          "frontDiameterMm": 85,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "Sony E",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.9,
-          "weight_g": 980,
-          "imageCircleMm": 28.5,
-          "lengthMm": 206,
-          "notes": "MK18–55mm T2.9 (S35). Manufacturer states <1 kg; B&H lists 0.98 kg."
-        },
-        "Fujinon MK50-135mm T2.9": {
-          "brand": "Fujinon",
-          "frontDiameterMm": 85,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "Sony E",
-          "rodStandard": "15mm",
-          "rodLengthCm": 20,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 980,
-          "imageCircleMm": 28.5,
-          "lengthMm": 206,
-          "notes": "MK50–135mm T2.9 (S35). Fujifilm page lists 206.3 mm length, 980 g."
-        },
-        "DZOFilm Vespid 35mm T2.1": {
-          "brand": "DZOFilm",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFilm Vespid 50mm T2.1": {
-          "brand": "DZOFilm",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFilm Vespid 75mm T2.1": {
-          "brand": "DZOFilm",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "Meike FF Prime 24mm T2.1": {
-          "brand": "Meike",
-          "frontDiameterMm": 85,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 45
-        },
-        "Meike FF Prime 35mm T2.1": {
-          "brand": "Meike",
-          "frontDiameterMm": 85,
-          "clampOn": true,
-          "tStop": 2.1,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 45
-        },
-        "Cooke S4/i 12mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 2600,
-          "imageCircleMm": 31,
-          "lengthMm": 160,
-          "notes": "Cooke S4/i technical data lists Ø110 mm fronts, 0.3 m MOD, and 2.6 kg weight for the 12 mm."
-        },
-        "Cooke S4/i 14mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.2,
-          "weight_g": 2500,
-          "imageCircleMm": 31,
-          "lengthMm": 144,
-          "notes": "Cooke specifications show the 14 mm sharing the Ø110 mm front, 0.2 m close focus, and ~2.5 kg build."
-        },
-        "Cooke S4/i 16mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.2,
-          "weight_g": 1800,
-          "imageCircleMm": 31,
-          "lengthMm": 120,
-          "notes": "S4/i 16 mm prime: 0.2 m MOD, 1.8 kg mass, and Ø110 mm clamp-on profile."
-        },
-        "Cooke S4/i 18mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 1970,
-          "imageCircleMm": 31,
-          "lengthMm": 137,
-          "notes": "Cooke publishes a 0.25 m minimum focus, 137 mm length, and 1.97 kg weight for the 18 mm S4/i."
-        },
-        "Cooke S4/i 21mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 1700,
-          "imageCircleMm": 31,
-          "lengthMm": 118,
-          "notes": "S4/i 21 mm spec: Ø110 mm front, 0.25 m MOD, ≈1.7 kg weight per Cooke datasheet."
-        },
-        "Cooke S4/i 25mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 1580,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke S4/i 25 mm: 0.25 m MOD with 104 mm length and 1.58 kg weight."
-        },
-        "Cooke S4/i 27mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 1550,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke datasheet lists the 27 mm at 1.55 kg with a 0.25 m close focus."
-        },
-        "Cooke S4/i 32mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1590,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke S4/i 32 mm: 0.3 m MOD, 1.59 kg weight, Ø110 mm front."
-        },
-        "Cooke S4/i 35mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1520,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke S4/i 35 mm shares the compact 104 mm length with 0.3 m MOD and ~1.52 kg weight."
-        },
-        "Cooke S4/i 40mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.38,
-          "weight_g": 1650,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke publishes a 0.38 m close focus and ~1.65 kg mass for the 40 mm S4/i prime."
-        },
-        "Cooke S4/i 50mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.41,
-          "weight_g": 1650,
-          "imageCircleMm": 31,
-          "lengthMm": 104,
-          "notes": "Cooke S4/i 50 mm: 0.41 m MOD, 104 mm overall length, around 1.65 kg."
-        },
-        "Cooke S4/i 65mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.61,
-          "weight_g": 1750,
-          "imageCircleMm": 31,
-          "lengthMm": 112,
-          "notes": "Cooke spec lists the 65 mm at 0.61 m close focus with ~1.75 kg weight."
-        },
-        "Cooke S4/i 75mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.76,
-          "weight_g": 1900,
-          "imageCircleMm": 31,
-          "lengthMm": 125,
-          "notes": "Cooke S4/i 75 mm: 0.76 m MOD and ~1.9 kg, still Ø110 mm clamp-on."
-        },
-        "Cooke S4/i 100mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.91,
-          "weight_g": 2350,
-          "imageCircleMm": 31,
-          "lengthMm": 138,
-          "notes": "Cooke data: 0.91 m close focus, 138 mm length, and ≈2.35 kg for the 100 mm S4/i."
-        },
-        "Cooke S4/i 135mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.37,
-          "weight_g": 2900,
-          "imageCircleMm": 31,
-          "lengthMm": 170,
-          "notes": "Cooke lists the 135 mm with 1.37 m MOD, 170 mm length, and roughly 2.9 kg weight."
-        },
-        "Cooke S4/i 150mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.52,
-          "weight_g": 3100,
-          "imageCircleMm": 31,
-          "lengthMm": 170,
-          "notes": "Cooke S4/i 150 mm: ~1.52 m close focus, 3.1 kg weight, Ø110 mm front."
-        },
-        "Cooke S4/i 180mm T2.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.83,
-          "weight_g": 3400,
-          "imageCircleMm": 31,
-          "lengthMm": 182,
-          "notes": "Cooke technical table: 1.83 m MOD and roughly 3.4 kg for the 180 mm S4/i prime."
-        },
-        "Cooke S4/i 300mm T3.0": {
-          "brand": "Cooke",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 3,
-          "tStopRange": "T3.0–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 3.66,
-          "weight_g": 5800,
-          "imageCircleMm": 31,
-          "lengthMm": 320,
-          "notes": "Cooke S4/i 300 mm tele: larger Ø136 mm front, ~5.8 kg, and 3.66 m minimum focus."
-        },
-        "Cooke Speed Panchro TLS 18mm T2.2": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "lengthMm": 61,
-          "minFocusMeters": 0.2,
-          "weight_g": 820,
-          "notes": "Front Ø110 mm; Super35; approx 2.40 in length"
-        },
-        "Cooke Speed Panchro TLS 25mm T2.2": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "lengthMm": 69,
-          "minFocusMeters": 0.2,
-          "weight_g": 860,
-          "notes": "Front Ø110 mm; approx 2.70 in length"
-        },
-        "Cooke Speed Panchro TLS 32mm T2.3": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "lengthMm": 69,
-          "minFocusMeters": 0.23,
-          "weight_g": 820,
-          "notes": "Front Ø110 mm"
-        },
-        "Cooke Speed Panchro TLS 40mm T2.3": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14,
-          "lengthMm": 69,
-          "minFocusMeters": 0.33,
-          "weight_g": 1040,
-          "notes": "Front Ø110 mm"
-        },
-        "Cooke Speed Panchro TLS 50mm T2.3": {
-          "brand": "Cooke",
-          "frontDiameterMm": 110,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 55,
-          "minFocusMeters": 0.38,
-          "weight_g": 1630,
-          "notes": "Front Ø110 mm; longer prime; manufacturer rates 55 mm image circle at infinity and 62 mm at close focus."
-        },
-        "Cooke Speed Panchro 18mm (P+S rehousing)": {
-          "brand": "Cooke (P+S rehoused)",
-          "frontDiameterMm": 100,
-          "clampOn": true,
-          "tStop": 2.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Cooke Speed Panchro 25mm (P+S rehousing)": {
-          "brand": "Cooke (P+S rehoused)",
-          "frontDiameterMm": 100,
-          "clampOn": true,
-          "tStop": 2.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Cooke Speed Panchro 35mm (P+S rehousing)": {
-          "brand": "Cooke (P+S rehoused)",
-          "frontDiameterMm": 100,
-          "clampOn": true,
-          "tStop": 2.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Cooke Speed Panchro 40mm (P+S rehousing)": {
-          "brand": "Cooke (P+S rehoused)",
-          "frontDiameterMm": 100,
-          "clampOn": true,
-          "tStop": 2.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "Cooke Speed Panchro 75mm (P+S rehousing)": {
-          "brand": "Cooke (P+S rehoused)",
-          "frontDiameterMm": 100,
-          "clampOn": true,
-          "tStop": 2.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 31.14
-        },
-        "P+S Technik Kowa Prominar 40mm T2.3": {
-          "brand": "P+S Technik",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1180,
-          "imageCircleMm": 31.1,
-          "lengthMm": 95,
-          "notes": "Kowa 40mm T2.3 PS-rehousing; 77 mm filter thread on all focal lengths."
-        },
-        "P+S Technik Kowa Prominar 50mm T2.3": {
-          "brand": "P+S Technik",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.3,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 10,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1300,
-          "imageCircleMm": 31.1,
-          "lengthMm": 105,
-          "notes": "Kowa 50mm T2.3 PS-rehousing; 77 mm filter thread."
-        },
-        "P+S Technik Kowa Prominar 75mm T2.8": {
-          "brand": "P+S Technik",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1560,
-          "imageCircleMm": 31.1,
-          "lengthMm": 134,
-          "notes": "Kowa 75mm T2.8 PS-rehousing; 77 mm filter thread."
-        },
-        "P+S Technik Kowa Prominar 100mm T3.4": {
-          "brand": "P+S Technik",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 3.4,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.7,
-          "weight_g": 1760,
-          "imageCircleMm": 31.1,
-          "lengthMm": 164,
-          "notes": "Kowa 100mm T3.4 PS-rehousing; 77 mm filter thread."
-        },
-        "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": {
-          "brand": "Laowa",
-          "frontDiameterMm": 30,
-          "clampOn": true,
-          "tStop": 8,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.005,
-          "imageCircleMm": 43.3,
-          "notes": "Macro probe set with 0°, 35° and 90° modules; waterproof tip and 2× magnification."
-        },
-        "Laowa Ranger 28-75mm T2.9": {
-          "brand": "Laowa",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 43.2
-        },
-        "Laowa Ranger 75-180mm T2.9": {
-          "brand": "Laowa",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 43.2
-        },
-        "Sigma Cine FF High Speed Prime 14mm T2": {
-          "brand": "Sigma",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.27,
-          "weight_g": 1190,
-          "imageCircleMm": 43.3,
-          "lengthMm": 126,
-          "notes": "Full-frame high-speed prime with interchangeable mounts and 0.8 mod gears."
-        },
-        "Sigma Cine FF High Speed Prime 20mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.28,
-          "weight_g": 1430,
-          "imageCircleMm": 43.3,
-          "lengthMm": 138,
-          "notes": "High-speed wide with unified 0.8 mod gears; optional lightweight support recommended for gimbals."
-        },
-        "Sigma Cine FF High Speed Prime 24mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1360,
-          "imageCircleMm": 43.3,
-          "lengthMm": 124,
-          "notes": "Matches Sigma FF housing with 95 mm front and consistent gear spacing for matte box swaps."
-        },
-        "Sigma Cine FF High Speed Prime 28mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1300,
-          "imageCircleMm": 43.3,
-          "lengthMm": 122,
-          "notes": "Standard wide FF prime with interchangeable mounts and 95 mm clip-on matte box compatibility."
-        },
-        "Sigma Cine FF High Speed Prime 35mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 1250,
-          "imageCircleMm": 43.3,
-          "lengthMm": 118,
-          "notes": "Go-to focal with matching focus/iris positions for fast swaps across the Sigma FF set."
-        },
-        "Sigma Cine FF High Speed Prime 40mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.4,
-          "weight_g": 1210,
-          "imageCircleMm": 43.3,
-          "lengthMm": 118,
-          "notes": "Large-format ready normal with consistent 95 mm front for clip-on matte boxes."
-        },
-        "Sigma Cine FF High Speed Prime 50mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.4,
-          "weight_g": 1180,
-          "imageCircleMm": 43.3,
-          "lengthMm": 117,
-          "notes": "Standard Sigma FF prime with LDS and /i contacts in PL for metadata-enabled shoots."
-        },
-        "Sigma Cine FF High Speed Prime 85mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.95,
-          "weight_g": 1220,
-          "imageCircleMm": 43.3,
-          "lengthMm": 125,
-          "notes": "Portrait-length FF prime with 300° focus travel; add clip-on support ring for extended builds."
-        },
-        "Sigma Cine FF High Speed Prime 105mm T1.5": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 1620,
-          "imageCircleMm": 43.3,
-          "lengthMm": 134,
-          "notes": "Compact FF prime with LDS and /i metadata support in PL mount plus matched gear positions."
-        },
-        "Sigma Cine FF High Speed Prime 135mm T2": {
-          "brand": "Sigma",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL / EF / E (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1840,
-          "imageCircleMm": 43.3,
-          "lengthMm": 156,
-          "notes": "Long telephoto prime best paired with 15 mm support bridge or studio rods for steadiness."
-        },
-        "Sigma Cine FF Zoom 28-45mm T2": {
-          "brand": "Sigma",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.61,
-          "weight_g": 4490,
-          "imageCircleMm": 46.3,
-          "lengthMm": 226,
-          "notes": "Full-frame Sigma cinema zoom covering wide-to-standard angles with consistent 0.8 mod gears and Cooke /i-compatible metadata pads."
-        },
-        "Sigma Cine High Speed Zoom 50-100mm T2": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1970,
-          "imageCircleMm": 31,
-          "lengthMm": 197,
-          "notes": "Super 35 companion zoom to the 18-35mm with matching 95 mm fronts, long focus throw, and durable cine housing."
-        },
-        "Sigma Cine High Speed Zoom 18-35mm T2": {
-          "brand": "Sigma",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.28,
-          "weight_g": 1870,
-          "imageCircleMm": 31,
-          "lengthMm": 196,
-          "notes": "Super 35 high-speed zoom optimized for gimbals and handheld use while retaining 0.8 mod cine gears and 95 mm fronts."
-        },
-        "Tokina Vista 18mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 3200,
-          "imageCircleMm": 46.7,
-          "lengthMm": 188,
-          "notes": "Ultra-wide Vista prime with generous image circle; use 15 mm rods with yoke-style lens support."
-        },
-        "Tokina Vista 21mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 2400,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Vista large-format prime with 46.7 mm image circle and matched gear spacing."
-        },
-        "Tokina Vista 25mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "weight_g": 2500,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Fast full-frame wide with matching focus/iris gear placement across the Vista range."
-        },
-        "Tokina Vista 35mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.38,
-          "weight_g": 2380,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Large-format normal prime with 300° focus travel and shared 114 mm front."
-        },
-        "Tokina Vista 40mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.38,
-          "weight_g": 2300,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Tokina Vista full-frame prime with 300° focus rotation and 0.8 mod gears."
-        },
-        "Tokina Vista 50mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 2320,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Vista 50 mm maintains even gear spacing and benefits from 15 mm lens support on longer takes."
-        },
-        "Tokina Vista 65mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.65,
-          "weight_g": 2450,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Longer Tokina Vista prime covering VistaVision with unified housing dimensions."
-        },
-        "Tokina Vista 85mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.95,
-          "weight_g": 2350,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Telephoto Vista prime—pair with 15 mm rods and lens support foot for steadier pulls."
-        },
-        "Tokina Vista 105mm T1.5": {
-          "brand": "Tokina",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.5,
-          "mount": "PL / EF / E (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 2420,
-          "imageCircleMm": 46.7,
-          "lengthMm": 179,
-          "notes": "Long Vista tele prime covering full-frame and VistaVision with identical gear positions."
-        },
-        "Cooke SP3 25mm T2.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 81,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "E / RF / L (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "weight_g": 700,
-          "imageCircleMm": 43.3,
-          "lengthMm": 87,
-          "notes": "Wide Cooke SP3 prime with native mirrorless mounts and 77 mm front threads for lightweight matte boxes."
-        },
-        "Cooke SP3 32mm T2.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 81,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "E / RF / L (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.29,
-          "weight_g": 690,
-          "imageCircleMm": 43.3,
-          "lengthMm": 87,
-          "notes": "Mirrorless-native Cooke SP3 with interchangeable bayonet mounts and 77 mm threads."
-        },
-        "Cooke SP3 50mm T2.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 81,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "E / RF / L (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "weight_g": 730,
-          "imageCircleMm": 43.3,
-          "lengthMm": 94,
-          "notes": "Standard SP3 prime retaining Cooke Look micro-contrast with lightweight build."
-        },
-        "Cooke SP3 75mm T2.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 81,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "E / RF / L (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.7,
-          "weight_g": 760,
-          "imageCircleMm": 43.3,
-          "lengthMm": 99,
-          "notes": "Compact SP3 telephoto prime, matched housing with Cooke Look rendering."
-        },
-        "Cooke SP3 100mm T2.4": {
-          "brand": "Cooke",
-          "frontDiameterMm": 81,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "E / RF / L (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1,
-          "weight_g": 840,
-          "imageCircleMm": 43.3,
-          "lengthMm": 118,
-          "notes": "Longest SP3 focal—add optional support foot for extended rods without sacrificing handheld agility."
-        },
-        "TRIBE7 Blackwing7 T-Tune 27mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.3,
-          "weight_g": 1880,
-          "imageCircleMm": 46.6,
-          "lengthMm": 178,
-          "notes": "Wide Blackwing7 T-Tune with swappable tuning modules; brace with 15 mm rods for accessories."
-        },
-        "TRIBE7 Blackwing7 T-Tune 37mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "weight_g": 1900,
-          "imageCircleMm": 46.6,
-          "lengthMm": 178,
-          "notes": "Blackwing7 T-Tune prime with modular contrast tuning and large-format coverage."
-        },
-        "TRIBE7 Blackwing7 T-Tune 47mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.55,
-          "weight_g": 1920,
-          "imageCircleMm": 46.6,
-          "lengthMm": 178,
-          "notes": "Normal Blackwing7 T-Tune prime—pair with clip-on matte boxes or 114 mm donut."
-        },
-        "TRIBE7 Blackwing7 T-Tune 57mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.65,
-          "weight_g": 1950,
-          "imageCircleMm": 46.6,
-          "lengthMm": 178,
-          "notes": "Blackwing7 T-Tune mid-tele prime tuned for lower contrast and halation."
-        },
-        "TRIBE7 Blackwing7 T-Tune 77mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 2050,
-          "imageCircleMm": 46.6,
-          "lengthMm": 178,
-          "notes": "Short telephoto Blackwing7 with tuned flare behavior; secure with lens support when rigged with motors."
-        },
-        "TRIBE7 Blackwing7 T-Tune 107mm T1.8": {
-          "brand": "TRIBE7",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.8,
-          "mount": "PL / LPL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.2,
-          "weight_g": 2150,
-          "imageCircleMm": 46.6,
-          "lengthMm": 185,
-          "notes": "Long Blackwing7 tele tuned for expressive falloff—run on 15 mm or 19 mm studio rods with solid support."
-        },
-        "Atlas Mercury 36mm T2.2 1.5x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "LPL / PL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "minFocusMeters": 0.4,
-          "weight_g": 1700,
-          "imageCircleMm": 36,
-          "lengthMm": 145,
-          "notes": "Widest Mercury 1.5x prime; prefer 15 mm bridge support when stacking clip-on matte boxes."
-        },
-        "Atlas Mercury 42mm T2.2 1.5x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "LPL / PL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "minFocusMeters": 0.55,
-          "weight_g": 1800,
-          "imageCircleMm": 36,
-          "lengthMm": 150,
-          "notes": "Mercury Series 1.5x anamorphic covering Open Gate sensors with built-in close focus."
-        },
-        "Atlas Mercury 54mm T2.2 1.5x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "LPL / PL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "minFocusMeters": 0.7,
-          "weight_g": 1900,
-          "imageCircleMm": 36,
-          "lengthMm": 160,
-          "notes": "Mercury Series normal with rear net slot; support on rods when pairing with dual motors."
-        },
-        "Atlas Mercury 72mm T2.2 1.5x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "LPL / PL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "minFocusMeters": 0.9,
-          "weight_g": 2000,
-          "imageCircleMm": 36,
-          "lengthMm": 170,
-          "notes": "Mercury Series 1.5x anamorphic mid-tele with LPL base mount and drop-in rear filter slot."
-        },
-        "Atlas Mercury 95mm T2.2 1.5x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "LPL / PL (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "minFocusMeters": 1.1,
-          "weight_g": 2150,
-          "imageCircleMm": 36,
-          "lengthMm": 185,
-          "notes": "Tele Mercury 1.5x prime—pair with sturdy 15 mm or studio rods for rock-solid framing."
-        },
-        "Atlas Orion 32mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.76,
-          "weight_g": 3600,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion Silver Edition wide: Ø136 mm front, 0.76 m close focus, 3.6 kg weight."
-        },
-        "Atlas Orion 40mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.61,
-          "weight_g": 3100,
-          "imageCircleMm": 31,
-          "lengthMm": 197,
-          "notes": "Atlas Orion A-set 40 mm: 0.61 m MOD, Ø114 mm front, approx. 3.1 kg."
-        },
-        "Atlas Orion 50mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.7,
-          "weight_g": 3400,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion B-set 50 mm: 0.7 m close focus, 210 mm length, 3.4 kg mass."
-        },
-        "Atlas Orion 65mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.76,
-          "weight_g": 3200,
-          "imageCircleMm": 31,
-          "lengthMm": 197,
-          "notes": "Atlas Orion A-set 65 mm: Ø114 mm clamp-on, 0.76 m MOD, roughly 3.2 kg."
-        },
-        "Atlas Orion 80mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.91,
-          "weight_g": 3500,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion B-set 80 mm: 0.91 m close focus with ~3.5 kg heft."
-        },
-        "Atlas Orion 100mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1,
-          "weight_g": 3600,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion A-set 100 mm: 1 m close focus, 210 mm length, approx. 3.6 kg."
-        },
-        "Atlas Orion 135mm T2.2 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2.2,
-          "tStopRange": "T2.2–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1.52,
-          "weight_g": 4000,
-          "imageCircleMm": 31,
-          "lengthMm": 230,
-          "notes": "Atlas Orion C-set 135 mm: T2.2 speed, 1.52 m close focus, roughly 4 kg."
-        },
-        "Atlas Orion 180mm T2.2 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2.2,
-          "tStopRange": "T2.2–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1.83,
-          "weight_g": 4200,
-          "imageCircleMm": 31,
-          "lengthMm": 240,
-          "notes": "Atlas Orion 180 mm tele: larger Ø136 mm front, ~4.2 kg, 1.83 m minimum focus."
-        },
-        "Sigma 18–35mm f/1.8 DC HSM Art": {
-          "brand": "Sigma",
-          "frontDiameterMm": 82,
-          "clampOn": true,
-          "tStop": 1.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 28.2
-        },
-        "Sony FE 24–70mm f/2.8 G Master II": {
-          "brand": "Sony",
-          "frontDiameterMm": 82,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "Sony FE 70–200mm f/2.8 G Master II": {
-          "brand": "Sony",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "Minolta 28mm f/2.8": {
-          "brand": "Minolta",
-          "frontDiameterMm": 55,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "Minolta 35mm f/1.4": {
-          "brand": "Minolta",
-          "frontDiameterMm": 72,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "Minolta 50mm f/1.4": {
-          "brand": "Minolta",
-          "frontDiameterMm": 55,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "Minolta 85mm f/1.8": {
-          "brand": "Minolta",
-          "frontDiameterMm": 55,
-          "clampOn": true,
-          "tStop": 1.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27
-        },
-        "SIGMA Aizu Prime Line 25mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 27mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 32mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 35mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 40mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 50mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 65mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "SIGMA Aizu Prime Line 75mm T1.3 LF": {
-          "brand": "SIGMA",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 1.3,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.3
-        },
-        "NiSi AUREUS Prime 18mm T1.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "NiSi AUREUS Prime 24mm T1.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "NiSi AUREUS Prime 35mm T1.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "NiSi AUREUS Prime 50mm T1.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "NiSi AUREUS Prime 85mm T1.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "IRIX Cine 150mm T3.0 Macro 1:1": {
-          "brand": "IRIX",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 3,
-          "mount": "PL / EF / RF / L / Z / E / MFT / X",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.36,
-          "weight_g": 1102,
-          "imageCircleMm": 43.3,
-          "lengthMm": 136,
-          "notes": "Cine 150mm T3.0 Macro 1:1; internal focus; 86 mm filter thread."
-        },
-        "SIRUI Vision Prime 1 24mm T1.4": {
-          "brand": "SIRUI",
-          "frontDiameterMm": 72,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "SIRUI Vision Prime 1 35mm T1.4": {
-          "brand": "SIRUI",
-          "frontDiameterMm": 72,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "SIRUI Vision Prime 1 50mm T1.4": {
-          "brand": "SIRUI",
-          "frontDiameterMm": 72,
-          "clampOn": true,
-          "tStop": 1.4,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46
-        },
-        "DJI DL-S 16mm F2.8 ASPH ND": {
-          "brand": "DJI",
-          "frontDiameterMm": 55,
-          "clampOn": false,
-          "tStop": 2.8,
-          "mount": "DJI DL-S",
-          "rodStandard": null,
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.4,
-          "weight_g": 178,
-          "imageCircleMm": 28.5,
-          "lengthMm": 71,
-          "notes": "DL-S 16mm F2.8 ND ASPH for Zenmuse X7/X9; 46 mm filter; built-in ND."
-        },
-        "DJI DL 24mm F2.8 LS ASPH": {
-          "brand": "DJI",
-          "frontDiameterMm": 55,
-          "clampOn": false,
-          "tStop": 2.8,
-          "mount": "DJI DL",
-          "rodStandard": null,
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 180,
-          "imageCircleMm": 43.3,
-          "lengthMm": 71,
-          "notes": "DL 24mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter."
-        },
-        "DJI DL 35mm F2.8 LS ASPH": {
-          "brand": "DJI",
-          "frontDiameterMm": 55,
-          "clampOn": false,
-          "tStop": 2.8,
-          "mount": "DJI DL",
-          "rodStandard": null,
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 180,
-          "imageCircleMm": 43.3,
-          "lengthMm": 71,
-          "notes": "DL 35mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter. Barrel φ55×71.2 mm."
-        },
-        "DJI DL 50mm F2.8 LS ASPH": {
-          "brand": "DJI",
-          "frontDiameterMm": 55,
-          "clampOn": false,
-          "tStop": 2.8,
-          "mount": "DJI DL",
-          "rodStandard": null,
-          "rodLengthCm": 5,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.85,
-          "weight_g": 180,
-          "imageCircleMm": 43.3,
-          "lengthMm": 71,
-          "notes": "DL 50mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter."
-        },
-        "Tokina Cinema Vista-P 180mm T1.9": {
-          "brand": "Tokina Cinema",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 46.7
-        },
-        "DZOFILM Pictor 12-25mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.4,
-          "weight_g": 1600,
-          "imageCircleMm": 31.5,
-          "lengthMm": 150,
-          "notes": "Pictor 12–25mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.4 m MOD."
-        },
-        "DZOFILM Pictor 14-30mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 1880,
-          "imageCircleMm": 31.5,
-          "lengthMm": 173,
-          "notes": "Pictor 14–30mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.6 m MOD."
-        },
-        "DZOFILM Pictor 20-55mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.6,
-          "weight_g": 1520,
-          "imageCircleMm": 31.1,
-          "lengthMm": 164,
-          "notes": "Pictor 20–55mm T2.8 (S35) parfocal; 16-blade iris; 86 mm filter thread."
-        },
-        "DZOFILM Pictor 50-125mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 95,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 15,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1700,
-          "imageCircleMm": 31.1,
-          "lengthMm": 175,
-          "notes": "Pictor 50–125mm T2.8 (S35) parfocal; 16-blade iris; 86 mm filter thread."
-        },
-        "DZOFILM Catta Ace 18-35mm T2.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.51,
-          "weight_g": 1530,
-          "imageCircleMm": 43.5,
-          "lengthMm": 195,
-          "notes": "Full-frame Catta Ace wide zoom with lightweight 80 mm fronts and quick-change PL/EF mounts for run-and-gun rigs."
-        },
-        "DZOFILM Catta Ace 35-80mm T2.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.75,
-          "weight_g": 1650,
-          "imageCircleMm": 43.5,
-          "lengthMm": 199,
-          "notes": "Mid-range Catta Ace zoom balancing compact housing with unified gear spacing and rear drop-in filter slot."
-        },
-        "DZOFILM Catta Ace 70-135mm T2.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.9,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "weight_g": 1750,
-          "imageCircleMm": 43.5,
-          "lengthMm": 203,
-          "notes": "Telephoto Catta Ace zoom maintaining 80 mm fronts—add lightweight lens support when motors or matte boxes are installed."
-        },
-        "DZOFILM Vespid Prime 12mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 16mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 21mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 25mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 35mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 40mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 50mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 75mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 90mm T2.8 Macro": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 100mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime 125mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 16mm T2.8": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.8,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 25mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 35mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 50mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 75mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 100mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Retro 125mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Cyber 35mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Cyber 50mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Cyber 75mm T2.1": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.1,
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 18mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 24mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 35mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 50mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 85mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Vespid Prime II 105mm T1.9": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "imageCircleMm": 46.5
-        },
-        "DZOFILM Gnosis 24mm T2.8 Macro": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.18,
-          "imageCircleMm": 46.5,
-          "notes": "1:1 macro prime with swappable PL/EF mounts and 300° focus rotation."
-        },
-        "DZOFILM Gnosis 32mm T2.8 Macro": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.23,
-          "imageCircleMm": 46.5,
-          "notes": "Macro-capable VistaVision prime sharing the Gnosis support foot and unified gear positions."
-        },
-        "DZOFILM Gnosis 65mm T2.8 Macro": {
-          "brand": "DZOFILM",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.8,
-          "mount": "PL / EF (interchangeable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "minFocusMeters": 0.37,
-          "imageCircleMm": 46.5,
-          "notes": "Longer Gnosis macro prime covering FF/VV with native support foot for studio rods."
-        },
-        "Laowa Proteus 2x 35mm T2": {
-          "brand": "Laowa",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "imageCircleMm": 31.14,
-          "notes": "Proteus wide 2x anamorphic prime with full-frame/VV coverage and drop-in rear filter slot."
-        },
-        "Laowa Proteus 2x 45mm T2": {
-          "brand": "Laowa",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "imageCircleMm": 31.14,
-          "notes": "Normal-length Proteus 2x anamorphic with unified 114 mm fronts across the set."
-        },
-        "Laowa Proteus 2x 60mm T2": {
-          "brand": "Laowa",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "imageCircleMm": 31.14,
-          "notes": "Proteus mid-tele prime—brace with rods when adding motors or heavy matte boxes."
-        },
-        "Laowa Proteus 2x 85mm T2": {
-          "brand": "Laowa",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "imageCircleMm": 31.14,
-          "notes": "Longest Proteus focal length retaining the same housing and 114 mm clamp-on interface."
-        },
-        "NiSi Athena Prime 14mm T2.4": {
-          "brand": "NiSi",
-          "frontDiameterMm": 80,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.2,
-          "imageCircleMm": 46,
-          "notes": "Ultra-wide Athena prime with full-frame coverage, 80 mm fronts, and matching 0.8 mod gears across the set."
-        },
-        "NiSi Athena Prime 18mm T2.2": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.2,
-          "imageCircleMm": 46,
-          "notes": "Wide Athena prime balancing minimal distortion with lightweight mechanics and the system's rear drop-in filter holder."
-        },
-        "NiSi Athena Prime 25mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.25,
-          "imageCircleMm": 46,
-          "notes": "Full-frame Athena prime with matched gear spacing, 77 mm front threads, and rear drop-in filter slot."
-        },
-        "NiSi Athena Prime 35mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.35,
-          "imageCircleMm": 46,
-          "notes": "Mid-wide Athena focal covering full frame with identical 77 mm front diameter and dual-scale markings."
-        },
-        "NiSi Athena Prime 40mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.38,
-          "imageCircleMm": 46,
-          "notes": "Natural perspective Athena prime maintaining matched gear spacing and integrated metadata pads for smart mounts."
-        },
-        "NiSi Athena Prime 50mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.45,
-          "imageCircleMm": 46,
-          "notes": "Standard Athena prime with consistent gear placement for quick swaps across the set and /i-style metadata pads."
-        },
-        "NiSi Athena Prime 65mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.55,
-          "imageCircleMm": 46,
-          "notes": "Short tele Athena prime that keeps the lightweight 77 mm front housing and synchronized 0.8 mod gears."
-        },
-        "NiSi Athena Prime 85mm T1.9": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 1.9,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.8,
-          "imageCircleMm": 46,
-          "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 77 mm fronts across the lineup."
-        },
-        "NiSi Athena Prime 135mm T2.2": {
-          "brand": "NiSi",
-          "frontDiameterMm": 77,
-          "clampOn": true,
-          "tStop": 2.2,
-          "mount": "PL / E / L / RF (swappable)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 1.1,
-          "imageCircleMm": 46,
-          "notes": "Longest Athena prime while retaining unified gear pitch, rear filter drawer, and metadata contacts for smart mounts."
-        },
-        "Sony FE C 16-35mm T3.1 G": {
-          "brand": "Sony",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 3.1,
-          "mount": "Sony E",
-          "rodStandard": "15mm",
-          "rodLengthCm": 30,
-          "needsLensSupport": false,
-          "lensType": "spherical",
-          "minFocusMeters": 0.28,
-          "imageCircleMm": 43.3,
-          "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs; manufacturer lists ≈43.3 mm image circle."
-        },
-        "Canon Flex Zoom 20-50mm T2.4": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27,
-          "minFocusMeters": 0.5,
-          "notes": "Flex Zoom wide with interchangeable PL/EF mounts, Cooke /i metadata, and servo-ready drive port."
-        },
-        "Canon Flex Zoom 45-135mm T2.4": {
-          "brand": "Canon",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2.4,
-          "mount": "PL / EF (convertible)",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "spherical",
-          "imageCircleMm": 43.27,
-          "minFocusMeters": 1,
-          "notes": "Tele Flex Zoom sharing the 114 mm front, consistent gear spacing, and swap-ready mount system."
-        }
-    },
-
     "tripodHeads": {
       "OConnor 2560 Head": {
         "brand": "OConnor",
@@ -10000,11 +5215,17 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 75,
-        "bowlMount": [75],
+        "bowlMount": [
+          75
+        ],
         "payloadKg": 20,
         "heightRangeCm": "26–153",
         "weightKg": 2.9,
-        "spreader": ["ground", "mid-level", "none"],
+        "spreader": [
+          "ground",
+          "mid-level",
+          "none"
+        ],
         "features": "hinge-lock design; spreaderless mode; optional spreaders",
         "dimensionsCm": "transport length 68",
         "sizeClass": "long",
@@ -10017,11 +5238,17 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 30,
         "heightRangeCm": "26–153",
         "weightKg": 3.2,
-        "spreader": ["ground", "mid-level", "none"],
+        "spreader": [
+          "ground",
+          "mid-level",
+          "none"
+        ],
         "features": "hinge-lock; spreaderless or with mid/ground spreaders",
         "dimensionsCm": "transport length 68",
         "sizeClass": "long",
@@ -10034,11 +5261,15 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 40,
         "heightRangeCm": "13–27",
         "weightKg": 1.5,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "mini ENG-style baby tripod",
         "dimensionsCm": "transport 22",
         "sizeClass": "short",
@@ -10051,11 +5282,15 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": [150],
+        "bowlMount": [
+          150
+        ],
         "payloadKg": 40,
         "heightRangeCm": "15–39",
         "weightKg": 3.1,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "low-angle baby tripod",
         "dimensionsCm": "transport 32",
         "sizeClass": "short",
@@ -10068,11 +5303,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": [150],
+        "bowlMount": [
+          150
+        ],
         "payloadKg": 50,
         "heightRangeCm": "21–85",
         "weightKg": 3.9,
-        "spreader": ["ground", "mid-level"],
+        "spreader": [
+          "ground",
+          "mid-level"
+        ],
         "features": "mid-size 150 mm leg",
         "dimensionsCm": "transport 57",
         "sizeClass": "medium",
@@ -10085,11 +5325,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 80,
         "heightRangeCm": "65–142",
         "weightKg": 4.4,
-        "spreader": ["ground", "mid-level"],
+        "spreader": [
+          "ground",
+          "mid-level"
+        ],
         "features": "heavy-duty single-extension 100 mm",
         "dimensionsCm": "transport 82",
         "sizeClass": "medium",
@@ -10102,11 +5347,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": [150],
+        "bowlMount": [
+          150
+        ],
         "payloadKg": 90,
         "heightRangeCm": "79–166",
         "weightKg": 5,
-        "spreader": ["ground", "mid-level"],
+        "spreader": [
+          "ground",
+          "mid-level"
+        ],
         "features": "long 150 mm leg",
         "dimensionsCm": "transport 92",
         "sizeClass": "long",
@@ -10119,11 +5369,16 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 1,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 45,
         "heightRangeCm": "65–142",
         "weightKg": 2.4,
-        "spreader": ["ground", "mid-level"],
+        "spreader": [
+          "ground",
+          "mid-level"
+        ],
         "features": "carbon fibre long version",
         "dimensionsCm": "",
         "sizeClass": "medium",
@@ -10136,11 +5391,15 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 75,
-        "bowlMount": [75],
+        "bowlMount": [
+          75
+        ],
         "payloadKg": 15,
         "heightRangeCm": "54–138",
         "weightKg": 2,
-        "spreader": ["none"],
+        "spreader": [
+          "none"
+        ],
         "features": "single extension 75 mm tripod",
         "dimensionsCm": "folded 81.5",
         "sizeClass": "medium",
@@ -10171,11 +5430,16 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 95,
         "heightRangeCm": "56–157",
         "weightKg": 4,
-        "spreader": ["mid-level", "ground"],
+        "spreader": [
+          "mid-level",
+          "ground"
+        ],
         "features": "quick clamping; integral spreader system",
         "dimensionsCm": "collapsed 75",
         "sizeClass": "long",
@@ -10188,11 +5452,17 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 150,
-        "bowlMount": ["Mitchell", 150],
+        "bowlMount": [
+          "Mitchell",
+          150
+        ],
         "payloadKg": 95,
         "heightRangeCm": "58–154",
         "weightKg": 4.1,
-        "spreader": ["mid-level", "ground"],
+        "spreader": [
+          "mid-level",
+          "ground"
+        ],
         "features": "Mitchell or 150 mm bowl; quick clamps",
         "dimensionsCm": "collapsed 76",
         "sizeClass": "long",
@@ -10205,11 +5475,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 2,
         "bowlSizeMm": 150,
-        "bowlMount": ["Mitchell", 150],
+        "bowlMount": [
+          "Mitchell",
+          150
+        ],
         "payloadKg": 140,
         "heightRangeCm": "85–176",
         "weightKg": 13.3,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "heavy-duty cine tripod",
         "dimensionsCm": "collapsed 103",
         "sizeClass": "long",
@@ -10222,11 +5497,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": ["Mitchell", 150],
+        "bowlMount": [
+          "Mitchell",
+          150
+        ],
         "payloadKg": null,
         "heightRangeCm": "89–173",
         "weightKg": 10,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "integral spreader; 1\" alloy tubes",
         "dimensionsCm": "",
         "sizeClass": "long",
@@ -10239,11 +5519,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": ["Mitchell", 150],
+        "bowlMount": [
+          "Mitchell",
+          150
+        ],
         "payloadKg": null,
         "heightRangeCm": "25–85",
         "weightKg": 8.2,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "short version; integral spreader",
         "dimensionsCm": "",
         "sizeClass": "medium",
@@ -10256,11 +5541,17 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": [150, "Mitchell", 100],
+        "bowlMount": [
+          150,
+          "Mitchell",
+          100
+        ],
         "payloadKg": null,
         "heightRangeCm": "86–178",
         "weightKg": 6.4,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "150 mm bowl standard; Mitchell/100 mm optional",
         "dimensionsCm": "",
         "sizeClass": "long",
@@ -10273,11 +5564,17 @@ const gear = {
         "material": "Aluminum",
         "stages": 1,
         "bowlSizeMm": 150,
-        "bowlMount": [150, "Mitchell", 100],
+        "bowlMount": [
+          150,
+          "Mitchell",
+          100
+        ],
         "payloadKg": null,
         "heightRangeCm": "18–91",
         "weightKg": 5,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "short variant; integral spreader",
         "dimensionsCm": "",
         "sizeClass": "medium",
@@ -10290,11 +5587,17 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100, 75],
+        "bowlMount": [
+          100,
+          75
+        ],
         "payloadKg": null,
         "heightRangeCm": "73–157",
         "weightKg": 3.6,
-        "spreader": ["mid-level", "ground"],
+        "spreader": [
+          "mid-level",
+          "ground"
+        ],
         "features": "FAST lock system; adapter for 75 mm",
         "dimensionsCm": "closed 73",
         "sizeClass": "long",
@@ -10307,11 +5610,15 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 3,
         "bowlSizeMm": 75,
-        "bowlMount": [75],
+        "bowlMount": [
+          75
+        ],
         "payloadKg": 20,
         "heightRangeCm": "29–155",
         "weightKg": 3.5,
-        "spreader": ["mid-level"],
+        "spreader": [
+          "mid-level"
+        ],
         "features": "single leg; 75 mm bowl",
         "dimensionsCm": "closed 73.5",
         "sizeClass": "long",
@@ -10324,11 +5631,16 @@ const gear = {
         "material": "Carbon Fiber",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 45.4,
         "heightRangeCm": "44–153",
         "weightKg": 3.2,
-        "spreader": ["mid-level", "ground"],
+        "spreader": [
+          "mid-level",
+          "ground"
+        ],
         "features": "Sprinter quick locks; mid-level spreader ready",
         "dimensionsCm": "transport 70",
         "sizeClass": "long",
@@ -10341,11 +5653,15 @@ const gear = {
         "material": "Aluminum",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 22.7,
         "heightRangeCm": "25–52",
         "weightKg": null,
-        "spreader": ["ground"],
+        "spreader": [
+          "ground"
+        ],
         "features": "toggle locks; ground spreader",
         "dimensionsCm": "",
         "sizeClass": "short",
@@ -10358,11 +5674,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 2,
         "bowlSizeMm": 100,
-        "bowlMount": [100],
+        "bowlMount": [
+          100
+        ],
         "payloadKg": 40,
         "heightRangeCm": "47–157",
         "weightKg": 3.1,
-        "spreader": ["ground", "mid-level"],
+        "spreader": [
+          "ground",
+          "mid-level"
+        ],
         "features": "ENG tripod; 100 mm bowl",
         "dimensionsCm": "",
         "sizeClass": "long",
@@ -10375,11 +5696,17 @@ const gear = {
         "material": "Aluminum",
         "stages": 2,
         "bowlSizeMm": 75,
-        "bowlMount": [75],
+        "bowlMount": [
+          75
+        ],
         "payloadKg": 25,
         "heightRangeCm": "41–150",
         "weightKg": 2.6,
-        "spreader": ["ground", "mid-level", "none"],
+        "spreader": [
+          "ground",
+          "mid-level",
+          "none"
+        ],
         "features": "rotating lock levers; spiked feet",
         "dimensionsCm": "folded 71",
         "sizeClass": "medium",
@@ -10392,11 +5719,16 @@ const gear = {
         "material": "Aluminum",
         "stages": 2,
         "bowlSizeMm": 75,
-        "bowlMount": [75],
+        "bowlMount": [
+          75
+        ],
         "payloadKg": 25,
         "heightRangeCm": "59–149",
         "weightKg": 2.3,
-        "spreader": ["mid-level", "ground"],
+        "spreader": [
+          "mid-level",
+          "ground"
+        ],
         "features": "ENG tripod; 2-stage",
         "dimensionsCm": "",
         "sizeClass": "medium",
@@ -10408,15 +5740,30 @@ const gear = {
       "ProSup Tango Roller (120/220)": {
         "brand": "ProSup",
         "model": "Tango Roller (120/220)",
-        "travelCm": [90, 190],
+        "travelCm": [
+          90,
+          190
+        ],
         "payloadHorizontalKg": 15,
-        "bowlMount": [75, 100, 150, "Mitchell", "Flat"],
+        "bowlMount": [
+          75,
+          100,
+          150,
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (roller bearings)",
         "motorized": false,
-        "weightKg": [7.6, 10.3],
+        "weightKg": [
+          7.6,
+          10.3
+        ],
         "material": "aluminum/steel",
         "features": "over/under-slung use; magnetic end-stops; modular extension",
-        "dimensionsCm": ["126 × 14 × —", "226 × 14 × —"],
+        "dimensionsCm": [
+          "126 × 14 × —",
+          "226 × 14 × —"
+        ],
         "notes": "Base 120 cm rail: 90 cm travel, 7.6 kg. Extended 220 cm rail: 190 cm travel, 10.3 kg. Payload 15 kg."
       },
       "Kessler CineSlider 5 ft (60.5\")": {
@@ -10425,7 +5772,10 @@ const gear = {
         "travelCm": 130,
         "payloadHorizontalKg": 36.3,
         "payloadVerticalKg": 15.9,
-        "bowlMount": ["Flat", 100],
+        "bowlMount": [
+          "Flat",
+          100
+        ],
         "driveType": "belt/roller, motion-control ready",
         "motorized": false,
         "weightKg": 5.4,
@@ -10440,7 +5790,9 @@ const gear = {
         "travelCm": 20,
         "payloadHorizontalKg": 9,
         "payloadVerticalKg": 2.3,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "motorized (leadscrew)",
         "motorized": true,
         "weightKg": 1.1,
@@ -10452,9 +5804,14 @@ const gear = {
       "Edelkrone SliderPLUS v5 PRO Long": {
         "brand": "Edelkrone",
         "model": "SliderPLUS v5 PRO Long",
-        "travelCm": [43, 79],
+        "travelCm": [
+          43,
+          79
+        ],
         "payloadHorizontalKg": 9.1,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "manual (telescopic rails), motion-control optional",
         "motorized": false,
         "weightKg": 1.84,
@@ -10465,12 +5822,24 @@ const gear = {
       "MYT Works Glide Large Camera Slider": {
         "brand": "MYT Works",
         "model": "Glide Large Camera Slider",
-        "travelCm": [64, 345],
+        "travelCm": [
+          64,
+          345
+        ],
         "payloadHorizontalKg": 68,
-        "bowlMount": [75, 100, 150, "Mitchell", "Flat"],
+        "bowlMount": [
+          75,
+          100,
+          150,
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (hybrid rolling/sliding bearings)",
         "motorized": false,
-        "weightKg": [7.7, 24.5],
+        "weightKg": [
+          7.7,
+          24.5
+        ],
         "material": "aluminum/brass/stainless",
         "features": "modular rail lengths; carriage uses hybrid bearings; wide footprint",
         "notes": "Travel 25–136″ (64–345 cm), payload 150 lb / 68 kg."
@@ -10478,7 +5847,12 @@ const gear = {
       "Dana Dolly Universal Track Ends": {
         "brand": "Dana Dolly",
         "model": "Universal Track Ends",
-        "bowlMount": [75, 100, "Mitchell", "Flat"],
+        "bowlMount": [
+          75,
+          100,
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (skate wheels on speed rail)",
         "motorized": false,
         "material": "aluminum",
@@ -10490,7 +5864,9 @@ const gear = {
         "model": "Slider Carbon 42\"",
         "travelCm": 90,
         "payloadHorizontalKg": 4.54,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "belt",
         "motorized": false,
         "weightKg": 2.15,
@@ -10504,7 +5880,9 @@ const gear = {
         "model": "Slider Carbon 24\"",
         "travelCm": 45,
         "payloadHorizontalKg": 1.81,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "belt",
         "motorized": false,
         "weightKg": 0.54,
@@ -10517,7 +5895,9 @@ const gear = {
         "brand": "Rhino",
         "model": "RŌV PRO Traveler 16\"",
         "travelCm": 40.6,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "motorized",
         "motorized": true,
         "features": "motorized travel slider"
@@ -10525,16 +5905,27 @@ const gear = {
       "iFootage Shark Slider Nano II": {
         "brand": "iFootage",
         "model": "Shark Slider Nano II",
-        "travelCm": [23.3, 43.3],
+        "travelCm": [
+          23.3,
+          43.3
+        ],
         "payloadHorizontalKg": 7,
         "payloadVerticalKg": 3.5,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "motorized (brushless servo)",
         "motorized": true,
-        "weightKg": [2.8, 3.1],
+        "weightKg": [
+          2.8,
+          3.1
+        ],
         "material": "aluminum + carbon fiber",
         "features": "dual-axis (pan + slide), app control",
-        "dimensionsCm": ["463 × 133 × 99", "663 × 133 × 99"],
+        "dimensionsCm": [
+          "463 × 133 × 99",
+          "663 × 133 × 99"
+        ],
         "notes": "Payload 7 kg horizontal, 3.5 kg vertical."
       },
       "iFootage Shark Slider Mini": {
@@ -10542,7 +5933,9 @@ const gear = {
         "model": "Shark Slider Mini",
         "travelCm": 60,
         "payloadHorizontalKg": 2.5,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "manual",
         "motorized": false,
         "weightKg": 1.9,
@@ -10554,7 +5947,13 @@ const gear = {
       "GFM GF-Slider System": {
         "brand": "GFM (Grip Factory Munich)",
         "model": "GF-Slider System",
-        "bowlMount": [75, 100, 150, "Mitchell", "Flat"],
+        "bowlMount": [
+          75,
+          100,
+          150,
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (modular rails/carriage)",
         "motorized": false,
         "material": "aluminum/steel",
@@ -10566,7 +5965,10 @@ const gear = {
         "model": "Flyking Precision (4 ft)",
         "travelCm": 99,
         "payloadHorizontalKg": 70,
-        "bowlMount": ["Mitchell", "Flat"],
+        "bowlMount": [
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (roller bearings)",
         "motorized": false,
         "weightKg": 12,
@@ -10579,7 +5981,10 @@ const gear = {
         "model": "Flyking Precision (6 ft)",
         "travelCm": 160,
         "payloadHorizontalKg": 70,
-        "bowlMount": ["Mitchell", "Flat"],
+        "bowlMount": [
+          "Mitchell",
+          "Flat"
+        ],
         "driveType": "manual (roller bearings)",
         "motorized": false,
         "weightKg": 13.4,
@@ -10591,7 +5996,10 @@ const gear = {
         "brand": "That Cat",
         "model": "Silent Cat 4000 (4')",
         "travelCm": 94,
-        "bowlMount": [150, "Mitchell"],
+        "bowlMount": [
+          150,
+          "Mitchell"
+        ],
         "driveType": "manual (roller)",
         "motorized": false,
         "weightKg": 19,
@@ -10605,7 +6013,9 @@ const gear = {
         "model": "Carbon 30\" Slider",
         "travelCm": 76,
         "payloadHorizontalKg": 22.7,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "roller bearings",
         "motorized": false,
         "material": "carbon fiber",
@@ -10616,7 +6026,9 @@ const gear = {
         "model": "DEV-1000",
         "travelCm": 61,
         "payloadHorizontalKg": 9.1,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "belt / manual",
         "motorized": false,
         "material": "aluminum",
@@ -10633,7 +6045,9 @@ const gear = {
         "brand": "Manfrotto",
         "model": "60 cm Slider",
         "travelCm": 60,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "manual",
         "motorized": false,
         "weightKg": 1.5,
@@ -10645,7 +6059,9 @@ const gear = {
         "brand": "GVM",
         "model": "GT-J80D Motorized Slider",
         "travelCm": 80,
-        "bowlMount": ["Flat"],
+        "bowlMount": [
+          "Flat"
+        ],
         "driveType": "motorized",
         "motorized": true,
         "material": "aluminum",
@@ -10700,13 +6116,6821 @@ const gear = {
     "Pearl",
     "Soft FX",
     "Diopter"
-  ]
+  ],
+  "lenses": {
+    "ZEISS High Speed MK III 18mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 95,
+      "minFocusMeters": 0.28,
+      "weight_g": 1600,
+      "notes": "Front Ø80 mm; S35; T1.3-T16",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 20mm T2.1": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "ZEISS High Speed MK III 25mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 75,
+      "minFocusMeters": 0.25,
+      "weight_g": 1100,
+      "notes": "Front Ø80 mm; S35",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 35mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 64,
+      "minFocusMeters": 0.3,
+      "weight_g": 700,
+      "notes": "Front Ø80 mm; S35",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 50mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 62,
+      "minFocusMeters": 0.6,
+      "weight_g": 700,
+      "notes": "Front Ø80 mm; S35",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 65mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 75,
+      "minFocusMeters": 0.7,
+      "weight_g": 1250,
+      "notes": "Front Ø80 mm; S35",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 85mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mount": "PL",
+      "lengthMm": 85,
+      "minFocusMeters": 0.91,
+      "weight_g": 1400,
+      "notes": "Front Ø80 mm; S35",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS High Speed MK III 135mm T1.3": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Tokina Vista One 18mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.7,
+      "minFocusMeters": 0.28,
+      "weight_g": 2300,
+      "notes": "Single-coated Vista One edition; 300° focus rotation and large-format coverage",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista One 25mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.7,
+      "minFocusMeters": 0.35,
+      "weight_g": 2200,
+      "notes": "Large-format Vista One prime with character single coating and matching 114 mm fronts",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista One 35mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.7,
+      "minFocusMeters": 0.38,
+      "weight_g": 2100,
+      "notes": "Covers VistaVision sensors; single-coated for flare control and gentle halation",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista One 50mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.7,
+      "minFocusMeters": 0.45,
+      "weight_g": 2100,
+      "notes": "Vista One 50 mm maintains T1.5 speed with unified gear positions",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "IB/E Raptor Macro 60mm T2.9": {
+      "brand": "IB/E Optics",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 50,
+      "minFocusMeters": 0.24,
+      "weight_g": 1600,
+      "notes": "Full-frame 1:1 macro prime; includes LDS metadata contacts",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "IB/E Raptor Macro 100mm T2.9": {
+      "brand": "IB/E Optics",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 50,
+      "minFocusMeters": 0.31,
+      "weight_g": 1750,
+      "notes": "Full-frame macro with user-swappable mount options and 300° focus rotation",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "IB/E Raptor Macro 150mm T3.5": {
+      "brand": "IB/E Optics",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 3.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 50,
+      "minFocusMeters": 0.41,
+      "weight_g": 1900,
+      "notes": "Long macro prime covering full frame with extended close focus",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Optimo 15-40mm T2.6": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.6,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.61,
+      "weight_g": 1920,
+      "imageCircleMm": 31.4,
+      "lengthMm": 186,
+      "notes": "Compact Optimo zoom with S35+ coverage (≈31.4 mm diagonal).",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Optimo 45-120mm T2.8": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.94,
+      "weight_g": 1950,
+      "imageCircleMm": 31.4,
+      "lengthMm": 203,
+      "notes": "Matches the 15-40mm Optimo compact zoom; S35+ coverage.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angenieux Optimo 25-250mm T3.5 (PL)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 3.5,
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 7300,
+      "imageCircleMm": 31.4,
+      "lengthMm": 377.4,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "LOMO Anamorphic RF 35mm T2.5": {
+      "brand": "LOMO",
+      "frontDiameterMm": 141,
+      "clampOn": true,
+      "tStop": 2.5,
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "LOMO Anamorphic RF 50mm T2.4": {
+      "brand": "LOMO",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "LOMO Anamorphic RF 75mm T2.4": {
+      "brand": "LOMO",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "LOMO Anamorphic RF 100mm T3.2": {
+      "brand": "LOMO",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3.2,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Canon CN7x17 17-120mm T2.95-3.9": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.95,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.4,
+      "minFocusMeters": 0.85,
+      "weight_g": 2900,
+      "lengthMm": 254.9,
+      "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area (≈31.4 mm image circle).",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon CN-E Flex Zoom 14-35mm T1.7": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.7,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.4,
+      "minFocusMeters": 0.6,
+      "weight_g": 3400,
+      "lengthMm": 233.3,
+      "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 241.3 mm / 3.4 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon CN-E Flex Zoom 31.5-95mm T1.7": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.7,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.4,
+      "minFocusMeters": 1,
+      "weight_g": 3500,
+      "lengthMm": 238.4,
+      "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 246.4 mm / 3.5 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 14mm T3.1": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3.1,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.203,
+      "weight_g": 1200,
+      "imageCircleMm": 43.3,
+      "notes": "Sumire 14mm T3.1 FP X. Series constant Ø114 mm, 300° focus rotation. 14 mm has no 105 mm front thread.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 20mm T1.5": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1200,
+      "imageCircleMm": 43.3,
+      "lengthMm": 102,
+      "notes": "Sumire Prime 20mm T1.5 FP X. Series uses Ø114 mm fronts; per Canon spec weight ≈1.2 kg.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 24mm T1.5": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1200,
+      "imageCircleMm": 43.3,
+      "lengthMm": 102,
+      "notes": "Sumire Prime 24mm T1.5 FP X. Canon table lists 1.2 kg weight and 1' close focus.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 35mm T1.5": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.46,
+      "weight_g": 1100,
+      "imageCircleMm": 43.3,
+      "lengthMm": 115,
+      "notes": "Sumire Prime 35mm T1.5 FP X. Canon table: 1.1 kg; CF 1'6\".",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 50mm T1.3": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.46,
+      "weight_g": 1100,
+      "imageCircleMm": 43.3,
+      "lengthMm": 115,
+      "notes": "Sumire Prime 50mm T1.3 FP X. Canon table: 1.1 kg; CF 1'6\".",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 85mm T1.3": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.95,
+      "weight_g": 1300,
+      "imageCircleMm": 43.3,
+      "lengthMm": 118,
+      "notes": "Sumire Prime 85mm T1.3 FP X. Canon table: 1.3 kg; CF 3'2\".",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Sumire Prime 135mm T2.2": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1400,
+      "imageCircleMm": 43.3,
+      "lengthMm": 118,
+      "notes": "Sumire Prime 135mm T2.2 FP X. Canon table: 1.4 kg; CF 3'3\".",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Ultra Compact FF 37-102mm T2.9": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2600,
+      "imageCircleMm": 46.3,
+      "lengthMm": 235,
+      "notes": "Full-frame/VV coverage with Cooke /i metadata; 114 mm front.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Ultra Compact FF 21-56mm T2.9": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 162,
+      "clampOn": true,
+      "tStop": 4.2,
+      "mount": "PL / LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.52,
+      "weight_g": 12750,
+      "imageCircleMm": 46.3,
+      "lengthMm": 523,
+      "notes": "Front Ø162 mm; weight and length are the full-frame specification. Data from Angénieux Optimo Ultra 12x technical literature.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Optimo Ultra 12x 24-290mm T2.8 (S35)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 162,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 12600,
+      "imageCircleMm": 31.1,
+      "lengthMm": 472,
+      "notes": "Super 35 mode for the Optimo Ultra 12x system. Data from Angénieux Optimo Ultra 12x technical literature.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Optimo Ultra 12x 26-320mm T3.1 (Ultra 35)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 162,
+      "clampOn": true,
+      "tStop": 3.1,
+      "mount": "PL / LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.24,
+      "weight_g": 12750,
+      "imageCircleMm": 34.6,
+      "lengthMm": 480,
+      "notes": "Ultra 35 mode for the Optimo Ultra 12x system. Data from Angénieux Optimo Ultra 12x technical literature.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-1 30-90mm T2.0 (S35)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2150,
+      "imageCircleMm": 30,
+      "lengthMm": 226,
+      "notes": "Optimo Type EZ-1 in Super 35 configuration. Ships in PL with Angénieux IRO support for EF/E/RF mounts and converts to the FF/VV 45-135mm block without tools.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-1 45-135mm T3.0 (FF)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2200,
+      "imageCircleMm": 46.3,
+      "lengthMm": 231,
+      "notes": "Full-frame/VV IRO block for the Optimo Type EZ-1. Maintains the same Ø114 mm front and close focus while stretching coverage to 46.3 mm.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-2 15-40mm T2.0 (S35)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2100,
+      "imageCircleMm": 30,
+      "lengthMm": 226,
+      "notes": "Optimo Type EZ-2 wide zoom covering Super 35. Shares the Angénieux IRO quick-swap system for EF/E/RF mounts and drop-in rear filters.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-2 22-60mm T3.0 (FF)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2150,
+      "imageCircleMm": 46.3,
+      "lengthMm": 231,
+      "notes": "Full-frame/VV configuration for the Optimo Type EZ-2. Retains Ø114 mm fronts and the same close-focus distance when converted with the IRO kit.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-3 45-165mm T2.3-3.0 (S35)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 2600,
+      "imageCircleMm": 30.4,
+      "lengthMm": 265,
+      "notes": "Convertible Type EZ-3 using Angénieux IRO: S35 block covers 30.4 mm image circle. Ships in PL with swaps to EF/E/RF.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Angénieux Type EZ-3 68-250mm T3.5-4.5 (FF)": {
+      "brand": "Angénieux",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 2600,
+      "imageCircleMm": 46.3,
+      "lengthMm": 265,
+      "notes": "Convertible Type EZ-3 using Angénieux IRO: FF/VV block covers 46.3 mm image circle. Ships in PL with swaps to EF/E/RF.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 12mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 134,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 25,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2800,
+      "imageCircleMm": 44.7,
+      "lengthMm": 239,
+      "notes": "From ARRI Signature Prime technical data: MOD 0.35 m, length 239 mm, front Ø 134 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 15mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 156,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2800,
+      "imageCircleMm": 44.7,
+      "lengthMm": 197,
+      "notes": "From ARRI data: length 197 mm, front Ø 156 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 18mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2000,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "ARRI specs: length 178 mm, front Ø 114 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 21mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1900,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI table: same length as 18mm, front Ø same.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 25mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1900,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI spec: 25 mm same length as 18/21 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 29mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1800,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI spec.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 35mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1700,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "ARRI spec: same as others, length 178 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 40mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1800,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI spec.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 47mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "weight_g": 1814,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "B&H listing: front 114 mm, weight 4 lb (~1814 g), close focus 9\" (~0.23 m) from lens front.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 58mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "weight_g": 2000,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI spec table.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 75mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.65,
+      "weight_g": 1900,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "ARRI spec table lists weight 1.9 kg.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 95mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 1900,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "ARRI spec table gives MOD 0.85 m.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 125mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 2300,
+      "imageCircleMm": 44.7,
+      "lengthMm": 178,
+      "notes": "From ARRI spec.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 150mm T1.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "tStopRange": "T1.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.5,
+      "weight_g": 3250,
+      "imageCircleMm": 44.7,
+      "lengthMm": 208,
+      "notes": "ARRI spec: length 208 mm, weight 3.25 kg.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 200mm T2.5": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.5,
+      "tStopRange": "T2.5–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.8,
+      "weight_g": 3100,
+      "imageCircleMm": 44.7,
+      "lengthMm": 218,
+      "notes": "From ARRI spec: length 218 mm for 200 mm T2.5.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Prime 280mm T2.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 134,
+      "clampOn": true,
+      "tStop": 2.8,
+      "tStopRange": "T2.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 25,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 2.5,
+      "weight_g": 4300,
+      "imageCircleMm": 44.7,
+      "lengthMm": 278,
+      "notes": "ARRI spec: length 278 mm, front Ø 134 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Zoom 16-32mm T2.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "tStopRange": "T2.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "weight_g": 3200,
+      "imageCircleMm": 46,
+      "lengthMm": 195,
+      "notes": "From ARRI technical data: 16-32 mm, MOD = 0.45 m.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Zoom 24-75mm T2.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "tStopRange": "T2.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.7,
+      "weight_g": 3700,
+      "imageCircleMm": 46,
+      "lengthMm": 244,
+      "notes": "ARRI technical data for length, weight, and MOD; LDS-2/Cooke /i metadata compatible.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Zoom 45-135mm T2.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "tStopRange": "T2.8–T22",
+      "mount": "LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 3600,
+      "imageCircleMm": 46,
+      "lengthMm": 300,
+      "notes": "ARRI technical data for 1 m MOD, 300 mm length, and 3.6 kg weight; LDS-2/Cooke /i metadata compatible.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI Signature Zoom 65-300mm T2.8": {
+      "brand": "ARRI",
+      "frontDiameterMm": 156,
+      "clampOn": true,
+      "tStop": 2.8,
+      "tStopRange": "T2.8–T22",
+      "mount": "LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.8,
+      "weight_g": 8100,
+      "imageCircleMm": 46,
+      "lengthMm": 420,
+      "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata.",
+      "mountOptions": [
+        {
+          "type": "LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/FUJINON Alura 15.5-45mm T2.8": {
+      "brand": "ARRI/FUJINON",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.5,
+      "minFocusMeters": 0.6,
+      "lengthMm": 228,
+      "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/FUJINON Alura 30-80mm T2.8": {
+      "brand": "ARRI/FUJINON",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 31.5,
+      "minFocusMeters": 0.6,
+      "lengthMm": 228,
+      "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 8mm T2.8": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 134,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 0.35,
+      "weight_g": 2000,
+      "lengthMm": 130,
+      "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 10mm T2.1": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 156,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 0.35,
+      "weight_g": 2900,
+      "lengthMm": 172,
+      "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 12mm T2.0": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 156,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 0.3,
+      "weight_g": 2000,
+      "lengthMm": 140,
+      "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 14mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 0.22,
+      "weight_g": 1800,
+      "lengthMm": 112,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 16mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 1200,
+      "lengthMm": 94,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 20mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.28,
+      "weight_g": 1200,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 24mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1000,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 28mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.28,
+      "weight_g": 1000,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "notes": "ZEISS technical table lists 0.28 m MOD, 91 mm length, 1.0 kg weight, and PL reference for Ultra Prime 28 mm.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 32mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1100,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 40mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.38,
+      "weight_g": 1000,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 50mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 1000,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 65mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.65,
+      "weight_g": 1200,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 85mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.9,
+      "weight_g": 1200,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 100mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1200,
+      "lengthMm": 91,
+      "imageCircleMm": 31.1,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 135mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 1.5,
+      "weight_g": 1600,
+      "lengthMm": 119,
+      "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ARRI/ZEISS Ultra Prime 180mm T1.9": {
+      "brand": "ARRI/ZEISS",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "minFocusMeters": 2.6,
+      "weight_g": 2600,
+      "lengthMm": 166,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 12mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 156,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.4,
+      "weight_g": 2900,
+      "imageCircleMm": 46.3,
+      "lengthMm": 197,
+      "notes": "Front Ø156 mm; close focus measured from image plane. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 14mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.3,
+      "lengthMm": 172,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 16mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2200,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 18mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2200,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 21mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 25mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2300,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 27mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 40mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 50mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.5,
+      "weight_g": 2700,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 65mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 75mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL / LDS",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "weight_g": 2800,
+      "imageCircleMm": 46.3,
+      "lengthMm": 153,
+      "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications.",
+      "mountOptions": [
+        {
+          "type": "PL / LDS",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 100mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 2900,
+      "imageCircleMm": 31.14,
+      "lengthMm": 205,
+      "notes": "ZEISS lists ≥31.14 mm image circle; optimized for Super 35 coverage.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Master Prime 135mm T1.3": {
+      "brand": "ZEISS/ARRI",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.55,
+      "weight_g": 2600,
+      "imageCircleMm": 43.3,
+      "lengthMm": 198,
+      "notes": "Full-frame coverage; T2.9–22. Source: ZEISS Cinema Zoom brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT.",
+      "mountOptions": []
+    },
+    "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.83,
+      "weight_g": 2500,
+      "imageCircleMm": 43.3,
+      "lengthMm": 196,
+      "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Sources: ZEISS brochure (accessed 2025-09-14); internal list. Interchangeable Mount System supports PL/EF/F/E/MFT.",
+      "mountOptions": []
+    },
+    "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.52,
+      "weight_g": 2800,
+      "imageCircleMm": 43.3,
+      "lengthMm": 250,
+      "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Source: ZEISS brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT.",
+      "mountOptions": []
+    },
+    "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "weight_g": 2000,
+      "imageCircleMm": 31.1,
+      "lengthMm": 226,
+      "notes": "ANSI Super 35 coverage; 11 iris blades; T2.9–22; front Ø 114 mm. Source: ZEISS technical data (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT.",
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 18mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 24mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 35mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 50mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 75mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Nano Prime 100mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 18mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2270,
+      "imageCircleMm": 46.3,
+      "lengthMm": 163,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 21mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1500,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 25mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.26,
+      "weight_g": 1420,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 29mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.33,
+      "weight_g": 1610,
+      "imageCircleMm": 46.3,
+      "lengthMm": 121,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 35mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.32,
+      "weight_g": 1400,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 40mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.42,
+      "weight_g": 1490,
+      "imageCircleMm": 46.3,
+      "lengthMm": 121,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 50mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.457,
+      "weight_g": 1220,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 65mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 1630,
+      "imageCircleMm": 46.3,
+      "lengthMm": 121,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 85mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.84,
+      "weight_g": 1420,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 100mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1700,
+      "imageCircleMm": 46.3,
+      "lengthMm": 119,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "ZEISS Supreme Prime Radiance 135mm T1.5": {
+      "brand": "ZEISS",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.4,
+      "weight_g": 2270,
+      "imageCircleMm": 46.3,
+      "lengthMm": 146,
+      "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14).",
+      "mountOptions": []
+    },
+    "Leitz Summicron-C 15mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 118,
+      "minFocusMeters": 0.3,
+      "weight_g": 1800,
+      "notes": "Front Ø95 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 18mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 101,
+      "minFocusMeters": 0.3,
+      "weight_g": 1300,
+      "notes": "Front Ø95 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 21mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 101,
+      "minFocusMeters": 0.3,
+      "weight_g": 1300,
+      "notes": "Front Ø95 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 25mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 101,
+      "minFocusMeters": 0.3,
+      "weight_g": 1500,
+      "notes": "Front Ø95 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 29mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 101,
+      "minFocusMeters": 0.3,
+      "weight_g": 1300,
+      "notes": "Leitz technical table lists 0.3 m MOD, 101 mm length, and 1.3 kg weight for the 29 mm Summicron-C.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 35mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 40mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 101,
+      "minFocusMeters": 0.45,
+      "weight_g": 1300,
+      "notes": "Leitz technical table lists 0.45 m MOD, 101 mm length, and 1.3 kg weight for the 40 mm Summicron-C.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 50mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 1500,
+      "lengthMm": 101,
+      "imageCircleMm": 36,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 75mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "weight_g": 1200,
+      "lengthMm": 101,
+      "imageCircleMm": 36,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 100mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Summicron-C 135mm T2.0": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 36,
+      "lengthMm": 118,
+      "minFocusMeters": 1.35,
+      "weight_g": 1800,
+      "notes": "Leitz technical table lists 1.35 m MOD, 118 mm length, and 1.8 kg weight for the 135 mm Summicron-C.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 15mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 15mm T2.1. No front thread on 15–25 mm; 160 mm length per Leitz technical table.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 18mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 18mm T2.1. No front thread on 15–25 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 21mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 21mm T2.1. No front thread on 15–25 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 25mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2400,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 25mm T2.1. No front thread on 15–25 mm; 160 mm length per Leitz technical table.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 29mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 29mm T2.1. Front filter M92×1 on 29–100 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 35mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 35mm T2.1. Front filter M92×1.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 40mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 40mm T2.1. Front filter M92×1.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 50mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.508,
+      "weight_g": 1996,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 50mm T2.1. BandPro listing notes 20\" (0.508 m) MOD, 160 mm length, and ~4.4 lb (1996 g).",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 65mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.65,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 65mm T2.1. Front filter M92×1.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 75mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.75,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 75mm T2.1. Front filter M92×1.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 100mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 2100,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 100mm T2.1. Front filter M92×1.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 125mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.27,
+      "weight_g": 2404,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 125mm T2.1. BandPro listing notes 50\" (1.27 m) MOD, 160 mm length, and ~5.3 lb (2404 g).",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Elsie 150mm T2.1": {
+      "brand": "Leitz",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "LPL (Cooke /i, LDS-2)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.5,
+      "weight_g": 2400,
+      "imageCircleMm": 46.5,
+      "lengthMm": 160,
+      "notes": "ELSIE 150mm T2.1. Front filter M112×1.5 on 125–150 mm.",
+      "mountOptions": [
+        {
+          "type": "LPL (Cooke /i, LDS-2)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz HUGO 18mm T1.5": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "LPL / Leica L / Leica M",
+      "rodStandard": "15mm",
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.22,
+      "weight_g": 1040,
+      "imageCircleMm": 43.3,
+      "lengthMm": 71,
+      "notes": "Specs from B&H: 2.8\" / 71 mm length, 95 mm front, 1040 g weight.",
+      "mountOptions": [
+        {
+          "type": "LPL / Leica L / Leica M",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz HUGO 24mm T1.5": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "LPL / Leica L / Leica M",
+      "rodStandard": "15mm",
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 860,
+      "imageCircleMm": 43.3,
+      "lengthMm": 68,
+      "notes": "Band Pro listing: 2.7\" / 68 mm length, approximately 860 g weight.",
+      "mountOptions": [
+        {
+          "type": "LPL / Leica L / Leica M",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz HUGO 40mm T1.5": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "LPL / Leica L / Leica M",
+      "rodStandard": "15mm",
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.36,
+      "weight_g": 870,
+      "imageCircleMm": 43.3,
+      "lengthMm": 68,
+      "notes": "Announced specifications: 2.7\" / 68 mm length, 0.87 kg weight, close focus 0.36 m.",
+      "mountOptions": [
+        {
+          "type": "LPL / Leica L / Leica M",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz HUGO 135mm T1.9": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "LPL / Leica L / Leica M",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1590,
+      "imageCircleMm": 43.3,
+      "lengthMm": 121,
+      "notes": "Manufacturer specs: 4.8\" / 121 mm length, 1.59 kg weight, close focus 1 m.",
+      "mountOptions": [
+        {
+          "type": "LPL / Leica L / Leica M",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 24mm T3.6": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 3.6,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 124.5,
+      "minFocusMeters": 0.2,
+      "weight_g": 1420,
+      "notes": "Thalia prime set; 92 mm thread except wides; 270° focus rotation. Specs from Leitz THALIA datasheet.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 30mm T2.9": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 131.5,
+      "minFocusMeters": 0.5,
+      "weight_g": 1500,
+      "notes": "Thalia 30 mm; datasheet lists close focus 0.5 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 35mm T2.6": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.6,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 131.5,
+      "minFocusMeters": 0.55,
+      "weight_g": 1400,
+      "notes": "Thalia 35 mm; close focus 0.55 m per spec.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 45mm T2.9": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 131.5,
+      "minFocusMeters": 0.6,
+      "weight_g": 1460,
+      "notes": "Thalia 45 mm; close focus 0.6 m per spec.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 55mm T2.8": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 154.5,
+      "minFocusMeters": 0.3,
+      "weight_g": 1640,
+      "notes": "Thalia 55 mm macro; spec gives close focus 0.3 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 70mm T2.6": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.6,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 124.5,
+      "minFocusMeters": 0.5,
+      "weight_g": 1060,
+      "notes": "Thalia 70 mm; spec gives length 124.5 mm and close focus 0.5 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 90mm T2.2 (Thalia-T variant)": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 124.5,
+      "minFocusMeters": 0.9,
+      "weight_g": 1050,
+      "notes": "Thalia-T 90 mm variant with dual \"soft/hard\" character. Datasheet lists 0.9 m close focus.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 100mm T2.2": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 124.5,
+      "minFocusMeters": 0.7,
+      "weight_g": 1160,
+      "notes": "Thalia 100 mm; spec gives close focus 0.7 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 120mm T2.6": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.6,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 175,
+      "minFocusMeters": 0.57,
+      "weight_g": 1660,
+      "notes": "Thalia 120 mm macro; spec length 175 mm and close focus 0.57 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Leitz Thalia 180mm T3.6": {
+      "brand": "Leitz",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 3.6,
+      "mount": "PL / LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 60,
+      "lengthMm": 154.5,
+      "minFocusMeters": 1.5,
+      "weight_g": 1620,
+      "notes": "Thalia 180 mm; spec gives length 154.5 mm and close focus 1.5 m.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 25mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "lengthMm": 182,
+      "minFocusMeters": 0.36,
+      "weight_g": 3300,
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 27mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 3300,
+      "imageCircleMm": 46.3,
+      "lengthMm": 182,
+      "notes": "Cooke spec lists 0.35 m close focus, 182 mm length, Ø110 mm front, and PL or LPL mount options.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 32mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "lengthMm": 189,
+      "minFocusMeters": 0.35,
+      "weight_g": 3400,
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 40mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "lengthMm": 189,
+      "minFocusMeters": 0.45,
+      "weight_g": 3500,
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 50mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 60mm T2.5": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.5,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "lengthMm": 160,
+      "minFocusMeters": 0.056,
+      "weight_g": 2200,
+      "imageCircleMm": 46.3,
+      "notes": "T2.5-T22",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 75mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.475,
+      "weight_g": 3300,
+      "lengthMm": 189,
+      "imageCircleMm": 46.31,
+      "notes": "T2.0-T22",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 100mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S7/i FF 300mm T3.3": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 3.3,
+      "mount": "PL or LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 2.1,
+      "weight_g": 4400,
+      "imageCircleMm": 46.3,
+      "lengthMm": 256,
+      "notes": "Cooke spec states 2.1 m close focus, 256 mm length, ~4.4 kg weight, Ø110 mm front, and includes a support bracket.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 18mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 3400,
+      "imageCircleMm": 43.3,
+      "lengthMm": 200,
+      "notes": "Cooke S8/i FF 18mm T1.4 ships with a support bracket; Cooke warns of Ø136 mm clamp-on vignette risk.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 25mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 27mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2600,
+      "imageCircleMm": 46.3,
+      "lengthMm": 162,
+      "notes": "Cooke S8/i FF 27mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.6 m MOD.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 32mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 40mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 50mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 65mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.75,
+      "weight_g": 2600,
+      "imageCircleMm": 46.3,
+      "lengthMm": 157,
+      "notes": "Cooke S8/i FF 65mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.75 m MOD.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 75mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S8/i FF 100mm T1.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 104,
+      "clampOn": true,
+      "tStop": 1.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.31,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Varotal/i FF 19-40mm T2.9": {
+      "brand": "Cooke",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 3500,
+      "imageCircleMm": 46.3,
+      "lengthMm": 280,
+      "notes": "Cooke Varotal/i FF wide zoom with /i metadata, matched Ø114 mm front and 11-blade iris across the set.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Varotal/i FF 30-95mm T2.9": {
+      "brand": "Cooke",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL or LPL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "weight_g": 3700,
+      "imageCircleMm": 46.3,
+      "lengthMm": 290,
+      "notes": "Mid-range Varotal/i FF zoom covering full frame/VV with consistent mechanics and Cooke /i data contacts.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Varotal/i FF 85-215mm T2.9": {
+      "brand": "Cooke",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL or LPL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 4100,
+      "imageCircleMm": 46.3,
+      "lengthMm": 320,
+      "notes": "Tele Varotal/i FF zoom matched to the 19-40 and 30-95mm lenses; supports Cooke /i metadata and full-frame coverage.",
+      "mountOptions": [
+        {
+          "type": "PL or LPL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Fujinon Premista 19-45mm T2.9": {
+      "brand": "Fujinon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 3300,
+      "imageCircleMm": 46.3,
+      "lengthMm": 228,
+      "notes": "Front Ø114 mm; full-frame/VV coverage.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Fujinon Premista 28-100mm T2.9": {
+      "brand": "Fujinon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "weight_g": 3800,
+      "imageCircleMm": 46.3,
+      "lengthMm": 255,
+      "notes": "Front Ø114 mm; full-frame/VV coverage.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Fujinon Premista 80-250mm T2.9-3.5": {
+      "brand": "Fujinon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.5,
+      "weight_g": 3800,
+      "imageCircleMm": 46.3,
+      "lengthMm": 255,
+      "notes": "Front Ø114 mm; full-frame/VV coverage.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Fujinon MK18-55mm T2.9": {
+      "brand": "Fujinon",
+      "frontDiameterMm": 85,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "Sony E",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.9,
+      "weight_g": 980,
+      "imageCircleMm": 28.5,
+      "lengthMm": 206,
+      "notes": "MK18–55mm T2.9 (S35). Manufacturer states <1 kg; B&H lists 0.98 kg.",
+      "mountOptions": [
+        {
+          "type": "Sony E",
+          "mount": "native"
+        }
+      ]
+    },
+    "Fujinon MK50-135mm T2.9": {
+      "brand": "Fujinon",
+      "frontDiameterMm": 85,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "Sony E",
+      "rodStandard": "15mm",
+      "rodLengthCm": 20,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 980,
+      "imageCircleMm": 28.5,
+      "lengthMm": 206,
+      "notes": "MK50–135mm T2.9 (S35). Fujifilm page lists 206.3 mm length, 980 g.",
+      "mountOptions": [
+        {
+          "type": "Sony E",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFilm Vespid 35mm T2.1": {
+      "brand": "DZOFilm",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFilm Vespid 50mm T2.1": {
+      "brand": "DZOFilm",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFilm Vespid 75mm T2.1": {
+      "brand": "DZOFilm",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Meike FF Prime 24mm T2.1": {
+      "brand": "Meike",
+      "frontDiameterMm": 85,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 45,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Meike FF Prime 35mm T2.1": {
+      "brand": "Meike",
+      "frontDiameterMm": 85,
+      "clampOn": true,
+      "tStop": 2.1,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 45,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 12mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 2600,
+      "imageCircleMm": 31,
+      "lengthMm": 160,
+      "notes": "Cooke S4/i technical data lists Ø110 mm fronts, 0.3 m MOD, and 2.6 kg weight for the 12 mm.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 14mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.2,
+      "weight_g": 2500,
+      "imageCircleMm": 31,
+      "lengthMm": 144,
+      "notes": "Cooke specifications show the 14 mm sharing the Ø110 mm front, 0.2 m close focus, and ~2.5 kg build.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 16mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.2,
+      "weight_g": 1800,
+      "imageCircleMm": 31,
+      "lengthMm": 120,
+      "notes": "S4/i 16 mm prime: 0.2 m MOD, 1.8 kg mass, and Ø110 mm clamp-on profile.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 18mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 1970,
+      "imageCircleMm": 31,
+      "lengthMm": 137,
+      "notes": "Cooke publishes a 0.25 m minimum focus, 137 mm length, and 1.97 kg weight for the 18 mm S4/i.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 21mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 1700,
+      "imageCircleMm": 31,
+      "lengthMm": 118,
+      "notes": "S4/i 21 mm spec: Ø110 mm front, 0.25 m MOD, ≈1.7 kg weight per Cooke datasheet.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 25mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 1580,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke S4/i 25 mm: 0.25 m MOD with 104 mm length and 1.58 kg weight.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 27mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 1550,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke datasheet lists the 27 mm at 1.55 kg with a 0.25 m close focus.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 32mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1590,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke S4/i 32 mm: 0.3 m MOD, 1.59 kg weight, Ø110 mm front.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 35mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1520,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke S4/i 35 mm shares the compact 104 mm length with 0.3 m MOD and ~1.52 kg weight.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 40mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.38,
+      "weight_g": 1650,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke publishes a 0.38 m close focus and ~1.65 kg mass for the 40 mm S4/i prime.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 50mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.41,
+      "weight_g": 1650,
+      "imageCircleMm": 31,
+      "lengthMm": 104,
+      "notes": "Cooke S4/i 50 mm: 0.41 m MOD, 104 mm overall length, around 1.65 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 65mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.61,
+      "weight_g": 1750,
+      "imageCircleMm": 31,
+      "lengthMm": 112,
+      "notes": "Cooke spec lists the 65 mm at 0.61 m close focus with ~1.75 kg weight.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 75mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.76,
+      "weight_g": 1900,
+      "imageCircleMm": 31,
+      "lengthMm": 125,
+      "notes": "Cooke S4/i 75 mm: 0.76 m MOD and ~1.9 kg, still Ø110 mm clamp-on.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 100mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.91,
+      "weight_g": 2350,
+      "imageCircleMm": 31,
+      "lengthMm": 138,
+      "notes": "Cooke data: 0.91 m close focus, 138 mm length, and ≈2.35 kg for the 100 mm S4/i.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 135mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.37,
+      "weight_g": 2900,
+      "imageCircleMm": 31,
+      "lengthMm": 170,
+      "notes": "Cooke lists the 135 mm with 1.37 m MOD, 170 mm length, and roughly 2.9 kg weight.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 150mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.52,
+      "weight_g": 3100,
+      "imageCircleMm": 31,
+      "lengthMm": 170,
+      "notes": "Cooke S4/i 150 mm: ~1.52 m close focus, 3.1 kg weight, Ø110 mm front.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 180mm T2.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.83,
+      "weight_g": 3400,
+      "imageCircleMm": 31,
+      "lengthMm": 182,
+      "notes": "Cooke technical table: 1.83 m MOD and roughly 3.4 kg for the 180 mm S4/i prime.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke S4/i 300mm T3.0": {
+      "brand": "Cooke",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 3,
+      "tStopRange": "T3.0–T22",
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 3.66,
+      "weight_g": 5800,
+      "imageCircleMm": 31,
+      "lengthMm": 320,
+      "notes": "Cooke S4/i 300 mm tele: larger Ø136 mm front, ~5.8 kg, and 3.66 m minimum focus.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro TLS 18mm T2.2": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "lengthMm": 61,
+      "minFocusMeters": 0.2,
+      "weight_g": 820,
+      "notes": "Front Ø110 mm; Super35; approx 2.40 in length",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro TLS 25mm T2.2": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "lengthMm": 69,
+      "minFocusMeters": 0.2,
+      "weight_g": 860,
+      "notes": "Front Ø110 mm; approx 2.70 in length",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro TLS 32mm T2.3": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "lengthMm": 69,
+      "minFocusMeters": 0.23,
+      "weight_g": 820,
+      "notes": "Front Ø110 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro TLS 40mm T2.3": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "lengthMm": 69,
+      "minFocusMeters": 0.33,
+      "weight_g": 1040,
+      "notes": "Front Ø110 mm",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro TLS 50mm T2.3": {
+      "brand": "Cooke",
+      "frontDiameterMm": 110,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 55,
+      "minFocusMeters": 0.38,
+      "weight_g": 1630,
+      "notes": "Front Ø110 mm; longer prime; manufacturer rates 55 mm image circle at infinity and 62 mm at close focus.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke Speed Panchro 18mm (P+S rehousing)": {
+      "brand": "Cooke (P+S rehoused)",
+      "frontDiameterMm": 100,
+      "clampOn": true,
+      "tStop": 2.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Cooke Speed Panchro 25mm (P+S rehousing)": {
+      "brand": "Cooke (P+S rehoused)",
+      "frontDiameterMm": 100,
+      "clampOn": true,
+      "tStop": 2.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Cooke Speed Panchro 35mm (P+S rehousing)": {
+      "brand": "Cooke (P+S rehoused)",
+      "frontDiameterMm": 100,
+      "clampOn": true,
+      "tStop": 2.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Cooke Speed Panchro 40mm (P+S rehousing)": {
+      "brand": "Cooke (P+S rehoused)",
+      "frontDiameterMm": 100,
+      "clampOn": true,
+      "tStop": 2.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "Cooke Speed Panchro 75mm (P+S rehousing)": {
+      "brand": "Cooke (P+S rehoused)",
+      "frontDiameterMm": 100,
+      "clampOn": true,
+      "tStop": 2.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 31.14,
+      "mountOptions": []
+    },
+    "P+S Technik Kowa Prominar 40mm T2.3": {
+      "brand": "P+S Technik",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1180,
+      "imageCircleMm": 31.1,
+      "lengthMm": 95,
+      "notes": "Kowa 40mm T2.3 PS-rehousing; 77 mm filter thread on all focal lengths.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "P+S Technik Kowa Prominar 50mm T2.3": {
+      "brand": "P+S Technik",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.3,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 10,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1300,
+      "imageCircleMm": 31.1,
+      "lengthMm": 105,
+      "notes": "Kowa 50mm T2.3 PS-rehousing; 77 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "P+S Technik Kowa Prominar 75mm T2.8": {
+      "brand": "P+S Technik",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1560,
+      "imageCircleMm": 31.1,
+      "lengthMm": 134,
+      "notes": "Kowa 75mm T2.8 PS-rehousing; 77 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "P+S Technik Kowa Prominar 100mm T3.4": {
+      "brand": "P+S Technik",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 3.4,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.7,
+      "weight_g": 1760,
+      "imageCircleMm": 31.1,
+      "lengthMm": 164,
+      "notes": "Kowa 100mm T3.4 PS-rehousing; 77 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": {
+      "brand": "Laowa",
+      "frontDiameterMm": 30,
+      "clampOn": true,
+      "tStop": 8,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.005,
+      "imageCircleMm": 43.3,
+      "notes": "Macro probe set with 0°, 35° and 90° modules; waterproof tip and 2× magnification.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Ranger 28-75mm T2.9": {
+      "brand": "Laowa",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 43.2,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Ranger 75-180mm T2.9": {
+      "brand": "Laowa",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 43.2,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 14mm T2": {
+      "brand": "Sigma",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.27,
+      "weight_g": 1190,
+      "imageCircleMm": 43.3,
+      "lengthMm": 126,
+      "notes": "Full-frame high-speed prime with interchangeable mounts and 0.8 mod gears.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 20mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.28,
+      "weight_g": 1430,
+      "imageCircleMm": 43.3,
+      "lengthMm": 138,
+      "notes": "High-speed wide with unified 0.8 mod gears; optional lightweight support recommended for gimbals.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 24mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1360,
+      "imageCircleMm": 43.3,
+      "lengthMm": 124,
+      "notes": "Matches Sigma FF housing with 95 mm front and consistent gear spacing for matte box swaps.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 28mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1300,
+      "imageCircleMm": 43.3,
+      "lengthMm": 122,
+      "notes": "Standard wide FF prime with interchangeable mounts and 95 mm clip-on matte box compatibility.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 35mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 1250,
+      "imageCircleMm": 43.3,
+      "lengthMm": 118,
+      "notes": "Go-to focal with matching focus/iris positions for fast swaps across the Sigma FF set.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 40mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.4,
+      "weight_g": 1210,
+      "imageCircleMm": 43.3,
+      "lengthMm": 118,
+      "notes": "Large-format ready normal with consistent 95 mm front for clip-on matte boxes.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 50mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.4,
+      "weight_g": 1180,
+      "imageCircleMm": 43.3,
+      "lengthMm": 117,
+      "notes": "Standard Sigma FF prime with LDS and /i contacts in PL for metadata-enabled shoots.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 85mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.95,
+      "weight_g": 1220,
+      "imageCircleMm": 43.3,
+      "lengthMm": 125,
+      "notes": "Portrait-length FF prime with 300° focus travel; add clip-on support ring for extended builds.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 105mm T1.5": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 1620,
+      "imageCircleMm": 43.3,
+      "lengthMm": 134,
+      "notes": "Compact FF prime with LDS and /i metadata support in PL mount plus matched gear positions.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF High Speed Prime 135mm T2": {
+      "brand": "Sigma",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL / EF / E (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1840,
+      "imageCircleMm": 43.3,
+      "lengthMm": 156,
+      "notes": "Long telephoto prime best paired with 15 mm support bridge or studio rods for steadiness.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine FF Zoom 28-45mm T2": {
+      "brand": "Sigma",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.61,
+      "weight_g": 4490,
+      "imageCircleMm": 46.3,
+      "lengthMm": 226,
+      "notes": "Full-frame Sigma cinema zoom covering wide-to-standard angles with consistent 0.8 mod gears and Cooke /i-compatible metadata pads.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine High Speed Zoom 50-100mm T2": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1970,
+      "imageCircleMm": 31,
+      "lengthMm": 197,
+      "notes": "Super 35 companion zoom to the 18-35mm with matching 95 mm fronts, long focus throw, and durable cine housing.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma Cine High Speed Zoom 18-35mm T2": {
+      "brand": "Sigma",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.28,
+      "weight_g": 1870,
+      "imageCircleMm": 31,
+      "lengthMm": 196,
+      "notes": "Super 35 high-speed zoom optimized for gimbals and handheld use while retaining 0.8 mod cine gears and 95 mm fronts.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 18mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 3200,
+      "imageCircleMm": 46.7,
+      "lengthMm": 188,
+      "notes": "Ultra-wide Vista prime with generous image circle; use 15 mm rods with yoke-style lens support.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 21mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 2400,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Vista large-format prime with 46.7 mm image circle and matched gear spacing.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 25mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "weight_g": 2500,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Fast full-frame wide with matching focus/iris gear placement across the Vista range.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 35mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.38,
+      "weight_g": 2380,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Large-format normal prime with 300° focus travel and shared 114 mm front.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 40mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.38,
+      "weight_g": 2300,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Tokina Vista full-frame prime with 300° focus rotation and 0.8 mod gears.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 50mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 2320,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Vista 50 mm maintains even gear spacing and benefits from 15 mm lens support on longer takes.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 65mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.65,
+      "weight_g": 2450,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Longer Tokina Vista prime covering VistaVision with unified housing dimensions.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 85mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.95,
+      "weight_g": 2350,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Telephoto Vista prime—pair with 15 mm rods and lens support foot for steadier pulls.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Vista 105mm T1.5": {
+      "brand": "Tokina",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.5,
+      "mount": "PL / EF / E (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 2420,
+      "imageCircleMm": 46.7,
+      "lengthMm": 179,
+      "notes": "Long Vista tele prime covering full-frame and VistaVision with identical gear positions.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / E (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke SP3 25mm T2.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 81,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "E / RF / L (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "weight_g": 700,
+      "imageCircleMm": 43.3,
+      "lengthMm": 87,
+      "notes": "Wide Cooke SP3 prime with native mirrorless mounts and 77 mm front threads for lightweight matte boxes.",
+      "mountOptions": [
+        {
+          "type": "E / RF / L (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke SP3 32mm T2.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 81,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "E / RF / L (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.29,
+      "weight_g": 690,
+      "imageCircleMm": 43.3,
+      "lengthMm": 87,
+      "notes": "Mirrorless-native Cooke SP3 with interchangeable bayonet mounts and 77 mm threads.",
+      "mountOptions": [
+        {
+          "type": "E / RF / L (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke SP3 50mm T2.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 81,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "E / RF / L (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "weight_g": 730,
+      "imageCircleMm": 43.3,
+      "lengthMm": 94,
+      "notes": "Standard SP3 prime retaining Cooke Look micro-contrast with lightweight build.",
+      "mountOptions": [
+        {
+          "type": "E / RF / L (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke SP3 75mm T2.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 81,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "E / RF / L (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.7,
+      "weight_g": 760,
+      "imageCircleMm": 43.3,
+      "lengthMm": 99,
+      "notes": "Compact SP3 telephoto prime, matched housing with Cooke Look rendering.",
+      "mountOptions": [
+        {
+          "type": "E / RF / L (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Cooke SP3 100mm T2.4": {
+      "brand": "Cooke",
+      "frontDiameterMm": 81,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "E / RF / L (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1,
+      "weight_g": 840,
+      "imageCircleMm": 43.3,
+      "lengthMm": 118,
+      "notes": "Longest SP3 focal—add optional support foot for extended rods without sacrificing handheld agility.",
+      "mountOptions": [
+        {
+          "type": "E / RF / L (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 27mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.3,
+      "weight_g": 1880,
+      "imageCircleMm": 46.6,
+      "lengthMm": 178,
+      "notes": "Wide Blackwing7 T-Tune with swappable tuning modules; brace with 15 mm rods for accessories.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 37mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "weight_g": 1900,
+      "imageCircleMm": 46.6,
+      "lengthMm": 178,
+      "notes": "Blackwing7 T-Tune prime with modular contrast tuning and large-format coverage.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 47mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.55,
+      "weight_g": 1920,
+      "imageCircleMm": 46.6,
+      "lengthMm": 178,
+      "notes": "Normal Blackwing7 T-Tune prime—pair with clip-on matte boxes or 114 mm donut.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 57mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.65,
+      "weight_g": 1950,
+      "imageCircleMm": 46.6,
+      "lengthMm": 178,
+      "notes": "Blackwing7 T-Tune mid-tele prime tuned for lower contrast and halation.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 77mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 2050,
+      "imageCircleMm": 46.6,
+      "lengthMm": 178,
+      "notes": "Short telephoto Blackwing7 with tuned flare behavior; secure with lens support when rigged with motors.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "TRIBE7 Blackwing7 T-Tune 107mm T1.8": {
+      "brand": "TRIBE7",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.8,
+      "mount": "PL / LPL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.2,
+      "weight_g": 2150,
+      "imageCircleMm": 46.6,
+      "lengthMm": 185,
+      "notes": "Long Blackwing7 tele tuned for expressive falloff—run on 15 mm or 19 mm studio rods with solid support.",
+      "mountOptions": [
+        {
+          "type": "PL / LPL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Mercury 36mm T2.2 1.5x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "LPL / PL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "minFocusMeters": 0.4,
+      "weight_g": 1700,
+      "imageCircleMm": 36,
+      "lengthMm": 145,
+      "notes": "Widest Mercury 1.5x prime; prefer 15 mm bridge support when stacking clip-on matte boxes.",
+      "mountOptions": [
+        {
+          "type": "LPL / PL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Mercury 42mm T2.2 1.5x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "LPL / PL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "minFocusMeters": 0.55,
+      "weight_g": 1800,
+      "imageCircleMm": 36,
+      "lengthMm": 150,
+      "notes": "Mercury Series 1.5x anamorphic covering Open Gate sensors with built-in close focus.",
+      "mountOptions": [
+        {
+          "type": "LPL / PL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Mercury 54mm T2.2 1.5x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "LPL / PL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "minFocusMeters": 0.7,
+      "weight_g": 1900,
+      "imageCircleMm": 36,
+      "lengthMm": 160,
+      "notes": "Mercury Series normal with rear net slot; support on rods when pairing with dual motors.",
+      "mountOptions": [
+        {
+          "type": "LPL / PL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Mercury 72mm T2.2 1.5x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "LPL / PL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "minFocusMeters": 0.9,
+      "weight_g": 2000,
+      "imageCircleMm": 36,
+      "lengthMm": 170,
+      "notes": "Mercury Series 1.5x anamorphic mid-tele with LPL base mount and drop-in rear filter slot.",
+      "mountOptions": [
+        {
+          "type": "LPL / PL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Mercury 95mm T2.2 1.5x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "LPL / PL (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "minFocusMeters": 1.1,
+      "weight_g": 2150,
+      "imageCircleMm": 36,
+      "lengthMm": 185,
+      "notes": "Tele Mercury 1.5x prime—pair with sturdy 15 mm or studio rods for rock-solid framing.",
+      "mountOptions": [
+        {
+          "type": "LPL / PL (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 32mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 0.76,
+      "weight_g": 3600,
+      "imageCircleMm": 31,
+      "lengthMm": 210,
+      "notes": "Atlas Orion Silver Edition wide: Ø136 mm front, 0.76 m close focus, 3.6 kg weight.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 40mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 0.61,
+      "weight_g": 3100,
+      "imageCircleMm": 31,
+      "lengthMm": 197,
+      "notes": "Atlas Orion A-set 40 mm: 0.61 m MOD, Ø114 mm front, approx. 3.1 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 50mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 0.7,
+      "weight_g": 3400,
+      "imageCircleMm": 31,
+      "lengthMm": 210,
+      "notes": "Atlas Orion B-set 50 mm: 0.7 m close focus, 210 mm length, 3.4 kg mass.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 65mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 0.76,
+      "weight_g": 3200,
+      "imageCircleMm": 31,
+      "lengthMm": 197,
+      "notes": "Atlas Orion A-set 65 mm: Ø114 mm clamp-on, 0.76 m MOD, roughly 3.2 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 80mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 0.91,
+      "weight_g": 3500,
+      "imageCircleMm": 31,
+      "lengthMm": 210,
+      "notes": "Atlas Orion B-set 80 mm: 0.91 m close focus with ~3.5 kg heft.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 100mm T2.0 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "tStopRange": "T2.0–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 1,
+      "weight_g": 3600,
+      "imageCircleMm": 31,
+      "lengthMm": 210,
+      "notes": "Atlas Orion A-set 100 mm: 1 m close focus, 210 mm length, approx. 3.6 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 135mm T2.2 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 2.2,
+      "tStopRange": "T2.2–T22",
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 1.52,
+      "weight_g": 4000,
+      "imageCircleMm": 31,
+      "lengthMm": 230,
+      "notes": "Atlas Orion C-set 135 mm: T2.2 speed, 1.52 m close focus, roughly 4 kg.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Atlas Orion 180mm T2.2 2x": {
+      "brand": "Atlas",
+      "frontDiameterMm": 136,
+      "clampOn": true,
+      "tStop": 2.2,
+      "tStopRange": "T2.2–T22",
+      "mount": "PL",
+      "rodStandard": "19mm",
+      "rodLengthCm": 60,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "minFocusMeters": 1.83,
+      "weight_g": 4200,
+      "imageCircleMm": 31,
+      "lengthMm": 240,
+      "notes": "Atlas Orion 180 mm tele: larger Ø136 mm front, ~4.2 kg, 1.83 m minimum focus.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sigma 18–35mm f/1.8 DC HSM Art": {
+      "brand": "Sigma",
+      "frontDiameterMm": 82,
+      "clampOn": true,
+      "tStop": 1.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 28.2,
+      "mountOptions": []
+    },
+    "Sony FE 24–70mm f/2.8 G Master II": {
+      "brand": "Sony",
+      "frontDiameterMm": 82,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "Sony FE 70–200mm f/2.8 G Master II": {
+      "brand": "Sony",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "Minolta 28mm f/2.8": {
+      "brand": "Minolta",
+      "frontDiameterMm": 55,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "Minolta 35mm f/1.4": {
+      "brand": "Minolta",
+      "frontDiameterMm": 72,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "Minolta 50mm f/1.4": {
+      "brand": "Minolta",
+      "frontDiameterMm": 55,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "Minolta 85mm f/1.8": {
+      "brand": "Minolta",
+      "frontDiameterMm": 55,
+      "clampOn": true,
+      "tStop": 1.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 25mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 27mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 32mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 35mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 40mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 50mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 65mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "SIGMA Aizu Prime Line 75mm T1.3 LF": {
+      "brand": "SIGMA",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 1.3,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.3,
+      "mountOptions": []
+    },
+    "NiSi AUREUS Prime 18mm T1.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "NiSi AUREUS Prime 24mm T1.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "NiSi AUREUS Prime 35mm T1.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "NiSi AUREUS Prime 50mm T1.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "NiSi AUREUS Prime 85mm T1.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "IRIX Cine 150mm T3.0 Macro 1:1": {
+      "brand": "IRIX",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 3,
+      "mount": "PL / EF / RF / L / Z / E / MFT / X",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.36,
+      "weight_g": 1102,
+      "imageCircleMm": 43.3,
+      "lengthMm": 136,
+      "notes": "Cine 150mm T3.0 Macro 1:1; internal focus; 86 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL / EF / RF / L / Z / E / MFT / X",
+          "mount": "native"
+        }
+      ]
+    },
+    "SIRUI Vision Prime 1 24mm T1.4": {
+      "brand": "SIRUI",
+      "frontDiameterMm": 72,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "SIRUI Vision Prime 1 35mm T1.4": {
+      "brand": "SIRUI",
+      "frontDiameterMm": 72,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "SIRUI Vision Prime 1 50mm T1.4": {
+      "brand": "SIRUI",
+      "frontDiameterMm": 72,
+      "clampOn": true,
+      "tStop": 1.4,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46,
+      "mountOptions": []
+    },
+    "DJI DL-S 16mm F2.8 ASPH ND": {
+      "brand": "DJI",
+      "frontDiameterMm": 55,
+      "clampOn": false,
+      "tStop": 2.8,
+      "mount": "DJI DL-S",
+      "rodStandard": null,
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.4,
+      "weight_g": 178,
+      "imageCircleMm": 28.5,
+      "lengthMm": 71,
+      "notes": "DL-S 16mm F2.8 ND ASPH for Zenmuse X7/X9; 46 mm filter; built-in ND.",
+      "mountOptions": [
+        {
+          "type": "DJI DL-S",
+          "mount": "native"
+        }
+      ]
+    },
+    "DJI DL 24mm F2.8 LS ASPH": {
+      "brand": "DJI",
+      "frontDiameterMm": 55,
+      "clampOn": false,
+      "tStop": 2.8,
+      "mount": "DJI DL",
+      "rodStandard": null,
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 180,
+      "imageCircleMm": 43.3,
+      "lengthMm": 71,
+      "notes": "DL 24mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter.",
+      "mountOptions": [
+        {
+          "type": "DJI DL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DJI DL 35mm F2.8 LS ASPH": {
+      "brand": "DJI",
+      "frontDiameterMm": 55,
+      "clampOn": false,
+      "tStop": 2.8,
+      "mount": "DJI DL",
+      "rodStandard": null,
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 180,
+      "imageCircleMm": 43.3,
+      "lengthMm": 71,
+      "notes": "DL 35mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter. Barrel φ55×71.2 mm.",
+      "mountOptions": [
+        {
+          "type": "DJI DL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DJI DL 50mm F2.8 LS ASPH": {
+      "brand": "DJI",
+      "frontDiameterMm": 55,
+      "clampOn": false,
+      "tStop": 2.8,
+      "mount": "DJI DL",
+      "rodStandard": null,
+      "rodLengthCm": 5,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.85,
+      "weight_g": 180,
+      "imageCircleMm": 43.3,
+      "lengthMm": 71,
+      "notes": "DL 50mm F2.8 LS ASPH for Zenmuse X7/X9; 46 mm filter.",
+      "mountOptions": [
+        {
+          "type": "DJI DL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Tokina Cinema Vista-P 180mm T1.9": {
+      "brand": "Tokina Cinema",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 46.7,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Pictor 12-25mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.4,
+      "weight_g": 1600,
+      "imageCircleMm": 31.5,
+      "lengthMm": 150,
+      "notes": "Pictor 12–25mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.4 m MOD.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Pictor 14-30mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 1880,
+      "imageCircleMm": 31.5,
+      "lengthMm": 173,
+      "notes": "Pictor 14–30mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.6 m MOD.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Pictor 20-55mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.6,
+      "weight_g": 1520,
+      "imageCircleMm": 31.1,
+      "lengthMm": 164,
+      "notes": "Pictor 20–55mm T2.8 (S35) parfocal; 16-blade iris; 86 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Pictor 50-125mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 95,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 15,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1700,
+      "imageCircleMm": 31.1,
+      "lengthMm": 175,
+      "notes": "Pictor 50–125mm T2.8 (S35) parfocal; 16-blade iris; 86 mm filter thread.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Catta Ace 18-35mm T2.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.51,
+      "weight_g": 1530,
+      "imageCircleMm": 43.5,
+      "lengthMm": 195,
+      "notes": "Full-frame Catta Ace wide zoom with lightweight 80 mm fronts and quick-change PL/EF mounts for run-and-gun rigs.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Catta Ace 35-80mm T2.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.75,
+      "weight_g": 1650,
+      "imageCircleMm": 43.5,
+      "lengthMm": 199,
+      "notes": "Mid-range Catta Ace zoom balancing compact housing with unified gear spacing and rear drop-in filter slot.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Catta Ace 70-135mm T2.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.9,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "weight_g": 1750,
+      "imageCircleMm": 43.5,
+      "lengthMm": 203,
+      "notes": "Telephoto Catta Ace zoom maintaining 80 mm fronts—add lightweight lens support when motors or matte boxes are installed.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime 12mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 16mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 21mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 25mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 35mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 40mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 50mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 75mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 90mm T2.8 Macro": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 100mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime 125mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 16mm T2.8": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.8,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 25mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 35mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 50mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 75mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 100mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Retro 125mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Cyber 35mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Cyber 50mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Cyber 75mm T2.1": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.1,
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": []
+    },
+    "DZOFILM Vespid Prime II 18mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime II 24mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime II 35mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime II 50mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime II 85mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Vespid Prime II 105mm T1.9": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "imageCircleMm": 46.5,
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Gnosis 24mm T2.8 Macro": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.18,
+      "imageCircleMm": 46.5,
+      "notes": "1:1 macro prime with swappable PL/EF mounts and 300° focus rotation.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Gnosis 32mm T2.8 Macro": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.23,
+      "imageCircleMm": 46.5,
+      "notes": "Macro-capable VistaVision prime sharing the Gnosis support foot and unified gear positions.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "DZOFILM Gnosis 65mm T2.8 Macro": {
+      "brand": "DZOFILM",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.8,
+      "mount": "PL / EF (interchangeable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "minFocusMeters": 0.37,
+      "imageCircleMm": 46.5,
+      "notes": "Longer Gnosis macro prime covering FF/VV with native support foot for studio rods.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (interchangeable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Proteus 2x 35mm T2": {
+      "brand": "Laowa",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "imageCircleMm": 31.14,
+      "notes": "Proteus wide 2x anamorphic prime with full-frame/VV coverage and drop-in rear filter slot.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Proteus 2x 45mm T2": {
+      "brand": "Laowa",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "imageCircleMm": 31.14,
+      "notes": "Normal-length Proteus 2x anamorphic with unified 114 mm fronts across the set.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Proteus 2x 60mm T2": {
+      "brand": "Laowa",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "imageCircleMm": 31.14,
+      "notes": "Proteus mid-tele prime—brace with rods when adding motors or heavy matte boxes.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "Laowa Proteus 2x 85mm T2": {
+      "brand": "Laowa",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2,
+      "mount": "PL",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "anamorphic",
+      "anamorphicSqueeze": 2,
+      "imageCircleMm": 31.14,
+      "notes": "Longest Proteus focal length retaining the same housing and 114 mm clamp-on interface.",
+      "mountOptions": [
+        {
+          "type": "PL",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 14mm T2.4": {
+      "brand": "NiSi",
+      "frontDiameterMm": 80,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.2,
+      "imageCircleMm": 46,
+      "notes": "Ultra-wide Athena prime with full-frame coverage, 80 mm fronts, and matching 0.8 mod gears across the set.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 18mm T2.2": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.2,
+      "imageCircleMm": 46,
+      "notes": "Wide Athena prime balancing minimal distortion with lightweight mechanics and the system's rear drop-in filter holder.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 25mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.25,
+      "imageCircleMm": 46,
+      "notes": "Full-frame Athena prime with matched gear spacing, 77 mm front threads, and rear drop-in filter slot.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 35mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.35,
+      "imageCircleMm": 46,
+      "notes": "Mid-wide Athena focal covering full frame with identical 77 mm front diameter and dual-scale markings.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 40mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.38,
+      "imageCircleMm": 46,
+      "notes": "Natural perspective Athena prime maintaining matched gear spacing and integrated metadata pads for smart mounts.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 50mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.45,
+      "imageCircleMm": 46,
+      "notes": "Standard Athena prime with consistent gear placement for quick swaps across the set and /i-style metadata pads.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 65mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.55,
+      "imageCircleMm": 46,
+      "notes": "Short tele Athena prime that keeps the lightweight 77 mm front housing and synchronized 0.8 mod gears.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 85mm T1.9": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 1.9,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.8,
+      "imageCircleMm": 46,
+      "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 77 mm fronts across the lineup.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "NiSi Athena Prime 135mm T2.2": {
+      "brand": "NiSi",
+      "frontDiameterMm": 77,
+      "clampOn": true,
+      "tStop": 2.2,
+      "mount": "PL / E / L / RF (swappable)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 1.1,
+      "imageCircleMm": 46,
+      "notes": "Longest Athena prime while retaining unified gear pitch, rear filter drawer, and metadata contacts for smart mounts.",
+      "mountOptions": [
+        {
+          "type": "PL / E / L / RF (swappable)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Sony FE C 16-35mm T3.1 G": {
+      "brand": "Sony",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 3.1,
+      "mount": "Sony E",
+      "rodStandard": "15mm",
+      "rodLengthCm": 30,
+      "needsLensSupport": false,
+      "lensType": "spherical",
+      "minFocusMeters": 0.28,
+      "imageCircleMm": 43.3,
+      "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs; manufacturer lists ≈43.3 mm image circle.",
+      "mountOptions": [
+        {
+          "type": "Sony E",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Flex Zoom 20-50mm T2.4": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "minFocusMeters": 0.5,
+      "notes": "Flex Zoom wide with interchangeable PL/EF mounts, Cooke /i metadata, and servo-ready drive port.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    },
+    "Canon Flex Zoom 45-135mm T2.4": {
+      "brand": "Canon",
+      "frontDiameterMm": 114,
+      "clampOn": true,
+      "tStop": 2.4,
+      "mount": "PL / EF (convertible)",
+      "rodStandard": "15mm",
+      "rodLengthCm": 45,
+      "needsLensSupport": true,
+      "lensType": "spherical",
+      "imageCircleMm": 43.27,
+      "minFocusMeters": 1,
+      "notes": "Tele Flex Zoom sharing the 114 mm front, consistent gear spacing, and swap-ready mount system.",
+      "mountOptions": [
+        {
+          "type": "PL / EF (convertible)",
+          "mount": "native"
+        }
+      ]
+    }
+  }
 };
 
 // Expose lenses at the top level for easier access
-gear.lenses = gear.accessories.lenses;
+gear.lenses = gear.lenses || {};
+
 // Remove lenses from accessories to avoid duplicate entries
-delete gear.accessories.lenses;
+if (gear.accessories && gear.accessories.lenses) {
+  delete gear.accessories.lenses;
+}
 
 const categories = {
   viewfinders: gear.viewfinders,

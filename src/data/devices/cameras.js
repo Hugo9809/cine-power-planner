@@ -7,7 +7,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11-34",
-        "type": "Bat LEMO 8-pin"
+        "type": [
+          "Bat LEMO 8-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -38,11 +40,14 @@ const cameraData = {
           "type": "Fischer 3-pin",
           "voltage": "24V",
           "current": null,
+          "wattage": null,
           "notes": "Regulated R/S, primarily control"
         },
         {
           "type": "EXT LEMO 7-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Control/Power"
         }
       ]
@@ -59,12 +64,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LBUS (LEMO 4-pin)",
-        "notes": "On lens mount, for lens motors"
+        "notes": "On lens mount, for lens motors",
+        "type": "LBUS (LEMO 4-pin)"
       },
       {
-        "type": "EXT LEMO 7-pin",
-        "notes": "For camera control, incl. FIZ with compatible systems"
+        "notes": "For camera control, incl. FIZ with compatible systems",
+        "type": "EXT LEMO 7-pin"
       }
     ],
     "recordingMedia": [
@@ -75,9 +80,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "ARRI MVF-2 (Native)",
         "resolution": "1920x1080",
-        "notes": "OLED eyepiece + LCD fold-out monitor"
+        "connector": "",
+        "notes": "OLED eyepiece + LCD fold-out monitor",
+        "type": "ARRI MVF-2 (Native)"
       }
     ],
     "lensMount": [
@@ -171,7 +177,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11-34",
-        "type": "Bat LEMO 8-pin"
+        "type": [
+          "Bat LEMO 8-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -202,11 +210,14 @@ const cameraData = {
           "type": "Fischer 3-pin",
           "voltage": "24V",
           "current": null,
+          "wattage": null,
           "notes": "Regulated R/S, primarily control"
         },
         {
           "type": "EXT LEMO 7-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Control/Power"
         }
       ]
@@ -223,12 +234,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LBUS (LEMO 4-pin)",
-        "notes": "On lens mount, for lens motors"
+        "notes": "On lens mount, for lens motors",
+        "type": "LBUS (LEMO 4-pin)"
       },
       {
-        "type": "EXT LEMO 7-pin",
-        "notes": "For camera control, incl. FIZ with compatible systems"
+        "notes": "For camera control, incl. FIZ with compatible systems",
+        "type": "EXT LEMO 7-pin"
       }
     ],
     "recordingMedia": [
@@ -239,9 +250,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "ARRI MVF-1 (Native)",
         "resolution": "1280x720",
-        "notes": "OLED eyepiece"
+        "connector": "",
+        "notes": "OLED eyepiece",
+        "type": "ARRI MVF-1 (Native)"
       }
     ],
     "lensMount": [
@@ -323,7 +335,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "19.5-34",
-        "type": "Bat LEMO 8-pin"
+        "type": [
+          "Bat LEMO 8-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -353,15 +367,23 @@ const cameraData = {
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Regulated R/S, primarily control"
         },
         {
           "type": "EXT LEMO 7-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Control/Power"
         },
         {
-          "type": "LBUS (LEMO 4-pin)"
+          "type": "LBUS (LEMO 4-pin)",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
@@ -377,12 +399,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LBUS (LEMO 4-pin)",
-        "notes": "On lens mount, for daisy-chainable motors"
+        "notes": "On lens mount, for daisy-chainable motors",
+        "type": "LBUS (LEMO 4-pin)"
       },
       {
-        "type": "EXT LEMO 7-pin",
-        "notes": "For camera control, incl. FIZ with compatible systems"
+        "notes": "For camera control, incl. FIZ with compatible systems",
+        "type": "EXT LEMO 7-pin"
       }
     ],
     "recordingMedia": [
@@ -393,9 +415,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "ARRI MVF-2 (Native)",
         "resolution": "1920x1080",
-        "notes": "OLED eyepiece + LCD fold-out monitor"
+        "connector": "",
+        "notes": "OLED eyepiece + LCD fold-out monitor",
+        "type": "ARRI MVF-2 (Native)"
       }
     ],
     "lensMount": [
@@ -479,7 +502,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "20.5-33.6",
-        "type": "Bat LEMO 8-pin"
+        "type": [
+          "Bat LEMO 8-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -492,30 +517,43 @@ const cameraData = {
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Regulated accessory power with start/stop and shutter pulse"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Regulated accessory power output"
         },
         {
           "type": "LBUS (LEMO 4-pin)",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Daisy-chainable lens and accessory power"
         },
         {
           "type": "LEMO 6-pin (Audio)",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Balanced stereo line input with 12V accessory power"
         },
         {
           "type": "LEMO 10-pin (ETH)",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Ethernet remote/control connector with regulated accessory power"
         },
         {
           "type": "Rear Interface",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Accessory modules like PDM-1 add 4×24V, 2×12V and D-Tap; LPS-1 adds extra 24V/12V feeds"
         }
       ]
@@ -528,16 +566,16 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LBUS (LEMO 4-pin)",
-        "notes": "Lens motors and accessories"
+        "notes": "Lens motors and accessories",
+        "type": "LBUS (LEMO 4-pin)"
       },
       {
-        "type": "SERIAL (LEMO 4-pin)",
-        "notes": "Distance measuring accessories"
+        "notes": "Distance measuring accessories",
+        "type": "SERIAL (LEMO 4-pin)"
       },
       {
-        "type": "ETH (LEMO 10-pin)",
-        "notes": "Camera Access Protocol, remote control and accessory power"
+        "notes": "Camera Access Protocol, remote control and accessory power",
+        "type": "ETH (LEMO 10-pin)"
       }
     ],
     "recordingMedia": [
@@ -556,9 +594,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "ARRI MVF-2 (Native)",
         "resolution": "1920x1080",
-        "notes": "OLED eyepiece with 4\" flip-out LCD"
+        "connector": "",
+        "notes": "OLED eyepiece with 4\" flip-out LCD",
+        "type": "ARRI MVF-2 (Native)"
       }
     ],
     "lensMount": [
@@ -650,7 +689,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "10.5-34",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -667,26 +708,37 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "Hirose 12-pin",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For ENG type zoom lenses"
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Power output"
         },
         {
           "type": "Hirose 4-pin",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Power output"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Power output"
         },
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
+          "wattage": null,
           "notes": "Power output"
         }
       ]
@@ -703,12 +755,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "EXT LEMO 7-pin",
-        "notes": "For electronic lens data and control"
+        "notes": "For electronic lens data and control",
+        "type": "EXT LEMO 7-pin"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "For ENG type zoom lenses (FIZ control)"
+        "notes": "For ENG type zoom lenses (FIZ control)",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -719,8 +771,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "AMIRA Multi Viewfinder MVF-1",
-        "notes": "OLED eyepiece and fold-away LCD monitor"
+        "resolution": "",
+        "connector": "",
+        "notes": "OLED eyepiece and fold-away LCD monitor",
+        "type": "AMIRA Multi Viewfinder MVF-1"
       }
     ],
     "lensMount": [
@@ -786,7 +840,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
-        "type": "XLR 4-pin,Square 5-pin"
+        "type": [
+          "XLR 4-pin,Square 5-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -854,33 +910,39 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "Hirose 12-pin",
-        "notes": "For lens control"
+        "notes": "For lens control",
+        "type": "Hirose 12-pin"
       },
       {
-        "type": "REMOTE B connector",
-        "notes": "General remote control"
+        "notes": "General remote control",
+        "type": "REMOTE B connector"
       }
     ],
     "recordingMedia": [
@@ -895,8 +957,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LEMO 26-pin port",
-        "notes": "For Sony DVF-EL200 Viewfinder"
+        "resolution": "",
+        "connector": "",
+        "notes": "For Sony DVF-EL200 Viewfinder",
+        "type": "LEMO 26-pin port"
       }
     ],
     "lensMount": [
@@ -955,7 +1019,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
-        "type": "XLR 4-pin,Square 5-pin"
+        "type": [
+          "XLR 4-pin,Square 5-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1023,33 +1089,39 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "Hirose 12-pin",
-        "notes": "For lens control"
+        "notes": "For lens control",
+        "type": "Hirose 12-pin"
       },
       {
-        "type": "REMOTE B connector",
-        "notes": "General remote control"
+        "notes": "General remote control",
+        "type": "REMOTE B connector"
       }
     ],
     "recordingMedia": [
@@ -1064,8 +1136,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LEMO 26-pin port",
-        "notes": "For Sony DVF-EL200 Viewfinder"
+        "resolution": "",
+        "connector": "",
+        "notes": "For Sony DVF-EL200 Viewfinder",
+        "type": "LEMO 26-pin port"
       }
     ],
     "lensMount": [
@@ -1125,7 +1199,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "19.5",
-        "type": "DC (Barrel)"
+        "type": [
+          "DC (Barrel)"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1143,12 +1219,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Typical, via battery plate"
         },
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Typical, via battery plate"
         },
@@ -1167,17 +1245,18 @@ const cameraData = {
         "notes": "12G-SDI, 3G-SDI"
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "Remote control"
+        "notes": "Remote control",
+        "type": "LANC"
       },
       {
-        "type": "USB-C",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -1188,13 +1267,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Sony Burano EVF Port (Proprietary)",
-        "notes": "For Sony EVF"
+        "resolution": "",
+        "connector": "",
+        "notes": "For Sony EVF",
+        "type": "Sony Burano EVF Port (Proprietary)"
       },
       {
-        "type": "Integrated LCD monitor",
+        "resolution": "1280x720",
+        "connector": "",
+        "notes": "",
         "size": "3.5-inch",
-        "resolution": "1280x720"
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -1254,7 +1337,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (ia NP-FZ100) / 5 (ia USB-C)",
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1286,18 +1371,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "Type A",
-        "notes": "Supports 4K 60p, 16-bit RAW output"
+        "notes": "Supports 4K 60p, 16-bit RAW output",
+        "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "USB-C"
       },
       {
-        "type": "Micro USB",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "Micro USB"
       }
     ],
     "recordingMedia": [
@@ -1312,10 +1397,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Integrated LCD monitor",
-        "size": "3.0-inch",
         "resolution": "1.44M dots",
-        "notes": "Vari-angle touchscreen"
+        "connector": "",
+        "notes": "Vari-angle touchscreen",
+        "size": "3.0-inch",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -1352,7 +1438,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "19.5",
-        "type": "DC (Barrel)"
+        "type": [
+          "DC (Barrel)"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1375,12 +1463,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional MID49 DB-11, per port (typical)"
         },
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional MID49 DB-11, per port (typical)"
         },
@@ -1401,12 +1491,14 @@ const cameraData = {
         {
           "type": "LEMO 2-pin",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 24,
           "notes": "Via optional MID49 DB-11, per port (est. 2A)"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 24,
           "notes": "Via optional MID49 DB-11, per port (est. 2A)"
         },
@@ -1426,13 +1518,14 @@ const cameraData = {
       },
       {
         "type": "HDMI",
+        "notes": "",
         "version": "2.0"
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "REMOTE connector"
+        "notes": "REMOTE connector",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -1447,9 +1540,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Integrated LCD monitor",
+        "resolution": "",
+        "connector": "",
+        "notes": "Touch operation, flexible attachment",
         "size": "3.5-inch",
-        "notes": "Touch operation, flexible attachment"
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -1495,7 +1590,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "19.5",
-        "type": "DC (Barrel)"
+        "type": [
+          "DC (Barrel)"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1518,12 +1615,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional XDCA-FX9 extension unit, per port"
         },
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional XDCA-FX9 extension unit, per port"
         },
@@ -1537,6 +1636,7 @@ const cameraData = {
         {
           "type": "USB-C",
           "voltage": "5V",
+          "current": "",
           "wattage": 7.5,
           "notes": "Via optional XDCA-FX9 extension unit (USB 2.0)"
         }
@@ -1548,17 +1648,18 @@ const cameraData = {
         "notes": "12G-SDI, 3G-SDI"
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "Remote control"
+        "notes": "Remote control",
+        "type": "LANC"
       },
       {
-        "type": "USB-C",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -1573,13 +1674,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Sony FX9 EVF Port (Proprietary)",
-        "notes": "For Sony EVF"
+        "resolution": "",
+        "connector": "",
+        "notes": "For Sony EVF",
+        "type": "Sony FX9 EVF Port (Proprietary)"
       },
       {
-        "type": "Integrated LCD monitor",
+        "resolution": "1280x720",
+        "connector": "",
+        "notes": "",
         "size": "3.5-inch",
-        "resolution": "1280x720"
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -1629,7 +1734,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-17",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1652,12 +1759,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional XDCA-FS7 extension unit, per port"
         },
         {
           "type": "D-Tap",
           "voltage": "14.4V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional XDCA-FS7 extension unit, per port"
         }
@@ -1665,16 +1774,18 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "Remote control"
+        "notes": "Remote control",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -1689,13 +1800,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Sony FS7 EVF Port (Proprietary)",
-        "notes": "For Sony viewfinder"
+        "resolution": "",
+        "connector": "",
+        "notes": "For Sony viewfinder",
+        "type": "Sony FS7 EVF Port (Proprietary)"
       },
       {
-        "type": "Integrated LCD monitor",
+        "resolution": "1280x720",
+        "connector": "",
+        "notes": "",
         "size": "3.5-inch",
-        "resolution": "1280x720"
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -1743,7 +1858,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "24",
-        "type": "DC"
+        "type": [
+          "DC"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1760,6 +1877,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "USB 3.2 Gen1, for optional GPS Unit, Wi-Fi, Ethernet adapters"
         }
       ]
@@ -1772,8 +1892,8 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "REMOTE A connector",
-        "notes": "2.5 mm stereo mini-mini jack (input only)"
+        "notes": "2.5 mm stereo mini-mini jack (input only)",
+        "type": "REMOTE A connector"
       }
     ],
     "recordingMedia": [
@@ -1784,9 +1904,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1280 x 720",
+        "connector": "",
+        "notes": "",
         "size": "3.5-inch",
-        "resolution": "1280 x 720"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -1803,7 +1925,8 @@ const cameraData = {
     ],
     "timecode": [
       {
-        "type": "BNC"
+        "type": "BNC",
+        "notes": ""
       }
     ],
     "weight_g": 1170,
@@ -1834,7 +1957,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "19.5",
-        "type": "DC 24V Terminal"
+        "type": [
+          "DC 24V Terminal"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -1852,18 +1977,21 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional MID49 DB-4, typical per port"
         },
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional MID49 DB-4, typical per port"
         },
         {
           "type": "USB-C PD",
           "voltage": "5V",
+          "current": "",
           "wattage": null,
           "notes": "Via optional MID49 DB-4"
         },
@@ -1884,12 +2012,14 @@ const cameraData = {
         {
           "type": "LEMO 2-pin",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": 24,
           "notes": "Via optional MID49 DB-4, typical per port (est. 2A)"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": 24,
           "notes": "Via optional MID49 DB-4, typical per port (est. 2A)"
         }
@@ -1902,17 +2032,18 @@ const cameraData = {
       },
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "REMOTE A connector",
-        "notes": "LANC"
+        "notes": "LANC",
+        "type": "REMOTE A connector"
       },
       {
-        "type": "Multi-function shoe",
-        "notes": "21 pin with electrical contacts"
+        "notes": "21 pin with electrical contacts",
+        "type": "Multi-function shoe"
       }
     ],
     "recordingMedia": [
@@ -1927,8 +2058,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "None",
-        "notes": "No built-in viewfinder. External LCD monitor."
+        "resolution": "",
+        "connector": "",
+        "notes": "No built-in viewfinder. External LCD monitor.",
+        "type": "None"
       }
     ],
     "lensMount": [
@@ -1987,7 +2120,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-20",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2004,10 +2139,16 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "DC",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via optional Expansion Unit EU-V2 / EU-V3"
         },
         {
           "type": "Lens terminal 12-pin",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via optional Expansion Unit EU-V2"
         }
       ]
@@ -2018,21 +2159,22 @@ const cameraData = {
         "notes": "BNC terminal, 4K to 2K/FHD conversion available"
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "REMOTE A connector",
-        "notes": "2.5 mm stereo jack (input only)"
+        "notes": "2.5 mm stereo jack (input only)",
+        "type": "REMOTE A connector"
       },
       {
-        "type": "REMOTE B connector",
-        "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3"
+        "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3",
+        "type": "REMOTE B connector"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "Requires optional EU-V2 / EU-V3"
+        "notes": "Requires optional EU-V2 / EU-V3",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -2047,10 +2189,15 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD Monitor LM-V2",
-        "notes": "4.3” rotating touchscreen LCD unit"
+        "resolution": "",
+        "connector": "",
+        "notes": "4.3” rotating touchscreen LCD unit",
+        "type": "LCD Monitor LM-V2"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "EVF-V70 (Optional)"
       }
     ],
@@ -2109,7 +2256,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-20",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2126,18 +2275,30 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "Multi-Accessory Shoe",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via camera body or top handle"
         },
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "USB 3.2 Gen1"
         },
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For supplied Hand Grip only"
         },
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For supplied LCD Monitor only"
         }
       ]
@@ -2153,17 +2314,18 @@ const cameraData = {
       },
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "REMOTE A connector",
-        "notes": "2.5 mm stereo mini jack"
+        "notes": "2.5 mm stereo mini jack",
+        "type": "REMOTE A connector"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "12-pin jack"
+        "notes": "12-pin jack",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -2178,9 +2340,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1280 x 720",
+        "connector": "",
+        "notes": "",
         "size": "3.5-inch",
-        "resolution": "1280 x 720"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -2245,7 +2409,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-20",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2262,10 +2428,16 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "DC",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via optional Expansion Unit EU-V2 / EU-V3"
         },
         {
           "type": "Lens terminal 12-pin",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via optional Expansion Unit EU-V2 / EU-V3"
         }
       ]
@@ -2276,21 +2448,22 @@ const cameraData = {
         "notes": "BNC terminal, 4K to 2K/FHD conversion available"
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "REMOTE A connector",
-        "notes": "2.5 mm stereo jack (input only)"
+        "notes": "2.5 mm stereo jack (input only)",
+        "type": "REMOTE A connector"
       },
       {
-        "type": "REMOTE B connector",
-        "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3"
+        "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3",
+        "type": "REMOTE B connector"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "Requires optional EU-V2 / EU-V3"
+        "notes": "Requires optional EU-V2 / EU-V3",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -2301,13 +2474,21 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD Monitor LM-V2",
-        "notes": "Canon's proprietary specification (special 13-pin jack)"
+        "resolution": "",
+        "connector": "",
+        "notes": "Canon's proprietary specification (special 13-pin jack)",
+        "type": "LCD Monitor LM-V2"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "EVF-V70 (Optional)"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "EVF-V50 (Optional)"
       }
     ],
@@ -2367,7 +2548,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11-17",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2386,12 +2569,14 @@ const cameraData = {
           "type": "Hirose 4-pin",
           "voltage": "12V",
           "current": "1.5A",
+          "wattage": null,
           "notes": "Regulated DC OUT for accessories"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "24V",
           "current": "2A",
+          "wattage": null,
           "notes": "Regulated 24V DC OUT (for lens/remote heads)"
         }
       ]
@@ -2437,7 +2622,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2454,6 +2641,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For external drive recording, PTP camera control, software updates, can trickle charge battery"
         }
       ]
@@ -2461,17 +2651,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "PTP camera control"
+        "notes": "PTP camera control",
+        "type": "USB-C"
       },
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -2490,9 +2681,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1920 x 1080",
+        "connector": "",
+        "notes": "",
         "size": "5-inch",
-        "resolution": "1920 x 1080"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -2534,7 +2727,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2551,6 +2746,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For external hard drive recording and software updates"
         }
       ]
@@ -2558,13 +2756,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -2583,12 +2782,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
-        "size": "5-inch",
         "resolution": "1920 x 1080",
-        "notes": "Adjustable HDR touchscreen"
+        "connector": "",
+        "notes": "Adjustable HDR touchscreen",
+        "size": "5-inch",
+        "type": "LCD touchscreen"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "OLED EVF (Optional)"
       }
     ],
@@ -2638,7 +2841,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2655,6 +2860,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For external drive recording, PTP camera control, software updates, can trickle charge battery"
         }
       ]
@@ -2662,17 +2870,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "PTP camera control"
+        "notes": "PTP camera control",
+        "type": "USB-C"
       },
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -2691,9 +2900,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1920 x 1080",
+        "connector": "",
+        "notes": "",
         "size": "5-inch",
-        "resolution": "1920 x 1080"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -2744,7 +2955,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2770,17 +2983,18 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For Blackmagic Zoom/Focus Demand, PTP camera control"
+        "notes": "For Blackmagic Zoom/Focus Demand, PTP camera control",
+        "type": "USB-C"
       },
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -2799,14 +3013,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "",
         "size": "5-inch",
-        "resolution": "1920x1080"
+        "type": "LCD touchscreen"
       },
       {
-        "type": "Blackmagic Pro EVF (Optional)",
         "resolution": "1280x960",
-        "notes": "Micro OLED display"
+        "connector": "",
+        "notes": "Micro OLED display",
+        "type": "Blackmagic Pro EVF (Optional)"
       }
     ],
     "lensMount": [
@@ -2855,7 +3072,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12",
-        "type": "Molex 12-pin,XLR 4-pin"
+        "type": [
+          "Molex 12-pin,XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -2873,18 +3092,21 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
+          "current": "",
           "wattage": null,
           "notes": "Regulated, via individualized V-Mount battery plate"
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
+          "current": "",
           "wattage": null,
           "notes": "Regulated, via individualized V-Mount battery plate"
         },
         {
           "type": "USB-C",
           "voltage": null,
+          "current": "",
           "wattage": null,
           "notes": "With power delivery for external drive recording"
         }
@@ -2892,7 +3114,8 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
         "type": "3G-SDI",
@@ -2901,13 +3124,13 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
+        "notes": "2.5mm input for Rec Start/Stop, Iris and Focus control",
         "count": 1,
-        "notes": "2.5mm input for Rec Start/Stop, Iris and Focus control"
+        "type": "LANC"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "For compatible lenses and electronic control via EF mount pins on optional EF lens mount"
+        "notes": "For compatible lenses and electronic control via EF mount pins on optional EF lens mount",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -2926,11 +3149,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "",
+        "connector": "",
+        "notes": "Fold out touchscreen",
         "size": "4-inch",
-        "notes": "Fold out touchscreen"
+        "type": "LCD touchscreen"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "LCD status display"
       }
     ],
@@ -2983,7 +3211,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "20-30",
-        "type": "XLR 2-pin"
+        "type": [
+          "XLR 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3027,12 +3257,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
@@ -3047,23 +3279,26 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "For broadcast lenses"
+        "notes": "For broadcast lenses",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -3078,11 +3313,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Fold- LCD",
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "",
         "size": "5-inch",
-        "resolution": "1920x1080"
+        "type": "Fold- LCD"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "Blackmagic URSA Cine EVF (Optional)"
       }
     ],
@@ -3142,7 +3382,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "20-30",
-        "type": "XLR 2-pin"
+        "type": [
+          "XLR 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3186,12 +3428,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
@@ -3206,23 +3450,26 @@ const cameraData = {
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "HDMI"
+        "type": "HDMI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       },
       {
-        "type": "Hirose 12-pin",
-        "notes": "For broadcast lenses"
+        "notes": "For broadcast lenses",
+        "type": "Hirose 12-pin"
       }
     ],
     "recordingMedia": [
@@ -3237,11 +3484,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Fold- LCD",
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "",
         "size": "5-inch",
-        "resolution": "1920x1080"
+        "type": "Fold- LCD"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "Blackmagic URSA Cine EVF (Optional)"
       }
     ],
@@ -3302,7 +3554,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3319,6 +3573,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For external drive recording, power delivery"
         }
       ]
@@ -3326,17 +3583,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "PTP camera control"
+        "notes": "PTP camera control",
+        "type": "USB-C"
       },
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -3351,9 +3609,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1280x720",
+        "connector": "",
+        "notes": "",
         "size": "4-inch",
-        "resolution": "1280x720"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -3397,7 +3657,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3414,6 +3676,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For external drive recording, power delivery"
         }
       ]
@@ -3421,17 +3686,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "PTP camera control"
+        "notes": "PTP camera control",
+        "type": "USB-C"
       },
       {
-        "type": "Bluetooth",
-        "notes": "Wireless control"
+        "notes": "Wireless control",
+        "type": "Bluetooth"
       }
     ],
     "recordingMedia": [
@@ -3446,9 +3712,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1280x720",
+        "connector": "",
+        "notes": "",
         "size": "4-inch",
-        "resolution": "1280x720"
+        "type": "LCD touchscreen"
       }
     ],
     "lensMount": [
@@ -3491,7 +3759,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "+7-+17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3514,6 +3784,7 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12-14.8V",
+          "current": "",
           "wattage": 50,
           "notes": "Via optional third-party plates, typical per port"
         },
@@ -3527,6 +3798,7 @@ const cameraData = {
         {
           "type": "LEMO 2-pin",
           "voltage": "12-14.8V",
+          "current": "",
           "wattage": 24,
           "notes": "Via optional third-party plates, typical per port (est. 2A)"
         }
@@ -3540,12 +3812,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Supports Genlock, Timecode In, GPIO, and Ctrl (RS-232)"
+        "notes": "Supports Genlock, Timecode In, GPIO, and Ctrl (RS-232)",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Via KOMODO Link Adaptor for camera control"
+        "notes": "Via KOMODO Link Adaptor for camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -3556,11 +3828,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
+        "resolution": "1440x1440",
+        "connector": "",
+        "notes": "",
         "size": "2.9-inch",
-        "resolution": "1440x1440"
+        "type": "LCD touchscreen"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -3617,7 +3894,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "+7-+17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3634,27 +3913,34 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Power Delivery"
         },
         {
           "type": "D-Tap",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "Via optional expander"
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Camera control"
+        "notes": "Camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -3665,10 +3951,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "LCD touchscreen",
-        "size": "2.9-inch"
+        "resolution": "",
+        "connector": "",
+        "notes": "",
+        "size": "2.9-inch",
+        "type": "LCD touchscreen"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -3719,7 +4011,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "24",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3737,58 +4031,73 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
           "wattage": null,
           "notes": "R/S"
         },
         {
           "type": "USB-C",
           "voltage": "5V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -3799,6 +4108,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -3850,7 +4162,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "24",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3868,58 +4182,73 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
           "wattage": null,
           "notes": "R/S"
         },
         {
           "type": "USB-C",
           "voltage": "5V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -3930,6 +4259,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -3980,7 +4312,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "24",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -3998,58 +4332,73 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
           "wattage": null,
           "notes": "R/S"
         },
         {
           "type": "USB-C",
           "voltage": "5V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -4060,6 +4409,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4108,7 +4460,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "24",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4126,58 +4480,73 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         },
         {
           "type": "Fischer 3-pin",
           "voltage": "24V",
+          "current": "",
           "wattage": null,
           "notes": "R/S"
         },
         {
           "type": "USB-C",
           "voltage": "5V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "LANC",
-        "notes": "2.5mm"
+        "notes": "2.5mm",
+        "type": "LANC"
       }
     ],
     "recordingMedia": [
@@ -4188,6 +4557,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4236,7 +4608,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4254,26 +4628,30 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Camera control"
+        "notes": "Camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -4284,6 +4662,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4331,7 +4712,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4349,26 +4732,30 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Camera control"
+        "notes": "Camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -4379,6 +4766,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4426,7 +4816,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4444,26 +4836,30 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Camera control"
+        "notes": "Camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -4474,6 +4870,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4527,7 +4926,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4545,26 +4946,30 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       },
       {
-        "type": "12G-SDI"
+        "type": "12G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       },
       {
-        "type": "USB-C",
-        "notes": "Camera control"
+        "notes": "Camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -4575,6 +4980,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4625,7 +5033,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4643,22 +5053,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -4669,6 +5083,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4720,7 +5137,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4738,22 +5157,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -4764,6 +5187,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4816,7 +5242,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4834,22 +5262,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -4860,6 +5292,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -4908,7 +5343,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -4926,22 +5363,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -4952,6 +5393,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -5001,7 +5445,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5019,22 +5465,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -5045,6 +5495,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -5091,7 +5544,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5109,22 +5564,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -5135,6 +5594,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -5183,7 +5645,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-17",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5201,22 +5665,26 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "12V",
-          "wattage": null
+          "current": "",
+          "wattage": null,
+          "notes": ""
         }
       ]
     },
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       },
       {
-        "type": "3G-SDI"
+        "type": "3G-SDI",
+        "notes": ""
       }
     ],
     "fizConnectors": [
       {
-        "type": "EXT Port (9-pin)",
-        "notes": "Genlock, Timecode, GPIO, Ctrl"
+        "notes": "Genlock, Timecode, GPIO, Ctrl",
+        "type": "EXT Port (9-pin)"
       }
     ],
     "recordingMedia": [
@@ -5227,6 +5695,9 @@ const cameraData = {
     ],
     "viewfinder": [
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "RED Touch 7\" LCD (Optional)"
       }
     ],
@@ -5273,8 +5744,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "8.4 (battery) / 9 (USB-C PD)",
-        "powerDrawWatts": 27,
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5306,13 +5778,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -5323,13 +5796,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "3,680k-dot"
+        "resolution": "3,680k-dot",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Vari-angle LCD",
+        "resolution": "1,840k-dot",
+        "connector": "",
+        "notes": "",
         "size": "3.0-inch",
-        "resolution": "1,840k-dot"
+        "type": "Vari-angle LCD"
       }
     ],
     "lensMount": [
@@ -5369,8 +5846,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "9.0 (battery) / 9 (USB-C PD)",
-        "powerDrawWatts": 27,
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5402,13 +5880,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -5423,13 +5902,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "3,680k-dot"
+        "resolution": "3,680k-dot",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Vari-angle LCD",
+        "resolution": "1,840k-dot",
+        "connector": "",
+        "notes": "",
         "size": "3.0-inch",
-        "resolution": "1,840k-dot"
+        "type": "Vari-angle LCD"
       }
     ],
     "lensMount": [
@@ -5470,8 +5953,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 9 (USB-C PD)",
-        "powerDrawWatts": 27,
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5503,13 +5987,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -5524,13 +6009,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "9.44M dots"
+        "resolution": "9.44M dots",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Vari-angle LCD",
+        "resolution": "1.44M dots",
+        "connector": "",
+        "notes": "",
         "size": "3.0-inch",
-        "resolution": "1.44M dots"
+        "type": "Vari-angle LCD"
       }
     ],
     "lensMount": [
@@ -5567,7 +6056,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 5 (USB-C PD)",
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5599,13 +6090,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -5620,13 +6112,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "EVF with eye sensor",
-        "resolution": "5.76M dots OLED"
+        "resolution": "5.76M dots OLED",
+        "connector": "",
+        "notes": "",
+        "type": "EVF with eye sensor"
       },
       {
-        "type": "Vari-angle LCD",
+        "resolution": "1.62M dots",
+        "connector": "",
+        "notes": "",
         "size": "3.0-inch",
-        "resolution": "1.62M dots"
+        "type": "Vari-angle LCD"
       }
     ],
     "lensMount": [
@@ -5664,7 +6160,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-30",
-        "type": "6-pin 1B DC-,TB50"
+        "type": [
+          "6-pin 1B DC-,TB50"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5708,12 +6206,14 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
         {
           "type": "D-Tap",
           "voltage": "Battery Voltage",
+          "current": "",
           "wattage": null,
           "notes": "Unregulated"
         },
@@ -5729,6 +6229,7 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type A"
       },
       {
@@ -5738,12 +6239,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For Focus Motor"
+        "notes": "For Focus Motor",
+        "type": "USB-C"
       },
       {
-        "type": "LiDAR Range Finder Port",
-        "notes": "Integrated LiDAR"
+        "notes": "Integrated LiDAR",
+        "type": "LiDAR Range Finder Port"
       }
     ],
     "recordingMedia": [
@@ -5758,11 +6259,16 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Integrated LCD monitor",
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "",
         "size": "5.5-inch",
-        "resolution": "1920x1080"
+        "type": "Integrated LCD monitor"
       },
       {
+        "resolution": "",
+        "connector": "",
+        "notes": "",
         "type": "High-Bright Remote Monitor (Optional)"
       }
     ],
@@ -5811,7 +6317,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 9 (USB-C PD)",
-        "type": "Battery Slot,USB-C"
+        "type": [
+          "Battery Slot,USB-C"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5843,18 +6351,18 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "Type-A",
-        "notes": "Supports 4672 x 2628 (59.94p/50p/29.97p/25p/23.98p), 16 bit RAW output [S1.1]"
+        "notes": "Supports 4672 x 2628 (59.94p/50p/29.97p/25p/23.98p), 16 bit RAW output [S1.1]",
+        "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "Multi/Micro USB",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "Multi/Micro USB"
       },
       {
-        "type": "USB-C",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -5869,10 +6377,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Integrated LCD monitor",
-        "size": "3.0-type (7.5 cm)",
         "resolution": "Approx. 2.36M dots",
-        "notes": "Vari-angle touch panel [S1.1]"
+        "connector": "",
+        "notes": "Vari-angle touch panel [S1.1]",
+        "size": "3.0-type (7.5 cm)",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -5913,7 +6422,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12 (11.4-12.6)",
-        "type": "Weipu SF610,S2"
+        "type": [
+          "Weipu SF610,S2"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -5941,16 +6452,16 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "LANC",
-        "notes": "Control Input [2.3]"
+        "notes": "Control Input [2.3]",
+        "type": "LANC"
       },
       {
-        "type": "USB-C",
-        "notes": "Control/Data/Video Input [2.3]"
+        "notes": "Control/Data/Video Input [2.3]",
+        "type": "USB-C"
       },
       {
-        "type": "RJ45 (LAN)",
-        "notes": "Control/Monitor/Video Input/Output [2.3]"
+        "notes": "Control/Monitor/Video Input/Output [2.3]",
+        "type": "RJ45 (LAN)"
       }
     ],
     "recordingMedia": [
@@ -5965,8 +6476,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "None",
-        "notes": "Box camera design, requires external monitor"
+        "resolution": "",
+        "connector": "",
+        "notes": "Box camera design, requires external monitor",
+        "type": "None"
       }
     ],
     "lensMount": [
@@ -6013,7 +6526,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 5 (USB-C PD)",
-        "type": "Battery Slot,USB-C"
+        "type": [
+          "Battery Slot,USB-C"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6037,14 +6552,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "Type-A",
-        "notes": "YCbCr 4:2:2 10 bit / RGB 8 bit [S3.1]"
+        "notes": "YCbCr 4:2:2 10 bit / RGB 8 bit [S3.1]",
+        "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For specific accessories/control"
+        "notes": "For specific accessories/control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -6055,10 +6570,11 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "Integrated LCD monitor",
-        "size": "3.0-type (7.5 cm)",
         "resolution": "Approx. 1.03M dots",
-        "notes": "Vari-angle touch panel [S3.1]"
+        "connector": "",
+        "notes": "Vari-angle touch panel [S3.1]",
+        "size": "3.0-type (7.5 cm)",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -6093,7 +6609,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / USB-C",
-        "type": "Battery Slot,USB-C"
+        "type": [
+          "Battery Slot,USB-C"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6115,6 +6633,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For charging or powering small accessories"
         }
       ]
@@ -6127,8 +6648,8 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -6139,14 +6660,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "None",
-        "notes": "No built-in viewfinder, relies on LCD [4.1]"
+        "resolution": "",
+        "connector": "",
+        "notes": "No built-in viewfinder, relies on LCD [4.1]",
+        "type": "None"
       },
       {
-        "type": "Integrated LCD monitor",
-        "size": "3.0-inch",
         "resolution": "1.04 million dots",
-        "notes": "Vari-angle touchscreen [4.1]"
+        "connector": "",
+        "notes": "Vari-angle touchscreen [4.1]",
+        "size": "3.0-inch",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -6187,7 +6711,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (LP-E6P) / USB-C PD (45W+ recommended)",
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6209,6 +6735,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C PD",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For charging or powering camera/accessories [S5.1]"
         }
       ]
@@ -6216,14 +6745,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "Type-A",
-        "notes": "RAW/SRAW Video: 8K DCI (17:9) / 4K DCI (17:9) [S5.3]"
+        "notes": "RAW/SRAW Video: 8K DCI (17:9) / 4K DCI (17:9) [S5.3]",
+        "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -6238,14 +6767,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "Approx. 5.76 million dots"
+        "resolution": "Approx. 5.76 million dots",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Integrated LCD monitor",
-        "size": "3.2-inch",
         "resolution": "Approx. 2.1 million dots",
-        "notes": "Vari-angle touchscreen"
+        "connector": "",
+        "notes": "Vari-angle touchscreen",
+        "size": "3.2-inch",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -6289,7 +6821,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (LP-E19) / USB-C PD",
-        "type": "Battery Slot,USB-C PD"
+        "type": [
+          "Battery Slot,USB-C PD"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6311,6 +6845,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C PD",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For charging or powering camera/accessories [S6.1]"
         }
       ]
@@ -6318,13 +6855,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "Type-A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -6335,12 +6873,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "High-resolution"
+        "resolution": "High-resolution",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Integrated LCD monitor",
-        "size": "Vari-angle touchscreen"
+        "resolution": "",
+        "connector": "",
+        "notes": "",
+        "size": "Vari-angle touchscreen",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -6383,7 +6926,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11-17",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6402,12 +6947,14 @@ const cameraData = {
           "type": "Hirose 4-pin",
           "voltage": "12V",
           "current": "0.5A",
+          "wattage": null,
           "notes": "DC OUT on camera body"
         },
         {
           "type": "USB-A",
           "voltage": "5V",
           "current": "1.5A",
+          "wattage": null,
           "notes": "USB host port powers accessories/data"
         }
       ]
@@ -6445,7 +6992,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11-17",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6464,12 +7013,14 @@ const cameraData = {
           "type": "Hirose 4-pin",
           "voltage": "12V",
           "current": "1.5A",
+          "wattage": null,
           "notes": "Regulated DC OUT"
         },
         {
           "type": "USB-A",
           "voltage": "5V",
           "current": "0.5A",
+          "wattage": null,
           "notes": "USB terminal for accessories/Wi-Fi"
         }
       ]
@@ -6507,7 +7058,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "10.5-17",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6531,12 +7084,14 @@ const cameraData = {
           "type": "Hirose 4-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Regulated DC OUT"
         },
         {
           "type": "USB-A",
           "voltage": "5V",
           "current": "0.5A",
+          "wattage": null,
           "notes": "USB host/control port"
         }
       ]
@@ -6575,7 +7130,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "10-18",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6594,24 +7151,28 @@ const cameraData = {
           "type": "D-Tap",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Accessory D-Tap"
         },
         {
           "type": "D-Tap",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Accessory D-Tap"
         },
         {
           "type": "Hirose 4-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Regulated DC OUT"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "24V",
           "current": "2A",
+          "wattage": null,
           "notes": "Regulated 24V for lens/remote"
         }
       ]
@@ -6658,7 +7219,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6682,23 +7245,27 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 1"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 2"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "24V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 24V"
         },
         {
           "type": "USB-C PD",
           "voltage": "5-20V",
+          "current": "",
           "wattage": 45,
           "notes": "USB-C PD on camera body"
         }
@@ -6743,7 +7310,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6767,23 +7336,27 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 1"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 2"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "24V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 24V"
         },
         {
           "type": "USB-C PD",
           "voltage": "5-20V",
+          "current": "",
           "wattage": 45,
           "notes": "USB-C PD on camera body"
         }
@@ -6828,7 +7401,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6852,23 +7427,27 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 1"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 2"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "24V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR 24V"
         },
         {
           "type": "USB-C PD",
           "voltage": "5-20V",
+          "current": "",
           "wattage": 45,
           "notes": "USB-C PD on camera body"
         }
@@ -6925,7 +7504,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "Locking DC barrel"
+        "type": [
+          "Locking DC barrel"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -6949,6 +7530,7 @@ const cameraData = {
           "type": "USB-C",
           "voltage": "5V",
           "current": "1.5A",
+          "wattage": null,
           "notes": "USB-C expansion port powers external drives"
         }
       ]
@@ -6995,7 +7577,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / USB-C",
-        "type": "Battery Slot,USB-C"
+        "type": [
+          "Battery Slot,USB-C"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7017,6 +7601,9 @@ const cameraData = {
       "powerDistributionOutputs": [
         {
           "type": "USB-C",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
           "notes": "For charging or powering accessories"
         }
       ]
@@ -7024,13 +7611,14 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
+        "notes": "",
         "version": "2.1 Type A"
       }
     ],
     "fizConnectors": [
       {
-        "type": "USB-C",
-        "notes": "For camera control"
+        "notes": "For camera control",
+        "type": "USB-C"
       }
     ],
     "recordingMedia": [
@@ -7045,12 +7633,17 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "OLED EVF",
-        "resolution": "High-resolution"
+        "resolution": "High-resolution",
+        "connector": "",
+        "notes": "",
+        "type": "OLED EVF"
       },
       {
-        "type": "Integrated LCD monitor",
-        "size": "Vari-angle touchscreen"
+        "resolution": "",
+        "connector": "",
+        "notes": "",
+        "size": "Vari-angle touchscreen",
+        "type": "Integrated LCD monitor"
       }
     ],
     "lensMount": [
@@ -7088,7 +7681,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "9-15",
-        "type": "USB-C PD,DC Coupler"
+        "type": [
+          "USB-C PD,DC Coupler"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7147,7 +7742,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-20",
-        "type": "XLR 4-pin"
+        "type": [
+          "XLR 4-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7166,24 +7763,28 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Accessory power 1"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Accessory power 2"
         },
         {
           "type": "Hirose 12-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Lens power/control connector"
         },
         {
           "type": "USB-C",
           "voltage": "5V",
           "current": "1.5A",
+          "wattage": null,
           "notes": "USB-C expansion port"
         }
       ]
@@ -7222,7 +7823,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "10.5-34",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7245,16 +7848,22 @@ const cameraData = {
         {
           "type": "D-Tap",
           "voltage": "14.8V",
+          "current": "",
+          "wattage": null,
           "notes": "Unregulated output on camera body"
         },
         {
           "type": "RS (LEMO 2-pin)",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Regulated 12V accessory rail"
         },
         {
           "type": "Lens port (LEMO 7-pin)",
           "voltage": "12V",
+          "current": "",
+          "wattage": null,
           "notes": "Lens/control port with 12V accessory power"
         }
       ]
@@ -7296,8 +7905,10 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-16.8",
-        "type": "LEMO 2-pin",
-        "notes": "DC input"
+        "notes": "DC input",
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7316,6 +7927,7 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "Regulated accessory power output"
         }
       ]
@@ -7323,8 +7935,8 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "2.0 Type A",
-        "notes": "4K up to 59.94p, 10-bit 4:2:2"
+        "notes": "4K up to 59.94p, 10-bit 4:2:2",
+        "version": "2.0 Type A"
       },
       {
         "type": "12G-SDI",
@@ -7333,12 +7945,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "2.5mm LANC",
-        "notes": "Remote control port"
+        "notes": "Remote control port",
+        "type": "2.5mm LANC"
       },
       {
-        "type": "Serial CTRL",
-        "notes": "Dedicated accessory control port"
+        "notes": "Dedicated accessory control port",
+        "type": "Serial CTRL"
       }
     ],
     "recordingMedia": [
@@ -7353,9 +7965,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "5\" Touchscreen LCD",
         "resolution": "1920x1080",
-        "notes": "Included monitor powered via control cable"
+        "connector": "",
+        "notes": "Included monitor powered via control cable",
+        "type": "5\" Touchscreen LCD"
       }
     ],
     "lensMount": [
@@ -7414,7 +8027,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "12-18",
-        "type": "LEMO 2-pin"
+        "type": [
+          "LEMO 2-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7428,6 +8043,7 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "2A",
+          "wattage": null,
           "notes": "AUX DC output"
         }
       ]
@@ -7435,8 +8051,8 @@ const cameraData = {
     "videoOutputs": [
       {
         "type": "HDMI",
-        "version": "2.0 Type A",
-        "notes": "4K up to 59.94p, 10-bit 4:2:2"
+        "notes": "4K up to 59.94p, 10-bit 4:2:2",
+        "version": "2.0 Type A"
       },
       {
         "type": "12G-SDI",
@@ -7445,12 +8061,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "2.5mm LANC",
-        "notes": "Remote control port"
+        "notes": "Remote control port",
+        "type": "2.5mm LANC"
       },
       {
-        "type": "Serial CTRL",
-        "notes": "Dedicated accessory control port"
+        "notes": "Dedicated accessory control port",
+        "type": "Serial CTRL"
       }
     ],
     "recordingMedia": [
@@ -7465,9 +8081,10 @@ const cameraData = {
     ],
     "viewfinder": [
       {
-        "type": "5\" Touchscreen LCD",
         "resolution": "1920x1080",
-        "notes": "Included monitor powered via control cable"
+        "connector": "",
+        "notes": "Included monitor powered via control cable",
+        "type": "5\" Touchscreen LCD"
       }
     ],
     "lensMount": [
@@ -7523,7 +8140,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7547,12 +8166,14 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "14V",
           "current": "3A",
+          "wattage": null,
           "notes": "DC OUT from DSMC2 I/O expander"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR rail on expander"
         }
       ]
@@ -7591,7 +8212,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7615,12 +8238,14 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "14V",
           "current": "3A",
+          "wattage": null,
           "notes": "DC OUT from DSMC2 I/O expander"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR rail on expander"
         }
       ]
@@ -7659,7 +8284,9 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": "11.5-32",
-        "type": "LEMO 6-pin"
+        "type": [
+          "LEMO 6-pin"
+        ]
       },
       "batteryPlateSupport": [
         {
@@ -7683,12 +8310,14 @@ const cameraData = {
           "type": "LEMO 2-pin",
           "voltage": "14V",
           "current": "3A",
+          "wattage": null,
           "notes": "DC OUT from DSMC2 I/O expander"
         },
         {
           "type": "LEMO 2-pin",
           "voltage": "12V",
           "current": "3A",
+          "wattage": null,
           "notes": "Aux PWR rail on expander"
         }
       ]
@@ -7725,8 +8354,11 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": null,
-        "type": "N/A",
-        "notes": "Placeholder entry representing no camera body"
+        "notes": "Placeholder entry representing no camera body",
+        "type": [
+          "N",
+          "A"
+        ]
       },
       "batteryPlateSupport": [],
       "powerDistributionOutputs": []
@@ -7748,7 +8380,6 @@ suppressedCameras.forEach(name => {
     delete cameraData[name];
   }
 });
-
 if (typeof registerDevice === 'function') {
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = registerDevice('cameras', cameraData);
