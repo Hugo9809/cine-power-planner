@@ -1040,6 +1040,23 @@
 
     const requestMode = 'same-origin';
 
+    const warmupCredentials = (() => {
+      if (!includeCredentials) {
+        return 'omit';
+      }
+
+      if (preferXmlHttpWarmup) {
+        // Safari enforces additional access control checks when credentials are
+        // forced to "include" on fetch requests—even for same-origin reloads.
+        // Falling back to the default "same-origin" mode keeps cookies
+        // available without triggering Safari's console errors while retaining
+        // the existing XHR-based warmup path for redundant coverage.
+        return 'same-origin';
+      }
+
+      return 'include';
+    })();
+
     const warmupRequestHref = (() => {
       const referenceHref = readLocationHrefSafe(locationLike);
       const originHref = typeof referenceHref === 'string' && referenceHref ? referenceHref : nextHref;
@@ -1075,7 +1092,7 @@
       const buildRequestInit = (overrides = {}) => {
         const requestInit = {
           cache: allowCachePopulation ? 'reload' : 'no-store',
-          credentials: includeCredentials ? 'include' : 'omit',
+          credentials: warmupCredentials,
           mode: requestMode,
           redirect: 'follow',
         };
