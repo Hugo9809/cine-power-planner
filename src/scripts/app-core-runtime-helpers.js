@@ -1,4 +1,6 @@
-/* global CORE_GLOBAL_SCOPE, CORE_PART2_RUNTIME_SCOPE, CORE_SHARED_SCOPE_PART2, CORE_SHARED, collectRuntimeScopeCandidates, resolveCoreSupportModule */
+/* global CORE_GLOBAL_SCOPE, CORE_PART2_RUNTIME_SCOPE, CORE_SHARED_SCOPE_PART2, CORE_SHARED,
+          CORE_PART2_RUNTIME_HELPERS: true, collectRuntimeScopeCandidates,
+          resolveCoreSupportModule */
 
 /*
  * Cine Power Planner runtime helpers (part 2 shared fallbacks).

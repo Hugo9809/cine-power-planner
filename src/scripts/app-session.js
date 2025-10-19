@@ -35,9 +35,9 @@
           resumeProjectPersistence, stableStringify, CORE_SHARED,
           markProjectFormDataDirty, loadAutoGearMonitorDefaults, loadDocumentationTracker,
           enhanceGearItemElement,
-          settingsFocusScale, focusScalePreference, normalizeFocusScale,
+          settingsFocusScale, focusScalePreference: true, normalizeFocusScale,
           applyFocusScalePreference: true, applyTemperatureUnitPreference: true,
-          updateLensWorkflowCatalog */
+          updateLensWorkflowCatalog, FOCUS_SCALE_STORAGE_KEY_NAME */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,

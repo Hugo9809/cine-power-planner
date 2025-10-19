@@ -1,3 +1,7 @@
+/* global resolveCoreSupportModule, CORE_PART1_RUNTIME_SCOPE,
+          CORE_GLOBAL_SCOPE */
+/* exported createInlineRuntimeSharedFallback, localizationBootstrapWiring */
+
 /*
  * Extracted from app-core-new-1.js to keep module boundaries manageable.
  * The logic remains identical to protect autosave, offline, and localization behaviours.

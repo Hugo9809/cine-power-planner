@@ -1,4 +1,4 @@
-/* global CORE_GLOBAL_SCOPE */
+/* global CORE_GLOBAL_SCOPE, ICON_GLYPHS, iconMarkup */
 /*
  * Centralised UI helpers shared across the Cine Power Planner runtime.
  *

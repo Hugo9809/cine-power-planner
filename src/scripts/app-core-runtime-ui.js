@@ -1,3 +1,6 @@
+/* global CORE_GLOBAL_SCOPE, CORE_PART1_RUNTIME_SCOPE, CORE_PART2_RUNTIME_SCOPE,
+          ICON_GLYPHS */
+
 /*
  * Cine Power Planner core runtime UI bridge.
  *
