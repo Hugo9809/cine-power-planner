@@ -73,6 +73,10 @@
     },
   };
 
+  const nativeObjectFreeze = typeof Object.freeze === 'function'
+    ? Object.freeze.bind(Object)
+    : null;
+
   const MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE) || FALLBACK_BASE;
 
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
@@ -202,9 +206,49 @@
     const logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
     const logger = safeContext.logger;
     let fallbackAttempts = 0;
+    let documentTitleChanged = false;
+
+    function setDocumentTitleForPrint() {
+      if (
+        documentRef
+        && typeof documentRef.title === 'string'
+        && safeContext.printDocumentTitle
+        && documentRef.title !== safeContext.printDocumentTitle
+      ) {
+        try {
+          documentRef.title = safeContext.printDocumentTitle;
+          documentTitleChanged = true;
+        } catch (titleError) {
+          documentTitleChanged = false;
+          log(logger, 'warn', `${logPrefix}: unable to set temporary document title for print.`, titleError);
+        }
+      }
+    }
+
+    function restoreDocumentTitle(reasonSuffix) {
+      if (!documentTitleChanged || !documentRef || typeof documentRef.title !== 'string') {
+        documentTitleChanged = false;
+        return;
+      }
+
+      try {
+        documentRef.title = safeContext.originalDocumentTitle;
+      } catch (restoreError) {
+        const suffix = reasonSuffix ? ` ${reasonSuffix}` : '';
+        log(
+          logger,
+          'warn',
+          `${logPrefix}: unable to restore original document title${suffix}.`,
+          restoreError,
+        );
+      }
+
+      documentTitleChanged = false;
+    }
 
     function attemptFallback(error) {
       fallbackAttempts += 1;
+      restoreDocumentTitle('after fallback attempt');
       if (error && error.name !== 'AbortError') {
         log(logger, 'warn', `${logPrefix}: falling back to print window.`, error);
       }
@@ -239,20 +283,26 @@
       }
 
       try {
-        if (documentRef && safeContext.printDocumentTitle) {
-          documentRef.title = safeContext.printDocumentTitle;
-        }
+        setDocumentTitleForPrint();
 
         const result = windowRef.print();
         if (result && typeof result.then === 'function') {
-          result.catch(error => {
-            if (!fallbackAttempts) {
-              attemptFallback(error);
-            }
-          });
+          result
+            .then(() => {
+              restoreDocumentTitle('after native print');
+            })
+            .catch(error => {
+              restoreDocumentTitle('after failed print attempt');
+              if (!fallbackAttempts) {
+                attemptFallback(error);
+              }
+            });
+        } else {
+          restoreDocumentTitle('after native print');
         }
         return true;
       } catch (error) {
+        restoreDocumentTitle('after failed print attempt');
         return attemptFallback(error);
       }
     }
@@ -278,11 +328,8 @@
       && typeof documentRef.title === 'string'
       && documentRef.title === safeContext.printDocumentTitle
     ) {
-      try {
-        documentRef.title = safeContext.originalDocumentTitle;
-      } catch (restoreError) {
-        log(logger, 'warn', `${logPrefix}: unable to restore original document title after failed print.`, restoreError);
-      }
+      documentTitleChanged = true;
+      restoreDocumentTitle('after failed print');
     }
 
     return success;
@@ -297,7 +344,13 @@
       },
     };
 
-    return freezeDeep(workflow);
+    if (nativeObjectFreeze) {
+      nativeObjectFreeze(workflow);
+    } else {
+      Object.freeze(workflow);
+    }
+    freezeDeep(workflow);
+    return workflow;
   }
 
   const printAPI = freezeDeep({

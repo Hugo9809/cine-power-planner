@@ -13,9 +13,11 @@ describe('cineFeaturePrint module', () => {
   });
 
   test('uses native print when available', () => {
-    const printSpy = jest.fn();
-    const fakeWindow = { print: printSpy };
     const fakeDocument = { title: 'Original Title' };
+    const printSpy = jest.fn(() => {
+      expect(fakeDocument.title).toBe('Printable Title');
+    });
+    const fakeWindow = { print: printSpy };
 
     const success = printModule.triggerOverviewPrintWorkflow({
       windowRef: fakeWindow,
@@ -29,7 +31,7 @@ describe('cineFeaturePrint module', () => {
 
     expect(success).toBe(true);
     expect(printSpy).toHaveBeenCalledTimes(1);
-    expect(fakeDocument.title).toBe('Printable Title');
+    expect(fakeDocument.title).toBe('Original Title');
   });
 
   test('falls back to window when native print fails', () => {
@@ -38,10 +40,11 @@ describe('cineFeaturePrint module', () => {
     const cleanupSpy = jest.fn();
     const warnSpy = jest.fn();
     const errorSpy = jest.fn();
+    const fakeDocument = { title: 'Original' };
 
     const success = printModule.triggerOverviewPrintWorkflow({
       windowRef: { print: printSpy },
-      documentRef: { title: 'Original' },
+      documentRef: fakeDocument,
       printDocumentTitle: 'Printable Title',
       originalDocumentTitle: 'Original',
       openFallbackPrintView: fallbackSpy,
@@ -54,6 +57,8 @@ describe('cineFeaturePrint module', () => {
     expect(fallbackSpy).toHaveBeenCalledTimes(1);
     expect(cleanupSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(fakeDocument.title).toBe('Original');
   });
 
   test('respects preferFallback option', () => {
@@ -73,5 +78,40 @@ describe('cineFeaturePrint module', () => {
     expect(success).toBe(true);
     expect(fallbackSpy).toHaveBeenCalledTimes(1);
     expect(printSpy).not.toHaveBeenCalled();
+  });
+
+  test('restores document title after promise-based native print resolves', async () => {
+    const fakeDocument = { title: 'Original Title' };
+    let resolvePrint;
+    const printPromise = new Promise((resolve) => {
+      resolvePrint = resolve;
+    });
+    const printSpy = jest.fn(() => {
+      expect(fakeDocument.title).toBe('Printable Title');
+      return printPromise;
+    });
+    const warnSpy = jest.fn();
+    const errorSpy = jest.fn();
+
+    const success = printModule.triggerOverviewPrintWorkflow({
+      windowRef: { print: printSpy },
+      documentRef: fakeDocument,
+      printDocumentTitle: 'Printable Title',
+      originalDocumentTitle: 'Original Title',
+      openFallbackPrintView: jest.fn(() => false),
+      closeAfterPrint: jest.fn(),
+      logger: { warn: warnSpy, error: errorSpy },
+    });
+
+    expect(success).toBe(true);
+    expect(printSpy).toHaveBeenCalledTimes(1);
+    expect(fakeDocument.title).toBe('Printable Title');
+
+    resolvePrint();
+    await Promise.resolve();
+
+    expect(fakeDocument.title).toBe('Original Title');
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 });
