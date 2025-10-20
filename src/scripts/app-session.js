@@ -12069,7 +12069,7 @@ function resetPlannerStateAfterFactoryReset() {
         if (sliderSelect) sliderSelect.value = '';
       } else {
         console.warn(
-          'Skipping slider bowl selection reset during factory reset because helper is unavailable'
+          'Skipping slider bowl selection reset during factory reset because helper is unavailable.'
         );
       }
     } catch (error) {
@@ -12082,7 +12082,7 @@ function resetPlannerStateAfterFactoryReset() {
         if (easyrigSelect) easyrigSelect.value = '';
       } else {
         console.warn(
-          'Skipping Easyrig selection reset during factory reset because helper is unavailable'
+          'Skipping Easyrig selection reset during factory reset because helper is unavailable.'
         );
       }
     } catch (error) {
@@ -12158,7 +12158,7 @@ function resetPlannerStateAfterFactoryReset() {
         resetCustomFontsForFactoryReset();
       } else {
         console.warn(
-          'Skipping custom font reset during factory reset because helper is unavailable'
+          'Skipping custom font reset during factory reset because helper is unavailable.'
         );
       }
     } catch (error) {
