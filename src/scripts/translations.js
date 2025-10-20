@@ -137,6 +137,132 @@
     return state;
   }
 
+  function assignLoaderStateLoading(loaderState, value) {
+    if (!loaderState || typeof loaderState !== 'object') {
+      return false;
+    }
+
+    var assigned = false;
+
+    try {
+      loaderState.loading = value;
+      assigned = loaderState.loading === value;
+    } catch (assignError) {
+      void assignError;
+    }
+
+    if (assigned) {
+      return true;
+    }
+
+    if (typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(loaderState, 'loading', {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: value,
+        });
+        assigned = loaderState.loading === value;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return assigned;
+  }
+
+  function getPropertyDescriptorSafe(target, key) {
+    if (!target || typeof target !== 'object') {
+      return null;
+    }
+
+    if (typeof Object.getOwnPropertyDescriptor !== 'function') {
+      return null;
+    }
+
+    try {
+      return Object.getOwnPropertyDescriptor(target, key);
+    } catch (descriptorError) {
+      void descriptorError;
+      return null;
+    }
+  }
+
+  function ensureLoaderStateLoadingContainer(loaderState) {
+    var targetState = loaderState && typeof loaderState === 'object'
+      ? loaderState
+      : ensureLoaderState();
+
+    var loading = targetState.loading;
+
+    if (loading && typeof loading === 'object') {
+      var isExtensible = true;
+      try {
+        isExtensible =
+          typeof Object.isExtensible !== 'function' ||
+          Object.isExtensible(loading);
+      } catch (extensibleCheckError) {
+        void extensibleCheckError;
+        isExtensible = true;
+      }
+
+      if (isExtensible) {
+        return loading;
+      }
+
+      var replacement = cloneContainerEntries(loading);
+      if (!replacement || typeof replacement !== 'object') {
+        replacement = {};
+        try {
+          var existingKeys = Object.keys(loading);
+          for (var index = 0; index < existingKeys.length; index += 1) {
+            var key = existingKeys[index];
+            replacement[key] = loading[key];
+          }
+        } catch (copyError) {
+          void copyError;
+        }
+      }
+
+      if (assignLoaderStateLoading(targetState, replacement)) {
+        return replacement;
+      }
+
+      return loading;
+    }
+
+    var nextLoading = {};
+    if (assignLoaderStateLoading(targetState, nextLoading)) {
+      return nextLoading;
+    }
+
+    var current = targetState.loading;
+    return current && typeof current === 'object' ? current : nextLoading;
+  }
+
+  function clearLoaderStateLoadingEntry(loaderState, locale) {
+    if (!locale) {
+      return;
+    }
+
+    var container = ensureLoaderStateLoadingContainer(loaderState);
+    if (!container || typeof container !== 'object') {
+      return;
+    }
+
+    var descriptor = getPropertyDescriptorSafe(container, locale);
+
+    if (!descriptor || descriptor.configurable !== false) {
+      delete container[locale];
+      return;
+    }
+
+    if (tryAssignContainerValue(container, locale, undefined)) {
+      return;
+    }
+  }
+
   function ensureContainer(name) {
     var existing = scope[name];
     if (existing && typeof existing === 'object') {
@@ -854,8 +980,10 @@
     }
 
     var loaderState = ensureLoaderState();
-    if (loaderState.loading[locale]) {
-      return loaderState.loading[locale];
+    var loadingContainer = ensureLoaderStateLoadingContainer(loaderState);
+
+    if (loadingContainer[locale]) {
+      return loadingContainer[locale];
     }
 
     if (typeof document === 'undefined' || !document || !document.createElement) {
@@ -885,18 +1013,18 @@
       });
     }
 
-    loaderState.loading[locale] = new Promise(function startLoading(resolve, reject) {
+    var loadingPromise = new Promise(function startLoading(resolve, reject) {
       var script = document.createElement('script');
       script.async = true;
       script.src = scripts.url;
       script.setAttribute('data-translation-locale', locale);
       script.onload = function handleLoad() {
         scripts.loaded = true;
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         resolve(getLocaleData(locale));
       };
       script.onerror = function handleError(event) {
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         var error = event && event.error
           ? event.error
           : new Error('Failed to load translations for ' + locale + '.');
@@ -906,12 +1034,39 @@
       try {
         document.head.appendChild(script);
       } catch (appendError) {
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         reject(appendError);
       }
     });
 
-    return loaderState.loading[locale];
+    if (!tryAssignContainerValue(loadingContainer, locale, loadingPromise)) {
+      var replacement = cloneContainerEntries(loadingContainer);
+      var assigned = false;
+
+      if (replacement && typeof replacement === 'object') {
+        replacement[locale] = loadingPromise;
+        assigned = assignLoaderStateLoading(loaderState, replacement);
+        if (assigned) {
+          loadingContainer = replacement;
+        }
+      }
+
+      if (!assigned) {
+        var fallback = {};
+        fallback[locale] = loadingPromise;
+        if (assignLoaderStateLoading(loaderState, fallback)) {
+          loadingContainer = fallback;
+          assigned = true;
+        }
+      }
+    }
+
+    var trackedPromise = loadingContainer[locale];
+    if (!trackedPromise) {
+      trackedPromise = loadingPromise;
+    }
+
+    return trackedPromise;
   }
 
   function ensureDefaultLanguageLoaded() {
