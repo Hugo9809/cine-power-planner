@@ -15,8 +15,9 @@ protecting user data.
 
 1. **Prime the cache**
    - Serve the repository locally and load `http://localhost:<port>/index.html`.
-   - Wait for the service worker ready prompt; click **Stay on current version**
-     to confirm controlled updates.
+   - Wait for the service worker ready prompt; verify the **Force reload** action
+     appears, then dismiss the prompt (close it or press <kbd>Esc</kbd>) so the
+     cached build keeps running under service-worker control.
    - Capture console logs for cache population messages.
 2. **Offline validation**
    - Disconnect the network.
