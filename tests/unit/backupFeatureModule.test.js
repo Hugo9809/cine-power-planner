@@ -20,6 +20,9 @@ const BACKUP_MODULE_SOURCE_WITH_TEST_STUBS = BACKUP_MODULE_SOURCE.replace(/\}\)\
     `      openBackupFallbackWindow = overrides.openBackupFallbackWindow;\n` +
     `    }\n` +
     `  };\n` +
+    `  GLOBAL_SCOPE.__getFallbackStorageKeys = function () {\n` +
+    `    return FALLBACK_STORAGE_KEYS;\n` +
+    `  };\n` +
     match,
 );
 
@@ -190,6 +193,49 @@ describe('cineFeatureBackup module', () => {
 
     expect(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS).toContain('iosPwaHelpDisplayed');
     expect(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS).not.toContain('iosPwaHelpShown');
+  });
+
+  test('captures documentation tracker data via fallback storage keys when enumeration is blocked', () => {
+    const { backupModule, context } = evaluateBackupModule();
+
+    expect(typeof context.__getFallbackStorageKeys).toBe('function');
+    const fallbackKeys = context.__getFallbackStorageKeys();
+    expect(fallbackKeys instanceof Set).toBe(true);
+    expect(fallbackKeys.has('cameraPowerPlanner_documentationTracker')).toBe(true);
+    expect(fallbackKeys.has('cinePowerPlanner_documentationTracker')).toBe(true);
+    expect(backupModule.constants.BACKUP_DATA_KEYS).toContain('documentationTracker');
+    expect(backupModule.constants.BACKUP_DATA_COMPLEX_KEYS).toContain('documentationTracker');
+
+    const storedValue = JSON.stringify({
+      releases: [{ id: 'tracker-1', name: 'Release 1' }],
+    });
+
+    const storage = {
+      getItem: jest.fn((key) => {
+        if (key === 'cameraPowerPlanner_documentationTracker') {
+          return storedValue;
+        }
+        return null;
+      }),
+      key: jest.fn(() => {
+        throw new Error('Enumeration blocked');
+      }),
+      keys: undefined,
+      forEach: undefined,
+    };
+
+    Object.defineProperty(storage, 'length', {
+      get() {
+        return 1;
+      },
+    });
+
+    const snapshot = backupModule.captureStorageSnapshot(storage);
+
+    expect(storage.key).toHaveBeenCalled();
+    expect(storage.getItem).toHaveBeenCalledWith('cameraPowerPlanner_documentationTracker');
+    expect(storage.getItem).toHaveBeenCalledWith('cinePowerPlanner_documentationTracker');
+    expect(snapshot.cameraPowerPlanner_documentationTracker).toBe(storedValue);
   });
 
   test('falls back to manual window when blob and data URLs fail', () => {
