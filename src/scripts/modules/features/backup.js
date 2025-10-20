@@ -195,6 +195,7 @@
     'schemaCache',
     'fullBackupHistory',
     'fullBackups',
+    'documentationTracker',
   ];
 
   const BACKUP_DATA_COMPLEX_KEYS = new Set([
@@ -218,6 +219,7 @@
     'fullBackupHistory',
     'fullBackups',
     'customFonts',
+    'documentationTracker',
   ]);
 
   const FALLBACK_STORAGE_KEYS = (() => {
