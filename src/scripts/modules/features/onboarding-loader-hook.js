@@ -6,11 +6,47 @@
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const LOAD_REASON_PREFIX = 'onboarding-tour:';
   const REQUEST_TIMEOUT_MS = 2000;
-  const MODULE_WAIT_TIMEOUT_MS = 4000;
+  const MODULE_WAIT_TIMEOUT_MS = (() => {
+    const candidates = [
+      typeof globalThis !== 'undefined' && globalThis ? globalThis.__CPP_ONBOARDING_WAIT_TIMEOUT_MS : undefined,
+      typeof window !== 'undefined' && window ? window.__CPP_ONBOARDING_WAIT_TIMEOUT_MS : undefined,
+      typeof self !== 'undefined' && self ? self.__CPP_ONBOARDING_WAIT_TIMEOUT_MS : undefined,
+      typeof global !== 'undefined' && global ? global.__CPP_ONBOARDING_WAIT_TIMEOUT_MS : undefined,
+    ];
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate === undefined || candidate === null) {
+        continue;
+      }
+      const parsed = Number(candidate);
+      if (Number.isFinite(parsed) && parsed >= 0) {
+        return parsed;
+      }
+    }
+    return 4000;
+  })();
+  const TRIGGER_INTERCEPTOR_RELEASE_MS = 4500;
+  const MODULE_MONITOR_MAX_DURATION_MS = Math.max((MODULE_WAIT_TIMEOUT_MS || 0) * 10, MODULE_WAIT_TIMEOUT_MS + 1000);
 
   let onboardingModulePromise = null;
   let onboardingModuleReady = false;
   let triggerInterceptor = null;
+  let moduleReadyPromise = null;
+  let resolveModuleReadyPromise = null;
+  let lastDeferredLoadFailed = false;
+  let moduleTimeoutWarningIssued = false;
+  const pendingTriggerCallbacks = [];
+  const pendingTriggerNodes = typeof WeakSet === 'function' ? new WeakSet() : null;
+
+  function warnModuleTimeoutOnce() {
+    if (moduleTimeoutWarningIssued) {
+      return;
+    }
+    moduleTimeoutWarningIssued = true;
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Onboarding tour module did not become available after deferred load.');
+    }
+  }
 
   function getGlobalScope() {
     if (typeof globalThis !== 'undefined') {
@@ -153,42 +189,142 @@
     triggerInterceptor = null;
   }
 
-  function waitForModule(scope) {
+  function notifyModuleReady(scope, moduleApi) {
+    if (!moduleApi) {
+      return;
+    }
+
+    onboardingModuleReady = true;
+    lastDeferredLoadFailed = false;
+    moduleTimeoutWarningIssued = false;
+
+    uninstallTriggerInterceptor(scope);
+
+    if (!pendingTriggerCallbacks.length) {
+      return;
+    }
+
+    const callbacks = pendingTriggerCallbacks.slice();
+    pendingTriggerCallbacks.length = 0;
+
+    for (let index = 0; index < callbacks.length; index += 1) {
+      const callback = callbacks[index];
+      if (typeof callback !== 'function') {
+        continue;
+      }
+      try {
+        callback(moduleApi);
+      } catch (callbackError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Onboarding tour queued trigger failed after module ready.', callbackError);
+        }
+      }
+    }
+  }
+
+  function replayTrigger(trigger, moduleApi, scope) {
+    schedule(() => {
+      try {
+        if (trigger && typeof trigger.click === 'function') {
+          trigger.click();
+        } else if (moduleApi && typeof moduleApi.start === 'function') {
+          moduleApi.start();
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Onboarding tour trigger failed after deferred load.', error);
+        }
+      }
+    }, scope);
+  }
+
+  function queueTriggerReplay(trigger, scope) {
+    if (pendingTriggerNodes && trigger) {
+      try {
+        if (pendingTriggerNodes.has(trigger)) {
+          return;
+        }
+        pendingTriggerNodes.add(trigger);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    pendingTriggerCallbacks.push(moduleApi => {
+      if (pendingTriggerNodes && trigger) {
+        try {
+          pendingTriggerNodes.delete(trigger);
+        } catch (error) {
+          void error;
+        }
+      }
+      replayTrigger(trigger, moduleApi, scope);
+    });
+  }
+
+  function getModuleReadyPromise(scope) {
+    if (moduleReadyPromise) {
+      const currentScope = scope || getGlobalScope();
+      if (currentScope && currentScope.cineFeaturesOnboardingTour) {
+        notifyModuleReady(currentScope, currentScope.cineFeaturesOnboardingTour);
+        if (resolveModuleReadyPromise) {
+          try {
+            resolveModuleReadyPromise(currentScope.cineFeaturesOnboardingTour);
+          } catch (resolveError) {
+            void resolveError;
+          }
+          resolveModuleReadyPromise = null;
+        }
+      }
+      return moduleReadyPromise;
+    }
+
     const target = scope || getGlobalScope();
     if (!target) {
       return Promise.resolve(null);
     }
 
     if (target.cineFeaturesOnboardingTour) {
-      onboardingModuleReady = true;
-      uninstallTriggerInterceptor(target);
+      notifyModuleReady(target, target.cineFeaturesOnboardingTour);
       return Promise.resolve(target.cineFeaturesOnboardingTour);
     }
 
-    return new Promise(resolve => {
-      const start = Date.now();
+    const monitorStart = Date.now();
 
+    moduleReadyPromise = new Promise(resolve => {
+      resolveModuleReadyPromise = resolve;
       function check() {
         const currentScope = scope || getGlobalScope();
         if (!currentScope) {
           resolve(null);
+          resolveModuleReadyPromise = null;
           return;
         }
         if (currentScope.cineFeaturesOnboardingTour) {
-          onboardingModuleReady = true;
-          uninstallTriggerInterceptor(currentScope);
+          notifyModuleReady(currentScope, currentScope.cineFeaturesOnboardingTour);
           resolve(currentScope.cineFeaturesOnboardingTour);
+          resolveModuleReadyPromise = null;
           return;
         }
-        if (Date.now() - start >= MODULE_WAIT_TIMEOUT_MS) {
+        if (Date.now() - monitorStart >= MODULE_MONITOR_MAX_DURATION_MS) {
           resolve(null);
+          resolveModuleReadyPromise = null;
           return;
         }
         schedule(check, currentScope);
       }
 
       check();
+    }).finally(() => {
+      moduleReadyPromise = null;
+      resolveModuleReadyPromise = null;
     });
+
+    return moduleReadyPromise;
+  }
+
+  function waitForModule(scope) {
+    return getModuleReadyPromise(scope);
   }
 
   function ensureOnboardingTourLoaded(reason) {
@@ -205,15 +341,62 @@
       return onboardingModulePromise;
     }
 
+    const timeoutToken = {};
+
     onboardingModulePromise = requestDeferredLoad(scope, reason)
       .catch(error => {
         void error;
         return false;
       })
-      .then(() => waitForModule(scope))
-      .then(moduleApi => {
+      .then(loaded => {
+        if (!loaded) {
+          lastDeferredLoadFailed = true;
+          return { moduleApi: null, reason: 'deferred-load-unavailable' };
+        }
+
+        lastDeferredLoadFailed = false;
+
+        const modulePromise = waitForModule(scope);
+        const timeoutPromise = new Promise(resolve => {
+          try {
+            setTimeout(() => {
+              resolve(timeoutToken);
+            }, MODULE_WAIT_TIMEOUT_MS);
+          } catch (timeoutError) {
+            void timeoutError;
+            resolve(timeoutToken);
+          }
+        });
+
+        return Promise.race([modulePromise, timeoutPromise]).then(result => {
+          if (result === timeoutToken) {
+            if (modulePromise && typeof modulePromise.then === 'function') {
+              modulePromise
+                .then(finalModuleApi => {
+                  if (!finalModuleApi) {
+                    warnModuleTimeoutOnce();
+                  }
+                })
+                .catch(error => {
+                  void error;
+                });
+            } else {
+              warnModuleTimeoutOnce();
+            }
+            return { moduleApi: null, reason: 'timeout-pending' };
+          }
+          if (!result) {
+            warnModuleTimeoutOnce();
+          }
+          return { moduleApi: result || null, reason: result ? 'ready' : 'monitor-timeout' };
+        });
+      })
+      .then(result => {
+        const moduleApi = result && result.moduleApi;
         if (!moduleApi && typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Onboarding tour module did not become available after deferred load.');
+          if (result && result.reason === 'deferred-load-unavailable') {
+            console.warn('Onboarding tour module deferred scripts could not be requested.');
+          }
         }
         return moduleApi || null;
       })
@@ -434,45 +617,53 @@
         }
       }
 
+      let releaseTimer = null;
+
+      function releaseBusyAttribute() {
+        if (releaseTimer !== null) {
+          try {
+            clearTimeout(releaseTimer);
+          } catch (clearError) {
+            void clearError;
+          }
+          releaseTimer = null;
+        }
+        if (typeof trigger.removeAttribute === 'function') {
+          try {
+            trigger.removeAttribute('aria-busy');
+          } catch (removeError) {
+            void removeError;
+          }
+        }
+      }
+
+      try {
+        if (typeof setTimeout === 'function') {
+          releaseTimer = setTimeout(releaseBusyAttribute, TRIGGER_INTERCEPTOR_RELEASE_MS);
+        }
+      } catch (timerError) {
+        void timerError;
+        releaseTimer = null;
+      }
+
       ensureOnboardingTourLoaded('ui-trigger')
         .then(moduleApi => {
-          if (typeof trigger.removeAttribute === 'function') {
-            try {
-              trigger.removeAttribute('aria-busy');
-            } catch (error) {
-              void error;
-            }
-          }
+          releaseBusyAttribute();
 
           if (!moduleApi) {
+            if (!lastDeferredLoadFailed) {
+              queueTriggerReplay(trigger, scope);
+            }
             return;
           }
 
           onboardingModuleReady = true;
           uninstallTriggerInterceptor(scope);
 
-          schedule(() => {
-            try {
-              if (typeof trigger.click === 'function') {
-                trigger.click();
-              } else if (typeof moduleApi.start === 'function') {
-                moduleApi.start();
-              }
-            } catch (error) {
-              if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                console.warn('Onboarding tour trigger failed after deferred load.', error);
-              }
-            }
-          }, scope);
+          replayTrigger(trigger, moduleApi, scope);
         })
         .catch(error => {
-          if (typeof trigger.removeAttribute === 'function') {
-            try {
-              trigger.removeAttribute('aria-busy');
-            } catch (removeError) {
-              void removeError;
-            }
-          }
+          releaseBusyAttribute();
           if (typeof console !== 'undefined' && typeof console.warn === 'function') {
             console.warn('Unable to load onboarding tour before handling trigger.', error);
           }
