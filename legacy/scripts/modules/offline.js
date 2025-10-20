@@ -1555,32 +1555,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return clearedAny;
   }
-  function unregisterServiceWorkers(_x) {
-    return _unregisterServiceWorkers.apply(this, arguments);
+  function queryServiceWorkerRegistrations(_x) {
+    return _queryServiceWorkerRegistrations.apply(this, arguments);
   }
-  function _unregisterServiceWorkers() {
-    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
+  function _queryServiceWorkerRegistrations() {
+    _queryServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
       var nav, registrations, serviceWorker, regs, reg, readyReg, _t7, _t8;
       return _regenerator().w(function (_context3) {
         while (1) switch (_context3.p = _context3.n) {
           case 0:
             nav = resolveNavigator(navigatorOverride);
-            if (!(!nav || !nav.serviceWorker)) {
-              _context3.n = 1;
-              break;
+            if (!nav || !nav.serviceWorker) {
+              return _context3.a(2, []);
             }
-            return _context3.a(2, false);
-          case 1:
             registrations = [];
             serviceWorker = nav.serviceWorker;
-            _context3.p = 2;
+            _context3.p = 1;
             if (!(typeof serviceWorker.getRegistrations === 'function')) {
-              _context3.n = 4;
+              _context3.n = 3;
               break;
             }
-            _context3.n = 3;
+            _context3.n = 2;
             return serviceWorker.getRegistrations();
-          case 3:
+          case 2:
             regs = _context3.v;
             if (Array.isArray(regs)) {
               regs.forEach(function (reg) {
@@ -1589,57 +1586,125 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               });
             }
-            _context3.n = 10;
+            _context3.n = 9;
             break;
-          case 4:
+          case 3:
             if (!(typeof serviceWorker.getRegistration === 'function')) {
-              _context3.n = 6;
+              _context3.n = 5;
               break;
             }
-            _context3.n = 5;
+            _context3.n = 4;
             return serviceWorker.getRegistration();
-          case 5:
+          case 4:
             reg = _context3.v;
             if (reg) {
               registrations.push(reg);
             }
-            _context3.n = 10;
+            _context3.n = 9;
             break;
-          case 6:
+          case 5:
             if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-              _context3.n = 10;
+              _context3.n = 9;
               break;
             }
-            _context3.p = 7;
-            _context3.n = 8;
+            _context3.p = 6;
+            _context3.n = 7;
             return serviceWorker.ready;
-          case 8:
+          case 7:
             readyReg = _context3.v;
             if (readyReg) {
               registrations.push(readyReg);
             }
-            _context3.n = 10;
+            _context3.n = 9;
             break;
-          case 9:
-            _context3.p = 9;
+          case 6:
+            _context3.p = 6;
             _t7 = _context3.v;
             safeWarn('Failed to await active service worker', _t7);
-          case 10:
-            _context3.n = 12;
+          case 8:
+            _context3.n = 9;
             break;
-          case 11:
-            _context3.p = 11;
+          case 9:
+            _context3.n = 11;
+            break;
+          case 10:
+            _context3.p = 10;
             _t8 = _context3.v;
             safeWarn('Failed to query service worker registrations', _t8);
-          case 12:
-            if (registrations.length) {
-              _context3.n = 13;
+          case 11:
+            return _context3.a(2, registrations);
+        }
+      }, _callee3, null, [[6, 8], [1, 10]]);
+    }));
+    return _queryServiceWorkerRegistrations.apply(this, arguments);
+  }
+  function unregisterServiceWorkers(_x2) {
+    return _unregisterServiceWorkers.apply(this, arguments);
+  }
+  function _unregisterServiceWorkers() {
+    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee4(navigatorOverride) {
+      var options,
+        nav,
+        registrations,
+        prefetched,
+        prefetchedPromise,
+        normalizedRegistrations,
+        _args4 = arguments,
+        _t9;
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.p = _context4.n) {
+          case 0:
+            options = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : {};
+            nav = resolveNavigator(navigatorOverride);
+            if (!nav || !nav.serviceWorker) {
+              return _context4.a(2, false);
+            }
+            prefetched = options && Array.isArray(options.prefetchedRegistrations) ? options.prefetchedRegistrations : null;
+            prefetchedPromise = options && options.registrationPromise && typeof options.registrationPromise.then === 'function' ? options.registrationPromise : null;
+            if (!prefetchedPromise) {
+              _context4.n = 5;
               break;
             }
-            return _context3.a(2, false);
-          case 13:
-            _context3.n = 14;
-            return Promise.all(registrations.map(function (registration) {
+            _context4.p = 1;
+            _context4.n = 2;
+            return prefetchedPromise;
+          case 2:
+            registrations = _context4.v;
+            _context4.n = 4;
+            break;
+          case 3:
+            _context4.p = 3;
+            _t9 = _context4.v;
+            safeWarn('Failed to resolve service worker registrations', _t9);
+            registrations = [];
+          case 4:
+            _context4.n = 8;
+            break;
+          case 5:
+            if (!prefetched) {
+              _context4.n = 6;
+              break;
+            }
+            registrations = prefetched;
+            _context4.n = 8;
+            break;
+          case 6:
+            _context4.n = 7;
+            return queryServiceWorkerRegistrations(nav);
+          case 7:
+            registrations = _context4.v;
+          case 8:
+            normalizedRegistrations = Array.isArray(registrations) ? registrations.filter(function (registration) {
+              return !!registration;
+            }) : [];
+            if (normalizedRegistrations.length) {
+              _context4.n = 9;
+              break;
+            }
+            return _context4.a(2, false);
+          case 9:
+            _context4.n = 10;
+            return Promise.all(normalizedRegistrations.map(function (registration) {
               if (!registration || typeof registration.unregister !== 'function') {
                 return Promise.resolve(false);
               }
@@ -1648,10 +1713,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 return false;
               });
             }));
-          case 14:
-            return _context3.a(2, true);
+          case 10:
+            return _context4.a(2, true);
         }
-      }, _callee3, null, [[7, 9], [2, 11]]);
+      }, _callee4, null, [[1, 3]]);
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
@@ -2480,6 +2545,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         clearUiCacheStorageEntriesFn,
         serviceWorkerCleanupPromise,
         cacheCleanupPromise,
+        registrationQueryPromise,
+        registrations,
         warmupHandle,
         resolveWarmupPromise,
         wrapResultWithSource,
@@ -2525,6 +2592,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
+            registrationQueryPromise = queryServiceWorkerRegistrations(options.navigator);
             serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
               var _t0;
               return _regenerator().w(function (_context5) {
@@ -2532,16 +2600,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   case 0:
                     _context5.p = 0;
                     _context5.n = 1;
-                    return unregisterServiceWorkers(options.navigator);
+                    return registrationQueryPromise;
                   case 1:
-                    return _context5.a(2, _context5.v);
-                  case 2:
+                    registrations = _context5.v;
                     _context5.p = 2;
+                    _context5.n = 3;
+                    return unregisterServiceWorkers(options.navigator, {
+                      prefetchedRegistrations: registrations
+                    });
+                  case 3:
+                    return _context5.a(2, _context5.v);
+                  case 4:
+                    _context5.p = 4;
                     _t0 = _context5.v;
                     safeWarn('Service worker cleanup failed', _t0);
                     return _context5.a(2, false);
                 }
-              }, _callee5, null, [[0, 2]]);
+              }, _callee5, null, [[0, 4], [2, 4]]);
             }))();
             cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee6() {
               var _t1;
@@ -2781,8 +2856,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     registerServiceWorker: registerServiceWorker,
     reloadApp: reloadApp,
     __internal: {
+      awaitPromiseWithSoftTimeout: awaitPromiseWithSoftTimeout,
       collectFallbackUiCacheStorages: collectFallbackUiCacheStorages,
       clearUiCacheEntriesFallback: clearUiCacheEntriesFallback,
+      queryServiceWorkerRegistrations: queryServiceWorkerRegistrations,
       unregisterServiceWorkers: unregisterServiceWorkers,
       clearCacheStorage: clearCacheStorage,
       triggerReload: triggerReload,

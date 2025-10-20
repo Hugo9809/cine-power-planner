@@ -188,6 +188,76 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp begins querying service worker registrations before awaiting the cleanup gate', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    try {
+      const unregister = jest.fn(() => Promise.resolve(true));
+      let resolveRegistrations;
+      const getRegistrations = jest.fn(() => new Promise((resolve) => {
+        resolveRegistrations = () => resolve([{ unregister }]);
+      }));
+
+      const navigatorMock = {
+        onLine: false,
+        serviceWorker: {
+          getRegistrations,
+        },
+      };
+
+      const cachesMock = {
+        keys: jest.fn(() => Promise.resolve([])),
+        delete: jest.fn(() => Promise.resolve(false)),
+      };
+
+      const reloadWindow = jest.fn(() => true);
+
+      const windowMock = {
+        location: {
+          href: 'https://example.test/app?foo=bar',
+          replace: jest.fn(),
+          assign: jest.fn(),
+          reload: jest.fn(),
+        },
+      };
+
+      const reloadPromise = offline.reloadApp({
+        navigator: navigatorMock,
+        caches: cachesMock,
+        window: windowMock,
+        reloadWindow,
+      });
+
+      expect(getRegistrations).toHaveBeenCalledTimes(1);
+      expect(typeof resolveRegistrations).toBe('function');
+      expect(unregister).not.toHaveBeenCalled();
+
+      let resolved = false;
+      reloadPromise.then(() => {
+        resolved = true;
+      });
+
+      await Promise.resolve();
+      expect(resolved).toBe(false);
+
+      resolveRegistrations();
+
+      const result = await reloadPromise;
+
+      expect(unregister).toHaveBeenCalledTimes(1);
+      expect(reloadWindow).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(
+        expect.objectContaining({
+          serviceWorkersUnregistered: true,
+        })
+      );
+
+    } finally {
+      delete global.clearUiCacheStorageEntries;
+    }
+  });
+
   test('reload warmup retries with cached response when reload fetch fails', async () => {
     jest.useFakeTimers();
 

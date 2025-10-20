@@ -13645,59 +13645,68 @@ async function clearCachesAndReload() {
 
   if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
     const { serviceWorker } = navigator;
-    serviceWorkerCleanupPromise = (async () => {
+
+    const registrationQueryPromise = (async () => {
+      const registrations = [];
+
       try {
-        const registrations = [];
-
-        try {
-          if (typeof serviceWorker.getRegistrations === 'function') {
-            const regs = await serviceWorker.getRegistrations();
-            if (Array.isArray(regs)) {
-              regs.forEach(reg => {
-                if (reg) {
-                  registrations.push(reg);
-                }
-              });
-            }
-          } else if (typeof serviceWorker.getRegistration === 'function') {
-            const reg = await serviceWorker.getRegistration();
-            if (reg) {
-              registrations.push(reg);
-            }
-          } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
-            try {
-              const readyReg = await serviceWorker.ready;
-              if (readyReg) {
-                registrations.push(readyReg);
+        if (typeof serviceWorker.getRegistrations === 'function') {
+          const regs = await serviceWorker.getRegistrations();
+          if (Array.isArray(regs)) {
+            regs.forEach(reg => {
+              if (reg) {
+                registrations.push(reg);
               }
-            } catch (readyError) {
-              console.warn('Failed to await active service worker', readyError);
-            }
+            });
           }
-        } catch (queryError) {
-          console.warn('Failed to query service worker registrations', queryError);
+        } else if (typeof serviceWorker.getRegistration === 'function') {
+          const reg = await serviceWorker.getRegistration();
+          if (reg) {
+            registrations.push(reg);
+          }
+        } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
+          try {
+            const readyReg = await serviceWorker.ready;
+            if (readyReg) {
+              registrations.push(readyReg);
+            }
+          } catch (readyError) {
+            console.warn('Failed to await active service worker', readyError);
+          }
         }
+      } catch (queryError) {
+        console.warn('Failed to query service worker registrations', queryError);
+      }
 
-        if (!registrations.length) {
+      return registrations;
+    })();
+
+    serviceWorkerCleanupPromise = registrationQueryPromise
+      .then(async registrations => {
+        if (!Array.isArray(registrations) || !registrations.length) {
           return false;
         }
 
-        await Promise.all(registrations.map(reg => {
-          if (!reg || typeof reg.unregister !== 'function') {
-            return Promise.resolve(false);
-          }
-          return reg.unregister().catch(unregisterError => {
-            console.warn('Service worker unregister failed', unregisterError);
-            return false;
-          });
-        }));
-
-        return true;
-      } catch (cleanupError) {
+        try {
+          await Promise.all(registrations.map(reg => {
+            if (!reg || typeof reg.unregister !== 'function') {
+              return Promise.resolve(false);
+            }
+            return reg.unregister().catch(unregisterError => {
+              console.warn('Service worker unregister failed', unregisterError);
+              return false;
+            });
+          }));
+          return true;
+        } catch (cleanupError) {
+          console.warn('Service worker cleanup failed', cleanupError);
+          return false;
+        }
+      })
+      .catch(cleanupError => {
         console.warn('Service worker cleanup failed', cleanupError);
         return false;
-      }
-    })();
+      });
   }
 
   if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {

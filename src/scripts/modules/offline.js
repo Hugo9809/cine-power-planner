@@ -1806,10 +1806,10 @@
     return clearedAny;
   }
 
-  async function unregisterServiceWorkers(navigatorOverride) {
+  async function queryServiceWorkerRegistrations(navigatorOverride) {
     const nav = resolveNavigator(navigatorOverride);
     if (!nav || !nav.serviceWorker) {
-      return false;
+      return [];
     }
 
     const registrations = [];
@@ -1844,12 +1844,46 @@
       safeWarn('Failed to query service worker registrations', queryError);
     }
 
-    if (!registrations.length) {
+    return registrations;
+  }
+
+  async function unregisterServiceWorkers(navigatorOverride, options = {}) {
+    const nav = resolveNavigator(navigatorOverride);
+    if (!nav || !nav.serviceWorker) {
+      return false;
+    }
+
+    let registrations;
+    const prefetched = options && Array.isArray(options.prefetchedRegistrations)
+      ? options.prefetchedRegistrations
+      : null;
+    const prefetchedPromise = options && options.registrationPromise && typeof options.registrationPromise.then === 'function'
+      ? options.registrationPromise
+      : null;
+
+    if (prefetchedPromise) {
+      try {
+        registrations = await prefetchedPromise;
+      } catch (prefetchError) {
+        safeWarn('Failed to resolve service worker registrations', prefetchError);
+        registrations = [];
+      }
+    } else if (prefetched) {
+      registrations = prefetched;
+    } else {
+      registrations = await queryServiceWorkerRegistrations(nav);
+    }
+
+    const normalizedRegistrations = Array.isArray(registrations)
+      ? registrations.filter((registration) => !!registration)
+      : [];
+
+    if (!normalizedRegistrations.length) {
       return false;
     }
 
     await Promise.all(
-      registrations.map((registration) => {
+      normalizedRegistrations.map((registration) => {
         if (!registration || typeof registration.unregister !== 'function') {
           return Promise.resolve(false);
         }
@@ -2916,9 +2950,14 @@
       }
     }
 
+    const registrationQueryPromise = queryServiceWorkerRegistrations(options.navigator);
+
     const serviceWorkerCleanupPromise = (async () => {
       try {
-        return await unregisterServiceWorkers(options.navigator);
+        const registrations = await registrationQueryPromise;
+        return await unregisterServiceWorkers(options.navigator, {
+          prefetchedRegistrations: registrations,
+        });
       } catch (error) {
         safeWarn('Service worker cleanup failed', error);
         return false;
@@ -3170,8 +3209,10 @@
     registerServiceWorker,
     reloadApp,
     __internal: {
+      awaitPromiseWithSoftTimeout,
       collectFallbackUiCacheStorages,
       clearUiCacheEntriesFallback,
+      queryServiceWorkerRegistrations,
       unregisterServiceWorkers,
       clearCacheStorage,
       triggerReload,
