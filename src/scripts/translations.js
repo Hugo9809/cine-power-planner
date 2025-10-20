@@ -41,20 +41,77 @@
 
   var registryKey = '__cineTranslations';
   var loaderStateKey = '__cineTranslationsLoaderState';
+  var internalRegistry = {};
 
-  function ensureRegistry() {
-    if (scope[registryKey] && typeof scope[registryKey] === 'object') {
-      return scope[registryKey];
+  function assignRegistryReference(value) {
+    internalRegistry = value && typeof value === 'object' ? value : {};
+
+    if (!scope) {
+      return internalRegistry;
     }
 
     try {
-      scope[registryKey] = {};
+      scope[registryKey] = internalRegistry;
+      if (scope[registryKey] === internalRegistry) {
+        return internalRegistry;
+      }
     } catch (assignError) {
       void assignError;
-      scope[registryKey] = {};
     }
 
-    return scope[registryKey];
+    if (typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(scope, registryKey, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: internalRegistry,
+        });
+        if (scope[registryKey] === internalRegistry) {
+          return internalRegistry;
+        }
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return internalRegistry;
+  }
+
+  function ensureRegistry() {
+    if (scope && scope[registryKey] && typeof scope[registryKey] === 'object') {
+      internalRegistry = scope[registryKey];
+      return scope[registryKey];
+    }
+
+    return assignRegistryReference(internalRegistry);
+  }
+
+  function storeRegistryEntry(locale, value) {
+    if (!locale) {
+      return ensureRegistry();
+    }
+
+    var registry = ensureRegistry();
+    if (!registry || typeof registry !== 'object') {
+      registry = assignRegistryReference({});
+    }
+
+    if (tryAssignContainerValue(registry, locale, value)) {
+      return registry;
+    }
+
+    var replacement = cloneContainerEntries(registry);
+    if (tryAssignContainerValue(replacement, locale, value)) {
+      return assignRegistryReference(replacement);
+    }
+
+    var fallback = {};
+    if (tryAssignContainerValue(fallback, locale, value)) {
+      return assignRegistryReference(fallback);
+    }
+
+    return registry;
   }
 
   function ensureLoaderState() {
@@ -495,6 +552,13 @@
   }
 
   function registerLocaleData(locale, data) {
+    if (!locale) {
+      return null;
+    }
+
+    var dataset = data && typeof data === 'object' ? data : {};
+    storeRegistryEntry(locale, dataset);
+
     if (!data || typeof data !== 'object') {
       return null;
     }
@@ -930,6 +994,10 @@
     clearLoadingState: clearLoadingState,
     resolveLocaleKey: resolveLocaleKey,
     getAvailableLanguages: getAvailableLanguages,
+    registerPreloadedLocale: function registerPreloadedLocale(locale, data) {
+      var key = resolveLocaleKey(locale);
+      return registerLocaleData(key, data || {});
+    },
     isLanguageReady: function isLanguageReady(locale) {
       var key = resolveLocaleKey(locale);
       var container = ensureContainer('texts');
