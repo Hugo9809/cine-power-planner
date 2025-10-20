@@ -16199,9 +16199,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     // Attach in-select search filtering for a dropdown
     function attachSelectSearch(selectElem) {
+      if (!selectElem) {
+        return;
+      }
       let searchStr = "";
       let timer;
-    
+
       selectElem.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace') {
           searchStr = searchStr.slice(0, -1);
