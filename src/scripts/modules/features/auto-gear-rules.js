@@ -1,7 +1,7 @@
 /* global cineModuleBase, normalizeAutoGearItem, normalizeAutoGearQuantity, normalizeAutoGearShootingDaysCondition,
-          normalizeVideoDistributionOptionValue, normalizeBatteryPlateValue, autoGearRuleSignature,
+          normalizeBatteryPlateValue, autoGearRuleSignature,
           generateGearListHtml, parseGearTableForAutoRules, diffGearTableMaps, generateAutoGearId,
-          getViewfinderFallbackLabel, getVideoDistributionFallbackLabel, monitorSelect, normalizeAutoGearTriggerValue,
+          monitorSelect, normalizeAutoGearTriggerValue,
           texts, currentLang, devices, setSelectValue, distanceSelect, motorSelects, controllerSelects, batterySelect,
           hotswapSelect, setSliderBowlValue, setEasyrigValue, collectProjectFormData, requiredScenariosSelect,
           autoGearRules, autoGearRuleMatteboxKey, setAutoGearRules, cameraSelect, videoSelect, cageSelect,
@@ -124,6 +124,33 @@
       }
     }
     return fallback(value);
+  }
+
+  function normalizeVideoDistributionOption(value) {
+    const helper = resolveAutoGearHelperFunction('normalizeVideoDistributionOptionValue');
+    if (typeof helper === 'function') {
+      try {
+        return helper.call(GLOBAL_SCOPE, value);
+      } catch (error) {
+        logMissingAutoGearHelper('normalizeVideoDistributionOptionValue', error);
+      }
+    }
+
+    if (typeof value !== 'string') {
+      return '';
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+
+    const lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') {
+      return '__none__';
+    }
+
+    return trimmed;
   }
 
   function getSafeViewfinderFallbackLabel(value) {
@@ -1315,89 +1342,89 @@ function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
   }
 
   function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
-  if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
-    return [];
-  }
+    if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
 
-  const select = document.getElementById('videoDistribution');
-  if (!select) return [];
+    const select = document.getElementById('videoDistribution');
+    if (!select) return [];
 
-  const optionValues = [];
-  const seen = new Set();
-  Array.from(select.options || []).forEach(option => {
-    if (!option) return;
-    const rawValue = typeof option.value === 'string' ? option.value.trim() : '';
-    const normalized = normalizeVideoDistributionOptionValue(rawValue);
-    if (!normalized || normalized === '__none__') return;
-    if (seen.has(normalized)) return;
-    seen.add(normalized);
-    optionValues.push(rawValue);
-  });
-
-  if (!optionValues.length) return [];
-
-  const baseProjectInfo = { ...(baseInfo || {}) };
-  delete baseProjectInfo.videoDistribution;
-  const emptyHtml = generateGearListHtml({ ...baseProjectInfo, requiredScenarios: '' });
-  const emptyMap = parseGearTableForAutoRules(emptyHtml);
-  if (!emptyMap) return [];
-
-  const generatedRules = [];
-  const handledTriggers = new Set();
-
-  optionValues.forEach(rawValue => {
-    const trimmed = typeof rawValue === 'string' ? rawValue.trim() : '';
-    if (!trimmed) return;
-    const normalized = normalizeVideoDistributionOptionValue(trimmed);
-    if (!normalized || handledTriggers.has(normalized)) return;
-    handledTriggers.add(normalized);
-
-    const infoForSelection = { ...(baseInfo || {}), videoDistribution: trimmed };
-    const selectionHtml = generateGearListHtml({ ...infoForSelection, requiredScenarios: '' });
-    const selectionMap = parseGearTableForAutoRules(selectionHtml);
-    if (!selectionMap) return;
-
-    const diff = diffGearTableMaps(emptyMap, selectionMap);
-    const additions = cloneAutoGearItems(diff.add);
-    const removals = cloneAutoGearItems(diff.remove);
-    if (!additions.length && !removals.length) return;
-
-    generatedRules.push({
-      id: generateAutoGearId('rule'),
-      label: getSafeVideoDistributionFallbackLabel(trimmed),
-      scenarios: [],
-      mattebox: [],
-      cameraHandle: [],
-      viewfinderExtension: [],
-      videoDistribution: [trimmed],
-      add: additions,
-      remove: removals,
+    const optionValues = [];
+    const seen = new Set();
+    Array.from(select.options || []).forEach(option => {
+      if (!option) return;
+      const rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+      const normalized = normalizeVideoDistributionOption(rawValue);
+      if (!normalized || normalized === '__none__') return;
+      if (seen.has(normalized)) return;
+      seen.add(normalized);
+      optionValues.push(rawValue);
     });
-  });
 
-  const hasIosOption = optionValues.some(value => value && value.toLowerCase() === 'ios video');
-  if (hasIosOption) {
-    const iosLabel = optionValues.find(value => value && value.toLowerCase() === 'ios video') || 'IOS Video';
-    const normalizedIos = normalizeAutoGearTriggerValue(iosLabel);
-    const hasGeneratedIosRule = generatedRules.some(rule =>
-      Array.isArray(rule.videoDistribution)
-        && rule.videoDistribution.some(value => normalizeAutoGearTriggerValue(value) === normalizedIos)
-    );
-    if (!hasGeneratedIosRule) {
-      const createdNames = new Set();
-      const createItem = (name, category, quantity = 1) => {
-        if (!name || !category || quantity <= 0) return null;
-        const key = `${name}|${category}`;
-        if (createdNames.has(key)) return null;
-        createdNames.add(key);
-        return {
-          id: generateAutoGearId('item'),
-          name,
-          category,
-          quantity,
-          screenSize: '',
-          selectorType: 'none',
-          selectorDefault: '',
+    if (!optionValues.length) return [];
+
+    const baseProjectInfo = { ...(baseInfo || {}) };
+    delete baseProjectInfo.videoDistribution;
+    const emptyHtml = generateGearListHtml({ ...baseProjectInfo, requiredScenarios: '' });
+    const emptyMap = parseGearTableForAutoRules(emptyHtml);
+    if (!emptyMap) return [];
+
+    const generatedRules = [];
+    const handledTriggers = new Set();
+
+    optionValues.forEach(rawValue => {
+      const trimmed = typeof rawValue === 'string' ? rawValue.trim() : '';
+      if (!trimmed) return;
+      const normalized = normalizeVideoDistributionOption(trimmed);
+      if (!normalized || handledTriggers.has(normalized)) return;
+      handledTriggers.add(normalized);
+
+      const infoForSelection = { ...(baseInfo || {}), videoDistribution: trimmed };
+      const selectionHtml = generateGearListHtml({ ...infoForSelection, requiredScenarios: '' });
+      const selectionMap = parseGearTableForAutoRules(selectionHtml);
+      if (!selectionMap) return;
+
+      const diff = diffGearTableMaps(emptyMap, selectionMap);
+      const additions = cloneAutoGearItems(diff.add);
+      const removals = cloneAutoGearItems(diff.remove);
+      if (!additions.length && !removals.length) return;
+
+      generatedRules.push({
+        id: generateAutoGearId('rule'),
+        label: getSafeVideoDistributionFallbackLabel(trimmed),
+        scenarios: [],
+        mattebox: [],
+        cameraHandle: [],
+        viewfinderExtension: [],
+        videoDistribution: [trimmed],
+        add: additions,
+        remove: removals,
+      });
+    });
+
+    const hasIosOption = optionValues.some(value => value && value.toLowerCase() === 'ios video');
+    if (hasIosOption) {
+      const iosLabel = optionValues.find(value => value && value.toLowerCase() === 'ios video') || 'IOS Video';
+      const normalizedIos = normalizeAutoGearTriggerValue(iosLabel);
+      const hasGeneratedIosRule = generatedRules.some(rule =>
+        Array.isArray(rule.videoDistribution)
+          && rule.videoDistribution.some(value => normalizeAutoGearTriggerValue(value) === normalizedIos)
+      );
+      if (!hasGeneratedIosRule) {
+        const createdNames = new Set();
+        const createItem = (name, category, quantity = 1) => {
+          if (!name || !category || quantity <= 0) return null;
+          const key = `${name}|${category}`;
+          if (createdNames.has(key)) return null;
+          createdNames.add(key);
+          return {
+            id: generateAutoGearId('item'),
+            name,
+            category,
+            quantity,
+            screenSize: '',
+            selectorType: 'none',
+            selectorDefault: '',
           selectorEnabled: false,
           notes: '',
         };
