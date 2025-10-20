@@ -1470,8 +1470,121 @@ function resolveRentalHouseCatalog() {
   }
   return [];
 }
-var rentalHouseCatalog = resolveRentalHouseCatalog();
 var RENTAL_HOUSE_SUGGESTION_LIMIT = 50;
+var rentalHouseRuntime = null;
+function isValidRentalHouseRuntime(runtime) {
+  return !!runtime && Array.isArray(runtime.catalog) && Array.isArray(runtime.searchIndex) && runtime.lookup && _typeof(runtime.lookup) === 'object' && typeof runtime.signature === 'string';
+}
+function publishRentalHouseRuntime(runtime) {
+  if (!runtime) {
+    return;
+  }
+  var scope = getGlobalScope();
+  if (!scope) {
+    return;
+  }
+  try {
+    scope.__cineRentalHouseRuntime = runtime;
+  } catch (assignRuntimeError) {
+    void assignRuntimeError;
+  }
+  if (!Array.isArray(scope.__cineRentalHouseCatalog)) {
+    try {
+      scope.__cineRentalHouseCatalog = runtime.catalog;
+    } catch (assignCatalogError) {
+      void assignCatalogError;
+    }
+  }
+  try {
+    scope.__cineRentalHouseSearchIndex = runtime.searchIndex;
+  } catch (assignIndexError) {
+    void assignIndexError;
+  }
+  try {
+    scope.__cineRentalHouseLookup = runtime.lookup;
+  } catch (assignLookupError) {
+    void assignLookupError;
+  }
+  try {
+    scope.__cineRentalHouseSignature = runtime.signature;
+  } catch (assignSignatureError) {
+    void assignSignatureError;
+  }
+}
+function buildRentalHouseRuntime() {
+  var scope = getGlobalScope();
+  if (scope) {
+    try {
+      var existingRuntime = scope.__cineRentalHouseRuntime;
+      if (isValidRentalHouseRuntime(existingRuntime)) {
+        return existingRuntime;
+      }
+    } catch (readRuntimeError) {
+      void readRuntimeError;
+    }
+  }
+  var catalog = [];
+  if (scope) {
+    try {
+      var globalCatalog = scope.__cineRentalHouseCatalog;
+      if (Array.isArray(globalCatalog) && globalCatalog.length) {
+        catalog = globalCatalog.slice();
+      }
+    } catch (readCatalogError) {
+      void readCatalogError;
+    }
+  }
+  if (!catalog.length) {
+    catalog = resolveRentalHouseCatalog();
+  }
+  var searchIndex = catalog.map(function (entry) {
+    if (!entry || _typeof(entry) !== 'object') return null;
+    var name = entry.name ? String(entry.name).trim() : '';
+    if (!name) return null;
+    var key = normalizeRentalHouseKey(name);
+    if (!key) return null;
+    var location = formatRentalHouseLocation(entry);
+    var normalizedName = normalizeRentalHouseSearchValue(name);
+    var normalizedLocation = normalizeRentalHouseSearchValue(location);
+    var additionalParts = normalizeRentalHouseSearchValue([entry.city, entry.country, entry.address, entry.phone, entry.email].map(function (part) {
+      return part ? String(part).trim() : '';
+    }).filter(Boolean).join(' '));
+    var searchKey = [normalizedName, normalizedLocation, additionalParts].filter(Boolean).join(' ');
+    return {
+      entry: entry,
+      name: name,
+      key: key,
+      location: location,
+      normalizedName: normalizedName,
+      normalizedLocation: normalizedLocation,
+      searchKey: searchKey
+    };
+  }).filter(Boolean);
+  var signature = searchIndex.map(function (info) {
+    return "".concat(info.key, "|").concat(info.location);
+  }).join('||');
+  var lookup = Object.create(null);
+  catalog.forEach(function (entry) {
+    if (!entry || _typeof(entry) !== 'object') return;
+    var key = normalizeRentalHouseKey(entry.name);
+    if (key && !lookup[key]) {
+      lookup[key] = entry;
+    }
+  });
+  return {
+    catalog: catalog,
+    searchIndex: searchIndex,
+    signature: signature,
+    lookup: lookup
+  };
+}
+function getRentalHouseRuntime() {
+  if (!isValidRentalHouseRuntime(rentalHouseRuntime)) {
+    rentalHouseRuntime = buildRentalHouseRuntime();
+    publishRentalHouseRuntime(rentalHouseRuntime);
+  }
+  return rentalHouseRuntime;
+}
 function normalizeRentalHouseSearchValue(value) {
   if (!value) return '';
   var normalized = String(value);
@@ -1484,47 +1597,10 @@ function normalizeRentalHouseSearchValue(value) {
   }
   return normalized.replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[\u2012\u2013\u2014\u2015]/g, '-').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
-var rentalHouseSearchIndex = rentalHouseCatalog.map(function (entry) {
-  if (!entry || _typeof(entry) !== 'object') return null;
-  var name = entry.name ? String(entry.name).trim() : '';
-  if (!name) return null;
-  var key = normalizeRentalHouseKey(name);
-  if (!key) return null;
-  var location = formatRentalHouseLocation(entry);
-  var normalizedName = normalizeRentalHouseSearchValue(name);
-  var normalizedLocation = normalizeRentalHouseSearchValue(location);
-  var additionalParts = normalizeRentalHouseSearchValue([entry.city, entry.country, entry.address, entry.phone, entry.email].map(function (part) {
-    return part ? String(part).trim() : '';
-  }).filter(Boolean).join(' '));
-  var searchKey = [normalizedName, normalizedLocation, additionalParts].filter(Boolean).join(' ');
-  return {
-    entry: entry,
-    name: name,
-    key: key,
-    location: location,
-    normalizedName: normalizedName,
-    normalizedLocation: normalizedLocation,
-    searchKey: searchKey
-  };
-}).filter(Boolean);
-var rentalHouseCatalogSignature = rentalHouseSearchIndex.map(function (info) {
-  return "".concat(info.key, "|").concat(info.location);
-}).join('||');
 function normalizeRentalHouseKey(value) {
   if (!value) return '';
   return String(value).trim().replace(/[\u2012\u2013\u2014\u2015]/g, '-').toLowerCase();
 }
-var rentalHouseLookup = function () {
-  var map = Object.create(null);
-  rentalHouseCatalog.forEach(function (entry) {
-    if (!entry || _typeof(entry) !== 'object') return;
-    var key = normalizeRentalHouseKey(entry.name);
-    if (key && !map[key]) {
-      map[key] = entry;
-    }
-  });
-  return map;
-}();
 var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
 function formatRentalHouseShortName(entryOrName) {
   if (!entryOrName) return '';
@@ -1603,7 +1679,12 @@ function resolveRentalProviderNoteLabel() {
   if (!rentalValue) {
     return fallback;
   }
-  var match = rentalHouseLookup[normalizeRentalHouseKey(rentalValue)];
+  var match = null;
+  if (rentalValue) {
+    var runtime = getRentalHouseRuntime();
+    var lookup = runtime && runtime.lookup;
+    match = lookup ? lookup[normalizeRentalHouseKey(rentalValue)] : null;
+  }
   var shortName = formatRentalHouseShortName(match || rentalValue);
   if (shortName) {
     return shortName;
@@ -1740,14 +1821,19 @@ function scoreRentalHouseMatch(info, query) {
   return 800 + (searchIndex >= 0 ? searchIndex : 0);
 }
 function getRentalHouseMatches(query) {
+  var runtime = getRentalHouseRuntime();
+  var searchIndex = runtime && Array.isArray(runtime.searchIndex) ? runtime.searchIndex : [];
   var normalizedQuery = normalizeRentalHouseSearchValue(query);
+  if (!searchIndex.length) {
+    return [];
+  }
   if (!normalizedQuery) {
-    return rentalHouseSearchIndex.slice().sort(function (a, b) {
+    return searchIndex.slice().sort(function (a, b) {
       return a.name.localeCompare(b.name);
     }).slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT);
   }
   var results = [];
-  rentalHouseSearchIndex.forEach(function (info) {
+  searchIndex.forEach(function (info) {
     var score = scoreRentalHouseMatch(info, normalizedQuery);
     if (!Number.isFinite(score)) return;
     results.push({
@@ -1765,12 +1851,15 @@ function getRentalHouseMatches(query) {
 }
 function renderRentalHouseSuggestions() {
   var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : resolveRentalHouseInput();
-  if (!input || !rentalHouseSearchIndex.length) return;
+  var runtime = getRentalHouseRuntime();
+  var searchIndex = runtime && Array.isArray(runtime.searchIndex) ? runtime.searchIndex : [];
+  if (!input || !searchIndex.length) return;
   var datalist = ensureRentalHouseDatalist(input);
   if (!datalist) return;
   var query = typeof input.value === 'string' ? input.value : '';
   var normalizedQuery = normalizeRentalHouseSearchValue(query);
-  var signature = "".concat(rentalHouseCatalogSignature, "::").concat(normalizedQuery);
+  var signatureBase = runtime && typeof runtime.signature === 'string' ? runtime.signature : '';
+  var signature = "".concat(signatureBase, "::").concat(normalizedQuery);
   if (datalist.__rentalHouseSignature === signature) {
     return;
   }
@@ -1797,7 +1886,12 @@ function updateRentalHouseAssistiveDetails() {
   var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : resolveRentalHouseInput();
   if (!input) return;
   var value = typeof input.value === 'string' ? input.value.trim() : '';
-  var match = value ? rentalHouseLookup[normalizeRentalHouseKey(value)] : null;
+  var match = null;
+  if (value) {
+    var runtime = getRentalHouseRuntime();
+    var lookup = runtime && runtime.lookup;
+    match = lookup ? lookup[normalizeRentalHouseKey(value)] : null;
+  }
   if (match) {
     var tooltip = formatRentalHouseTooltip(match);
     if (tooltip) {
@@ -1818,9 +1912,6 @@ function updateRentalHouseAssistiveDetails() {
 }
 var initialRentalHouseInput = resolveRentalHouseInput();
 if (initialRentalHouseInput) {
-  if (rentalHouseSearchIndex.length) {
-    renderRentalHouseSuggestions(initialRentalHouseInput);
-  }
   updateRentalHouseAssistiveDetails(initialRentalHouseInput);
   initialRentalHouseInput.addEventListener('input', function () {
     renderRentalHouseSuggestions(initialRentalHouseInput);

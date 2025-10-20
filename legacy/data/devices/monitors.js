@@ -7,7 +7,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -29,7 +29,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": true,
@@ -52,7 +52,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -76,7 +76,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -98,7 +98,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": true,
@@ -121,7 +121,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -145,7 +145,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -167,7 +167,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": true,
@@ -190,7 +190,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -214,7 +214,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -233,7 +233,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -255,7 +255,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": true,
@@ -278,7 +278,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -302,7 +302,7 @@
       "power": {
         "input": {
           "voltageRange": "12-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -324,7 +324,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -346,7 +346,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": true,
@@ -369,7 +369,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -393,7 +393,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -415,7 +415,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -434,7 +434,7 @@
       "power": {
         "input": {
           "voltageRange": "7-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": true,
@@ -458,7 +458,7 @@
       "power": {
         "input": {
           "voltageRange": "7-16",
-          "portType": "DC Barrel"
+          "type": ["DC Barrel"]
         }
       },
       "wirelessTx": true,
@@ -480,7 +480,7 @@
       "power": {
         "input": {
           "voltageRange": "7-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": true,
@@ -505,7 +505,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": ["4-pin Aviation", "NP-F"]
+          "type": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -530,7 +530,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": ["4-pin Aviation", "NP-F"]
+          "type": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -554,7 +554,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": ["4-pin Aviation", "NP-F"]
+          "type": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -579,7 +579,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": ["4-pin Aviation", "NP-F"]
+          "type": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -600,7 +600,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -624,7 +624,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -648,7 +648,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -669,7 +669,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -691,7 +691,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": ["DC Barrel", "NP-F"]
+          "type": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -714,7 +714,7 @@
       "power": {
         "input": {
           "voltageRange": "7-18",
-          "portType": "NP-F"
+          "type": ["NP-F"]
         }
       },
       "wirelessTx": false,
@@ -739,7 +739,7 @@
       "power": {
         "input": {
           "voltageRange": "7-18",
-          "portType": "NP-F"
+          "type": ["NP-F"]
         }
       },
       "wirelessTx": false,
@@ -760,7 +760,7 @@
       "power": {
         "input": {
           "voltageRange": "7-18",
-          "portType": "NP-F"
+          "type": ["NP-F"]
         }
       },
       "wirelessTx": false,
@@ -781,7 +781,7 @@
       "power": {
         "input": {
           "voltageRange": "7-18",
-          "portType": "NP-F"
+          "type": ["NP-F"]
         }
       },
       "wirelessTx": false,
@@ -802,7 +802,7 @@
       "power": {
         "input": {
           "voltageRange": "12",
-          "portType": "Mini XLR 3-pin"
+          "type": ["Mini XLR 3-pin"]
         }
       },
       "wirelessTx": false,
@@ -822,7 +822,7 @@
       "power": {
         "input": {
           "voltageRange": "6.8-12",
-          "portType": ["DC Barrel", "D-Tap"]
+          "type": ["DC Barrel", "D-Tap"]
         }
       },
       "wirelessTx": false,
@@ -844,7 +844,7 @@
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -864,7 +864,7 @@
       "power": {
         "input": {
           "voltageRange": "12-24",
-          "portType": "Mini XLR 3-pin"
+          "type": ["Mini XLR 3-pin"]
         }
       },
       "wirelessTx": false,
@@ -884,7 +884,7 @@
       "power": {
         "input": {
           "voltageRange": "6-17",
-          "portType": "LEMO 2-pin"
+          "type": ["LEMO 2-pin"]
         }
       },
       "wirelessTx": false,
@@ -902,8 +902,8 @@
       "power": {
         "input": {
           "voltageRange": null,
-          "portType": "N/A",
-          "notes": "Placeholder entry representing no dedicated monitor"
+          "notes": "Placeholder entry representing no dedicated monitor",
+          "type": ["N", "A"]
         }
       },
       "wirelessTx": false,

@@ -1,3 +1,6 @@
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function initAutoGearUiModule(globalScope) {
   'use strict';
@@ -108,11 +111,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       AUTO_GEAR_CONDITION_KEYS: [],
       AUTO_GEAR_REPEATABLE_CONDITIONS: new Set(),
       AUTO_GEAR_CONDITION_FALLBACK_LABELS: {},
-      getViewfinderFallbackLabel: function getViewfinderFallbackLabelStub(value) {
+      getViewfinderFallbackLabel: function getViewfinderFallbackLabel(value) {
         if (value === '__none__') return 'No';
         return typeof value === 'string' ? value : '';
       },
-      getVideoDistributionFallbackLabel: function getVideoDistributionFallbackLabelStub(value) {
+      getVideoDistributionFallbackLabel: function getVideoDistributionFallbackLabel(value) {
         if (value === '__none__') return 'No video distribution selected';
         return typeof value === 'string' ? value : '';
       },
@@ -872,7 +875,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function setAutoGearScenarioModeSelectElement(value) {
     autoGearScenarioModeSelectElement = value || null;
   }
-  var AUTO_GEAR_UI_EXPORTS = {
+  var AUTO_GEAR_UI_EXPORTS = _defineProperty(_defineProperty({
     autoGearRuleNameInput: autoGearRuleNameInput,
     autoGearRuleNameLabel: autoGearRuleNameLabel,
     autoGearScenariosSelect: autoGearScenariosSelect,
@@ -986,10 +989,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     refreshAutoGearVideoDistributionOptions: refreshAutoGearVideoDistributionOptions,
     collectAutoGearSelectedValues: collectAutoGearSelectedValues,
     getAutoGearScenarioModeSelectElement: getAutoGearScenarioModeSelectElement,
-    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement,
-    getViewfinderFallbackLabel: getViewfinderFallbackLabel,
-    getVideoDistributionFallbackLabel: getVideoDistributionFallbackLabel
-  };
+    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement
+  }, "getViewfinderFallbackLabel", getViewfinderFallbackLabel), "getVideoDistributionFallbackLabel", getVideoDistributionFallbackLabel);
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = AUTO_GEAR_UI_EXPORTS;
   }

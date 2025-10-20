@@ -241,6 +241,160 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return typeof factory === 'function' ? factory() : factory;
     };
     var CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
+    function resolveRuntimeScopeFunction(name, exclude) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+      var exclusions = [];
+      if (Array.isArray(exclude)) {
+        for (var index = 0; index < exclude.length; index += 1) {
+          var item = exclude[index];
+          if (typeof item === 'function') {
+            exclusions.push(item);
+          }
+        }
+      } else if (typeof exclude === 'function') {
+        exclusions.push(exclude);
+      }
+      var inspectCandidate = function inspectCandidate(candidate) {
+        if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+          return null;
+        }
+        try {
+          var value = candidate[name];
+          if (typeof value === 'function') {
+            for (var idx = 0; idx < exclusions.length; idx += 1) {
+              if (value === exclusions[idx]) {
+                return null;
+              }
+            }
+            return value;
+          }
+        } catch (candidateError) {
+          void candidateError;
+        }
+        return null;
+      };
+      var directSources = [CORE_RUNTIME_UI_BRIDGE, CORE_RUNTIME_FALLBACKS, CORE_PART2_HELPERS];
+      for (var _index2 = 0; _index2 < directSources.length; _index2 += 1) {
+        var resolved = inspectCandidate(directSources[_index2]);
+        if (resolved) {
+          return resolved;
+        }
+      }
+      if (Array.isArray(CORE_RUNTIME_SCOPE_CANDIDATES)) {
+        for (var _index3 = 0; _index3 < CORE_RUNTIME_SCOPE_CANDIDATES.length; _index3 += 1) {
+          var candidate = CORE_RUNTIME_SCOPE_CANDIDATES[_index3];
+          var _resolved = inspectCandidate(candidate);
+          if (_resolved) {
+            return _resolved;
+          }
+        }
+      }
+      var scopeCandidates = [];
+      if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE && ((typeof CORE_PART2_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART2_RUNTIME_SCOPE)) === 'object' || typeof CORE_PART2_RUNTIME_SCOPE === 'function')) {
+        scopeCandidates.push(CORE_PART2_RUNTIME_SCOPE);
+      }
+      if (CORE_SHARED_SCOPE_PART2 && (_typeof(CORE_SHARED_SCOPE_PART2) === 'object' || typeof CORE_SHARED_SCOPE_PART2 === 'function')) {
+        scopeCandidates.push(CORE_SHARED_SCOPE_PART2);
+      }
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' || typeof CORE_GLOBAL_SCOPE === 'function')) {
+        scopeCandidates.push(CORE_GLOBAL_SCOPE);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        scopeCandidates.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && window) {
+        scopeCandidates.push(window);
+      }
+      if (typeof self !== 'undefined' && self) {
+        scopeCandidates.push(self);
+      }
+      if (typeof global !== 'undefined' && global) {
+        scopeCandidates.push(global);
+      }
+      for (var _index4 = 0; _index4 < scopeCandidates.length; _index4 += 1) {
+        var _resolved2 = inspectCandidate(scopeCandidates[_index4]);
+        if (_resolved2) {
+          return _resolved2;
+        }
+      }
+      return null;
+    }
+    function createDynamicScopeFunctionResolver(name, fallback) {
+      var fallbackFn = typeof fallback === 'function' ? fallback : function identityFallback(value) {
+        return value;
+      };
+      function dynamicResolverProxy() {
+        var args = Array.prototype.slice.call(arguments);
+        var resolved = resolveRuntimeScopeFunction(name, dynamicResolverProxy);
+        if (typeof resolved === 'function') {
+          try {
+            return resolved.apply(this, args);
+          } catch (resolvedError) {
+            void resolvedError;
+          }
+        }
+        return fallbackFn.apply(this, args);
+      }
+      return dynamicResolverProxy;
+    }
+    function fallbackGetViewfinderFallbackLabelLocal(value) {
+      if (value === '__none__') {
+        var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+        var textSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[activeLang] || texts.en || {} : {};
+        return textSource.viewfinderExtensionNone || textSource.autoGearViewfinderExtensionNone || 'No';
+      }
+      return typeof value === 'string' ? value : '';
+    }
+    function fallbackGetVideoDistributionFallbackLabelLocal(value) {
+      if (value === '__none__') {
+        var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+        var textSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[activeLang] || texts.en || {} : {};
+        return textSource.autoGearVideoDistributionNone || 'No video distribution selected';
+      }
+      return typeof value === 'string' ? value : '';
+    }
+    var getViewfinderFallbackLabel = createDynamicScopeFunctionResolver('getViewfinderFallbackLabel', fallbackGetViewfinderFallbackLabelLocal);
+    var getVideoDistributionFallbackLabel = createDynamicScopeFunctionResolver('getVideoDistributionFallbackLabel', fallbackGetVideoDistributionFallbackLabelLocal);
+    function ensureGlobalFunctionBinding(name, fn) {
+      if (typeof name !== 'string' || !name || typeof fn !== 'function') {
+        return;
+      }
+      var assignToScope = function assignToScope(scope) {
+        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+          return;
+        }
+        try {
+          if (typeof scope[name] !== 'function') {
+            scope[name] = fn;
+          }
+        } catch (assignError) {
+          void assignError;
+        }
+      };
+      if (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE) {
+        assignToScope(CORE_PART2_RUNTIME_SCOPE);
+      }
+      assignToScope(CORE_SHARED_SCOPE_PART2);
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+        assignToScope(CORE_GLOBAL_SCOPE);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis) {
+        assignToScope(globalThis);
+      }
+      if (typeof window !== 'undefined' && window) {
+        assignToScope(window);
+      }
+      if (typeof self !== 'undefined' && self) {
+        assignToScope(self);
+      }
+      if (typeof global !== 'undefined' && global) {
+        assignToScope(global);
+      }
+    }
+    ensureGlobalFunctionBinding('getViewfinderFallbackLabel', getViewfinderFallbackLabel);
+    ensureGlobalFunctionBinding('getVideoDistributionFallbackLabel', getVideoDistributionFallbackLabel);
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
@@ -390,8 +544,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       var fallback = sharedDeviceManagerLists instanceof Map ? sharedDeviceManagerLists : new Map();
-      for (var _index2 = 0; _index2 < candidateScopes.length; _index2 += 1) {
-        var _scope = candidateScopes[_index2];
+      for (var _index5 = 0; _index5 < candidateScopes.length; _index5 += 1) {
+        var _scope = candidateScopes[_index5];
         if (!_scope) continue;
         var extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(_scope) : true;
         if (!extensible) continue;
@@ -5641,8 +5795,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       var resolvedApi = null;
-      for (var _index3 = 0; _index3 < candidates.length; _index3 += 1) {
-        var candidate = candidates[_index3];
+      for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
+        var candidate = candidates[_index6];
         if (candidate && _typeof(candidate) === 'object' && typeof candidate.normalizeSearchValue === 'function') {
           resolvedApi = candidate;
           break;
@@ -5750,8 +5904,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof global !== 'undefined' && global && !candidates.includes(global)) {
         candidates.push(global);
       }
-      for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
-        var candidate = candidates[_index4];
+      for (var _index7 = 0; _index7 < candidates.length; _index7 += 1) {
+        var candidate = candidates[_index7];
         if (candidate && _typeof(candidate) === 'object') {
           return candidate;
         }
@@ -6170,9 +6324,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var lookupId = typeof elementId === 'string' && elementId ? elementId : name;
           var fallback = document.getElementById(lookupId);
           if (fallback && _typeof(fallback) === 'object') {
-            var _resolved = assignResolved(fallback);
-            if (_resolved) {
-              return _resolved;
+            var _resolved3 = assignResolved(fallback);
+            if (_resolved3) {
+              return _resolved3;
             }
           }
         } catch (lookupError) {
@@ -8315,6 +8469,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var MAX_FEATURE_SEARCH_HISTORY = 50;
     var MAX_FEATURE_SEARCH_RECENTS = 5;
     var featureSearchHistoryLoaded = false;
+    var featureSearchHistoryLoadInProgress = false;
+    var featureSearchHistoryLoadRetryTimer = null;
+    var FEATURE_SEARCH_HISTORY_RETRY_DELAY = 1000;
     var featureSearchHistory = new Map();
     var featureSearchHistorySaveTimer = null;
     var getFeatureSearchHistoryStorage = function getFeatureSearchHistoryStorage() {
@@ -8373,20 +8530,47 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         featureSearchHistory.delete(entries[i][0]);
       }
     };
+    var resetFeatureSearchHistoryRetryTimer = function resetFeatureSearchHistoryRetryTimer() {
+      if (!featureSearchHistoryLoadRetryTimer) return;
+      if (typeof clearTimeout === 'function') {
+        clearTimeout(featureSearchHistoryLoadRetryTimer);
+      }
+      featureSearchHistoryLoadRetryTimer = null;
+    };
+    var scheduleFeatureSearchHistoryRetry = function scheduleFeatureSearchHistoryRetry() {
+      if (featureSearchHistoryLoadRetryTimer || typeof setTimeout !== 'function') {
+        return;
+      }
+      featureSearchHistoryLoadRetryTimer = setTimeout(function () {
+        featureSearchHistoryLoadRetryTimer = null;
+        featureSearchHistoryLoadInProgress = false;
+        loadFeatureSearchHistory();
+      }, FEATURE_SEARCH_HISTORY_RETRY_DELAY);
+    };
     var loadFeatureSearchHistory = function loadFeatureSearchHistory() {
-      if (featureSearchHistoryLoaded) return;
-      featureSearchHistoryLoaded = true;
+      if (featureSearchHistoryLoaded || featureSearchHistoryLoadInProgress) {
+        return;
+      }
+      featureSearchHistoryLoadInProgress = true;
       var storage = getFeatureSearchHistoryStorage();
       if (!storage || typeof storage.getItem !== 'function') {
+        featureSearchHistoryLoadInProgress = false;
+        scheduleFeatureSearchHistoryRetry();
         return;
       }
       var raw = null;
       try {
         raw = storage.getItem(FEATURE_SEARCH_HISTORY_STORAGE_KEY);
       } catch (err) {
+        featureSearchHistoryLoadInProgress = false;
+        featureSearchHistoryLoaded = false;
         console.warn('Could not read feature search history', err);
+        scheduleFeatureSearchHistoryRetry();
         return;
       }
+      featureSearchHistoryLoadInProgress = false;
+      featureSearchHistoryLoaded = true;
+      resetFeatureSearchHistoryRetryTimer();
       if (!raw) return;
       var parsed = null;
       try {
@@ -9455,8 +9639,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           void error;
         }
       }
-      for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
-        var candidate = candidates[_index5];
+      for (var _index8 = 0; _index8 < candidates.length; _index8 += 1) {
+        var candidate = candidates[_index8];
         if (candidate && typeof candidate.createEngine === 'function') {
           if (globalScope && !globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
             try {

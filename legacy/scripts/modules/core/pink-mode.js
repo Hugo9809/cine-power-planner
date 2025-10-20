@@ -1069,7 +1069,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return layer;
         }
         function readScrollExtent(target) {
-          if (!target || (_typeof(target) !== 'object' && _typeof(target) !== 'function')) {
+          if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
             return null;
           }
           var value = null;
@@ -1084,7 +1084,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return null;
         }
-
         function resolvePinkModeScrollHeight(host) {
           var globalDocument = typeof document !== 'undefined' ? document : null;
           var candidateHost = host && _typeof(host) === 'object' ? host : globalDocument && globalDocument.body ? globalDocument.body : globalDocument && globalDocument.documentElement ? globalDocument.documentElement : null;
