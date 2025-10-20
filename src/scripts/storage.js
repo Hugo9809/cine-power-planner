@@ -14016,6 +14016,18 @@ function loadAutoGearBackupRetention() {
 }
 
 function saveAutoGearBackupRetention(retention) {
+  if (
+    retention === null
+    || retention === undefined
+    || typeof retention === 'function'
+    || (
+      typeof retention === 'object'
+      && !Array.isArray(retention)
+      && !isPlainObject(retention)
+    )
+  ) {
+    return;
+  }
   const safeStorage = getSafeLocalStorage();
   const normalized = normalizeAutoGearBackupRetentionValue(retention);
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY);
