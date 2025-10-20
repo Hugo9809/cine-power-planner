@@ -188,6 +188,81 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp resolves when controllerchange fires and removes listener', async () => {
+    let controllerHandler = null;
+    const addEventListener = jest.fn((event, handler) => {
+      if (event === 'controllerchange') {
+        controllerHandler = handler;
+      }
+    });
+    const removeEventListener = jest.fn();
+    let resolveRegistrations;
+    const registrationsPromise = new Promise(resolve => {
+      resolveRegistrations = resolve;
+    });
+
+    const navigatorMock = {
+      serviceWorker: {
+        controller: null,
+        addEventListener,
+        removeEventListener,
+        getRegistrations: jest.fn(() => registrationsPromise),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve([])),
+    };
+
+    const responseClone = { bodyUsed: false, text: jest.fn(() => Promise.resolve('<html></html>')) };
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      }),
+    );
+
+    const reloadWindow = jest.fn(() => true);
+
+    const windowMock = {
+      location: {
+        href: 'https://example.test/app',
+        replace: jest.fn(),
+        assign: jest.fn(),
+        reload: jest.fn(),
+      },
+    };
+
+    const reloadPromise = offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      fetch: fetchMock,
+      window: windowMock,
+      reloadWindow,
+    });
+
+    expect(addEventListener).toHaveBeenCalledWith('controllerchange', expect.any(Function));
+    expect(controllerHandler).toEqual(expect.any(Function));
+
+    controllerHandler();
+
+    expect(removeEventListener).toHaveBeenCalledWith('controllerchange', controllerHandler);
+
+    const result = await reloadPromise;
+
+    resolveRegistrations([]);
+
+    expect(reloadWindow).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(
+      expect.objectContaining({
+        serviceWorkerStatusKnown: true,
+      }),
+    );
+    expect(removeEventListener).toHaveBeenCalledTimes(1);
+  });
+
   test('reload warmup retries with cached response when reload fetch fails', async () => {
     jest.useFakeTimers();
 

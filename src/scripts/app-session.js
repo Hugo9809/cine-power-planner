@@ -13560,6 +13560,115 @@ function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateReject
   });
 }
 
+function observeServiceWorkerControllerChangeForSession(navigatorLike) {
+  const nav = navigatorLike && typeof navigatorLike === 'object' ? navigatorLike : null;
+  if (!nav || !nav.serviceWorker) {
+    return null;
+  }
+
+  const { serviceWorker } = nav;
+  if (!serviceWorker) {
+    return null;
+  }
+
+  let resolved = false;
+  let detach = null;
+  let resolver = null;
+  let attached = false;
+
+  const finalize = (value) => {
+    if (resolved) {
+      return;
+    }
+
+    resolved = true;
+
+    const currentResolver = resolver;
+    resolver = null;
+
+    if (typeof detach === 'function') {
+      try {
+        detach();
+      } catch (error) {
+        void error;
+      }
+      detach = null;
+    }
+
+    if (typeof currentResolver === 'function') {
+      try {
+        currentResolver(value);
+      } catch (resolveError) {
+        void resolveError;
+      }
+    }
+  };
+
+  const promise = new Promise((resolve) => {
+    resolver = resolve;
+
+    if (serviceWorker.controller) {
+      finalize(true);
+      return;
+    }
+
+    const handler = () => {
+      finalize(true);
+    };
+
+    try {
+      if (typeof serviceWorker.addEventListener === 'function') {
+        serviceWorker.addEventListener('controllerchange', handler);
+        detach = () => {
+          try {
+            serviceWorker.removeEventListener('controllerchange', handler);
+          } catch (removeError) {
+            void removeError;
+          }
+        };
+        attached = true;
+      } else if ('oncontrollerchange' in serviceWorker) {
+        const previous = serviceWorker.oncontrollerchange;
+        serviceWorker.oncontrollerchange = function controllerchangeProxy(event) {
+          if (typeof previous === 'function') {
+            try {
+              previous.call(this, event);
+            } catch (previousError) {
+              console.warn('Existing service worker controllerchange handler failed', previousError);
+            }
+          }
+          handler(event);
+        };
+        detach = () => {
+          try {
+            serviceWorker.oncontrollerchange = previous;
+          } catch (restoreError) {
+            void restoreError;
+          }
+        };
+        attached = true;
+      } else {
+        finalize(false);
+      }
+    } catch (error) {
+      console.warn('Failed to observe service worker controllerchange', error);
+      finalize(false);
+    }
+  });
+
+  if (!attached && !serviceWorker.controller) {
+    finalize(false);
+    return null;
+  }
+
+  return {
+    promise,
+    cancel() {
+      finalize(false);
+    },
+  };
+}
+
 async function clearCachesAndReload() {
   try {
     flushProjectAutoSaveOnExit({ reason: 'before-manual-reload' });
@@ -13744,9 +13853,22 @@ async function clearCachesAndReload() {
     })();
   }
 
+  let controllerChangeWatcher = null;
+  let serviceWorkerGatePromise = serviceWorkerCleanupPromise;
+
+  if (typeof navigator !== 'undefined' && navigator && navigator.serviceWorker) {
+    controllerChangeWatcher = observeServiceWorkerControllerChangeForSession(navigator);
+    if (controllerChangeWatcher && controllerChangeWatcher.promise && serviceWorkerCleanupPromise && typeof serviceWorkerCleanupPromise.then === 'function') {
+      serviceWorkerGatePromise = Promise.race([
+        serviceWorkerCleanupPromise,
+        controllerChangeWatcher.promise,
+      ]);
+    }
+  }
+
   try {
     await awaitPromiseWithSoftTimeout(
-      serviceWorkerCleanupPromise,
+      serviceWorkerGatePromise,
       FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
       () => {
         console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
@@ -13759,6 +13881,14 @@ async function clearCachesAndReload() {
     );
   } catch (cleanupError) {
     console.warn('Service worker cleanup failed', cleanupError);
+  } finally {
+    if (controllerChangeWatcher && typeof controllerChangeWatcher.cancel === 'function') {
+      try {
+        controllerChangeWatcher.cancel();
+      } catch (controllerCleanupError) {
+        void controllerCleanupError;
+      }
+    }
   }
 
   try {
