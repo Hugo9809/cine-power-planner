@@ -23,4 +23,11 @@ describe('guessFontFallback', () => {
     expect(guessFontFallback('Calligraphy Script')).toBe('cursive');
     expect(guessFontFallback('CALLIGRAPHY script')).toBe('cursive');
   });
+
+  test('Callig-prefix fonts continue to map to cursive fallback', () => {
+    const guessFontFallback = extractGuessFontFallback();
+    expect(guessFontFallback('Calligraffitti')).toBe('cursive');
+    expect(guessFontFallback('Calligra Sans')).toBe('cursive');
+    expect(guessFontFallback('The Calligrapher')).toBe('cursive');
+  });
 });

@@ -12105,7 +12105,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (/(serif|times|garamond|georgia|baskerville|roman|palatino|bodoni|bookman)/.test(lower)) {
         return 'serif';
       }
-      if (/(script|hand|brush|cursive|calligraphy|marker)/.test(lower)) {
+      if (/(script|hand|brush|cursive|callig|marker)/.test(lower)) {
         return 'cursive';
       }
       return 'sans-serif';
