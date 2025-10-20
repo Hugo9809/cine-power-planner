@@ -261,6 +261,21 @@
     setMessageKey('almost');
     setBusy(false);
     scheduleHideAfterComplete();
+    if (typeof setTimeout === 'function') {
+      try {
+        setTimeout(function () {
+          if (
+            indicator &&
+            indicator.dataset &&
+            indicator.dataset.bootstrap === 'true'
+          ) {
+            cleanupIndicatorIfIdle();
+          }
+        }, 2400);
+      } catch (fallbackHideError) {
+        void fallbackHideError;
+      }
+    }
   }
 
   document.addEventListener('cine-loader-progress', handleProgress);
