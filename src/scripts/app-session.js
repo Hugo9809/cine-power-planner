@@ -13607,11 +13607,6 @@ function observeServiceWorkerControllerChangeForSession(navigatorLike) {
   const promise = new Promise((resolve) => {
     resolver = resolve;
 
-    if (serviceWorker.controller) {
-      finalize(true);
-      return;
-    }
-
     const handler = () => {
       finalize(true);
     };
@@ -13656,8 +13651,10 @@ function observeServiceWorkerControllerChangeForSession(navigatorLike) {
     }
   });
 
-  if (!attached && !serviceWorker.controller) {
-    finalize(false);
+  if (!attached) {
+    if (!resolved) {
+      finalize(false);
+    }
     return null;
   }
 

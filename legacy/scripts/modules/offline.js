@@ -1703,11 +1703,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var promise = new Promise(function (resolve) {
       resolver = resolve;
 
-      if (serviceWorker.controller) {
-        finalize(true);
-        return;
-      }
-
       var handler = function handler() {
         finalize(true);
       };
@@ -1752,8 +1747,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
 
-    if (!attached && !serviceWorker.controller) {
-      finalize(false);
+    if (!attached) {
+      if (!resolved) {
+        finalize(false);
+      }
       return null;
     }
 
