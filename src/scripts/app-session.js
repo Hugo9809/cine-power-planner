@@ -12064,15 +12064,27 @@ function resetPlannerStateAfterFactoryReset() {
     }
 
     try {
-      const sliderSelect = getSliderBowlSelect();
-      if (sliderSelect) sliderSelect.value = '';
+      if (typeof getSliderBowlSelect === 'function') {
+        const sliderSelect = getSliderBowlSelect();
+        if (sliderSelect) sliderSelect.value = '';
+      } else {
+        console.warn(
+          'Skipping slider bowl selection reset during factory reset because helper is unavailable'
+        );
+      }
     } catch (error) {
       console.warn('Failed to reset slider bowl selection during factory reset', error);
     }
 
     try {
-      const easyrigSelect = getEasyrigSelect();
-      if (easyrigSelect) easyrigSelect.value = '';
+      if (typeof getEasyrigSelect === 'function') {
+        const easyrigSelect = getEasyrigSelect();
+        if (easyrigSelect) easyrigSelect.value = '';
+      } else {
+        console.warn(
+          'Skipping Easyrig selection reset during factory reset because helper is unavailable'
+        );
+      }
     } catch (error) {
       console.warn('Failed to reset Easyrig selection during factory reset', error);
     }
@@ -12142,7 +12154,13 @@ function resetPlannerStateAfterFactoryReset() {
     }
 
     try {
-      resetCustomFontsForFactoryReset();
+      if (typeof resetCustomFontsForFactoryReset === 'function') {
+        resetCustomFontsForFactoryReset();
+      } else {
+        console.warn(
+          'Skipping custom font reset during factory reset because helper is unavailable'
+        );
+      }
     } catch (error) {
       console.warn('Failed to reset custom fonts during factory reset', error);
     }
