@@ -62,7 +62,7 @@
 
   // In older browsers (or legacy contexts without Element.closest) we walk up
   // the DOM tree manually to locate the parent ".form-row" wrapper. Keeping the
-  // implementation small lets us re-use it as a fallback for resolveRow.
+  // implementation small lets us reuse it as a fallback for resolveRow.
   function findAncestorFormRow(element) {
     var current = element;
     while (current && current !== document && current !== document.body) {
