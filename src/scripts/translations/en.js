@@ -1926,7 +1926,81 @@
     }
   }
 
-  scope[registryKey][locale] = data;
+  var registry = scope[registryKey] && typeof scope[registryKey] === 'object'
+    ? scope[registryKey]
+    : null;
+
+  var assigned = false;
+
+  if (registry) {
+    try {
+      registry[locale] = data;
+      assigned = registry[locale] === data;
+    } catch (directAssignError) {
+      void directAssignError;
+    }
+  }
+
+  if (!assigned) {
+    var replacement = {};
+
+    if (registry) {
+      try {
+        var existingKeys = Object.keys(registry);
+        for (var index = 0; index < existingKeys.length; index += 1) {
+          var key = existingKeys[index];
+          try {
+            replacement[key] = registry[key];
+          } catch (copyError) {
+            void copyError;
+          }
+        }
+      } catch (keysError) {
+        void keysError;
+      }
+    }
+
+    replacement[locale] = data;
+
+    try {
+      scope[registryKey] = replacement;
+      assigned = scope[registryKey] === replacement;
+    } catch (replaceError) {
+      void replaceError;
+    }
+
+    if (!assigned && typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(scope, registryKey, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: replacement,
+        });
+        assigned = scope[registryKey] === replacement;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    if (!assigned && registry && typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(registry, locale, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: data,
+        });
+        assigned = registry[locale] === data;
+      } catch (fallbackDefineError) {
+        void fallbackDefineError;
+      }
+    }
+
+    if (!assigned) {
+      return;
+    }
+  }
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = data;
