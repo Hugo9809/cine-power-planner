@@ -1096,12 +1096,52 @@
         return '';
       }
 
-      const relativeHref = normaliseHrefForHistory(enforcedHref, referenceHref);
-      if (typeof relativeHref === 'string' && relativeHref) {
-        return relativeHref;
+      const expectedOrigin = readLocationOriginSafe(locationLike);
+
+      if (typeof URL === 'function') {
+        const reference = typeof referenceHref === 'string' && referenceHref ? referenceHref : undefined;
+
+        try {
+          const parsed = new URL(enforcedHref, reference);
+
+          if (expectedOrigin && parsed.origin && parsed.origin !== expectedOrigin) {
+            return '';
+          }
+
+          const pathCandidate = `${parsed.pathname || ''}${parsed.search || ''}${parsed.hash || ''}`;
+
+          if (pathCandidate) {
+            return pathCandidate;
+          }
+
+          if (expectedOrigin && (!parsed.pathname || parsed.pathname === '/')) {
+            return '/';
+          }
+        } catch (error) {
+          void error;
+        }
       }
 
-      return enforcedHref;
+      if (typeof expectedOrigin === 'string' && expectedOrigin) {
+        if (typeof enforcedHref === 'string' && enforcedHref.startsWith(expectedOrigin)) {
+          const suffix = enforcedHref.slice(expectedOrigin.length);
+          if (!suffix || suffix.startsWith('/') || suffix.startsWith('?') || suffix.startsWith('#')) {
+            return suffix || '/';
+          }
+        }
+      }
+
+      if (typeof enforcedHref === 'string') {
+        if (enforcedHref.startsWith('/')) {
+          return enforcedHref;
+        }
+
+        if (!enforcedHref.includes('://')) {
+          return enforcedHref;
+        }
+      }
+
+      return '';
     })();
 
     const executeWarmup = async () => {
