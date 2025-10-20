@@ -41,6 +41,7 @@ describe('onboarding loader hook', () => {
     delete global.cineDeferredScriptsReady;
     delete global.getSafeLocalStorage;
     delete global.SAFE_LOCAL_STORAGE;
+    delete global.localStorage;
     delete global.cineEnsureOnboardingTourLoaded;
     delete global.cineFeaturesOnboardingTour;
     delete global.requestAnimationFrame;
@@ -60,6 +61,40 @@ describe('onboarding loader hook', () => {
 
     global.cineFeaturesOnboardingTour = { start: jest.fn() };
     jest.runAllTimers();
+  });
+
+  test('first-run detection primes loader when stored state is incomplete', async () => {
+    const storedValue = JSON.stringify({ version: 2, completed: false, skipped: false });
+    const safeStorage = createStorageStub(storedValue);
+    global.getSafeLocalStorage = jest.fn(() => safeStorage);
+    const legacyStorage = createStorageStub(storedValue);
+    global.SAFE_LOCAL_STORAGE = legacyStorage;
+    global.localStorage = createStorageStub(storedValue);
+
+    require(modulePath);
+
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+
+    expect(global.cineEnsureDeferredScriptsLoaded).toHaveBeenCalledWith({
+      reason: 'onboarding-tour:first-run',
+    });
+  });
+
+  test('first-run detection does not load when onboarding has completed', async () => {
+    const storedValue = JSON.stringify({ version: 2, completed: true, skipped: false });
+    const safeStorage = createStorageStub(storedValue);
+    global.getSafeLocalStorage = jest.fn(() => safeStorage);
+    const legacyStorage = createStorageStub(storedValue);
+    global.SAFE_LOCAL_STORAGE = legacyStorage;
+    global.localStorage = createStorageStub(storedValue);
+
+    require(modulePath);
+
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+
+    expect(global.cineEnsureDeferredScriptsLoaded).not.toHaveBeenCalled();
   });
 
   test('ensure helper resolves once onboarding module becomes available', async () => {
