@@ -1542,7 +1542,7 @@
     "rentalPrintSectionGearList": "Gear List",
     "rentalPrintSectionBattery": "Battery Comparison",
     "pdfWarningsHeading": "Warnings",
-    "exportAndRevertBtn": "Export and Revert to default Database",
+    "exportAndRevertBtn": "Export and revert to default database",
     "exportAndRevertBtnHelp": "Export your database and restore default entries.",
     "helpButtonLabel": "Help",
     "helpButtonTitle": "Help (press ?, H, F1 or Ctrl+/)",
