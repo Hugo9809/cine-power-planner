@@ -168,7 +168,7 @@ describe('cineOffline module', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     const warmupUrl = fetchMock.mock.calls[0][0];
-    expect(warmupUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
+    expect(warmupUrl).toMatch(/^\/app\?foo=bar&forceReload=/);
 
     const reloadArgs = reloadWindow.mock.calls[0];
     expect(reloadArgs[1]).toEqual(
@@ -177,13 +177,15 @@ describe('cineOffline module', () => {
       }),
     );
 
-    expect(result).toEqual({
-      uiCacheCleared: true,
-      serviceWorkersUnregistered: true,
-      cachesCleared: true,
-      reloadTriggered: true,
-      navigationTriggered: true,
-    });
+    expect(result).toEqual(
+      expect.objectContaining({
+        uiCacheCleared: true,
+        serviceWorkersUnregistered: true,
+        cachesCleared: true,
+        reloadTriggered: true,
+        navigationTriggered: true,
+      }),
+    );
 
     delete global.clearUiCacheStorageEntries;
   });

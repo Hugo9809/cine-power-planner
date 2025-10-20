@@ -858,11 +858,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof enforcedHref !== 'string' || !enforcedHref) {
         return '';
       }
-      var relativeHref = normaliseHrefForHistory(enforcedHref, referenceHref);
-      if (typeof relativeHref === 'string' && relativeHref) {
-        return relativeHref;
+      var expectedOrigin = readLocationOriginSafe(locationLike);
+      if (typeof URL === 'function') {
+        var reference = typeof referenceHref === 'string' && referenceHref ? referenceHref : undefined;
+        try {
+          var parsed = new URL(enforcedHref, reference);
+          if (expectedOrigin && parsed.origin && parsed.origin !== expectedOrigin) {
+            return '';
+          }
+          var pathCandidate = '' + (parsed.pathname || '') + (parsed.search || '') + (parsed.hash || '');
+          if (pathCandidate) {
+            return pathCandidate;
+          }
+          if (expectedOrigin && (!parsed.pathname || parsed.pathname === '/')) {
+            return '/';
+          }
+        } catch (error) {
+          void error;
+        }
       }
-      return enforcedHref;
+      if (typeof expectedOrigin === 'string' && expectedOrigin) {
+        if (typeof enforcedHref === 'string' && enforcedHref.indexOf(expectedOrigin) === 0) {
+          var suffix = enforcedHref.slice(expectedOrigin.length);
+          if (!suffix || suffix.charAt(0) === '/' || suffix.charAt(0) === '?' || suffix.charAt(0) === '#') {
+            return suffix || '/';
+          }
+        }
+      }
+      if (typeof enforcedHref === 'string') {
+        if (enforcedHref.indexOf('/') === 0) {
+          return enforcedHref;
+        }
+        if (enforcedHref.indexOf('://') === -1) {
+          return enforcedHref;
+        }
+      }
+      return '';
     }();
     var executeWarmup = function () {
       var _ref = _asyncToGenerator(_regenerator().m(function _callee2() {
