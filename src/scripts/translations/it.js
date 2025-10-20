@@ -1622,7 +1622,7 @@
           "title": "Benvenuto in Cine Power Planner",
           "body": "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
           "hero": {
-            "heading": "Benvenuto in Cine Power Planner",
+            "heading": "Benvenuto in Cine Power Planner!",
             "subheading": "Proteggi ogni setup camera con verifiche di potenza, kit AutoGear e handoff pronti al noleggio—tutto rimane offline.",
             "summary": "Pianifica setup camera sicuri, verifica i limiti di potenza, genera automaticamente liste gear dai requisiti di progetto ed esporta PDF pronti per il noleggio—ogni salvataggio resta locale prima del ciak.",
             "badgeIcon": "",

@@ -7351,7 +7351,7 @@ body.dark-mode .onboarding-hero-banner {
     calc(var(--font-size-relative-base) * var(--font-scale-xxxl))
   );
   line-height: clamp(1.05, 1.02 + 0.03vw, 1.1);
-  font-weight: var(--font-weight-extrabold, 800);
+  font-weight: var(--font-weight-semibold, 600);
   letter-spacing: -0.01em;
   color: color-mix(in srgb, var(--text-color) 95%, rgba(0, 0, 0, 0.05));
 }

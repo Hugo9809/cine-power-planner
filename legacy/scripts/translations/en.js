@@ -1613,7 +1613,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "steps": {
           "intro": {
             "hero": {
-              "heading": "Welcome to Cine Power Planner",
+              "heading": "Welcome to Cine Power Planner!",
               "subheading": "Safeguard every camera setup with power checks, AutoGear kits, and rental-ready handoffs—kept fully offline.",
               "summary": "Plan safe camera setups, verify power limits, auto-build gear lists from project requirements, and export rental-ready PDFs—every save stays local before call time.",
               "badgeIcon": "",
