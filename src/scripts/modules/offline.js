@@ -1803,42 +1803,73 @@
     return clearedAny;
   }
 
-  async function unregisterServiceWorkers(navigatorOverride) {
+  async function collectServiceWorkerRegistrations(navigatorOverride) {
     const nav = resolveNavigator(navigatorOverride);
     if (!nav || !nav.serviceWorker) {
-      return false;
+      return [];
     }
 
-    const registrations = [];
     const { serviceWorker } = nav;
+    const registrations = [];
+
+    const pushRegistration = (registration) => {
+      if (registration) {
+        registrations.push(registration);
+      }
+    };
 
     try {
       if (typeof serviceWorker.getRegistrations === 'function') {
         const regs = await serviceWorker.getRegistrations();
         if (Array.isArray(regs)) {
-          regs.forEach((reg) => {
-            if (reg) {
-              registrations.push(reg);
-            }
-          });
+          regs.forEach(pushRegistration);
         }
       } else if (typeof serviceWorker.getRegistration === 'function') {
         const reg = await serviceWorker.getRegistration();
-        if (reg) {
-          registrations.push(reg);
-        }
+        pushRegistration(reg);
       } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
         try {
           const readyReg = await serviceWorker.ready;
-          if (readyReg) {
-            registrations.push(readyReg);
-          }
+          pushRegistration(readyReg);
         } catch (readyError) {
           safeWarn('Failed to await active service worker', readyError);
         }
       }
     } catch (queryError) {
       safeWarn('Failed to query service worker registrations', queryError);
+    }
+
+    return registrations;
+  }
+
+  async function resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations) {
+    if (!prefetchedRegistrations) {
+      return [];
+    }
+
+    try {
+      const resolved = await Promise.resolve(prefetchedRegistrations);
+      if (!Array.isArray(resolved)) {
+        return [];
+      }
+
+      return resolved.filter((registration) => !!registration);
+    } catch (error) {
+      safeWarn('Failed to resolve prefetched service worker registrations', error);
+    }
+
+    return [];
+  }
+
+  async function unregisterServiceWorkers(navigatorOverride, prefetchedRegistrations) {
+    const nav = resolveNavigator(navigatorOverride);
+    if (!nav || !nav.serviceWorker) {
+      return false;
+    }
+
+    let registrations = await resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations);
+    if (!registrations.length) {
+      registrations = await collectServiceWorkerRegistrations(nav);
     }
 
     if (!registrations.length) {
@@ -2996,6 +3027,12 @@
       'forceReload',
     );
 
+    const navigatorLike = resolveNavigator(options.navigator);
+    const serviceWorkerRegistrationsPromise =
+      navigatorLike && navigatorLike.serviceWorker
+        ? collectServiceWorkerRegistrations(navigatorLike)
+        : Promise.resolve([]);
+
     let uiCacheCleared = false;
     const clearUiCacheStorageEntriesFn =
       typeof options.clearUiCacheStorageEntries === 'function'
@@ -3023,7 +3060,7 @@
 
     const serviceWorkerCleanupPromise = (async () => {
       try {
-        return await unregisterServiceWorkers(options.navigator);
+        return await unregisterServiceWorkers(options.navigator, serviceWorkerRegistrationsPromise);
       } catch (error) {
         safeWarn('Service worker cleanup failed', error);
         return false;

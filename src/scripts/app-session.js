@@ -13669,6 +13669,42 @@ function observeServiceWorkerControllerChangeForSession(navigatorLike) {
   };
 }
 
+async function collectServiceWorkerRegistrationsForReload(serviceWorker) {
+  if (!serviceWorker) {
+    return [];
+  }
+
+  const registrations = [];
+  const pushRegistration = (registration) => {
+    if (registration) {
+      registrations.push(registration);
+    }
+  };
+
+  try {
+    if (typeof serviceWorker.getRegistrations === 'function') {
+      const regs = await serviceWorker.getRegistrations();
+      if (Array.isArray(regs)) {
+        regs.forEach(pushRegistration);
+      }
+    } else if (typeof serviceWorker.getRegistration === 'function') {
+      const reg = await serviceWorker.getRegistration();
+      pushRegistration(reg);
+    } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
+      try {
+        const readyReg = await serviceWorker.ready;
+        pushRegistration(readyReg);
+      } catch (readyError) {
+        console.warn('Failed to await active service worker', readyError);
+      }
+    }
+  } catch (queryError) {
+    console.warn('Failed to query service worker registrations', queryError);
+  }
+
+  return registrations;
+}
+
 async function clearCachesAndReload() {
   try {
     flushProjectAutoSaveOnExit({ reason: 'before-manual-reload' });
@@ -13689,12 +13725,21 @@ async function clearCachesAndReload() {
       ? readLocationHrefSafe(window.location)
       : '';
 
+  const sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
+  const sessionCaches = typeof caches !== 'undefined' ? caches : undefined;
+  const serviceWorkerLike = sessionNavigator && sessionNavigator.serviceWorker
+    ? sessionNavigator.serviceWorker
+    : null;
+  const serviceWorkerRegistrationsPromise = serviceWorkerLike
+    ? collectServiceWorkerRegistrationsForReload(serviceWorkerLike)
+    : Promise.resolve([]);
+
   if (offlineModule && typeof offlineModule.reloadApp === 'function') {
     try {
       const reloadAttempt = offlineModule.reloadApp({
         window,
-        navigator: typeof navigator !== 'undefined' ? navigator : undefined,
-        caches: typeof caches !== 'undefined' ? caches : undefined,
+        navigator: sessionNavigator,
+        caches: sessionCaches,
       });
 
       const { timedOut, result } = await awaitPromiseWithSoftTimeout(
@@ -13752,41 +13797,10 @@ async function clearCachesAndReload() {
   let serviceWorkerCleanupPromise = Promise.resolve(false);
   let cacheCleanupPromise = Promise.resolve(false);
 
-  if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
-    const { serviceWorker } = navigator;
+  if (serviceWorkerLike) {
     serviceWorkerCleanupPromise = (async () => {
       try {
-        const registrations = [];
-
-        try {
-          if (typeof serviceWorker.getRegistrations === 'function') {
-            const regs = await serviceWorker.getRegistrations();
-            if (Array.isArray(regs)) {
-              regs.forEach(reg => {
-                if (reg) {
-                  registrations.push(reg);
-                }
-              });
-            }
-          } else if (typeof serviceWorker.getRegistration === 'function') {
-            const reg = await serviceWorker.getRegistration();
-            if (reg) {
-              registrations.push(reg);
-            }
-          } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
-            try {
-              const readyReg = await serviceWorker.ready;
-              if (readyReg) {
-                registrations.push(readyReg);
-              }
-            } catch (readyError) {
-              console.warn('Failed to await active service worker', readyError);
-            }
-          }
-        } catch (queryError) {
-          console.warn('Failed to query service worker registrations', queryError);
-        }
-
+        const registrations = await serviceWorkerRegistrationsPromise;
         if (!registrations.length) {
           return false;
         }
@@ -13809,10 +13823,10 @@ async function clearCachesAndReload() {
     })();
   }
 
-  if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
+  if (sessionCaches && typeof sessionCaches.keys === 'function') {
     cacheCleanupPromise = (async () => {
       try {
-        const keys = await caches.keys();
+        const keys = await sessionCaches.keys();
         if (!Array.isArray(keys) || !keys.length) {
           return false;
         }
@@ -13830,11 +13844,11 @@ async function clearCachesAndReload() {
         let removedAny = false;
 
         await Promise.all(relevantKeys.map(key => {
-          if (!key || typeof caches.delete !== 'function') {
+          if (!key || typeof sessionCaches.delete !== 'function') {
             return Promise.resolve(false);
           }
 
-          return caches.delete(key)
+          return sessionCaches.delete(key)
             .then(result => {
               removedAny = removedAny || !!result;
               return result;
@@ -13856,8 +13870,8 @@ async function clearCachesAndReload() {
   let controllerChangeWatcher = null;
   let serviceWorkerGatePromise = serviceWorkerCleanupPromise;
 
-  if (typeof navigator !== 'undefined' && navigator && navigator.serviceWorker) {
-    controllerChangeWatcher = observeServiceWorkerControllerChangeForSession(navigator);
+  if (sessionNavigator && sessionNavigator.serviceWorker) {
+    controllerChangeWatcher = observeServiceWorkerControllerChangeForSession(sessionNavigator);
     if (controllerChangeWatcher && controllerChangeWatcher.promise && serviceWorkerCleanupPromise && typeof serviceWorkerCleanupPromise.then === 'function') {
       serviceWorkerGatePromise = Promise.race([
         serviceWorkerCleanupPromise,
