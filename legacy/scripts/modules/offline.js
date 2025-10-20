@@ -866,13 +866,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }();
     var executeWarmup = function () {
       var _ref = _asyncToGenerator(_regenerator().m(function _callee2() {
-        var allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, suppressWarning, body, _t, _t2, _t3, _t4, _t5, _t6;
+        var allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, suppressWarning, body, _t, _t3, _t4, _t5, _t6;
         return _regenerator().w(function (_context2) {
           while (1) switch (_context2.p = _context2.n) {
             case 0:
               _context2.p = 0;
               _context2.n = 1;
-              return Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+              return Promise.allSettled([Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]), Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])]);
             case 1:
               _context2.n = 3;
               break;
@@ -881,17 +881,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               _t = _context2.v;
               void _t;
             case 3:
-              _context2.p = 3;
-              _context2.n = 4;
-              return Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
-            case 4:
-              _context2.n = 6;
-              break;
-            case 5:
-              _context2.p = 5;
-              _t2 = _context2.v;
-              void _t2;
-            case 6:
               allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
               buildRequestInit = function buildRequestInit() {
                 var overrides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};

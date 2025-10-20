@@ -456,6 +456,67 @@ describe('cineOffline module', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  test('scheduleReloadWarmup waits for service worker and cache readiness concurrently', async () => {
+    jest.useFakeTimers();
+
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    try {
+      setTimeoutSpy.mockClear();
+
+      const navigatorMock = { onLine: true };
+      const windowMock = {
+        location: {
+          href: 'https://example.test/app/index.html',
+          origin: 'https://example.test',
+          pathname: '/app/index.html',
+          search: '',
+          hash: '',
+        },
+      };
+
+      const fetchMock = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          bodyUsed: false,
+          text: jest.fn(() => Promise.resolve('<html></html>')),
+          clone: jest.fn(() => ({
+            bodyUsed: false,
+            text: jest.fn(() => Promise.resolve('<html></html>')),
+          })),
+        }),
+      );
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app/index.html?forceReload=token',
+        navigator: navigatorMock,
+        window: windowMock,
+        serviceWorkerPromise: new Promise(() => {}),
+        cachePromise: new Promise(() => {}),
+        allowCache: false,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+
+      await Promise.resolve();
+
+      expect(setTimeoutSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+      expect(setTimeoutSpy.mock.calls[0][1]).toBe(setTimeoutSpy.mock.calls[1][1]);
+
+      if (typeof jest.getTimerCount === 'function') {
+        expect(jest.getTimerCount()).toBeGreaterThanOrEqual(2);
+      }
+
+      jest.advanceTimersByTime(200);
+
+      await expect(warmupHandle.promise).resolves.toBe(true);
+    } finally {
+      setTimeoutSpy.mockRestore();
+      jest.useRealTimers();
+    }
+  });
+
   test('scheduleReloadWarmup uses Safari path when vendor string is empty', async () => {
     class MockXMLHttpRequest {
       constructor() {

@@ -1106,13 +1106,10 @@
 
     const executeWarmup = async () => {
       try {
-        await Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
-      } catch (error) {
-        void error;
-      }
-
-      try {
-        await Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+        await Promise.allSettled([
+          Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]),
+          Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]),
+        ]);
       } catch (error) {
         void error;
       }
