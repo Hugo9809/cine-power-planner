@@ -152,6 +152,25 @@ describe('automatic gear backup retention normalization', () => {
     expect(storage.loadAutoGearBackupRetention()).toBe(normalizedExpectation);
   });
 
+  test('saveAutoGearBackupRetention ignores null values', () => {
+    storage.saveAutoGearBackupRetention(null);
+
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(storage.loadAutoGearBackupRetention()).toBe(
+      storage.getAutoGearBackupRetentionDefault(),
+    );
+  });
+
+  test('saveAutoGearBackupRetention ignores non-plain object inputs', () => {
+    storage.saveAutoGearBackupRetention(12);
+    const storedBefore = localStorage.getItem(STORAGE_KEY);
+
+    storage.saveAutoGearBackupRetention(() => 42);
+
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(storedBefore);
+    expect(storage.loadAutoGearBackupRetention()).toBe(12);
+  });
+
   test.each([
     { stored: '5', expected: 5 },
     { stored: '0', expected: 1 },
