@@ -989,7 +989,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     refreshAutoGearVideoDistributionOptions: refreshAutoGearVideoDistributionOptions,
     collectAutoGearSelectedValues: collectAutoGearSelectedValues,
     getAutoGearScenarioModeSelectElement: getAutoGearScenarioModeSelectElement,
-    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement
+    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement,
+    normalizeVideoDistributionOptionValue: normalizeVideoDistributionOptionValue
   }, "getViewfinderFallbackLabel", getViewfinderFallbackLabel), "getVideoDistributionFallbackLabel", getVideoDistributionFallbackLabel);
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = AUTO_GEAR_UI_EXPORTS;
@@ -998,5 +999,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
     scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
     scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
+    scope.normalizeVideoDistributionOptionValue = normalizeVideoDistributionOptionValue;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);
