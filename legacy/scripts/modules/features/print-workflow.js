@@ -146,6 +146,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
     var logger = safeContext.logger;
     var fallbackAttempts = 0;
+    var pendingResult = null;
+
+    function restoreDocumentTitle() {
+      if (documentRef && typeof documentRef.title === 'string' && documentRef.title === safeContext.printDocumentTitle) {
+        try {
+          documentRef.title = safeContext.originalDocumentTitle;
+        } catch (restoreError) {
+          log(
+            logger,
+            'warn',
+            "".concat(logPrefix, ": unable to restore original document title after failed print."),
+            restoreError,
+          );
+        }
+      }
+    }
     function attemptFallback(error) {
       fallbackAttempts += 1;
       if (error && error.name !== 'AbortError') {
@@ -164,11 +180,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } catch (closeError) {
           log(logger, 'warn', "".concat(logPrefix, ": unable to run post-print cleanup after fallback window."), closeError);
         }
+        restoreDocumentTitle();
         return true;
       }
       if (error && error.name !== 'AbortError') {
         log(logger, 'error', "".concat(logPrefix, ": unable to open fallback print window."), error);
       }
+      restoreDocumentTitle();
       return false;
     }
     function attemptNativePrint() {
@@ -181,35 +199,62 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var result = windowRef.print();
         if (result && typeof result.then === 'function') {
-          result.catch(function (error) {
-            if (!fallbackAttempts) {
-              attemptFallback(error);
-            }
-          });
+          var handledResult = Promise.resolve(result)
+            .then(function () {
+              restoreDocumentTitle();
+              return true;
+            })
+            .catch(function (error) {
+              if (!fallbackAttempts) {
+                return attemptFallback(error);
+              }
+              restoreDocumentTitle();
+              return false;
+            });
+          pendingResult = handledResult;
+          return handledResult;
         }
         return true;
       } catch (error) {
-        return attemptFallback(error);
+        var fallbackResult = attemptFallback(error);
+        if (!fallbackResult) {
+          restoreDocumentTitle();
+        }
+        return fallbackResult;
       }
     }
     var success = false;
     if (preferFallback) {
       success = attemptFallback();
       if (!success) {
-        success = attemptNativePrint();
+        var nativeResult = attemptNativePrint();
+        if (nativeResult && typeof nativeResult.then === 'function') {
+          pendingResult = nativeResult;
+        } else {
+          success = nativeResult;
+        }
       }
     } else {
-      success = attemptNativePrint();
+      var _nativeResult = attemptNativePrint();
+      if (_nativeResult && typeof _nativeResult.then === 'function') {
+        pendingResult = _nativeResult;
+      } else {
+        success = _nativeResult;
+      }
     }
-    if (!success && fallbackAttempts === 0) {
+    if (!pendingResult && !success && fallbackAttempts === 0) {
       success = attemptFallback();
     }
-    if (!success && documentRef && typeof documentRef.title === 'string' && documentRef.title === safeContext.printDocumentTitle) {
-      try {
-        documentRef.title = safeContext.originalDocumentTitle;
-      } catch (restoreError) {
-        log(logger, 'warn', "".concat(logPrefix, ": unable to restore original document title after failed print."), restoreError);
-      }
+    if (pendingResult) {
+      return pendingResult.then(function (result) {
+        if (!result) {
+          restoreDocumentTitle();
+        }
+        return result;
+      });
+    }
+    if (!success) {
+      restoreDocumentTitle();
     }
     return success;
   }
@@ -220,7 +265,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return triggerOverviewPrintWorkflow(safeContext, options);
       }
     };
-    return freezeDeep(workflow);
+    var frozenWorkflow = freezeDeep(workflow);
+    if (frozenWorkflow && typeof Object.isFrozen === 'function' && !Object.isFrozen(frozenWorkflow)) {
+      try {
+        var propertyNames = Object.getOwnPropertyNames(frozenWorkflow);
+        for (var index = 0; index < propertyNames.length; index += 1) {
+          var property = propertyNames[index];
+          var descriptor = Object.getOwnPropertyDescriptor(frozenWorkflow, property);
+          if (!descriptor || typeof descriptor.get === 'function' || typeof descriptor.set === 'function') {
+            continue;
+          }
+
+          Object.defineProperty(frozenWorkflow, property, {
+            configurable: false,
+            enumerable: descriptor.enumerable === true,
+            writable: false,
+            value: descriptor.value
+          });
+        }
+
+        if (typeof Object.preventExtensions === 'function') {
+          Object.preventExtensions(frozenWorkflow);
+        }
+      } catch (freezeError) {
+        log(
+          safeContext.logger,
+          'warn',
+          "".concat(safeContext.logPrefix, ": unable to freeze overview print workflow helpers."),
+          freezeError,
+        );
+      }
+    }
+    return frozenWorkflow;
   }
   var printAPI = freezeDeep({
     createOverviewPrintWorkflow: createOverviewPrintWorkflow,
