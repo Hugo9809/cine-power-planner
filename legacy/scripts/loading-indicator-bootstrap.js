@@ -229,25 +229,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scheduleHideAfterComplete();
   }
   document.addEventListener('cine-loader-progress', handleProgress);
-
   function registerLoaderCompleteListener(target, listener) {
     if (!target || typeof target.addEventListener !== 'function' || typeof listener !== 'function') {
       return;
     }
-
     var fallbackRequired = false;
-
     try {
-      target.addEventListener('cine-loader-complete', listener, { once: true });
+      target.addEventListener('cine-loader-complete', listener, {
+        once: true
+      });
     } catch (error) {
       fallbackRequired = true;
       void error;
     }
-
     if (!fallbackRequired) {
       return;
     }
-
     var handled = false;
     function fallbackListener(event) {
       if (handled) {
@@ -259,10 +256,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       listener(event);
     }
-
     target.addEventListener('cine-loader-complete', fallbackListener, false);
   }
-
   registerLoaderCompleteListener(document, handleComplete);
   scope.__cineLoadingNotice = {
     container: container,

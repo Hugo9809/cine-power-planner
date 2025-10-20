@@ -8145,16 +8145,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         known.add(short);
       }
     };
-
     if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts !== null) {
       Object.keys(texts).forEach(addLanguage);
     }
-
-    if (translationsRuntime && (typeof translationsRuntime === "undefined" ? "undefined" : _typeof(translationsRuntime)) === 'object') {
+    if (translationsRuntime && _typeof(translationsRuntime) === 'object') {
       if (translationsRuntime.texts && _typeof(translationsRuntime.texts) === 'object') {
         Object.keys(translationsRuntime.texts).forEach(addLanguage);
       }
-
       if (typeof translationsRuntime.getAvailableLanguages === 'function') {
         try {
           var runtimeLanguages = translationsRuntime.getAvailableLanguages();
@@ -8166,9 +8163,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
     }
-
     addLanguage(DEFAULT_LANGUAGE_SAFE);
-
     return Array.from(known);
   }();
   function resolveLanguagePreference(candidate) {
@@ -18559,6 +18554,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     };
   };
+  var refreshAutoGearShootingDaysValue = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue : function refreshAutoGearShootingDaysValue() {};
+  var refreshAutoGearScenarioOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions : function refreshAutoGearScenarioOptions() {};
+  var refreshAutoGearScenarioBaseSelect = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect : function refreshAutoGearScenarioBaseSelect() {};
+  var refreshAutoGearMatteboxOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions : function refreshAutoGearMatteboxOptions() {};
+  var refreshAutoGearCameraHandleOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions : function refreshAutoGearCameraHandleOptions() {};
+  var refreshAutoGearViewfinderExtensionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions : function refreshAutoGearViewfinderExtensionOptions() {};
+  var refreshAutoGearDeliveryResolutionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions : function refreshAutoGearDeliveryResolutionOptions() {};
+  var refreshAutoGearVideoDistributionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions : function refreshAutoGearVideoDistributionOptions() {};
+  var collectAutoGearSelectedValues = typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function' ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues : function collectAutoGearSelectedValues() {
+    return [];
+  };
   var autoGearConditionRefreshers = {
     always: null,
     scenarios: refreshAutoGearScenarioOptions,
@@ -19819,17 +19825,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       conditionLogic: {}
     };
   }
-  var refreshAutoGearShootingDaysValue = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue : function refreshAutoGearShootingDaysValue() {};
-  var refreshAutoGearScenarioOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions : function refreshAutoGearScenarioOptions() {};
-  var refreshAutoGearScenarioBaseSelect = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect : function refreshAutoGearScenarioBaseSelect() {};
-  var refreshAutoGearMatteboxOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions : function refreshAutoGearMatteboxOptions() {};
-  var refreshAutoGearCameraHandleOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions : function refreshAutoGearCameraHandleOptions() {};
-  var refreshAutoGearViewfinderExtensionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions : function refreshAutoGearViewfinderExtensionOptions() {};
-  var refreshAutoGearDeliveryResolutionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions : function refreshAutoGearDeliveryResolutionOptions() {};
-  var refreshAutoGearVideoDistributionOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions : function refreshAutoGearVideoDistributionOptions() {};
-  var collectAutoGearSelectedValues = typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function' ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues : function collectAutoGearSelectedValues() {
-    return [];
-  };
   function getCrewRoleEntries() {
     var _texts$en29;
     var langTexts = texts[currentLang] || texts.en || {};

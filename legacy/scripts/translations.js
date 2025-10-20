@@ -244,20 +244,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function ensureContainerAssignment(containerName, container, locale, value) {
     var targetContainer = container && _typeof(container) === 'object' ? container : null;
     if (!targetContainer) {
-      return { container: container, assigned: false };
+      return {
+        container: container,
+        assigned: false
+      };
     }
     if (tryAssignContainerValue(targetContainer, locale, value)) {
-      return { container: targetContainer, assigned: true };
+      return {
+        container: targetContainer,
+        assigned: true
+      };
     }
     var replacement = cloneContainerEntries(targetContainer);
     if (tryAssignContainerValue(replacement, locale, value) && replaceContainerReference(containerName, replacement)) {
-      return { container: replacement, assigned: true };
+      return {
+        container: replacement,
+        assigned: true
+      };
     }
     var fallback = {};
     if (tryAssignContainerValue(fallback, locale, value) && replaceContainerReference(containerName, fallback)) {
-      return { container: fallback, assigned: true };
+      return {
+        container: fallback,
+        assigned: true
+      };
     }
-    return { container: targetContainer, assigned: false };
+    return {
+      container: targetContainer,
+      assigned: false
+    };
   }
   function cloneTranslationValue(value) {
     if (Array.isArray(value)) {
@@ -807,13 +822,122 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   ensureGlobalLexicalBinding('texts', loaderInterface.texts);
   ensureGlobalLexicalBinding('categoryNames', loaderInterface.categoryNames);
   ensureGlobalLexicalBinding('gearItems', loaderInterface.gearItems);
-  try {
-    if (!scope.translations || _typeof(scope.translations) !== 'object') {
-      scope.translations = loaderInterface;
+  function exposeLoaderInterface(targetScope, value) {
+    if (!targetScope) {
+      return;
     }
-  } catch (assignError) {
-    void assignError;
-    scope.translations = loaderInterface;
+    var assigned = false;
+    try {
+      if (!targetScope.translations || _typeof(targetScope.translations) !== 'object') {
+        targetScope.translations = value;
+        assigned = targetScope.translations === value;
+      }
+    } catch (directAssignError) {
+      void directAssignError;
+    }
+    var descriptor = null;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(targetScope, 'translations');
+    } catch (descriptorError) {
+      void descriptorError;
+    }
+    if (!assigned && targetScope.translations && _typeof(targetScope.translations) === 'object') {
+      try {
+        var existing = targetScope.translations;
+        var interfaceDescriptors = Object.getOwnPropertyDescriptors ? Object.getOwnPropertyDescriptors(loaderInterface) : null;
+        if (interfaceDescriptors) {
+          var descriptorKeys = Object.keys(interfaceDescriptors);
+          for (var index = 0; index < descriptorKeys.length; index += 1) {
+            var key = descriptorKeys[index];
+            var definition = interfaceDescriptors[key];
+            try {
+              Object.defineProperty(existing, key, definition);
+            } catch (defineExistingError) {
+              void defineExistingError;
+            }
+          }
+        } else {
+          for (var simpleKey in loaderInterface) {
+            if (Object.prototype.hasOwnProperty.call(loaderInterface, simpleKey)) {
+              try {
+                existing[simpleKey] = loaderInterface[simpleKey];
+              } catch (copyError) {
+                void copyError;
+              }
+            }
+          }
+        }
+        assigned = true;
+      } catch (mergeError) {
+        void mergeError;
+      }
+    }
+    if (assigned) {
+      return;
+    }
+    if (descriptor && typeof descriptor.set === 'function') {
+      try {
+        descriptor.set.call(targetScope, value);
+        assigned = targetScope.translations === value;
+      } catch (setterError) {
+        void setterError;
+      }
+    }
+    if (assigned) {
+      return;
+    }
+    var propertyDescriptor = {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: value
+    };
+    if (!descriptor) {
+      try {
+        Object.defineProperty(targetScope, 'translations', propertyDescriptor);
+        assigned = targetScope.translations === value;
+      } catch (defineError) {
+        void defineError;
+      }
+    } else if (descriptor.configurable) {
+      propertyDescriptor.enumerable = descriptor.enumerable === true;
+      try {
+        Object.defineProperty(targetScope, 'translations', propertyDescriptor);
+        assigned = targetScope.translations === value;
+      } catch (redefineError) {
+        void redefineError;
+      }
+    }
+    if (assigned) {
+      return;
+    }
+    try {
+      if (!targetScope.__cineTranslationsLoader__) {
+        Object.defineProperty(targetScope, '__cineTranslationsLoader__', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: value
+        });
+      } else {
+        targetScope.__cineTranslationsLoader__ = value;
+      }
+    } catch (fallbackError) {
+      void fallbackError;
+    }
+  }
+  exposeLoaderInterface(scope, loaderInterface);
+  if (typeof document === 'undefined' && typeof require === 'function') {
+    Object.keys(LOCALE_SCRIPTS).forEach(function preloadLocale(locale) {
+      if (locale === DEFAULT_LANGUAGE) {
+        return;
+      }
+      try {
+        loaderInterface.loadLanguage(locale);
+      } catch (preloadError) {
+        void preloadError;
+      }
+    });
   }
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = loaderInterface;

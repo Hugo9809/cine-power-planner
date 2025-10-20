@@ -194,6 +194,45 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   })();
+  function resolveLocalStorageFromScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+    try {
+      var candidate = scope.localStorage;
+      if (candidate && typeof candidate.getItem === 'function') {
+        return candidate;
+      }
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+  function collectLocalStorageCandidates() {
+    var scopes = [GLOBAL_SCOPE, GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null, GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal ? GLOBAL_SCOPE.__cineGlobal : null, typeof window !== 'undefined' ? window : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+    var candidates = [];
+    var seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+    for (var index = 0; index < scopes.length; index += 1) {
+      var candidate = resolveLocalStorageFromScope(scopes[index]);
+      if (!candidate) {
+        continue;
+      }
+      if (seen) {
+        try {
+          if (seen.has(candidate)) {
+            continue;
+          }
+          seen.add(candidate);
+        } catch (error) {
+          void error;
+        }
+      } else if (candidates.indexOf(candidate) !== -1) {
+        continue;
+      }
+      candidates.push(candidate);
+    }
+    return candidates;
+  }
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone !== 'function') {
     try {
       GLOBAL_SCOPE.__cineDeepClone = STORAGE_DEEP_CLONE;
@@ -3421,6 +3460,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     projectActivityTimestamps.set(name, recordTime);
   }
+  function markProjectCollectionActivity(projects, timestamp) {
+    if (!projects || _typeof(projects) !== 'object') {
+      return;
+    }
+    var recordTime = typeof timestamp === 'number' && Number.isFinite(timestamp) ? timestamp : Date.now();
+    Object.keys(projects).forEach(function (key) {
+      if (typeof key !== 'string' || !key || isAutoBackupStorageKey(key)) {
+        return;
+      }
+      markProjectActivity(key, recordTime);
+    });
+  }
   function removeProjectActivity(name) {
     if (typeof name !== 'string') {
       return;
@@ -4745,26 +4796,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
   function initializeSafeLocalStorage() {
-    if (typeof window !== 'undefined') {
-      var candidate = null;
-      try {
-        if ('localStorage' in window) {
-          candidate = window.localStorage;
-          var storage = verifyStorage(candidate);
-          if (storage) {
-            lastFailedUpgradeCandidate = null;
-            return {
-              storage: storage,
-              type: 'local'
-            };
-          }
-        }
-      } catch (e) {
-        console.warn('localStorage is unavailable:', e);
-        if (candidate) {
-          lastFailedUpgradeCandidate = candidate;
-        }
+    var localCandidates = collectLocalStorageCandidates();
+    for (var index = 0; index < localCandidates.length; index += 1) {
+      var candidate = localCandidates[index];
+      if (!candidate) {
+        continue;
       }
+      try {
+        var storage = verifyStorage(candidate);
+        if (storage) {
+          lastFailedUpgradeCandidate = null;
+          return {
+            storage: storage,
+            type: 'local'
+          };
+        }
+      } catch (error) {
+        console.warn('localStorage is unavailable:', error);
+        lastFailedUpgradeCandidate = candidate;
+      }
+    }
+    if (typeof window !== 'undefined') {
       try {
         if ('sessionStorage' in window) {
           var _storage = verifyStorage(window.sessionStorage);
@@ -5024,57 +5076,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'local') {
       return safeLocalStorageInfo.storage;
     }
-    if (typeof window === 'undefined') {
-      return safeLocalStorageInfo.storage;
-    }
-    var candidate;
-    try {
-      if (!('localStorage' in window)) {
-        return safeLocalStorageInfo.storage;
+    var candidates = collectLocalStorageCandidates();
+    var currentStorage = safeLocalStorageInfo.storage;
+    var selectedCandidate = null;
+    var verifiedStorage = null;
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (!candidate || candidate === currentStorage) {
+        continue;
       }
-      candidate = window.localStorage;
-    } catch (error) {
-      console.warn('Unable to access localStorage during upgrade attempt', error);
-      lastFailedUpgradeCandidate = null;
-      return safeLocalStorageInfo.storage;
-    }
-    if (candidate && candidate === lastFailedUpgradeCandidate) {
-      return safeLocalStorageInfo.storage;
-    }
-    var verified;
-    try {
-      verified = verifyStorage(candidate);
-    } catch (verificationError) {
-      console.warn('localStorage upgrade verification failed', verificationError);
-      lastFailedUpgradeCandidate = candidate;
-      return safeLocalStorageInfo.storage;
-    }
-    if (!verified || verified === safeLocalStorageInfo.storage) {
-      if (!verified) {
+      if (candidate === lastFailedUpgradeCandidate) {
+        continue;
+      }
+      var verified = void 0;
+      try {
+        verified = verifyStorage(candidate);
+      } catch (verificationError) {
+        console.warn('localStorage upgrade verification failed', verificationError);
         lastFailedUpgradeCandidate = candidate;
-      } else {
-        lastFailedUpgradeCandidate = null;
+        continue;
       }
-      return safeLocalStorageInfo.storage;
+      if (!verified || verified === currentStorage) {
+        if (!verified) {
+          lastFailedUpgradeCandidate = candidate;
+        }
+        continue;
+      }
+      selectedCandidate = candidate;
+      verifiedStorage = verified;
+      break;
     }
-    var snapshot = snapshotStorageEntries(safeLocalStorageInfo.storage);
-    var _migrateSnapshotToSto = migrateSnapshotToStorage(snapshot, verified),
+    if (!verifiedStorage) {
+      return currentStorage;
+    }
+    var snapshot = snapshotStorageEntries(currentStorage);
+    var _migrateSnapshotToSto = migrateSnapshotToStorage(snapshot, verifiedStorage),
       migratedKeys = _migrateSnapshotToSto.migratedKeys,
       failedKeys = _migrateSnapshotToSto.failedKeys;
     if (failedKeys.length > 0) {
-      rollbackMigratedKeys(verified, migratedKeys);
+      rollbackMigratedKeys(verifiedStorage, migratedKeys);
       console.warn('Aborting localStorage upgrade because some entries could not be migrated. Continuing to use fallback storage.', failedKeys);
       alertStorageError('migration-write');
-      lastFailedUpgradeCandidate = candidate;
-      return safeLocalStorageInfo.storage;
+      lastFailedUpgradeCandidate = selectedCandidate || verifiedStorage;
+      return currentStorage;
     }
-    clearMigratedKeys(snapshot, safeLocalStorageInfo.storage, migratedKeys);
+    clearMigratedKeys(snapshot, currentStorage, migratedKeys);
     safeLocalStorageInfo = {
-      storage: verified,
+      storage: verifiedStorage,
       type: 'local'
     };
     lastFailedUpgradeCandidate = null;
-    return verified;
+    return verifiedStorage;
   }
   function getSafeLocalStorage() {
     if (!safeLocalStorageInfo || !safeLocalStorageInfo.storage) {
@@ -10298,6 +10350,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       projects = mutableProjects;
     }
     if (name === undefined) {
+      markProjectCollectionActivity(projects);
       return projects;
     }
     if (resolvedKey !== null && resolvedKey !== undefined && Object.prototype.hasOwnProperty.call(projects, resolvedKey)) {

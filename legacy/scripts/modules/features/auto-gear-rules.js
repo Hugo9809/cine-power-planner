@@ -31,6 +31,81 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var GLOBAL_SCOPE = detectGlobalScope();
+  var missingAutoGearHelperLog = new Set();
+  function logMissingAutoGearHelper(name, error) {
+    if (missingAutoGearHelperLog.has(name)) {
+      return;
+    }
+    missingAutoGearHelperLog.add(name);
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      if (error) {
+        console.warn("[cine] Missing auto gear helper: ".concat(name), error);
+      } else {
+        console.warn("[cine] Missing auto gear helper: ".concat(name));
+      }
+    }
+  }
+  function resolveAutoGearUiExports() {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object' && typeof GLOBAL_SCOPE !== 'function') {
+      return null;
+    }
+    try {
+      if (GLOBAL_SCOPE.cineCoreAutoGearUi && _typeof(GLOBAL_SCOPE.cineCoreAutoGearUi) === 'object') {
+        return GLOBAL_SCOPE.cineCoreAutoGearUi;
+      }
+    } catch (readError) {
+      logMissingAutoGearHelper('cineCoreAutoGearUi', readError);
+    }
+    return null;
+  }
+  function resolveAutoGearHelperFunction(name) {
+    if (typeof name !== 'string' || !name) {
+      return null;
+    }
+    var exports = resolveAutoGearUiExports();
+    if (exports && typeof exports[name] === 'function') {
+      return exports[name];
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[name] === 'function') {
+      return GLOBAL_SCOPE[name];
+    }
+    logMissingAutoGearHelper(name);
+    return null;
+  }
+  function getFallbackViewfinderLabel(value) {
+    if (value === '__none__') {
+      var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+      var textSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[activeLang] || texts.en || {} : {};
+      return textSource.viewfinderExtensionNone || textSource.autoGearViewfinderExtensionNone || 'No';
+    }
+    return typeof value === 'string' ? value : '';
+  }
+  function getFallbackVideoDistributionLabel(value) {
+    if (value === '__none__') {
+      var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+      var textSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[activeLang] || texts.en || {} : {};
+      return textSource.autoGearVideoDistributionNone || 'No video distribution selected';
+    }
+    return typeof value === 'string' ? value : '';
+  }
+  function invokeAutoGearLabelHelper(name, fallback, value) {
+    var helper = resolveAutoGearHelperFunction(name);
+    if (typeof helper === 'function') {
+      try {
+        var result = helper.call(GLOBAL_SCOPE, value);
+        return result !== undefined && result !== null ? result : fallback(value);
+      } catch (invokeError) {
+        logMissingAutoGearHelper(name, invokeError);
+      }
+    }
+    return fallback(value);
+  }
+  function getSafeViewfinderFallbackLabel(value) {
+    return invokeAutoGearLabelHelper('getViewfinderFallbackLabel', getFallbackViewfinderLabel, value);
+  }
+  function getSafeVideoDistributionFallbackLabel(value) {
+    return invokeAutoGearLabelHelper('getVideoDistributionFallbackLabel', getFallbackVideoDistributionLabel, value);
+  }
   function createModuleBaseFallback(scope) {
     var targetScope = scope && (_typeof(scope) === 'object' || typeof scope === 'function') ? scope : detectGlobalScope();
     var resolvedScope = targetScope && (_typeof(targetScope) === 'object' || typeof targetScope === 'function') ? targetScope : null;
@@ -710,9 +785,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         diff = diffGearTableMaps(baselineMap, _variantMap);
       }
       if (!diff || !diff.add.length && !diff.remove.length) return;
-      var additions = cloneAutoGearItems(diff.add);
-      if (!additions.length) return;
-      var removals = cloneAutoGearItems(diff.remove);
+      var additions = Array.isArray(diff.add) ? cloneAutoGearItems(diff.add) : [];
+      var removals = Array.isArray(diff.remove) ? cloneAutoGearItems(diff.remove) : [];
+      if (!additions.length && !removals.length) return;
       rules.push({
         id: generateAutoGearId('rule'),
         label: trimmed,
@@ -756,7 +831,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var removals = cloneAutoGearItems(diff.remove);
       rules.push({
         id: generateAutoGearId('rule'),
-        label: getViewfinderFallbackLabel(trimmed),
+        label: getSafeViewfinderFallbackLabel(trimmed),
         scenarios: [],
         mattebox: [],
         cameraHandle: [],
@@ -799,7 +874,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var removals = cloneAutoGearItems(diff.remove);
       rules.push({
         id: generateAutoGearId('rule'),
-        label: getVideoDistributionFallbackLabel(trimmed),
+        label: getSafeVideoDistributionFallbackLabel(trimmed),
         scenarios: [],
         mattebox: [],
         cameraHandle: [],
@@ -1037,7 +1112,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var sliderActive = normalizedScenarios.includes(normalizeAutoGearTriggerValue('Slider'));
     var rules = [];
     if (viewfinderSelection) {
-      var contextLabel = getViewfinderFallbackLabel(viewfinderSelection);
+      var contextLabel = getSafeViewfinderFallbackLabel(viewfinderSelection);
       var viewfinderRule = createArriBracketRule({
         label: "".concat(contextLabel || viewfinderSelection, " \u2013 ARRI viewfinder support"),
         viewfinderExtension: [viewfinderSelection],
@@ -1109,7 +1184,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!additions.length && !removals.length) return;
       generatedRules.push({
         id: generateAutoGearId('rule'),
-        label: getVideoDistributionFallbackLabel(trimmed),
+        label: getSafeVideoDistributionFallbackLabel(trimmed),
         scenarios: [],
         mattebox: [],
         cameraHandle: [],
@@ -1175,7 +1250,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (additions.length) {
           generatedRules.push({
             id: generateAutoGearId('rule'),
-            label: getVideoDistributionFallbackLabel(iosLabel),
+            label: getSafeVideoDistributionFallbackLabel(iosLabel),
             scenarios: [],
             mattebox: [],
             cameraHandle: [],

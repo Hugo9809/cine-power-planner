@@ -1,5 +1,19 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var devices = {};
+var NORMALIZED_FLAG_KEY = '__normalized';
+function markDevicesNormalized() {
+  try {
+    Object.defineProperty(devices, NORMALIZED_FLAG_KEY, {
+      configurable: true,
+      enumerable: false,
+      value: true,
+      writable: true
+    });
+  } catch (defineError) {
+    void defineError;
+    devices[NORMALIZED_FLAG_KEY] = true;
+  }
+}
 function isSafeKey(key) {
   return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
 }
@@ -36,9 +50,11 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./cages.js');
   require('./gearList.js');
   require('./wirelessReceivers.js');
+  markDevicesNormalized();
   delete globalThis.registerDevice;
   module.exports = devices;
 } else {
   globalThis.registerDevice = registerDevice;
   globalThis.devices = devices;
+  markDevicesNormalized();
 }

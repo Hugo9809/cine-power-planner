@@ -737,10 +737,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     var normalisedVendor = vendor.toLowerCase();
+    var trimmedVendor = normalisedVendor.trim();
     var normalisedUserAgent = userAgent.toLowerCase();
-    if (!normalisedVendor.includes('apple')) {
-      return false;
-    }
     var exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
     for (var index = 0; index < exclusionTokens.length; index += 1) {
       var token = exclusionTokens[index];
@@ -748,7 +746,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return false;
       }
     }
-    if (normalisedUserAgent.includes('safari')) {
+    var vendorIndicatesSafariFamily = trimmedVendor.includes('apple');
+    var userAgentHasSafariToken = normalisedUserAgent.includes('safari');
+    var userAgentHasAppleWebkitToken = normalisedUserAgent.includes('applewebkit');
+    var vendorIsEffectivelyEmpty = trimmedVendor.length === 0;
+    var fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasSafariToken && userAgentHasAppleWebkitToken;
+    if (!vendorIndicatesSafariFamily && !fallbackSafariMatch) {
+      return false;
+    }
+    if (vendorIndicatesSafariFamily && userAgentHasSafariToken) {
+      return true;
+    }
+    if (fallbackSafariMatch) {
       return true;
     }
     var standalone = false;
@@ -1047,7 +1056,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
               return _context2.a(2, true);
             case 9:
-              shouldAttemptFetch = xmlHttpResult === false ? false : true;
+              if (xmlHttpResult === false) {
+                shouldAttemptFetch = false;
+              } else {
+                shouldAttemptFetch = true;
+              }
               _context2.n = 11;
               break;
             case 10:

@@ -965,13 +965,13 @@
       "handle_extension_compatible": true
     }
   };
-  if (typeof registerDevice === "function") {
-    if (typeof module !== "undefined" && module.exports) {
-      module.exports = registerDevice("accessories.cages", cageData);
+  if (typeof registerDevice === 'function') {
+    if (typeof module !== 'undefined' && module.exports) {
+      module.exports = registerDevice('accessories.cages', cageData);
     } else {
-      registerDevice("accessories.cages", cageData);
+      registerDevice('accessories.cages', cageData);
     }
-  } else if (typeof module !== "undefined" && module.exports) {
+  } else if (typeof module !== 'undefined' && module.exports) {
     module.exports = cageData;
   } else {
     globalThis.devices = globalThis.devices || {};

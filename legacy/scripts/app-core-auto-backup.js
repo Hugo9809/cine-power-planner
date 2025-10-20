@@ -1,6 +1,9 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+var hasWarnedResolverRequireFailure = false;
+var hasWarnedResolverScopeFailure = false;
+var hasWarnedLoggerResolverFailure = false;
 function collectAutoBackupLoggingScopes() {
   var scopes = [];
   function enqueue(scope) {
@@ -35,7 +38,16 @@ function resolveAutoBackupLoggingResolver() {
         return required;
       }
     } catch (resolverRequireError) {
-      void resolverRequireError;
+      if (!hasWarnedResolverRequireFailure) {
+        hasWarnedResolverRequireFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to require logging resolver module', resolverRequireError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
   var scopes = collectAutoBackupLoggingScopes();
@@ -50,7 +62,16 @@ function resolveAutoBackupLoggingResolver() {
         return resolver;
       }
     } catch (resolveError) {
-      void resolveError;
+      if (!hasWarnedResolverScopeFailure) {
+        hasWarnedResolverScopeFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to resolve logging resolver from scope', resolveError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
   return null;
@@ -90,6 +111,38 @@ function resolveLegacyAutoBackupLogger() {
   return null;
 }
 var autoBackupLoggerCache = null;
+var deepCloneStrategyWarnings = {
+  coreDeepClone: false,
+  cineDeepClone: false,
+  structuredClone: false,
+  jsonClone: false
+};
+function warnDeepCloneStrategyFailure(strategy, error) {
+  if (!strategy || deepCloneStrategyWarnings[strategy]) {
+    return;
+  }
+  deepCloneStrategyWarnings[strategy] = true;
+  var messages = {
+    coreDeepClone: 'CORE_DEEP_CLONE failed; falling back to runtime deep clone helpers',
+    cineDeepClone: '__cineDeepClone failed; falling back to runtime deep clone helpers',
+    structuredClone: 'structuredClone failed while deep cloning auto backup data; using JSON fallback',
+    jsonClone: 'JSON deep clone failed while preparing auto backup data; returning original value'
+  };
+  var message = messages[strategy] || 'Deep clone strategy failed; falling back to next option';
+  try {
+    logAutoBackupEvent('warn', message, error, {
+      strategy: strategy
+    });
+  } catch (loggingError) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      try {
+        console.warn('[auto-backup] Deep clone warning:', message, error, loggingError);
+      } catch (consoleError) {
+        void consoleError;
+      }
+    }
+  }
+}
 function resolveAutoBackupLogger() {
   if (autoBackupLoggerCache) {
     return autoBackupLoggerCache;
@@ -107,7 +160,16 @@ function resolveAutoBackupLogger() {
         return autoBackupLoggerCache;
       }
     } catch (resolverError) {
-      void resolverError;
+      if (!hasWarnedLoggerResolverFailure) {
+        hasWarnedLoggerResolverFailure = true;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            console.warn('[auto-backup] Failed to create logger via resolver', resolverError);
+          } catch (consoleWarnError) {
+            void consoleWarnError;
+          }
+        }
+      }
     }
   }
   autoBackupLoggerCache = resolveLegacyAutoBackupLogger();
@@ -165,7 +227,7 @@ function resolveDeepCloneHelper(explicit) {
       return CORE_DEEP_CLONE;
     }
   } catch (coreDeepCloneError) {
-    void coreDeepCloneError;
+    warnDeepCloneStrategyFailure('coreDeepClone', coreDeepCloneError);
   }
   var scopes = collectAutoBackupLoggingScopes();
   for (var index = 0; index < scopes.length; index += 1) {
@@ -178,7 +240,7 @@ function resolveDeepCloneHelper(explicit) {
         return scope.__cineDeepClone;
       }
     } catch (scopeError) {
-      void scopeError;
+      warnDeepCloneStrategyFailure('cineDeepClone', scopeError);
     }
   }
   return function fallbackDeepClone(value) {
@@ -190,12 +252,12 @@ function resolveDeepCloneHelper(explicit) {
         return structuredClone(value);
       }
     } catch (structuredCloneError) {
-      void structuredCloneError;
+      warnDeepCloneStrategyFailure('structuredClone', structuredCloneError);
     }
     try {
       return JSON.parse(JSON.stringify(value));
     } catch (jsonCloneError) {
-      void jsonCloneError;
+      warnDeepCloneStrategyFailure('jsonClone', jsonCloneError);
     }
     return value;
   };

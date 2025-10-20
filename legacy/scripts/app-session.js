@@ -895,6 +895,29 @@ function ensureDeferredScriptsLoaded(reason) {
   }
   return result;
 }
+function ensureOnboardingTourReady(reason) {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (!scope) {
+    return null;
+  }
+  var loader = null;
+  try {
+    if (typeof scope.cineEnsureOnboardingTourLoaded === 'function') {
+      loader = scope.cineEnsureOnboardingTourLoaded(reason);
+    }
+  } catch (error) {
+    void error;
+    loader = null;
+  }
+  if (loader && typeof loader.then === 'function') {
+    loader.catch(function (loadError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Onboarding tour module failed to pre-load for help interactions.', loadError);
+      }
+    });
+  }
+  return loader;
+}
 function requestSettingsOpen(context) {
   var dialog = resolveSettingsDialog();
   var trigger = resolveSettingsButton();
@@ -5831,19 +5854,19 @@ if (settingsButton && settingsDialog) {
     updateStorageSummary();
     if (autoGearEditor) {
       closeAutoGearEditor();
-      refreshAutoGearScenarioOptions();
-      refreshAutoGearMatteboxOptions();
-      refreshAutoGearCameraHandleOptions();
-      refreshAutoGearViewfinderExtensionOptions();
-      refreshAutoGearVideoDistributionOptions();
+      callSessionCoreFunction('refreshAutoGearScenarioOptions');
+      callSessionCoreFunction('refreshAutoGearMatteboxOptions');
+      callSessionCoreFunction('refreshAutoGearCameraHandleOptions');
+      callSessionCoreFunction('refreshAutoGearViewfinderExtensionOptions');
+      callSessionCoreFunction('refreshAutoGearVideoDistributionOptions');
       callSessionCoreFunction('refreshAutoGearCameraOptions', [], {
         defer: true
       });
-      refreshAutoGearMonitorOptions();
-      refreshAutoGearWirelessOptions();
-      refreshAutoGearMotorsOptions();
-      refreshAutoGearControllersOptions();
-      refreshAutoGearDistanceOptions();
+      callSessionCoreFunction('refreshAutoGearMonitorOptions');
+      callSessionCoreFunction('refreshAutoGearWirelessOptions');
+      callSessionCoreFunction('refreshAutoGearMotorsOptions');
+      callSessionCoreFunction('refreshAutoGearControllersOptions');
+      callSessionCoreFunction('refreshAutoGearDistanceOptions');
       populateAutoGearCategorySelect(autoGearAddCategorySelect, '');
       populateAutoGearCategorySelect(autoGearRemoveCategorySelect, '');
       renderAutoGearRulesList();
@@ -12556,9 +12579,7 @@ if (helpButton && helpDialog) {
       return;
     }
     var applyGrouping = function applyGrouping() {
-      helpQuickLinksList.querySelectorAll('li[data-quick-link-spacer="true"]').forEach(function (node) {
-        return removeNode(node);
-      });
+      helpQuickLinksList.querySelectorAll('li[data-quick-link-spacer="true"]').forEach(removeNode);
       var items = Array.from(helpQuickLinksList.children);
       if (!items.length) return;
       var multiLineItems = [];
@@ -13126,6 +13147,7 @@ if (helpButton && helpDialog) {
     syncHelpQuickLinksVisibility();
   };
   var openHelp = function openHelp() {
+    ensureOnboardingTourReady('help-open');
     closeSideMenu();
     helpDialog.removeAttribute('hidden');
     openDialog(helpDialog);

@@ -14,8 +14,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -35,12 +35,12 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": [{
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }, {
-          "type": "Gold-Mount"
+          "type": ["Gold-Mount"]
         }, {
-          "type": "V-Mount"
+          "type": ["V-Mount"]
         }]
       }
     },
@@ -60,12 +60,12 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": [{
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }, {
-          "type": "Gold-Mount"
+          "type": ["Gold-Mount"]
         }, {
-          "type": "V-Mount"
+          "type": ["V-Mount"]
         }]
       }
     },
@@ -83,8 +83,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -104,12 +104,12 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": [{
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }, {
-          "type": "Gold-Mount"
+          "type": ["Gold-Mount"]
         }, {
-          "type": "V-Mount"
+          "type": ["V-Mount"]
         }]
       }
     },
@@ -127,8 +127,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -146,8 +146,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -165,8 +165,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -184,8 +184,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -203,8 +203,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -222,8 +222,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -241,8 +241,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -260,8 +260,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -281,13 +281,13 @@
       "latencyMs": "50ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V-12V"
+          "notes": "5V-12V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F"
+          "type": ["NP-F"]
         }, {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "notes": "6-16V",
+          "type": ["DC Barrel"]
         }]
       }
     },
@@ -303,10 +303,10 @@
       "latencyMs": "< 80ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5-12V"
+          "notes": "5-12V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F"
+          "type": ["NP-F"]
         }]
       }
     },
@@ -326,13 +326,13 @@
       "latencyMs": "< 80ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5-12V"
+          "notes": "5-12V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F"
+          "type": ["NP-F"]
         }, {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "notes": "6-16V",
+          "type": ["DC Barrel"]
         }]
       }
     },
@@ -352,12 +352,12 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "DC-",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": ["DC-"]
         }, {
-          "type": "NP-F"
+          "type": ["NP-F"]
         }, {
-          "type": "WB37"
+          "type": ["WB37"]
         }]
       }
     },
@@ -377,8 +377,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -398,8 +398,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -419,8 +419,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -440,8 +440,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "6-18V"
+          "notes": "6-18V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -459,10 +459,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -478,10 +478,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -501,10 +501,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -524,10 +524,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -543,10 +543,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -566,10 +566,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "USB-C",
-          "notes": "5V"
+          "notes": "5V",
+          "type": ["USB-C"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -589,10 +589,10 @@
       "latencyMs": "< 60ms",
       "power": {
         "input": [{
-          "type": "LEMO 2-pin",
-          "notes": "7.4-16.8V"
+          "notes": "7.4-16.8V",
+          "type": ["LEMO 2-pin"]
         }, {
-          "type": "NP-F battery"
+          "type": ["NP-F battery"]
         }]
       }
     },
@@ -609,8 +609,8 @@
       "latencyMs": "< 1ms",
       "power": {
         "input": {
-          "type": "LEMO 2-pin",
-          "notes": "10.5-34V"
+          "notes": "10.5-34V",
+          "type": ["LEMO 2-pin"]
         }
       }
     },
@@ -619,7 +619,7 @@
       "power": {
         "input": {
           "voltageRange": "",
-          "type": ""
+          "type": []
         }
       },
       "videoInputs": [],
