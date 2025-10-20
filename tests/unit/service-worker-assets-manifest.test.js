@@ -8,6 +8,13 @@ describe('service worker asset manifest', () => {
     const manifestAssets = require('../../service-worker-assets.js');
 
     expect(Array.isArray(manifestAssets)).toBe(true);
+    // Ensure essential documentation files remain cached for offline safety checks.
+    expect(manifestAssets).toEqual(
+      expect.arrayContaining([
+        './docs/offline-readiness.md',
+        './docs/save-share-restore-reference.md',
+      ]),
+    );
     expect(manifestAssets).toEqual(generatedAssets);
   });
 });
