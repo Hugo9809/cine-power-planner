@@ -224,6 +224,66 @@
     return onboardingModulePromise;
   }
 
+  function parseStoredStateValue(rawValue) {
+    if (!rawValue) {
+      return null;
+    }
+
+    if (typeof rawValue === 'object') {
+      return rawValue;
+    }
+
+    if (typeof rawValue !== 'string') {
+      return null;
+    }
+
+    const trimmed = rawValue.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+      if (parsed === true) {
+        return { completed: true };
+      }
+      if (parsed === false) {
+        return { completed: false };
+      }
+      if (typeof parsed === 'string') {
+        if (parsed === 'completed') {
+          return { completed: true };
+        }
+        if (parsed === 'skipped') {
+          return { skipped: true };
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+
+    if (trimmed === 'completed') {
+      return { completed: true };
+    }
+
+    if (trimmed === 'skipped') {
+      return { skipped: true };
+    }
+
+    if (trimmed === 'true') {
+      return { completed: true };
+    }
+
+    if (trimmed === 'false') {
+      return { completed: false };
+    }
+
+    return null;
+  }
+
   function readStoredState(scope) {
     let storageCandidates = [];
     try {
@@ -253,8 +313,9 @@
       }
       try {
         const value = storage.getItem(STORAGE_KEY);
-        if (value) {
-          return value;
+        const parsed = parseStoredStateValue(value);
+        if (parsed) {
+          return parsed;
         }
       } catch (error) {
         void error;
@@ -269,7 +330,7 @@
       return;
     }
     const stored = readStoredState(scope);
-    if (stored) {
+    if (stored && typeof stored === 'object' && (stored.completed === true || stored.skipped === true)) {
       return;
     }
     schedule(() => {
