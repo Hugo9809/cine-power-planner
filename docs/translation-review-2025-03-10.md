@@ -28,4 +28,4 @@ This audit captures UI copy that still appears in English or uses inconsistent t
   - Primary actions (`generateGearListBtn`, `deleteGearListBtn`, `deleteGearListBtnHelp`, confirmation prompts). 【F:src/scripts/translations/de.js†L497-L498】【F:src/scripts/translations/de.js†L754-L756】
   - Gear list maintenance copy such as the autosave note still references an "Offline-Gear-Manifest"; swap to a German phrasing that keeps offline safety messaging intact. 【F:src/scripts/translations/de.js†L692-L695】
 
-Document each localisation approval and rerun `npm test -- translations` before shipping to keep offline bundles in sync.
+Document each localisation approval and rerun `npm run test:unit -- translations` before shipping to keep offline bundles in sync. This targeted unit run executes the translation assertions housed in [`tests/unit/translations/`](../tests/unit/translations/), ensuring locale fixes continue to protect offline bundles.
