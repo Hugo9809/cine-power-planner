@@ -1864,6 +1864,114 @@
     return true;
   }
 
+  function observeServiceWorkerControllerChange(navigatorOverride) {
+    const nav = resolveNavigator(navigatorOverride);
+    if (!nav || !nav.serviceWorker) {
+      return null;
+    }
+
+    const { serviceWorker } = nav;
+    if (!serviceWorker) {
+      return null;
+    }
+
+    let resolved = false;
+    let detach = null;
+    let resolver = null;
+    let attached = false;
+
+    const finalize = (value) => {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+
+      const currentResolver = resolver;
+      resolver = null;
+
+      if (typeof detach === 'function') {
+        try {
+          detach();
+        } catch (error) {
+          void error;
+        }
+        detach = null;
+      }
+
+      if (typeof currentResolver === 'function') {
+        try {
+          currentResolver(value);
+        } catch (resolveError) {
+          void resolveError;
+        }
+      }
+    };
+
+    const promise = new Promise((resolve) => {
+      resolver = resolve;
+
+      if (serviceWorker.controller) {
+        finalize(true);
+        return;
+      }
+
+      const handler = () => {
+        finalize(true);
+      };
+
+      try {
+        if (typeof serviceWorker.addEventListener === 'function') {
+          serviceWorker.addEventListener('controllerchange', handler);
+          detach = () => {
+            try {
+              serviceWorker.removeEventListener('controllerchange', handler);
+            } catch (removeError) {
+              void removeError;
+            }
+          };
+          attached = true;
+        } else if ('oncontrollerchange' in serviceWorker) {
+          const previous = serviceWorker.oncontrollerchange;
+          serviceWorker.oncontrollerchange = function controllerchangeProxy(event) {
+            if (typeof previous === 'function') {
+              try {
+                previous.call(this, event);
+              } catch (previousError) {
+                safeWarn('Existing service worker controllerchange handler failed', previousError);
+              }
+            }
+            handler(event);
+          };
+          detach = () => {
+            try {
+              serviceWorker.oncontrollerchange = previous;
+            } catch (restoreError) {
+              void restoreError;
+            }
+          };
+          attached = true;
+        } else {
+          finalize(false);
+        }
+      } catch (error) {
+        safeWarn('Failed to observe service worker controllerchange', error);
+        finalize(false);
+      }
+    });
+
+    if (!attached && !serviceWorker.controller) {
+      finalize(false);
+      return null;
+    }
+
+    return {
+      promise,
+      cancel() {
+        finalize(false);
+      },
+    };
+  }
+
   const APP_CACHE_IDENTIFIERS = ['cine-power-planner', 'cinepowerplanner'];
 
   function resolveExposedCacheName() {
@@ -2987,6 +3095,11 @@
 
     const warmupPromise = resolveWarmupPromise(warmupHandle);
 
+    const controllerChangeWatcher = observeServiceWorkerControllerChange(options.navigator);
+    const controllerChangeResultPromise = controllerChangeWatcher
+      ? wrapResultWithSource('controllerChange', controllerChangeWatcher.promise)
+      : null;
+
     let serviceWorkerResultLogged = false;
     const serviceWorkerResultPromiseRaw = wrapResultWithSource('serviceWorker', serviceWorkerCleanupPromise);
     const serviceWorkerResultPromise = serviceWorkerResultPromiseRaw.then((result) => {
@@ -2999,9 +3112,15 @@
 
     const warmupResultPromise = warmupPromise ? wrapResultWithSource('warmup', warmupPromise) : null;
 
-    const gatePromise = warmupResultPromise
-      ? Promise.race([serviceWorkerResultPromise, warmupResultPromise])
-      : serviceWorkerResultPromise;
+    const gateCandidates = [serviceWorkerResultPromise];
+    if (warmupResultPromise) {
+      gateCandidates.push(warmupResultPromise);
+    }
+    if (controllerChangeResultPromise) {
+      gateCandidates.push(controllerChangeResultPromise);
+    }
+
+    const gatePromise = gateCandidates.length > 1 ? Promise.race(gateCandidates) : gateCandidates[0];
 
     let serviceWorkersUnregistered = false;
     let warmupFinishedBeforeReload = false;
@@ -3040,6 +3159,11 @@
             serviceWorkerResultLogged = true;
             safeWarn('Service worker cleanup promise rejected', gateResult.error);
           }
+        } else if (gateResult && gateResult.source === 'controllerChange') {
+          serviceWorkerStatusKnown = true;
+          if (!gateResult.successful && gateResult.error) {
+            safeWarn('Service worker controllerchange watcher rejected', gateResult.error);
+          }
         } else if (gateResult && gateResult.source === 'warmup') {
           warmupFinishedBeforeReload = gateResult.successful && gateResult.value === true;
 
@@ -3051,6 +3175,14 @@
     } catch (error) {
       const detail = error && error.error ? error.error : error;
       safeWarn('Reload preparation gate failed', detail);
+    } finally {
+      if (controllerChangeWatcher) {
+        try {
+          controllerChangeWatcher.cancel();
+        } catch (controllerCleanupError) {
+          void controllerCleanupError;
+        }
+      }
     }
 
     let reloadTriggered = false;

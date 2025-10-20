@@ -1655,6 +1655,115 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
+
+  function observeServiceWorkerControllerChange(navigatorOverride) {
+    var nav = resolveNavigator(navigatorOverride);
+    if (!nav || !nav.serviceWorker) {
+      return null;
+    }
+
+    var serviceWorker = nav.serviceWorker;
+    if (!serviceWorker) {
+      return null;
+    }
+
+    var resolved = false;
+    var detach = null;
+    var resolver = null;
+    var attached = false;
+
+    var finalize = function finalize(value) {
+      if (resolved) {
+        return;
+      }
+
+      resolved = true;
+
+      var currentResolver = resolver;
+      resolver = null;
+
+      if (typeof detach === 'function') {
+        try {
+          detach();
+        } catch (error) {
+          void error;
+        }
+        detach = null;
+      }
+
+      if (typeof currentResolver === 'function') {
+        try {
+          currentResolver(value);
+        } catch (resolveError) {
+          void resolveError;
+        }
+      }
+    };
+
+    var promise = new Promise(function (resolve) {
+      resolver = resolve;
+
+      if (serviceWorker.controller) {
+        finalize(true);
+        return;
+      }
+
+      var handler = function handler() {
+        finalize(true);
+      };
+
+      try {
+        if (typeof serviceWorker.addEventListener === 'function') {
+          serviceWorker.addEventListener('controllerchange', handler);
+          detach = function detach() {
+            try {
+              serviceWorker.removeEventListener('controllerchange', handler);
+            } catch (removeError) {
+              void removeError;
+            }
+          };
+          attached = true;
+        } else if ('oncontrollerchange' in serviceWorker) {
+          var previous = serviceWorker.oncontrollerchange;
+          serviceWorker.oncontrollerchange = function controllerchangeProxy(event) {
+            if (typeof previous === 'function') {
+              try {
+                previous.call(this, event);
+              } catch (previousError) {
+                safeWarn('Existing service worker controllerchange handler failed', previousError);
+              }
+            }
+            handler(event);
+          };
+          detach = function detach() {
+            try {
+              serviceWorker.oncontrollerchange = previous;
+            } catch (restoreError) {
+              void restoreError;
+            }
+          };
+          attached = true;
+        } else {
+          finalize(false);
+        }
+      } catch (error) {
+        safeWarn('Failed to observe service worker controllerchange', error);
+        finalize(false);
+      }
+    });
+
+    if (!attached && !serviceWorker.controller) {
+      finalize(false);
+      return null;
+    }
+
+    return {
+      promise: promise,
+      cancel: function cancel() {
+        finalize(false);
+      }
+    };
+  }
   var APP_CACHE_IDENTIFIERS = ['cine-power-planner', 'cinepowerplanner'];
   function resolveExposedCacheName() {
     var exposedName = resolveGlobal('CINE_CACHE_NAME');
@@ -2484,10 +2593,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         resolveWarmupPromise,
         wrapResultWithSource,
         warmupPromise,
+        controllerChangeWatcher,
+        controllerChangeResultPromise,
         serviceWorkerResultLogged,
         serviceWorkerResultPromiseRaw,
         serviceWorkerResultPromise,
         warmupResultPromise,
+        gateCandidates,
         gatePromise,
         serviceWorkersUnregistered,
         warmupFinishedBeforeReload,
@@ -2608,6 +2720,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             };
             warmupPromise = resolveWarmupPromise(warmupHandle);
+            controllerChangeWatcher = observeServiceWorkerControllerChange(options.navigator);
+            controllerChangeResultPromise = controllerChangeWatcher ? wrapResultWithSource('controllerChange', controllerChangeWatcher.promise) : null;
             serviceWorkerResultLogged = false;
             serviceWorkerResultPromiseRaw = wrapResultWithSource('serviceWorker', serviceWorkerCleanupPromise);
             serviceWorkerResultPromise = serviceWorkerResultPromiseRaw.then(function (result) {
@@ -2618,7 +2732,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               return result;
             });
             warmupResultPromise = warmupPromise ? wrapResultWithSource('warmup', warmupPromise) : null;
-            gatePromise = warmupResultPromise ? Promise.race([serviceWorkerResultPromise, warmupResultPromise]) : serviceWorkerResultPromise;
+            gateCandidates = [serviceWorkerResultPromise];
+            if (warmupResultPromise) {
+              gateCandidates.push(warmupResultPromise);
+            }
+            if (controllerChangeResultPromise) {
+              gateCandidates.push(controllerChangeResultPromise);
+            }
+            gatePromise = gateCandidates.length > 1 ? Promise.race(gateCandidates) : gateCandidates[0];
             serviceWorkersUnregistered = false;
             warmupFinishedBeforeReload = false;
             serviceWorkerStatusKnown = false;
@@ -2649,11 +2770,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   serviceWorkerResultLogged = true;
                   safeWarn('Service worker cleanup promise rejected', gateResult.error);
                 }
+              } else if (gateResult && gateResult.source === 'controllerChange') {
+                serviceWorkerStatusKnown = true;
+                if (!gateResult.successful && gateResult.error) {
+                  safeWarn('Service worker controllerchange watcher rejected', gateResult.error);
+                }
               } else if (gateResult && gateResult.source === 'warmup') {
                 warmupFinishedBeforeReload = gateResult.successful && gateResult.value === true;
                 if (!gateResult.successful && gateResult.error) {
                   safeWarn('Reload warmup promise rejected before reload triggered', gateResult.error);
                 }
+              }
+            }
+            if (controllerChangeWatcher) {
+              try {
+                controllerChangeWatcher.cancel();
+              } catch (controllerCleanupError) {
+                void controllerCleanupError;
               }
             }
             _context7.n = 4;
@@ -2663,6 +2796,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _t10 = _context7.v;
             detail = _t10 && _t10.error ? _t10.error : _t10;
             safeWarn('Reload preparation gate failed', detail);
+            if (controllerChangeWatcher) {
+              try {
+                controllerChangeWatcher.cancel();
+              } catch (controllerCleanupError) {
+                void controllerCleanupError;
+              }
+            }
           case 4:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
