@@ -1568,12 +1568,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return clearedAny;
   }
-  function unregisterServiceWorkers(_x) {
-    return _unregisterServiceWorkers.apply(this, arguments);
+  function collectServiceWorkerRegistrations(_x) {
+    return _collectServiceWorkerRegistrations.apply(this, arguments);
   }
-  function _unregisterServiceWorkers() {
-    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
-      var nav, registrations, serviceWorker, regs, reg, readyReg, _t7, _t8;
+  function _collectServiceWorkerRegistrations() {
+    _collectServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
+      var nav, serviceWorker, registrations, regs, reg, readyReg, _t7, _t8;
       return _regenerator().w(function (_context3) {
         while (1) switch (_context3.p = _context3.n) {
           case 0:
@@ -1582,10 +1582,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               _context3.n = 1;
               break;
             }
-            return _context3.a(2, false);
+            return _context3.a(2, []);
           case 1:
-            registrations = [];
             serviceWorker = nav.serviceWorker;
+            registrations = [];
             _context3.p = 2;
             if (!(typeof serviceWorker.getRegistrations === 'function')) {
               _context3.n = 4;
@@ -1645,13 +1645,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _t8 = _context3.v;
             safeWarn('Failed to query service worker registrations', _t8);
           case 12:
-            if (registrations.length) {
-              _context3.n = 13;
+            return _context3.a(2, registrations);
+        }
+      }, _callee3, null, [[7, 9], [2, 11]]);
+    }));
+    return _collectServiceWorkerRegistrations.apply(this, arguments);
+  }
+  function resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations) {
+    if (!prefetchedRegistrations) {
+      return Promise.resolve([]);
+    }
+    return Promise.resolve(prefetchedRegistrations).then(function (resolved) {
+      if (!Array.isArray(resolved)) {
+        return [];
+      }
+      return resolved.filter(function (registration) {
+        return !!registration;
+      });
+    }).catch(function (error) {
+      safeWarn('Failed to resolve prefetched service worker registrations', error);
+      return [];
+    });
+  }
+  function unregisterServiceWorkers(_x, _x2) {
+    return _unregisterServiceWorkers.apply(this, arguments);
+  }
+  function _unregisterServiceWorkers() {
+    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee4(navigatorOverride, prefetchedRegistrations) {
+      var nav, registrations;
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.p = _context4.n) {
+          case 0:
+            nav = resolveNavigator(navigatorOverride);
+            if (!(!nav || !nav.serviceWorker)) {
+              _context4.n = 1;
               break;
             }
-            return _context3.a(2, false);
-          case 13:
-            _context3.n = 14;
+            return _context4.a(2, false);
+          case 1:
+            _context4.n = 2;
+            return resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations);
+          case 2:
+            registrations = _context4.v;
+            if (registrations.length) {
+              _context4.n = 4;
+              break;
+            }
+            _context4.n = 3;
+            return collectServiceWorkerRegistrations(nav);
+          case 3:
+            registrations = _context4.v;
+          case 4:
+            if (registrations.length) {
+              _context4.n = 5;
+              break;
+            }
+            return _context4.a(2, false);
+          case 5:
+            _context4.n = 6;
             return Promise.all(registrations.map(function (registration) {
               if (!registration || typeof registration.unregister !== 'function') {
                 return Promise.resolve(false);
@@ -1661,10 +1712,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 return false;
               });
             }));
-          case 14:
-            return _context3.a(2, true);
+          case 6:
+            return _context4.a(2, true);
         }
-      }, _callee3, null, [[7, 9], [2, 11]]);
+      }, _callee4, null, []);
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
@@ -2600,6 +2651,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         forceReloadUrl,
         uiCacheCleared,
         clearUiCacheStorageEntriesFn,
+        navigatorLike,
+        serviceWorkerRegistrationsPromise,
         serviceWorkerCleanupPromise,
         cacheCleanupPromise,
         warmupHandle,
@@ -2633,6 +2686,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             win = resolveWindow(options.window);
             location = resolveLocation(options.location || win && win.location);
             forceReloadUrl = coerceForceReloadUrlDescriptor(location, buildForceReloadUrl(location, 'forceReload'), 'forceReload');
+            navigatorLike = resolveNavigator(options.navigator);
+            serviceWorkerRegistrationsPromise = navigatorLike && navigatorLike.serviceWorker ? collectServiceWorkerRegistrations(navigatorLike) : Promise.resolve([]);
             uiCacheCleared = false;
             clearUiCacheStorageEntriesFn = typeof options.clearUiCacheStorageEntries === 'function' ? options.clearUiCacheStorageEntries : typeof resolveGlobal('clearUiCacheStorageEntries') === 'function' ? resolveGlobal('clearUiCacheStorageEntries') : null;
             if (clearUiCacheStorageEntriesFn) {
@@ -2657,7 +2712,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   case 0:
                     _context5.p = 0;
                     _context5.n = 1;
-                    return unregisterServiceWorkers(options.navigator);
+                    return unregisterServiceWorkers(options.navigator, serviceWorkerRegistrationsPromise);
                   case 1:
                     return _context5.a(2, _context5.v);
                   case 2:

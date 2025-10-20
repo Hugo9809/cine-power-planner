@@ -188,6 +188,64 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp begins querying service worker registrations before clearing UI caches completes', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve([])),
+    };
+
+    const responseClone = { bodyUsed: false, text: jest.fn(() => Promise.resolve('<html></html>')) };
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      }),
+    );
+
+    const reloadWindow = jest.fn(() => true);
+
+    const windowMock = {
+      location: {
+        href: 'https://example.test/app',
+        replace: jest.fn(),
+        assign: jest.fn(),
+        reload: jest.fn(),
+      },
+    };
+
+    try {
+      const reloadPromise = offline.reloadApp({
+        navigator: navigatorMock,
+        caches: cachesMock,
+        fetch: fetchMock,
+        window: windowMock,
+        reloadWindow,
+      });
+
+      expect(navigatorMock.serviceWorker.getRegistrations).toHaveBeenCalledTimes(1);
+      expect(clearUiCacheStorageEntries).toHaveBeenCalledTimes(1);
+      expect(navigatorMock.serviceWorker.getRegistrations.mock.invocationCallOrder[0]).toBeLessThan(
+        clearUiCacheStorageEntries.mock.invocationCallOrder[0],
+      );
+
+      await reloadPromise;
+      await new Promise(resolve => setTimeout(resolve, 250));
+    } finally {
+      delete global.clearUiCacheStorageEntries;
+    }
+  });
+
   test('reloadApp resolves when controllerchange fires and removes listener', async () => {
     let controllerHandler = null;
     const addEventListener = jest.fn((event, handler) => {
