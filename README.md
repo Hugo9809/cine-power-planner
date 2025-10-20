@@ -658,7 +658,7 @@ Use Cine Power Planner end-to-end with the following routine:
   in-progress edits continue to land while you rehearse restores or capture
   manual backups.
 - **Reveal auto backup snapshots on demand.** Toggle **Settings → Backup &
-  Restore → Show auto backups** to temporarily display the timestamped safety
+  Restore → Show auto backups in project list** to temporarily display the timestamped safety
   copies in the project selector when you need to restore one manually.
 - **Renaming duplicates on purpose.** Editing the active project name and
   pressing **Enter** creates a branched copy. Use this when you want to compare
