@@ -976,6 +976,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     AUTO_GEAR_CONDITION_FALLBACK_LABELS: AUTO_GEAR_CONDITION_FALLBACK_LABELS,
     getViewfinderFallbackLabel: getViewfinderFallbackLabel,
     getVideoDistributionFallbackLabel: getVideoDistributionFallbackLabel,
+    normalizeVideoDistributionOptionValue: normalizeVideoDistributionOptionValue,
     refreshAutoGearShootingDaysValue: refreshAutoGearShootingDaysValue,
     refreshAutoGearScenarioOptions: refreshAutoGearScenarioOptions,
     refreshAutoGearScenarioBaseSelect: refreshAutoGearScenarioBaseSelect,
@@ -988,7 +989,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     getAutoGearScenarioModeSelectElement: getAutoGearScenarioModeSelectElement,
     setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement,
     getViewfinderFallbackLabel: getViewfinderFallbackLabel,
-    getVideoDistributionFallbackLabel: getVideoDistributionFallbackLabel
+    getVideoDistributionFallbackLabel: getVideoDistributionFallbackLabel,
+    normalizeVideoDistributionOptionValue: normalizeVideoDistributionOptionValue
   };
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = AUTO_GEAR_UI_EXPORTS;
@@ -997,5 +999,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
     scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
     scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
+    scope.normalizeVideoDistributionOptionValue = normalizeVideoDistributionOptionValue;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);

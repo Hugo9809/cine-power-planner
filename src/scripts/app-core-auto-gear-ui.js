@@ -1127,6 +1127,7 @@ function collectAutoGearSelectedValues(selected, key) {
     AUTO_GEAR_CONDITION_FALLBACK_LABELS,
     getViewfinderFallbackLabel,
     getVideoDistributionFallbackLabel,
+    normalizeVideoDistributionOptionValue,
     refreshAutoGearShootingDaysValue,
     refreshAutoGearScenarioOptions,
     refreshAutoGearScenarioBaseSelect,
@@ -1139,7 +1140,8 @@ function collectAutoGearSelectedValues(selected, key) {
     getAutoGearScenarioModeSelectElement,
     setAutoGearScenarioModeSelectElement,
     getViewfinderFallbackLabel,
-    getVideoDistributionFallbackLabel
+    getVideoDistributionFallbackLabel,
+    normalizeVideoDistributionOptionValue
   };
 
   if (typeof module === 'object' && module && module.exports) {
@@ -1150,5 +1152,6 @@ function collectAutoGearSelectedValues(selected, key) {
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
     scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
     scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
+    scope.normalizeVideoDistributionOptionValue = normalizeVideoDistributionOptionValue;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);
