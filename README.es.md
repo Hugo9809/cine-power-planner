@@ -90,7 +90,7 @@ Antes de fusionar o publicar una build para campo, completa esta lista condensad
 2. **Actualiza la guía escrita.** Revisa el centro de ayuda, los README localizados y los manuales impresos. Usa la [Matriz de cobertura de documentación](docs/documentation-coverage-matrix.md) para asegurar que no falta ningún idioma ni flujo.
 3. **Captura artefactos de verificación.** Completa el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y la [Plantilla de registro de verificación](docs/verification-log-template.md) con las notas de ensayo, hashes de exportaciones y capturas de precalentamiento de caché más recientes.
 4. **Valida los toggles de idioma.** Cambia por cada idioma de la app para confirmar que los textos actualizados se representan correctamente sin cargar assets externos.
-5. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, las reglas automáticas en JSON y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
+5. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, la exportación ``${timestamp} auto gear rules.json`` y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
 6. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** manual para que los equipos sepan qué revisión ejecutan.
 
 ## Panorama general

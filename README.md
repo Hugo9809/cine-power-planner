@@ -210,7 +210,7 @@ protect user data, documentation and translations:
 4. **Validate translation toggles.** Switch through every language in the app to
    ensure updated strings render correctly without fetching external assets.
 5. **Store redundant archives.** Export `planner-backup.json`, current project
-   bundles, automatic gear rule JSON and a ZIP of the repository. Place the set
+   bundles, the ``${timestamp} auto gear rules.json`` export and a ZIP of the repository. Place the set
    on at least two offline media locations with a short retention note.
 6. **Log service worker state.** Record the reported version, offline indicator
    behavior and the timestamp of the last manual **Force reload** so crews can

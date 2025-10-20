@@ -127,7 +127,7 @@ Before you merge or ship a field build, walk through this condensed checklist to
 2. **Refresh written guidance.** Update help center topics, localized README files and printed manuals. Use the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) to confirm no language or workflow was missed.
 3. **Capture verification artifacts.** Fill in the [Documentation Verification Packet](docs/documentation-verification-packet.md) and [Verification Log Template](docs/verification-log-template.md) with the latest rehearsal notes, export hashes and cache-priming screenshots.
 4. **Validate translation toggles.** Switch through every language in the app to ensure updated strings render correctly without fetching external assets.
-5. **Store redundant archives.** Export `planner-backup.json`, current project bundles, automatic gear rule JSON and a ZIP of the repository. Place the set on at least two offline media locations with a short retention note.
+5. **Store redundant archives.** Export `planner-backup.json`, current project bundles, the ``${timestamp} auto gear rules.json`` export and a ZIP of the repository. Place the set on at least two offline media locations with a short retention note.
 6. **Log service worker state.** Record the reported version, offline indicator behavior and the timestamp of the last manual **Force reload** so crews can audit which revision they are running.
 
 ## Overview

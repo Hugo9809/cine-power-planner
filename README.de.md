@@ -90,7 +90,7 @@ Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimi
 2. **Schriftliche Hilfen aktualisieren.** Aktualisiere Hilfecenter, lokalisierte README-Dateien und Druckanleitungen. Nutze die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md), um sicherzustellen, dass keine Sprache fehlt.
 3. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
 4. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
-5. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
+5. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, den ``${timestamp} auto gear rules.json``-Export und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
 6. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten manuellen **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
 
 ## Überblick
