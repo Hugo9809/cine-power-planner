@@ -1918,6 +1918,23 @@
     return;
   }
 
+  var loader = scope.translations || scope.__cineTranslationsLoader__ || null;
+  var registerPreloadedLocale = loader && typeof loader.registerPreloadedLocale === 'function'
+    ? loader.registerPreloadedLocale
+    : null;
+
+  if (registerPreloadedLocale) {
+    try {
+      registerPreloadedLocale.call(loader, locale, data);
+      if (typeof module !== 'undefined' && module.exports) {
+        module.exports = data;
+      }
+      return;
+    } catch (loaderError) {
+      void loaderError;
+    }
+  }
+
   function assignRegistry(targetScope, key, value) {
     if (!targetScope) {
       return false;
