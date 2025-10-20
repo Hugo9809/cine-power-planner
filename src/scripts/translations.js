@@ -42,6 +42,7 @@
   var registryKey = '__cineTranslations';
   var loaderStateKey = '__cineTranslationsLoaderState';
   var internalRegistry = {};
+  var preferInternalRegistry = false;
 
   function assignRegistryReference(value) {
     internalRegistry = value && typeof value === 'object' ? value : {};
@@ -78,10 +79,65 @@
     return internalRegistry;
   }
 
+  function isRegistryMutable(candidate) {
+    if (!candidate || typeof candidate !== 'object') {
+      return false;
+    }
+
+    var isExtensible = true;
+    if (typeof Object.isExtensible === 'function') {
+      try {
+        isExtensible = Object.isExtensible(candidate);
+      } catch (extensibleCheckError) {
+        void extensibleCheckError;
+        isExtensible = true;
+      }
+    }
+
+    if (!isExtensible) {
+      return false;
+    }
+
+    var isFrozen = false;
+    if (typeof Object.isFrozen === 'function') {
+      try {
+        isFrozen = Object.isFrozen(candidate);
+      } catch (frozenCheckError) {
+        void frozenCheckError;
+        isFrozen = false;
+      }
+    }
+
+    if (isFrozen) {
+      return false;
+    }
+
+    return true;
+  }
+
   function ensureRegistry() {
-    if (scope && scope[registryKey] && typeof scope[registryKey] === 'object') {
-      internalRegistry = scope[registryKey];
-      return scope[registryKey];
+    var globalRegistry =
+      scope && scope[registryKey] && typeof scope[registryKey] === 'object'
+        ? scope[registryKey]
+        : null;
+
+    if (!preferInternalRegistry && globalRegistry) {
+      if (globalRegistry === internalRegistry) {
+        return globalRegistry;
+      }
+
+      if (isRegistryMutable(globalRegistry)) {
+        internalRegistry = globalRegistry;
+        return globalRegistry;
+      }
+
+      preferInternalRegistry = true;
+      internalRegistry = cloneContainerEntries(globalRegistry);
+      return internalRegistry;
+    }
+
+    if (preferInternalRegistry) {
+      return internalRegistry;
     }
 
     return assignRegistryReference(internalRegistry);
