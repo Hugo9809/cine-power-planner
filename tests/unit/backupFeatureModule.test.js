@@ -245,6 +245,7 @@ describe('cineFeatureBackup module', () => {
     expect(triggerStub.mock.calls[1][0]).toMatch(/^data:application\/json/);
     expect(fallbackStub).toHaveBeenCalledTimes(1);
     expect(fallbackStub).toHaveBeenCalledWith(payload, fileName);
+    expect(revokeObjectURLMock).toHaveBeenCalledWith(blobUrl);
     expect(result).toEqual({ success: true, method: 'manual', permission: permissionMonitor });
   });
 
@@ -298,6 +299,7 @@ describe('cineFeatureBackup module', () => {
     expect(monitorStub).toHaveBeenCalledTimes(1);
     expect(triggerStub).toHaveBeenCalledTimes(2);
     expect(fallbackStub).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURLMock).toHaveBeenCalledWith(blobUrl);
     expect(result).toEqual({ success: false, method: null, permission: permissionMonitor });
   });
 });
