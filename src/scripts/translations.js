@@ -80,32 +80,65 @@
     return state;
   }
 
-    function ensureContainer(name) {
-      if (scope[name] && typeof scope[name] === 'object') {
-        return scope[name];
+  function ensureContainer(name) {
+    var existing = scope[name];
+    if (existing && typeof existing === 'object') {
+      var isExtensible = true;
+      try {
+        isExtensible =
+          typeof Object.isExtensible !== 'function' ||
+          Object.isExtensible(existing);
+      } catch (extensibleCheckError) {
+        void extensibleCheckError;
+        isExtensible = true;
       }
 
-      var container = {};
+      if (isExtensible) {
+        return existing;
+      }
 
-      try {
-        scope[name] = container;
-      } catch (assignError) {
-        void assignError;
+      var replacement = cloneContainerEntries(existing);
+      if (!replacement || typeof replacement !== 'object') {
+        replacement = {};
         try {
-          Object.defineProperty(scope, name, {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: container,
-          });
-        } catch (defineError) {
-          void defineError;
-          scope[name] = container;
+          var existingKeys = Object.keys(existing);
+          for (var index = 0; index < existingKeys.length; index += 1) {
+            var key = existingKeys[index];
+            replacement[key] = existing[key];
+          }
+        } catch (copyError) {
+          void copyError;
         }
       }
 
-      return container;
+      if (replaceContainerReference(name, replacement)) {
+        return replacement;
+      }
+
+      return existing;
     }
+
+    var container = {};
+
+    try {
+      scope[name] = container;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(scope, name, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: container,
+        });
+      } catch (defineError) {
+        void defineError;
+        scope[name] = container;
+      }
+    }
+
+    return container;
+  }
 
     function tryAssignContainerValue(target, key, value) {
       if (!target || typeof target !== 'object') {
