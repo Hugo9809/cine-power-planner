@@ -68,6 +68,50 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   return {};
 })();
 
+const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+
+function getDeviceStorageKeyVariantsForEvents() {
+  if (typeof require === 'function') {
+    try {
+      const storage = require('./storage.js');
+      if (storage && typeof storage === 'object') {
+        if (typeof storage.getDeviceStorageKeyVariants === 'function') {
+          const variants = storage.getDeviceStorageKeyVariants();
+          if (variants && typeof variants.forEach === 'function') {
+            return Array.from(variants);
+          }
+        }
+        if (typeof storage.getStorageKeyVariants === 'function') {
+          const variants = storage.getStorageKeyVariants(DEVICE_STORAGE_KEY_FOR_EVENTS);
+          if (variants && typeof variants.forEach === 'function') {
+            return Array.from(variants);
+          }
+        }
+      }
+    } catch (storageHelperError) {
+      void storageHelperError;
+    }
+  }
+
+  const variants = new Set();
+
+  if (typeof DEVICE_STORAGE_KEY_FOR_EVENTS === 'string' && DEVICE_STORAGE_KEY_FOR_EVENTS) {
+    variants.add(DEVICE_STORAGE_KEY_FOR_EVENTS);
+
+    if (DEVICE_STORAGE_KEY_FOR_EVENTS.startsWith('cameraPowerPlanner_')) {
+      variants.add(
+        `cinePowerPlanner_${DEVICE_STORAGE_KEY_FOR_EVENTS.slice('cameraPowerPlanner_'.length)}`,
+      );
+    } else if (DEVICE_STORAGE_KEY_FOR_EVENTS.startsWith('cinePowerPlanner_')) {
+      variants.add(
+        `cameraPowerPlanner_${DEVICE_STORAGE_KEY_FOR_EVENTS.slice('cinePowerPlanner_'.length)}`,
+      );
+    }
+  }
+
+  return Array.from(variants);
+}
+
 const setButtonLabelWithIconForEvents = (function resolveSetButtonLabelWithIconForEvents() {
   if (typeof EVENTS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
     return EVENTS_UI_HELPERS.setButtonLabelWithIcon;
@@ -4299,7 +4343,35 @@ if (exportAndRevertBtn) {
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
         // Step 2: Remove saved database and reload page so device files are re-read
-        localStorage.removeItem('cameraPowerPlanner_devices');
+        const variants = getDeviceStorageKeyVariantsForEvents();
+
+        if (variants && typeof variants.forEach === 'function') {
+          variants.forEach((keyVariant) => {
+            if (typeof keyVariant !== 'string' || !keyVariant) {
+              return;
+            }
+
+            try {
+              const canRemoveDeviceStorage =
+                typeof localStorage !== 'undefined'
+                && localStorage
+                && typeof localStorage.removeItem === 'function';
+
+              if (canRemoveDeviceStorage) {
+                localStorage.removeItem(keyVariant);
+              }
+            } catch (removeError) {
+              try {
+                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                  console.warn(`Failed to remove device storage key variant "${keyVariant}"`, removeError);
+                }
+              } catch (logError) {
+                void logError;
+              }
+            }
+          });
+        }
+
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
       }, 500); // 500ms delay
