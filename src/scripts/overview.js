@@ -1749,10 +1749,10 @@ function generatePrintableOverview(config = {}) {
         }
 
         const success = triggerPrintWorkflow(workflowOptions);
-        if (!success) {
-            const failureMessage = mode === 'print'
-                ? 'Unable to open the print dialog. Please check your browser settings and try again.'
-                : 'Unable to start the PDF export workflow. Please enable pop-ups and try again.';
+        const failureMessage = mode === 'print'
+            ? 'Unable to open the print dialog. Please check your browser settings and try again.'
+            : 'Unable to start the PDF export workflow. Please enable pop-ups and try again.';
+        const handleFailure = () => {
             logOverview('error', failureMessage, undefined, {
                 action: 'print-workflow',
                 stage: 'trigger',
@@ -1762,6 +1762,23 @@ function generatePrintableOverview(config = {}) {
             });
             runPendingPrintCleanup('configured-print-failed');
             return false;
+        };
+
+        if (!success) {
+            return handleFailure();
+        }
+
+        if (success && typeof success.then === 'function') {
+            return success
+                .then((result) => {
+                    if (!result) {
+                        return handleFailure();
+                    }
+                    const ensureCleanup = () => runPendingPrintCleanup('overview-closed');
+                    overviewDialog.addEventListener('close', ensureCleanup, { once: true });
+                    return true;
+                })
+                .catch(() => handleFailure());
         }
 
         const ensureCleanup = () => runPendingPrintCleanup('overview-closed');
@@ -2081,13 +2098,26 @@ function generatePrintableOverview(config = {}) {
 
     if (autoPrint) {
         const printed = triggerPrintWorkflow({ reason: 'generate' });
-        if (!printed) {
+        const handlePrintFailure = () => {
             logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
                 action: 'print-workflow',
                 stage: 'trigger',
                 reason: 'generate',
                 result: 'not-started',
             });
+        };
+        if (!printed) {
+            handlePrintFailure();
+        } else if (printed && typeof printed.then === 'function') {
+            printed
+                .then((result) => {
+                    if (!result) {
+                        handlePrintFailure();
+                    }
+                })
+                .catch(() => {
+                    handlePrintFailure();
+                });
         }
     }
 

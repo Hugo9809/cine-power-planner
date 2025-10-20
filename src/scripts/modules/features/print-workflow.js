@@ -202,6 +202,26 @@
     const logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
     const logger = safeContext.logger;
     let fallbackAttempts = 0;
+    let pendingResult = null;
+
+    function restoreDocumentTitle() {
+      if (
+        documentRef
+        && typeof documentRef.title === 'string'
+        && documentRef.title === safeContext.printDocumentTitle
+      ) {
+        try {
+          documentRef.title = safeContext.originalDocumentTitle;
+        } catch (restoreError) {
+          log(
+            logger,
+            'warn',
+            `${logPrefix}: unable to restore original document title after failed print.`,
+            restoreError,
+          );
+        }
+      }
+    }
 
     function attemptFallback(error) {
       fallbackAttempts += 1;
@@ -223,6 +243,7 @@
         } catch (closeError) {
           log(logger, 'warn', `${logPrefix}: unable to run post-print cleanup after fallback window.`, closeError);
         }
+        restoreDocumentTitle();
         return true;
       }
 
@@ -230,6 +251,7 @@
         log(logger, 'error', `${logPrefix}: unable to open fallback print window.`, error);
       }
 
+      restoreDocumentTitle();
       return false;
     }
 
@@ -245,15 +267,29 @@
 
         const result = windowRef.print();
         if (result && typeof result.then === 'function') {
-          result.catch(error => {
-            if (!fallbackAttempts) {
-              attemptFallback(error);
-            }
-          });
+          const handledResult = Promise
+            .resolve(result)
+            .then(() => {
+              restoreDocumentTitle();
+              return true;
+            })
+            .catch(error => {
+              if (!fallbackAttempts) {
+                return attemptFallback(error);
+              }
+              restoreDocumentTitle();
+              return false;
+            });
+          pendingResult = handledResult;
+          return handledResult;
         }
         return true;
       } catch (error) {
-        return attemptFallback(error);
+        const fallbackResult = attemptFallback(error);
+        if (!fallbackResult) {
+          restoreDocumentTitle();
+        }
+        return fallbackResult;
       }
     }
 
@@ -262,27 +298,37 @@
     if (preferFallback) {
       success = attemptFallback();
       if (!success) {
-        success = attemptNativePrint();
+        const nativeResult = attemptNativePrint();
+        if (nativeResult && typeof nativeResult.then === 'function') {
+          pendingResult = nativeResult;
+        } else {
+          success = nativeResult;
+        }
       }
     } else {
-      success = attemptNativePrint();
+      const nativeResult = attemptNativePrint();
+      if (nativeResult && typeof nativeResult.then === 'function') {
+        pendingResult = nativeResult;
+      } else {
+        success = nativeResult;
+      }
     }
 
-    if (!success && fallbackAttempts === 0) {
+    if (!pendingResult && !success && fallbackAttempts === 0) {
       success = attemptFallback();
     }
 
-    if (
-      !success
-      && documentRef
-      && typeof documentRef.title === 'string'
-      && documentRef.title === safeContext.printDocumentTitle
-    ) {
-      try {
-        documentRef.title = safeContext.originalDocumentTitle;
-      } catch (restoreError) {
-        log(logger, 'warn', `${logPrefix}: unable to restore original document title after failed print.`, restoreError);
-      }
+    if (pendingResult) {
+      return pendingResult.then(result => {
+        if (!result) {
+          restoreDocumentTitle();
+        }
+        return result;
+      });
+    }
+
+    if (!success) {
+      restoreDocumentTitle();
     }
 
     return success;
@@ -297,7 +343,39 @@
       },
     };
 
-    return freezeDeep(workflow);
+    const frozenWorkflow = freezeDeep(workflow);
+    if (frozenWorkflow && typeof Object.isFrozen === 'function' && !Object.isFrozen(frozenWorkflow)) {
+      try {
+        const propertyNames = Object.getOwnPropertyNames(frozenWorkflow);
+        for (let index = 0; index < propertyNames.length; index += 1) {
+          const property = propertyNames[index];
+          const descriptor = Object.getOwnPropertyDescriptor(frozenWorkflow, property);
+          if (!descriptor || typeof descriptor.get === 'function' || typeof descriptor.set === 'function') {
+            continue;
+          }
+
+          Object.defineProperty(frozenWorkflow, property, {
+            configurable: false,
+            enumerable: descriptor.enumerable === true,
+            writable: false,
+            value: descriptor.value,
+          });
+        }
+
+        if (typeof Object.preventExtensions === 'function') {
+          Object.preventExtensions(frozenWorkflow);
+        }
+      } catch (freezeError) {
+        log(
+          safeContext.logger,
+          'warn',
+          `${safeContext.logPrefix}: unable to freeze overview print workflow helpers.`,
+          freezeError,
+        );
+      }
+    }
+
+    return frozenWorkflow;
   }
 
   const printAPI = freezeDeep({
