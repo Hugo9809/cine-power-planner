@@ -1478,13 +1478,25 @@
         };
       }
 
-      function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions) {
+      function isPinkModeAnimationSpotClear(
+        layer,
+        hostRect,
+        x,
+        y,
+        size,
+        avoidRegions,
+        options
+      ) {
         if (
           typeof document === 'undefined' ||
           typeof document.elementFromPoint !== 'function'
         ) {
           return true;
         }
+        const allowLayerOverlap = Boolean(options && options.allowLayerOverlap);
+        const allowInteractiveOverlap = Boolean(
+          options && options.allowInteractiveOverlap
+        );
         const viewportWidth =
           typeof window !== 'undefined' && typeof window.innerWidth === 'number'
             ? window.innerWidth
@@ -1555,11 +1567,17 @@
               continue;
             }
             if (layer && layer.contains(element)) {
+              if (allowLayerOverlap) {
+                continue;
+              }
               return false;
             }
             if (
-              (typeof element.matches === 'function' && element.matches(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR)) ||
-              (typeof element.closest === 'function' && element.closest(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR))
+              !allowInteractiveOverlap &&
+              ((typeof element.matches === 'function' &&
+                element.matches(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR)) ||
+                (typeof element.closest === 'function' &&
+                  element.closest(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR)))
             ) {
               return false;
             }
@@ -1580,7 +1598,8 @@
         size,
         avoidRegions,
         leftMarginExtension = 0,
-        rightMarginExtension = 0
+        rightMarginExtension = 0,
+        spotOptions = null
       }) {
         const minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
         const maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
@@ -1594,7 +1613,17 @@
         for (let attempt = 0; attempt < PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS; attempt += 1) {
           const y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
           const x = maxX > minX ? minX + Math.random() * (maxX - minX) : minX;
-          if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)) {
+          if (
+            isPinkModeAnimationSpotClear(
+              layer,
+              hostRect,
+              x,
+              y,
+              size,
+              avoidRegions,
+              spotOptions
+            )
+          ) {
             return { x, y };
           }
         }
@@ -2139,25 +2168,86 @@
             };
           })
           .filter(Boolean);
-        const avoidRegions = [
-          ...computePinkModeAnimationAvoidRegions(layer),
-          ...collectPinkModeAnimationInstanceRegions(layer),
-          ...historicalAvoidRegions
-        ];
-        const placement = findPinkModeAnimationPlacement({
+        const staticAvoidRegions = computePinkModeAnimationAvoidRegions(layer);
+        const activeInstanceRegions = collectPinkModeAnimationInstanceRegions(layer);
+        const basePlacementConfig = {
           layer,
           hostRect,
           hostTop,
           visibleTop,
           visibleBottom,
-          horizontalPadding,
-          verticalPadding,
           hostWidth,
-          size,
-          avoidRegions,
-          leftMarginExtension,
-          rightMarginExtension
+          size
+        };
+
+        const attemptPlacement = placementOptions =>
+          findPinkModeAnimationPlacement({
+            ...basePlacementConfig,
+            horizontalPadding,
+            verticalPadding,
+            leftMarginExtension,
+            rightMarginExtension,
+            ...placementOptions
+          });
+
+        let placement = attemptPlacement({
+          avoidRegions: [...staticAvoidRegions, ...activeInstanceRegions, ...historicalAvoidRegions]
         });
+
+        if (!placement) {
+          placement = attemptPlacement({
+            avoidRegions: [...activeInstanceRegions, ...historicalAvoidRegions],
+            horizontalPadding: Math.max(horizontalPadding * 0.65, 48),
+            verticalPadding: Math.max(verticalPadding * 0.65, 64),
+            leftMarginExtension: Math.max(leftMarginExtension, size * 0.5),
+            rightMarginExtension: Math.max(rightMarginExtension, size * 0.5)
+          });
+        }
+
+        if (!placement) {
+          placement = attemptPlacement({
+            avoidRegions: [...historicalAvoidRegions],
+            horizontalPadding: Math.max(horizontalPadding * 0.45, 32),
+            verticalPadding: Math.max(verticalPadding * 0.45, 48),
+            leftMarginExtension: Math.max(leftMarginExtension, size * 1.5),
+            rightMarginExtension: Math.max(rightMarginExtension, size * 1.5),
+            spotOptions: { allowInteractiveOverlap: true }
+          });
+        }
+
+        if (!placement) {
+          placement = attemptPlacement({
+            avoidRegions: [],
+            horizontalPadding: Math.max(horizontalPadding * 0.25, 24),
+            verticalPadding: Math.max(verticalPadding * 0.25, 32),
+            leftMarginExtension: Math.max(leftMarginExtension, size * 2),
+            rightMarginExtension: Math.max(rightMarginExtension, size * 2),
+            spotOptions: { allowInteractiveOverlap: true }
+          });
+        }
+
+        if (!placement) {
+          const fallbackHorizontalPadding = Math.max(horizontalPadding * 0.2, 16);
+          const fallbackVerticalPadding = Math.max(verticalPadding * 0.2, 28);
+          const marginLeft = Math.max(0, Math.max(leftMarginExtension, size));
+          const marginRight = Math.max(0, Math.max(rightMarginExtension, size));
+          const minX = fallbackHorizontalPadding - marginLeft;
+          const maxX =
+            Math.max(hostWidth - fallbackHorizontalPadding, minX) + marginRight;
+          const minY = Math.max(
+            visibleTop - hostTop + fallbackVerticalPadding,
+            fallbackVerticalPadding
+          );
+          const maxY = Math.max(
+            visibleBottom - hostTop - fallbackVerticalPadding,
+            minY
+          );
+          placement = {
+            x: maxX > minX ? (minX + maxX) / 2 : minX,
+            y: maxY > minY ? (minY + maxY) / 2 : minY
+          };
+        }
+
         if (!placement) {
           if (container.parentNode) {
             container.parentNode.removeChild(container);
