@@ -1622,7 +1622,7 @@
           "title": "Bienvenida a Cine Power Planner",
           "body": "Este recorrido guiado explica las defensas sin conexión, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           "hero": {
-            "heading": "Bienvenida a Cine Power Planner",
+            "heading": "Bienvenida a Cine Power Planner!",
             "subheading": "Protege cada set de cámara con comprobaciones de potencia, kits AutoGear y entregas listas para alquiler—todo se mantiene sin conexión.",
             "summary": "Planifica setups de cámara seguros, verifica límites de potencia, genera automáticamente listas de equipo desde los requisitos del proyecto y exporta PDF listos para renta—cada guardado permanece local antes del llamado.",
             "badgeIcon": "",

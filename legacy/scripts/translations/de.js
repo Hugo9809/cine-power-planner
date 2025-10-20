@@ -1615,7 +1615,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Willkommen bei Cine Power Planner",
             "body": "",
             "hero": {
-              "heading": "Willkommen bei Cine Power Planner",
+              "heading": "Willkommen bei Cine Power Planner!",
               "subheading": "Schütze jedes Kamera-Setup mit Leistungschecks, AutoGear-Kits und übergabefertigen Unterlagen—alles bleibt offline.",
               "summary": "Plane sichere Kamera-Setups, prüfe Leistungsgrenzen, erstelle Gear-Listen automatisch aus Projektanforderungen und exportiere übergabefertige PDFs—jeder Speicherstand bleibt vor Drehbeginn lokal.",
               "badgeIcon": "",

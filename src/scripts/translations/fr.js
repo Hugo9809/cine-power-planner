@@ -1622,7 +1622,7 @@
           "title": "Bienvenue dans Cine Power Planner",
           "body": "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
           "hero": {
-            "heading": "Bienvenue dans Cine Power Planner",
+            "heading": "Bienvenue dans Cine Power Planner!",
             "subheading": "Sécurisez chaque setup caméra avec des contrôles d’alimentation, des kits AutoGear et des handoffs prêts pour la location—le tout reste hors ligne.",
             "summary": "Planifiez des setups caméra sûrs, vérifiez les limites de puissance, générez automatiquement des listes de matériel à partir des exigences projet et exportez des PDF prêts pour la location—chaque sauvegarde reste locale avant l’appel.",
             "badgeIcon": "",
