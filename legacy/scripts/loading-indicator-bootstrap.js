@@ -227,6 +227,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     setMessageKey('almost');
     setBusy(false);
     scheduleHideAfterComplete();
+    if (typeof setTimeout === 'function') {
+      try {
+        setTimeout(function () {
+          if (indicator && indicator.dataset && indicator.dataset.bootstrap === 'true') {
+            cleanupIndicatorIfIdle();
+          }
+        }, 2400);
+      } catch (fallbackHideError) {
+        void fallbackHideError;
+      }
+    }
   }
   document.addEventListener('cine-loader-progress', handleProgress);
   function registerLoaderCompleteListener(target, listener) {

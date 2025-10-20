@@ -998,5 +998,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scope.cineCoreAutoGearUi = AUTO_GEAR_UI_EXPORTS;
     scope.getViewfinderFallbackLabel = getViewfinderFallbackLabel;
     scope.getVideoDistributionFallbackLabel = getVideoDistributionFallbackLabel;
+    scope.normalizeVideoDistributionOptionValue = normalizeVideoDistributionOptionValue;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this);
