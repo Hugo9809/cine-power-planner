@@ -74,4 +74,51 @@ describe('cineFeaturePrint module', () => {
     expect(fallbackSpy).toHaveBeenCalledTimes(1);
     expect(printSpy).not.toHaveBeenCalled();
   });
+
+  describe.each([
+    {
+      description: 'succeeds',
+      fallbackSuccess: true,
+      expectedResult: true,
+    },
+    {
+      description: 'fails to open fallback window',
+      fallbackSuccess: false,
+      expectedResult: false,
+    },
+  ])('handles async native print rejection and %s fallback', ({
+    description,
+    fallbackSuccess,
+    expectedResult,
+  }) => {
+    test(`${description}`, async () => {
+      const closeAfterPrint = jest.fn();
+      const fallbackSpy = jest.fn(() => fallbackSuccess);
+      const documentRef = { title: 'Original Title' };
+      const printSpy = jest.fn(() => Promise.reject(new Error('Async print failed')));
+
+      const result = printModule.triggerOverviewPrintWorkflow({
+        windowRef: { print: printSpy },
+        documentRef,
+        printDocumentTitle: 'Printable Title',
+        originalDocumentTitle: 'Original Title',
+        openFallbackPrintView: fallbackSpy,
+        closeAfterPrint,
+        logger: { warn: jest.fn(), error: jest.fn() },
+      }, {});
+
+      await expect(Promise.resolve(result)).resolves.toBe(expectedResult);
+
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(fallbackSpy).toHaveBeenCalledTimes(1);
+      if (fallbackSuccess) {
+        expect(closeAfterPrint).toHaveBeenCalledTimes(1);
+      } else {
+        expect(closeAfterPrint).not.toHaveBeenCalled();
+      }
+
+      expect(documentRef.title).toBe('Original Title');
+    });
+  });
 });
