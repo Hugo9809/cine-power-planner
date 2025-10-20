@@ -1916,17 +1916,197 @@
     return;
   }
 
-  var registryKey = '__cineTranslations';
-  if (!scope[registryKey] || typeof scope[registryKey] !== 'object') {
+  function assignRegistry(targetScope, key, value) {
+    if (!targetScope) {
+      return false;
+    }
+
     try {
-      scope[registryKey] = {};
+      targetScope[key] = value;
+      if (targetScope[key] === value) {
+        return true;
+      }
     } catch (assignError) {
       void assignError;
+    }
+
+    var descriptor = null;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(targetScope, key);
+    } catch (descriptorError) {
+      void descriptorError;
+      descriptor = null;
+    }
+
+    if (descriptor) {
+      if (typeof descriptor.set === 'function') {
+        try {
+          descriptor.set.call(targetScope, value);
+          if (targetScope[key] === value) {
+            return true;
+          }
+        } catch (setterError) {
+          void setterError;
+        }
+      }
+
+      if (descriptor.configurable) {
+        try {
+          Object.defineProperty(targetScope, key, {
+            configurable: true,
+            enumerable: descriptor.enumerable === true,
+            writable: true,
+            value: value,
+          });
+          if (targetScope[key] === value) {
+            return true;
+          }
+        } catch (redefineError) {
+          void redefineError;
+        }
+      }
+    } else if (typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(targetScope, key, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: value,
+        });
+        if (targetScope[key] === value) {
+          return true;
+        }
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return false;
+  }
+
+  function tryAssignLocale(target, key, value) {
+    if (!target || typeof target !== 'object') {
+      return false;
+    }
+
+    var assigned = false;
+
+    try {
+      target[key] = value;
+      assigned = target[key] === value;
+    } catch (assignError) {
+      void assignError;
+    }
+
+    if (!assigned && typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(target, key, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: value,
+        });
+        assigned = target[key] === value;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return assigned;
+  }
+
+  function cloneRegistryEntries(source) {
+    var clone = {};
+
+    if (!source || typeof source !== 'object') {
+      return clone;
+    }
+
+    var descriptors = null;
+    if (typeof Object.getOwnPropertyDescriptors === 'function') {
+      try {
+        descriptors = Object.getOwnPropertyDescriptors(source);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptors = null;
+      }
+    }
+
+    if (descriptors) {
+      var descriptorKeys = Object.keys(descriptors);
+      for (var index = 0; index < descriptorKeys.length; index += 1) {
+        var descriptorKey = descriptorKeys[index];
+        var definition = descriptors[descriptorKey];
+
+        if (!definition) {
+          continue;
+        }
+
+        if (typeof definition.get === 'function' || typeof definition.set === 'function') {
+          try {
+            Object.defineProperty(clone, descriptorKey, definition);
+            continue;
+          } catch (accessorError) {
+            void accessorError;
+          }
+        }
+
+        var copy = {
+          configurable: true,
+          enumerable: definition.enumerable === true,
+          writable: true,
+          value: definition.value,
+        };
+
+        try {
+          Object.defineProperty(clone, descriptorKey, copy);
+        } catch (defineError) {
+          void defineError;
+          try {
+            clone[descriptorKey] = source[descriptorKey];
+          } catch (fallbackError) {
+            void fallbackError;
+          }
+        }
+      }
+
+      return clone;
+    }
+
+    try {
+      var keys = Object.keys(source);
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        var key = keys[keyIndex];
+        clone[key] = source[key];
+      }
+    } catch (copyError) {
+      void copyError;
+    }
+
+    return clone;
+  }
+
+  var registryKey = '__cineTranslations';
+  var registry = scope[registryKey];
+
+  if (!registry || typeof registry !== 'object') {
+    registry = {};
+    if (!assignRegistry(scope, registryKey, registry)) {
       return;
     }
   }
 
-  scope[registryKey][locale] = data;
+  if (!tryAssignLocale(registry, locale, data)) {
+    var replacement = cloneRegistryEntries(registry);
+    replacement[locale] = data;
+
+    if (!assignRegistry(scope, registryKey, replacement)) {
+      return;
+    }
+
+    registry = scope[registryKey];
+    tryAssignLocale(registry, locale, data);
+  }
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = data;
