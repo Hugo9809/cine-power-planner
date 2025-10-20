@@ -98,6 +98,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var MODULE_ENV = MODULE_LINKER && typeof MODULE_LINKER.getModuleEnvironment === 'function' ? MODULE_LINKER.getModuleEnvironment() : fallbackLoadModuleEnvironment(FALLBACK_SCOPE);
   var ENV_BRIDGE = MODULE_LINKER && typeof MODULE_LINKER.getEnvironmentBridge === 'function' ? MODULE_LINKER.getEnvironmentBridge() : fallbackLoadEnvironmentBridge(FALLBACK_SCOPE);
   var GLOBAL_SCOPE = (MODULE_LINKER && typeof MODULE_LINKER.getGlobalScope === 'function' ? MODULE_LINKER.getGlobalScope() : null) || (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function' ? ENV_BRIDGE.getGlobalScope() : null) || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function' ? MODULE_ENV.getGlobalScope() : null) || FALLBACK_SCOPE;
+  function allSettledCompat(promises) {
+    if (typeof Promise.allSettled === 'function') {
+      return Promise.allSettled(promises);
+    }
+    return Promise.all(promises.map(function (promise) {
+      return Promise.resolve(promise).then(function (value) {
+        return {
+          status: 'fulfilled',
+          value: value
+        };
+      }, function (reason) {
+        return {
+          status: 'rejected',
+          reason: reason
+        };
+      });
+    }));
+  }
   function fallbackResolveModuleGlobals() {
     if (typeof require === 'function') {
       try {
@@ -863,7 +881,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             case 0:
               _context2.p = 0;
               _context2.n = 1;
-              return Promise.allSettled([Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]), Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])]);
+              return allSettledCompat([Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]), Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])]);
             case 1:
               _context2.n = 3;
               break;
