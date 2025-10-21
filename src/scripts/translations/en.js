@@ -125,6 +125,7 @@
       "saveContact": "Save to contacts",
       "openManager": "Open contacts",
       "linkedBadge": "Linked to contact",
+      "linkedProfileBadge": "Linked to user profile",
       "contactMissingDetails": "Enter a name, email, phone number or website before saving this contact.",
       "websiteLabel": "Website",
       "websitePlaceholder": "https://example.com",

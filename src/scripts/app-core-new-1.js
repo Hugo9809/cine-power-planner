@@ -15342,18 +15342,25 @@ function updateRowLinkedBadge(row) {
   const badge = row.querySelector('.person-linked-badge');
   if (!badge) return;
   const contactId = row.dataset.contactId;
-  if (!contactId) {
-    badge.hidden = true;
+  const isUserProfileLinked = row.dataset.userProfileLinked === '1';
+  if (contactId) {
+    const contact = getContactById(contactId);
+    const baseLabel = getContactsText('linkedBadge', 'Linked to contact');
+    if (contact && contact.name) {
+      badge.textContent = `${baseLabel}: ${contact.name}`;
+    } else {
+      badge.textContent = baseLabel;
+    }
+    badge.hidden = false;
     return;
   }
-  const contact = getContactById(contactId);
-  const baseLabel = getContactsText('linkedBadge', 'Linked to contact');
-  if (contact && contact.name) {
-    badge.textContent = `${baseLabel}: ${contact.name}`;
-  } else {
-    badge.textContent = baseLabel;
+  if (isUserProfileLinked) {
+    badge.textContent = getContactsText('linkedProfileBadge', 'Linked to user profile');
+    badge.hidden = false;
+    return;
   }
-  badge.hidden = false;
+  badge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+  badge.hidden = true;
 }
 
 function handleCrewRowManualChange(row) {
@@ -16251,6 +16258,10 @@ function createCrewRow(data = {}) {
   const row = document.createElement('div');
   row.className = 'person-row';
 
+  if (data.userProfileLinked) {
+    row.dataset.userProfileLinked = '1';
+  }
+
   let documentLang = '';
   if (typeof document !== 'undefined' && document && document.documentElement) {
     documentLang = document.documentElement.lang || '';
@@ -16364,8 +16375,13 @@ function createCrewRow(data = {}) {
 
   const linkedBadge = document.createElement('span');
   linkedBadge.className = 'person-linked-badge';
-  linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
-  linkedBadge.hidden = true;
+  if (data.userProfileLinked) {
+    linkedBadge.textContent = getContactsText('linkedProfileBadge', 'Linked to user profile');
+    linkedBadge.hidden = false;
+  } else {
+    linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+    linkedBadge.hidden = true;
+  }
   const saveContactBtn = document.createElement('button');
   saveContactBtn.type = 'button';
   saveContactBtn.className = 'person-save-contact';

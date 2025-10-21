@@ -5758,6 +5758,7 @@ function populateProjectForm(info = {}) {
                         phone: profilePhone || '',
                         email: profileEmail || '',
                         avatar: profileAvatar || '',
+                        userProfileLinked: true,
                     });
                 }
             }
