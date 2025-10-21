@@ -169,16 +169,18 @@
       if (currentValue) {
         languageSelect.value = currentValue;
       }
+      // Precompute allowed destinations from select options
+      var allowedDestinations = Array.prototype.slice.call(languageSelect.options).map(function(opt) {
+        return opt.value.trim();
+      });
       languageSelect.addEventListener('change', function (event) {
         var target = event.target;
         if (!target) return;
         var selectedOption = target.selectedOptions && target.selectedOptions[0];
-        var destination = selectedOption ? selectedOption.value : target.value;
-        if (destination) {
-          var safeDestination = resolveSafeDestination(destination);
-          if (safeDestination) {
-            window.location.assign(safeDestination);
-          }
+        var destination = selectedOption ? selectedOption.value.trim() : target.value.trim();
+        // Only navigate if destination is one of allowedDestinations
+        if (destination && allowedDestinations.indexOf(destination) !== -1) {
+          window.location.assign(destination);
         }
       });
     }
