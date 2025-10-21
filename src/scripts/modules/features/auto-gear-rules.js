@@ -2325,7 +2325,7 @@ function resetAutoGearRulesToFactoryAdditions() {
     }
     if (backupName && typeof notifyAutoSaveFromBackup === 'function') {
       try {
-        notifyAutoSaveFromBackup(failureMessage, backupName);
+        notifyAutoSaveFromBackup(failureMessage, backupName, 'error');
       } catch (notifyError) {
         console.warn('Failed to announce automatic backup after reset failure', notifyError);
       }

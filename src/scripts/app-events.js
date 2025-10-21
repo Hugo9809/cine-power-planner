@@ -2220,7 +2220,7 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
-function notifyAutoSaveFromBackup(message, backupName) {
+function notifyAutoSaveFromBackup(message, backupName, severity) {
   if (typeof message !== 'string') {
     return;
   }
@@ -2228,9 +2228,11 @@ function notifyAutoSaveFromBackup(message, backupName) {
   if (!trimmed) {
     return;
   }
+  const notificationSeverity =
+    typeof severity === 'string' && severity.trim() ? severity.trim() : 'success';
   if (typeof showNotification === 'function') {
     try {
-      showNotification('success', trimmed);
+      showNotification(notificationSeverity, trimmed);
     } catch (notifyError) {
       console.warn('Failed to display auto save notification after auto backup', notifyError);
     }
@@ -2247,6 +2249,7 @@ function notifyAutoSaveFromBackup(message, backupName) {
           message: trimmed,
           source: 'auto-backup',
           backupName: backupName || null,
+          severity: notificationSeverity,
           timestamp: new Date().toISOString(),
         },
       }));
