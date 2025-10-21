@@ -982,6 +982,9 @@
           return;
         }
         Object.keys(map).forEach(itemId => {
+          if (itemId === '__proto__' || itemId === 'constructor' || itemId === 'prototype') {
+            return;
+          }
           map[itemId] = {
             completed,
             updatedAt: timestamp,
