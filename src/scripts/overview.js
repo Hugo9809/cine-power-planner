@@ -1768,21 +1768,24 @@ function generatePrintableOverview(config = {}) {
             return handleFailure();
         }
 
+        const ensureCleanup = () => runPendingPrintCleanup('overview-closed');
+        overviewDialog.addEventListener('close', ensureCleanup, { once: true });
+
         if (success && typeof success.then === 'function') {
             return success
                 .then((result) => {
                     if (!result) {
+                        overviewDialog.removeEventListener('close', ensureCleanup);
                         return handleFailure();
                     }
-                    const ensureCleanup = () => runPendingPrintCleanup('overview-closed');
-                    overviewDialog.addEventListener('close', ensureCleanup, { once: true });
                     return true;
                 })
-                .catch(() => handleFailure());
+                .catch((error) => {
+                    overviewDialog.removeEventListener('close', ensureCleanup);
+                    return handleFailure(error);
+                });
         }
 
-        const ensureCleanup = () => runPendingPrintCleanup('overview-closed');
-        overviewDialog.addEventListener('close', ensureCleanup, { once: true });
         return true;
     };
 
