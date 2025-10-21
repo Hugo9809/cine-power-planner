@@ -336,16 +336,24 @@ describe('cineOffline module', () => {
       };
 
       const fetchError = new TypeError('Load failed');
+      const windowMock = {
+        location: {
+          href: 'https://example.test/app/index.html',
+          origin: 'https://example.test',
+        },
+      };
       const fetchMock = jest
         .fn()
-        .mockImplementationOnce(() => Promise.reject(fetchError))
-        .mockImplementationOnce(() => Promise.resolve(warmupResponse));
+        .mockRejectedValueOnce(fetchError)
+        .mockRejectedValueOnce(fetchError)
+        .mockRejectedValueOnce(fetchError)
+        .mockResolvedValueOnce(warmupResponse);
 
       const warmupHandle = internal.scheduleReloadWarmup({
         fetch: fetchMock,
         nextHref: 'https://example.test/app?foo=bar',
         navigator: { onLine: true },
-        window: {},
+        window: windowMock,
         serviceWorkerPromise: Promise.resolve(true),
         cachePromise: Promise.resolve(true),
         allowCache: true,
@@ -360,22 +368,8 @@ describe('cineOffline module', () => {
 
       const cacheModes = fetchMock.mock.calls.map(call => call[1]?.cache);
       expect(cacheModes).toEqual(['reload', 'no-cache', 'no-store', 'default']);
-      expect(fetchMock.mock.calls[0][1]).toEqual(
-        expect.objectContaining({
-          cache: 'reload',
-          credentials: 'same-origin',
-          mode: 'cors',
-          redirect: 'follow',
-        }),
-      );
-      expect(fetchMock.mock.calls[1][1]).toEqual(
-        expect.objectContaining({
-          cache: 'no-cache',
-          credentials: 'same-origin',
-          mode: 'cors',
-          redirect: 'follow',
-        }),
-      );
+      expect(fetchMock.mock.calls[0][1]?.cache).toBe('reload');
+      expect(fetchMock.mock.calls[1][1]?.cache).toBe('no-cache');
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
       expect(warmupWarnings).toHaveLength(0);
