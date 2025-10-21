@@ -132,4 +132,51 @@ describe('storage deep clone resilience', () => {
       jsonStringifySpy.mockRestore();
     }
   });
+
+  it('preserves Date instances when manual deep cloning is required', () => {
+    const structuredCloneMock = jest.fn(() => {
+      throw new Error('structuredClone failure');
+    });
+
+    const originalStringify = JSON.stringify;
+    const jsonStringifySpy = jest
+      .spyOn(JSON, 'stringify')
+      .mockImplementation((value, ...args) => {
+        if (value && value.forceManualClone) {
+          throw new Error('JSON stringify blocked');
+        }
+        return originalStringify.call(JSON, value, ...args);
+      });
+
+    global.structuredClone = structuredCloneMock;
+
+    try {
+      const storageModule = require('../../src/scripts/storage.js');
+
+      expect(storageModule).toBeDefined();
+      expect(typeof global.__cineDeepClone).toBe('function');
+
+      const sharedDate = new Date('2024-02-03T10:20:30.000Z');
+      const source = {
+        forceManualClone: true,
+        first: sharedDate,
+        second: sharedDate,
+      };
+
+      const clone = global.__cineDeepClone(source);
+
+      expect(structuredCloneMock).toHaveBeenCalledTimes(1);
+      expect(jsonStringifySpy).toHaveBeenCalled();
+      expect(clone).not.toBe(source);
+      expect(clone.first).toBeInstanceOf(Date);
+      expect(clone.second).toBeInstanceOf(Date);
+      expect(clone.first).not.toBe(sharedDate);
+      expect(clone.second).not.toBe(sharedDate);
+      expect(clone.first.getTime()).toBe(sharedDate.getTime());
+      expect(clone.second.getTime()).toBe(sharedDate.getTime());
+      expect(clone.first).toBe(clone.second);
+    } finally {
+      jsonStringifySpy.mockRestore();
+    }
+  });
 });

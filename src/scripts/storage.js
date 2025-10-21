@@ -99,6 +99,26 @@
       }
     }
 
+    const valueTag = Object.prototype.toString.call(value);
+    if (valueTag === '[object Date]') {
+      let clonedDate;
+      try {
+        const timeValue = typeof value.getTime === 'function' ? value.getTime() : value.valueOf();
+        clonedDate = new Date(timeValue);
+      } catch (dateCloneError) {
+        clonedDate = new Date(value);
+        void dateCloneError;
+      }
+
+      if (typeof referenceStore.set === 'function') {
+        referenceStore.set(value, clonedDate);
+      } else if (Array.isArray(referenceStore)) {
+        referenceStore.push([value, clonedDate]);
+      }
+
+      return clonedDate;
+    }
+
     const clone = Array.isArray(value) ? [] : {};
 
     if (typeof referenceStore.set === 'function') {
