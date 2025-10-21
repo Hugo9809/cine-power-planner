@@ -1273,6 +1273,13 @@ describe('cineResults module', () => {
         { textContent: 'Teradek Bolt 4K', value: 'Teradek Bolt 4K' },
       ],
     };
+    const distanceSelect = {
+      value: 'Focusbug Cine RT',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'Focusbug Cine RT', value: 'Focusbug Cine RT' },
+      ],
+    };
     const motor1Select = {
       value: 'cforce mini RF',
       selectedIndex: 0,
@@ -1331,6 +1338,9 @@ describe('cineResults module', () => {
         if (id === 'videoSelect') {
           return videoSelect;
         }
+        if (id === 'distanceSelect') {
+          return distanceSelect;
+        }
         if (id === 'motor1Select') {
           return motor1Select;
         }
@@ -1385,6 +1395,7 @@ describe('cineResults module', () => {
     expect(fieldElements.get('fbBattery').value).toBe('Core SWX 150Wh');
     expect(fieldElements.get('fbWirelessVideo').value).toBe('Teradek Bolt 4K');
     expect(fieldElements.get('fbMonitor').value).toBe('SmallHD Cine 7');
+    expect(fieldElements.get('fbDistance').value).toBe('Focusbug Cine RT');
     expect(fieldElements.get('fbControllers').value).toBe('ARRI Hi-5, WCU-4');
     expect(fieldElements.get('fbMotors').value).toBe('cforce mini RF');
     expect(openDialog).toHaveBeenCalledWith(dialog);
