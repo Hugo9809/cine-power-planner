@@ -7902,14 +7902,31 @@ body.dark-mode .onboarding-progress-fill {
 
 .onboarding-card h2 {
   margin: 0;
-  color: inherit;
   border: none;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  font-weight: var(--font-weight-medium);
+  color: color-mix(in srgb, var(--accent-color) 82%, var(--text-color) 18%);
+}
+
+body.dark-mode .onboarding-card h2 {
+  color: color-mix(in srgb, var(--accent-color) 88%, var(--inverse-text-color) 12%);
+}
+
+body.dark-mode.pink-mode .onboarding-card h2 {
+  color: color-mix(in srgb, var(--accent-color) 92%, var(--inverse-text-color) 8%);
+}
+
+@supports not (color-mix(in srgb, black 50%, white 50%)) {
+  .onboarding-card h2,
+  body.dark-mode .onboarding-card h2,
+  body.dark-mode.pink-mode .onboarding-card h2 {
+    color: var(--accent-color);
+  }
 }
 
 .onboarding-card[data-step-key='userProfile'] h2,
 .onboarding-step-item[data-step-key='userProfile'] .onboarding-step-title {
-  font-weight: var(--font-weight-strong, 650);
+  font-weight: var(--font-weight-medium);
 }
 
 .onboarding-card p {
@@ -8320,6 +8337,23 @@ body.dark-mode
 .onboarding-step-title {
   font-weight: var(--font-weight-medium);
   flex: 1 1 auto;
+  color: color-mix(in srgb, var(--accent-color) 78%, var(--text-color) 22%);
+}
+
+body.dark-mode .onboarding-step-title {
+  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+}
+
+body.dark-mode.pink-mode .onboarding-step-title {
+  color: color-mix(in srgb, var(--accent-color) 90%, var(--inverse-text-color) 10%);
+}
+
+@supports not (color-mix(in srgb, black 50%, white 50%)) {
+  .onboarding-step-title,
+  body.dark-mode .onboarding-step-title,
+  body.dark-mode.pink-mode .onboarding-step-title {
+    color: var(--accent-color);
+  }
 }
 
 .onboarding-step-status {
@@ -8370,7 +8404,6 @@ body.dark-mode
   --button-text: color-mix(in srgb, var(--button-default-text) 65%, transparent);
 }
 
-body.dark-mode.pink-mode .onboarding-step-title,
 body.dark-mode.pink-mode .onboarding-step-status {
   color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
 }
@@ -8383,7 +8416,6 @@ body:not(.dark-mode) .onboarding-hero-subheading,
 body:not(.dark-mode) .onboarding-hero-highlight-title,
 body:not(.dark-mode) .onboarding-hero-highlight-badge-label,
 body:not(.dark-mode) .onboarding-hero-language-label,
-body:not(.dark-mode) .onboarding-step-title,
 body:not(.dark-mode) .onboarding-step-status {
   color: color-mix(in srgb, var(--accent-color) 80%, var(--text-color) 20%);
 }
