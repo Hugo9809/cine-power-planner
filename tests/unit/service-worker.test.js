@@ -117,4 +117,71 @@ describe('service worker configuration', () => {
 
     expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
   });
+
+  test('serves cached app icon when query parameters are present and the network fails', async () => {
+    const originalSelf = global.self;
+    const originalCaches = global.caches;
+    const originalFetch = global.fetch;
+
+    const eventHandlers = {};
+    const addEventListener = jest.fn((type, handler) => {
+      eventHandlers[type] = handler;
+    });
+
+    const cachedIconResponse = { ok: true, body: 'icon' };
+    const cacheMatchSpy = jest.fn().mockResolvedValue(null);
+    const cachesMatchSpy = jest.fn().mockResolvedValue(cachedIconResponse);
+    const cacheOpenSpy = jest.fn().mockResolvedValue({
+      match: cacheMatchSpy,
+      put: jest.fn(),
+    });
+
+    global.self = {
+      location: { origin: 'https://example.test' },
+      addEventListener,
+    };
+
+    global.caches = {
+      open: cacheOpenSpy,
+      match: cachesMatchSpy,
+    };
+
+    global.fetch = jest.fn().mockRejectedValue(new Error('Network unavailable'));
+
+    try {
+      jest.isolateModules(() => {
+        require('../../service-worker.js');
+      });
+
+      const fetchHandler = eventHandlers.fetch;
+      expect(typeof fetchHandler).toBe('function');
+
+      let respondPromise;
+      const fetchEvent = {
+        request: {
+          method: 'GET',
+          mode: 'no-cors',
+          url: 'https://example.test/src/icons/app-icon.png?v=42',
+        },
+        respondWith: promise => {
+          respondPromise = promise;
+        },
+        waitUntil: jest.fn(),
+      };
+
+      fetchHandler(fetchEvent);
+
+      expect(respondPromise).toBeInstanceOf(Promise);
+
+      const response = await respondPromise;
+      expect(response).toBe(cachedIconResponse);
+      expect(cacheOpenSpy).toHaveBeenCalledWith(CACHE_NAME);
+      expect(cacheMatchSpy).toHaveBeenCalledWith(fetchEvent.request, { ignoreSearch: true });
+      expect(cachesMatchSpy).toHaveBeenCalledWith(fetchEvent.request, { ignoreSearch: true });
+    } finally {
+      global.self = originalSelf;
+      global.caches = originalCaches;
+      global.fetch = originalFetch;
+    }
+  });
 });

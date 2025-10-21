@@ -911,10 +911,20 @@ if (typeof self !== 'undefined') {
           return response;
         } catch (error) {
           const cache = await cachePromise;
-          const cachedResponse = await cache.match(event.request);
+          let cachedResponse = null;
+
+          if (cache && typeof cache.match === 'function') {
+            cachedResponse = await cache.match(event.request, { ignoreSearch: true });
+          }
+
+          if (!cachedResponse && typeof caches.match === 'function') {
+            cachedResponse = await caches.match(event.request, { ignoreSearch: true });
+          }
+
           if (cachedResponse) {
             return cachedResponse;
           }
+
           throw error;
         }
       })());
