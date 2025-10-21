@@ -36,6 +36,100 @@ function createDatalistElement(initialValues = []) {
   };
 }
 
+function createSelectElement() {
+  const element = createInteractiveElement('');
+  let html = '';
+  let options = [];
+  let value = '';
+  let selectedIndex = -1;
+
+  const updateSelectionFlags = () => {
+    options.forEach((option, index) => {
+      option.selected = index === selectedIndex;
+    });
+  };
+
+  const parseHtmlOptions = () => {
+    const parsed = [];
+    const regex = /<option value="([^"]*)">([^<]*)<\/option>/g;
+    let match = regex.exec(html);
+    while (match) {
+      const [, optionValue, label] = match;
+      parsed.push({
+        value: optionValue,
+        textContent: label,
+        text: label,
+        label,
+        selected: false,
+        setAttribute: jest.fn(),
+        removeAttribute: jest.fn(),
+      });
+      match = regex.exec(html);
+    }
+    options = parsed;
+    element.options = options;
+    selectedIndex = options.findIndex((option) => option.value === value);
+    updateSelectionFlags();
+  };
+
+  Object.defineProperty(element, 'innerHTML', {
+    get() {
+      return html;
+    },
+    set(value) {
+      html = value;
+      parseHtmlOptions();
+    },
+  });
+
+  Object.defineProperty(element, 'value', {
+    get() {
+      return value;
+    },
+    set(newValue) {
+      value = newValue;
+      selectedIndex = options.findIndex((option) => option.value === newValue);
+      updateSelectionFlags();
+    },
+  });
+
+  Object.defineProperty(element, 'selectedIndex', {
+    get() {
+      return selectedIndex;
+    },
+    set(newIndex) {
+      selectedIndex = newIndex;
+      if (newIndex >= 0 && newIndex < options.length) {
+        value = options[newIndex].value;
+      }
+      updateSelectionFlags();
+    },
+  });
+
+  element.appendChild = jest.fn((child) => {
+    options.push(child);
+    element.options = options;
+    if (child.selected) {
+      element.selectedIndex = options.length - 1;
+    }
+  });
+
+  element.removeChild = jest.fn((child) => {
+    options = options.filter((option) => option !== child);
+    element.options = options;
+  });
+
+  Object.defineProperty(element, 'firstChild', {
+    get() {
+      return options[0] || null;
+    },
+  });
+
+  element.ownerDocument = null;
+
+  return element;
+}
+
 const FEEDBACK_FIELD_CONFIG = [
   { id: 'fbUsername', key: 'username', trim: true },
   { id: 'fbDate', key: 'date', trim: false },
@@ -45,6 +139,7 @@ const FEEDBACK_FIELD_CONFIG = [
   { id: 'fbLensMount', key: 'lensMount', trim: true },
   { id: 'fbResolution', key: 'resolution', trim: true },
   { id: 'fbCodec', key: 'codec', trim: true },
+  { id: 'fbSensorMode', key: 'sensorMode', trim: true },
   { id: 'fbFramerate', key: 'framerate', trim: true },
   { id: 'fbWifi', key: 'cameraWifi', trim: false },
   { id: 'fbFirmware', key: 'firmware', trim: true },
@@ -585,17 +680,19 @@ describe('cineResults module', () => {
     const mountOptions = createDatalistElement(['PL', 'EF']);
     const resolutionOptions = createDatalistElement(['1080p']);
     const codecOptions = createDatalistElement([]);
-    const framerateOptions = createDatalistElement([]);
+    const sensorModeSelect = createSelectElement();
+    const framerateSelect = createSelectElement();
 
-    const datalistElements = {
+    const elementsById = {
       mountOptions,
       resolutionOptions,
       codecOptions,
-      framerateOptions,
+      fbSensorMode: sensorModeSelect,
+      fbFramerate: framerateSelect,
     };
 
     const doc = {
-      getElementById: jest.fn((id) => datalistElements[id] || null),
+      getElementById: jest.fn((id) => elementsById[id] || null),
       createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
     };
 
@@ -651,7 +748,8 @@ describe('cineResults module', () => {
     ];
     devices.cameras.CameraA.resolutions = ['4.5K', '4K UHD', '1080p'];
     devices.cameras.CameraA.recordingCodecs = ['ARRIRAW', 'ProRes 4444 XQ'];
-    devices.cameras.CameraA.frameRates = ['4.5K: up to 60 fps', 'HD: up to 200 fps'];
+    devices.cameras.CameraA.sensorModes = ['Mode A', 'Mode B'];
+    devices.cameras.CameraA.frameRates = ['Mode A: up to 60 fps', 'Mode B: up to 30 fps'];
 
     const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
 
@@ -685,7 +783,7 @@ describe('cineResults module', () => {
       lastRuntimeHoursValue = value;
     });
 
-    cineResults.updateCalculations({
+    const updateOptions = {
       document: doc,
       elements: {
         cameraSelect,
@@ -707,6 +805,8 @@ describe('cineResults module', () => {
         hotswapWarnElem,
         batteryComparisonSection,
         batteryTableElem,
+        feedbackSensorModeSelect: sensorModeSelect,
+        feedbackFramerateSelect: framerateSelect,
         setupDiagramContainer,
         resultsPlainSummaryElem,
         resultsPlainSummaryTextElem,
@@ -741,7 +841,9 @@ describe('cineResults module', () => {
       escapeHtml,
       getLastRuntimeHours,
       setLastRuntimeHours,
-    });
+    };
+
+    cineResults.updateCalculations(updateOptions);
 
     const parseValues = (html) => (
       html
@@ -763,10 +865,31 @@ describe('cineResults module', () => {
       'ARRIRAW',
       'ProRes 4444 XQ',
     ]);
-    expect(parseValues(framerateOptions.innerHTML)).toEqual([
-      '4.5K: up to 60 fps',
-      'HD: up to 200 fps',
+    const selectValues = (select) => select.options
+      ? select.options.filter((option) => option.value).map((option) => option.value)
+      : [];
+
+    expect(selectValues(sensorModeSelect)).toEqual([
+      'Mode A',
+      'Mode B',
     ]);
+    expect(sensorModeSelect.value).toBe('Mode A');
+    expect(selectValues(framerateSelect)).toEqual([
+      'Mode A: up to 60 fps',
+    ]);
+
+    const changeHandler = sensorModeSelect.listeners.change;
+    sensorModeSelect.value = 'Mode B';
+    if (changeHandler) {
+      changeHandler();
+    } else {
+      cineResults.updateCalculations(updateOptions);
+    }
+
+    expect(selectValues(framerateSelect)).toEqual([
+      'Mode B: up to 30 fps',
+    ]);
+    expect(framerateSelect.value).toBe('Mode B: up to 30 fps');
   });
 
   test('updateCalculations uses preview selections when DOM inputs are empty', () => {
@@ -1130,7 +1253,11 @@ describe('cineResults module', () => {
   test('setupRuntimeFeedback wires handlers and persists sanitized entries', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
-      fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      if (id === 'fbSensorMode' || id === 'fbFramerate') {
+        fieldElements.set(id, createSelectElement());
+      } else {
+        fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      }
     });
 
     fieldElements.get('fbUsername').value = '  Operator ';
@@ -1234,7 +1361,11 @@ describe('cineResults module', () => {
   test('setupRuntimeFeedback pre-fills current gear selections into runtime feedback fields', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
-      fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      if (id === 'fbSensorMode' || id === 'fbFramerate') {
+        fieldElements.set(id, createSelectElement());
+      } else {
+        fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      }
     });
 
     const cameraSelect = {
@@ -1404,7 +1535,11 @@ describe('cineResults module', () => {
   test('setupRuntimeFeedback picks up latest updateCalculations reference', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
-      fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      if (id === 'fbSensorMode' || id === 'fbFramerate') {
+        fieldElements.set(id, createSelectElement());
+      } else {
+        fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+      }
     });
 
     const doc = {
