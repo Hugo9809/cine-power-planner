@@ -14,6 +14,7 @@ validate backups without inspecting code online.
 | `cameraPowerPlanner_feedback` | `storage.js` (`loadFeedback`) | Object keyed by ISO timestamp with `{ message, category }`. | Logged for rehearsal notes; exported in planner backup. |
 | `cameraPowerPlanner_project` | `storage.js` (`loadProject`) | Object describing active project `{ id, name, notes, crew, requirements, scenarios }`. | Always cloned before mutation. |
 | `cameraPowerPlanner_favorites` | `storage.js` (`loadFavorites`) | Array of device IDs and setup IDs pinned for quick access. |  |
+| `cameraPowerPlanner_contacts` | `storage.js` (`loadContacts`) | Array of contact entries `{ id, name, role, phone, email, website, notes, createdAt, updatedAt, avatar? }`. | Sorted alphabetically; avatars must be data URIs. |
 | `cameraPowerPlanner_ownGear` | `storage.js` (`loadOwnGear`) | Array of custom gear entries `{ id, name, mount, capacityWh, voltage, weight, notes, source }`. | Used by automatic gear rules. |
 | `cameraPowerPlanner_userProfile` | `storage.js` (`loadUserProfile`) | Object `{ name, role, avatar, phone, email }`. | Avatar is a data URI. Empty values remove storage entry. |
 | `cameraPowerPlanner_documentationTracker` | `storage.js` (`loadDocumentationTracker`) | Object `{ statusReports: [...], coverageMatrix: {...}, lastAudit: ISO }`. | Mirrors docs folder status; update when checklists change. |
@@ -36,6 +37,7 @@ validate backups without inspecting code online.
   "devices": [...],
   "ownGear": [...],
   "favorites": [...],
+  "contacts": [...],
   "autoGearRules": {...},
   "autoGearBackups": [...],
   "autoGearPresets": {...},

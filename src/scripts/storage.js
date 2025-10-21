@@ -430,6 +430,9 @@ var STORAGE_STATE_CACHE_WEAKMAP =
     ? new WeakMap()
     : null;
 
+var CONTACTS_MODULE_API = null;
+var CONTACTS_MODULE_RESOLUTION_ATTEMPTED = false;
+
 var COMPRESSION_STRATEGY_CACHE =
   typeof Map === 'function'
     ? new Map()
@@ -3012,6 +3015,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
+  CONTACTS_STORAGE_KEY,
   OWN_GEAR_STORAGE_KEY,
   DOCUMENTATION_TRACKER_STORAGE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
@@ -3033,6 +3037,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: FEEDBACK_STORAGE_KEY }),
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: CONTACTS_STORAGE_KEY }),
   () => ({ key: OWN_GEAR_STORAGE_KEY }),
   () => ({ key: DOCUMENTATION_TRACKER_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
@@ -12814,6 +12819,222 @@ function saveFavorites(favs) {
   );
 }
 
+function resolveContactsModuleApi() {
+  if (CONTACTS_MODULE_API) {
+    return CONTACTS_MODULE_API;
+  }
+
+  if (!CONTACTS_MODULE_RESOLUTION_ATTEMPTED) {
+    CONTACTS_MODULE_RESOLUTION_ATTEMPTED = true;
+    if (typeof require === 'function') {
+      CONTACTS_MODULE_API = require('./modules/features/contacts.js');
+    }
+  }
+
+  if (CONTACTS_MODULE_API) {
+    return CONTACTS_MODULE_API;
+  }
+
+  const scope = GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object' ? GLOBAL_SCOPE : null;
+  if (scope && scope.cineFeaturesContacts && typeof scope.cineFeaturesContacts === 'object') {
+    CONTACTS_MODULE_API = scope.cineFeaturesContacts;
+    return CONTACTS_MODULE_API;
+  }
+
+  const moduleBase = scope && typeof scope.cineModuleBase === 'object' ? scope.cineModuleBase : null;
+  if (moduleBase && typeof moduleBase.resolveModule === 'function') {
+    try {
+      const resolved = moduleBase.resolveModule('cine.features.contacts', scope);
+      if (resolved && typeof resolved === 'object') {
+        CONTACTS_MODULE_API = resolved;
+        return CONTACTS_MODULE_API;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return CONTACTS_MODULE_API;
+}
+
+function fallbackSanitizeContactValue(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim();
+}
+
+function fallbackGenerateContactId(moduleApi) {
+  if (moduleApi && typeof moduleApi.generateContactId === 'function') {
+    try {
+      const generated = moduleApi.generateContactId();
+      if (typeof generated === 'string' && generated) {
+        return generated;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  return `contact-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function fallbackNormalizeContactEntry(entry, moduleApi) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const sanitize = fallbackSanitizeContactValue;
+  const id = sanitize(entry.id) || fallbackGenerateContactId(moduleApi);
+  const name = sanitize(entry.name);
+  const role = sanitize(entry.role);
+  const phone = sanitize(entry.phone);
+  const email = sanitize(entry.email);
+  const website = sanitize(entry.website || entry.url);
+  const notes = sanitize(entry.notes || entry.note || entry.text);
+  const avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+  const avatar = avatarSource && avatarSource.startsWith('data:') ? avatarSource : '';
+  const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+  const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+
+  const normalized = { id, name, role, phone, email, website, notes, createdAt, updatedAt };
+  if (avatar) {
+    normalized.avatar = avatar;
+  }
+
+  return normalized;
+}
+
+function fallbackSortContacts(list) {
+  if (!Array.isArray(list)) {
+    return [];
+  }
+
+  const cloned = list
+    .filter((entry) => entry && typeof entry === 'object')
+    .map((entry) => ({ ...entry }));
+
+  cloned.sort((a, b) => {
+    const nameA = (a && a.name ? a.name : '').toLowerCase();
+    const nameB = (b && b.name ? b.name : '').toLowerCase();
+    if (nameA && nameB && nameA !== nameB) {
+      try {
+        return nameA.localeCompare(nameB);
+      } catch (error) {
+        void error;
+      }
+    }
+    if (nameA && !nameB) {
+      return -1;
+    }
+    if (!nameA && nameB) {
+      return 1;
+    }
+    const createdA = a && typeof a.createdAt === 'number' ? a.createdAt : 0;
+    const createdB = b && typeof b.createdAt === 'number' ? b.createdAt : 0;
+    return createdA - createdB;
+  });
+
+  return cloned;
+}
+
+function normalizeContactsList(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  const moduleApi = resolveContactsModuleApi();
+
+  if (moduleApi && typeof moduleApi.sortContacts === 'function') {
+    try {
+      const sorted = moduleApi.sortContacts(entries);
+      if (Array.isArray(sorted)) {
+        return sorted.filter((entry) => entry && typeof entry === 'object');
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Error normalizing contacts via module.', error);
+      }
+    }
+  }
+
+  const normalizer = moduleApi && typeof moduleApi.normalizeContactEntry === 'function'
+    ? moduleApi.normalizeContactEntry
+    : null;
+
+  const normalized = [];
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    if (!entry) {
+      continue;
+    }
+
+    let normalizedEntry = null;
+    if (normalizer) {
+      try {
+        normalizedEntry = normalizer(entry);
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Error normalizing contact entry via module.', error);
+        }
+        normalizedEntry = null;
+      }
+    }
+
+    if (!normalizedEntry) {
+      normalizedEntry = fallbackNormalizeContactEntry(entry, moduleApi);
+    }
+
+    if (normalizedEntry && typeof normalizedEntry === 'object') {
+      normalized.push(normalizedEntry);
+    }
+  }
+
+  return fallbackSortContacts(normalized);
+}
+
+function loadContacts() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    'Error loading contacts from localStorage:',
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  return normalizeContactsList(parsed);
+}
+
+function saveContacts(contacts) {
+  const safeStorage = getSafeLocalStorage();
+  if (contacts === null || contacts === undefined) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      'Error deleting contacts from localStorage:',
+    );
+    return;
+  }
+
+  if (!Array.isArray(contacts)) {
+    console.warn('Ignoring invalid contacts payload. Expected an array.');
+    return;
+  }
+
+  const normalized = normalizeContactsList(contacts);
+  ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    normalized,
+    'Error saving contacts to localStorage:',
+    { disableCompression: true },
+  );
+}
+
 function normalizeOwnGearItem(entry) {
   if (!entry || typeof entry !== 'object') {
     return null;
@@ -14141,6 +14362,7 @@ function clearAllData() {
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
@@ -14515,6 +14737,7 @@ function clearAllData() {
       feedback: loadFeedback(),
       project: loadProject(),
       favorites: loadFavorites(),
+      contacts: loadContacts(),
       ownGear: loadOwnGear(),
       userProfile: null,
       autoGearRules: loadAutoGearRules(),
@@ -14708,6 +14931,18 @@ function normalizeImportedArray(value, fallbackKeys = [], filterFn = null) {
   }
 
   return [];
+}
+
+function normalizeImportedContacts(value) {
+  const entries = normalizeImportedArray(
+    value,
+    ['contacts', 'entries', 'items', 'list', 'values', 'data'],
+    (entry) => entry && typeof entry === 'object',
+  );
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  return normalizeContactsList(entries);
 }
 
 function normalizeImportedAutoGearRules(value) {
@@ -15012,6 +15247,7 @@ function convertStorageSnapshotToData(snapshot) {
     'session',
     'feedback',
     'favorites',
+    'contacts',
     'preferences',
     'project',
     'projects',
@@ -15111,6 +15347,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
   assignJSONValue(PROJECT_STORAGE_KEY, 'project');
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(CONTACTS_STORAGE_KEY, 'contacts');
   assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
   assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
   assignJSONValue(DOCUMENTATION_TRACKER_STORAGE_KEY, 'documentationTracker');
@@ -15281,6 +15518,14 @@ function importAllData(allData, options = {}) {
   }
   if (hasOwn('favorites')) {
     saveFavorites(allData.favorites);
+  }
+  if (hasOwn('contacts')) {
+    if (allData.contacts === null) {
+      saveContacts(null);
+    } else {
+      const contacts = normalizeImportedContacts(allData.contacts);
+      saveContacts(contacts);
+    }
   }
   if (hasOwn('ownGear')) {
     const entries = normalizeImportedArray(
@@ -15573,6 +15818,8 @@ var STORAGE_API = {
   saveSessionState,
   loadFavorites,
   saveFavorites,
+  loadContacts,
+  saveContacts,
   loadOwnGear,
   saveOwnGear,
   loadUserProfile,

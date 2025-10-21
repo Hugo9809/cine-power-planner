@@ -26,8 +26,8 @@ workstations.
 ## Backup
 
 - **Planner backup:** **Settings → Backup & Restore → Backup** exports
-  `planner-backup.json`, capturing all projects, favorites, automatic gear rules
-  and preferences.
+  `planner-backup.json`, capturing all projects, favorites, contacts, own gear,
+  automatic gear rules and preferences.
 - **Checksum discipline:** Generate SHA-256 hashes for each backup and store them
   with physical copies.
 - **Archive storage:** Keep at least two copies (primary + offsite). Log
