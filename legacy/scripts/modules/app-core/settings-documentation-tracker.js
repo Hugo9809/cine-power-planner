@@ -315,7 +315,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
       sectionOrder.forEach(function (sectionKey) {
         var config = sectionConfig[sectionKey];
-        var map = cloned.statuses[sectionKey] || {};
+        var map = cloned.statuses[sectionKey] || Object.create(null);
         if (config && Array.isArray(config.items)) {
           config.items.forEach(function (item) {
             // Prevent prototype pollution
