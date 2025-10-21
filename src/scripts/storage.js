@@ -5095,11 +5095,17 @@ function ensurePreWriteMigrationBackup(storage, key) {
   }
 
   let parsedValue = rawValue;
+  let normalizedRawValue = rawValue;
   if (typeof rawValue === 'string' && rawValue) {
-    try {
-      parsedValue = JSON.parse(rawValue);
-    } catch (parseError) {
-      void parseError;
+    normalizedRawValue = maybeDecompressStoredString(rawValue);
+    if (typeof normalizedRawValue === 'string' && normalizedRawValue) {
+      try {
+        parsedValue = JSON.parse(normalizedRawValue);
+      } catch (parseError) {
+        void parseError;
+      }
+    } else {
+      parsedValue = normalizedRawValue;
     }
   }
 
