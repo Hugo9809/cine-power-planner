@@ -10,6 +10,7 @@ const LOG_ENTRY_MESSAGE_TYPE = 'cine-sw:log-entry';
 const LOG_STATE_REQUEST_TYPE = 'cine-sw:log-state-request';
 const LOG_STATE_RESPONSE_TYPE = 'cine-sw:log-state';
 const CACHE_MATCH_IGNORE_SEARCH_OPTIONS = Object.freeze({ ignoreSearch: true });
+const APP_CACHE_IDENTIFIERS = Object.freeze(['cine-power-planner', 'cinepowerplanner']);
 
 let logEntryCounter = 0;
 let logBroadcastChannel = null;
@@ -791,11 +792,8 @@ if (typeof self !== 'undefined') {
     event.waitUntil((async () => {
       try {
         const keys = await caches.keys();
-        await Promise.all(
-          keys
-            .filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-        );
+        const keysToDelete = filterObsoleteCacheKeys(keys, CACHE_NAME);
+        await Promise.all(keysToDelete.map(key => caches.delete(key)));
       } catch (error) {
         serviceWorkerLog.warn('Failed to clean up outdated caches during activation.', error);
       }
@@ -1026,6 +1024,45 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ASSETS,
     CACHE_NAME,
-    __private__: { shouldBypassCache },
+    __private__: {
+      shouldBypassCache,
+      isRelevantCacheKeyForCleanup,
+      filterObsoleteCacheKeys,
+    },
   };
+}
+function isRelevantCacheKeyForCleanup(key, explicitName, lowerExplicit) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+
+  if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
+    return true;
+  }
+
+  const lowerKey = key.toLowerCase();
+  for (let index = 0; index < APP_CACHE_IDENTIFIERS.length; index += 1) {
+    if (lowerKey.includes(APP_CACHE_IDENTIFIERS[index])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function filterObsoleteCacheKeys(keys, activeCacheName) {
+  if (!Array.isArray(keys) || !keys.length) {
+    return [];
+  }
+
+  const explicitName = typeof activeCacheName === 'string' && activeCacheName
+    ? activeCacheName
+    : null;
+  const lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
+
+  return keys.filter(key =>
+    key
+    && key !== explicitName
+    && isRelevantCacheKeyForCleanup(key, explicitName, lowerExplicit)
+  );
 }

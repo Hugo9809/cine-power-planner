@@ -1,7 +1,7 @@
 const {
   ASSETS,
   CACHE_NAME,
-  __private__: { shouldBypassCache },
+  __private__: { shouldBypassCache, filterObsoleteCacheKeys },
 } = require('../../service-worker.js');
 
 const createHeaders = entries => ({
@@ -116,5 +116,31 @@ describe('service worker configuration', () => {
     };
 
     expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
+  });
+
+  test('keeps unrelated caches when cleaning up during activation', () => {
+    const cacheKeys = [
+      'cine-power-planner-v1',
+      'cinepowerplanner-temp-cache',
+      'cine-power-planner-staging',
+      'other-app-cache',
+      'static-assets',
+      CACHE_NAME,
+      'cinePowerPlannerExtras',
+    ];
+
+    const keysToDelete = filterObsoleteCacheKeys(cacheKeys, CACHE_NAME);
+
+    expect(keysToDelete).toEqual(
+      expect.arrayContaining([
+        'cine-power-planner-v1',
+        'cinepowerplanner-temp-cache',
+        'cine-power-planner-staging',
+      ]),
+    );
+    expect(keysToDelete).toEqual(expect.arrayContaining(['cinePowerPlannerExtras']));
+    expect(keysToDelete).not.toContain('other-app-cache');
+    expect(keysToDelete).not.toContain('static-assets');
+    expect(keysToDelete).not.toContain(CACHE_NAME);
   });
 });
