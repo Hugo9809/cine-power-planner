@@ -2789,6 +2789,13 @@ body.dark-mode .gear-item-edit-rental,
   align-items: center;
 }
 
+body.light-mode #projectBackupsHeading,
+body.light-mode #fullBackupHeading,
+body.pink-mode #projectBackupsHeading,
+body.pink-mode #fullBackupHeading {
+  color: var(--accent-color);
+}
+
 .full-backup-section {
   display: flex;
   flex-direction: column;
