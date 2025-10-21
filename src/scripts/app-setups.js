@@ -3296,6 +3296,28 @@ function formatOwnedGearExportLabel(ownerName) {
   return base.replace('%s', ownerName);
 }
 
+function getGearItemDisplayName(element) {
+  if (!element || typeof element.getAttribute !== 'function') {
+    return '';
+  }
+  const nameAttr = element.getAttribute('data-gear-name') || '';
+  const labelAttr = element.getAttribute('data-gear-label') || '';
+  const base = (nameAttr || labelAttr || '').trim();
+  const attributesAttr = (element.getAttribute('data-gear-attributes') || '').trim();
+  if (!attributesAttr) {
+    return base;
+  }
+  if (!base) {
+    return attributesAttr;
+  }
+  const normalizedBase = base.toLowerCase();
+  const normalizedAttributes = attributesAttr.toLowerCase();
+  if (normalizedBase.includes(normalizedAttributes)) {
+    return base;
+  }
+  return `${base} (${attributesAttr})`;
+}
+
 function collectOwnedGearMarkersForExport(root) {
   const scope = root || gearListOutput;
   if (!scope || typeof scope.querySelectorAll !== 'function') {
@@ -3331,7 +3353,7 @@ function collectOwnedGearMarkersForExport(root) {
       ownerProfileName: info.profileName || '',
       ownerType: info.type || '',
       contactId: info.contactId || '',
-      gearName: element.getAttribute('data-gear-name') || '',
+      gearName: getGearItemDisplayName(element),
     };
     markers.push(marker);
   });
@@ -5951,8 +5973,7 @@ function ensureOnboardMonitorRiggingAutoGearHighlight(table) {
     const fallbackRule = { id: ONBOARD_MONITOR_RIGGING_RULE_ID, label };
     const spans = Array.from(table.querySelectorAll('.gear-item')).filter(span => {
         if (!span) return false;
-        const dataName = typeof span.getAttribute === 'function' ? span.getAttribute('data-gear-name') : '';
-        const textSource = dataName || span.textContent || '';
+        const textSource = getGearItemDisplayName(span) || span.textContent || '';
         return normalizeAutoGearName(textSource) === target;
     });
     if (!spans.length) {
@@ -6053,9 +6074,9 @@ function analyzeAutoGearSegment(nodes) {
     if (!nodes || !nodes.length) return null;
     const span = nodes.find(node => node.nodeType === 1 && node.classList && node.classList.contains('gear-item'));
     if (span) {
-        const name = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+        const displayName = getGearItemDisplayName(span) || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
         const count = getSpanCount(span);
-        return { span, name, count };
+        return { span, name: displayName, count };
     }
     const wrapper = document.createElement('div');
     nodes.forEach(node => wrapper.appendChild(node.cloneNode(true)));
@@ -6630,7 +6651,7 @@ function addAutoGearItem(cell, item, rule) {
     const spans = Array.from(cell.querySelectorAll('.gear-item'));
     const targetNotesKey = normalizeAutoGearNotesKey(normalizedItem.notes);
     for (const span of spans) {
-        const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+        const spanName = getGearItemDisplayName(span) || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
         if (matchesAutoGearItem(name, spanName)) {
             const spanNotesKey = getAutoGearSpanNotesKey(span);
             if (targetNotesKey) {
@@ -7544,7 +7565,7 @@ function applyRentalExclusionsState(state) {
   });
   const spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
   spans.forEach(span => {
-    const name = span.getAttribute('data-gear-name');
+    const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
     setRentalExclusionState(span, exclusions.has(name));
   });
 }
@@ -7650,7 +7671,7 @@ function collectStandardItemSuggestions(categoryKey) {
     names.add(normalized);
   };
   group.querySelectorAll('.gear-standard-items .gear-item').forEach(item => {
-    const dataName = item.getAttribute('data-gear-name');
+    const dataName = getGearItemDisplayName(item) || item.getAttribute('data-gear-name');
     if (dataName) {
       addName(dataName);
     } else {
@@ -11443,9 +11464,7 @@ function gearListGenerateHtmlImpl(info = {}) {
             : '';
         const wrapperHtml = `<span class="cage-select-wrapper"><span>1x</span>${hiddenLabelHtml}<select id="gearListCage"${ariaLabelAttr}>${options}</select></span>`;
         const attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
-        const dataName = attributesText
-            ? `${cageLabelText} (${attributesText})`
-            : cageLabelText;
+        const dataName = cageLabelText;
         const cageExtraAttributes = selectedNames.cage && hasCameraForLinking
             ? buildCameraLinkAttributes(selectedNames.cage)
             : '';
@@ -12869,7 +12888,7 @@ function getGearListSelectors() {
     if (gearListOutput) {
         const rentalState = {};
         gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
-            const name = span.getAttribute('data-gear-name');
+            const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
             if (!name) return;
             if (span.getAttribute('data-rental-excluded') === 'true') {
                 rentalState[name] = true;
@@ -14165,17 +14184,14 @@ function syncGearListCageItem(select) {
         ? option.text.trim()
         : (option && option.textContent ? option.textContent.trim() : '');
     const label = resolveGearListCageLabel();
-    const combinedName = optionText
-        ? `${label} (${optionText})`
-        : label;
     gearItem.setAttribute('data-gear-quantity', '1');
     if (label) {
         gearItem.setAttribute('data-gear-label', label);
     } else {
         gearItem.removeAttribute('data-gear-label');
     }
-    if (combinedName) {
-        gearItem.setAttribute('data-gear-name', combinedName);
+    if (label) {
+        gearItem.setAttribute('data-gear-name', label);
     } else {
         gearItem.removeAttribute('data-gear-name');
     }
