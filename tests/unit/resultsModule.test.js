@@ -1024,6 +1024,47 @@ describe('cineResults module', () => {
     expect(updateCalculations).toHaveBeenCalledTimes(1);
   });
 
+  test('setupRuntimeFeedback runtime button closes an open dialog', () => {
+    const doc = {
+      getElementById: jest.fn(() => null),
+    };
+
+    const button = createInteractiveElement('Feedback');
+    const dialog = {
+      ...createInteractiveElement('Dialog'),
+      close: jest.fn(),
+      hasAttribute: jest.fn(() => true),
+    };
+    dialog.open = true;
+
+    const form = createInteractiveElement('Form');
+    const cancelBtn = createInteractiveElement('Cancel');
+    const useLocationBtn = createInteractiveElement('Use location');
+    useLocationBtn.disabled = false;
+
+    const openDialog = jest.fn();
+    const closeDialog = jest.fn();
+
+    const wired = cineResults.setupRuntimeFeedback({
+      document: doc,
+      runtimeFeedbackButton: button,
+      feedbackDialog: dialog,
+      feedbackForm: form,
+      feedbackCancelBtn: cancelBtn,
+      feedbackUseLocationBtn: useLocationBtn,
+      openDialog,
+      closeDialog,
+    });
+
+    expect(wired).toBe(true);
+
+    button.listeners.click();
+
+    expect(closeDialog).toHaveBeenCalledWith(dialog);
+    expect(openDialog).not.toHaveBeenCalled();
+    expect(dialog.close).not.toHaveBeenCalled();
+  });
+
   test('setupRuntimeFeedback picks up latest updateCalculations reference', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
