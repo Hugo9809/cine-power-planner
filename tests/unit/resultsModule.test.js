@@ -1224,7 +1224,7 @@ describe('cineResults module', () => {
     expect(updateCalculations).toHaveBeenCalledTimes(1);
   });
 
-  test('setupRuntimeFeedback pre-fills camera and battery plate fields from current selections', () => {
+  test('setupRuntimeFeedback pre-fills current gear selections into runtime feedback fields', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
       fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
@@ -1245,6 +1245,64 @@ describe('cineResults module', () => {
         { textContent: 'V-Mount', value: 'V-Mount' },
       ],
     };
+    const batterySelect = {
+      value: 'Core SWX 150Wh',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'Core SWX 150Wh', value: 'Core SWX 150Wh' },
+      ],
+    };
+    const monitorSelect = {
+      value: 'SmallHD Cine 7',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'SmallHD Cine 7', value: 'SmallHD Cine 7' },
+      ],
+    };
+    const videoSelect = {
+      value: 'Teradek Bolt 4K',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'Teradek Bolt 4K', value: 'Teradek Bolt 4K' },
+      ],
+    };
+    const motor1Select = {
+      value: 'cforce mini RF',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'cforce mini RF', value: 'cforce mini RF' },
+        { textContent: 'None', value: 'None' },
+      ],
+    };
+    const motor2Select = {
+      value: 'None',
+      selectedIndex: 1,
+      options: [
+        { textContent: 'cforce plus', value: 'cforce plus' },
+        { textContent: 'None', value: 'None' },
+      ],
+    };
+    const controller1Select = {
+      value: 'ARRI Hi-5',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'ARRI Hi-5', value: 'ARRI Hi-5' },
+      ],
+    };
+    const controller2Select = {
+      value: 'WCU-4',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'WCU-4', value: 'WCU-4' },
+      ],
+    };
+    const controller3Select = {
+      value: 'None',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'None', value: 'None' },
+      ],
+    };
 
     const doc = {
       getElementById: jest.fn((id) => {
@@ -1256,6 +1314,36 @@ describe('cineResults module', () => {
         }
         if (id === 'batteryPlateSelect') {
           return batteryPlateSelect;
+        }
+        if (id === 'batterySelect') {
+          return batterySelect;
+        }
+        if (id === 'monitorSelect') {
+          return monitorSelect;
+        }
+        if (id === 'videoSelect') {
+          return videoSelect;
+        }
+        if (id === 'motor1Select') {
+          return motor1Select;
+        }
+        if (id === 'motor2Select') {
+          return motor2Select;
+        }
+        if (id === 'motor3Select' || id === 'motor4Select') {
+          return null;
+        }
+        if (id === 'controller1Select') {
+          return controller1Select;
+        }
+        if (id === 'controller2Select') {
+          return controller2Select;
+        }
+        if (id === 'controller3Select') {
+          return controller3Select;
+        }
+        if (id === 'controller4Select') {
+          return null;
         }
         return null;
       }),
@@ -1287,6 +1375,11 @@ describe('cineResults module', () => {
     expect(getSelectedPlate).toHaveBeenCalledTimes(1);
     expect(fieldElements.get('fbCamera').value).toBe('Sony VENICE 2');
     expect(fieldElements.get('fbBatteryPlate').value).toBe('Gold-Mount');
+    expect(fieldElements.get('fbBattery').value).toBe('Core SWX 150Wh');
+    expect(fieldElements.get('fbWirelessVideo').value).toBe('Teradek Bolt 4K');
+    expect(fieldElements.get('fbMonitor').value).toBe('SmallHD Cine 7');
+    expect(fieldElements.get('fbControllers').value).toBe('ARRI Hi-5, WCU-4');
+    expect(fieldElements.get('fbMotors').value).toBe('cforce mini RF');
     expect(openDialog).toHaveBeenCalledWith(dialog);
   });
 
