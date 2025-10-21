@@ -10538,6 +10538,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   font-family: var(--font-family);
   font-size: var(--form-control-font-size);
   line-height: var(--line-height-base);
+  font-weight: var(--font-weight-light);
 }
 
 @media (min-width: 1024px) {
