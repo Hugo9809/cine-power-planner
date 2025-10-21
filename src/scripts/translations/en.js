@@ -1586,6 +1586,7 @@
       "userProfileInteractionIntro": "Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.",
       "userProfileInteractionSkipHint": "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
       "userProfileAvatarAction": "Add profile photo",
+      "userProfileAvatarEditAction": "Edit photo",
       "unitsPreferencesLanguageLabel": "Language",
       "unitsPreferencesThemeLabel": "Theme",
       "unitsPreferencesThemeLight": "Light",

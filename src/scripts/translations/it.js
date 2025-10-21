@@ -1586,6 +1586,7 @@
       "userProfileInteractionIntro": "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il setup.",
       "userProfileInteractionSkipHint": "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
       "userProfileAvatarAction": "Aggiungi foto profilo",
+      "userProfileAvatarEditAction": "Modifica foto",
       "unitsPreferencesLanguageLabel": "Lingua",
       "unitsPreferencesThemeLabel": "Tema",
       "unitsPreferencesThemeLight": "Chiaro",

@@ -4653,7 +4653,10 @@
       return raw ? raw.charAt(0).toUpperCase() : '•';
     };
 
+    let applyAvatarActionLabel = () => {};
+
     const updateAvatarPreview = () => {
+      let hasPhoto = false;
       while (avatarPreview.firstChild) {
         avatarPreview.removeChild(avatarPreview.firstChild);
       }
@@ -4666,18 +4669,71 @@
             img.src = currentImage.src;
             img.alt = '';
             avatarPreview.appendChild(img);
-            return;
-          }
-          const text = visual.textContent ? visual.textContent.trim() : '';
-          if (text) {
-            renderAvatarInitial(text.charAt(0).toUpperCase());
-            return;
+            hasPhoto = true;
+          } else {
+            const text = visual.textContent ? visual.textContent.trim() : '';
+            if (text) {
+              renderAvatarInitial(text.charAt(0).toUpperCase());
+              applyAvatarActionLabel(false);
+              return;
+            }
           }
         }
       }
-      renderAvatarInitial(getNameInitial());
+      if (!hasPhoto) {
+        renderAvatarInitial(getNameInitial());
+      }
+      applyAvatarActionLabel(hasPhoto);
     };
-
+    const rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
+      ? avatarButtonLabel.textContent.trim()
+      : '';
+    const fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string'
+      ? tourTexts.userProfileAvatarAction
+      : 'Add profile photo';
+    const fallbackAvatarEditAction = tourTexts && typeof tourTexts.userProfileAvatarEditAction === 'string'
+      ? tourTexts.userProfileAvatarEditAction
+      : 'Edit photo';
+    const avatarChangeLabel = (() => {
+      const lang = resolveLanguage();
+      const texts = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.texts === 'object' ? GLOBAL_SCOPE.texts : {};
+      const langPack = texts && typeof texts[lang] === 'object' ? texts[lang] : null;
+      const fallbackPack = texts && typeof texts.en === 'object' ? texts.en : null;
+      const langContacts = langPack && typeof langPack.contacts === 'object' ? langPack.contacts : null;
+      const fallbackContacts = fallbackPack && typeof fallbackPack.contacts === 'object' ? fallbackPack.contacts : null;
+      const primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string'
+        ? langContacts.userProfileAvatarButton.trim()
+        : '';
+      if (primary) {
+        return primary;
+      }
+      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string'
+        ? fallbackContacts.userProfileAvatarButton.trim()
+        : '';
+    })();
+    const normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
+    const matchesAvatarChangeLabel = (value) => {
+      if (!value) {
+        return false;
+      }
+      return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
+    };
+    const resolveAvatarActionLabel = (hasPhoto) => {
+      if (!normalizedAvatarAction || matchesAvatarChangeLabel(normalizedAvatarAction)) {
+        return hasPhoto ? fallbackAvatarEditAction : fallbackAvatarAction;
+      }
+      return normalizedAvatarAction;
+    };
+    const avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
+    applyAvatarActionLabel = (hasPhoto) => {
+      const label = resolveAvatarActionLabel(hasPhoto);
+      if (avatarAction.textContent !== label) {
+        avatarAction.textContent = label;
+      }
+    };
+    applyAvatarActionLabel(false);
     updateAvatarPreview();
 
     let avatarObserver = null;
@@ -4696,40 +4752,6 @@
         void error;
       }
     }
-
-    const rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
-      ? avatarButtonLabel.textContent.trim()
-      : '';
-    const fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string'
-      ? tourTexts.userProfileAvatarAction
-      : 'Add profile photo';
-    const avatarChangeLabel = (() => {
-      const lang = resolveLanguage();
-      const texts = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.texts === 'object' ? GLOBAL_SCOPE.texts : {};
-      const langPack = texts && typeof texts[lang] === 'object' ? texts[lang] : null;
-      const fallbackPack = texts && typeof texts.en === 'object' ? texts.en : null;
-      const langContacts = langPack && typeof langPack.contacts === 'object' ? langPack.contacts : null;
-      const fallbackContacts = fallbackPack && typeof fallbackPack.contacts === 'object' ? fallbackPack.contacts : null;
-      const primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string'
-        ? langContacts.userProfileAvatarButton.trim()
-        : '';
-      if (primary) {
-        return primary;
-      }
-      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string'
-        ? fallbackContacts.userProfileAvatarButton.trim()
-        : '';
-    })();
-    const normalizedAvatarAction = rawAvatarActionLabel || '';
-    const avatarActionLabel = !normalizedAvatarAction
-      ? fallbackAvatarAction
-      : avatarChangeLabel && normalizedAvatarAction.toLowerCase() === avatarChangeLabel.toLowerCase()
-        ? fallbackAvatarAction
-        : normalizedAvatarAction;
-    const avatarAction = DOCUMENT.createElement('button');
-    avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
-    avatarAction.textContent = avatarActionLabel;
     const handleAvatarActionClick = () => {
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {

@@ -1579,6 +1579,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionIntro": "Saisissez une fois les informations de votre équipe. Chaque mise à jour se synchronise immédiatement avec Contacts, reste mise en cache hors ligne et se retrouve dans les exports pour que l’équipe sache toujours qui possède le setup.",
         "userProfileInteractionSkipHint": "Appuyez sur Suivant quand vous êtes prêt : Contacts dans la barre latérale affiche toujours ces informations sauvegardées sans réinitialiser la progression du tutoriel.",
         "userProfileAvatarAction": "Ajouter une photo de profil",
+        "userProfileAvatarEditAction": "Modifier la photo",
         "unitsPreferencesLanguageLabel": "Langue",
         "unitsPreferencesThemeLabel": "Thème",
         "unitsPreferencesThemeLight": "Clair",

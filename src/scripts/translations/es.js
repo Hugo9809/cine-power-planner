@@ -1586,6 +1586,7 @@
       "userProfileInteractionIntro": "Introduce los datos de tu equipo una sola vez. Cada actualización se sincroniza al instante con Contactos, permanece guardada sin conexión y se refleja en las exportaciones para que el equipo siempre sepa quién es el responsable del set.",
       "userProfileInteractionSkipHint": "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
       "userProfileAvatarAction": "Añadir foto de perfil",
+      "userProfileAvatarEditAction": "Editar foto",
       "unitsPreferencesLanguageLabel": "Idioma",
       "unitsPreferencesThemeLabel": "Tema",
       "unitsPreferencesThemeLight": "Claro",

@@ -3971,7 +3971,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var raw = profileInput && typeof profileInput.value === 'string' ? profileInput.value.trim() : '';
       return raw ? raw.charAt(0).toUpperCase() : '•';
     };
+    var applyAvatarActionLabel = function applyAvatarActionLabel() {};
     var updateAvatarPreview = function updateAvatarPreview() {
+      var hasPhoto = false;
       while (avatarPreview.firstChild) {
         avatarPreview.removeChild(avatarPreview.firstChild);
       }
@@ -3984,17 +3986,61 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             img.src = currentImage.src;
             img.alt = '';
             avatarPreview.appendChild(img);
-            return;
-          }
-          var text = visual.textContent ? visual.textContent.trim() : '';
-          if (text) {
-            renderAvatarInitial(text.charAt(0).toUpperCase());
-            return;
+            hasPhoto = true;
+          } else {
+            var text = visual.textContent ? visual.textContent.trim() : '';
+            if (text) {
+              renderAvatarInitial(text.charAt(0).toUpperCase());
+              applyAvatarActionLabel(false);
+              return;
+            }
           }
         }
       }
-      renderAvatarInitial(getNameInitial());
+      if (!hasPhoto) {
+        renderAvatarInitial(getNameInitial());
+      }
+      applyAvatarActionLabel(hasPhoto);
     };
+    var rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent.trim() : '';
+    var fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string' ? tourTexts.userProfileAvatarAction : 'Add profile photo';
+    var fallbackAvatarEditAction = tourTexts && typeof tourTexts.userProfileAvatarEditAction === 'string' ? tourTexts.userProfileAvatarEditAction : 'Edit photo';
+    var avatarChangeLabel = function () {
+      var lang = resolveLanguage();
+      var texts = GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.texts) === 'object' ? GLOBAL_SCOPE.texts : {};
+      var langPack = texts && _typeof(texts[lang]) === 'object' ? texts[lang] : null;
+      var fallbackPack = texts && _typeof(texts.en) === 'object' ? texts.en : null;
+      var langContacts = langPack && _typeof(langPack.contacts) === 'object' ? langPack.contacts : null;
+      var fallbackContacts = fallbackPack && _typeof(fallbackPack.contacts) === 'object' ? fallbackPack.contacts : null;
+      var primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string' ? langContacts.userProfileAvatarButton.trim() : '';
+      if (primary) {
+        return primary;
+      }
+      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string' ? fallbackContacts.userProfileAvatarButton.trim() : '';
+    }();
+    var normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
+    var matchesAvatarChangeLabel = function matchesAvatarChangeLabel(value) {
+      if (!value) {
+        return false;
+      }
+      return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
+    };
+    var resolveAvatarActionLabel = function resolveAvatarActionLabel(hasPhoto) {
+      if (!normalizedAvatarAction || matchesAvatarChangeLabel(normalizedAvatarAction)) {
+        return hasPhoto ? fallbackAvatarEditAction : fallbackAvatarAction;
+      }
+      return normalizedAvatarAction;
+    };
+    var avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
+    applyAvatarActionLabel = function applyAvatarActionLabel(hasPhoto) {
+      var label = resolveAvatarActionLabel(hasPhoto);
+      if (avatarAction.textContent !== label) {
+        avatarAction.textContent = label;
+      }
+    };
+    applyAvatarActionLabel(false);
     updateAvatarPreview();
     var avatarObserver = null;
     if (GLOBAL_SCOPE.MutationObserver && avatarContainer) {
@@ -4018,27 +4064,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-    var rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent.trim() : '';
-    var fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string' ? tourTexts.userProfileAvatarAction : 'Add profile photo';
-    var avatarChangeLabel = function () {
-      var lang = resolveLanguage();
-      var texts = GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.texts) === 'object' ? GLOBAL_SCOPE.texts : {};
-      var langPack = texts && _typeof(texts[lang]) === 'object' ? texts[lang] : null;
-      var fallbackPack = texts && _typeof(texts.en) === 'object' ? texts.en : null;
-      var langContacts = langPack && _typeof(langPack.contacts) === 'object' ? langPack.contacts : null;
-      var fallbackContacts = fallbackPack && _typeof(fallbackPack.contacts) === 'object' ? fallbackPack.contacts : null;
-      var primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string' ? langContacts.userProfileAvatarButton.trim() : '';
-      if (primary) {
-        return primary;
-      }
-      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string' ? fallbackContacts.userProfileAvatarButton.trim() : '';
-    }();
-    var normalizedAvatarAction = rawAvatarActionLabel || '';
-    var avatarActionLabel = !normalizedAvatarAction ? fallbackAvatarAction : avatarChangeLabel && normalizedAvatarAction.toLowerCase() === avatarChangeLabel.toLowerCase() ? fallbackAvatarAction : normalizedAvatarAction;
-    var avatarAction = DOCUMENT.createElement('button');
-    avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
-    avatarAction.textContent = avatarActionLabel;
     var handleAvatarActionClick = function handleAvatarActionClick() {
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {
