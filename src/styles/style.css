@@ -11716,6 +11716,14 @@ body.dark-mode .requirement-box,
   font-size: calc(var(--button-icon-size) * 0.7);
 }
 
+#gearListOutput .gear-item-edit-btn .gear-item-edit-fallback {
+  display: inline-block;
+  font-size: calc(var(--font-size-relative-base) * 0.85);
+  font-weight: 600;
+  line-height: 1;
+  padding-inline: 0.1rem;
+}
+
 #gearListOutput .gear-item-rental-excluded {
   color: color-mix(in srgb, var(--text-color) 68%, var(--muted-text-color, #666) 32%);
 }
