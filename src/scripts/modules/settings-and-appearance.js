@@ -1215,6 +1215,12 @@
       if (settings.reduceMotion) {
         settings.reduceMotion.checked = Boolean(enabled);
       }
+
+      if (enabled) {
+        stopPinkModeAnimatedIconRotation();
+      } else if (isPinkModeActive()) {
+        startPinkModeAnimatedIconRotation();
+      }
     }
 
     function applyRelaxedSpacing(enabled) {
