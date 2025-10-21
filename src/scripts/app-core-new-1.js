@@ -5582,6 +5582,8 @@ function setInstallBannerOffset(offset) {
 }
 
 let pendingInstallBannerPositionUpdate = false;
+const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
+  'Force reload requires an internet connection. Try again once you are back online.';
 
 function scheduleInstallBannerPositionUpdate() {
   if (pendingInstallBannerPositionUpdate) return;
@@ -5645,15 +5647,133 @@ function setupOfflineIndicator() {
   const offlineIndicator = document.getElementById('offlineIndicator');
   if (!offlineIndicator) return;
 
+  const reloadButton = document.getElementById('reloadButton');
+  const dataset = offlineIndicator.dataset || {};
+  const currentLabel =
+    typeof offlineIndicator.textContent === 'string' && offlineIndicator.textContent.trim()
+      ? offlineIndicator.textContent.trim()
+      : 'Offline';
+
+  if (offlineIndicator.dataset) {
+    if (!dataset.baseLabel || !dataset.baseLabel.trim()) {
+      offlineIndicator.dataset.baseLabel = currentLabel;
+    }
+    const currentHelp = typeof offlineIndicator.getAttribute === 'function'
+      ? offlineIndicator.getAttribute('data-help')
+      : null;
+    if (!offlineIndicator.dataset.baseHelp || !offlineIndicator.dataset.baseHelp.trim()) {
+      if (typeof currentHelp === 'string' && currentHelp.trim()) {
+        offlineIndicator.dataset.baseHelp = currentHelp.trim();
+      } else {
+        offlineIndicator.dataset.baseHelp = offlineIndicator.dataset.baseLabel || currentLabel;
+      }
+    }
+    if (!offlineIndicator.dataset.forceReloadNotice || !offlineIndicator.dataset.forceReloadNotice.trim()) {
+      offlineIndicator.dataset.forceReloadNotice = FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+    }
+  }
+
+  const resolveOfflineNotice = () => {
+    const indicatorNotice = offlineIndicator.dataset?.forceReloadNotice;
+    if (typeof indicatorNotice === 'string' && indicatorNotice.trim()) {
+      return indicatorNotice.trim();
+    }
+
+    const buttonNotice = reloadButton?.dataset?.offlineNotice;
+    if (typeof buttonNotice === 'string' && buttonNotice.trim()) {
+      return buttonNotice.trim();
+    }
+
+    return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+  };
+
+  const updateReloadButtonState = (isOnline, offlineNotice) => {
+    if (!reloadButton) {
+      return;
+    }
+
+    if (reloadButton.dataset) {
+      if (!reloadButton.dataset.onlineTitle || !reloadButton.dataset.onlineTitle.trim()) {
+        const currentTitle = reloadButton.getAttribute('title');
+        if (typeof currentTitle === 'string' && currentTitle.trim()) {
+          reloadButton.dataset.onlineTitle = currentTitle.trim();
+        } else {
+          reloadButton.dataset.onlineTitle = 'Force reload';
+        }
+      }
+
+      if (!reloadButton.dataset.onlineHelp || !reloadButton.dataset.onlineHelp.trim()) {
+        const currentHelp = reloadButton.getAttribute('data-help');
+        if (typeof currentHelp === 'string' && currentHelp.trim()) {
+          reloadButton.dataset.onlineHelp = currentHelp.trim();
+        } else {
+          reloadButton.dataset.onlineHelp = reloadButton.dataset.onlineTitle;
+        }
+      }
+
+      if (!reloadButton.dataset.onlineAriaLabel || !reloadButton.dataset.onlineAriaLabel.trim()) {
+        const ariaLabel = reloadButton.getAttribute('aria-label');
+        if (typeof ariaLabel === 'string' && ariaLabel.trim()) {
+          reloadButton.dataset.onlineAriaLabel = ariaLabel.trim();
+        } else {
+          reloadButton.dataset.onlineAriaLabel = reloadButton.dataset.onlineTitle;
+        }
+      }
+
+      if (!reloadButton.dataset.offlineNotice || !reloadButton.dataset.offlineNotice.trim()) {
+        reloadButton.dataset.offlineNotice = offlineNotice;
+      }
+    }
+
+    if (isOnline) {
+      reloadButton.removeAttribute('disabled');
+      reloadButton.removeAttribute('aria-disabled');
+      const title = reloadButton.dataset?.onlineTitle || 'Force reload';
+      const help = reloadButton.dataset?.onlineHelp || title;
+      reloadButton.setAttribute('title', title);
+      reloadButton.setAttribute('data-help', help);
+      const ariaLabel = reloadButton.dataset?.onlineAriaLabel || title;
+      reloadButton.setAttribute('aria-label', ariaLabel);
+    } else {
+      const notice = reloadButton.dataset?.offlineNotice || offlineNotice;
+      reloadButton.setAttribute('disabled', 'disabled');
+      reloadButton.setAttribute('aria-disabled', 'true');
+      reloadButton.setAttribute('title', notice);
+      reloadButton.setAttribute('data-help', notice);
+      reloadButton.setAttribute('aria-label', notice);
+    }
+  };
+
   const updateOnlineStatus = () => {
     const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
+    const offlineNotice = resolveOfflineNotice();
+    const baseLabel = offlineIndicator.dataset?.baseLabel && offlineIndicator.dataset.baseLabel.trim()
+      ? offlineIndicator.dataset.baseLabel.trim()
+      : currentLabel;
+    const baseHelp = offlineIndicator.dataset?.baseHelp && offlineIndicator.dataset.baseHelp.trim()
+      ? offlineIndicator.dataset.baseHelp.trim()
+      : baseLabel;
+
     if (isOnline) {
+      if (typeof offlineIndicator.textContent === 'string' || typeof offlineIndicator.textContent === 'object') {
+        offlineIndicator.textContent = baseLabel;
+      }
+      offlineIndicator.setAttribute('data-help', baseHelp);
       if (!offlineIndicator.hasAttribute('hidden')) {
         offlineIndicator.setAttribute('hidden', '');
       }
     } else {
+      if (offlineIndicator.dataset) {
+        offlineIndicator.dataset.forceReloadNotice = offlineNotice;
+      }
+      if (typeof offlineIndicator.textContent === 'string' || typeof offlineIndicator.textContent === 'object') {
+        offlineIndicator.textContent = offlineNotice;
+      }
+      offlineIndicator.setAttribute('data-help', offlineNotice);
       offlineIndicator.removeAttribute('hidden');
     }
+
+    updateReloadButtonState(isOnline, offlineNotice);
     if (typeof updateInstallBannerPosition === 'function') {
       updateInstallBannerPosition();
     }
@@ -10037,10 +10157,28 @@ async function setLanguage(lang) {
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) {
-    offlineElem.textContent = texts[lang].offlineIndicator;
-    const offlineHelp =
-      texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
-    offlineElem.setAttribute("data-help", offlineHelp);
+    const offlineLabel = texts[lang].offlineIndicator;
+    const offlineNotice = texts[lang].reloadAppOfflineNotice || offlineLabel;
+    const offlineHelp = texts[lang].offlineIndicatorHelp || offlineNotice;
+    const isExplicitlyOffline =
+      typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean'
+        ? navigator.onLine === false
+        : false;
+
+    if (offlineElem.dataset) {
+      offlineElem.dataset.baseLabel = offlineLabel;
+      offlineElem.dataset.baseHelp = offlineHelp;
+      offlineElem.dataset.forceReloadNotice = offlineNotice;
+    }
+
+    if (isExplicitlyOffline) {
+      offlineElem.textContent = offlineNotice;
+      offlineElem.setAttribute('data-help', offlineNotice);
+      offlineElem.removeAttribute('hidden');
+    } else {
+      offlineElem.textContent = offlineLabel;
+      offlineElem.setAttribute('data-help', offlineHelp);
+    }
   }
   applyInstallTexts(lang);
   const legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
@@ -12897,12 +13035,21 @@ async function setLanguage(lang) {
     }
   }
   if (reloadButton) {
-    reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
-    reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
-    reloadButton.setAttribute(
-      "data-help",
-      texts[lang].reloadAppHelp || texts[lang].reloadAppLabel
-    );
+    const reloadLabel = texts[lang].reloadAppLabel;
+    const reloadHelp = texts[lang].reloadAppHelp || reloadLabel;
+    const offlineNotice = texts[lang].reloadAppOfflineNotice || reloadLabel;
+    reloadButton.setAttribute('title', reloadLabel);
+    reloadButton.setAttribute('aria-label', reloadLabel);
+    reloadButton.setAttribute('data-help', reloadHelp);
+    if (reloadButton.dataset) {
+      reloadButton.dataset.onlineTitle = reloadLabel;
+      reloadButton.dataset.onlineHelp = reloadHelp;
+      reloadButton.dataset.offlineNotice = offlineNotice;
+    }
+    if (reloadButton.hasAttribute('aria-disabled')) {
+      reloadButton.setAttribute('title', offlineNotice);
+      reloadButton.setAttribute('data-help', offlineNotice);
+    }
   }
   if (featureSearch) {
     featureSearch.setAttribute("placeholder", texts[lang].featureSearchPlaceholder);

@@ -51,6 +51,9 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 
+const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
+  'Force reload requires an internet connection. Try again once you are back online.';
+
 // Determine which global scope we can use for deep cloning. The order mirrors
 // the environments the planner needs to support: main window first, followed by
 // worker-like contexts and finally Node during testing.
@@ -137,6 +140,126 @@ function resolveSessionRuntimeFunction(name) {
   }
 
   return null;
+}
+
+function isNavigatorExplicitlyOffline(navigatorLike) {
+  if (!navigatorLike || typeof navigatorLike !== 'object') {
+    return false;
+  }
+
+  if (typeof navigatorLike.onLine !== 'boolean') {
+    return false;
+  }
+
+  return navigatorLike.onLine === false;
+}
+
+function resolveForceReloadOfflineNotice() {
+  let notice = '';
+
+  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    const indicator = document.getElementById('offlineIndicator');
+    if (indicator) {
+      const dataset = indicator.dataset || {};
+      const dataNotice =
+        (typeof dataset.forceReloadNotice === 'string' && dataset.forceReloadNotice.trim())
+          ? dataset.forceReloadNotice.trim()
+          : null;
+      const dataHelp =
+        (typeof dataset.reloadNotice === 'string' && dataset.reloadNotice.trim())
+          ? dataset.reloadNotice.trim()
+          : null;
+      const helpAttr =
+        typeof indicator.getAttribute === 'function'
+          ? indicator.getAttribute('data-help')
+          : null;
+      const helpAttrNormalized = typeof helpAttr === 'string' && helpAttr.trim() ? helpAttr.trim() : null;
+      const textContent = typeof indicator.textContent === 'string' && indicator.textContent.trim()
+        ? indicator.textContent.trim()
+        : null;
+
+      notice = dataNotice || dataHelp || helpAttrNormalized || textContent || '';
+
+      if (!notice) {
+        const baseLabel =
+          (typeof dataset.baseLabel === 'string' && dataset.baseLabel.trim())
+            ? dataset.baseLabel.trim()
+            : null;
+        if (baseLabel) {
+          notice = baseLabel;
+        }
+      }
+
+      if (notice) {
+        return notice;
+      }
+    }
+  }
+
+  const resolveLocale = resolveSessionRuntimeFunction('resolveLocaleString');
+  if (typeof resolveLocale === 'function') {
+    try {
+      const localized = resolveLocale('reloadAppOfflineNotice');
+      if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+      }
+    } catch (localeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveForceReloadOfflineNotice: failed to resolve locale string', localeError);
+      }
+    }
+  }
+
+  return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+}
+
+function announceForceReloadOfflineNotice() {
+  const notice = resolveForceReloadOfflineNotice();
+  let handled = false;
+
+  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    const indicator = document.getElementById('offlineIndicator');
+    if (indicator) {
+      handled = true;
+
+      if (indicator.dataset) {
+        indicator.dataset.forceReloadNotice = notice;
+        indicator.dataset.reloadNotice = notice;
+      }
+
+      if (typeof indicator.setAttribute === 'function') {
+        indicator.setAttribute('data-help', notice);
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-live', 'polite');
+      }
+
+      if (typeof indicator.removeAttribute === 'function') {
+        indicator.removeAttribute('hidden');
+      }
+
+      if (typeof indicator.textContent === 'string' || typeof indicator.textContent === 'object') {
+        indicator.textContent = notice;
+      }
+    }
+  }
+
+  if (!handled && typeof window !== 'undefined' && typeof window.alert === 'function') {
+    try {
+      window.alert(notice);
+    } catch (alertError) {
+      void alertError;
+    }
+  }
+}
+
+try {
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    if (typeof globalThis.announceForceReloadOfflineNotice !== 'function') {
+      globalThis.announceForceReloadOfflineNotice = announceForceReloadOfflineNotice;
+    }
+  }
+} catch (exposeError) {
+  void exposeError;
 }
 
 function safeGetCurrentProjectName(defaultValue = '') {
@@ -13931,6 +14054,13 @@ async function collectServiceWorkerRegistrationsForReload(serviceWorker) {
 }
 
 async function clearCachesAndReload() {
+  const sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
+
+  if (isNavigatorExplicitlyOffline(sessionNavigator)) {
+    announceForceReloadOfflineNotice();
+    return { blocked: true, reason: 'offline' };
+  }
+
   try {
     flushProjectAutoSaveOnExit({ reason: 'before-manual-reload' });
   } catch (flushError) {
@@ -13950,7 +14080,6 @@ async function clearCachesAndReload() {
       ? readLocationHrefSafe(window.location)
       : '';
 
-  const sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
   const sessionCaches = typeof caches !== 'undefined' ? caches : undefined;
   const serviceWorkerLike = sessionNavigator && sessionNavigator.serviceWorker
     ? sessionNavigator.serviceWorker
@@ -13965,6 +14094,7 @@ async function clearCachesAndReload() {
         window,
         navigator: sessionNavigator,
         caches: sessionCaches,
+        onOfflineReloadBlocked: announceForceReloadOfflineNotice,
       });
 
       const { timedOut, result } = await awaitPromiseWithSoftTimeout(

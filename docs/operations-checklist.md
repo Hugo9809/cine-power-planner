@@ -7,6 +7,8 @@ restore workflows protect every bit of user data.
 ## Preparation
 
 - [ ] Disconnect from the internet after warming caches.
+- [ ] Verify the offline banner states that force reload requires connectivity
+      and the header reload control is disabled before proceeding.
 - [ ] Ensure the rehearsal project is loaded with representative data.
 - [ ] Confirm the latest planner backup and project bundles are stored safely.
 - [ ] Open a fresh copy of `docs/verification-log-template.md` to log evidence.

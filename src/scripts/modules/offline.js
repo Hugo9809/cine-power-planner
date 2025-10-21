@@ -1637,6 +1637,18 @@
     return resolveGlobal('navigator');
   }
 
+  function isNavigatorExplicitlyOffline(navigatorLike) {
+    if (!navigatorLike || typeof navigatorLike !== 'object') {
+      return false;
+    }
+
+    if (typeof navigatorLike.onLine !== 'boolean') {
+      return false;
+    }
+
+    return navigatorLike.onLine === false;
+  }
+
   function resolveCaches(explicitCaches) {
     if (explicitCaches) {
       return explicitCaches;
@@ -3101,6 +3113,33 @@
     );
 
     const navigatorLike = resolveNavigator(options.navigator);
+    if (isNavigatorExplicitlyOffline(navigatorLike)) {
+      const notifyOffline =
+        typeof options.onOfflineReloadBlocked === 'function'
+          ? options.onOfflineReloadBlocked
+          : resolveGlobal('announceForceReloadOfflineNotice');
+
+      if (typeof notifyOffline === 'function') {
+        try {
+          notifyOffline({ reason: 'offline', source: 'reloadApp' });
+        } catch (notifyError) {
+          safeWarn('Failed to announce offline reload guard', notifyError);
+        }
+      }
+
+      return {
+        blocked: true,
+        reason: 'offline',
+        uiCacheCleared: false,
+        serviceWorkersUnregistered: false,
+        serviceWorkerStatusKnown: false,
+        warmupCompleted: false,
+        cachesCleared: false,
+        reloadTriggered: false,
+        navigationTriggered: false,
+      };
+    }
+
     const serviceWorkerRegistrationsPromise =
       navigatorLike && navigatorLike.serviceWorker
         ? collectServiceWorkerRegistrations(navigatorLike)
