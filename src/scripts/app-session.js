@@ -17935,14 +17935,34 @@ function createFilterStorageValueSelect(type, selected) {
   return select;
 }
 
+function resolveFilterDetailsStorageElement() {
+  if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
+    return filterDetailsStorage;
+  }
+  if (typeof document === 'undefined') return null;
+  const element = document.getElementById('filterDetails');
+  if (!element) return null;
+  try {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      globalThis.filterDetailsStorage = element;
+    } else if (typeof window !== 'undefined' && window) {
+      window.filterDetailsStorage = element;
+    }
+  } catch (ex) {
+    void ex;
+  }
+  return element;
+}
+
 function renderFilterDetailsStorage(details) {
-  if (!filterDetailsStorage) return;
-  filterDetailsStorage.innerHTML = '';
+  const storageRoot = resolveFilterDetailsStorageElement();
+  if (!storageRoot) return;
+  storageRoot.innerHTML = '';
   if (!details.length) {
-    filterDetailsStorage.hidden = true;
+    storageRoot.hidden = true;
     return;
   }
-  filterDetailsStorage.hidden = true;
+  storageRoot.hidden = true;
   details.forEach(detail => {
     const { type, size, values, needsSize, needsValues } = detail;
     if (needsSize) {
@@ -17950,12 +17970,12 @@ function renderFilterDetailsStorage(details) {
       sizeSelect.hidden = true;
       sizeSelect.setAttribute('aria-hidden', 'true');
       sizeSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(sizeSelect);
+      storageRoot.appendChild(sizeSelect);
     }
     if (needsValues) {
       const valuesSelect = createFilterStorageValueSelect(type, values);
       valuesSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(valuesSelect);
+      storageRoot.appendChild(valuesSelect);
     }
   });
 }

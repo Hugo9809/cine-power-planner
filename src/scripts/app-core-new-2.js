@@ -16051,12 +16051,40 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
         FAVORITE_BUTTON_BY_SELECT.set(selectElem, favoriteButton);
         favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
-        favoriteButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
-        favoriteButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
-        favoriteButton.setAttribute(
-          'data-help',
-          texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel
-        );
+
+        const translations = (() => {
+          const translationSource =
+            (typeof texts === 'object' && texts) ||
+            (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE && GLOBAL_SCOPE.texts) ||
+            {};
+          const activeTexts = translationSource?.[currentLang];
+          const fallbackLangCandidates = [];
+          if (
+            typeof DEFAULT_LANGUAGE_SAFE === 'string' &&
+            translationSource?.[DEFAULT_LANGUAGE_SAFE]
+          ) {
+            fallbackLangCandidates.push(DEFAULT_LANGUAGE_SAFE);
+          }
+          if (translationSource?.en) {
+            fallbackLangCandidates.push('en');
+          }
+          const fallbackTexts = fallbackLangCandidates
+            .map(langKey => translationSource?.[langKey])
+            .find(bundle => bundle && typeof bundle === 'object') || {};
+          const label =
+            (activeTexts && activeTexts.favoriteToggleLabel) ||
+            fallbackTexts.favoriteToggleLabel ||
+            'Toggle favorite';
+          const help =
+            (activeTexts && activeTexts.favoriteToggleHelp) ||
+            fallbackTexts.favoriteToggleHelp ||
+            label;
+          return { label, help };
+        })();
+
+        favoriteButton.setAttribute('aria-label', translations.label);
+        favoriteButton.setAttribute('title', translations.label);
+        favoriteButton.setAttribute('data-help', translations.help);
 
         applyFavoritesToSelect(selectElem);
         updateFavoriteButton(selectElem);

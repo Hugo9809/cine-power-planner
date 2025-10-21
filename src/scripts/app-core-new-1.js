@@ -9592,6 +9592,36 @@ async function setLanguage(lang) {
   document.getElementById("tagline").textContent = translationSource[lang].tagline;
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
+  const attemptRefreshDeviceLists = () => {
+    let refreshFn = null;
+    if (typeof refreshDeviceLists === 'function') {
+      refreshFn = refreshDeviceLists;
+    } else if (runtimeScope && typeof runtimeScope.refreshDeviceLists === 'function') {
+      refreshFn = runtimeScope.refreshDeviceLists.bind(runtimeScope);
+    }
+
+    if (typeof refreshFn !== 'function') {
+      return false;
+    }
+
+    try {
+      refreshFn();
+    } catch (refreshError) {
+      console.warn('setLanguage: refreshDeviceLists execution failed', refreshError);
+    }
+    return true;
+  };
+
+  if (!attemptRefreshDeviceLists()) {
+    const retryRefresh = () => {
+      attemptRefreshDeviceLists();
+    };
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(retryRefresh);
+    } else if (typeof setTimeout === 'function') {
+      setTimeout(retryRefresh, 0);
+    }
+  }
   const fallbackLocale = translationSource[DEFAULT_LANGUAGE_SAFE] || {};
   const normalizeTemperatureUnitSafe = unit => {
     if (typeof normalizeTemperatureUnit === "function") {
