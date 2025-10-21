@@ -8,7 +8,7 @@ teams can trace historical issues offline.
 | --- | --- | --- | --- | --- | --- |
 | _(YYYY-MM-DD)_ | _(Name)_ | _(e.g. Backup restore)_ | _(Description)_ | _(High/Medium/Low)_ | _(Link to review-tasks entry / commit)_ |
 | 2025-10-13 | Automated QA | Offline cache manifest | `service-worker-assets.js` excluded schema and runtime helpers so offline loads miss critical modules. | High | TASK-001 |
-| 2025-10-14 | Automated QA | Offline documentation caching | Service worker asset manifest skips the `docs/` tree, so help and drill references 404 when crews browse the app offline even though the README directs them to those files. | Medium | TASK-008 |
+| 2025-10-14 | Automated QA | Offline documentation caching | Original: Service worker asset manifest skipped the `docs/` tree, so help and drill references 404 when crews browsed the app offline even though the README directs them to those files. Resolved 2025-03-04 after verifying `service-worker-assets.js` now enumerates the `docs/` entries, restoring offline access to the help packet. | Medium (initial; now mitigated) | TASK-008 (closed; evidence: `service-worker-assets.js` L17-L37) |
 | 2025-10-14 | Automated QA | Test plan clarity & coverage | `npm test` entry in `docs/testing-plan.md` only mentions the unit suite, leaving out the data/dom projects and masking missing assertions in storage alert coverage. | Medium | TASK-009 & TASK-010 |
 
 ## Usage guidelines
