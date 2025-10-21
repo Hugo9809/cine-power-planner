@@ -1416,7 +1416,7 @@
       heading.textContent = fileName || 'Manual backup';
       heading.style.margin = '0';
       heading.style.fontSize = '1.5rem';
-      heading.style.fontWeight = '600';
+      heading.style.fontWeight = '400';
 
       const description = doc.createElement('p');
       if (typeof getManualDownloadFallbackMessage === 'function') {

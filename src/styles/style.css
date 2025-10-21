@@ -123,11 +123,11 @@
   --icon-size-lg: calc(var(--font-size-relative-base) * var(--font-scale-xl));
   --icon-size-xl: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   --font-weight-light: 300;
-  --font-weight-regular: var(--font-weight-light);
+  --font-weight-bold: 400;
+  --font-weight-regular: var(--font-weight-bold);
   --font-weight-medium: var(--font-weight-bold);
-  --font-weight-bold: 500;
   --font-weight-semibold: var(--font-weight-bold);
-  --font-weight-strong: 650;
+  --font-weight-strong: var(--font-weight-bold);
   --font-size-diagram-icon: calc(var(--font-size-base) * var(--font-scale-icon-lg));
   --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-diagram-label));
   --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-diagram-text));
@@ -1098,7 +1098,7 @@ main.legal-content {
 
 .person-avatar-initial,
 .contact-card-avatar-initial {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   font-size: 1.25rem;
   text-transform: uppercase;
 }
@@ -1148,7 +1148,7 @@ main.legal-content {
   background: color-mix(in srgb, var(--accent-color) 12%, var(--surface-2));
   color: var(--text-muted);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .person-row[data-contact-id] .person-linked-badge {
@@ -1570,7 +1570,7 @@ main.legal-content {
 
 .avatar-edit-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   margin: 0;
 }
 
@@ -1987,7 +1987,7 @@ main.legal-content {
 
 .own-gear-item-title {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .own-gear-item-note {
@@ -2901,7 +2901,7 @@ body.pink-mode #fullBackupHeading {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-bold);
 }
 
 .restore-rehearsal-file {
@@ -2923,7 +2923,7 @@ body.pink-mode #fullBackupHeading {
 
 .restore-rehearsal-table caption {
   text-align: left;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   padding: 0.75rem;
 }
 
@@ -2950,12 +2950,12 @@ body.pink-mode #fullBackupHeading {
 
 .restore-rehearsal-table .restore-rehearsal-diff-positive {
   color: var(--danger-color, #b00020);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .restore-rehearsal-table .restore-rehearsal-diff-negative {
   color: var(--warning-color, #8a6d3b);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .restore-rehearsal-rule-preview {
@@ -4758,7 +4758,7 @@ body.pink-mode.dark-mode .settings-card h4 {
 .auto-gear-backup-warning {
   margin: 0;
   color: var(--warning-color, #ff9f1c);
-  font-weight: 500;
+  font-weight: var(--font-weight-bold);
 }
 
 .auto-gear-backup-header {
@@ -5488,7 +5488,7 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
 }
 
 .auto-gear-impact-summary {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .auto-gear-impact-totals,
@@ -5497,7 +5497,7 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
 }
 
 .auto-gear-impact-delta {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .auto-gear-impact-item.auto-gear-impact-negative .auto-gear-impact-delta {
@@ -5535,7 +5535,7 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
 
 .auto-gear-impact-warning-item {
   color: var(--warning-color, #ff9f1c);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .auto-gear-selector-container {
@@ -6713,7 +6713,7 @@ body.pink-mode .favorite-toggle.favorited:active {
 }
 
 #hoverHelpTooltip .hover-help-heading {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.01em;
 }
 
@@ -6759,7 +6759,7 @@ body.pink-mode .favorite-toggle.favorited:active {
 }
 
 #hoverHelpTooltip .hover-help-shortcuts-heading {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   font-size: calc(var(--font-size-base) * var(--font-scale-compact));
   letter-spacing: 0.01em;
 }
@@ -9509,7 +9509,7 @@ body.light-mode #topBar select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 
@@ -11328,7 +11328,7 @@ body.dark-mode .requirement-box,
 #gearListOutput .gear-item-note__label {
   flex: 0 0 auto;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.045em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--accent-color) 70%, var(--text-color) 30%);
@@ -11474,7 +11474,7 @@ body.dark-mode .requirement-box,
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.02em;
   background: color-mix(in srgb, var(--auto-gear-rule-bg, var(--auto-gear-highlight-bg)) 65%, transparent);
   border: 1px solid color-mix(in srgb, var(--auto-gear-rule-border, var(--auto-gear-highlight-border)) 75%, transparent);
@@ -11720,7 +11720,7 @@ body.dark-mode .requirement-box,
 #gearListOutput .gear-item-edit-btn .gear-item-edit-fallback {
   display: inline-block;
   font-size: calc(var(--font-size-relative-base) * 0.85);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   line-height: 1;
   padding-inline: 0.1rem;
 }
