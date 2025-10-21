@@ -3870,6 +3870,51 @@ function setupRuntimeFeedback(options) {
       if (typeof normalized !== 'string') {
         normalized = '';
       }
+      var tagName = typeof input.tagName === 'string' ? input.tagName.toUpperCase() : '';
+      if (tagName === 'SELECT') {
+        try {
+          var options = input.options;
+          var foundMatch = false;
+          if (options && typeof options.length === 'number') {
+            for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+              var option = options[optionIndex];
+              if (!option) {
+                continue;
+              }
+              var optionValue = typeof option.value === 'string' ? option.value : '';
+              var optionLabel = typeof option.text === 'string' ? option.text : option.textContent;
+              if (optionValue === normalized || optionLabel === normalized) {
+                option.selected = true;
+                foundMatch = true;
+                break;
+              }
+            }
+          }
+          if (!foundMatch) {
+            if (normalized) {
+              var ownerDoc = input.ownerDocument && typeof input.ownerDocument.createElement === 'function'
+                ? input.ownerDocument
+                : null;
+              var newOption = ownerDoc ? ownerDoc.createElement('option') : null;
+              if (newOption) {
+                newOption.value = normalized;
+                newOption.textContent = normalized;
+                input.appendChild(newOption);
+                newOption.selected = true;
+                foundMatch = true;
+              }
+            } else if (typeof input.selectedIndex === 'number') {
+              input.selectedIndex = -1;
+            }
+          }
+          if (foundMatch) {
+            input.value = normalized;
+            return;
+          }
+        } catch (selectError) {
+          safeWarn('cineResults could not update runtime feedback select prefill.', selectError);
+        }
+      }
       try {
         input.value = normalized;
       } catch (error) {
