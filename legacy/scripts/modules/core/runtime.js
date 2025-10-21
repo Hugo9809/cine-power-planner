@@ -2131,12 +2131,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return defaults;
         }
+        function isSafeScopePropertyName(name) {
+          if (typeof name !== 'string' || !name) {
+            return false;
+          }
+          return name !== '__proto__' && name !== 'constructor' && name !== 'prototype';
+        }
         function fallbackCreateLocalRuntimeState(candidateScopes, options, temperatureResolver) {
           var resolveTemperatureKeys = typeof temperatureResolver === 'function' ? temperatureResolver : fallbackResolveTemperatureKeyDefaults;
           var configuration = options && _typeof(options) === 'object' ? options : {};
           var resolvedTemperatureKeys = resolveTemperatureKeys();
-          var temperatureQueueKey = typeof configuration.temperatureQueueKey === 'string' ? configuration.temperatureQueueKey : resolvedTemperatureKeys.queueKey;
-          var temperatureRenderName = typeof configuration.temperatureRenderName === 'string' ? configuration.temperatureRenderName : resolvedTemperatureKeys.renderName;
+          var configuredTemperatureQueueKey = typeof configuration.temperatureQueueKey === 'string' ? configuration.temperatureQueueKey : null;
+          var temperatureQueueKey = isSafeScopePropertyName(configuredTemperatureQueueKey) ? configuredTemperatureQueueKey : resolvedTemperatureKeys.queueKey;
+          var configuredTemperatureRenderName = typeof configuration.temperatureRenderName === 'string' ? configuration.temperatureRenderName : null;
+          var temperatureRenderName = isSafeScopePropertyName(configuredTemperatureRenderName) ? configuredTemperatureRenderName : resolvedTemperatureKeys.renderName;
           var scopes = [];
           var seenScopes = typeof Set === 'function' ? new Set() : null;
           function registerScope(scope) {
@@ -2500,11 +2508,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return defaults;
         };
+        function isSafeScopePropertyName(name) {
+          if (typeof name !== 'string' || !name) {
+            return false;
+          }
+          return name !== '__proto__' && name !== 'constructor' && name !== 'prototype';
+        }
         function createLocalRuntimeState(candidateScopes, options) {
           var configuration = options && _typeof(options) === 'object' ? options : {};
           var resolvedTemperatureKeys = resolveTemperatureKeyDefaults();
-          var temperatureQueueKey = typeof configuration.temperatureQueueKey === 'string' ? configuration.temperatureQueueKey : resolvedTemperatureKeys.queueKey;
-          var temperatureRenderName = typeof configuration.temperatureRenderName === 'string' ? configuration.temperatureRenderName : resolvedTemperatureKeys.renderName;
+          var configuredTemperatureQueueKey = typeof configuration.temperatureQueueKey === 'string' ? configuration.temperatureQueueKey : null;
+          var temperatureQueueKey = isSafeScopePropertyName(configuredTemperatureQueueKey) ? configuredTemperatureQueueKey : resolvedTemperatureKeys.queueKey;
+          var configuredTemperatureRenderName = typeof configuration.temperatureRenderName === 'string' ? configuration.temperatureRenderName : null;
+          var temperatureRenderName = isSafeScopePropertyName(configuredTemperatureRenderName) ? configuredTemperatureRenderName : resolvedTemperatureKeys.renderName;
           var scopes = [];
           var seenScopes = typeof Set === 'function' ? new Set() : null;
           function registerScope(scope) {
