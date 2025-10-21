@@ -14033,7 +14033,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     emailInput.value = data.email || '';
     applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
     var websiteInput = document.createElement('input');
-    websiteInput.type = 'url';
+    websiteInput.type = 'text';
+    websiteInput.inputMode = 'url';
+    websiteInput.autocomplete = 'url';
     websiteInput.name = 'crewWebsite';
     websiteInput.className = 'person-website';
     websiteInput.placeholder = projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder || 'Website';
