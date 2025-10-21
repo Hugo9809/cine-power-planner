@@ -16980,6 +16980,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function renderDeviceList(categoryKey, ulElement) {
       ulElement.innerHTML = "";
       let categoryDevices = devices[categoryKey];
+      const globalTexts =
+        (typeof texts === "object" && texts) ||
+        (typeof window !== "undefined" && typeof window.texts === "object" && window.texts) ||
+        {};
+      const fallbackLangTexts =
+        (typeof globalTexts.en === "object" && globalTexts.en) ||
+        {};
+      const activeLangTexts =
+        (currentLang && typeof globalTexts[currentLang] === "object" && globalTexts[currentLang]) ||
+        fallbackLangTexts;
+      const resolveText = (key, fallback) => {
+        if (activeLangTexts && typeof activeLangTexts[key] !== "undefined") {
+          return activeLangTexts[key];
+        }
+        if (fallbackLangTexts && typeof fallbackLangTexts[key] !== "undefined") {
+          return fallbackLangTexts[key];
+        }
+        return fallback || "";
+      };
+
       // Handle nested FIZ categories
       if (categoryKey.includes('.')) {
         const [mainCat, subCat] = categoryKey.split('.');
@@ -17020,29 +17040,34 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         toggleBtn.className = "detail-toggle";
         toggleBtn.type = "button";
         toggleBtn.setAttribute("aria-expanded", "false");
-        toggleBtn.textContent = texts[currentLang].showDetails;
-        toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
+        const showDetailsText = resolveText("showDetails", "Show Details");
+        toggleBtn.textContent = showDetailsText;
+        toggleBtn.setAttribute('data-help', showDetailsText);
         toggleBtn.dataset.name = name;
         toggleBtn.dataset.category = categoryKey;
         if (subcategory) toggleBtn.dataset.subcategory = subcategory;
         header.appendChild(toggleBtn);
-    
+
         const editBtn = document.createElement("button");
         editBtn.className = "edit-btn";
         editBtn.dataset.name = name;
         editBtn.dataset.category = categoryKey;
         if (subcategory) editBtn.dataset.subcategory = subcategory;
-        editBtn.textContent = texts[currentLang].editBtn;
-        editBtn.setAttribute('data-help', texts[currentLang].editBtnHelp || texts[currentLang].editBtn);
+        const editLabel = resolveText("editBtn", "Edit");
+        const editHelp = resolveText("editBtnHelp", editLabel);
+        editBtn.textContent = editLabel;
+        editBtn.setAttribute('data-help', editHelp || editLabel);
         header.appendChild(editBtn);
-    
+
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
         deleteBtn.dataset.name = name;
         deleteBtn.dataset.category = categoryKey;
         if (subcategory) deleteBtn.dataset.subcategory = subcategory;
-        deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
-        deleteBtn.setAttribute('data-help', texts[currentLang].deleteDeviceBtnHelp || texts[currentLang].deleteDeviceBtn);
+        const deleteLabel = resolveText("deleteDeviceBtn", "Delete");
+        const deleteHelp = resolveText("deleteDeviceBtnHelp", deleteLabel);
+        deleteBtn.textContent = deleteLabel;
+        deleteBtn.setAttribute('data-help', deleteHelp || deleteLabel);
         header.appendChild(deleteBtn);
     
         li.appendChild(header);
