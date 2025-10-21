@@ -7967,7 +7967,7 @@ body.dark-mode .onboarding-active-target {
   border: none;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
   line-height: var(--line-height-snug);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-light);
   color: inherit;
 }
 
