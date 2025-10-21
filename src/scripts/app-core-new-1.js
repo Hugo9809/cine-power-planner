@@ -14517,10 +14517,9 @@ function getAvatarInitial(value) {
 
 function isSafeImageUrl(url) {
   if (typeof url !== 'string') return false;
-  // Accept only image data URLs (PNG, JPEG, GIF) or relative URLs (no scheme), but not SVG (risk for embedded scripts)
-  // Acceptable: data:image/png, data:image/jpeg, data:image/gif
-  // Optionally, allow only http(s) URLs to trusted hosts: skipped here for generality
-  // We reject "javascript:", "data:image/svg+xml", and others
+  // Only allow image data URLs (PNG, JPEG, GIF, WEBP, NO SVG) or simple relative URLs (not starting with /), NEVER remote URLs
+  // Acceptable: data:image/png, data:image/jpeg, data:image/gif, data:image/webp, or e.g. "avatar-foo.png"
+  // Reject: javascript:, data:image/svg+xml, all http(s) URLs, leading slash-relative URLs, protocol-relative and remote URLs!
   if (url.startsWith('data:')) {
     // allow only certain image mime types
     const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
@@ -14530,17 +14529,18 @@ function isSafeImageUrl(url) {
       if (allowedTypes.includes(type)) return true;
     } catch (e) { /* ignore */ }
     return false;
-  } else if (/^\s*javascript:/i.test(url)) {
+  }
+  // Reject javascript: and all remote URLs
+  if (/^\s*(javascript:|https?:|\/\/)/i.test(url)) {
     return false;
-  } else if (/^\s*https?:\/\//i.test(url)) {
-    // Optionally: Add trusted domains logic here
-    return true;
-  } else if (/^[./\w-]/.test(url)) {
-    // Simple allow relative paths (basic check)
+  }
+  // Allow only plain relative paths (no starting / or \), to prevent absolute/site-root references and protocol-relative URLs
+  if (/^[a-zA-Z0-9._-]+$/.test(url)) {
     return true;
   }
   return false;
 }
+
 
 function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
   if (!container) return;
