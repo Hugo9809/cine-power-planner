@@ -96,4 +96,44 @@ describe('user profile normalization', () => {
       avatar: 'DATA:image/png;base64,avatar-data',
     });
   });
+
+  test('loadUserProfile preserves legacy numeric fields', () => {
+    const { storage } = createMockStorage();
+    storage.setItem(
+      USER_PROFILE_KEY,
+      JSON.stringify({
+        name: 'Casey Lighting',
+        role: 'Gaffer',
+        phone: 15550100,
+        email: 'casey@example.test',
+      }),
+    );
+
+    const api = bootstrapStorageModule(storage);
+    const profile = api.loadUserProfile();
+
+    expect(profile).toEqual({
+      name: 'Casey Lighting',
+      role: 'Gaffer',
+      phone: '15550100',
+      email: 'casey@example.test',
+      avatar: '',
+    });
+  });
+
+  test('saveUserProfile coerces numeric phone numbers to strings', () => {
+    const { storage, data } = createMockStorage();
+    const api = bootstrapStorageModule(storage);
+
+    api.saveUserProfile({
+      name: 'Casey Lighting',
+      role: 'Gaffer',
+      phone: 15550100,
+      email: 'casey@example.test',
+    });
+
+    const raw = data.get(USER_PROFILE_KEY);
+    const stored = JSON.parse(raw);
+    expect(stored.phone).toBe('15550100');
+  });
 });

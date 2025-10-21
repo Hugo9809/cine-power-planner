@@ -12883,19 +12883,53 @@ function saveOwnGear(items) {
   );
 }
 
+function normalizeUserProfileField(value) {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+
+  if (typeof value === 'bigint') {
+    return value.toString();
+  }
+
+  if (value && typeof value === 'object') {
+    try {
+      const primitive = value.valueOf();
+      if (primitive !== value) {
+        return normalizeUserProfileField(primitive);
+      }
+
+      if (typeof value.toString === 'function') {
+        const stringified = value.toString();
+        if (typeof stringified === 'string' && stringified && stringified !== '[object Object]') {
+          return stringified.trim();
+        }
+      }
+    } catch (coercionError) {
+      void coercionError;
+    }
+  }
+
+  return '';
+}
+
 function normalizeUserProfile(entry) {
   if (!entry || typeof entry !== 'object') {
     return null;
   }
 
-  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
-  const role = typeof entry.role === 'string' ? entry.role.trim() : '';
-  const avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+  const name = normalizeUserProfileField(entry.name);
+  const role = normalizeUserProfileField(entry.role);
+  const avatarSource = normalizeUserProfileField(entry.avatar);
   const avatar = avatarSource && avatarSource.toLowerCase().startsWith('data:')
     ? avatarSource
     : '';
-  const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
-  const email = typeof entry.email === 'string' ? entry.email.trim() : '';
+  const phone = normalizeUserProfileField(entry.phone);
+  const email = normalizeUserProfileField(entry.email);
 
   if (!name && !role && !avatar && !phone && !email) {
     return { name: '', role: '', avatar: '', phone: '', email: '' };
