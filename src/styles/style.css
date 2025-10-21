@@ -4148,6 +4148,25 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   font-size: 1.05rem;
 }
 
+body.light-mode:not(.pink-mode) .settings-card h4 {
+  color: var(--accent-color);
+  color: color-mix(in srgb, var(--accent-color) 90%, var(--text-color) 10%);
+}
+
+body.pink-mode:not(.dark-mode) .settings-card h4 {
+  color: var(--accent-color);
+  color: color-mix(in srgb, var(--accent-color) 92%, var(--text-color) 8%);
+}
+
+body.pink-mode.dark-mode .settings-card h4 {
+  color: var(--accent-color);
+  color: color-mix(
+    in srgb,
+    var(--accent-color) 85%,
+    var(--inverse-text-color) 15%
+  );
+}
+
 .settings-card-body {
   display: flex;
   flex-direction: column;
