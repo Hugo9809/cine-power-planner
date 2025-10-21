@@ -11,7 +11,7 @@ This audit captures UI copy that still appears in English or uses inconsistent t
 
 ## French (`fr`)
 
-- [ ] Translate the monitor user button terms that remain English:
+- [x] Translate the monitor user button terms that remain English:
   - `projectForm.userButtonFunctions.surroundView` is still "Surround View"; replace with a French phrase users recognise on set. 【F:src/scripts/translations/fr.js†L569-L596】
   - `projectForm.userButtonFunctions.vectorscope` retains the English "Vectorscope" despite Spanish adopting "Vectorscopio". Align with French broadcast terminology. 【F:src/scripts/translations/fr.js†L569-L596】
   - `projectForm.userButtonFunctions.peaking` also mirrors English. Confirm whether French operator guides prefer "Peaking" or "Renforcement des contours" and update accordingly. 【F:src/scripts/translations/fr.js†L569-L596】
