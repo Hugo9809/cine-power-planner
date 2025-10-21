@@ -14,6 +14,7 @@
   "./animated icons 3/pinata.json",
   "./animated icons 3/script.json",
   "./animated icons 3/video-camera.json",
+  "./app-version.js",
   "./docs/architecture/app-core-modules.md",
   "./docs/architecture/module-registry.md",
   "./docs/auto-gear-rule-options.md",

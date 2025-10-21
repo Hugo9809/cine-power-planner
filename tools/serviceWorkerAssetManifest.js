@@ -5,6 +5,7 @@ const EXPLICIT_ASSET_ENTRIES = ['./'];
 
 const EXPLICIT_FILES = [
   'index.html',
+  'app-version.js',
   'manifest.webmanifest',
   path.join('src', 'icons', 'Icon Bluenew.svg'),
   path.join('src', 'icons', 'Icon Pinknew.svg'),

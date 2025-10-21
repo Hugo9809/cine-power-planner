@@ -38,6 +38,11 @@ describe('service worker asset manifest', () => {
         './docs/save-share-restore-reference.md',
       ]),
     );
+    expect(manifestAssets).toEqual(
+      expect.arrayContaining([
+        './app-version.js',
+      ]),
+    );
     expect(manifestAssets.filter((asset) => asset.startsWith('./docs/')).sort()).toEqual(docFiles);
     expect(manifestAssets).toEqual(generatedAssets);
   });
