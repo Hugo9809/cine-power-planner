@@ -3875,6 +3875,7 @@ function setupRuntimeFeedback(options) {
         try {
           var options = input.options;
           var foundMatch = false;
+          var selectedValue;
           if (options && typeof options.length === 'number') {
             for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
               var option = options[optionIndex];
@@ -3886,6 +3887,7 @@ function setupRuntimeFeedback(options) {
               if (optionValue === normalized || optionLabel === normalized) {
                 option.selected = true;
                 foundMatch = true;
+                selectedValue = optionValue;
                 break;
               }
             }
@@ -3902,13 +3904,16 @@ function setupRuntimeFeedback(options) {
                 input.appendChild(newOption);
                 newOption.selected = true;
                 foundMatch = true;
+                selectedValue = normalized;
               }
             } else if (typeof input.selectedIndex === 'number') {
               input.selectedIndex = -1;
             }
           }
           if (foundMatch) {
-            input.value = normalized;
+            if (typeof selectedValue === 'string') {
+              input.value = selectedValue;
+            }
             return;
           }
         } catch (selectError) {
