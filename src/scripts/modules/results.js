@@ -3355,25 +3355,32 @@ function setupRuntimeFeedback(options) {
       return resolveSelectLabel(select, 'videoSelect', 'cineResults could not inspect wireless video selection for runtime feedback prefill.');
     }
 
+    function resolveDistanceSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.distanceSelect
+        : null;
+      return resolveSelectLabel(select, 'distanceSelect', 'cineResults could not inspect FIZ distance selection for runtime feedback prefill.');
+    }
+
     function resolveCollectionSelectionLabels(collection, fallbackIds, warnMessage) {
       var labels = [];
       var elements = Array.isArray(collection) ? collection : [];
       if ((!elements || !elements.length) && doc && typeof doc.getElementById === 'function' && Array.isArray(fallbackIds)) {
         var fallbackElements = [];
         for (var fallbackIndex = 0; fallbackIndex < fallbackIds.length; fallbackIndex += 1) {
-          var fallbackId = fallbackIds[fallbackIndex];
-          if (!fallbackId) {
+          var candidateId = fallbackIds[fallbackIndex];
+          if (!candidateId) {
             continue;
           }
-          var element = null;
+          var fallbackElement = null;
           try {
-            element = doc.getElementById(fallbackId);
+            fallbackElement = doc.getElementById(candidateId);
           } catch (error) {
             void error;
-            element = null;
+            fallbackElement = null;
           }
-          if (element) {
-            fallbackElements.push(element);
+          if (fallbackElement) {
+            fallbackElements.push(fallbackElement);
           }
         }
         elements = fallbackElements;
@@ -3436,6 +3443,7 @@ function setupRuntimeFeedback(options) {
       var batteryEntry = null;
       var wirelessVideoEntry = null;
       var monitorEntry = null;
+      var distanceEntry = null;
       var controllerEntry = null;
       var motorEntry = null;
       for (var index = 0; index < fieldEntries.length; index += 1) {
@@ -3453,6 +3461,8 @@ function setupRuntimeFeedback(options) {
           wirelessVideoEntry = entry;
         } else if (entry.map.key === 'monitor' && !monitorEntry) {
           monitorEntry = entry;
+        } else if (entry.map.key === 'distance' && !distanceEntry) {
+          distanceEntry = entry;
         } else if (entry.map.key === 'controllers' && !controllerEntry) {
           controllerEntry = entry;
         } else if (entry.map.key === 'motors' && !motorEntry) {
@@ -3474,6 +3484,9 @@ function setupRuntimeFeedback(options) {
       }
       if (monitorEntry && monitorEntry.element) {
         setPrefillValue(monitorEntry.element, resolveMonitorSelectionLabel());
+      }
+      if (distanceEntry && distanceEntry.element) {
+        setPrefillValue(distanceEntry.element, resolveDistanceSelectionLabel());
       }
       if (controllerEntry && controllerEntry.element) {
         var controllers = resolveControllerSelectionLabels();
