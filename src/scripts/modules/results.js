@@ -3216,6 +3216,32 @@ function setupRuntimeFeedback(options) {
     runtimeFeedbackState.elements.feedbackCancelBtn = cancelBtn;
     runtimeFeedbackState.elements.feedbackUseLocationBtn = useLocationBtn;
 
+    function closeRuntimeFeedbackDialog(warnMessage) {
+      if (!dialog) {
+        return false;
+      }
+      var closeDialogFn = deps.closeDialog;
+      if (typeof closeDialogFn === 'function') {
+        try {
+          closeDialogFn(dialog);
+          return true;
+        } catch (error) {
+          if (warnMessage) {
+            safeWarn(warnMessage, error);
+          }
+        }
+      }
+      if (typeof dialog.close === 'function') {
+        try {
+          dialog.close();
+          return true;
+        } catch (dialogError) {
+          void dialogError;
+        }
+      }
+      return false;
+    }
+
     function sanitizePrefillValue(value) {
       if (typeof value === 'number' && Number.isFinite(value)) {
         return String(value);
@@ -3404,27 +3430,22 @@ function setupRuntimeFeedback(options) {
       };
     });
 
-    attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
-      return function cancelRuntimeFeedbackDialog() {
+    attachHandlerOnce(dialog, 'click', 'dialogBackdrop', function () {
+      return function handleRuntimeFeedbackBackdropClick(event) {
         if (!dialog) {
           return;
         }
-        var closeDialogFn = deps.closeDialog;
-        if (typeof closeDialogFn === 'function') {
-          try {
-            closeDialogFn(dialog);
-            return;
-          } catch (error) {
-            safeWarn('cineResults could not close runtime feedback dialog via helper.', error);
-          }
+        var target = event ? event.target : null;
+        if (target !== dialog) {
+          return;
         }
-        if (typeof dialog.close === 'function') {
-          try {
-            dialog.close();
-          } catch (dialogError) {
-            void dialogError;
-          }
-        }
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog from backdrop interaction.');
+      };
+    });
+
+    attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
+      return function cancelRuntimeFeedbackDialog() {
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog via helper.');
       };
     });
 
@@ -3565,20 +3586,7 @@ function setupRuntimeFeedback(options) {
         }
 
         if (dialog) {
-          var closeDialogFn = deps.closeDialog;
-          if (typeof closeDialogFn === 'function') {
-            try {
-              closeDialogFn(dialog);
-            } catch (error) {
-              safeWarn('cineResults could not close runtime feedback dialog after submit.', error);
-            }
-          } else if (typeof dialog.close === 'function') {
-            try {
-              dialog.close();
-            } catch (dialogError) {
-              void dialogError;
-            }
-          }
+          closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog after submit.');
         }
 
         if (typeof deps.updateCalculations === 'function') {

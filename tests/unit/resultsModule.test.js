@@ -1190,12 +1190,19 @@ describe('cineResults module', () => {
     expect(typeof cancelBtn.listeners.click).toBe('function');
     expect(typeof useLocationBtn.listeners.click).toBe('function');
     expect(typeof form.listeners.submit).toBe('function');
+    expect(typeof dialog.listeners.click).toBe('function');
 
     button.listeners.click();
     expect(openDialog).toHaveBeenCalledWith(dialog);
 
     cancelBtn.listeners.click();
     expect(closeDialog).toHaveBeenCalledWith(dialog);
+
+    dialog.listeners.click({ target: form });
+    expect(closeDialog).toHaveBeenCalledTimes(1);
+
+    dialog.listeners.click({ target: dialog });
+    expect(closeDialog).toHaveBeenCalledTimes(2);
 
     useLocationBtn.listeners.click();
     expect(geolocation.getCurrentPosition).toHaveBeenCalledTimes(1);
