@@ -15,6 +15,63 @@
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
 
+const normalizeVideoDistributionOptionValueForSetups = (function resolveNormalizeVideoDistributionOptionValue() {
+    if (typeof require === 'function') {
+        try {
+            const autoGearUiModule = require('./app-core-auto-gear-ui.js');
+            if (autoGearUiModule && typeof autoGearUiModule.normalizeVideoDistributionOptionValue === 'function') {
+                return autoGearUiModule.normalizeVideoDistributionOptionValue;
+            }
+            if (
+                autoGearUiModule &&
+                autoGearUiModule.cineCoreAutoGearUi &&
+                typeof autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue === 'function'
+            ) {
+                return autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue;
+            }
+        } catch (autoGearRequireError) {
+            void autoGearRequireError;
+        }
+    }
+
+    const scopes = [];
+
+    try { if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) scopes.push(CORE_GLOBAL_SCOPE); } catch (coreScopeError) { void coreScopeError; }
+    try { if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis); } catch (globalThisError) { void globalThisError; }
+    try { if (typeof window !== 'undefined' && window) scopes.push(window); } catch (windowError) { void windowError; }
+    try { if (typeof self !== 'undefined' && self) scopes.push(self); } catch (selfError) { void selfError; }
+    try { if (typeof global !== 'undefined' && global) scopes.push(global); } catch (globalError) { void globalError; }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope || typeof scope !== 'object') {
+            continue;
+        }
+
+        try {
+            if (typeof scope.normalizeVideoDistributionOptionValue === 'function') {
+                return scope.normalizeVideoDistributionOptionValue;
+            }
+
+            const autoGearUi = scope.cineCoreAutoGearUi;
+            if (autoGearUi && typeof autoGearUi.normalizeVideoDistributionOptionValue === 'function') {
+                return autoGearUi.normalizeVideoDistributionOptionValue;
+            }
+        } catch (scopeLookupError) {
+            void scopeLookupError;
+        }
+    }
+
+    return function fallbackNormalizeVideoDistributionOptionValue(value) {
+        if (typeof value !== 'string') return '';
+        const trimmed = value.trim();
+        if (!trimmed) return '';
+        const lower = trimmed.toLowerCase();
+        if (lower === '__none__' || lower === 'none') return '__none__';
+        return trimmed;
+    };
+})();
+
 const SETUPS_UI_HELPERS = (function resolveUiHelpersForSetups() {
     if (typeof require === 'function') {
         try {
@@ -6803,7 +6860,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       .filter(Boolean);
   }
   const normalizedVideoDistribution = videoDistribution
-    .map(normalizeVideoDistributionOptionValue)
+    .map(normalizeVideoDistributionOptionValueForSetups)
     .map(value => (value === '__none__' ? '' : normalizeAutoGearTriggerValue(value)))
     .filter(Boolean);
   const videoDistributionSet = new Set(normalizedVideoDistribution);
@@ -7174,7 +7231,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         const videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
         if (videoDistList.length) {
             const normalizedTargets = videoDistList
-                .map(value => normalizeVideoDistributionOptionValue(value))
+                .map(value => normalizeVideoDistributionOptionValueForSetups(value))
                 .map(value => (value === '__none__' ? '' : normalizeAutoGearTriggerValue(value)))
                 .filter(Boolean);
             if (!normalizedTargets.length) return false;
