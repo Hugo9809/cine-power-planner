@@ -16341,7 +16341,9 @@ function createCrewRow(data = {}) {
   applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
 
   const websiteInput = document.createElement('input');
-  websiteInput.type = 'url';
+  websiteInput.type = 'text';
+  websiteInput.inputMode = 'url';
+  websiteInput.autocomplete = 'url';
   websiteInput.name = 'crewWebsite';
   websiteInput.className = 'person-website';
   websiteInput.placeholder = projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder || 'Website';
