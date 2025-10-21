@@ -10966,7 +10966,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var name = typeof entry.name === 'string' ? entry.name.trim() : '';
     var role = typeof entry.role === 'string' ? entry.role.trim() : '';
-    var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
+    var avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+    var avatar = avatarSource && avatarSource.toLowerCase().startsWith('data:') ? avatarSource : '';
     var phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
     var email = typeof entry.email === 'string' ? entry.email.trim() : '';
     if (!name && !role && !avatar && !phone && !email) {
