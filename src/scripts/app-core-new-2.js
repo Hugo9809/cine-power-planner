@@ -10581,12 +10581,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       renderFeatureListOptions(values);
     }
-    // Normalise strings for search comparisons by removing punctuation, diacritics
-    // and treating symbols like “&”/“+” as their word equivalents. British and
-    // American spelling variants are folded together so queries like “favourites”
-    // still match “Favorites”. Falls back to whitespace-stripping when no
-    // meaningful characters remain (e.g. emoji-only headings) so legacy behaviour
-    // is preserved for those edge cases.
+    // Provide a minimal search normaliser that lowercases values and strips
+    // punctuation so searches stay functional before the advanced feature-search
+    // module is available. It keeps behaviour consistent with the previous
+    // release by falling back to whitespace removal when nothing else remains
+    // (e.g. emoji-only headings). Full diacritic folding, symbol translation and
+    // locale-aware normalisation only run once the complete module finishes
+    // loading, preserving the richer matching for detailed searches.
     const FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchEngineModule';
 
     function createFeatureSearchEngineFallback() {
