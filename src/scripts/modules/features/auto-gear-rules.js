@@ -85,6 +85,77 @@
     return null;
   }
 
+  function ensureFallbackAutoGearHelper(name, implementation) {
+    if (typeof name !== 'string' || !name || typeof implementation !== 'function') {
+      return false;
+    }
+
+    let installed = false;
+
+    if (GLOBAL_SCOPE && (typeof GLOBAL_SCOPE === 'object' || typeof GLOBAL_SCOPE === 'function')) {
+      const existing = (() => {
+        try {
+          return GLOBAL_SCOPE[name];
+        } catch (readError) {
+          void readError;
+          return undefined;
+        }
+      })();
+
+      if (typeof existing !== 'function') {
+        try {
+          Object.defineProperty(GLOBAL_SCOPE, name, {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: implementation,
+          });
+          installed = true;
+        } catch (defineError) {
+          void defineError;
+          try {
+            GLOBAL_SCOPE[name] = implementation;
+            installed = true;
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      }
+    }
+
+    const exports = resolveAutoGearUiExports();
+    if (exports && typeof exports[name] !== 'function') {
+      try {
+        exports[name] = implementation;
+        installed = true;
+      } catch (assignExportError) {
+        void assignExportError;
+      }
+    }
+
+    return installed;
+  }
+
+  function fallbackNormalizeVideoDistributionOptionValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+
+    const lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') {
+      return '__none__';
+    }
+
+    return trimmed;
+  }
+
+  ensureFallbackAutoGearHelper('normalizeVideoDistributionOptionValue', fallbackNormalizeVideoDistributionOptionValue);
+
   function getFallbackViewfinderLabel(value) {
     if (value === '__none__') {
       const activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
