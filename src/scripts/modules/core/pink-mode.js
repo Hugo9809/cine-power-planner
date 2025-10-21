@@ -965,6 +965,22 @@
           ? window.matchMedia('(prefers-reduced-motion: reduce)')
           : null;
 
+      const PINK_MODE_REDUCE_MOTION_TRUTHY_VALUES = Object.freeze([
+        'true',
+        '1',
+        'yes',
+        'on',
+        'enabled'
+      ]);
+
+      const PINK_MODE_REDUCE_MOTION_FALSY_VALUES = Object.freeze([
+        'false',
+        '0',
+        'no',
+        'off',
+        'disabled'
+      ]);
+
       function readPinkModeStoredReduceMotionPreference() {
         if (typeof window === 'undefined') {
           return null;
@@ -984,7 +1000,26 @@
 
         try {
           const value = storage.getItem('reduceMotion');
-          return typeof value === 'string' ? value : null;
+          if (typeof value !== 'string') {
+            return null;
+          }
+
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return null;
+          }
+
+          const normalized = trimmed.toLowerCase();
+
+          if (PINK_MODE_REDUCE_MOTION_TRUTHY_VALUES.includes(normalized)) {
+            return 'true';
+          }
+
+          if (PINK_MODE_REDUCE_MOTION_FALSY_VALUES.includes(normalized)) {
+            return 'false';
+          }
+
+          return trimmed;
         } catch (readError) {
           void readError;
         }
