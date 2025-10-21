@@ -521,7 +521,91 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
 
     const { entries: addressEntries } = addressAccumulator;
     if (addressEntries.length) {
+        const locationFieldSet = new Set([
+            'productionCompanyCity',
+            'productionCompanyRegion',
+            'productionCompanyPostalCode',
+        ]);
+        const locationValues = {
+            productionCompanyCity: [],
+            productionCompanyRegion: [],
+            productionCompanyPostalCode: [],
+        };
+        const filteredEntries = [];
+        let locationInsertIndex = null;
+
         addressEntries.forEach((entry) => {
+            const { value, fields } = entry;
+            const isLocationEntry = Array.isArray(fields)
+                ? fields.some((field) => locationFieldSet.has(field))
+                : false;
+            if (isLocationEntry) {
+                if (locationInsertIndex === null) {
+                    locationInsertIndex = filteredEntries.length;
+                }
+                fields.forEach((field) => {
+                    if (locationFieldSet.has(field)) {
+                        locationValues[field].push(value);
+                    }
+                });
+            } else {
+                filteredEntries.push(entry);
+            }
+        });
+
+        const pickFirstValue = (arr) => {
+            if (!Array.isArray(arr)) return '';
+            const found = arr.find((item) => typeof item === 'string' && item.trim());
+            return found ? found.trim() : '';
+        };
+
+        const cityValue = pickFirstValue(locationValues.productionCompanyCity);
+        const regionValue = pickFirstValue(locationValues.productionCompanyRegion);
+        const postalValue = pickFirstValue(locationValues.productionCompanyPostalCode);
+
+        const locationParts = [];
+        const locationFields = [];
+        if (cityValue) {
+            locationParts.push(cityValue);
+            locationFields.push('productionCompanyCity');
+        }
+        const regionPostalParts = [];
+        if (regionValue) {
+            regionPostalParts.push(regionValue);
+            locationFields.push('productionCompanyRegion');
+        }
+        if (postalValue) {
+            regionPostalParts.push(postalValue);
+            locationFields.push('productionCompanyPostalCode');
+        }
+        if (regionPostalParts.length) {
+            const combinedRegionPostal = regionPostalParts.join(', ');
+            if (cityValue) {
+                locationParts.push(combinedRegionPostal);
+            } else {
+                locationParts.push(combinedRegionPostal);
+            }
+        }
+
+        const combinedLocationLine = locationParts.join(', ').trim();
+        if (combinedLocationLine) {
+            const normalizedCombined = combinedLocationLine.toLowerCase();
+            const hasExisting = filteredEntries.some((entry) => {
+                const entryValue = typeof entry.value === 'string' ? entry.value.trim() : '';
+                return entryValue && entryValue.toLowerCase() === normalizedCombined;
+            });
+            if (!hasExisting) {
+                const insertAt = locationInsertIndex === null
+                    ? filteredEntries.length
+                    : locationInsertIndex;
+                filteredEntries.splice(insertAt, 0, {
+                    value: combinedLocationLine,
+                    fields: locationFields,
+                });
+            }
+        }
+
+        filteredEntries.forEach((entry) => {
             const { value, fields } = entry;
             addLine(value, 'req-sub-line', fields);
         });
