@@ -636,6 +636,65 @@ function scheduleCachePut(event, request, response, errorMessage, cachePromiseOv
   cachePutTask.catch(() => {});
 }
 
+function scheduleAppIconCachePut(event, request, response, cachePromiseOverride) {
+  if (
+    !response ||
+    !response.ok ||
+    typeof caches === 'undefined' ||
+    !caches ||
+    typeof caches.open !== 'function'
+  ) {
+    return;
+  }
+
+  let responseForCache;
+
+  try {
+    responseForCache = response.clone();
+  } catch (cloneError) {
+    serviceWorkerLog.warn('Unable to clone response for cache update.', cloneError);
+    return;
+  }
+
+  const requestUrl = new URL(request.url);
+  requestUrl.search = '';
+  const canonicalRequest = new Request(requestUrl.toString(), { method: request.method });
+
+  const performCachePut = async () => {
+    try {
+      const cachePromise =
+        cachePromiseOverride && typeof cachePromiseOverride.then === 'function'
+          ? cachePromiseOverride
+          : caches.open(CACHE_NAME);
+      const cache = await cachePromise;
+      const matchingRequests = await cache.keys(request, CACHE_MATCH_IGNORE_SEARCH_OPTIONS);
+
+      for (const existingRequest of matchingRequests) {
+        if (existingRequest.url !== canonicalRequest.url) {
+          await cache.delete(existingRequest);
+        }
+      }
+
+      await cache.put(canonicalRequest, responseForCache);
+    } catch (cacheError) {
+      serviceWorkerLog.warn('Unable to update cached app icon response.', cacheError);
+    }
+  };
+
+  const cachePutTask = performCachePut();
+
+  if (event && typeof event.waitUntil === 'function') {
+    try {
+      event.waitUntil(cachePutTask);
+      return;
+    } catch (waitUntilError) {
+      serviceWorkerLog.warn('Unable to extend service worker lifetime for cache update.', waitUntilError);
+    }
+  }
+
+  cachePutTask.catch(() => {});
+}
+
 function shouldBypassCache(request, requestUrl) {
   if (!request) {
     return false;
@@ -908,7 +967,7 @@ if (typeof self !== 'undefined') {
 
         try {
           const response = await fetch(event.request, { cache: 'no-store' });
-          scheduleCachePut(event, event.request, response, 'Unable to update cached app icon response.', cachePromise);
+          scheduleAppIconCachePut(event, event.request, response, cachePromise);
           return response;
         } catch (error) {
           const cache = await cachePromise;
