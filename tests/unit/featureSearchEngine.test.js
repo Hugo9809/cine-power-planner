@@ -35,6 +35,13 @@ describe('feature search engine module', () => {
     expect(spelledNumbers).toEqual(expect.arrayContaining(['21', 'batteries']));
   });
 
+  test('normalizes unicode fractions into numeric equivalents', () => {
+    expect(engine.searchKey('⅝ mount')).toBe('58mount');
+
+    const fractionTokens = engine.searchTokens('⅝ mount');
+    expect(fractionTokens).toEqual(expect.arrayContaining(['58', '5', '8', 'mount']));
+  });
+
   test('parses mark suffixes with roman numerals', () => {
     expect(engine.parseMarkSuffix('iv')).toEqual({ cleaned: 'iv', number: 4 });
     expect(engine.parseMarkSuffix('iii')).toEqual({ cleaned: 'iii', number: 3 });
