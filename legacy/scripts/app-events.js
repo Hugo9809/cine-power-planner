@@ -58,6 +58,40 @@ var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
   }
   return {};
 }();
+var DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+function getDeviceStorageKeyVariantsForEvents() {
+  if (typeof require === 'function') {
+    try {
+      var storage = require('./storage.js');
+      if (storage && _typeof(storage) === 'object') {
+        if (typeof storage.getDeviceStorageKeyVariants === 'function') {
+          var _variants = storage.getDeviceStorageKeyVariants();
+          if (_variants && typeof _variants.forEach === 'function') {
+            return Array.from(_variants);
+          }
+        }
+        if (typeof storage.getStorageKeyVariants === 'function') {
+          var _variants2 = storage.getStorageKeyVariants(DEVICE_STORAGE_KEY_FOR_EVENTS);
+          if (_variants2 && typeof _variants2.forEach === 'function') {
+            return Array.from(_variants2);
+          }
+        }
+      }
+    } catch (storageHelperError) {
+      void storageHelperError;
+    }
+  }
+  var variants = new Set();
+  if (typeof DEVICE_STORAGE_KEY_FOR_EVENTS === 'string' && DEVICE_STORAGE_KEY_FOR_EVENTS) {
+    variants.add(DEVICE_STORAGE_KEY_FOR_EVENTS);
+    if (DEVICE_STORAGE_KEY_FOR_EVENTS.startsWith('cameraPowerPlanner_')) {
+      variants.add("cinePowerPlanner_".concat(DEVICE_STORAGE_KEY_FOR_EVENTS.slice('cameraPowerPlanner_'.length)));
+    } else if (DEVICE_STORAGE_KEY_FOR_EVENTS.startsWith('cinePowerPlanner_')) {
+      variants.add("cameraPowerPlanner_".concat(DEVICE_STORAGE_KEY_FOR_EVENTS.slice('cinePowerPlanner_'.length)));
+    }
+  }
+  return Array.from(variants);
+}
 var setButtonLabelWithIconForEvents = function resolveSetButtonLabelWithIconForEvents() {
   if (typeof EVENTS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
     return EVENTS_UI_HELPERS.setButtonLabelWithIcon;
@@ -1811,7 +1845,7 @@ function populateSetupSelect() {
 }
 populateSetupSelect();
 checkSetupChanged();
-function notifyAutoSaveFromBackup(message, backupName) {
+function notifyAutoSaveFromBackup(message, backupName, severity) {
   if (typeof message !== 'string') {
     return;
   }
@@ -1819,9 +1853,10 @@ function notifyAutoSaveFromBackup(message, backupName) {
   if (!trimmed) {
     return;
   }
+  var notificationSeverity = typeof severity === 'string' && severity.trim() ? severity.trim() : 'success';
   if (typeof showNotification === 'function') {
     try {
-      showNotification('success', trimmed);
+      showNotification(notificationSeverity, trimmed);
     } catch (notifyError) {
       console.warn('Failed to display auto save notification after auto backup', notifyError);
     }
@@ -1833,6 +1868,7 @@ function notifyAutoSaveFromBackup(message, backupName) {
           message: trimmed,
           source: 'auto-backup',
           backupName: backupName || null,
+          severity: notificationSeverity,
           timestamp: new Date().toISOString()
         }
       }));
@@ -3731,7 +3767,28 @@ if (exportAndRevertBtn) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       var revertTimer = setTimeout(function () {
-        localStorage.removeItem('cameraPowerPlanner_devices');
+        var variants = getDeviceStorageKeyVariantsForEvents();
+        if (variants && typeof variants.forEach === 'function') {
+          variants.forEach(function (keyVariant) {
+            if (typeof keyVariant !== 'string' || !keyVariant) {
+              return;
+            }
+            try {
+              var canRemoveDeviceStorage = typeof localStorage !== 'undefined' && localStorage && typeof localStorage.removeItem === 'function';
+              if (canRemoveDeviceStorage) {
+                localStorage.removeItem(keyVariant);
+              }
+            } catch (removeError) {
+              try {
+                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                  console.warn("Failed to remove device storage key variant \"".concat(keyVariant, "\""), removeError);
+                }
+              } catch (logError) {
+                void logError;
+              }
+            }
+          });
+        }
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
       }, 500);

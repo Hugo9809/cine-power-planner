@@ -1101,6 +1101,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (settings.reduceMotion) {
         settings.reduceMotion.checked = Boolean(enabled);
       }
+      if (enabled) {
+        stopPinkModeAnimatedIconRotation();
+      } else if (isPinkModeActive()) {
+        startPinkModeAnimatedIconRotation();
+      }
     }
     function applyRelaxedSpacing(enabled) {
       var root = getRoot();
@@ -1591,9 +1596,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       revertSettingsMountVoltagesIfNeeded: revertSettingsMountVoltagesIfNeeded,
       handlePinkModeIconPress: handlePinkModeIconPress,
       triggerPinkModeIconAnimation: triggerPinkModeIconAnimation,
+      triggerPinkModeIconRain: triggerPinkModeIconRain,
       startPinkModeIconRotation: startPinkModeIconRotation,
       stopPinkModeIconRotation: stopPinkModeIconRotation,
       applyPinkModeIcon: applyPinkModeIcon,
+      startPinkModeAnimatedIcons: startPinkModeAnimatedIcons,
+      stopPinkModeAnimatedIcons: stopPinkModeAnimatedIcons,
       startPinkModeAnimatedIconRotation: startPinkModeAnimatedIconRotation,
       stopPinkModeAnimatedIconRotation: stopPinkModeAnimatedIconRotation,
       isPinkModeActive: isPinkModeActive,

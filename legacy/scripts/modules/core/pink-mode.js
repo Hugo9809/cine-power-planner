@@ -3,6 +3,11 @@ function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArra
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
@@ -895,6 +900,65 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var pinkModeAnimatedIconPressListenerCleanup = null;
         var pinkModeAnimatedIconLastTouchTime = 0;
         var pinkModeReduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+        var PINK_MODE_REDUCE_MOTION_TRUTHY_VALUES = Object.freeze(['true', '1', 'yes', 'on', 'enabled']);
+        var PINK_MODE_REDUCE_MOTION_FALSY_VALUES = Object.freeze(['false', '0', 'no', 'off', 'disabled']);
+        function readPinkModeStoredReduceMotionPreference() {
+          if (typeof window === 'undefined') {
+            return null;
+          }
+          var storage = null;
+          try {
+            storage = window.localStorage || null;
+          } catch (storageError) {
+            void storageError;
+            storage = null;
+          }
+          if (!storage) {
+            return null;
+          }
+          try {
+            var value = storage.getItem('reduceMotion');
+            if (typeof value !== 'string') {
+              return null;
+            }
+            var trimmed = value.trim();
+            if (!trimmed) {
+              return null;
+            }
+            var normalized = trimmed.toLowerCase();
+            if (PINK_MODE_REDUCE_MOTION_TRUTHY_VALUES.includes(normalized)) {
+              return 'true';
+            }
+            if (PINK_MODE_REDUCE_MOTION_FALSY_VALUES.includes(normalized)) {
+              return 'false';
+            }
+            return trimmed;
+          } catch (readError) {
+            void readError;
+          }
+          return null;
+        }
+        function isPinkModeReduceMotionClassActive() {
+          if (typeof document === 'undefined' || !document) {
+            return false;
+          }
+          var root = document.documentElement;
+          var body = document.body;
+          return root && root.classList && root.classList.contains('reduce-motion') || body && body.classList && body.classList.contains('reduce-motion');
+        }
+        function shouldRespectPinkModeReduceMotion() {
+          var stored = readPinkModeStoredReduceMotionPreference();
+          if (stored === 'true') {
+            return true;
+          }
+          if (stored === 'false') {
+            return false;
+          }
+          if (isPinkModeReduceMotionClassActive()) {
+            return true;
+          }
+          return Boolean(pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches);
+        }
         function ensureSvgHasAriaHidden(markup) {
           if (typeof markup !== 'string') return '';
           var trimmed = markup.trim();
@@ -1403,10 +1467,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             pinkModeAnimatedIconLastTouchTime = 0;
           };
         }
-        function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions) {
+        function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions, options) {
           if (typeof document === 'undefined' || typeof document.elementFromPoint !== 'function') {
             return true;
           }
+          var allowLayerOverlap = Boolean(options && options.allowLayerOverlap);
+          var allowInteractiveOverlap = Boolean(options && options.allowInteractiveOverlap);
           var viewportWidth = typeof window !== 'undefined' && typeof window.innerWidth === 'number' ? window.innerWidth : document.documentElement && typeof document.documentElement.clientWidth === 'number' ? document.documentElement.clientWidth : null;
           var viewportHeight = typeof window !== 'undefined' && typeof window.innerHeight === 'number' ? window.innerHeight : document.documentElement && typeof document.documentElement.clientHeight === 'number' ? document.documentElement.clientHeight : null;
           var baseX = (hostRect ? hostRect.left : 0) + x;
@@ -1463,9 +1529,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     continue;
                   }
                   if (layer && layer.contains(element)) {
+                    if (allowLayerOverlap) {
+                      continue;
+                    }
                     return false;
                   }
-                  if (typeof element.matches === 'function' && element.matches(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR) || typeof element.closest === 'function' && element.closest(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR)) {
+                  if (!allowInteractiveOverlap && (typeof element.matches === 'function' && element.matches(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR) || typeof element.closest === 'function' && element.closest(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR))) {
                     return false;
                   }
                 }
@@ -1496,7 +1565,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             _ref2$leftMarginExten = _ref2.leftMarginExtension,
             leftMarginExtension = _ref2$leftMarginExten === void 0 ? 0 : _ref2$leftMarginExten,
             _ref2$rightMarginExte = _ref2.rightMarginExtension,
-            rightMarginExtension = _ref2$rightMarginExte === void 0 ? 0 : _ref2$rightMarginExte;
+            rightMarginExtension = _ref2$rightMarginExte === void 0 ? 0 : _ref2$rightMarginExte,
+            _ref2$spotOptions = _ref2.spotOptions,
+            spotOptions = _ref2$spotOptions === void 0 ? null : _ref2$spotOptions;
           var minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
           var maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
           var marginLeft = Math.max(0, leftMarginExtension);
@@ -1508,7 +1579,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           for (var attempt = 0; attempt < PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS; attempt += 1) {
             var y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
             var x = maxX > minX ? minX + Math.random() * (maxX - minX) : minX;
-            if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)) {
+            if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions, spotOptions)) {
               return {
                 x: x,
                 y: y
@@ -1732,7 +1803,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             whenPinkModeBodyReady(triggerPinkModeIconRain);
             return;
           }
-          if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+          if (shouldRespectPinkModeReduceMotion()) {
             return;
           }
           var now = Date.now();
@@ -1890,29 +1961,84 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               margin: margin
             };
           }).filter(Boolean);
-          var avoidRegions = [].concat(_toConsumableArray(computePinkModeAnimationAvoidRegions(layer)), _toConsumableArray(collectPinkModeAnimationInstanceRegions(layer)), _toConsumableArray(historicalAvoidRegions));
-          var placement = findPinkModeAnimationPlacement({
+          var staticAvoidRegions = computePinkModeAnimationAvoidRegions(layer);
+          var activeInstanceRegions = collectPinkModeAnimationInstanceRegions(layer);
+          var basePlacementConfig = {
             layer: layer,
             hostRect: hostRect,
             hostTop: hostTop,
             visibleTop: visibleTop,
             visibleBottom: visibleBottom,
-            horizontalPadding: horizontalPadding,
-            verticalPadding: verticalPadding,
             hostWidth: hostWidth,
-            size: size,
-            avoidRegions: avoidRegions,
-            leftMarginExtension: leftMarginExtension,
-            rightMarginExtension: rightMarginExtension
+            size: size
+          };
+          var attemptPlacement = function attemptPlacement(placementOptions) {
+            return findPinkModeAnimationPlacement(_objectSpread(_objectSpread({}, basePlacementConfig), {}, {
+              horizontalPadding: horizontalPadding,
+              verticalPadding: verticalPadding,
+              leftMarginExtension: leftMarginExtension,
+              rightMarginExtension: rightMarginExtension
+            }, placementOptions));
+          };
+          var placement = attemptPlacement({
+            avoidRegions: [].concat(_toConsumableArray(staticAvoidRegions), _toConsumableArray(activeInstanceRegions), _toConsumableArray(historicalAvoidRegions))
           });
+          if (!placement) {
+            placement = attemptPlacement({
+              avoidRegions: [].concat(_toConsumableArray(activeInstanceRegions), _toConsumableArray(historicalAvoidRegions)),
+              horizontalPadding: Math.max(horizontalPadding * 0.65, 48),
+              verticalPadding: Math.max(verticalPadding * 0.65, 64),
+              leftMarginExtension: Math.max(leftMarginExtension, size * 0.5),
+              rightMarginExtension: Math.max(rightMarginExtension, size * 0.5)
+            });
+          }
+          if (!placement) {
+            placement = attemptPlacement({
+              avoidRegions: _toConsumableArray(historicalAvoidRegions),
+              horizontalPadding: Math.max(horizontalPadding * 0.45, 32),
+              verticalPadding: Math.max(verticalPadding * 0.45, 48),
+              leftMarginExtension: Math.max(leftMarginExtension, size * 1.5),
+              rightMarginExtension: Math.max(rightMarginExtension, size * 1.5),
+              spotOptions: {
+                allowInteractiveOverlap: true
+              }
+            });
+          }
+          if (!placement) {
+            placement = attemptPlacement({
+              avoidRegions: [],
+              horizontalPadding: Math.max(horizontalPadding * 0.25, 24),
+              verticalPadding: Math.max(verticalPadding * 0.25, 32),
+              leftMarginExtension: Math.max(leftMarginExtension, size * 2),
+              rightMarginExtension: Math.max(rightMarginExtension, size * 2),
+              spotOptions: {
+                allowInteractiveOverlap: true
+              }
+            });
+          }
+          if (!placement) {
+            var fallbackHorizontalPadding = Math.max(horizontalPadding * 0.2, 16);
+            var fallbackVerticalPadding = Math.max(verticalPadding * 0.2, 28);
+            var marginLeft = Math.max(0, Math.max(leftMarginExtension, size));
+            var marginRight = Math.max(0, Math.max(rightMarginExtension, size));
+            var minX = fallbackHorizontalPadding - marginLeft;
+            var maxX = Math.max(hostWidth - fallbackHorizontalPadding, minX) + marginRight;
+            var minY = Math.max(visibleTop - hostTop + fallbackVerticalPadding, fallbackVerticalPadding);
+            var maxY = Math.max(visibleBottom - hostTop - fallbackVerticalPadding, minY);
+            placement = {
+              x: maxX > minX ? (minX + maxX) / 2 : minX,
+              y: maxY > minY ? (minY + maxY) / 2 : minY
+            };
+          }
           if (!placement) {
             if (container.parentNode) {
               container.parentNode.removeChild(container);
             }
             return false;
           }
-          var x = placement.x,
-            y = placement.y;
+          var _placement = placement,
+            x = _placement.x,
+            y = _placement.y;
           pinkModeAnimatedIconPlacementHistory.push({
             x: x,
             y: y,
@@ -1921,10 +2047,89 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (pinkModeAnimatedIconPlacementHistory.length > PINK_MODE_ANIMATED_ICON_RECENT_SPOT_LIMIT) {
             pinkModeAnimatedIconPlacementHistory.splice(0, pinkModeAnimatedIconPlacementHistory.length - PINK_MODE_ANIMATED_ICON_RECENT_SPOT_LIMIT);
           }
+          var randomInRange = function randomInRange(min, max) {
+            if (!Number.isFinite(min) || !Number.isFinite(max)) {
+              return 0;
+            }
+            if (max === min) {
+              return max;
+            }
+            var lower = Math.min(min, max);
+            var upper = Math.max(min, max);
+            return Math.random() * (upper - lower) + lower;
+          };
+          var setAnimationMetric = function setAnimationMetric(name, value, options) {
+            if (!name || !container || !container.style) {
+              return;
+            }
+            var finiteValue = Number.isFinite(value) ? value : null;
+            if (finiteValue === null) {
+              return;
+            }
+            var unit = options && typeof options.unit === 'string' ? options.unit : 'px';
+            var precision = options && Number.isFinite(options.precision) && options.precision >= 0 ? options.precision : 2;
+            var formatted = "".concat(finiteValue.toFixed(precision)).concat(unit);
+            container.style.setProperty(name, formatted);
+          };
+          var horizontalDirection = Math.random() < 0.5 ? -1 : 1;
+          var translateXStart = randomInRange(-36, 36);
+          var translateXSettle = translateXStart + randomInRange(-28, 28);
+          var translateXDrift = translateXSettle + horizontalDirection * randomInRange(36, 84);
+          var translateXEnd = translateXDrift + horizontalDirection * randomInRange(48, 132);
+          var translateYStart = randomInRange(Math.max(24, size * 0.3), Math.max(60, size * 0.85));
+          var translateYSettle = randomInRange(-16, 16);
+          var translateYDrift = -Math.abs(randomInRange(Math.max(32, size * 0.25), Math.max(96, size * 0.65)));
+          var translateYEnd = -Math.abs(randomInRange(Math.max(80, size * 0.6), Math.max(180, size * 1.35)));
+          var scaleJitter = randomInRange(-0.08, 0.08);
+          var scaleStart = Math.min(0.92, Math.max(0.62, 0.75 + scaleJitter * 0.5));
+          var scaleSettle = Math.min(1.2, Math.max(0.9, 1 + scaleJitter));
+          var scaleDrift = Math.min(1.25, Math.max(0.95, 1.05 + scaleJitter * 0.5));
+          var scaleEnd = Math.min(1.05, Math.max(0.7, 0.85 + scaleJitter * 0.5));
+          var rotationDirection = Math.random() < 0.5 ? -1 : 1;
+          var rotationStart = -rotationDirection * randomInRange(4, 12);
+          var rotationSettle = rotationDirection * randomInRange(-3, 3);
+          var rotationDrift = rotationDirection * randomInRange(6, 14);
+          var rotationEnd = rotationDirection * randomInRange(10, 18);
           container.style.setProperty('--pink-mode-animation-duration', "".concat(duration, "ms"));
           container.style.setProperty('--pink-mode-animation-size', "".concat(size, "px"));
           container.style.setProperty('--pink-mode-animation-x', "".concat(x, "px"));
           container.style.setProperty('--pink-mode-animation-y', "".concat(y, "px"));
+          setAnimationMetric('--pink-mode-animation-translate-x-start', translateXStart);
+          setAnimationMetric('--pink-mode-animation-translate-x-settle', translateXSettle);
+          setAnimationMetric('--pink-mode-animation-translate-x-drift', translateXDrift);
+          setAnimationMetric('--pink-mode-animation-translate-x-end', translateXEnd);
+          setAnimationMetric('--pink-mode-animation-translate-y-start', translateYStart);
+          setAnimationMetric('--pink-mode-animation-translate-y-settle', translateYSettle);
+          setAnimationMetric('--pink-mode-animation-translate-y-drift', translateYDrift);
+          setAnimationMetric('--pink-mode-animation-translate-y-end', translateYEnd);
+          setAnimationMetric('--pink-mode-animation-scale-start', scaleStart, {
+            unit: '',
+            precision: 3
+          });
+          setAnimationMetric('--pink-mode-animation-scale-settle', scaleSettle, {
+            unit: '',
+            precision: 3
+          });
+          setAnimationMetric('--pink-mode-animation-scale-drift', scaleDrift, {
+            unit: '',
+            precision: 3
+          });
+          setAnimationMetric('--pink-mode-animation-scale-end', scaleEnd, {
+            unit: '',
+            precision: 3
+          });
+          setAnimationMetric('--pink-mode-animation-rotation-start', rotationStart, {
+            unit: 'deg'
+          });
+          setAnimationMetric('--pink-mode-animation-rotation-settle', rotationSettle, {
+            unit: 'deg'
+          });
+          setAnimationMetric('--pink-mode-animation-rotation-drift', rotationDrift, {
+            unit: 'deg'
+          });
+          setAnimationMetric('--pink-mode-animation-rotation-end', rotationEnd, {
+            unit: 'deg'
+          });
           layer.appendChild(container);
           var animationData;
           try {
@@ -2025,7 +2230,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             whenPinkModeBodyReady(startPinkModeAnimatedIcons);
             return;
           }
-          if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+          if (shouldRespectPinkModeReduceMotion()) {
             return;
           }
           if (!document.body.classList.contains('pink-mode')) {
@@ -2040,7 +2245,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!lottie || typeof lottie.loadAnimation !== 'function') {
               return null;
             }
-            if (!document || !document.body || !document.body.classList.contains('pink-mode') || pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+            if (!document || !document.body || !document.body.classList.contains('pink-mode') || shouldRespectPinkModeReduceMotion()) {
               return null;
             }
             activatePinkModeAnimatedIcons();
@@ -2073,8 +2278,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           pinkModeAnimatedIconLastTemplateName = null;
         }
         if (pinkModeReduceMotionQuery) {
-          var handlePinkModeReduceMotionChange = function handlePinkModeReduceMotionChange(event) {
-            if (event.matches) {
+          var handlePinkModeReduceMotionChange = function handlePinkModeReduceMotionChange() {
+            if (shouldRespectPinkModeReduceMotion()) {
               stopPinkModeAnimatedIcons();
             } else if (document.body && document.body.classList.contains('pink-mode')) {
               startPinkModeAnimatedIcons();

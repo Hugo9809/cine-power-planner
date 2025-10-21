@@ -764,56 +764,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return trimmed.toLowerCase().replace(/\s+/g, ' ');
   }
-
-  var CANONICAL_FRAME_RATE_VALUES = Object.freeze([
-    0.75,
-    1,
-    8,
-    12,
-    12.5,
-    15,
-    23.976,
-    24,
-    25,
-    29.97,
-    30,
-    36,
-    40,
-    47.952,
-    48,
-    50,
-    59.94,
-    60,
-    72,
-    75,
-    80,
-    90,
-    96,
-    100,
-    110,
-    112,
-    120,
-    144,
-    150,
-    160,
-    168,
-    170,
-    180,
-    200,
-    240,
-    290,
-    300
-  ]);
-
+  var CANONICAL_FRAME_RATE_VALUES = Object.freeze([0.75, 1, 8, 12, 12.5, 15, 23.976, 24, 25, 29.97, 30, 36, 40, 47.952, 48, 50, 59.94, 60, 72, 75, 80, 90, 96, 100, 110, 112, 120, 144, 150, 160, 168, 170, 180, 200, 240, 290, 300]);
   function resolveCanonicalFrameRateValue(rawValue) {
     if (typeof rawValue !== 'number' || !Number.isFinite(rawValue)) {
       return rawValue;
     }
-
     var tolerance = 0.05;
     var nearest = rawValue;
     var smallestDiff = tolerance + 1;
-
     for (var index = 0; index < CANONICAL_FRAME_RATE_VALUES.length; index += 1) {
       var candidate = CANONICAL_FRAME_RATE_VALUES[index];
       var diff = Math.abs(candidate - rawValue);
@@ -822,50 +780,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         smallestDiff = diff;
       }
     }
-
     return nearest;
   }
-
   function formatFrameRateLabel(value) {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
       return '';
     }
-
     var rounded = Math.round(value);
     if (Math.abs(rounded - value) < 0.0005) {
       return String(rounded);
     }
-
     var fixed = value.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
     return fixed;
   }
-
   function appendFrameRateOption(results, seen, numericValue) {
     if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
       return;
     }
-
     var canonical = resolveCanonicalFrameRateValue(numericValue);
     var label = formatFrameRateLabel(canonical);
     if (!label) {
       return;
     }
-
     var optionLabel = label + ' fps';
     if (Object.prototype.hasOwnProperty.call(seen, optionLabel)) {
       return;
     }
-
     seen[optionLabel] = canonical;
-    results.push({ numeric: canonical, label: optionLabel });
+    results.push({
+      numeric: canonical,
+      label: optionLabel
+    });
   }
-
   function appendFrameRateRange(results, seen, minValue, maxValue) {
-    if (typeof minValue !== 'number' || !Number.isFinite(minValue) ||
-        typeof maxValue !== 'number' || !Number.isFinite(maxValue)) {
+    if (typeof minValue !== 'number' || !Number.isFinite(minValue) || typeof maxValue !== 'number' || !Number.isFinite(maxValue)) {
       return;
     }
-
     var min = minValue;
     var max = maxValue;
     if (min > max) {
@@ -873,7 +823,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       min = max;
       max = swap;
     }
-
     var tolerance = 0.05;
     for (var index = 0; index < CANONICAL_FRAME_RATE_VALUES.length; index += 1) {
       var candidate = CANONICAL_FRAME_RATE_VALUES[index];
@@ -885,20 +834,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       appendFrameRateOption(results, seen, candidate);
     }
-
     appendFrameRateOption(results, seen, min);
     appendFrameRateOption(results, seen, max);
   }
-
   function sortFrameRateOptionsInPlace(values) {
     if (!Array.isArray(values)) {
       return;
     }
-
     values.sort(function sortFrameRateOptions(a, b) {
       var aValue = parseFloat(a);
       var bValue = parseFloat(b);
-
       if (Number.isFinite(aValue) && Number.isFinite(bValue)) {
         if (aValue < bValue) {
           return -1;
@@ -907,7 +852,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return 1;
         }
       }
-
       if (a < b) {
         return -1;
       }
@@ -917,21 +861,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return 0;
     });
   }
-
   function parseFrameRateOptions(frameRateValue) {
     if (typeof frameRateValue !== 'string') {
       return [];
     }
-
     var trimmed = frameRateValue.trim();
     if (!trimmed) {
       return [];
     }
-
     var colonIndex = trimmed.lastIndexOf(':');
     var detail = colonIndex !== -1 ? trimmed.slice(colonIndex + 1) : trimmed;
     var cleaned = detail.replace(/\([^)]*\)/g, ' ');
-
     var numbers = [];
     cleaned.replace(/([0-9]+(?:\.[0-9]+)?)/g, function parseMatch(_, match) {
       var numeric = parseFloat(match);
@@ -940,21 +880,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return match;
     });
-
     if (!numbers.length) {
       return [];
     }
-
     var results = [];
     var seen = Object.create(null);
-
     var hasSlashList = /[0-9]\s*\//.test(cleaned);
     var hasCommaList = /[0-9]\s*,\s*[0-9]/.test(cleaned);
     var hasListKeyword = /\b(?:or|and)\b/i.test(cleaned);
     var hasUpTo = /up to/i.test(cleaned) || /\bmax(?:imum)?\b/i.test(cleaned);
     var hasBetween = /\bbetween\b/i.test(cleaned);
     var hasRangeIndicator = /(?:–|-|\bto\b)/i.test(cleaned);
-
     if (hasUpTo) {
       var maxRange = Math.max.apply(Math, numbers);
       var minRange = numbers.length > 1 ? Math.min.apply(Math, numbers) : 1;
@@ -963,7 +899,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var minBound = Math.min.apply(Math, numbers);
       var maxBound = Math.max.apply(Math, numbers);
       appendFrameRateRange(results, seen, minBound, maxBound);
-    } else if (hasSlashList || hasCommaList || (hasListKeyword && numbers.length > 1)) {
+    } else if (hasSlashList || hasCommaList || hasListKeyword && numbers.length > 1) {
       for (var listIndex = 0; listIndex < numbers.length; listIndex += 1) {
         appendFrameRateOption(results, seen, numbers[listIndex]);
       }
@@ -974,7 +910,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var fallbackMax = Math.max.apply(Math, numbers);
       appendFrameRateRange(results, seen, fallbackMin, fallbackMax);
     }
-
     results.sort(function sortFrameRateResult(a, b) {
       if (a.numeric < b.numeric) {
         return -1;
@@ -990,20 +925,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return 0;
     });
-
     var labels = [];
     for (var index = 0; index < results.length; index += 1) {
       labels.push(results[index].label);
     }
-
     return labels;
   }
-
   function collectAllFrameRateOptions(frameRates) {
     var options = [];
     var seen = Object.create(null);
     var list = Array.isArray(frameRates) ? frameRates : [];
-
     for (var index = 0; index < list.length; index += 1) {
       var parsed = parseFrameRateOptions(list[index]);
       for (var optionIndex = 0; optionIndex < parsed.length; optionIndex += 1) {
@@ -1015,11 +946,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         options.push(option);
       }
     }
-
     sortFrameRateOptionsInPlace(options);
     return options;
   }
-
   function tokenizeComparisonValue(value) {
     if (typeof value !== 'string') {
       return [];
@@ -3737,6 +3666,49 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var normalized = typeof value === 'string' ? value : sanitizePrefillValue(value);
       if (typeof normalized !== 'string') {
         normalized = '';
+      }
+      var tagName = typeof input.tagName === 'string' ? input.tagName.toUpperCase() : '';
+      if (tagName === 'SELECT') {
+        try {
+          var options = input.options;
+          var foundMatch = false;
+          if (options && typeof options.length === 'number') {
+            for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+              var option = options[optionIndex];
+              if (!option) {
+                continue;
+              }
+              var optionValue = typeof option.value === 'string' ? option.value : '';
+              var optionLabel = typeof option.text === 'string' ? option.text : option.textContent;
+              if (optionValue === normalized || optionLabel === normalized) {
+                option.selected = true;
+                foundMatch = true;
+                break;
+              }
+            }
+          }
+          if (!foundMatch) {
+            if (normalized) {
+              var ownerDoc = input.ownerDocument && typeof input.ownerDocument.createElement === 'function' ? input.ownerDocument : null;
+              var newOption = ownerDoc ? ownerDoc.createElement('option') : null;
+              if (newOption) {
+                newOption.value = normalized;
+                newOption.textContent = normalized;
+                input.appendChild(newOption);
+                newOption.selected = true;
+                foundMatch = true;
+              }
+            } else if (typeof input.selectedIndex === 'number') {
+              input.selectedIndex = -1;
+            }
+          }
+          if (foundMatch) {
+            input.value = normalized;
+            return;
+          }
+        } catch (selectError) {
+          safeWarn('cineResults could not update runtime feedback select prefill.', selectError);
+        }
       }
       try {
         input.value = normalized;

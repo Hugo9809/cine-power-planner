@@ -866,7 +866,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (expectedOrigin && parsed.origin && parsed.origin !== expectedOrigin) {
             return '';
           }
-          var pathCandidate = '' + (parsed.pathname || '') + (parsed.search || '') + (parsed.hash || '');
+          var pathCandidate = "".concat(parsed.pathname || '').concat(parsed.search || '').concat(parsed.hash || '');
           if (pathCandidate) {
             return pathCandidate;
           }
@@ -878,18 +878,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       if (typeof expectedOrigin === 'string' && expectedOrigin) {
-        if (typeof enforcedHref === 'string' && enforcedHref.indexOf(expectedOrigin) === 0) {
+        if (typeof enforcedHref === 'string' && enforcedHref.startsWith(expectedOrigin)) {
           var suffix = enforcedHref.slice(expectedOrigin.length);
-          if (!suffix || suffix.charAt(0) === '/' || suffix.charAt(0) === '?' || suffix.charAt(0) === '#') {
+          if (!suffix || suffix.startsWith('/') || suffix.startsWith('?') || suffix.startsWith('#')) {
             return suffix || '/';
           }
         }
       }
       if (typeof enforcedHref === 'string') {
-        if (enforcedHref.indexOf('/') === 0) {
+        if (enforcedHref.startsWith('/')) {
           return enforcedHref;
         }
-        if (enforcedHref.indexOf('://') === -1) {
+        if (!enforcedHref.includes('://')) {
           return enforcedHref;
         }
       }
@@ -897,7 +897,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }();
     var executeWarmup = function () {
       var _ref = _asyncToGenerator(_regenerator().m(function _callee2() {
-        var allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, suppressWarning, body, _t, _t3, _t4, _t5, _t6;
+        var allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, suppressWarning, body, _t, _t2, _t3, _t4, _t5;
         return _regenerator().w(function (_context2) {
           while (1) switch (_context2.p = _context2.n) {
             case 0:
@@ -1062,125 +1062,125 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               firstError = null;
               shouldAttemptFetch = !preferXmlHttpWarmup;
               if (!preferXmlHttpWarmup) {
-                _context2.n = 11;
+                _context2.n = 8;
                 break;
               }
-              _context2.p = 7;
-              _context2.n = 8;
+              _context2.p = 4;
+              _context2.n = 5;
               return attemptXmlHttpWarmup();
-            case 8:
+            case 5:
               xmlHttpResult = _context2.v;
               if (!(xmlHttpResult === true)) {
-                _context2.n = 9;
+                _context2.n = 6;
                 break;
               }
               return _context2.a(2, true);
-            case 9:
+            case 6:
               if (xmlHttpResult === false) {
                 shouldAttemptFetch = false;
               } else {
                 shouldAttemptFetch = true;
               }
-              _context2.n = 11;
+              _context2.n = 8;
               break;
-            case 10:
-              _context2.p = 10;
-              _t3 = _context2.v;
-              void _t3;
+            case 7:
+              _context2.p = 7;
+              _t2 = _context2.v;
+              void _t2;
               shouldAttemptFetch = true;
-            case 11:
+            case 8:
               if (!shouldAttemptFetch) {
-                _context2.n = 15;
+                _context2.n = 12;
                 break;
               }
-              _context2.p = 12;
-              _context2.n = 13;
+              _context2.p = 9;
+              _context2.n = 10;
               return performFetch();
-            case 13:
+            case 10:
               response = _context2.v;
-              _context2.n = 15;
+              _context2.n = 12;
               break;
-            case 14:
-              _context2.p = 14;
-              _t4 = _context2.v;
-              firstError = _t4;
-            case 15:
+            case 11:
+              _context2.p = 11;
+              _t3 = _context2.v;
+              firstError = _t3;
+            case 12:
               if (response) {
-                _context2.n = 24;
+                _context2.n = 21;
                 break;
               }
               if (!isAborted()) {
-                _context2.n = 16;
+                _context2.n = 13;
                 break;
               }
               return _context2.a(2, false);
-            case 16:
+            case 13:
               if (!isAccessControlReloadWarmupError(firstError)) {
-                _context2.n = 17;
+                _context2.n = 14;
                 break;
               }
               return _context2.a(2, false);
-            case 17:
+            case 14:
               fallbackResponse = null;
               fallbackError = firstError;
-              _context2.p = 18;
-              _context2.n = 19;
+              _context2.p = 15;
+              _context2.n = 16;
               return performFetch({
                 cache: 'default'
               });
-            case 19:
+            case 16:
               fallbackResponse = _context2.v;
-              _context2.n = 21;
+              _context2.n = 18;
               break;
-            case 20:
-              _context2.p = 20;
-              _t5 = _context2.v;
-              fallbackError = _t5 || firstError;
-            case 21:
+            case 17:
+              _context2.p = 17;
+              _t4 = _context2.v;
+              fallbackError = _t4 || firstError;
+            case 18:
               if (fallbackResponse) {
-                _context2.n = 23;
+                _context2.n = 20;
                 break;
               }
               if (!isAborted()) {
-                _context2.n = 22;
+                _context2.n = 19;
                 break;
               }
               return _context2.a(2, false);
-            case 22:
+            case 19:
               suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
               if (!reloadWarmupFailureLogged && !suppressWarning) {
                 reloadWarmupFailureLogged = true;
                 safeWarn('Reload warmup fetch failed', fallbackError || firstError);
               }
               return _context2.a(2, false);
-            case 23:
+            case 20:
               response = fallbackResponse;
-            case 24:
+            case 21:
               if (response) {
-                _context2.n = 25;
+                _context2.n = 22;
                 break;
               }
               return _context2.a(2, false);
-            case 25:
-              _context2.p = 25;
+            case 22:
+              _context2.p = 22;
               body = typeof response.clone === 'function' ? response.clone() : response;
               if (!(body && typeof body.text === 'function' && body.bodyUsed !== true)) {
-                _context2.n = 26;
+                _context2.n = 23;
                 break;
               }
-              _context2.n = 26;
+              _context2.n = 23;
               return body.text();
-            case 26:
-              _context2.n = 28;
+            case 23:
+              _context2.n = 25;
               break;
-            case 27:
-              _context2.p = 27;
-              _t6 = _context2.v;
-              void _t6;
-            case 28:
+            case 24:
+              _context2.p = 24;
+              _t5 = _context2.v;
+              void _t5;
+            case 25:
               return _context2.a(2, true);
           }
-        }, _callee2, null, [[25, 27], [18, 20], [12, 14], [7, 10], [3, 5], [0, 2]]);
+        }, _callee2, null, [[22, 24], [15, 17], [9, 11], [4, 7], [0, 2]]);
       }));
       return function executeWarmup() {
         return _ref.apply(this, arguments);
@@ -1593,7 +1593,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _collectServiceWorkerRegistrations() {
     _collectServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
-      var nav, serviceWorker, registrations, regs, reg, readyReg, _t7, _t8;
+      var nav, serviceWorker, registrations, pushRegistration, regs, reg, readyReg, _t6, _t7;
       return _regenerator().w(function (_context3) {
         while (1) switch (_context3.p = _context3.n) {
           case 0:
@@ -1606,6 +1606,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           case 1:
             serviceWorker = nav.serviceWorker;
             registrations = [];
+            pushRegistration = function pushRegistration(registration) {
+              if (registration) {
+                registrations.push(registration);
+              }
+            };
             _context3.p = 2;
             if (!(typeof serviceWorker.getRegistrations === 'function')) {
               _context3.n = 4;
@@ -1616,11 +1621,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           case 3:
             regs = _context3.v;
             if (Array.isArray(regs)) {
-              regs.forEach(function (reg) {
-                if (reg) {
-                  registrations.push(reg);
-                }
-              });
+              regs.forEach(pushRegistration);
             }
             _context3.n = 10;
             break;
@@ -1633,9 +1634,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return serviceWorker.getRegistration();
           case 5:
             reg = _context3.v;
-            if (reg) {
-              registrations.push(reg);
-            }
+            pushRegistration(reg);
             _context3.n = 10;
             break;
           case 6:
@@ -1648,22 +1647,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return serviceWorker.ready;
           case 8:
             readyReg = _context3.v;
-            if (readyReg) {
-              registrations.push(readyReg);
-            }
+            pushRegistration(readyReg);
             _context3.n = 10;
             break;
           case 9:
             _context3.p = 9;
-            _t7 = _context3.v;
-            safeWarn('Failed to await active service worker', _t7);
+            _t6 = _context3.v;
+            safeWarn('Failed to await active service worker', _t6);
           case 10:
             _context3.n = 12;
             break;
           case 11:
             _context3.p = 11;
-            _t8 = _context3.v;
-            safeWarn('Failed to query service worker registrations', _t8);
+            _t7 = _context3.v;
+            safeWarn('Failed to query service worker registrations', _t7);
           case 12:
             return _context3.a(2, registrations);
         }
@@ -1671,58 +1668,81 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }));
     return _collectServiceWorkerRegistrations.apply(this, arguments);
   }
-  function resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations) {
-    if (!prefetchedRegistrations) {
-      return Promise.resolve([]);
-    }
-    return Promise.resolve(prefetchedRegistrations).then(function (resolved) {
-      if (!Array.isArray(resolved)) {
-        return [];
-      }
-      return resolved.filter(function (registration) {
-        return !!registration;
-      });
-    }).catch(function (error) {
-      safeWarn('Failed to resolve prefetched service worker registrations', error);
-      return [];
-    });
+  function resolvePrefetchedServiceWorkerRegistrations(_x2) {
+    return _resolvePrefetchedServiceWorkerRegistrations.apply(this, arguments);
   }
-  function unregisterServiceWorkers(_x, _x2) {
-    return _unregisterServiceWorkers.apply(this, arguments);
-  }
-  function _unregisterServiceWorkers() {
-    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee4(navigatorOverride, prefetchedRegistrations) {
-      var nav, registrations;
+  function _resolvePrefetchedServiceWorkerRegistrations() {
+    _resolvePrefetchedServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee4(prefetchedRegistrations) {
+      var resolved, _t8;
       return _regenerator().w(function (_context4) {
         while (1) switch (_context4.p = _context4.n) {
           case 0:
-            nav = resolveNavigator(navigatorOverride);
-            if (!(!nav || !nav.serviceWorker)) {
+            if (prefetchedRegistrations) {
               _context4.n = 1;
               break;
             }
-            return _context4.a(2, false);
+            return _context4.a(2, []);
           case 1:
+            _context4.p = 1;
             _context4.n = 2;
+            return Promise.resolve(prefetchedRegistrations);
+          case 2:
+            resolved = _context4.v;
+            if (Array.isArray(resolved)) {
+              _context4.n = 3;
+              break;
+            }
+            return _context4.a(2, []);
+          case 3:
+            return _context4.a(2, resolved.filter(function (registration) {
+              return !!registration;
+            }));
+          case 4:
+            _context4.p = 4;
+            _t8 = _context4.v;
+            safeWarn('Failed to resolve prefetched service worker registrations', _t8);
+            return _context4.a(2, []);
+        }
+      }, _callee4, null, [[1, 4]]);
+    }));
+    return _resolvePrefetchedServiceWorkerRegistrations.apply(this, arguments);
+  }
+  function unregisterServiceWorkers(_x3, _x4) {
+    return _unregisterServiceWorkers.apply(this, arguments);
+  }
+  function _unregisterServiceWorkers() {
+    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee5(navigatorOverride, prefetchedRegistrations) {
+      var nav, registrations;
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.n) {
+          case 0:
+            nav = resolveNavigator(navigatorOverride);
+            if (!(!nav || !nav.serviceWorker)) {
+              _context5.n = 1;
+              break;
+            }
+            return _context5.a(2, false);
+          case 1:
+            _context5.n = 2;
             return resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations);
           case 2:
-            registrations = _context4.v;
+            registrations = _context5.v;
             if (registrations.length) {
-              _context4.n = 4;
+              _context5.n = 4;
               break;
             }
-            _context4.n = 3;
+            _context5.n = 3;
             return collectServiceWorkerRegistrations(nav);
           case 3:
-            registrations = _context4.v;
+            registrations = _context5.v;
           case 4:
             if (registrations.length) {
-              _context4.n = 5;
+              _context5.n = 5;
               break;
             }
-            return _context4.a(2, false);
+            return _context5.a(2, false);
           case 5:
-            _context4.n = 6;
+            _context5.n = 6;
             return Promise.all(registrations.map(function (registration) {
               if (!registration || typeof registration.unregister !== 'function') {
                 return Promise.resolve(false);
@@ -1733,39 +1753,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 6:
-            return _context4.a(2, true);
+            return _context5.a(2, true);
         }
-      }, _callee4, null, []);
+      }, _callee5);
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
-
   function observeServiceWorkerControllerChange(navigatorOverride) {
     var nav = resolveNavigator(navigatorOverride);
     if (!nav || !nav.serviceWorker) {
       return null;
     }
-
     var serviceWorker = nav.serviceWorker;
     if (!serviceWorker) {
       return null;
     }
-
     var resolved = false;
     var detach = null;
     var resolver = null;
     var attached = false;
-
     var finalize = function finalize(value) {
       if (resolved) {
         return;
       }
-
       resolved = true;
-
       var currentResolver = resolver;
       resolver = null;
-
       if (typeof detach === 'function') {
         try {
           detach();
@@ -1774,7 +1787,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         detach = null;
       }
-
       if (typeof currentResolver === 'function') {
         try {
           currentResolver(value);
@@ -1783,19 +1795,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     };
-
     var promise = new Promise(function (resolve) {
       resolver = resolve;
-
       if (serviceWorker.controller) {
         finalize(true);
         return;
       }
-
       var handler = function handler() {
         finalize(true);
       };
-
       try {
         if (typeof serviceWorker.addEventListener === 'function') {
           serviceWorker.addEventListener('controllerchange', handler);
@@ -1835,12 +1843,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         finalize(false);
       }
     });
-
     if (!attached && !serviceWorker.controller) {
       finalize(false);
       return null;
     }
-
     return {
       promise: promise,
       cancel: function cancel() {
@@ -1871,46 +1877,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  function clearCacheStorage(_x2) {
+  function clearCacheStorage(_x5) {
     return _clearCacheStorage.apply(this, arguments);
   }
   function _clearCacheStorage() {
-    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee4(cachesOverride) {
+    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee6(cachesOverride) {
       var cachesInstance, exposedName, lowerExplicit, keys, relevantKeys, removedAny, _t9;
-      return _regenerator().w(function (_context4) {
-        while (1) switch (_context4.p = _context4.n) {
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.p = _context6.n) {
           case 0:
             cachesInstance = resolveCaches(cachesOverride);
             if (!(!cachesInstance || typeof cachesInstance.keys !== 'function')) {
-              _context4.n = 1;
+              _context6.n = 1;
               break;
             }
-            return _context4.a(2, false);
+            return _context6.a(2, false);
           case 1:
             exposedName = resolveExposedCacheName();
             lowerExplicit = exposedName ? exposedName.toLowerCase() : null;
-            _context4.p = 2;
-            _context4.n = 3;
+            _context6.p = 2;
+            _context6.n = 3;
             return cachesInstance.keys();
           case 3:
-            keys = _context4.v;
+            keys = _context6.v;
             if (!(!Array.isArray(keys) || !keys.length)) {
-              _context4.n = 4;
+              _context6.n = 4;
               break;
             }
-            return _context4.a(2, false);
+            return _context6.a(2, false);
           case 4:
             relevantKeys = keys.filter(function (key) {
               return isRelevantCacheKey(key, exposedName, lowerExplicit);
             });
             if (relevantKeys.length) {
-              _context4.n = 5;
+              _context6.n = 5;
               break;
             }
-            return _context4.a(2, false);
+            return _context6.a(2, false);
           case 5:
             removedAny = false;
-            _context4.n = 6;
+            _context6.n = 6;
             return Promise.all(relevantKeys.map(function (key) {
               if (!key || typeof cachesInstance.delete !== 'function') {
                 return Promise.resolve(false);
@@ -1927,14 +1933,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 6:
-            return _context4.a(2, removedAny);
+            return _context6.a(2, removedAny);
           case 7:
-            _context4.p = 7;
-            _t9 = _context4.v;
+            _context6.p = 7;
+            _t9 = _context6.v;
             safeWarn('Cache clear failed', _t9);
-            return _context4.a(2, false);
+            return _context6.a(2, false);
         }
-      }, _callee4, null, [[2, 7]]);
+      }, _callee6, null, [[2, 7]]);
     }));
     return _clearCacheStorage.apply(this, arguments);
   }
@@ -2664,15 +2670,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return _reloadApp.apply(this, arguments);
   }
   function _reloadApp() {
-    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee7() {
+    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee9() {
       var options,
         win,
         location,
         forceReloadUrl,
-        uiCacheCleared,
-        clearUiCacheStorageEntriesFn,
         navigatorLike,
         serviceWorkerRegistrationsPromise,
+        uiCacheCleared,
+        clearUiCacheStorageEntriesFn,
         serviceWorkerCleanupPromise,
         cacheCleanupPromise,
         warmupHandle,
@@ -2696,13 +2702,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         reloadTriggered,
         reloadFn,
         cachesCleared,
-        _args7 = arguments,
+        _args9 = arguments,
         _t10,
         _t11;
-      return _regenerator().w(function (_context7) {
-        while (1) switch (_context7.p = _context7.n) {
+      return _regenerator().w(function (_context9) {
+        while (1) switch (_context9.p = _context9.n) {
           case 0:
-            options = _args7.length > 0 && _args7[0] !== undefined ? _args7[0] : {};
+            options = _args9.length > 0 && _args9[0] !== undefined ? _args9[0] : {};
             win = resolveWindow(options.window);
             location = resolveLocation(options.location || win && win.location);
             forceReloadUrl = coerceForceReloadUrlDescriptor(location, buildForceReloadUrl(location, 'forceReload'), 'forceReload');
@@ -2725,41 +2731,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee7() {
               var _t0;
-              return _regenerator().w(function (_context5) {
-                while (1) switch (_context5.p = _context5.n) {
+              return _regenerator().w(function (_context7) {
+                while (1) switch (_context7.p = _context7.n) {
                   case 0:
-                    _context5.p = 0;
-                    _context5.n = 1;
+                    _context7.p = 0;
+                    _context7.n = 1;
                     return unregisterServiceWorkers(options.navigator, serviceWorkerRegistrationsPromise);
                   case 1:
-                    return _context5.a(2, _context5.v);
+                    return _context7.a(2, _context7.v);
                   case 2:
-                    _context5.p = 2;
-                    _t0 = _context5.v;
+                    _context7.p = 2;
+                    _t0 = _context7.v;
                     safeWarn('Service worker cleanup failed', _t0);
-                    return _context5.a(2, false);
+                    return _context7.a(2, false);
                 }
-              }, _callee5, null, [[0, 2]]);
+              }, _callee7, null, [[0, 2]]);
             }))();
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee6() {
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee8() {
               var _t1;
-              return _regenerator().w(function (_context6) {
-                while (1) switch (_context6.p = _context6.n) {
+              return _regenerator().w(function (_context8) {
+                while (1) switch (_context8.p = _context8.n) {
                   case 0:
-                    _context6.p = 0;
-                    _context6.n = 1;
+                    _context8.p = 0;
+                    _context8.n = 1;
                     return clearCacheStorage(options.caches);
                   case 1:
-                    return _context6.a(2, _context6.v);
+                    return _context8.a(2, _context8.v);
                   case 2:
-                    _context6.p = 2;
-                    _t1 = _context6.v;
+                    _context8.p = 2;
+                    _t1 = _context8.v;
                     safeWarn('Cache clear failed', _t1);
-                    return _context6.a(2, false);
+                    return _context8.a(2, false);
                 }
-              }, _callee6, null, [[0, 2]]);
+              }, _callee8, null, [[0, 2]]);
             }))();
             warmupHandle = scheduleReloadWarmup({
               window: win,
@@ -2831,8 +2837,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             serviceWorkersUnregistered = false;
             warmupFinishedBeforeReload = false;
             serviceWorkerStatusKnown = false;
-            _context7.p = 1;
-            _context7.n = 2;
+            _context9.p = 1;
+            _context9.n = 2;
             return awaitPromiseWithSoftTimeout(gatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
               safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
                 timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -2847,7 +2853,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               safeWarn('Service worker cleanup failed after reload triggered', detail);
             });
           case 2:
-            serviceWorkerAwaitResult = _context7.v;
+            serviceWorkerAwaitResult = _context9.v;
             if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
               gateResult = serviceWorkerAwaitResult.result;
               if (gateResult && gateResult.source === 'serviceWorker') {
@@ -2870,20 +2876,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }
             }
-            if (controllerChangeWatcher) {
-              try {
-                controllerChangeWatcher.cancel();
-              } catch (controllerCleanupError) {
-                void controllerCleanupError;
-              }
-            }
-            _context7.n = 4;
+            _context9.n = 4;
             break;
           case 3:
-            _context7.p = 3;
-            _t10 = _context7.v;
+            _context9.p = 3;
+            _t10 = _context9.v;
             detail = _t10 && _t10.error ? _t10.error : _t10;
             safeWarn('Reload preparation gate failed', detail);
+          case 4:
+            _context9.p = 4;
             if (controllerChangeWatcher) {
               try {
                 controllerChangeWatcher.cancel();
@@ -2891,7 +2892,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 void controllerCleanupError;
               }
             }
-          case 4:
+            return _context9.f(4);
+          case 5:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
             try {
@@ -2911,20 +2913,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
             cachesCleared = false;
-            _context7.p = 5;
-            _context7.n = 6;
+            _context9.p = 6;
+            _context9.n = 7;
             return cacheCleanupPromise;
-          case 6:
-            cachesCleared = _context7.v;
-            _context7.n = 8;
-            break;
           case 7:
-            _context7.p = 7;
-            _t11 = _context7.v;
+            cachesCleared = _context9.v;
+            _context9.n = 9;
+            break;
+          case 8:
+            _context9.p = 8;
+            _t11 = _context9.v;
             safeWarn('Cache cleanup promise rejected', _t11);
             cachesCleared = false;
-          case 8:
-            return _context7.a(2, {
+          case 9:
+            return _context9.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
               serviceWorkerStatusKnown: serviceWorkerStatusKnown,
@@ -2934,7 +2936,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               navigationTriggered: reloadTriggered
             });
         }
-      }, _callee7, null, [[5, 7], [1, 3]]);
+      }, _callee9, null, [[6, 8], [1, 3, 4, 5]]);
     }));
     return _reloadApp.apply(this, arguments);
   }

@@ -3355,6 +3355,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var texts = getStepTexts(step);
       var item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
+      if (step && typeof step.key === 'string' && step.key) {
+        item.setAttribute('data-step-key', step.key);
+      }
       if (index < 3) {
         item.classList.add('onboarding-step-item--pinned');
         if (item && item.style && typeof item.style.setProperty === 'function') {

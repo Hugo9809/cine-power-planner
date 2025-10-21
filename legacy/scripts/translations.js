@@ -49,17 +49,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var registryKey = '__cineTranslations';
   var loaderStateKey = '__cineTranslationsLoaderState';
-  function ensureRegistry() {
-    if (scope[registryKey] && _typeof(scope[registryKey]) === 'object') {
-      return scope[registryKey];
+  var internalRegistry = {};
+  function assignRegistryReference(value) {
+    internalRegistry = value && _typeof(value) === 'object' ? value : {};
+    if (!scope) {
+      return internalRegistry;
     }
     try {
-      scope[registryKey] = {};
+      scope[registryKey] = internalRegistry;
+      if (scope[registryKey] === internalRegistry) {
+        return internalRegistry;
+      }
     } catch (assignError) {
       void assignError;
-      scope[registryKey] = {};
     }
-    return scope[registryKey];
+    if (typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(scope, registryKey, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: internalRegistry
+        });
+        if (scope[registryKey] === internalRegistry) {
+          return internalRegistry;
+        }
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+    return internalRegistry;
+  }
+  function ensureRegistry() {
+    if (scope && scope[registryKey] && _typeof(scope[registryKey]) === 'object') {
+      internalRegistry = scope[registryKey];
+      return scope[registryKey];
+    }
+    return assignRegistryReference(internalRegistry);
+  }
+  function storeRegistryEntry(locale, value) {
+    if (!locale) {
+      return ensureRegistry();
+    }
+    var registry = ensureRegistry();
+    if (!registry || _typeof(registry) !== 'object') {
+      registry = assignRegistryReference({});
+    }
+    if (tryAssignContainerValue(registry, locale, value)) {
+      return registry;
+    }
+    var replacement = cloneContainerEntries(registry);
+    if (tryAssignContainerValue(replacement, locale, value)) {
+      return assignRegistryReference(replacement);
+    }
+    var fallback = {};
+    if (tryAssignContainerValue(fallback, locale, value)) {
+      return assignRegistryReference(fallback);
+    }
+    return registry;
   }
   function ensureLoaderState() {
     if (scope[loaderStateKey] && _typeof(scope[loaderStateKey]) === 'object') {
@@ -77,9 +124,135 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return state;
   }
+  function assignLoaderStateLoading(loaderState, value) {
+    if (!loaderState || _typeof(loaderState) !== 'object') {
+      return false;
+    }
+    var assigned = false;
+    try {
+      loaderState.loading = value;
+      assigned = loaderState.loading === value;
+    } catch (assignError) {
+      void assignError;
+    }
+    if (assigned) {
+      return true;
+    }
+    if (typeof Object.defineProperty === 'function') {
+      try {
+        Object.defineProperty(loaderState, 'loading', {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: value
+        });
+        assigned = loaderState.loading === value;
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+    return assigned;
+  }
+  function getPropertyDescriptorSafe(target, key) {
+    if (!target || _typeof(target) !== 'object') {
+      return null;
+    }
+    if (typeof Object.getOwnPropertyDescriptor !== 'function') {
+      return null;
+    }
+    try {
+      return Object.getOwnPropertyDescriptor(target, key);
+    } catch (descriptorError) {
+      void descriptorError;
+      return null;
+    }
+  }
+  function ensureLoaderStateLoadingContainer(loaderState) {
+    var targetState = loaderState && _typeof(loaderState) === 'object' ? loaderState : ensureLoaderState();
+    var loading = targetState.loading;
+    if (loading && _typeof(loading) === 'object') {
+      var isExtensible = true;
+      try {
+        isExtensible = typeof Object.isExtensible !== 'function' || Object.isExtensible(loading);
+      } catch (extensibleCheckError) {
+        void extensibleCheckError;
+        isExtensible = true;
+      }
+      if (isExtensible) {
+        return loading;
+      }
+      var replacement = cloneContainerEntries(loading);
+      if (!replacement || _typeof(replacement) !== 'object') {
+        replacement = {};
+        try {
+          var existingKeys = Object.keys(loading);
+          for (var index = 0; index < existingKeys.length; index += 1) {
+            var key = existingKeys[index];
+            replacement[key] = loading[key];
+          }
+        } catch (copyError) {
+          void copyError;
+        }
+      }
+      if (assignLoaderStateLoading(targetState, replacement)) {
+        return replacement;
+      }
+      return loading;
+    }
+    var nextLoading = {};
+    if (assignLoaderStateLoading(targetState, nextLoading)) {
+      return nextLoading;
+    }
+    var current = targetState.loading;
+    return current && _typeof(current) === 'object' ? current : nextLoading;
+  }
+  function clearLoaderStateLoadingEntry(loaderState, locale) {
+    if (!locale) {
+      return;
+    }
+    var container = ensureLoaderStateLoadingContainer(loaderState);
+    if (!container || _typeof(container) !== 'object') {
+      return;
+    }
+    var descriptor = getPropertyDescriptorSafe(container, locale);
+    if (!descriptor || descriptor.configurable !== false) {
+      delete container[locale];
+      return;
+    }
+    if (tryAssignContainerValue(container, locale, undefined)) {
+      return;
+    }
+  }
   function ensureContainer(name) {
-    if (scope[name] && _typeof(scope[name]) === 'object') {
-      return scope[name];
+    var existing = scope[name];
+    if (existing && _typeof(existing) === 'object') {
+      var isExtensible = true;
+      try {
+        isExtensible = typeof Object.isExtensible !== 'function' || Object.isExtensible(existing);
+      } catch (extensibleCheckError) {
+        void extensibleCheckError;
+        isExtensible = true;
+      }
+      if (isExtensible) {
+        return existing;
+      }
+      var replacement = cloneContainerEntries(existing);
+      if (!replacement || _typeof(replacement) !== 'object') {
+        replacement = {};
+        try {
+          var existingKeys = Object.keys(existing);
+          for (var index = 0; index < existingKeys.length; index += 1) {
+            var key = existingKeys[index];
+            replacement[key] = existing[key];
+          }
+        } catch (copyError) {
+          void copyError;
+        }
+      }
+      if (replaceContainerReference(name, replacement)) {
+        return replacement;
+      }
+      return existing;
     }
     var container = {};
     try {
@@ -414,6 +587,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return registry && _typeof(registry) === 'object' ? registry[locale] : null;
   }
   function registerLocaleData(locale, data) {
+    if (!locale) {
+      return null;
+    }
+    var dataset = data && _typeof(data) === 'object' ? data : {};
+    storeRegistryEntry(locale, dataset);
     if (!data || _typeof(data) !== 'object') {
       return null;
     }
@@ -618,8 +796,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return Promise.resolve(registryData);
     }
     var loaderState = ensureLoaderState();
-    if (loaderState.loading[locale]) {
-      return loaderState.loading[locale];
+    var loadingContainer = ensureLoaderStateLoadingContainer(loaderState);
+    if (loadingContainer[locale]) {
+      return loadingContainer[locale];
     }
     if (typeof document === 'undefined' || !document || !document.createElement) {
       if (typeof require === 'function') {
@@ -646,29 +825,52 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       });
     }
-    loaderState.loading[locale] = new Promise(function startLoading(resolve, reject) {
+    var loadingPromise = new Promise(function startLoading(resolve, reject) {
       var script = document.createElement('script');
       script.async = true;
       script.src = scripts.url;
       script.setAttribute('data-translation-locale', locale);
       script.onload = function handleLoad() {
         scripts.loaded = true;
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         resolve(getLocaleData(locale));
       };
       script.onerror = function handleError(event) {
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         var error = event && event.error ? event.error : new Error('Failed to load translations for ' + locale + '.');
         reject(error);
       };
       try {
         document.head.appendChild(script);
       } catch (appendError) {
-        delete loaderState.loading[locale];
+        clearLoaderStateLoadingEntry(loaderState, locale);
         reject(appendError);
       }
     });
-    return loaderState.loading[locale];
+    if (!tryAssignContainerValue(loadingContainer, locale, loadingPromise)) {
+      var replacement = cloneContainerEntries(loadingContainer);
+      var assigned = false;
+      if (replacement && _typeof(replacement) === 'object') {
+        replacement[locale] = loadingPromise;
+        assigned = assignLoaderStateLoading(loaderState, replacement);
+        if (assigned) {
+          loadingContainer = replacement;
+        }
+      }
+      if (!assigned) {
+        var fallback = {};
+        fallback[locale] = loadingPromise;
+        if (assignLoaderStateLoading(loaderState, fallback)) {
+          loadingContainer = fallback;
+          assigned = true;
+        }
+      }
+    }
+    var trackedPromise = loadingContainer[locale];
+    if (!trackedPromise) {
+      trackedPromise = loadingPromise;
+    }
+    return trackedPromise;
   }
   function ensureDefaultLanguageLoaded() {
     var loaderState = ensureLoaderState();
@@ -767,6 +969,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     clearLoadingState: clearLoadingState,
     resolveLocaleKey: resolveLocaleKey,
     getAvailableLanguages: getAvailableLanguages,
+    registerPreloadedLocale: function registerPreloadedLocale(locale, data) {
+      var key = resolveLocaleKey(locale);
+      return registerLocaleData(key, data || {});
+    },
     isLanguageReady: function isLanguageReady(locale) {
       var key = resolveLocaleKey(locale);
       var container = ensureContainer('texts');
