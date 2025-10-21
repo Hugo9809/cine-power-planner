@@ -965,6 +965,61 @@
           ? window.matchMedia('(prefers-reduced-motion: reduce)')
           : null;
 
+      function readPinkModeStoredReduceMotionPreference() {
+        if (typeof window === 'undefined') {
+          return null;
+        }
+
+        let storage = null;
+        try {
+          storage = window.localStorage || null;
+        } catch (storageError) {
+          void storageError;
+          storage = null;
+        }
+
+        if (!storage) {
+          return null;
+        }
+
+        try {
+          const value = storage.getItem('reduceMotion');
+          return typeof value === 'string' ? value : null;
+        } catch (readError) {
+          void readError;
+        }
+
+        return null;
+      }
+
+      function isPinkModeReduceMotionClassActive() {
+        if (typeof document === 'undefined' || !document) {
+          return false;
+        }
+
+        const root = document.documentElement;
+        const body = document.body;
+
+        return (
+          (root && root.classList && root.classList.contains('reduce-motion')) ||
+          (body && body.classList && body.classList.contains('reduce-motion'))
+        );
+      }
+
+      function shouldRespectPinkModeReduceMotion() {
+        const stored = readPinkModeStoredReduceMotionPreference();
+        if (stored === 'true') {
+          return true;
+        }
+        if (stored === 'false') {
+          return false;
+        }
+        if (isPinkModeReduceMotionClassActive()) {
+          return true;
+        }
+        return Boolean(pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches);
+      }
+
       function ensureSvgHasAriaHidden(markup) {
         if (typeof markup !== 'string') return '';
         const trimmed = markup.trim();
@@ -1921,7 +1976,7 @@
           return;
         }
 
-        if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+        if (shouldRespectPinkModeReduceMotion()) {
           return;
         }
 
@@ -2481,7 +2536,7 @@
           whenPinkModeBodyReady(startPinkModeAnimatedIcons);
           return;
         }
-        if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+        if (shouldRespectPinkModeReduceMotion()) {
           return;
         }
         if (!document.body.classList.contains('pink-mode')) {
@@ -2503,7 +2558,7 @@
               !document ||
               !document.body ||
               !document.body.classList.contains('pink-mode') ||
-              (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches)
+              shouldRespectPinkModeReduceMotion()
             ) {
               return null;
             }
@@ -2541,8 +2596,8 @@
       }
 
       if (pinkModeReduceMotionQuery) {
-        const handlePinkModeReduceMotionChange = event => {
-          if (event.matches) {
+        const handlePinkModeReduceMotionChange = () => {
+          if (shouldRespectPinkModeReduceMotion()) {
             stopPinkModeAnimatedIcons();
           } else if (document.body && document.body.classList.contains('pink-mode')) {
             startPinkModeAnimatedIcons();

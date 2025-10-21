@@ -6618,14 +6618,14 @@ body.pink-mode .pink-mode-icon {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .pink-mode-icon-pop {
-    animation: none;
-  }
+html.reduce-motion .pink-mode-icon-pop,
+body.reduce-motion .pink-mode-icon-pop {
+  animation: none;
+}
 
-  .pink-mode-animation-layer {
-    display: none !important;
-  }
+html.reduce-motion .pink-mode-animation-layer,
+body.reduce-motion .pink-mode-animation-layer {
+  display: none !important;
 }
 
 #helpSearchClear .icon-glyph,
