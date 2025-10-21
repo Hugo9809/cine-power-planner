@@ -350,6 +350,82 @@
       const pinkModeAssetTextCache = new Map();
       const pinkModeAssetTextPromiseCache = new Map();
 
+      function decodePinkModeUriCandidate(value) {
+        if (typeof value !== 'string' || !value) {
+          return null;
+        }
+
+        try {
+          const decoded = decodeURI(value);
+          if (decoded && decoded !== value) {
+            return decoded;
+          }
+        } catch (error) {
+          void error;
+        }
+
+        return null;
+      }
+
+      function registerPinkModeNetworkVariant(variants, seen, candidate) {
+        if (!candidate) {
+          return;
+        }
+
+        const key =
+          typeof candidate === 'string'
+            ? candidate
+            : candidate && typeof candidate.url === 'string'
+              ? candidate.url
+              : null;
+
+        if (!key || seen.has(key)) {
+          return;
+        }
+
+        seen.add(key);
+        variants.push(candidate);
+      }
+
+      function createPinkModeNetworkRequestVariants(request, fallbackUrl) {
+        const variants = [];
+        const seen = new Set();
+
+        if (request) {
+          registerPinkModeNetworkVariant(variants, seen, request);
+
+          if (typeof request.url === 'string') {
+            const decodedRequestUrl = decodePinkModeUriCandidate(request.url);
+            if (decodedRequestUrl) {
+              registerPinkModeNetworkVariant(
+                variants,
+                seen,
+                createPinkModeAssetRequest(decodedRequestUrl) || decodedRequestUrl
+              );
+            }
+          }
+        }
+
+        const urlCandidates = [];
+        if (typeof fallbackUrl === 'string' && fallbackUrl) {
+          urlCandidates.push(fallbackUrl);
+          const decodedFallbackUrl = decodePinkModeUriCandidate(fallbackUrl);
+          if (decodedFallbackUrl) {
+            urlCandidates.push(decodedFallbackUrl);
+          }
+        }
+
+        for (const url of urlCandidates) {
+          registerPinkModeNetworkVariant(
+            variants,
+            seen,
+            createPinkModeAssetRequest(url) || url
+          );
+        }
+
+        return variants;
+      }
+
       function createPinkModeCacheKeyVariants(normalized, resolvedUrl, request) {
         const variants = [];
 
@@ -362,6 +438,10 @@
 
         if (resolvedUrl) {
           variants.push(resolvedUrl);
+          const decodedResolvedUrl = decodePinkModeUriCandidate(resolvedUrl);
+          if (decodedResolvedUrl) {
+            variants.push(decodedResolvedUrl);
+          }
         }
 
         if (!normalized) {
@@ -392,6 +472,14 @@
           if (encoded.charAt(0) !== '/') {
             variants.push(`./${encoded}`);
             variants.push(`/${encoded}`);
+          }
+          const decodedEncoded = decodePinkModeUriCandidate(encoded);
+          if (decodedEncoded) {
+            variants.push(decodedEncoded);
+            if (decodedEncoded.charAt(0) !== '/') {
+              variants.push(`./${decodedEncoded}`);
+              variants.push(`/${decodedEncoded}`);
+            }
           }
         }
 
@@ -432,10 +520,17 @@
           const fallbackUrl = resolvedUrl || (encodedNormalized || normalized);
           const request = createPinkModeAssetRequest(fallbackUrl);
 
-          const networkResult = await fetchPinkModeAssetFromNetwork(request || fallbackUrl);
-          if (networkResult !== null) {
-            pinkModeAssetTextCache.set(normalized, networkResult);
-            return networkResult;
+          const networkCandidates = createPinkModeNetworkRequestVariants(
+            request,
+            fallbackUrl
+          );
+
+          for (const candidate of networkCandidates) {
+            const networkResult = await fetchPinkModeAssetFromNetwork(candidate);
+            if (networkResult !== null) {
+              pinkModeAssetTextCache.set(normalized, networkResult);
+              return networkResult;
+            }
           }
 
           const cacheVariants = createPinkModeCacheKeyVariants(
