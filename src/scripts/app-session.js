@@ -5889,21 +5889,52 @@ let rememberSettingsMountVoltagesBaseline = () => {};
 let revertSettingsMountVoltagesIfNeeded = () => {};
 let handlePinkModeIconPress = () => {};
 let triggerPinkModeIconAnimation = () => {};
-const FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = () => {};
+function callPinkModeSupport(methodName, args, warningMessage) {
+  if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
+    return undefined;
+  }
+
+  const method = PINK_MODE_SUPPORT_API[methodName];
+  if (typeof method !== 'function') {
+    return undefined;
+  }
+
+  try {
+    return method.apply(PINK_MODE_SUPPORT_API, Array.isArray(args) ? args : []);
+  } catch (error) {
+    if (
+      typeof console !== 'undefined' &&
+      console &&
+      typeof console.warn === 'function' &&
+      warningMessage
+    ) {
+      console.warn(warningMessage, error);
+    }
+  }
+
+  return undefined;
+}
+
+const FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = () =>
+  callPinkModeSupport('triggerPinkModeIconRain', null, 'cineSession: triggerPinkModeIconRain failed.');
 let sessionTriggerPinkModeIconRain =
   typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function'
     ? window.triggerPinkModeIconRain
     : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
 let startPinkModeIconRotation = () => {};
 let stopPinkModeIconRotation = () => {};
+const FALLBACK_START_PINK_MODE_ANIMATED_ICONS = () =>
+  callPinkModeSupport('startPinkModeAnimatedIcons', null, 'cineSession: startPinkModeAnimatedIcons failed.');
 let sessionStartPinkModeAnimatedIcons =
   typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function'
     ? window.startPinkModeAnimatedIcons
-    : () => {};
+    : FALLBACK_START_PINK_MODE_ANIMATED_ICONS;
+const FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS = () =>
+  callPinkModeSupport('stopPinkModeAnimatedIcons', null, 'cineSession: stopPinkModeAnimatedIcons failed.');
 let sessionStopPinkModeAnimatedIcons =
   typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function'
     ? window.stopPinkModeAnimatedIcons
-    : () => {};
+    : FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS;
 let startPinkModeAnimatedIconRotation = () => {};
 let stopPinkModeAnimatedIconRotation = () => {};
 let applyPinkModeIcon = () => {};
@@ -6197,10 +6228,103 @@ function applyAppearanceModuleBindings(module) {
   sessionTriggerPinkModeIconRain = module.triggerPinkModeIconRain || sessionTriggerPinkModeIconRain;
   startPinkModeIconRotation = module.startPinkModeIconRotation || startPinkModeIconRotation;
   stopPinkModeIconRotation = module.stopPinkModeIconRotation || stopPinkModeIconRotation;
-  sessionStartPinkModeAnimatedIcons =
-    module.startPinkModeAnimatedIcons || sessionStartPinkModeAnimatedIcons;
-  sessionStopPinkModeAnimatedIcons =
-    module.stopPinkModeAnimatedIcons || sessionStopPinkModeAnimatedIcons;
+  if (typeof module.startPinkModeAnimatedIcons === 'function') {
+    const previousStart = sessionStartPinkModeAnimatedIcons;
+    const moduleStart = module.startPinkModeAnimatedIcons;
+    sessionStartPinkModeAnimatedIcons = (...args) => {
+      const iconsContext = appearanceContext && appearanceContext.icons ? appearanceContext.icons : null;
+      const previousIconsStart = iconsContext ? iconsContext.startPinkModeAnimatedIcons : undefined;
+      const hasWindow = typeof window !== 'undefined';
+      const previousWindowStart = hasWindow ? window.startPinkModeAnimatedIcons : undefined;
+      let fallbackInvoked = false;
+      let fallbackResult;
+      const trackFallbackStart = (...innerArgs) => {
+        fallbackInvoked = true;
+        fallbackResult = previousStart(...innerArgs);
+        return fallbackResult;
+      };
+
+      if (iconsContext) {
+        iconsContext.startPinkModeAnimatedIcons = trackFallbackStart;
+      }
+      if (hasWindow) {
+        window.startPinkModeAnimatedIcons = trackFallbackStart;
+      }
+
+      try {
+        const result = moduleStart(...args);
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        if (typeof result === 'undefined') {
+          return previousStart(...args);
+        }
+        return result;
+      } catch (startError) {
+        void startError;
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        return previousStart(...args);
+      } finally {
+        if (iconsContext) {
+          iconsContext.startPinkModeAnimatedIcons = previousIconsStart;
+        }
+        if (hasWindow) {
+          window.startPinkModeAnimatedIcons = previousWindowStart;
+        }
+      }
+    };
+  }
+
+  if (typeof module.stopPinkModeAnimatedIcons === 'function') {
+    const previousStop = sessionStopPinkModeAnimatedIcons;
+    const moduleStop = module.stopPinkModeAnimatedIcons;
+    sessionStopPinkModeAnimatedIcons = (...args) => {
+      const iconsContext = appearanceContext && appearanceContext.icons ? appearanceContext.icons : null;
+      const previousIconsStop = iconsContext ? iconsContext.stopPinkModeAnimatedIcons : undefined;
+      const hasWindow = typeof window !== 'undefined';
+      const previousWindowStop = hasWindow ? window.stopPinkModeAnimatedIcons : undefined;
+      let fallbackInvoked = false;
+      let fallbackResult;
+      const trackFallbackStop = (...innerArgs) => {
+        fallbackInvoked = true;
+        fallbackResult = previousStop(...innerArgs);
+        return fallbackResult;
+      };
+
+      if (iconsContext) {
+        iconsContext.stopPinkModeAnimatedIcons = trackFallbackStop;
+      }
+      if (hasWindow) {
+        window.stopPinkModeAnimatedIcons = trackFallbackStop;
+      }
+
+      try {
+        const result = moduleStop(...args);
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        if (typeof result === 'undefined') {
+          return previousStop(...args);
+        }
+        return result;
+      } catch (stopError) {
+        void stopError;
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        return previousStop(...args);
+      } finally {
+        if (iconsContext) {
+          iconsContext.stopPinkModeAnimatedIcons = previousIconsStop;
+        }
+        if (hasWindow) {
+          window.stopPinkModeAnimatedIcons = previousWindowStop;
+        }
+      }
+    };
+  }
   startPinkModeAnimatedIconRotation = module.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
   stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
   applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
