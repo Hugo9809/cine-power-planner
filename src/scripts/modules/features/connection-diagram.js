@@ -1645,21 +1645,44 @@
         let top = rect.top;
         if (popupRect) {
           const pointer = lastPointerPosition;
-          const pointerOnRightSide = pointer
-            && viewportWidth
+          const usePointerPosition = !entry
+            && pointer
             && Number.isFinite(pointer.x)
-            && pointer.x >= viewportWidth * 0.55;
-          if (pointerOnRightSide) {
-            const preferredLeft = rect.left - popupRect.width - margin;
-            if (preferredLeft >= margin) {
-              left = preferredLeft;
-            } else if (viewportWidth) {
-              left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
-            } else {
-              left = Math.max(margin, preferredLeft);
+            && Number.isFinite(pointer.y);
+          if (usePointerPosition) {
+            let preferredLeft = pointer.x + margin;
+            if (viewportWidth && preferredLeft + popupRect.width > viewportWidth - margin) {
+              preferredLeft = pointer.x - popupRect.width - margin;
             }
-          } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
-            left = Math.max(margin, rect.left - popupRect.width - margin);
+            if (viewportWidth) {
+              if (preferredLeft + popupRect.width > viewportWidth - margin) {
+                preferredLeft = viewportWidth - popupRect.width - margin;
+              }
+              if (preferredLeft < margin) {
+                const alternativeLeft = pointer.x + margin;
+                const clampedAlternative = Math.min(alternativeLeft, viewportWidth - popupRect.width - margin);
+                preferredLeft = Math.max(margin, clampedAlternative);
+              }
+            }
+            left = preferredLeft;
+            top = pointer.y - popupRect.height * 0.5;
+          } else {
+            const pointerOnRightSide = pointer
+              && viewportWidth
+              && Number.isFinite(pointer.x)
+              && pointer.x >= viewportWidth * 0.55;
+            if (pointerOnRightSide) {
+              const preferredLeft = rect.left - popupRect.width - margin;
+              if (preferredLeft >= margin) {
+                left = preferredLeft;
+              } else if (viewportWidth) {
+                left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
+              } else {
+                left = Math.max(margin, preferredLeft);
+              }
+            } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
+              left = Math.max(margin, rect.left - popupRect.width - margin);
+            }
           }
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
@@ -1669,8 +1692,13 @@
               left = margin;
             }
           }
-          if (viewportHeight && top + popupRect.height > viewportHeight - margin) {
-            top = Math.max(margin, viewportHeight - popupRect.height - margin);
+          if (viewportHeight) {
+            if (top + popupRect.height > viewportHeight - margin) {
+              top = viewportHeight - popupRect.height - margin;
+            }
+            if (top < margin) {
+              top = margin;
+            }
           }
         }
         popup.style.left = `${Math.round(left)}px`;
