@@ -10609,22 +10609,119 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { cleaned, number: null };
       }
 
+      const NUMBER_WORD_ONES = new Map([
+        ['zero', 0],
+        ['one', 1],
+        ['two', 2],
+        ['three', 3],
+        ['four', 4],
+        ['five', 5],
+        ['six', 6],
+        ['seven', 7],
+        ['eight', 8],
+        ['nine', 9],
+      ]);
+
+      const NUMBER_WORD_TEENS = new Map([
+        ['ten', 10],
+        ['eleven', 11],
+        ['twelve', 12],
+        ['thirteen', 13],
+        ['fourteen', 14],
+        ['fifteen', 15],
+        ['sixteen', 16],
+        ['seventeen', 17],
+        ['eighteen', 18],
+        ['nineteen', 19],
+      ]);
+
+      const NUMBER_WORD_TENS = new Map([
+        ['twenty', 20],
+        ['thirty', 30],
+        ['forty', 40],
+        ['fifty', 50],
+        ['sixty', 60],
+        ['seventy', 70],
+        ['eighty', 80],
+        ['ninety', 90],
+      ]);
+
+      const NUMBER_WORD_BASE = new Map([
+        ...NUMBER_WORD_ONES,
+        ...NUMBER_WORD_TEENS,
+        ...NUMBER_WORD_TENS,
+      ]);
+
+      const NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(
+        (a, b) => b.length - a.length,
+      );
+      const NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(
+        (a, b) => b.length - a.length,
+      );
+
+      const NUMBER_WORD_PATTERN =
+        NUMBER_WORD_BASE.size > 0
+          ? new RegExp(
+              `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
+              'gi',
+            )
+          : null;
+
+      function fallbackNormalizeNumberWords(str) {
+        if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
+          return str;
+        }
+
+        return str.replace(NUMBER_WORD_PATTERN, match => {
+          const lower = match.toLowerCase();
+          if (NUMBER_WORD_BASE.has(lower)) {
+            return String(NUMBER_WORD_BASE.get(lower));
+          }
+          const parts = lower.split(/[\s-]+/).filter(Boolean);
+          if (parts.length === 2) {
+            const tens = NUMBER_WORD_TENS.get(parts[0]);
+            const ones = NUMBER_WORD_ONES.get(parts[1]);
+            if (typeof tens === 'number' && typeof ones === 'number') {
+              return String(tens + ones);
+            }
+          }
+          return match;
+        });
+      }
+
+      function fallbackCollectTokens(str) {
+        if (!str) {
+          return [];
+        }
+
+        return String(str)
+          .toLowerCase()
+          .split(/[^a-z0-9]+/)
+          .filter(Boolean);
+      }
+
       return {
         FEATURE_SEARCH_FUZZY_MAX_DISTANCE: FALLBACK_FUZZY_DISTANCE,
         searchKey(value) {
           if (!value) {
             return '';
           }
-          return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+          const lower = String(value).toLowerCase();
+          const normalized = fallbackNormalizeNumberWords(lower);
+          return normalized.replace(/[^a-z0-9]+/g, '');
         },
         searchTokens(value) {
           if (!value) {
             return [];
           }
-          return String(value)
-            .toLowerCase()
-            .split(/[^a-z0-9]+/)
-            .filter(Boolean);
+          const lower = String(value).toLowerCase();
+          const numberNormalized = fallbackNormalizeNumberWords(lower);
+          const tokens = new Set();
+          fallbackCollectTokens(lower).forEach(token => tokens.add(token));
+          if (numberNormalized !== lower) {
+            fallbackCollectTokens(numberNormalized).forEach(token => tokens.add(token));
+          }
+          return Array.from(tokens);
         },
         computeTokenMatchDetails() {
           return { score: 0, matched: 0 };
@@ -10649,7 +10746,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return value;
         },
         normalizeNumberWords(value) {
-          return value;
+          if (typeof value !== 'string' || !value) {
+            return value;
+          }
+          return fallbackNormalizeNumberWords(value);
         },
         normalizeSpellingVariants(value) {
           return value;
