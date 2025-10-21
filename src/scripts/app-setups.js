@@ -5196,6 +5196,28 @@ function freezeProjectFormDataSnapshot(info) {
     return PROJECT_FORM_FREEZE(snapshot);
 }
 
+function sanitizeCrewAvatarValue(value) {
+    if (typeof value !== 'string') {
+        return '';
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+        return '';
+    }
+
+    const dataUrlMatch = trimmed.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/i);
+    if (dataUrlMatch) {
+        return trimmed;
+    }
+
+    if (/^[a-zA-Z0-9._-]+$/.test(trimmed)) {
+        return trimmed;
+    }
+
+    return '';
+}
+
 function collectProjectFormData() {
     if (!projectForm) return {};
 
@@ -5230,6 +5252,7 @@ function collectProjectFormData() {
             const phoneInput = row.querySelector('.person-phone');
             const emailInput = row.querySelector('.person-email');
             const websiteInput = row.querySelector('.person-website');
+            const avatarInput = row.querySelector('.person-avatar-data');
             const role = typeof roleValue === 'string'
                 ? roleValue.trim()
                 : (roleValue == null ? '' : String(roleValue));
@@ -5237,9 +5260,11 @@ function collectProjectFormData() {
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
             const website = typeof websiteInput?.value === 'string' ? websiteInput.value.trim() : '';
-            return { role, name, phone, email, website };
+            const avatarRaw = typeof avatarInput?.value === 'string' ? avatarInput.value.trim() : '';
+            const avatar = sanitizeCrewAvatarValue(avatarRaw);
+            return { role, name, phone, email, website, avatar };
         })
-        .filter(person => person.role || person.name || person.phone || person.email || person.website);
+        .filter(person => person.role || person.name || person.phone || person.email || person.website || person.avatar);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
@@ -10945,7 +10970,7 @@ function gearListGenerateHtmlImpl(info = {}) {
         const crewEntriesHtml = [];
         const crewEntriesText = [];
         info.people
-            .filter(p => p.role && p.name)
+            .filter(p => p && typeof p.name === 'string' && p.name.trim())
             .forEach(p => {
                 const roleLabel = crewRoleLabels[p.role] || p.role || '';
                 const safeRole = escapeHtml(roleLabel);
