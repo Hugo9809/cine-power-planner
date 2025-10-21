@@ -15577,7 +15577,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         label: 'Firmware'
       }, {
         key: 'batteryAge',
-        label: 'Battery Age'
+        label: 'Battery Age (in years)'
       }, {
         key: 'monitorBrightness',
         label: 'Monitor Brightness'

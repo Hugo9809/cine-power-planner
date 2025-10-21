@@ -16588,7 +16588,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         { key: 'codec', label: 'Codec' },
         { key: 'framerate', label: 'FPS' },
         { key: 'firmware', label: 'Firmware' },
-        { key: 'batteryAge', label: 'Battery Age' },
+        { key: 'batteryAge', label: 'Battery Age (in years)' },
         { key: 'monitorBrightness', label: 'Monitor Brightness' },
         { key: 'temperature', label: 'temp' },
         { key: 'charging', label: 'Charging' },
