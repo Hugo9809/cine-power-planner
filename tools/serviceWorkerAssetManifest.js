@@ -21,6 +21,8 @@ const TOOL_WHITELIST = new Set([
   'unifyPorts.js',
 ]);
 
+const README_PATTERN = /^README.*\.md$/i;
+
 const DIRECTORY_RULES = [
   { dir: 'legal', recursive: true },
   { dir: path.join('src', 'styles'), recursive: true },
@@ -95,6 +97,12 @@ function collectServiceWorkerAssets(projectRoot) {
       assets.add(normalizeAssetPath(fileName));
     }
   });
+
+  fs.readdirSync(normalizedRoot, { withFileTypes: true })
+    .filter(entry => entry.isFile() && README_PATTERN.test(entry.name))
+    .forEach(entry => {
+      assets.add(normalizeAssetPath(entry.name));
+    });
 
   DIRECTORY_RULES.forEach(rule => {
     collectFromDirectory(normalizedRoot, rule.dir, rule, assets);

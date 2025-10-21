@@ -20,6 +20,14 @@ function listFilesRecursive(directoryPath) {
     });
 }
 
+function listTopLevelReadmes(directoryPath) {
+  return fs
+    .readdirSync(directoryPath, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /^README.*\.md$/i.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+}
+
 describe('service worker asset manifest', () => {
   test('matches generated manifest output', () => {
     const projectRoot = path.resolve(__dirname, '..', '..');
@@ -43,6 +51,8 @@ describe('service worker asset manifest', () => {
         './app-version.js',
       ]),
     );
+    const readmeFiles = listTopLevelReadmes(projectRoot).map((fileName) => `./${fileName}`);
+    expect(manifestAssets).toEqual(expect.arrayContaining(readmeFiles));
     expect(manifestAssets.filter((asset) => asset.startsWith('./docs/')).sort()).toEqual(docFiles);
     expect(manifestAssets).toEqual(generatedAssets);
   });
