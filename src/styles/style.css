@@ -6496,22 +6496,46 @@ body.pink-mode .pink-mode-icon {
 @keyframes pink-mode-floating-icon {
   0% {
     opacity: 0;
-    transform: translate3d(0, 12%, 0) scale(0.75);
+    transform: translate3d(
+        var(--pink-mode-animation-translate-x-start, 0px),
+        var(--pink-mode-animation-translate-y-start, 12%),
+        0
+      )
+      scale(var(--pink-mode-animation-scale-start, 0.75))
+      rotate(var(--pink-mode-animation-rotation-start, 0deg));
   }
 
   18% {
     opacity: 0.9;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(
+        var(--pink-mode-animation-translate-x-settle, 0px),
+        var(--pink-mode-animation-translate-y-settle, 0px),
+        0
+      )
+      scale(var(--pink-mode-animation-scale-settle, 1))
+      rotate(var(--pink-mode-animation-rotation-settle, 0deg));
   }
 
   82% {
     opacity: 0.9;
-    transform: translate3d(0, -4%, 0) scale(1.05);
+    transform: translate3d(
+        var(--pink-mode-animation-translate-x-drift, 0px),
+        var(--pink-mode-animation-translate-y-drift, -4%),
+        0
+      )
+      scale(var(--pink-mode-animation-scale-drift, 1.05))
+      rotate(var(--pink-mode-animation-rotation-drift, 0deg));
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(0, -14%, 0) scale(0.85);
+    transform: translate3d(
+        var(--pink-mode-animation-translate-x-end, 0px),
+        var(--pink-mode-animation-translate-y-end, -14%),
+        0
+      )
+      scale(var(--pink-mode-animation-scale-end, 0.85))
+      rotate(var(--pink-mode-animation-rotation-end, 0deg));
   }
 }
 
