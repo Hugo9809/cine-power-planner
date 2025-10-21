@@ -153,8 +153,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     handlers: {},
     feedbackFieldCache: [],
     feedbackFieldCacheDoc: null,
+    feedbackOptionFallbacks: Object.create(null),
     collatorCache: Object.create(null),
     fallbackCollator: null,
+    sensorModeFrameRateMap: Object.create(null),
+    allFrameRateOptions: [],
+    selectedSensorMode: '',
+    selectedFramerate: '',
     dependencies: {
       mailTarget: 'info@lucazanner.de',
       document: null,
@@ -286,6 +291,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     key: 'codec',
     trim: true
   }, {
+    id: 'fbSensorMode',
+    key: 'sensorMode',
+    trim: true
+  }, {
     id: 'fbFramerate',
     key: 'framerate',
     trim: true
@@ -354,6 +363,735 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     key: 'batteriesPerDay',
     trim: true
   }];
+  var FEEDBACK_OPTION_TARGETS = {
+    lensMount: {
+      elementName: 'feedbackMountOptions',
+      elementId: 'mountOptions'
+    },
+    resolution: {
+      elementName: 'feedbackResolutionOptions',
+      elementId: 'resolutionOptions'
+    },
+    codec: {
+      elementName: 'feedbackCodecOptions',
+      elementId: 'codecOptions'
+    }
+  };
+  function getFeedbackOptionFallbacks() {
+    var fallbacks = runtimeFeedbackState.feedbackOptionFallbacks;
+    if (!fallbacks || _typeof(fallbacks) !== 'object') {
+      fallbacks = Object.create(null);
+      runtimeFeedbackState.feedbackOptionFallbacks = fallbacks;
+    }
+    return fallbacks;
+  }
+  function extractDatalistValues(element) {
+    var values = [];
+    if (!element) {
+      return values;
+    }
+    var options = null;
+    try {
+      options = element.options;
+    } catch (error) {
+      void error;
+      options = null;
+    }
+    if (options && typeof options.length === 'number') {
+      for (var index = 0; index < options.length; index += 1) {
+        var option = options[index];
+        if (!option) {
+          continue;
+        }
+        var value = '';
+        if (typeof option.value === 'string' && option.value) {
+          value = option.value;
+        } else if (typeof option.getAttribute === 'function') {
+          value = option.getAttribute('value') || '';
+        } else if (typeof option.textContent === 'string' && option.textContent) {
+          value = option.textContent;
+        }
+        if (value) {
+          values.push(value);
+        }
+      }
+      return values;
+    }
+    if (element.childNodes && typeof element.childNodes.length === 'number') {
+      for (var childIndex = 0; childIndex < element.childNodes.length; childIndex += 1) {
+        var child = element.childNodes[childIndex];
+        if (!child) {
+          continue;
+        }
+        var childValue = '';
+        if (typeof child.value === 'string' && child.value) {
+          childValue = child.value;
+        } else if (typeof child.getAttribute === 'function') {
+          childValue = child.getAttribute('value') || '';
+        } else if (typeof child.textContent === 'string' && child.textContent) {
+          childValue = child.textContent;
+        }
+        if (childValue) {
+          values.push(childValue);
+        }
+      }
+    }
+    return values;
+  }
+  function storeFeedbackOptionFallback(name, element) {
+    if (!name || !element) {
+      return;
+    }
+    var fallbacks = getFeedbackOptionFallbacks();
+    if (fallbacks[name]) {
+      return;
+    }
+    fallbacks[name] = extractDatalistValues(element);
+  }
+  function escapeAttributeValue(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function replaceDatalistOptions(element, values) {
+    if (!element) {
+      return;
+    }
+    var normalizedValues = Array.isArray(values) ? values : [];
+    var html = '';
+    for (var index = 0; index < normalizedValues.length; index += 1) {
+      html += '<option value="' + escapeAttributeValue(normalizedValues[index]) + '"></option>';
+    }
+    if (typeof element.innerHTML === 'string') {
+      try {
+        element.innerHTML = html;
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+    var doc = null;
+    try {
+      doc = element.ownerDocument || null;
+    } catch (ownerError) {
+      void ownerError;
+      doc = null;
+    }
+    if (!doc) {
+      doc = resolveDocument();
+    }
+    if (!doc || typeof doc.createElement !== 'function' || typeof element.appendChild !== 'function') {
+      return;
+    }
+    try {
+      while (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
+    } catch (clearError) {
+      void clearError;
+    }
+    for (var valueIndex = 0; valueIndex < normalizedValues.length; valueIndex += 1) {
+      var option = null;
+      try {
+        option = doc.createElement('option');
+      } catch (createError) {
+        void createError;
+        option = null;
+      }
+      if (!option) {
+        continue;
+      }
+      var text = normalizedValues[valueIndex];
+      try {
+        option.value = text;
+      } catch (assignError) {
+        void assignError;
+        if (typeof option.setAttribute === 'function') {
+          option.setAttribute('value', text);
+        }
+      }
+      if (typeof option.textContent === 'string') {
+        try {
+          option.textContent = text;
+        } catch (textError) {
+          void textError;
+        }
+      }
+      try {
+        element.appendChild(option);
+      } catch (appendError) {
+        void appendError;
+      }
+    }
+  }
+  function getFeedbackSelectElement(name, id) {
+    if (runtimeFeedbackState.elements[name]) {
+      return runtimeFeedbackState.elements[name];
+    }
+    var doc = resolveDocument();
+    if (!doc || !id) {
+      return null;
+    }
+    var element = null;
+    try {
+      element = doc.getElementById(id);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+    if (element) {
+      runtimeFeedbackState.elements[name] = element;
+    }
+    return element;
+  }
+  function escapeOptionText(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function replaceSelectOptions(select, values, preferredValue, defaultToFirst) {
+    if (!select) {
+      return '';
+    }
+    var seen = Object.create(null);
+    var normalized = [];
+    var list = Array.isArray(values) ? values : [];
+    for (var index = 0; index < list.length; index += 1) {
+      var raw = list[index];
+      if (raw == null) {
+        continue;
+      }
+      var text = String(raw);
+      if (!text) {
+        continue;
+      }
+      var trimmed = text.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (Object.prototype.hasOwnProperty.call(seen, trimmed)) {
+        continue;
+      }
+      seen[trimmed] = true;
+      normalized.push(trimmed);
+    }
+    var htmlParts = ['<option value="">--</option>'];
+    for (var valueIndex = 0; valueIndex < normalized.length; valueIndex += 1) {
+      var escapedValue = escapeOptionText(normalized[valueIndex]);
+      htmlParts.push('<option value="' + escapedValue + '">' + escapedValue + '</option>');
+    }
+    var html = htmlParts.join('');
+    var assigned = false;
+    if (typeof select.innerHTML === 'string') {
+      try {
+        select.innerHTML = html;
+        assigned = true;
+      } catch (error) {
+        void error;
+        assigned = false;
+      }
+    }
+    if (!assigned) {
+      var doc = null;
+      try {
+        doc = select.ownerDocument || null;
+      } catch (ownerError) {
+        void ownerError;
+        doc = null;
+      }
+      if (!doc) {
+        doc = resolveDocument();
+      }
+      if (doc && typeof doc.createElement === 'function' && typeof select.appendChild === 'function') {
+        try {
+          while (select.firstChild) {
+            select.removeChild(select.firstChild);
+          }
+        } catch (clearError) {
+          void clearError;
+        }
+        var placeholder = null;
+        try {
+          placeholder = doc.createElement('option');
+        } catch (placeholderError) {
+          void placeholderError;
+          placeholder = null;
+        }
+        if (placeholder) {
+          try {
+            placeholder.value = '';
+          } catch (placeholderAssign) {
+            void placeholderAssign;
+            if (typeof placeholder.setAttribute === 'function') {
+              placeholder.setAttribute('value', '');
+            }
+          }
+          if (typeof placeholder.textContent === 'string') {
+            try {
+              placeholder.textContent = '--';
+            } catch (placeholderTextError) {
+              void placeholderTextError;
+            }
+          }
+          try {
+            select.appendChild(placeholder);
+          } catch (appendPlaceholderError) {
+            void appendPlaceholderError;
+          }
+        }
+        for (var optionIndex = 0; optionIndex < normalized.length; optionIndex += 1) {
+          var option = null;
+          try {
+            option = doc.createElement('option');
+          } catch (createError) {
+            void createError;
+            option = null;
+          }
+          if (!option) {
+            continue;
+          }
+          var optionValue = normalized[optionIndex];
+          try {
+            option.value = optionValue;
+          } catch (optionAssignError) {
+            void optionAssignError;
+            if (typeof option.setAttribute === 'function') {
+              option.setAttribute('value', optionValue);
+            }
+          }
+          if (typeof option.textContent === 'string') {
+            try {
+              option.textContent = optionValue;
+            } catch (optionTextError) {
+              void optionTextError;
+            }
+          }
+          try {
+            select.appendChild(option);
+          } catch (optionAppendError) {
+            void optionAppendError;
+          }
+        }
+      }
+    }
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var nextValue = '';
+    if (preferred && normalized.indexOf(preferred) !== -1) {
+      nextValue = preferred;
+    } else if (defaultToFirst && normalized.length) {
+      nextValue = normalized[0];
+    }
+    try {
+      select.value = nextValue;
+    } catch (assignValueError) {
+      void assignValueError;
+      if (typeof select.setAttribute === 'function') {
+        select.setAttribute('value', nextValue);
+      }
+    }
+    var options = null;
+    try {
+      options = select.options || null;
+    } catch (optionsError) {
+      void optionsError;
+      options = null;
+    }
+    if (options && typeof options.length === 'number') {
+      for (var idx = 0; idx < options.length; idx += 1) {
+        var opt = options[idx];
+        if (!opt) {
+          continue;
+        }
+        var optValue = '';
+        try {
+          optValue = typeof opt.value === 'string' ? opt.value : '';
+        } catch (optValueError) {
+          void optValueError;
+          optValue = '';
+        }
+        var shouldSelect = optValue === nextValue;
+        if (typeof opt.selected === 'boolean') {
+          try {
+            opt.selected = shouldSelect;
+          } catch (optSelectError) {
+            void optSelectError;
+          }
+        } else if (shouldSelect && typeof opt.setAttribute === 'function') {
+          try {
+            opt.setAttribute('selected', 'selected');
+          } catch (optAttrError) {
+            void optAttrError;
+          }
+        } else if (!shouldSelect && typeof opt.removeAttribute === 'function') {
+          try {
+            opt.removeAttribute('selected');
+          } catch (optRemoveAttrError) {
+            void optRemoveAttrError;
+          }
+        }
+      }
+    }
+    if (typeof select.selectedIndex === 'number' && options && typeof options.length === 'number') {
+      var selectedIndex = -1;
+      for (var optionIdx = 0; optionIdx < options.length; optionIdx += 1) {
+        var candidate = options[optionIdx];
+        if (!candidate) {
+          continue;
+        }
+        var candidateValue = '';
+        try {
+          candidateValue = typeof candidate.value === 'string' ? candidate.value : '';
+        } catch (candidateValueError) {
+          void candidateValueError;
+          candidateValue = '';
+        }
+        if (candidateValue === nextValue) {
+          selectedIndex = optionIdx;
+          break;
+        }
+      }
+      try {
+        select.selectedIndex = selectedIndex;
+      } catch (assignIndexError) {
+        void assignIndexError;
+      }
+    }
+    return nextValue;
+  }
+  function normalizeSensorModeKey(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    return trimmed.toLowerCase().replace(/\s+/g, ' ');
+  }
+  function tokenizeComparisonValue(value) {
+    if (typeof value !== 'string') {
+      return [];
+    }
+    var withoutParens = value.replace(/\([^)]*\)/g, ' ');
+    var normalized = withoutParens.replace(/[^0-9a-zA-Z]+/g, ' ').toLowerCase().trim();
+    if (!normalized) {
+      return [];
+    }
+    var rawTokens = normalized.split(/\s+/);
+    var tokens = [];
+    for (var index = 0; index < rawTokens.length; index += 1) {
+      var token = rawTokens[index];
+      if (!token) {
+        continue;
+      }
+      if (/^\d$/.test(token)) {
+        continue;
+      }
+      tokens.push(token);
+    }
+    return tokens;
+  }
+  function doesFrameRateMatchSensorMode(frameRateValue, sensorModeValue) {
+    var sensorTokens = tokenizeComparisonValue(sensorModeValue);
+    if (!sensorTokens.length) {
+      return false;
+    }
+    var frameTokens = tokenizeComparisonValue(frameRateValue);
+    if (!frameTokens.length) {
+      return false;
+    }
+    var frameSet = Object.create(null);
+    for (var frameIndex = 0; frameIndex < frameTokens.length; frameIndex += 1) {
+      frameSet[frameTokens[frameIndex]] = true;
+    }
+    var matches = 0;
+    for (var sensorIndex = 0; sensorIndex < sensorTokens.length; sensorIndex += 1) {
+      if (frameSet[sensorTokens[sensorIndex]]) {
+        matches += 1;
+      }
+    }
+    if (!matches) {
+      return false;
+    }
+    var requiredMatches = sensorTokens.length;
+    if (sensorTokens.length >= 3) {
+      requiredMatches = sensorTokens.length - 1;
+    }
+    return matches >= Math.max(1, requiredMatches);
+  }
+  function buildSensorModeFrameRateMap(sensorModes, frameRates) {
+    var map = Object.create(null);
+    var modes = Array.isArray(sensorModes) ? sensorModes : [];
+    var rates = Array.isArray(frameRates) ? frameRates : [];
+    for (var modeIndex = 0; modeIndex < modes.length; modeIndex += 1) {
+      var modeValue = modes[modeIndex];
+      if (typeof modeValue !== 'string') {
+        continue;
+      }
+      var trimmed = modeValue.trim();
+      if (!trimmed) {
+        continue;
+      }
+      var key = normalizeSensorModeKey(trimmed);
+      if (!key) {
+        continue;
+      }
+      if (!map[key]) {
+        map[key] = [];
+      }
+    }
+    for (var rateIndex = 0; rateIndex < rates.length; rateIndex += 1) {
+      var rateValue = rates[rateIndex];
+      if (typeof rateValue !== 'string') {
+        continue;
+      }
+      var rateTrimmed = rateValue.trim();
+      if (!rateTrimmed) {
+        continue;
+      }
+      for (var matchIndex = 0; matchIndex < modes.length; matchIndex += 1) {
+        var matchValue = modes[matchIndex];
+        if (typeof matchValue !== 'string') {
+          continue;
+        }
+        var matchTrimmed = matchValue.trim();
+        if (!matchTrimmed) {
+          continue;
+        }
+        var modeKey = normalizeSensorModeKey(matchTrimmed);
+        if (!modeKey) {
+          continue;
+        }
+        if (!doesFrameRateMatchSensorMode(rateTrimmed, matchTrimmed)) {
+          continue;
+        }
+        if (!map[modeKey]) {
+          map[modeKey] = [];
+        }
+        if (map[modeKey].indexOf(rateTrimmed) === -1) {
+          map[modeKey].push(rateTrimmed);
+        }
+      }
+    }
+    return map;
+  }
+  function updateSensorModeSelectOptions(values, preferredValue) {
+    var select = getFeedbackSelectElement('sensorModeSelect', 'fbSensorMode');
+    if (!select) {
+      return '';
+    }
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var selected = replaceSelectOptions(select, values, preferred, true);
+    runtimeFeedbackState.selectedSensorMode = selected;
+    return selected;
+  }
+  function updateFramerateSelectOptionsForSensorMode(sensorModeValue, preferredValue) {
+    var select = getFeedbackSelectElement('framerateSelect', 'fbFramerate');
+    if (!select) {
+      return '';
+    }
+    var map = runtimeFeedbackState.sensorModeFrameRateMap || {};
+    var allRates = Array.isArray(runtimeFeedbackState.allFrameRateOptions) ? runtimeFeedbackState.allFrameRateOptions : [];
+    var normalizedKey = normalizeSensorModeKey(sensorModeValue);
+    var targeted = normalizedKey && map[normalizedKey] && map[normalizedKey].length ? map[normalizedKey] : [];
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var shouldDefaultToFirst = !!normalizedKey;
+    var selected = replaceSelectOptions(select, targeted.length ? targeted : allRates, preferred, shouldDefaultToFirst);
+    runtimeFeedbackState.selectedFramerate = selected;
+    return selected;
+  }
+  function resolveFeedbackOptionElement(config) {
+    if (!config) {
+      return null;
+    }
+    var existing = runtimeFeedbackState.elements[config.elementName];
+    if (existing) {
+      storeFeedbackOptionFallback(config.elementName, existing);
+      return existing;
+    }
+    var doc = resolveDocument();
+    if (!doc) {
+      return null;
+    }
+    var element = null;
+    try {
+      element = doc.getElementById(config.elementId);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+    if (element) {
+      runtimeFeedbackState.elements[config.elementName] = element;
+      storeFeedbackOptionFallback(config.elementName, element);
+    }
+    return element;
+  }
+  function updateFeedbackOptionList(optionKey, values) {
+    var config = FEEDBACK_OPTION_TARGETS[optionKey];
+    if (!config) {
+      return;
+    }
+    var element = resolveFeedbackOptionElement(config);
+    if (!element) {
+      return;
+    }
+    var fallbacks = getFeedbackOptionFallbacks();
+    var fallbackValues = fallbacks[config.elementName] || [];
+    var normalized = [];
+    var seen = Object.create(null);
+    if (Array.isArray(values)) {
+      for (var index = 0; index < values.length; index += 1) {
+        var raw = values[index];
+        if (raw == null) {
+          continue;
+        }
+        var text = String(raw).trim();
+        if (!text) {
+          continue;
+        }
+        if (Object.prototype.hasOwnProperty.call(seen, text)) {
+          continue;
+        }
+        seen[text] = true;
+        normalized.push(text);
+      }
+    }
+    if (!normalized.length) {
+      normalized = fallbackValues.slice();
+    }
+    replaceDatalistOptions(element, normalized);
+  }
+  function captureFeedbackOptionElements(doc) {
+    if (!doc) {
+      return;
+    }
+    for (var key in FEEDBACK_OPTION_TARGETS) {
+      if (!Object.prototype.hasOwnProperty.call(FEEDBACK_OPTION_TARGETS, key)) {
+        continue;
+      }
+      var config = FEEDBACK_OPTION_TARGETS[key];
+      if (!config) {
+        continue;
+      }
+      if (runtimeFeedbackState.elements[config.elementName]) {
+        storeFeedbackOptionFallback(config.elementName, runtimeFeedbackState.elements[config.elementName]);
+        continue;
+      }
+      var element = null;
+      try {
+        element = doc.getElementById(config.elementId);
+      } catch (error) {
+        void error;
+        element = null;
+      }
+      if (element) {
+        runtimeFeedbackState.elements[config.elementName] = element;
+        storeFeedbackOptionFallback(config.elementName, element);
+      }
+    }
+  }
+  function normalizeCameraListValue(entry, preferredKeys) {
+    if (entry == null) {
+      return '';
+    }
+    if (typeof entry === 'string') {
+      return entry.trim();
+    }
+    if (typeof entry === 'number' && Number.isFinite(entry)) {
+      return String(entry);
+    }
+    if (entry && _typeof(entry) === 'object') {
+      var keys = Array.isArray(preferredKeys) ? preferredKeys : [];
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        if (!key) {
+          continue;
+        }
+        var value = entry[key];
+        if (typeof value === 'string' && value.trim()) {
+          return value.trim();
+        }
+      }
+    }
+    return '';
+  }
+  function collectLensMountValues(cameraData) {
+    if (!cameraData || _typeof(cameraData) !== 'object') {
+      return [];
+    }
+    var mounts = [];
+    var lensMounts = cameraData.lensMount;
+    if (Array.isArray(lensMounts)) {
+      for (var index = 0; index < lensMounts.length; index += 1) {
+        var lens = lensMounts[index];
+        if (!lens) {
+          continue;
+        }
+        var type = normalizeCameraListValue(lens.type || lens, []);
+        if (!type) {
+          continue;
+        }
+        var mountType = '';
+        if (typeof lens.mount === 'string' && lens.mount.trim()) {
+          mountType = lens.mount.trim();
+        }
+        var label = type;
+        if (mountType) {
+          label += ' (' + mountType + ')';
+        }
+        mounts.push(label);
+      }
+    }
+    if (!mounts.length && Array.isArray(cameraData.mountOptions)) {
+      var altMounts = cameraData.mountOptions;
+      for (var altIndex = 0; altIndex < altMounts.length; altIndex += 1) {
+        var alt = altMounts[altIndex];
+        var altType = normalizeCameraListValue(alt, ['type', 'name']);
+        if (!altType) {
+          continue;
+        }
+        mounts.push(altType);
+      }
+    }
+    return mounts;
+  }
+  function collectCameraValues(cameraData, key, preferredKeys) {
+    if (!cameraData || _typeof(cameraData) !== 'object') {
+      return [];
+    }
+    var list = cameraData[key];
+    if (!Array.isArray(list)) {
+      return [];
+    }
+    var values = [];
+    for (var index = 0; index < list.length; index += 1) {
+      var value = normalizeCameraListValue(list[index], preferredKeys);
+      if (value) {
+        values.push(value);
+      }
+    }
+    return values;
+  }
+  function updateRuntimeFeedbackCameraOptionLists(cameraDevices, cameraName) {
+    var cameraData = null;
+    if (cameraDevices && cameraName && _typeof(cameraDevices) === 'object') {
+      if (Object.prototype.hasOwnProperty.call(cameraDevices, cameraName)) {
+        cameraData = cameraDevices[cameraName];
+      }
+    }
+    var lensMountValues = collectLensMountValues(cameraData);
+    var resolutionValues = collectCameraValues(cameraData, 'resolutions', ['label', 'name', 'value']);
+    var codecValues = collectCameraValues(cameraData, 'recordingCodecs', ['label', 'name', 'codec', 'type']);
+    var sensorModeValues = collectCameraValues(cameraData, 'sensorModes', ['label', 'name', 'mode']);
+    var frameRateValues = collectCameraValues(cameraData, 'frameRates', ['label', 'name', 'rate', 'value']);
+    updateFeedbackOptionList('lensMount', lensMountValues);
+    updateFeedbackOptionList('resolution', resolutionValues);
+    updateFeedbackOptionList('codec', codecValues);
+    runtimeFeedbackState.allFrameRateOptions = frameRateValues.slice();
+    runtimeFeedbackState.sensorModeFrameRateMap = buildSensorModeFrameRateMap(sensorModeValues, frameRateValues);
+    var sensorModeSelect = getFeedbackSelectElement('sensorModeSelect', 'fbSensorMode');
+    var framerateSelect = getFeedbackSelectElement('framerateSelect', 'fbFramerate');
+    var preferredSensorMode = sensorModeSelect && typeof sensorModeSelect.value === 'string' ? sensorModeSelect.value : runtimeFeedbackState.selectedSensorMode;
+    var selectedSensorMode = updateSensorModeSelectOptions(sensorModeValues, preferredSensorMode);
+    var preferredFramerate = framerateSelect && typeof framerateSelect.value === 'string' ? framerateSelect.value : runtimeFeedbackState.selectedFramerate;
+    updateFramerateSelectOptionsForSensorMode(selectedSensorMode, preferredFramerate);
+  }
   function resolveDocument(options) {
     if (options && options.document && _typeof(options.document) === 'object') {
       return options.document;
@@ -1546,6 +2284,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var videoSelect = resolveElementFromOptions(opts, 'videoSelect', 'videoSelect', 'videoSelect');
     var distanceSelect = resolveElementFromOptions(opts, 'distanceSelect', 'distanceSelect', 'distanceSelect');
     var batterySelect = resolveElementFromOptions(opts, 'batterySelect', 'batterySelect', 'batterySelect');
+    var batteryPlateSelect = resolveElementFromOptions(opts, 'batteryPlateSelect', 'batteryPlateSelect', 'batteryPlateSelect');
     var hotswapSelect = resolveElementFromOptions(opts, 'hotswapSelect', 'batteryHotswapSelect', 'hotswapSelect');
     var motorSelects = resolveSelectCollection(opts, 'motorSelects', ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'], 'motorSelects');
     var controllerSelects = resolveSelectCollection(opts, 'controllerSelects', ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'], 'controllerSelects');
@@ -1572,6 +2311,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.elements.distanceSelect = distanceSelect;
     runtimeFeedbackState.elements.batterySelect = batterySelect;
     runtimeFeedbackState.elements.hotswapSelect = hotswapSelect;
+    runtimeFeedbackState.elements.batteryPlateSelect = batteryPlateSelect;
     runtimeFeedbackState.elements.motorSelects = motorSelects;
     runtimeFeedbackState.elements.controllerSelects = controllerSelects;
     runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummaryTarget;
@@ -1688,6 +2428,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var cameraDevices = devices && _typeof(devices.cameras) === 'object' && devices.cameras ? devices.cameras : {};
+    updateRuntimeFeedbackCameraOptionLists(cameraDevices, camera);
     var monitorDevices = devices && _typeof(devices.monitors) === 'object' && devices.monitors ? devices.monitors : {};
     var videoDevices = devices && _typeof(devices.video) === 'object' && devices.video ? devices.video : {};
     var fizDevices = devices && _typeof(devices.fiz) === 'object' && devices.fiz ? devices.fiz : {};
@@ -2537,18 +3278,269 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
     var doc = resolveDocument(opts);
+    captureFeedbackOptionElements(doc);
     var button = resolveElementFromOptions(opts, 'runtimeFeedbackButton', 'runtimeFeedbackBtn', 'runtimeFeedbackBtn');
     var dialog = resolveElementFromOptions(opts, 'feedbackDialog', 'feedbackDialog', 'feedbackDialog');
     var form = resolveElementFromOptions(opts, 'feedbackForm', 'feedbackForm', 'feedbackForm');
     var cancelBtn = resolveElementFromOptions(opts, 'feedbackCancelBtn', 'fbCancel', 'feedbackCancelBtn');
     var useLocationBtn = resolveElementFromOptions(opts, 'feedbackUseLocationBtn', 'fbUseLocationBtn', 'feedbackUseLocationBtn');
+    var sensorModeSelect = resolveElementFromOptions(opts, 'sensorModeSelect', 'fbSensorMode', 'sensorModeSelect');
+    var framerateSelect = resolveElementFromOptions(opts, 'framerateSelect', 'fbFramerate', 'framerateSelect');
     runtimeFeedbackState.elements.runtimeFeedbackButton = button;
     runtimeFeedbackState.elements.feedbackDialog = dialog;
     runtimeFeedbackState.elements.feedbackForm = form;
     runtimeFeedbackState.elements.feedbackCancelBtn = cancelBtn;
     runtimeFeedbackState.elements.feedbackUseLocationBtn = useLocationBtn;
+    if (sensorModeSelect) {
+      runtimeFeedbackState.elements.sensorModeSelect = sensorModeSelect;
+    }
+    if (framerateSelect) {
+      runtimeFeedbackState.elements.framerateSelect = framerateSelect;
+    }
+    function closeRuntimeFeedbackDialog(warnMessage) {
+      if (!dialog) {
+        return false;
+      }
+      var closeDialogFn = deps.closeDialog;
+      if (typeof closeDialogFn === 'function') {
+        try {
+          closeDialogFn(dialog);
+          return true;
+        } catch (error) {
+          if (warnMessage) {
+            safeWarn(warnMessage, error);
+          }
+        }
+      }
+      if (typeof dialog.close === 'function') {
+        try {
+          dialog.close();
+          return true;
+        } catch (dialogError) {
+          void dialogError;
+        }
+      }
+      return false;
+    }
+    function sanitizePrefillValue(value) {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value);
+      }
+      if (typeof value !== 'string') {
+        if (value == null) {
+          return '';
+        }
+        value = String(value);
+      }
+      var trimmed = value.trim();
+      if (!trimmed) {
+        return '';
+      }
+      if (trimmed.toLowerCase() === 'none') {
+        return '';
+      }
+      return trimmed;
+    }
+    function resolveSelectLabel(select, fallbackId, warnMessage) {
+      var target = select;
+      if (!target && doc && typeof doc.getElementById === 'function' && fallbackId) {
+        try {
+          target = doc.getElementById(fallbackId);
+        } catch (error) {
+          void error;
+          target = null;
+        }
+      }
+      if (!target) {
+        return '';
+      }
+      var resolved = '';
+      try {
+        var options = target.options;
+        var selectedIndex = typeof target.selectedIndex === 'number' ? target.selectedIndex : -1;
+        if (options && selectedIndex >= 0 && selectedIndex < options.length) {
+          var option = options[selectedIndex];
+          if (option) {
+            if (typeof option.text === 'string' && option.text) {
+              resolved = option.text;
+            } else if (typeof option.textContent === 'string' && option.textContent) {
+              resolved = option.textContent;
+            } else if (typeof option.label === 'string' && option.label) {
+              resolved = option.label;
+            } else if (typeof option.value === 'string' && option.value) {
+              resolved = option.value;
+            }
+          }
+        }
+        if (!resolved && typeof target.value === 'string') {
+          resolved = target.value;
+        }
+      } catch (error) {
+        if (warnMessage) {
+          safeWarn(warnMessage, error);
+        }
+        resolved = '';
+      }
+      return sanitizePrefillValue(resolved);
+    }
+    function resolveCameraSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.cameraSelect : null;
+      return resolveSelectLabel(select, 'cameraSelect', 'cineResults could not inspect camera selection for runtime feedback prefill.');
+    }
+    function resolveBatteryPlateSelectionLabel() {
+      var label = '';
+      var getSelectedPlateFn = deps && typeof deps.getSelectedPlate === 'function' ? deps.getSelectedPlate : null;
+      if (getSelectedPlateFn) {
+        try {
+          label = sanitizePrefillValue(getSelectedPlateFn());
+        } catch (error) {
+          safeWarn('cineResults could not resolve battery plate selection via helper for runtime feedback.', error);
+          label = '';
+        }
+      }
+      if (label) {
+        return label;
+      }
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.batteryPlateSelect : null;
+      return resolveSelectLabel(select, 'batteryPlateSelect', 'cineResults could not inspect battery plate selection for runtime feedback prefill.');
+    }
+    function resolveBatterySelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.batterySelect : null;
+      return resolveSelectLabel(select, 'batterySelect', 'cineResults could not inspect battery selection for runtime feedback prefill.');
+    }
+    function resolveMonitorSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.monitorSelect : null;
+      return resolveSelectLabel(select, 'monitorSelect', 'cineResults could not inspect monitor selection for runtime feedback prefill.');
+    }
+    function resolveWirelessVideoSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.videoSelect : null;
+      return resolveSelectLabel(select, 'videoSelect', 'cineResults could not inspect wireless video selection for runtime feedback prefill.');
+    }
+    function resolveDistanceSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.distanceSelect : null;
+      return resolveSelectLabel(select, 'distanceSelect', 'cineResults could not inspect FIZ distance selection for runtime feedback prefill.');
+    }
+    function resolveCollectionSelectionLabels(collection, fallbackIds, warnMessage) {
+      var labels = [];
+      var elements = Array.isArray(collection) ? collection : [];
+      if ((!elements || !elements.length) && doc && typeof doc.getElementById === 'function' && Array.isArray(fallbackIds)) {
+        var fallbackElements = [];
+        for (var fallbackIndex = 0; fallbackIndex < fallbackIds.length; fallbackIndex += 1) {
+          var candidateId = fallbackIds[fallbackIndex];
+          if (!candidateId) {
+            continue;
+          }
+          var fallbackElement = null;
+          try {
+            fallbackElement = doc.getElementById(candidateId);
+          } catch (error) {
+            void error;
+            fallbackElement = null;
+          }
+          if (fallbackElement) {
+            fallbackElements.push(fallbackElement);
+          }
+        }
+        elements = fallbackElements;
+      }
+      for (var index = 0; index < elements.length; index += 1) {
+        var element = elements[index];
+        var fallbackId = Array.isArray(fallbackIds) && index < fallbackIds.length ? fallbackIds[index] : null;
+        var label = resolveSelectLabel(element, fallbackId, warnMessage);
+        if (label && labels.indexOf(label) === -1) {
+          labels.push(label);
+        }
+      }
+      return labels;
+    }
+    function resolveMotorSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.motorSelects : null;
+      return resolveCollectionSelectionLabels(collection, ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'], 'cineResults could not inspect FIZ motor selection for runtime feedback prefill.');
+    }
+    function resolveControllerSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.controllerSelects : null;
+      return resolveCollectionSelectionLabels(collection, ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'], 'cineResults could not inspect FIZ controller selection for runtime feedback prefill.');
+    }
+    function setPrefillValue(input, value) {
+      if (!input || _typeof(input) !== 'object' || typeof input.value === 'undefined') {
+        return;
+      }
+      var normalized = typeof value === 'string' ? value : sanitizePrefillValue(value);
+      if (typeof normalized !== 'string') {
+        normalized = '';
+      }
+      try {
+        input.value = normalized;
+      } catch (error) {
+        safeWarn('cineResults could not update runtime feedback field prefill.', error);
+      }
+    }
+    function prefillRuntimeFeedbackDefaults() {
+      if (!doc) {
+        return;
+      }
+      var fieldEntries = getFeedbackFieldEntries(doc);
+      var cameraEntry = null;
+      var batteryPlateEntry = null;
+      var batteryEntry = null;
+      var wirelessVideoEntry = null;
+      var monitorEntry = null;
+      var distanceEntry = null;
+      var controllerEntry = null;
+      var motorEntry = null;
+      for (var index = 0; index < fieldEntries.length; index += 1) {
+        var entry = fieldEntries[index];
+        if (!entry || !entry.map) {
+          continue;
+        }
+        if (entry.map.key === 'camera' && !cameraEntry) {
+          cameraEntry = entry;
+        } else if (entry.map.key === 'batteryPlate' && !batteryPlateEntry) {
+          batteryPlateEntry = entry;
+        } else if (entry.map.key === 'battery' && !batteryEntry) {
+          batteryEntry = entry;
+        } else if (entry.map.key === 'wirelessVideo' && !wirelessVideoEntry) {
+          wirelessVideoEntry = entry;
+        } else if (entry.map.key === 'monitor' && !monitorEntry) {
+          monitorEntry = entry;
+        } else if (entry.map.key === 'distance' && !distanceEntry) {
+          distanceEntry = entry;
+        } else if (entry.map.key === 'controllers' && !controllerEntry) {
+          controllerEntry = entry;
+        } else if (entry.map.key === 'motors' && !motorEntry) {
+          motorEntry = entry;
+        }
+      }
+      if (cameraEntry && cameraEntry.element) {
+        setPrefillValue(cameraEntry.element, resolveCameraSelectionLabel());
+      }
+      if (batteryPlateEntry && batteryPlateEntry.element) {
+        setPrefillValue(batteryPlateEntry.element, resolveBatteryPlateSelectionLabel());
+      }
+      if (batteryEntry && batteryEntry.element) {
+        setPrefillValue(batteryEntry.element, resolveBatterySelectionLabel());
+      }
+      if (wirelessVideoEntry && wirelessVideoEntry.element) {
+        setPrefillValue(wirelessVideoEntry.element, resolveWirelessVideoSelectionLabel());
+      }
+      if (monitorEntry && monitorEntry.element) {
+        setPrefillValue(monitorEntry.element, resolveMonitorSelectionLabel());
+      }
+      if (distanceEntry && distanceEntry.element) {
+        setPrefillValue(distanceEntry.element, resolveDistanceSelectionLabel());
+      }
+      if (controllerEntry && controllerEntry.element) {
+        var controllers = resolveControllerSelectionLabels();
+        setPrefillValue(controllerEntry.element, controllers.join(', '));
+      }
+      if (motorEntry && motorEntry.element) {
+        var motors = resolveMotorSelectionLabels();
+        setPrefillValue(motorEntry.element, motors.join(', '));
+      }
+    }
     attachHandlerOnce(button, 'click', 'openDialog', function () {
       return function openRuntimeFeedbackDialog() {
+        prefillRuntimeFeedbackDefaults();
         if (!dialog) {
           return;
         }
@@ -2570,27 +3562,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       };
     });
-    attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
-      return function cancelRuntimeFeedbackDialog() {
+    attachHandlerOnce(sensorModeSelect, 'change', 'sensorModeChange', function () {
+      return function handleSensorModeChange() {
+        var value = '';
+        if (sensorModeSelect && typeof sensorModeSelect.value === 'string') {
+          value = sensorModeSelect.value;
+        }
+        runtimeFeedbackState.selectedSensorMode = value;
+        updateFramerateSelectOptionsForSensorMode(value, '');
+      };
+    });
+    attachHandlerOnce(dialog, 'click', 'dialogBackdrop', function () {
+      return function handleRuntimeFeedbackBackdropClick(event) {
         if (!dialog) {
           return;
         }
-        var closeDialogFn = deps.closeDialog;
-        if (typeof closeDialogFn === 'function') {
-          try {
-            closeDialogFn(dialog);
-            return;
-          } catch (error) {
-            safeWarn('cineResults could not close runtime feedback dialog via helper.', error);
-          }
+        var target = event ? event.target : null;
+        if (target !== dialog) {
+          return;
         }
-        if (typeof dialog.close === 'function') {
-          try {
-            dialog.close();
-          } catch (dialogError) {
-            void dialogError;
-          }
-        }
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog from backdrop interaction.');
+      };
+    });
+    attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
+      return function cancelRuntimeFeedbackDialog() {
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog via helper.');
       };
     });
     attachHandlerOnce(useLocationBtn, 'click', 'useLocation', function () {
@@ -2720,20 +3716,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         }
         if (dialog) {
-          var closeDialogFn = deps.closeDialog;
-          if (typeof closeDialogFn === 'function') {
-            try {
-              closeDialogFn(dialog);
-            } catch (error) {
-              safeWarn('cineResults could not close runtime feedback dialog after submit.', error);
-            }
-          } else if (typeof dialog.close === 'function') {
-            try {
-              dialog.close();
-            } catch (dialogError) {
-              void dialogError;
-            }
-          }
+          closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog after submit.');
         }
         if (typeof deps.updateCalculations === 'function') {
           try {

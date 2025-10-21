@@ -216,6 +216,10 @@
     feedbackOptionFallbacks: Object.create(null),
     collatorCache: Object.create(null),
     fallbackCollator: null,
+    sensorModeFrameRateMap: Object.create(null),
+    allFrameRateOptions: [],
+    selectedSensorMode: '',
+    selectedFramerate: '',
     dependencies: {
       mailTarget: 'info@lucazanner.de',
       document: null,
@@ -331,6 +335,7 @@
     { id: 'fbLensMount', key: 'lensMount', trim: true },
     { id: 'fbResolution', key: 'resolution', trim: true },
     { id: 'fbCodec', key: 'codec', trim: true },
+    { id: 'fbSensorMode', key: 'sensorMode', trim: true },
     { id: 'fbFramerate', key: 'framerate', trim: true },
     { id: 'fbWifi', key: 'cameraWifi', trim: false },
     { id: 'fbFirmware', key: 'firmware', trim: true },
@@ -353,8 +358,7 @@
   var FEEDBACK_OPTION_TARGETS = {
     lensMount: { elementName: 'feedbackMountOptions', elementId: 'mountOptions' },
     resolution: { elementName: 'feedbackResolutionOptions', elementId: 'resolutionOptions' },
-    codec: { elementName: 'feedbackCodecOptions', elementId: 'codecOptions' },
-    framerate: { elementName: 'feedbackFramerateOptions', elementId: 'framerateOptions' }
+    codec: { elementName: 'feedbackCodecOptions', elementId: 'codecOptions' }
   };
 
   function getFeedbackOptionFallbacks() {
@@ -520,6 +524,424 @@
         void appendError;
       }
     }
+  }
+
+  function getFeedbackSelectElement(name, id) {
+    if (runtimeFeedbackState.elements[name]) {
+      return runtimeFeedbackState.elements[name];
+    }
+
+    var doc = resolveDocument();
+    if (!doc || !id) {
+      return null;
+    }
+
+    var element = null;
+    try {
+      element = doc.getElementById(id);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+
+    if (element) {
+      runtimeFeedbackState.elements[name] = element;
+    }
+
+    return element;
+  }
+
+  function escapeOptionText(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function replaceSelectOptions(select, values, preferredValue, defaultToFirst) {
+    if (!select) {
+      return '';
+    }
+
+    var seen = Object.create(null);
+    var normalized = [];
+    var list = Array.isArray(values) ? values : [];
+    for (var index = 0; index < list.length; index += 1) {
+      var raw = list[index];
+      if (raw == null) {
+        continue;
+      }
+      var text = String(raw);
+      if (!text) {
+        continue;
+      }
+      var trimmed = text.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (Object.prototype.hasOwnProperty.call(seen, trimmed)) {
+        continue;
+      }
+      seen[trimmed] = true;
+      normalized.push(trimmed);
+    }
+
+    var htmlParts = ['<option value="">--</option>'];
+    for (var valueIndex = 0; valueIndex < normalized.length; valueIndex += 1) {
+      var escapedValue = escapeOptionText(normalized[valueIndex]);
+      htmlParts.push('<option value="' + escapedValue + '">' + escapedValue + '</option>');
+    }
+    var html = htmlParts.join('');
+
+    var assigned = false;
+    if (typeof select.innerHTML === 'string') {
+      try {
+        select.innerHTML = html;
+        assigned = true;
+      } catch (error) {
+        void error;
+        assigned = false;
+      }
+    }
+
+    if (!assigned) {
+      var doc = null;
+      try {
+        doc = select.ownerDocument || null;
+      } catch (ownerError) {
+        void ownerError;
+        doc = null;
+      }
+      if (!doc) {
+        doc = resolveDocument();
+      }
+
+      if (doc && typeof doc.createElement === 'function' && typeof select.appendChild === 'function') {
+        try {
+          while (select.firstChild) {
+            select.removeChild(select.firstChild);
+          }
+        } catch (clearError) {
+          void clearError;
+        }
+
+        var placeholder = null;
+        try {
+          placeholder = doc.createElement('option');
+        } catch (placeholderError) {
+          void placeholderError;
+          placeholder = null;
+        }
+        if (placeholder) {
+          try {
+            placeholder.value = '';
+          } catch (placeholderAssign) {
+            void placeholderAssign;
+            if (typeof placeholder.setAttribute === 'function') {
+              placeholder.setAttribute('value', '');
+            }
+          }
+          if (typeof placeholder.textContent === 'string') {
+            try {
+              placeholder.textContent = '--';
+            } catch (placeholderTextError) {
+              void placeholderTextError;
+            }
+          }
+          try {
+            select.appendChild(placeholder);
+          } catch (appendPlaceholderError) {
+            void appendPlaceholderError;
+          }
+        }
+
+        for (var optionIndex = 0; optionIndex < normalized.length; optionIndex += 1) {
+          var option = null;
+          try {
+            option = doc.createElement('option');
+          } catch (createError) {
+            void createError;
+            option = null;
+          }
+          if (!option) {
+            continue;
+          }
+          var optionValue = normalized[optionIndex];
+          try {
+            option.value = optionValue;
+          } catch (optionAssignError) {
+            void optionAssignError;
+            if (typeof option.setAttribute === 'function') {
+              option.setAttribute('value', optionValue);
+            }
+          }
+          if (typeof option.textContent === 'string') {
+            try {
+              option.textContent = optionValue;
+            } catch (optionTextError) {
+              void optionTextError;
+            }
+          }
+          try {
+            select.appendChild(option);
+          } catch (optionAppendError) {
+            void optionAppendError;
+          }
+        }
+      }
+    }
+
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var nextValue = '';
+    if (preferred && normalized.indexOf(preferred) !== -1) {
+      nextValue = preferred;
+    } else if (defaultToFirst && normalized.length) {
+      nextValue = normalized[0];
+    }
+
+    try {
+      select.value = nextValue;
+    } catch (assignValueError) {
+      void assignValueError;
+      if (typeof select.setAttribute === 'function') {
+        select.setAttribute('value', nextValue);
+      }
+    }
+
+    var options = null;
+    try {
+      options = select.options || null;
+    } catch (optionsError) {
+      void optionsError;
+      options = null;
+    }
+
+    if (options && typeof options.length === 'number') {
+      for (var idx = 0; idx < options.length; idx += 1) {
+        var opt = options[idx];
+        if (!opt) {
+          continue;
+        }
+        var optValue = '';
+        try {
+          optValue = typeof opt.value === 'string' ? opt.value : '';
+        } catch (optValueError) {
+          void optValueError;
+          optValue = '';
+        }
+        var shouldSelect = optValue === nextValue;
+        if (typeof opt.selected === 'boolean') {
+          try {
+            opt.selected = shouldSelect;
+          } catch (optSelectError) {
+            void optSelectError;
+          }
+        } else if (shouldSelect && typeof opt.setAttribute === 'function') {
+          try {
+            opt.setAttribute('selected', 'selected');
+          } catch (optAttrError) {
+            void optAttrError;
+          }
+        } else if (!shouldSelect && typeof opt.removeAttribute === 'function') {
+          try {
+            opt.removeAttribute('selected');
+          } catch (optRemoveAttrError) {
+            void optRemoveAttrError;
+          }
+        }
+      }
+    }
+
+    if (typeof select.selectedIndex === 'number' && options && typeof options.length === 'number') {
+      var selectedIndex = -1;
+      for (var optionIdx = 0; optionIdx < options.length; optionIdx += 1) {
+        var candidate = options[optionIdx];
+        if (!candidate) {
+          continue;
+        }
+        var candidateValue = '';
+        try {
+          candidateValue = typeof candidate.value === 'string' ? candidate.value : '';
+        } catch (candidateValueError) {
+          void candidateValueError;
+          candidateValue = '';
+        }
+        if (candidateValue === nextValue) {
+          selectedIndex = optionIdx;
+          break;
+        }
+      }
+      try {
+        select.selectedIndex = selectedIndex;
+      } catch (assignIndexError) {
+        void assignIndexError;
+      }
+    }
+
+    return nextValue;
+  }
+
+  function normalizeSensorModeKey(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    return trimmed.toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function tokenizeComparisonValue(value) {
+    if (typeof value !== 'string') {
+      return [];
+    }
+    var withoutParens = value.replace(/\([^)]*\)/g, ' ');
+    var normalized = withoutParens.replace(/[^0-9a-zA-Z]+/g, ' ').toLowerCase().trim();
+    if (!normalized) {
+      return [];
+    }
+    var rawTokens = normalized.split(/\s+/);
+    var tokens = [];
+    for (var index = 0; index < rawTokens.length; index += 1) {
+      var token = rawTokens[index];
+      if (!token) {
+        continue;
+      }
+      if (/^\d$/.test(token)) {
+        continue;
+      }
+      tokens.push(token);
+    }
+    return tokens;
+  }
+
+  function doesFrameRateMatchSensorMode(frameRateValue, sensorModeValue) {
+    var sensorTokens = tokenizeComparisonValue(sensorModeValue);
+    if (!sensorTokens.length) {
+      return false;
+    }
+    var frameTokens = tokenizeComparisonValue(frameRateValue);
+    if (!frameTokens.length) {
+      return false;
+    }
+    var frameSet = Object.create(null);
+    for (var frameIndex = 0; frameIndex < frameTokens.length; frameIndex += 1) {
+      frameSet[frameTokens[frameIndex]] = true;
+    }
+    var matches = 0;
+    for (var sensorIndex = 0; sensorIndex < sensorTokens.length; sensorIndex += 1) {
+      if (frameSet[sensorTokens[sensorIndex]]) {
+        matches += 1;
+      }
+    }
+    if (!matches) {
+      return false;
+    }
+    var requiredMatches = sensorTokens.length;
+    if (sensorTokens.length >= 3) {
+      requiredMatches = sensorTokens.length - 1;
+    }
+    return matches >= Math.max(1, requiredMatches);
+  }
+
+  function buildSensorModeFrameRateMap(sensorModes, frameRates) {
+    var map = Object.create(null);
+    var modes = Array.isArray(sensorModes) ? sensorModes : [];
+    var rates = Array.isArray(frameRates) ? frameRates : [];
+
+    for (var modeIndex = 0; modeIndex < modes.length; modeIndex += 1) {
+      var modeValue = modes[modeIndex];
+      if (typeof modeValue !== 'string') {
+        continue;
+      }
+      var trimmed = modeValue.trim();
+      if (!trimmed) {
+        continue;
+      }
+      var key = normalizeSensorModeKey(trimmed);
+      if (!key) {
+        continue;
+      }
+      if (!map[key]) {
+        map[key] = [];
+      }
+    }
+
+    for (var rateIndex = 0; rateIndex < rates.length; rateIndex += 1) {
+      var rateValue = rates[rateIndex];
+      if (typeof rateValue !== 'string') {
+        continue;
+      }
+      var rateTrimmed = rateValue.trim();
+      if (!rateTrimmed) {
+        continue;
+      }
+      for (var matchIndex = 0; matchIndex < modes.length; matchIndex += 1) {
+        var matchValue = modes[matchIndex];
+        if (typeof matchValue !== 'string') {
+          continue;
+        }
+        var matchTrimmed = matchValue.trim();
+        if (!matchTrimmed) {
+          continue;
+        }
+        var modeKey = normalizeSensorModeKey(matchTrimmed);
+        if (!modeKey) {
+          continue;
+        }
+        if (!doesFrameRateMatchSensorMode(rateTrimmed, matchTrimmed)) {
+          continue;
+        }
+        if (!map[modeKey]) {
+          map[modeKey] = [];
+        }
+        if (map[modeKey].indexOf(rateTrimmed) === -1) {
+          map[modeKey].push(rateTrimmed);
+        }
+      }
+    }
+
+    return map;
+  }
+
+  function updateSensorModeSelectOptions(values, preferredValue) {
+    var select = getFeedbackSelectElement('sensorModeSelect', 'fbSensorMode');
+    if (!select) {
+      return '';
+    }
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var selected = replaceSelectOptions(select, values, preferred, true);
+    runtimeFeedbackState.selectedSensorMode = selected;
+    return selected;
+  }
+
+  function updateFramerateSelectOptionsForSensorMode(sensorModeValue, preferredValue) {
+    var select = getFeedbackSelectElement('framerateSelect', 'fbFramerate');
+    if (!select) {
+      return '';
+    }
+
+    var map = runtimeFeedbackState.sensorModeFrameRateMap || {};
+    var allRates = Array.isArray(runtimeFeedbackState.allFrameRateOptions)
+      ? runtimeFeedbackState.allFrameRateOptions
+      : [];
+    var normalizedKey = normalizeSensorModeKey(sensorModeValue);
+    var targeted = normalizedKey && map[normalizedKey] && map[normalizedKey].length
+      ? map[normalizedKey]
+      : [];
+    var preferred = typeof preferredValue === 'string' ? preferredValue : '';
+    var shouldDefaultToFirst = !!normalizedKey;
+    var selected = replaceSelectOptions(
+      select,
+      targeted.length ? targeted : allRates,
+      preferred,
+      shouldDefaultToFirst
+    );
+    runtimeFeedbackState.selectedFramerate = selected;
+    return selected;
   }
 
   function resolveFeedbackOptionElement(config) {
@@ -724,12 +1146,26 @@
     var lensMountValues = collectLensMountValues(cameraData);
     var resolutionValues = collectCameraValues(cameraData, 'resolutions', ['label', 'name', 'value']);
     var codecValues = collectCameraValues(cameraData, 'recordingCodecs', ['label', 'name', 'codec', 'type']);
+    var sensorModeValues = collectCameraValues(cameraData, 'sensorModes', ['label', 'name', 'mode']);
     var frameRateValues = collectCameraValues(cameraData, 'frameRates', ['label', 'name', 'rate', 'value']);
 
     updateFeedbackOptionList('lensMount', lensMountValues);
     updateFeedbackOptionList('resolution', resolutionValues);
     updateFeedbackOptionList('codec', codecValues);
-    updateFeedbackOptionList('framerate', frameRateValues);
+
+    runtimeFeedbackState.allFrameRateOptions = frameRateValues.slice();
+    runtimeFeedbackState.sensorModeFrameRateMap = buildSensorModeFrameRateMap(sensorModeValues, frameRateValues);
+
+    var sensorModeSelect = getFeedbackSelectElement('sensorModeSelect', 'fbSensorMode');
+    var framerateSelect = getFeedbackSelectElement('framerateSelect', 'fbFramerate');
+    var preferredSensorMode = sensorModeSelect && typeof sensorModeSelect.value === 'string'
+      ? sensorModeSelect.value
+      : runtimeFeedbackState.selectedSensorMode;
+    var selectedSensorMode = updateSensorModeSelectOptions(sensorModeValues, preferredSensorMode);
+    var preferredFramerate = framerateSelect && typeof framerateSelect.value === 'string'
+      ? framerateSelect.value
+      : runtimeFeedbackState.selectedFramerate;
+    updateFramerateSelectOptionsForSensorMode(selectedSensorMode, preferredFramerate);
   }
 
   function resolveDocument(options) {
@@ -3209,12 +3645,20 @@ function setupRuntimeFeedback(options) {
     var form = resolveElementFromOptions(opts, 'feedbackForm', 'feedbackForm', 'feedbackForm');
     var cancelBtn = resolveElementFromOptions(opts, 'feedbackCancelBtn', 'fbCancel', 'feedbackCancelBtn');
     var useLocationBtn = resolveElementFromOptions(opts, 'feedbackUseLocationBtn', 'fbUseLocationBtn', 'feedbackUseLocationBtn');
+    var sensorModeSelect = resolveElementFromOptions(opts, 'sensorModeSelect', 'fbSensorMode', 'sensorModeSelect');
+    var framerateSelect = resolveElementFromOptions(opts, 'framerateSelect', 'fbFramerate', 'framerateSelect');
 
     runtimeFeedbackState.elements.runtimeFeedbackButton = button;
     runtimeFeedbackState.elements.feedbackDialog = dialog;
     runtimeFeedbackState.elements.feedbackForm = form;
     runtimeFeedbackState.elements.feedbackCancelBtn = cancelBtn;
     runtimeFeedbackState.elements.feedbackUseLocationBtn = useLocationBtn;
+    if (sensorModeSelect) {
+      runtimeFeedbackState.elements.sensorModeSelect = sensorModeSelect;
+    }
+    if (framerateSelect) {
+      runtimeFeedbackState.elements.framerateSelect = framerateSelect;
+    }
 
     function closeRuntimeFeedbackDialog(warnMessage) {
       if (!dialog) {
@@ -3520,6 +3964,17 @@ function setupRuntimeFeedback(options) {
             void dialogError;
           }
         }
+      };
+    });
+
+    attachHandlerOnce(sensorModeSelect, 'change', 'sensorModeChange', function () {
+      return function handleSensorModeChange() {
+        var value = '';
+        if (sensorModeSelect && typeof sensorModeSelect.value === 'string') {
+          value = sensorModeSelect.value;
+        }
+        runtimeFeedbackState.selectedSensorMode = value;
+        updateFramerateSelectOptionsForSensorMode(value, '');
       };
     });
 
