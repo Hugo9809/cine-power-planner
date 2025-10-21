@@ -1586,6 +1586,7 @@
       "userProfileInteractionIntro": "Erfasse die Crew-Daten einmalig. Jede Aktualisierung synchronisiert sich sofort mit Kontakte, bleibt offline zwischengespeichert und fließt in Exporte ein, damit das Team immer weiß, wem das Setup gehört.",
       "userProfileInteractionSkipHint": "Drücke Weiter, sobald du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorial-Fortschritt zurückzusetzen.",
       "userProfileAvatarAction": "Profilfoto hinzufügen",
+      "userProfileAvatarEditAction": "Foto bearbeiten",
       "unitsPreferencesLanguageLabel": "Sprache",
       "unitsPreferencesThemeLabel": "Design",
       "unitsPreferencesThemeLight": "Hell",
