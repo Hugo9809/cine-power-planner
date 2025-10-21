@@ -212,13 +212,45 @@
         return `${baseUrl}/${encodedNormalized}`;
       }
 
+      const pinkModeOriginalUrlSymbol =
+        typeof Symbol === 'function' ? Symbol('pinkModeOriginalUrl') : '__pinkModeOriginalUrl__';
+
+      function setPinkModeRequestOriginalUrl(request, url) {
+        if (!request || !url) {
+          return request;
+        }
+
+        try {
+          request[pinkModeOriginalUrlSymbol] = url;
+        } catch (error) {
+          void error;
+        }
+
+        return request;
+      }
+
+      function getPinkModeRequestOriginalUrl(candidate) {
+        if (
+          candidate &&
+          typeof candidate === 'object' &&
+          typeof candidate[pinkModeOriginalUrlSymbol] === 'string'
+        ) {
+          return candidate[pinkModeOriginalUrlSymbol];
+        }
+
+        return null;
+      }
+
       function createPinkModeAssetRequest(url) {
         if (typeof Request !== 'function' || !url) {
           return null;
         }
 
         try {
-          return new Request(url, { credentials: 'same-origin' });
+          return setPinkModeRequestOriginalUrl(
+            new Request(url, { credentials: 'same-origin' }),
+            url
+          );
         } catch (error) {
           void error;
           return null;
@@ -375,8 +407,10 @@
         const key =
           typeof candidate === 'string'
             ? candidate
-            : candidate && typeof candidate.url === 'string'
-              ? candidate.url
+            : getPinkModeRequestOriginalUrl(candidate) ||
+                (candidate && typeof candidate.url === 'string'
+                  ? candidate.url
+                  : null)
               : null;
 
         if (!key || seen.has(key)) {
@@ -400,7 +434,10 @@
               registerPinkModeNetworkVariant(
                 variants,
                 seen,
-                createPinkModeAssetRequest(decodedRequestUrl) || decodedRequestUrl
+                setPinkModeRequestOriginalUrl(
+                  createPinkModeAssetRequest(decodedRequestUrl),
+                  decodedRequestUrl
+                ) || decodedRequestUrl
               );
             }
           }
@@ -419,7 +456,7 @@
           registerPinkModeNetworkVariant(
             variants,
             seen,
-            createPinkModeAssetRequest(url) || url
+            setPinkModeRequestOriginalUrl(createPinkModeAssetRequest(url), url) || url
           );
         }
 
@@ -518,7 +555,10 @@
           const resolvedUrl = resolvePinkModeAssetUrl(normalized);
           const encodedNormalized = encodeURI(normalized);
           const fallbackUrl = resolvedUrl || (encodedNormalized || normalized);
-          const request = createPinkModeAssetRequest(fallbackUrl);
+          const request = setPinkModeRequestOriginalUrl(
+            createPinkModeAssetRequest(fallbackUrl),
+            fallbackUrl
+          ) || fallbackUrl;
 
           const networkCandidates = createPinkModeNetworkRequestVariants(
             request,
