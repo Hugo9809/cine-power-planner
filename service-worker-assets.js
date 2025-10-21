@@ -170,6 +170,7 @@
   "./legal/impressum-it.html",
   "./legal/impressum.html",
   "./manifest.webmanifest",
+  "./service-worker-assets.js",
   "./src/animations/cat.json",
   "./src/animations/cup.json",
   "./src/animations/cupcake.json",
