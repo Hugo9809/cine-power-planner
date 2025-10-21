@@ -36,6 +36,111 @@ function createDatalistElement(initialValues = []) {
   };
 }
 
+function createSelectElement(initialValues = [], ownerDocument = null) {
+  const element = createInteractiveElement('');
+  element.tagName = 'SELECT';
+  element.ownerDocument = ownerDocument;
+  element.childNodes = [];
+  element.options = [];
+  element.selectedIndex = -1;
+  let internalValue = '';
+
+  Object.defineProperty(element, 'firstChild', {
+    get() {
+      return element.childNodes.length ? element.childNodes[0] : null;
+    },
+  });
+
+  element.appendChild = function appendChild(child) {
+    element.childNodes.push(child);
+    element.options.push(child);
+    if (typeof child.value !== 'string') {
+      child.value = '';
+    }
+    if (typeof child.textContent !== 'string') {
+      child.textContent = '';
+    }
+    if (element.selectedIndex === -1) {
+      element.selectedIndex = element.options.length - 1;
+    }
+    return child;
+  };
+
+  element.removeChild = function removeChild(child) {
+    const index = element.childNodes.indexOf(child);
+    if (index !== -1) {
+      element.childNodes.splice(index, 1);
+      element.options.splice(index, 1);
+    }
+    if (element.selectedIndex >= element.options.length) {
+      element.selectedIndex = element.options.length ? element.options.length - 1 : -1;
+    }
+    return child;
+  };
+
+  element.getAttribute = function getAttribute(name) {
+    if (name === 'value') {
+      return element.value;
+    }
+    return null;
+  };
+
+  element.setAttribute = function setAttribute(name, value) {
+    if (name === 'value') {
+      element.value = value;
+    }
+  };
+
+  Object.defineProperty(element, 'value', {
+    get() {
+      if (element.selectedIndex >= 0 && element.selectedIndex < element.options.length) {
+        return element.options[element.selectedIndex].value;
+      }
+      return internalValue;
+    },
+    set(value) {
+      internalValue = typeof value === 'string' ? value : '';
+      let foundIndex = -1;
+      for (let optionIndex = 0; optionIndex < element.options.length; optionIndex += 1) {
+        if (element.options[optionIndex].value === internalValue) {
+          foundIndex = optionIndex;
+          break;
+        }
+      }
+      element.selectedIndex = foundIndex;
+      if (foundIndex === -1 && !internalValue && element.options.length) {
+        element.selectedIndex = 0;
+      }
+    },
+  });
+
+  if (Array.isArray(initialValues)) {
+    initialValues.forEach((value) => {
+      const option = {
+        value: typeof value === 'string' ? value : '',
+        textContent: typeof value === 'string' ? value : '',
+        setAttribute(name, val) {
+          if (name === 'value') {
+            this.value = val;
+          }
+        },
+        getAttribute(name) {
+          if (name === 'value') {
+            return this.value;
+          }
+          return null;
+        },
+      };
+      element.appendChild(option);
+    });
+    if (initialValues.length) {
+      element.value = initialValues[0];
+    }
+  }
+
+  return element;
+}
+
 const FEEDBACK_FIELD_CONFIG = [
   { id: 'fbUsername', key: 'username', trim: true },
   { id: 'fbDate', key: 'date', trim: false },
@@ -45,6 +150,7 @@ const FEEDBACK_FIELD_CONFIG = [
   { id: 'fbLensMount', key: 'lensMount', trim: true },
   { id: 'fbResolution', key: 'resolution', trim: true },
   { id: 'fbCodec', key: 'codec', trim: true },
+  { id: 'fbSensorMode', key: 'sensorMode', trim: true },
   { id: 'fbFramerate', key: 'framerate', trim: true },
   { id: 'fbWifi', key: 'cameraWifi', trim: false },
   { id: 'fbFirmware', key: 'firmware', trim: true },
@@ -585,21 +691,53 @@ describe('cineResults module', () => {
     const mountOptions = createDatalistElement(['PL', 'EF']);
     const resolutionOptions = createDatalistElement(['1080p']);
     const codecOptions = createDatalistElement([]);
-    const framerateOptions = createDatalistElement([]);
+    const sensorModeOptions = createSelectElement([]);
+    const framerateOptions = createSelectElement([]);
 
-    const datalistElements = {
+    const optionElements = {
       mountOptions,
       resolutionOptions,
       codecOptions,
-      framerateOptions,
+      fbSensorMode: sensorModeOptions,
+      fbFramerate: framerateOptions,
     };
 
     const doc = {
-      getElementById: jest.fn((id) => datalistElements[id] || null),
-      createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
+      getElementById: jest.fn((id) => optionElements[id] || null),
+      createElement: jest.fn((tagName) => {
+        if (tagName === 'option') {
+          return {
+            value: '',
+            textContent: '',
+            setAttribute(name, value) {
+              if (name === 'value') {
+                this.value = value;
+              }
+            },
+            getAttribute(name) {
+              if (name === 'value') {
+                return this.value;
+              }
+              return null;
+            },
+          };
+        }
+        return { innerHTML: '', appendChild: jest.fn(), removeChild: jest.fn(), childNodes: [] };
+      }),
     };
 
+    sensorModeOptions.ownerDocument = doc;
+    framerateOptions.ownerDocument = doc;
+
     const cameraSelect = { value: 'CameraA' };
+    const sensorModeSelect = {
+      value: '4.5K Open Gate',
+      selectedIndex: 0,
+      options: [
+        { textContent: '4.5K Open Gate' },
+        { textContent: 'HD' },
+      ],
+    };
     const monitorSelect = { value: 'None', options: [], selectedIndex: -1 };
     const videoSelect = { value: 'None', options: [], selectedIndex: -1 };
     const distanceSelect = { value: 'None', options: [], selectedIndex: -1 };
@@ -651,7 +789,11 @@ describe('cineResults module', () => {
     ];
     devices.cameras.CameraA.resolutions = ['4.5K', '4K UHD', '1080p'];
     devices.cameras.CameraA.recordingCodecs = ['ARRIRAW', 'ProRes 4444 XQ'];
-    devices.cameras.CameraA.frameRates = ['4.5K: up to 60 fps', 'HD: up to 200 fps'];
+    devices.cameras.CameraA.sensorModes = ['4.5K Open Gate', 'HD'];
+    devices.cameras.CameraA.frameRates = [
+      '4.5K Open Gate: 24 fps, 48 fps, 60 fps',
+      'HD: 120 fps, 200 fps',
+    ];
 
     const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
 
@@ -690,6 +832,7 @@ describe('cineResults module', () => {
       elements: {
         cameraSelect,
         monitorSelect,
+        sensorModeSelect,
         videoSelect,
         distanceSelect,
         batterySelect,
@@ -748,6 +891,11 @@ describe('cineResults module', () => {
         ? html.split('<option value="').slice(1).map((part) => part.split('"')[0])
         : []
     );
+    const readSelectValues = (select) => (
+      select && Array.isArray(select.options)
+        ? select.options.map((option) => option.value)
+        : []
+    );
 
     expect(parseValues(mountOptions.innerHTML)).toEqual([
       'LPL (native)',
@@ -763,9 +911,16 @@ describe('cineResults module', () => {
       'ARRIRAW',
       'ProRes 4444 XQ',
     ]);
-    expect(parseValues(framerateOptions.innerHTML)).toEqual([
-      '4.5K: up to 60 fps',
-      'HD: up to 200 fps',
+    expect(readSelectValues(sensorModeOptions)).toEqual([
+      '',
+      '4.5K Open Gate',
+      'HD',
+    ]);
+    expect(readSelectValues(framerateOptions)).toEqual([
+      '',
+      '24',
+      '48',
+      '60',
     ]);
   });
 
