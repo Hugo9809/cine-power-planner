@@ -13048,13 +13048,9 @@ function loadFullBackupHistory() {
 }
 
 function saveFullBackupHistory(entries) {
-  const safeEntries = Array.isArray(entries)
-    ? entries
-        .map(normalizeFullBackupHistoryEntry)
-        .filter(Boolean)
-    : [];
   const safeStorage = getSafeLocalStorage();
-  if (!safeEntries.length) {
+
+  if (entries === null || entries === undefined) {
     deleteFromStorage(
       safeStorage,
       FULL_BACKUP_HISTORY_STORAGE_KEY,
@@ -13062,6 +13058,29 @@ function saveFullBackupHistory(entries) {
     );
     return;
   }
+
+  if (!Array.isArray(entries)) {
+    console.warn('Ignoring invalid full backup history payload. Expected an array.');
+    return;
+  }
+
+  const safeEntries = entries
+    .map(normalizeFullBackupHistoryEntry)
+    .filter(Boolean);
+
+  if (!safeEntries.length) {
+    if (entries.length === 0) {
+      deleteFromStorage(
+        safeStorage,
+        FULL_BACKUP_HISTORY_STORAGE_KEY,
+        "Error deleting full backup history from localStorage:",
+      );
+    } else {
+      console.warn('Ignoring full backup history update because no valid entries were provided.');
+    }
+    return;
+  }
+
   ensurePreWriteMigrationBackup(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
