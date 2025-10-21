@@ -1024,6 +1024,72 @@ describe('cineResults module', () => {
     expect(updateCalculations).toHaveBeenCalledTimes(1);
   });
 
+  test('setupRuntimeFeedback pre-fills camera and battery plate fields from current selections', () => {
+    const fieldElements = new Map();
+    FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
+      fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+    });
+
+    const cameraSelect = {
+      value: 'Sony VENICE 2',
+      selectedIndex: 0,
+      options: [
+        { textContent: 'Sony VENICE 2', text: 'Sony VENICE 2', label: 'Sony VENICE 2', value: 'Sony VENICE 2' },
+      ],
+    };
+    const batteryPlateSelect = {
+      value: 'V-Mount',
+      selectedIndex: 1,
+      options: [
+        { textContent: 'B-Mount', value: 'B-Mount' },
+        { textContent: 'V-Mount', value: 'V-Mount' },
+      ],
+    };
+
+    const doc = {
+      getElementById: jest.fn((id) => {
+        if (fieldElements.has(id)) {
+          return fieldElements.get(id);
+        }
+        if (id === 'cameraSelect') {
+          return cameraSelect;
+        }
+        if (id === 'batteryPlateSelect') {
+          return batteryPlateSelect;
+        }
+        return null;
+      }),
+    };
+
+    const button = createInteractiveElement('Feedback');
+    const dialog = { ...createInteractiveElement('Dialog'), close: jest.fn() };
+    const form = createInteractiveElement('Form');
+    const cancelBtn = createInteractiveElement('Cancel');
+    const useLocationBtn = createInteractiveElement('Use location');
+    useLocationBtn.disabled = false;
+
+    const openDialog = jest.fn();
+    const getSelectedPlate = jest.fn(() => 'Gold-Mount');
+
+    cineResults.setupRuntimeFeedback({
+      document: doc,
+      runtimeFeedbackButton: button,
+      feedbackDialog: dialog,
+      feedbackForm: form,
+      feedbackCancelBtn: cancelBtn,
+      feedbackUseLocationBtn: useLocationBtn,
+      openDialog,
+      getSelectedPlate,
+    });
+
+    button.listeners.click();
+
+    expect(getSelectedPlate).toHaveBeenCalledTimes(1);
+    expect(fieldElements.get('fbCamera').value).toBe('Sony VENICE 2');
+    expect(fieldElements.get('fbBatteryPlate').value).toBe('Gold-Mount');
+    expect(openDialog).toHaveBeenCalledWith(dialog);
+  });
+
   test('setupRuntimeFeedback picks up latest updateCalculations reference', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
