@@ -13,6 +13,10 @@ air-gapped workflows.
 - [ ] Open **Help → Start Here** and complete the offline readiness quick check
       to verify the Data & Storage dashboard timestamps, persistent storage
       status, redundant backups and rehearsal coverage before travelling.
+- [ ] Toggle the browser’s offline mode and confirm the top banner announces
+      that force reload requires connectivity while the header reload control
+      remains disabled. This ensures caches and service workers stay intact
+      until a connection is restored.
 - [ ] Export planner backups and project bundles; store copies on redundant
       physical media.
 - [ ] Print essential docs (operations checklist, save/share reference,

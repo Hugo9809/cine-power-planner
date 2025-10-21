@@ -190,6 +190,53 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp does not clear caches or service workers when navigator reports offline', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      onLine: false,
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve(['cine-power-planner-primary'])),
+      delete: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const reloadWindow = jest.fn();
+    const notifyOffline = jest.fn();
+
+    const result = await offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      window: {},
+      reloadWindow,
+      onOfflineReloadBlocked: notifyOffline,
+    });
+
+    expect(notifyOffline).toHaveBeenCalledTimes(1);
+    expect(clearUiCacheStorageEntries).not.toHaveBeenCalled();
+    expect(navigatorMock.serviceWorker.getRegistrations).not.toHaveBeenCalled();
+    expect(cachesMock.keys).not.toHaveBeenCalled();
+    expect(reloadWindow).not.toHaveBeenCalled();
+    expect(result).toEqual(
+      expect.objectContaining({
+        blocked: true,
+        reason: 'offline',
+        reloadTriggered: false,
+        navigationTriggered: false,
+        uiCacheCleared: false,
+        cachesCleared: false,
+      }),
+    );
+
+    delete global.clearUiCacheStorageEntries;
+  });
+
   test('reloadApp begins querying service worker registrations before clearing UI caches completes', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
