@@ -10770,7 +10770,7 @@ async function setLanguage(lang) {
     console.warn("Could not save language to localStorage", e);
   }
   // Recalculate and update dynamic content (results, breakdown, battery comparison)
-  refreshDeviceLists(); // Call refreshDeviceLists to update Edit/Delete buttons in the list
+  attemptRefreshDeviceLists(); // Guarded refresh to update Edit/Delete buttons without crashing when unavailable
   applyFilters();
   updateCalculations();
 
