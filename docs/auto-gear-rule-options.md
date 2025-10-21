@@ -35,7 +35,7 @@ machines.
 ## Storage & audit safeguards
 
 - **Redundant mirrors.** Before applying changes, the runtime copies the current
-  rule set into a `auto-gear-rules-backup-<timestamp>` slot. Restores load the
+  rule set into an `auto-gear-rules-backup-<timestamp>` slot. Restores load the
   backup first, only promoting to active rules when the operator confirms.
 - **Verification timeline.** Each change records the triggering scenarios,
   diff summary and timestamp in the diagnostics timeline consumed by the
