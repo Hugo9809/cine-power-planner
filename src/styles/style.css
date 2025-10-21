@@ -8026,14 +8026,6 @@ body.dark-mode .onboarding-active-target {
   background-color: var(--control-active-bg);
 }
 
-.onboarding-field-group input:focus,
-.onboarding-field-group select:focus,
-.onboarding-field-group textarea:focus {
-  background-color: var(--control-bg);
-  box-shadow: none;
-  outline: none;
-}
-
 .onboarding-interaction-actions {
   display: flex;
   flex-wrap: wrap;
