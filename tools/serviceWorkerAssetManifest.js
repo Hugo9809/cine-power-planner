@@ -7,6 +7,7 @@ const EXPLICIT_FILES = [
   'index.html',
   'app-version.js',
   'manifest.webmanifest',
+  'service-worker-assets.js',
   path.join('src', 'icons', 'Icon Bluenew.svg'),
   path.join('src', 'icons', 'Icon Pinknew.svg'),
 ];
