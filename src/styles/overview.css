@@ -1,5 +1,4 @@
-@import url('fonts.css');
-
+/* Fonts loaded globally via index.html */
 button:focus,
 select:focus,
 button:focus-visible,
