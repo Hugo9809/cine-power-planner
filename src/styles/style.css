@@ -127,6 +127,7 @@
   --font-weight-medium: var(--font-weight-bold);
   --font-weight-bold: 500;
   --font-weight-semibold: var(--font-weight-bold);
+  --font-weight-strong: 650;
   --font-size-diagram-icon: calc(var(--font-size-base) * var(--font-scale-icon-lg));
   --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-diagram-label));
   --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-diagram-text));
@@ -7904,6 +7905,11 @@ body.dark-mode .onboarding-progress-fill {
   color: inherit;
   border: none;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+}
+
+.onboarding-card[data-step-key='userProfile'] h2,
+.onboarding-step-item[data-step-key='userProfile'] .onboarding-step-title {
+  font-weight: var(--font-weight-strong, 650);
 }
 
 .onboarding-card p {
