@@ -764,6 +764,262 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return trimmed.toLowerCase().replace(/\s+/g, ' ');
   }
+
+  var CANONICAL_FRAME_RATE_VALUES = Object.freeze([
+    0.75,
+    1,
+    8,
+    12,
+    12.5,
+    15,
+    23.976,
+    24,
+    25,
+    29.97,
+    30,
+    36,
+    40,
+    47.952,
+    48,
+    50,
+    59.94,
+    60,
+    72,
+    75,
+    80,
+    90,
+    96,
+    100,
+    110,
+    112,
+    120,
+    144,
+    150,
+    160,
+    168,
+    170,
+    180,
+    200,
+    240,
+    290,
+    300
+  ]);
+
+  function resolveCanonicalFrameRateValue(rawValue) {
+    if (typeof rawValue !== 'number' || !Number.isFinite(rawValue)) {
+      return rawValue;
+    }
+
+    var tolerance = 0.05;
+    var nearest = rawValue;
+    var smallestDiff = tolerance + 1;
+
+    for (var index = 0; index < CANONICAL_FRAME_RATE_VALUES.length; index += 1) {
+      var candidate = CANONICAL_FRAME_RATE_VALUES[index];
+      var diff = Math.abs(candidate - rawValue);
+      if (diff <= tolerance && diff < smallestDiff) {
+        nearest = candidate;
+        smallestDiff = diff;
+      }
+    }
+
+    return nearest;
+  }
+
+  function formatFrameRateLabel(value) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return '';
+    }
+
+    var rounded = Math.round(value);
+    if (Math.abs(rounded - value) < 0.0005) {
+      return String(rounded);
+    }
+
+    var fixed = value.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+    return fixed;
+  }
+
+  function appendFrameRateOption(results, seen, numericValue) {
+    if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
+      return;
+    }
+
+    var canonical = resolveCanonicalFrameRateValue(numericValue);
+    var label = formatFrameRateLabel(canonical);
+    if (!label) {
+      return;
+    }
+
+    var optionLabel = label + ' fps';
+    if (Object.prototype.hasOwnProperty.call(seen, optionLabel)) {
+      return;
+    }
+
+    seen[optionLabel] = canonical;
+    results.push({ numeric: canonical, label: optionLabel });
+  }
+
+  function appendFrameRateRange(results, seen, minValue, maxValue) {
+    if (typeof minValue !== 'number' || !Number.isFinite(minValue) ||
+        typeof maxValue !== 'number' || !Number.isFinite(maxValue)) {
+      return;
+    }
+
+    var min = minValue;
+    var max = maxValue;
+    if (min > max) {
+      var swap = min;
+      min = max;
+      max = swap;
+    }
+
+    var tolerance = 0.05;
+    for (var index = 0; index < CANONICAL_FRAME_RATE_VALUES.length; index += 1) {
+      var candidate = CANONICAL_FRAME_RATE_VALUES[index];
+      if (candidate + tolerance < min) {
+        continue;
+      }
+      if (candidate - tolerance > max) {
+        break;
+      }
+      appendFrameRateOption(results, seen, candidate);
+    }
+
+    appendFrameRateOption(results, seen, min);
+    appendFrameRateOption(results, seen, max);
+  }
+
+  function sortFrameRateOptionsInPlace(values) {
+    if (!Array.isArray(values)) {
+      return;
+    }
+
+    values.sort(function sortFrameRateOptions(a, b) {
+      var aValue = parseFloat(a);
+      var bValue = parseFloat(b);
+
+      if (Number.isFinite(aValue) && Number.isFinite(bValue)) {
+        if (aValue < bValue) {
+          return -1;
+        }
+        if (aValue > bValue) {
+          return 1;
+        }
+      }
+
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  function parseFrameRateOptions(frameRateValue) {
+    if (typeof frameRateValue !== 'string') {
+      return [];
+    }
+
+    var trimmed = frameRateValue.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    var colonIndex = trimmed.lastIndexOf(':');
+    var detail = colonIndex !== -1 ? trimmed.slice(colonIndex + 1) : trimmed;
+    var cleaned = detail.replace(/\([^)]*\)/g, ' ');
+
+    var numbers = [];
+    cleaned.replace(/([0-9]+(?:\.[0-9]+)?)/g, function parseMatch(_, match) {
+      var numeric = parseFloat(match);
+      if (Number.isFinite(numeric)) {
+        numbers.push(numeric);
+      }
+      return match;
+    });
+
+    if (!numbers.length) {
+      return [];
+    }
+
+    var results = [];
+    var seen = Object.create(null);
+
+    var hasSlashList = /[0-9]\s*\//.test(cleaned);
+    var hasCommaList = /[0-9]\s*,\s*[0-9]/.test(cleaned);
+    var hasListKeyword = /\b(?:or|and)\b/i.test(cleaned);
+    var hasUpTo = /up to/i.test(cleaned) || /\bmax(?:imum)?\b/i.test(cleaned);
+    var hasBetween = /\bbetween\b/i.test(cleaned);
+    var hasRangeIndicator = /(?:–|-|\bto\b)/i.test(cleaned);
+
+    if (hasUpTo) {
+      var maxRange = Math.max.apply(Math, numbers);
+      var minRange = numbers.length > 1 ? Math.min.apply(Math, numbers) : 1;
+      appendFrameRateRange(results, seen, minRange, maxRange);
+    } else if ((hasRangeIndicator || hasBetween) && numbers.length >= 2) {
+      var minBound = Math.min.apply(Math, numbers);
+      var maxBound = Math.max.apply(Math, numbers);
+      appendFrameRateRange(results, seen, minBound, maxBound);
+    } else if (hasSlashList || hasCommaList || (hasListKeyword && numbers.length > 1)) {
+      for (var listIndex = 0; listIndex < numbers.length; listIndex += 1) {
+        appendFrameRateOption(results, seen, numbers[listIndex]);
+      }
+    } else if (numbers.length === 1) {
+      appendFrameRateOption(results, seen, numbers[0]);
+    } else {
+      var fallbackMin = Math.min.apply(Math, numbers);
+      var fallbackMax = Math.max.apply(Math, numbers);
+      appendFrameRateRange(results, seen, fallbackMin, fallbackMax);
+    }
+
+    results.sort(function sortFrameRateResult(a, b) {
+      if (a.numeric < b.numeric) {
+        return -1;
+      }
+      if (a.numeric > b.numeric) {
+        return 1;
+      }
+      if (a.label < b.label) {
+        return -1;
+      }
+      if (a.label > b.label) {
+        return 1;
+      }
+      return 0;
+    });
+
+    var labels = [];
+    for (var index = 0; index < results.length; index += 1) {
+      labels.push(results[index].label);
+    }
+
+    return labels;
+  }
+
+  function collectAllFrameRateOptions(frameRates) {
+    var options = [];
+    var seen = Object.create(null);
+    var list = Array.isArray(frameRates) ? frameRates : [];
+
+    for (var index = 0; index < list.length; index += 1) {
+      var parsed = parseFrameRateOptions(list[index]);
+      for (var optionIndex = 0; optionIndex < parsed.length; optionIndex += 1) {
+        var option = parsed[optionIndex];
+        if (Object.prototype.hasOwnProperty.call(seen, option)) {
+          continue;
+        }
+        seen[option] = true;
+        options.push(option);
+      }
+    }
+
+    sortFrameRateOptionsInPlace(options);
+    return options;
+  }
+
   function tokenizeComparisonValue(value) {
     if (typeof value !== 'string') {
       return [];
@@ -845,6 +1101,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!rateTrimmed) {
         continue;
       }
+      var parsedOptions = parseFrameRateOptions(rateTrimmed);
+      if (!parsedOptions.length) {
+        continue;
+      }
       for (var matchIndex = 0; matchIndex < modes.length; matchIndex += 1) {
         var matchValue = modes[matchIndex];
         if (typeof matchValue !== 'string') {
@@ -864,10 +1124,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!map[modeKey]) {
           map[modeKey] = [];
         }
-        if (map[modeKey].indexOf(rateTrimmed) === -1) {
-          map[modeKey].push(rateTrimmed);
+        for (var optionIndex = 0; optionIndex < parsedOptions.length; optionIndex += 1) {
+          var option = parsedOptions[optionIndex];
+          if (map[modeKey].indexOf(option) === -1) {
+            map[modeKey].push(option);
+          }
         }
       }
+    }
+    for (var key in map) {
+      if (!Object.prototype.hasOwnProperty.call(map, key)) {
+        continue;
+      }
+      sortFrameRateOptionsInPlace(map[key]);
     }
     return map;
   }
@@ -891,8 +1160,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var normalizedKey = normalizeSensorModeKey(sensorModeValue);
     var targeted = normalizedKey && map[normalizedKey] && map[normalizedKey].length ? map[normalizedKey] : [];
     var preferred = typeof preferredValue === 'string' ? preferredValue : '';
-    var shouldDefaultToFirst = !!normalizedKey;
-    var selected = replaceSelectOptions(select, targeted.length ? targeted : allRates, preferred, shouldDefaultToFirst);
+    var shouldDefaultToFirst = !!normalizedKey && targeted.length > 0;
+    var selected = replaceSelectOptions(select, normalizedKey ? targeted : allRates, preferred, shouldDefaultToFirst);
     runtimeFeedbackState.selectedFramerate = selected;
     return selected;
   }
@@ -1083,7 +1352,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     updateFeedbackOptionList('lensMount', lensMountValues);
     updateFeedbackOptionList('resolution', resolutionValues);
     updateFeedbackOptionList('codec', codecValues);
-    runtimeFeedbackState.allFrameRateOptions = frameRateValues.slice();
+    runtimeFeedbackState.allFrameRateOptions = collectAllFrameRateOptions(frameRateValues);
     runtimeFeedbackState.sensorModeFrameRateMap = buildSensorModeFrameRateMap(sensorModeValues, frameRateValues);
     var sensorModeSelect = getFeedbackSelectElement('sensorModeSelect', 'fbSensorMode');
     var framerateSelect = getFeedbackSelectElement('framerateSelect', 'fbFramerate');

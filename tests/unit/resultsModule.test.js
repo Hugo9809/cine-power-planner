@@ -875,7 +875,23 @@ describe('cineResults module', () => {
     ]);
     expect(sensorModeSelect.value).toBe('Mode A');
     expect(selectValues(framerateSelect)).toEqual([
-      'Mode A: up to 60 fps',
+      '1 fps',
+      '8 fps',
+      '12 fps',
+      '12.5 fps',
+      '15 fps',
+      '23.976 fps',
+      '24 fps',
+      '25 fps',
+      '29.97 fps',
+      '30 fps',
+      '36 fps',
+      '40 fps',
+      '47.952 fps',
+      '48 fps',
+      '50 fps',
+      '59.94 fps',
+      '60 fps',
     ]);
 
     const changeHandler = sensorModeSelect.listeners.change;
@@ -887,9 +903,18 @@ describe('cineResults module', () => {
     }
 
     expect(selectValues(framerateSelect)).toEqual([
-      'Mode B: up to 30 fps',
+      '1 fps',
+      '8 fps',
+      '12 fps',
+      '12.5 fps',
+      '15 fps',
+      '23.976 fps',
+      '24 fps',
+      '25 fps',
+      '29.97 fps',
+      '30 fps',
     ]);
-    expect(framerateSelect.value).toBe('Mode B: up to 30 fps');
+    expect(framerateSelect.value).toBe('1 fps');
   });
 
   test('updateCalculations uses preview selections when DOM inputs are empty', () => {
