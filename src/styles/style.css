@@ -5604,6 +5604,32 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   color: var(--muted-text-color, #666);
 }
 
+#settingsPanel-data {
+  --storage-accent-strong: color-mix(in srgb, var(--accent-color) 80%, var(--text-color) 20%);
+  --storage-accent-soft: color-mix(in srgb, var(--accent-color) 62%, var(--text-color) 38%);
+  --storage-accent-surface: color-mix(in srgb, var(--surface-color) 88%, var(--accent-color) 12%);
+  --storage-accent-border: color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+body.dark-mode #settingsPanel-data {
+  --storage-accent-strong: color-mix(in srgb, var(--accent-color) 78%, var(--inverse-text-color) 22%);
+  --storage-accent-soft: color-mix(in srgb, var(--accent-color) 55%, var(--inverse-text-color) 45%);
+  --storage-accent-surface: color-mix(in srgb, var(--surface-color) 82%, var(--accent-color) 18%);
+  --storage-accent-border: color-mix(in srgb, var(--accent-color) 52%, transparent);
+}
+
+body.high-contrast #settingsPanel-data {
+  --storage-accent-strong: var(--accent-color);
+  --storage-accent-soft: var(--accent-color);
+  --storage-accent-surface: transparent;
+  --storage-accent-border: var(--accent-color);
+}
+
+#settingsPanel-data h3,
+#settingsPanel-data h4 {
+  color: var(--storage-accent-strong);
+}
+
 .storage-summary {
   list-style: none;
   margin: 0;
@@ -5628,6 +5654,7 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
 
 .storage-summary-label {
   font-weight: var(--font-weight-semibold);
+  color: var(--storage-accent-strong, inherit);
 }
 
 .storage-summary-key {
@@ -5635,13 +5662,15 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
   padding: 2px 6px;
   border-radius: 4px;
-  background: var(--control-bg);
-  color: var(--control-text);
+  border: 1px solid var(--storage-accent-border, transparent);
+  background: var(--storage-accent-surface, var(--control-bg));
+  color: var(--storage-accent-strong, var(--control-text));
 }
 
 .storage-summary-value {
   margin: 0;
   font-weight: var(--font-weight-medium);
+  color: var(--storage-accent-soft, inherit);
 }
 
 .storage-summary-note,
@@ -5649,8 +5678,8 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
 .storage-summary-extra {
   margin: 0;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
-  color: var(--control-text);
-  opacity: 0.85;
+  color: var(--storage-accent-soft, var(--control-text));
+  opacity: 1;
 }
 
 .storage-summary-extra {
@@ -5742,13 +5771,14 @@ body.dark-mode .storage-status-reminder {
 
 .storage-status-item dt {
   font-weight: var(--font-weight-semibold);
+  color: var(--storage-accent-strong, inherit);
 }
 
 .storage-status-item dd {
   margin: 0;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
-  color: var(--control-text);
-  opacity: 0.9;
+  color: var(--storage-accent-soft, var(--control-text));
+  opacity: 1;
 }
 
 .logging-section {
