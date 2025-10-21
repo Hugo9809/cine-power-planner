@@ -3008,6 +3008,25 @@ describe('full backup history storage', () => {
     expect(getDecodedLocalStorageItem(FULL_BACKUP_HISTORY_KEY)).toBeNull();
   });
 
+  test('saveFullBackupHistory preserves existing history when payload normalizes to empty', () => {
+    saveFullBackupHistory([{ createdAt: '2024-07-04T10:20:30Z', fileName: 'primary.json' }]);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    saveFullBackupHistory([
+      { createdAt: '   ' },
+      null,
+      42,
+    ]);
+
+    expect(loadFullBackupHistory()).toEqual([
+      { createdAt: '2024-07-04T10:20:30Z', fileName: 'primary.json' },
+    ]);
+    expect(getDecodedLocalStorageItem(FULL_BACKUP_HISTORY_KEY)).not.toBeNull();
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
   test('loadFullBackupHistory normalizes raw string entries', () => {
     localStorage.setItem(FULL_BACKUP_HISTORY_KEY, JSON.stringify([' 2024-03-03T08:30:00Z ']));
     const history = loadFullBackupHistory();
