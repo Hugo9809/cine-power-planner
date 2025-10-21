@@ -39,6 +39,7 @@ const {
   deleteProject,
   loadFavorites,
   saveFavorites,
+  saveUserProfile,
   clearAllData,
   exportAllData,
   importAllData,
@@ -73,6 +74,7 @@ const SESSION_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
+const USER_PROFILE_KEY = 'cameraPowerPlanner_userProfile';
 const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
@@ -2105,6 +2107,10 @@ describe('clearAllData', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
+    saveUserProfile({
+      name: 'Casey Crew',
+      email: 'casey@example.invalid',
+    });
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     localStorage.setItem(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
     localStorage.setItem(backupKeyFor(CUSTOM_LOGO_KEY), 'data:image/svg+xml;base64,AAAA');
@@ -2131,6 +2137,7 @@ describe('clearAllData', () => {
     expect(getDecodedLocalStorageItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(USER_PROFILE_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(SCHEMA_CACHE_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(CUSTOM_LOGO_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(CUSTOM_FONT_KEY)).toBeNull();

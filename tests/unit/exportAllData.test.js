@@ -104,6 +104,31 @@ describe('exportAllData', () => {
     expect(typeof release.updatedAt === 'string' || release.updatedAt === null).toBe(true);
   });
 
+  test('includes stored user profile when details are available', () => {
+    const {
+      saveUserProfile,
+      exportAllData,
+    } = require('../../src/scripts/storage');
+
+    saveUserProfile({
+      name: 'Taylor River',
+      role: '1st AC',
+      email: 'taylor@example.invalid',
+      phone: '+1 555 0100',
+      avatar: 'data:image/png;base64,AAAA',
+    });
+
+    const exported = exportAllData();
+
+    expect(exported.userProfile).toEqual({
+      name: 'Taylor River',
+      role: '1st AC',
+      email: 'taylor@example.invalid',
+      phone: '+1 555 0100',
+      avatar: 'data:image/png;base64,AAAA',
+    });
+  });
+
   test('captures preference snapshot values and preserves raw mount voltage payloads', () => {
     const {
       exportAllData,

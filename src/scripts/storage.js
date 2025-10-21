@@ -14103,6 +14103,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
@@ -14481,6 +14482,7 @@ function clearAllData() {
       project: loadProject(),
       favorites: loadFavorites(),
       ownGear: loadOwnGear(),
+      userProfile: null,
       autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
@@ -14505,6 +14507,23 @@ function clearAllData() {
     const preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;
+    }
+
+    const profile = loadUserProfile();
+    if (
+      profile
+      && typeof profile === 'object'
+      && (
+        (typeof profile.name === 'string' && profile.name)
+        || (typeof profile.role === 'string' && profile.role)
+        || (typeof profile.avatar === 'string' && profile.avatar)
+        || (typeof profile.phone === 'string' && profile.phone)
+        || (typeof profile.email === 'string' && profile.email)
+      )
+    ) {
+      payload.userProfile = profile;
+    } else {
+      delete payload.userProfile;
     }
 
     const customLogo = readLocalStorageValue(CUSTOM_LOGO_STORAGE_KEY);
