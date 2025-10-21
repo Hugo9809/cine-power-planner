@@ -2262,10 +2262,99 @@
             pinkModeAnimatedIconPlacementHistory.length - PINK_MODE_ANIMATED_ICON_RECENT_SPOT_LIMIT
           );
         }
+        const randomInRange = (min, max) => {
+          if (!Number.isFinite(min) || !Number.isFinite(max)) {
+            return 0;
+          }
+          if (max === min) {
+            return max;
+          }
+          const lower = Math.min(min, max);
+          const upper = Math.max(min, max);
+          return Math.random() * (upper - lower) + lower;
+        };
+        const setAnimationMetric = (name, value, options) => {
+          if (!name || !container || !container.style) {
+            return;
+          }
+          const finiteValue = Number.isFinite(value) ? value : null;
+          if (finiteValue === null) {
+            return;
+          }
+          const unit = options && typeof options.unit === 'string' ? options.unit : 'px';
+          const precision =
+            options && Number.isFinite(options.precision) && options.precision >= 0
+              ? options.precision
+              : 2;
+          const formatted = `${finiteValue.toFixed(precision)}${unit}`;
+          container.style.setProperty(name, formatted);
+        };
+
+        const horizontalDirection = Math.random() < 0.5 ? -1 : 1;
+        const translateXStart = randomInRange(-36, 36);
+        const translateXSettle = translateXStart + randomInRange(-28, 28);
+        const translateXDrift = translateXSettle + horizontalDirection * randomInRange(36, 84);
+        const translateXEnd = translateXDrift + horizontalDirection * randomInRange(48, 132);
+
+        const translateYStart = randomInRange(Math.max(24, size * 0.3), Math.max(60, size * 0.85));
+        const translateYSettle = randomInRange(-16, 16);
+        const translateYDrift = -Math.abs(randomInRange(Math.max(32, size * 0.25), Math.max(96, size * 0.65)));
+        const translateYEnd = -Math.abs(
+          randomInRange(Math.max(80, size * 0.6), Math.max(180, size * 1.35))
+        );
+
+        const scaleJitter = randomInRange(-0.08, 0.08);
+        const scaleStart = Math.min(0.92, Math.max(0.62, 0.75 + scaleJitter * 0.5));
+        const scaleSettle = Math.min(1.2, Math.max(0.9, 1 + scaleJitter));
+        const scaleDrift = Math.min(1.25, Math.max(0.95, 1.05 + scaleJitter * 0.5));
+        const scaleEnd = Math.min(1.05, Math.max(0.7, 0.85 + scaleJitter * 0.5));
+
+        const rotationDirection = Math.random() < 0.5 ? -1 : 1;
+        const rotationStart = -rotationDirection * randomInRange(4, 12);
+        const rotationSettle = rotationDirection * randomInRange(-3, 3);
+        const rotationDrift = rotationDirection * randomInRange(6, 14);
+        const rotationEnd = rotationDirection * randomInRange(10, 18);
+
         container.style.setProperty('--pink-mode-animation-duration', `${duration}ms`);
         container.style.setProperty('--pink-mode-animation-size', `${size}px`);
         container.style.setProperty('--pink-mode-animation-x', `${x}px`);
         container.style.setProperty('--pink-mode-animation-y', `${y}px`);
+        setAnimationMetric('--pink-mode-animation-translate-x-start', translateXStart);
+        setAnimationMetric('--pink-mode-animation-translate-x-settle', translateXSettle);
+        setAnimationMetric('--pink-mode-animation-translate-x-drift', translateXDrift);
+        setAnimationMetric('--pink-mode-animation-translate-x-end', translateXEnd);
+        setAnimationMetric('--pink-mode-animation-translate-y-start', translateYStart);
+        setAnimationMetric('--pink-mode-animation-translate-y-settle', translateYSettle);
+        setAnimationMetric('--pink-mode-animation-translate-y-drift', translateYDrift);
+        setAnimationMetric('--pink-mode-animation-translate-y-end', translateYEnd);
+        setAnimationMetric('--pink-mode-animation-scale-start', scaleStart, {
+          unit: '',
+          precision: 3
+        });
+        setAnimationMetric('--pink-mode-animation-scale-settle', scaleSettle, {
+          unit: '',
+          precision: 3
+        });
+        setAnimationMetric('--pink-mode-animation-scale-drift', scaleDrift, {
+          unit: '',
+          precision: 3
+        });
+        setAnimationMetric('--pink-mode-animation-scale-end', scaleEnd, {
+          unit: '',
+          precision: 3
+        });
+        setAnimationMetric('--pink-mode-animation-rotation-start', rotationStart, {
+          unit: 'deg'
+        });
+        setAnimationMetric('--pink-mode-animation-rotation-settle', rotationSettle, {
+          unit: 'deg'
+        });
+        setAnimationMetric('--pink-mode-animation-rotation-drift', rotationDrift, {
+          unit: 'deg'
+        });
+        setAnimationMetric('--pink-mode-animation-rotation-end', rotationEnd, {
+          unit: 'deg'
+        });
         layer.appendChild(container);
 
         let animationData;
