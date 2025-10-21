@@ -9,6 +9,7 @@ const LOG_BROADCAST_CHANNEL_NAME = 'cine-sw-logs';
 const LOG_ENTRY_MESSAGE_TYPE = 'cine-sw:log-entry';
 const LOG_STATE_REQUEST_TYPE = 'cine-sw:log-state-request';
 const LOG_STATE_RESPONSE_TYPE = 'cine-sw:log-state';
+const CACHE_MATCH_IGNORE_SEARCH_OPTIONS = Object.freeze({ ignoreSearch: true });
 
 let logEntryCounter = 0;
 let logBroadcastChannel = null;
@@ -736,7 +737,7 @@ async function precacheAssets(cacheName, assets) {
           let reusedFromExistingCache = false;
 
           try {
-            const cachedResponse = await caches.match(request, { ignoreSearch: true });
+            const cachedResponse = await caches.match(request, CACHE_MATCH_IGNORE_SEARCH_OPTIONS);
             if (cachedResponse) {
               await cache.put(request, cachedResponse.clone());
               reusedFromExistingCache = true;
@@ -911,7 +912,7 @@ if (typeof self !== 'undefined') {
           return response;
         } catch (error) {
           const cache = await cachePromise;
-          const cachedResponse = await cache.match(event.request);
+          const cachedResponse = await cache.match(event.request, CACHE_MATCH_IGNORE_SEARCH_OPTIONS);
           if (cachedResponse) {
             return cachedResponse;
           }
