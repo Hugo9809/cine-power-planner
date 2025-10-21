@@ -26,10 +26,12 @@ offline.
 | Planner backup | `storage.js` serialises all projects, favorites, settings, automatic gear rules and history into `planner-backup.json`. | Hash log, verification packet attachment. |
 | Backup guardian | `storage.js` runs `ensureCriticalStorageBackups()` to mirror every critical key into redundant backup slots and exposes the result via `getLastCriticalStorageGuardResult()`. | **Settings → Data & Storage** screenshot showing the **Backup guardian** row plus the structured `storage` logger entry (also mirrored to the console) when issues appear. |
 | Project bundle export | `modules/offline.js` packages a single project with scenario presets, runtime estimates and checksum metadata. | Bundle JSON, hash log, restore rehearsal notes. |
-| Reload warmup safety | `modules/offline.js` now limits reload warmup fetches to same-origin requests and downgrades Safari fetch credentials so the browser no longer raises access-control warnings while preserving the XHR warmup fallback. | Console log showing "Reload warmup fetch resolved", Safari hard-reload console capture without the access-control warning, and service worker cache inspection. |
+| Reload warmup safety | `modules/offline.js` now limits reload warmup fetches to same-origin requests, recognises Safari's reduced user agents so the XHR warmup path always engages, and iterates cache modes when fetch retries are needed to keep reloads deterministic without reintroducing Safari access-control warnings. | Console log showing "Reload warmup fetch resolved", Safari hard-reload console capture without the access-control warning, and service worker cache inspection. |
 | Restore sandbox | `restore-verification.js` loads backups into an isolated workspace that can be discarded or promoted. | Screenshot of sandbox prompt, before/after project list. |
 
 > **Safari verification (2025-10-19):** Hard reload on Safari 17.4 no longer logged the "access control checks" warning, and offline reload succeeded while the warmup request consumed the response and cleaned up its controller.
+>
+> **Safari verification (2026-02-14):** Reduced Safari user agents without the `Safari/` token still triggered the XHR warmup path, and a forced cache-miss sequence (`reload` → `no-cache` → `no-store`) completed without data loss before the reload navigation executed.
 
 ## Release checklist
 

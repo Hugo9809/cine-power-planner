@@ -946,14 +946,28 @@
     const vendorIndicatesSafariFamily = trimmedVendor.includes('apple');
     const userAgentHasSafariToken = normalisedUserAgent.includes('safari');
     const userAgentHasAppleWebkitToken = normalisedUserAgent.includes('applewebkit');
+    const userAgentHasVersionToken = normalisedUserAgent.includes('version/');
+    const userAgentHasMobileToken = normalisedUserAgent.includes('mobile/');
+    const userAgentHasPlatformToken =
+      normalisedUserAgent.includes('macintosh')
+      || normalisedUserAgent.includes('iphone')
+      || normalisedUserAgent.includes('ipad')
+      || normalisedUserAgent.includes('ipod')
+      || normalisedUserAgent.includes('watch')
+      || normalisedUserAgent.includes('apple tv');
     const vendorIsEffectivelyEmpty = trimmedVendor.length === 0;
-    const fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasSafariToken && userAgentHasAppleWebkitToken;
+
+    const userAgentSignalsSafariFamily =
+      userAgentHasSafariToken
+      || (userAgentHasAppleWebkitToken && (userAgentHasVersionToken || userAgentHasMobileToken || userAgentHasPlatformToken));
+
+    const fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasAppleWebkitToken && userAgentSignalsSafariFamily;
 
     if (!vendorIndicatesSafariFamily && !fallbackSafariMatch) {
       return false;
     }
 
-    if (vendorIndicatesSafariFamily && userAgentHasSafariToken) {
+    if (vendorIndicatesSafariFamily && userAgentSignalsSafariFamily) {
       return true;
     }
 
@@ -1350,11 +1364,30 @@
 
         let fallbackResponse = null;
         let fallbackError = firstError;
+        const initialCacheMode = allowCachePopulation ? 'reload' : 'no-store';
+        const fallbackCacheModes = [];
 
-        try {
-          fallbackResponse = await performFetch({ cache: 'default' });
-        } catch (secondError) {
-          fallbackError = secondError || firstError;
+        if (allowCachePopulation) {
+          fallbackCacheModes.push('no-cache');
+        }
+
+        fallbackCacheModes.push('no-store');
+        fallbackCacheModes.push('default');
+
+        for (let index = 0; index < fallbackCacheModes.length && !fallbackResponse; index += 1) {
+          const cacheMode = fallbackCacheModes[index];
+
+          if (cacheMode === initialCacheMode) {
+            continue;
+          }
+
+          try {
+            fallbackResponse = await performFetch({ cache: cacheMode });
+            fallbackError = null;
+          } catch (secondError) {
+            fallbackError = secondError || fallbackError || firstError;
+            fallbackResponse = null;
+          }
         }
 
         if (!fallbackResponse) {
