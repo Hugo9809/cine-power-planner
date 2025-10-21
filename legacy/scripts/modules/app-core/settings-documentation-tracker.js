@@ -863,6 +863,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return;
         }
         Object.keys(map).forEach(function (itemId) {
+          if (itemId === '__proto__' || itemId === 'constructor' || itemId === 'prototype') {
+            return;
+          }
           map[itemId] = {
             completed: completed,
             updatedAt: timestamp
