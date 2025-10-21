@@ -907,13 +907,15 @@
       var pinkModeIconRotationTimer = null;
       var pinkModeIconIndex = 0;
 
-      const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 14800;
-      const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 23800;
+      const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 5200;
+      const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 8800;
       const PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS = 6400;
       const PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS = 10800;
       const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 72;
       const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 72;
       const PINK_MODE_ANIMATED_ICON_MAX_ACTIVE = 4;
+      const PINK_MODE_ANIMATED_ICON_MIN_ACTIVE = 3;
+      const PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS = 1200;
       const PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS = 12;
       const PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX = 28;
       const PINK_MODE_ANIMATED_ICON_MIN_SCALE = 0.65;
@@ -1839,6 +1841,12 @@
           instance.container.parentNode.removeChild(instance.container);
         }
         pinkModeAnimatedIconInstances.delete(instance);
+        if (pinkModeAnimatedIconsActive) {
+          ensurePinkModeAnimatedIconPopulation(pinkModeAnimatedIconTemplates, {
+            immediate: true,
+            staggerMs: Math.round(PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS * 0.75)
+          });
+        }
         if (!pinkModeAnimatedIconInstances.size) {
           teardownPinkModeAnimatedIconPressListener();
         }
@@ -2170,6 +2178,66 @@
           .catch(error => {
             console.warn('Could not trigger pink mode icon rain', error);
           });
+      }
+
+      function ensurePinkModeAnimatedIconPopulation(templates, options) {
+        if (!pinkModeAnimatedIconsActive) {
+          return;
+        }
+
+        const resolvedTemplates =
+          (Array.isArray(templates) && templates.length
+            ? templates
+            : pinkModeAnimatedIconTemplates) || null;
+
+        if (!Array.isArray(resolvedTemplates) || !resolvedTemplates.length) {
+          return;
+        }
+
+        const targetCount = Math.min(
+          PINK_MODE_ANIMATED_ICON_MAX_ACTIVE,
+          Math.max(PINK_MODE_ANIMATED_ICON_MIN_ACTIVE, 1)
+        );
+
+        const missing = targetCount - pinkModeAnimatedIconInstances.size;
+        if (missing <= 0) {
+          return;
+        }
+
+        const immediate = Boolean(options && options.immediate);
+        const staggerMs =
+          options && typeof options.staggerMs === 'number'
+            ? Math.max(0, options.staggerMs)
+            : PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS;
+
+        for (let index = 0; index < missing; index += 1) {
+          const scheduleSpawn = () => {
+            if (
+              !pinkModeAnimatedIconsActive ||
+              pinkModeAnimatedIconInstances.size >= PINK_MODE_ANIMATED_ICON_MAX_ACTIVE
+            ) {
+              return;
+            }
+            spawnPinkModeAnimatedIconInstance(resolvedTemplates);
+          };
+
+          let delay = 0;
+          if (index === 0) {
+            delay = immediate ? 0 : Math.round(staggerMs * Math.random() * 0.35);
+          } else {
+            delay = Math.round(
+              staggerMs * index * (0.55 + Math.random() * 0.65)
+            );
+          }
+
+          if (delay <= 0) {
+            scheduleSpawn();
+          } else if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+            window.setTimeout(scheduleSpawn, delay);
+          } else {
+            scheduleSpawn();
+          }
+        }
       }
 
       function spawnPinkModeAnimatedIconInstance(templates) {
@@ -2612,7 +2680,7 @@
           if (!pinkModeAnimatedIconsActive) {
             return;
           }
-          spawnPinkModeAnimatedIconInstance(templates);
+          ensurePinkModeAnimatedIconPopulation(templates);
           if (pinkModeAnimatedIconsActive) {
             scheduleNextPinkModeAnimatedIcon(templates);
           }
@@ -2645,7 +2713,9 @@
               stopPinkModeAnimatedIcons();
               return templates;
             }
-            spawnPinkModeAnimatedIconInstance(templates);
+            ensurePinkModeAnimatedIconPopulation(templates, {
+              immediate: true
+            });
             scheduleNextPinkModeAnimatedIcon(templates);
             return templates;
           })
