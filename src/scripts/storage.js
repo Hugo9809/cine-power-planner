@@ -12864,8 +12864,9 @@ function normalizeUserProfile(entry) {
 
   const name = typeof entry.name === 'string' ? entry.name.trim() : '';
   const role = typeof entry.role === 'string' ? entry.role.trim() : '';
-  const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
-    ? entry.avatar
+  const avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+  const avatar = avatarSource && avatarSource.toLowerCase().startsWith('data:')
+    ? avatarSource
     : '';
   const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
   const email = typeof entry.email === 'string' ? entry.email.trim() : '';
