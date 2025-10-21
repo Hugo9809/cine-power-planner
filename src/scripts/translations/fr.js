@@ -126,6 +126,7 @@
       "saveContact": "Enregistrer dans les contacts",
       "openManager": "Ouvrir les contacts",
       "linkedBadge": "Lié au contact",
+      "linkedProfileBadge": "Lié au profil utilisateur",
       "contactMissingDetails": "Saisissez un nom, un e-mail, un numéro de téléphone ou un site web avant d'enregistrer ce contact.",
       "websiteLabel": "Site web",
       "websitePlaceholder": "https://exemple.com",
