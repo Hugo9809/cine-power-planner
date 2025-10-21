@@ -122,44 +122,54 @@
       return null;
     }
 
-    // Disallow dangerous protocols explicitly before parsing as URL
-    // Allow only http and https, block 'javascript:', 'data:', etc.
+    // Disallow dangerous protocols before attempting to resolve the URL.
     var lowerTrimmed = trimmed.toLowerCase();
-    // Block if starts with javascript:, data:, vbscript: (protocols), or // (protocol-relative)--even if our host.
     if (
       lowerTrimmed.startsWith('javascript:') ||
       lowerTrimmed.startsWith('data:') ||
       lowerTrimmed.startsWith('vbscript:') ||
       lowerTrimmed.startsWith('file:') ||
+      lowerTrimmed.startsWith('blob:') ||
+      lowerTrimmed.startsWith('filesystem:') ||
       lowerTrimmed.startsWith('//')
     ) {
       return null;
     }
 
+    // Prevent newline or carriage return injection that could smuggle a protocol.
+    if (/[\r\n\f\u0000]/.test(trimmed)) {
+      return null;
+    }
+
+    var currentLocation = typeof window !== 'undefined' && window.location ? window.location : null;
+
+    // If we cannot rely on window.location, allow only absolute paths within the site or hash anchors.
+    if (!currentLocation || typeof currentLocation.href !== 'string') {
+      if (trimmed.charAt(0) === '/' || trimmed.charAt(0) === '#') {
+        return trimmed;
+      }
+      return null;
+    }
+
+    var resolvedUrl;
     try {
-      var currentLocation = typeof window !== 'undefined' ? window.location : null;
-      // Allow only absolute path ("/...") or relative ("foo/bar")
-      // Defensive: if currentLocation doesn't exist, only allow "/..." paths
-      if (!currentLocation || typeof currentLocation.href !== 'string') {
-        return trimmed.charAt(0) === '/' ? trimmed : null;
-      }
-
-      // The URL constructor will resolve the path appropriately
-      var resolvedUrl = new URL(trimmed, currentLocation.href);
-      // Allow only http(s), same protocol and same origin as current page
-      if (
-        !(resolvedUrl.protocol === "http:" || resolvedUrl.protocol === "https:") ||
-        resolvedUrl.protocol !== currentLocation.protocol ||
-        resolvedUrl.origin !== currentLocation.origin
-      ) {
-        return null;
-      }
-
-      return resolvedUrl.href;
+      resolvedUrl = new URL(trimmed, currentLocation.href);
     } catch (error) {
       void error;
       return null;
     }
+
+    var allowedProtocols = { 'http:': true, 'https:': true };
+    if (!allowedProtocols[resolvedUrl.protocol]) {
+      return null;
+    }
+
+    if (resolvedUrl.origin !== currentLocation.origin) {
+      return null;
+    }
+
+    // Only allow navigation within the same origin. Return a normalized path.
+    return resolvedUrl.pathname + resolvedUrl.search + resolvedUrl.hash;
   }
 
   function initTopBarControls() {
