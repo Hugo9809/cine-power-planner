@@ -10044,7 +10044,7 @@ async function setLanguage(lang) {
   );
 
   const resultsHeadingElem = document.getElementById("resultsHeading");
-  resultsHeadingElem.textContent = texts[lang].resultsHeading; // Fixed typo here
+  resultsHeadingElem.textContent = texts[lang].resultsHeading; // Heading text and hover help both come from the active locale
   resultsHeadingElem.setAttribute(
     "data-help",
     texts[lang].resultsHeadingHelp
