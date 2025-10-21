@@ -6,8 +6,8 @@ const EXPLICIT_ASSET_ENTRIES = ['./'];
 const EXPLICIT_FILES = [
   'index.html',
   'manifest.webmanifest',
-  'Icon Bluenew.svg',
-  'Icon Pinknew.svg',
+  path.join('src', 'icons', 'Icon Bluenew.svg'),
+  path.join('src', 'icons', 'Icon Pinknew.svg'),
 ];
 
 const TOOL_WHITELIST = new Set([
