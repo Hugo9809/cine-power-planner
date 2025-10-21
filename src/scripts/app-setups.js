@@ -10407,11 +10407,22 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   const removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
   const removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', { category: categoryLabel });
   const editLabel = resolveGearListCustomText('gearListEditCustomItem', 'Edit custom item');
-  const minusIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
+  const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
+  const editGlyph = hasIconRegistry
+    ? (
+        ICON_GLYPHS.sliders
+        || ICON_GLYPHS.gears
+        || ICON_GLYPHS.gearList
+        || ICON_GLYPHS.settingsGeneral
+        || ICON_GLYPHS.note
+        || null
+      )
+    : null;
+  const minusIcon = (typeof iconMarkup === 'function' && hasIconRegistry)
     ? iconMarkup(ICON_GLYPHS.minus, { className: 'btn-icon' })
     : '';
-  const editIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
-    ? iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' })
+  const editIcon = (typeof iconMarkup === 'function' && editGlyph)
+    ? iconMarkup(editGlyph, { className: 'btn-icon' })
     : '';
   const rentalTexts = getGearListRentalToggleTexts();
   const noteLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel : '';
@@ -10428,7 +10439,7 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
           data-gear-edit
           aria-label="${escapeHtml(editLabel)}"
         >
-          ${editIcon}
+          ${editIcon || `<span class="gear-item-edit-fallback">${escapeHtml(editLabel)}</span>`}
         </button>
         <button
           type="button"

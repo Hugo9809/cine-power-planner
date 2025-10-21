@@ -18236,9 +18236,18 @@ function ensureFilterDetailEditButton(element) {
     ? scope.setButtonLabelWithIcon
     : null;
   const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
-  const sliderGlyph = iconRegistry && iconRegistry.sliders ? iconRegistry.sliders : null;
-  if (setLabelWithIcon && sliderGlyph) {
-    setLabelWithIcon.call(scope, button, '', sliderGlyph);
+  const editGlyph = iconRegistry
+    ? (
+        iconRegistry.sliders
+        || iconRegistry.gears
+        || iconRegistry.gearList
+        || iconRegistry.settingsGeneral
+        || iconRegistry.note
+        || null
+      )
+    : null;
+  if (setLabelWithIcon && editGlyph) {
+    setLabelWithIcon.call(scope, button, '', editGlyph);
   } else if (editLabel) {
     button.textContent = editLabel;
   }
