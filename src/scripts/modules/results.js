@@ -1198,14 +1198,16 @@
       ? runtimeFeedbackState.allFrameRateOptions
       : [];
     var normalizedKey = normalizeSensorModeKey(sensorModeValue);
-    var targeted = normalizedKey && map[normalizedKey] && map[normalizedKey].length
+    var targeted = normalizedKey && Array.isArray(map[normalizedKey])
       ? map[normalizedKey]
       : [];
+    var hasTargeted = targeted.length > 0;
+    var options = hasTargeted ? targeted : allRates;
     var preferred = typeof preferredValue === 'string' ? preferredValue : '';
-    var shouldDefaultToFirst = !!normalizedKey && targeted.length > 0;
+    var shouldDefaultToFirst = !!normalizedKey && hasTargeted;
     var selected = replaceSelectOptions(
       select,
-      normalizedKey ? targeted : allRates,
+      options,
       preferred,
       shouldDefaultToFirst
     );
