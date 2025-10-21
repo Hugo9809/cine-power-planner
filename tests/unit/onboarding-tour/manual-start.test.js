@@ -35,15 +35,21 @@ describe('onboarding tour manual start', () => {
     delete global.cineFeaturesOnboardingTour;
     delete global.currentLang;
     delete global.texts;
-    const storage = (() => {
+    const createInMemoryStorage = () => {
       let store = new Map();
       return {
         getItem: jest.fn(key => (store.has(key) ? store.get(key) : null)),
         setItem: jest.fn((key, value) => {
           store.set(key, value);
         }),
+        removeItem: jest.fn(key => {
+          store.delete(key);
+        }),
       };
-    })();
+    };
+
+    const safeStorage = options.safeStorage || createInMemoryStorage();
+    const safeLocalStorage = options.safeLocalStorage || safeStorage;
 
     if (options.currentLang) {
       global.currentLang = options.currentLang;
@@ -53,8 +59,24 @@ describe('onboarding tour manual start', () => {
       global.texts = options.texts;
     }
 
-    global.getSafeLocalStorage = () => storage;
-    global.SAFE_LOCAL_STORAGE = storage;
+    if (typeof options.getSafeLocalStorage === 'function') {
+      global.getSafeLocalStorage = options.getSafeLocalStorage;
+    } else {
+      global.getSafeLocalStorage = () => safeStorage;
+    }
+    global.SAFE_LOCAL_STORAGE = safeLocalStorage;
+
+    if (options.localStorage) {
+      global.localStorage = options.localStorage;
+    } else {
+      delete global.localStorage;
+    }
+
+    if (options.sessionStorage) {
+      global.sessionStorage = options.sessionStorage;
+    } else {
+      delete global.sessionStorage;
+    }
 
     const globalEventListeners = new Map();
     global.addEventListener = (type, listener) => {
@@ -199,6 +221,21 @@ describe('onboarding tour manual start', () => {
     updateLanguage(options.currentLang || 'en');
 
     return require(modulePath);
+  }
+
+  function getRegisteredModuleApi() {
+    if (
+      !global.cineModuleBase
+      || !global.cineModuleBase.registerOrQueueModule
+      || typeof global.cineModuleBase.registerOrQueueModule.mock === 'undefined'
+    ) {
+      return null;
+    }
+    const calls = global.cineModuleBase.registerOrQueueModule.mock.calls;
+    if (!calls || !calls.length) {
+      return null;
+    }
+    return calls[calls.length - 1][1];
   }
 
   function parseTranslate(transform) {
@@ -669,5 +706,61 @@ describe('onboarding tour manual start', () => {
     await new Promise(resolve => setTimeout(resolve, 60));
 
     expect(progress.textContent).toBe('Étape 1 sur 32');
+  });
+
+  test('skipping onboarding persists across reloads when primary storage is unavailable', async () => {
+    const persistentStorage = (() => {
+      const values = new Map();
+      return {
+        getItem: jest.fn(key => (values.has(key) ? values.get(key) : null)),
+        setItem: jest.fn((key, value) => {
+          values.set(key, value);
+        }),
+        removeItem: jest.fn(key => {
+          values.delete(key);
+        }),
+      };
+    })();
+
+    const failingStorageFactory = () => ({
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(() => {
+        throw new Error('blocked');
+      }),
+      removeItem: jest.fn(),
+    });
+
+    try {
+      loadModule({
+        safeStorage: failingStorageFactory(),
+        safeLocalStorage: persistentStorage,
+        localStorage: persistentStorage,
+      });
+
+      const firstModuleApi = getRegisteredModuleApi();
+      expect(firstModuleApi).not.toBeNull();
+
+      firstModuleApi.skip();
+
+      loadModule({
+        safeStorage: failingStorageFactory(),
+        safeLocalStorage: persistentStorage,
+        localStorage: persistentStorage,
+      });
+
+      const secondModuleApi = getRegisteredModuleApi();
+      expect(secondModuleApi).not.toBeNull();
+
+      const status = secondModuleApi.getStatus();
+      expect(status).not.toBeNull();
+      expect(status.skipped).toBe(true);
+      expect(status.completed).toBe(false);
+      expect(secondModuleApi.isActive()).toBe(false);
+      await new Promise(resolve => setTimeout(resolve, 650));
+      expect(secondModuleApi.isActive()).toBe(false);
+    } finally {
+      delete global.localStorage;
+      delete global.sessionStorage;
+    }
   });
 });

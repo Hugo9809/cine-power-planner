@@ -468,26 +468,39 @@
   }
 
   function readStoredState(scope) {
-    let storageCandidates = [];
+    const storageCandidates = [];
+    const pushCandidate = candidate => {
+      if (!candidate) {
+        return;
+      }
+      if (storageCandidates.indexOf(candidate) !== -1) {
+        return;
+      }
+      storageCandidates.push(candidate);
+    };
     try {
       if (typeof getSafeLocalStorage === 'function') {
         const safeStorage = getSafeLocalStorage();
-        if (safeStorage) {
-          storageCandidates.push(safeStorage);
-        }
+        pushCandidate(safeStorage);
       }
     } catch (error) {
       void error;
     }
 
     if (typeof SAFE_LOCAL_STORAGE === 'object' && SAFE_LOCAL_STORAGE) {
-      storageCandidates.push(SAFE_LOCAL_STORAGE);
+      pushCandidate(SAFE_LOCAL_STORAGE);
     }
 
     const currentScope = scope || getGlobalScope();
     if (currentScope && typeof currentScope.localStorage === 'object' && currentScope.localStorage) {
-      storageCandidates.push(currentScope.localStorage);
+      pushCandidate(currentScope.localStorage);
     }
+
+    if (currentScope && typeof currentScope.sessionStorage === 'object' && currentScope.sessionStorage) {
+      pushCandidate(currentScope.sessionStorage);
+    }
+
+    let fallbackState = null;
 
     for (let index = 0; index < storageCandidates.length; index += 1) {
       const storage = storageCandidates[index];
@@ -498,14 +511,19 @@
         const value = storage.getItem(STORAGE_KEY);
         const parsed = parseStoredStateValue(value);
         if (parsed) {
-          return parsed;
+          if (parsed.completed === true || parsed.skipped === true) {
+            return parsed;
+          }
+          if (!fallbackState) {
+            fallbackState = parsed;
+          }
         }
       } catch (error) {
         void error;
       }
     }
 
-    return null;
+    return fallbackState;
   }
 
   function detectFirstRun(scope) {
