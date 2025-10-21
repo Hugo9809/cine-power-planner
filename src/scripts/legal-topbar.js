@@ -122,18 +122,36 @@
       return null;
     }
 
+    // Disallow dangerous protocols explicitly before parsing as URL
+    // Allow only http and https, block 'javascript:', 'data:', etc.
+    var lowerTrimmed = trimmed.toLowerCase();
+    // Block if starts with javascript:, data:, vbscript: (protocols), or // (protocol-relative)--even if our host.
+    if (
+      lowerTrimmed.startsWith('javascript:') ||
+      lowerTrimmed.startsWith('data:') ||
+      lowerTrimmed.startsWith('vbscript:') ||
+      lowerTrimmed.startsWith('file:') ||
+      lowerTrimmed.startsWith('//')
+    ) {
+      return null;
+    }
+
     try {
       var currentLocation = typeof window !== 'undefined' ? window.location : null;
+      // Allow only absolute path ("/...") or relative ("foo/bar")
+      // Defensive: if currentLocation doesn't exist, only allow "/..." paths
       if (!currentLocation || typeof currentLocation.href !== 'string') {
         return trimmed.charAt(0) === '/' ? trimmed : null;
       }
 
+      // The URL constructor will resolve the path appropriately
       var resolvedUrl = new URL(trimmed, currentLocation.href);
-      if (resolvedUrl.protocol !== currentLocation.protocol) {
-        return null;
-      }
-
-      if (resolvedUrl.origin !== currentLocation.origin) {
+      // Allow only http(s), same protocol and same origin as current page
+      if (
+        !(resolvedUrl.protocol === "http:" || resolvedUrl.protocol === "https:") ||
+        resolvedUrl.protocol !== currentLocation.protocol ||
+        resolvedUrl.origin !== currentLocation.origin
+      ) {
         return null;
       }
 
