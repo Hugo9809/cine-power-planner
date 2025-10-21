@@ -8007,30 +8007,30 @@ body.dark-mode .onboarding-active-target {
 .onboarding-field-group input,
 .onboarding-field-group select,
 .onboarding-field-group textarea {
-  background-color: var(--onboarding-control-bg);
-  color: var(--onboarding-control-text);
-  border: 1px solid var(--onboarding-control-border);
-  box-shadow: var(--onboarding-control-shadow);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .onboarding-field-group input:hover,
-.onboarding-field-group input:active,
 .onboarding-field-group select:hover,
+.onboarding-field-group textarea:hover {
+  background-color: var(--control-hover-bg);
+}
+
+.onboarding-field-group input:active,
 .onboarding-field-group select:active,
-.onboarding-field-group textarea:hover,
 .onboarding-field-group textarea:active {
-  background-color: var(--onboarding-control-bg);
-  border-color: var(--onboarding-control-focus-border);
-  box-shadow: var(--onboarding-control-shadow);
+  background-color: var(--control-active-bg);
 }
 
 .onboarding-field-group input:focus,
 .onboarding-field-group select:focus,
 .onboarding-field-group textarea:focus {
-  background-color: var(--onboarding-control-bg);
-  border-color: var(--onboarding-control-focus-border);
-  box-shadow: var(--onboarding-control-shadow), var(--onboarding-control-focus-ring);
+  background-color: var(--control-bg);
+  box-shadow: none;
   outline: none;
 }
 
