@@ -759,6 +759,13 @@ async function precacheAssets(cacheName, assets) {
         'Service worker installed with missing cached assets. Offline support may be degraded until the next update.',
         missingAssets
       );
+
+      const precacheError = new Error('Service worker precache failed due to missing assets.');
+      precacheError.missingAssets = missingAssets.slice();
+      if (typeof error !== 'undefined' && error) {
+        precacheError.cause = error;
+      }
+      throw precacheError;
     }
   }
 
@@ -1026,6 +1033,9 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ASSETS,
     CACHE_NAME,
-    __private__: { shouldBypassCache },
+    __private__: {
+      shouldBypassCache,
+      precacheAssets,
+    },
   };
 }

@@ -1,7 +1,7 @@
 const {
   ASSETS,
   CACHE_NAME,
-  __private__: { shouldBypassCache },
+  __private__: { precacheAssets, shouldBypassCache },
 } = require('../../service-worker.js');
 
 const createHeaders = entries => ({
@@ -116,5 +116,50 @@ describe('service worker configuration', () => {
     };
 
     expect(shouldBypassCache(mockRequest, new URL('https://example.test/app'))).toBe(true);
+  });
+
+  test('rejects installation when assets are missing during precache', async () => {
+    const originalCaches = global.caches;
+    const originalRequest = global.Request;
+
+    class MockRequest {
+      constructor(url) {
+        this.url = url;
+      }
+    }
+
+    const addAllError = new Error('addAll failed');
+    const networkError = new Error('network failure');
+
+    const cache = {
+      addAll: jest.fn().mockRejectedValue(addAllError),
+      add: jest.fn().mockImplementation(() => Promise.reject(networkError)),
+      put: jest.fn().mockResolvedValue(undefined),
+      match: jest.fn().mockResolvedValue(null),
+    };
+
+    global.Request = MockRequest;
+    global.caches = {
+      open: jest.fn().mockResolvedValue(cache),
+      match: jest.fn().mockResolvedValue(null),
+    };
+
+    try {
+      await expect(precacheAssets('test-cache', ['./missing.js'])).rejects.toMatchObject({
+        missingAssets: ['./missing.js'],
+      });
+    } finally {
+      if (typeof originalCaches === 'undefined') {
+        delete global.caches;
+      } else {
+        global.caches = originalCaches;
+      }
+
+      if (typeof originalRequest === 'undefined') {
+        delete global.Request;
+      } else {
+        global.Request = originalRequest;
+      }
+    }
   });
 });
