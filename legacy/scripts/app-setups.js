@@ -16,6 +16,72 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var normalizeVideoDistributionOptionValueForSetups = function resolveNormalizeVideoDistributionOptionValue() {
+  if (typeof require === 'function') {
+    try {
+      var autoGearUiModule = require('./app-core-auto-gear-ui.js');
+      if (autoGearUiModule && typeof autoGearUiModule.normalizeVideoDistributionOptionValue === 'function') {
+        return autoGearUiModule.normalizeVideoDistributionOptionValue;
+      }
+      if (autoGearUiModule && autoGearUiModule.cineCoreAutoGearUi && typeof autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue === 'function') {
+        return autoGearUiModule.cineCoreAutoGearUi.normalizeVideoDistributionOptionValue;
+      }
+    } catch (autoGearRequireError) {
+      void autoGearRequireError;
+    }
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) scopes.push(CORE_GLOBAL_SCOPE);
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  try {
+    if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  } catch (globalThisError) {
+    void globalThisError;
+  }
+  try {
+    if (typeof window !== 'undefined' && window) scopes.push(window);
+  } catch (windowError) {
+    void windowError;
+  }
+  try {
+    if (typeof self !== 'undefined' && self) scopes.push(self);
+  } catch (selfError) {
+    void selfError;
+  }
+  try {
+    if (typeof global !== 'undefined' && global) scopes.push(global);
+  } catch (globalError) {
+    void globalError;
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    try {
+      if (typeof scope.normalizeVideoDistributionOptionValue === 'function') {
+        return scope.normalizeVideoDistributionOptionValue;
+      }
+      var autoGearUi = scope.cineCoreAutoGearUi;
+      if (autoGearUi && typeof autoGearUi.normalizeVideoDistributionOptionValue === 'function') {
+        return autoGearUi.normalizeVideoDistributionOptionValue;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  return function fallbackNormalizeVideoDistributionOptionValue(value) {
+    if (typeof value !== 'string') return '';
+    var trimmed = value.trim();
+    if (!trimmed) return '';
+    var lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') return '__none__';
+    return trimmed;
+  };
+}();
 var SETUPS_UI_HELPERS = function resolveUiHelpersForSetups() {
   if (typeof require === 'function') {
     try {
@@ -6387,7 +6453,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       return s.trim();
     }).filter(Boolean);
   }
-  var normalizedVideoDistribution = videoDistribution.map(normalizeVideoDistributionOptionValue).map(function (value) {
+  var normalizedVideoDistribution = videoDistribution.map(normalizeVideoDistributionOptionValueForSetups).map(function (value) {
     return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
   }).filter(Boolean);
   var videoDistributionSet = new Set(normalizedVideoDistribution);
@@ -6717,7 +6783,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
       var _normalizedTargets15 = videoDistList.map(function (value) {
-        return normalizeVideoDistributionOptionValue(value);
+        return normalizeVideoDistributionOptionValueForSetups(value);
       }).map(function (value) {
         return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);

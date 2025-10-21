@@ -74,6 +74,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
+    var valueTag = Object.prototype.toString.call(value);
+    if (valueTag === '[object Date]') {
+      var clonedDate;
+      try {
+        var timeValue = typeof value.getTime === 'function' ? value.getTime() : value.valueOf();
+        clonedDate = new Date(timeValue);
+      } catch (dateCloneError) {
+        clonedDate = new Date(value);
+        void dateCloneError;
+      }
+      if (typeof referenceStore.set === 'function') {
+        referenceStore.set(value, clonedDate);
+      } else if (Array.isArray(referenceStore)) {
+        referenceStore.push([value, clonedDate]);
+      }
+      return clonedDate;
+    }
     var clone = Array.isArray(value) ? [] : {};
     if (typeof referenceStore.set === 'function') {
       referenceStore.set(value, clone);
@@ -4317,11 +4334,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var parsedValue = rawValue;
+    var normalizedRawValue = rawValue;
     if (typeof rawValue === 'string' && rawValue) {
-      try {
-        parsedValue = JSON.parse(rawValue);
-      } catch (parseError) {
-        void parseError;
+      normalizedRawValue = maybeDecompressStoredString(rawValue);
+      if (typeof normalizedRawValue === 'string' && normalizedRawValue) {
+        try {
+          parsedValue = JSON.parse(normalizedRawValue);
+        } catch (parseError) {
+          void parseError;
+        }
+      } else {
+        parsedValue = normalizedRawValue;
       }
     }
     createStorageMigrationBackup(storage, key, parsedValue);
@@ -11102,10 +11125,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return parsed.map(normalizeFullBackupHistoryEntry).filter(Boolean);
   }
   function saveFullBackupHistory(entries) {
-    var safeEntries = Array.isArray(entries) ? entries.map(normalizeFullBackupHistoryEntry).filter(Boolean) : [];
     var safeStorage = getSafeLocalStorage();
-    if (!safeEntries.length) {
+    if (entries === null || entries === undefined) {
       deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, "Error deleting full backup history from localStorage:");
+      return;
+    }
+    if (!Array.isArray(entries)) {
+      console.warn('Ignoring invalid full backup history payload. Expected an array.');
+      return;
+    }
+    var safeEntries = entries.map(normalizeFullBackupHistoryEntry).filter(Boolean);
+    if (!safeEntries.length) {
+      if (entries.length === 0) {
+        deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, "Error deleting full backup history from localStorage:");
+      } else {
+        console.warn('Ignoring full backup history update because no valid entries were provided.');
+      }
       return;
     }
     ensurePreWriteMigrationBackup(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY);
@@ -11928,6 +11963,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return normalizeAutoGearBackupRetentionValue(retention);
   }
   function saveAutoGearBackupRetention(retention) {
+    if (retention === null || retention === undefined || typeof retention === 'function' || _typeof(retention) === 'object' && !Array.isArray(retention) && !isPlainObject(retention)) {
+      return;
+    }
     var safeStorage = getSafeLocalStorage();
     var normalized = normalizeAutoGearBackupRetentionValue(retention);
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY);
@@ -11944,6 +11982,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
+    deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
@@ -12250,6 +12289,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       project: loadProject(),
       favorites: loadFavorites(),
       ownGear: loadOwnGear(),
+      userProfile: null,
       autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
@@ -12268,6 +12308,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;
+    }
+    var profile = loadUserProfile();
+    if (profile && _typeof(profile) === 'object' && (typeof profile.name === 'string' && profile.name || typeof profile.role === 'string' && profile.role || typeof profile.avatar === 'string' && profile.avatar || typeof profile.phone === 'string' && profile.phone || typeof profile.email === 'string' && profile.email)) {
+      payload.userProfile = profile;
+    } else {
+      delete payload.userProfile;
     }
     var customLogo = readLocalStorageValue(CUSTOM_LOGO_STORAGE_KEY);
     if (customLogo) {

@@ -9515,19 +9515,69 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           number: null
         };
       }
+      var NUMBER_WORD_ONES = new Map([['zero', 0], ['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6], ['seven', 7], ['eight', 8], ['nine', 9]]);
+      var NUMBER_WORD_TEENS = new Map([['ten', 10], ['eleven', 11], ['twelve', 12], ['thirteen', 13], ['fourteen', 14], ['fifteen', 15], ['sixteen', 16], ['seventeen', 17], ['eighteen', 18], ['nineteen', 19]]);
+      var NUMBER_WORD_TENS = new Map([['twenty', 20], ['thirty', 30], ['forty', 40], ['fifty', 50], ['sixty', 60], ['seventy', 70], ['eighty', 80], ['ninety', 90]]);
+      var NUMBER_WORD_BASE = new Map([].concat(_toConsumableArray(NUMBER_WORD_ONES), _toConsumableArray(NUMBER_WORD_TEENS), _toConsumableArray(NUMBER_WORD_TENS)));
+      var NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(function (a, b) {
+        return b.length - a.length;
+      });
+      var NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(function (a, b) {
+        return b.length - a.length;
+      });
+      var NUMBER_WORD_PATTERN = NUMBER_WORD_BASE.size > 0 ? new RegExp("\\b(?:".concat(NUMBER_WORD_BASE_KEYS.join('|'), ")(?:[\\s-](?:").concat(NUMBER_WORD_ONES_KEYS.join('|'), "))?\\b"), 'gi') : null;
+      function fallbackNormalizeNumberWords(str) {
+        if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
+          return str;
+        }
+        return str.replace(NUMBER_WORD_PATTERN, function (match) {
+          var lower = match.toLowerCase();
+          if (NUMBER_WORD_BASE.has(lower)) {
+            return String(NUMBER_WORD_BASE.get(lower));
+          }
+          var parts = lower.split(/[\s-]+/).filter(Boolean);
+          if (parts.length === 2) {
+            var tens = NUMBER_WORD_TENS.get(parts[0]);
+            var ones = NUMBER_WORD_ONES.get(parts[1]);
+            if (typeof tens === 'number' && typeof ones === 'number') {
+              return String(tens + ones);
+            }
+          }
+          return match;
+        });
+      }
+      function fallbackCollectTokens(str) {
+        if (!str) {
+          return [];
+        }
+        return String(str).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+      }
       return {
         FEATURE_SEARCH_FUZZY_MAX_DISTANCE: FALLBACK_FUZZY_DISTANCE,
         searchKey: function searchKey(value) {
           if (!value) {
             return '';
           }
-          return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+          var lower = String(value).toLowerCase();
+          var normalized = fallbackNormalizeNumberWords(lower);
+          return normalized.replace(/[^a-z0-9]+/g, '');
         },
         searchTokens: function searchTokens(value) {
           if (!value) {
             return [];
           }
-          return String(value).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+          var lower = String(value).toLowerCase();
+          var numberNormalized = fallbackNormalizeNumberWords(lower);
+          var tokens = new Set();
+          fallbackCollectTokens(lower).forEach(function (token) {
+            return tokens.add(token);
+          });
+          if (numberNormalized !== lower) {
+            fallbackCollectTokens(numberNormalized).forEach(function (token) {
+              return tokens.add(token);
+            });
+          }
+          return Array.from(tokens);
         },
         computeTokenMatchDetails: function computeTokenMatchDetails() {
           return {
@@ -9555,7 +9605,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return value;
         },
         normalizeNumberWords: function normalizeNumberWords(value) {
-          return value;
+          if (typeof value !== 'string' || !value) {
+            return value;
+          }
+          return fallbackNormalizeNumberWords(value);
         },
         normalizeSpellingVariants: function normalizeSpellingVariants(value) {
           return value;
@@ -11180,7 +11233,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (/(serif|times|garamond|georgia|baskerville|roman|palatino|bodoni|bookman)/.test(lower)) {
         return 'serif';
       }
-      if (/(script|hand|brush|cursive|callig|marker)/.test(lower)) {
+      if (/(script|hand|brush|cursive|calligraphy|marker)/.test(lower)) {
         return 'cursive';
       }
       return 'sans-serif';
@@ -15100,9 +15153,31 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       FAVORITE_BUTTON_BY_SELECT.set(selectElem, favoriteButton);
       favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
-      favoriteButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
-      favoriteButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
-      favoriteButton.setAttribute('data-help', texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel);
+      var translations = function () {
+        var translationSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts || typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE && GLOBAL_SCOPE.texts || {};
+        var activeTexts = translationSource === null || translationSource === void 0 ? void 0 : translationSource[currentLang];
+        var fallbackLangCandidates = [];
+        if (typeof DEFAULT_LANGUAGE_SAFE === 'string' && translationSource !== null && translationSource !== void 0 && translationSource[DEFAULT_LANGUAGE_SAFE]) {
+          fallbackLangCandidates.push(DEFAULT_LANGUAGE_SAFE);
+        }
+        if (translationSource !== null && translationSource !== void 0 && translationSource.en) {
+          fallbackLangCandidates.push('en');
+        }
+        var fallbackTexts = fallbackLangCandidates.map(function (langKey) {
+          return translationSource === null || translationSource === void 0 ? void 0 : translationSource[langKey];
+        }).find(function (bundle) {
+          return bundle && _typeof(bundle) === 'object';
+        }) || {};
+        var label = activeTexts && activeTexts.favoriteToggleLabel || fallbackTexts.favoriteToggleLabel || 'Toggle favorite';
+        var help = activeTexts && activeTexts.favoriteToggleHelp || fallbackTexts.favoriteToggleHelp || label;
+        return {
+          label: label,
+          help: help
+        };
+      }();
+      favoriteButton.setAttribute('aria-label', translations.label);
+      favoriteButton.setAttribute('title', translations.label);
+      favoriteButton.setAttribute('data-help', translations.help);
       applyFavoritesToSelect(selectElem);
       updateFavoriteButton(selectElem);
       adjustGearListSelectWidth(selectElem);
@@ -15236,6 +15311,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
     }
     function attachSelectSearch(selectElem) {
+      if (!selectElem) {
+        return;
+      }
       var searchStr = "";
       var timer;
       selectElem.addEventListener('keydown', function (e) {
@@ -15940,6 +16018,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function renderDeviceList(categoryKey, ulElement) {
       ulElement.innerHTML = "";
       var categoryDevices = devices[categoryKey];
+      var globalTexts = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === "object" && texts || typeof window !== "undefined" && _typeof(window.texts) === "object" && window.texts || {};
+      var fallbackLangTexts = _typeof(globalTexts.en) === "object" && globalTexts.en || {};
+      var activeLangTexts = currentLang && _typeof(globalTexts[currentLang]) === "object" && globalTexts[currentLang] || fallbackLangTexts;
+      var resolveText = function resolveText(key, fallback) {
+        if (activeLangTexts && typeof activeLangTexts[key] !== "undefined") {
+          return activeLangTexts[key];
+        }
+        if (fallbackLangTexts && typeof fallbackLangTexts[key] !== "undefined") {
+          return fallbackLangTexts[key];
+        }
+        return fallback || "";
+      };
       if (categoryKey.includes('.')) {
         var _categoryKey$split = categoryKey.split('.'),
           _categoryKey$split2 = _slicedToArray(_categoryKey$split, 2),
@@ -15978,8 +16068,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         toggleBtn.className = "detail-toggle";
         toggleBtn.type = "button";
         toggleBtn.setAttribute("aria-expanded", "false");
-        toggleBtn.textContent = texts[currentLang].showDetails;
-        toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
+        var showDetailsText = resolveText("showDetails", "Show Details");
+        toggleBtn.textContent = showDetailsText;
+        toggleBtn.setAttribute('data-help', showDetailsText);
         toggleBtn.dataset.name = name;
         toggleBtn.dataset.category = categoryKey;
         if (subcategory) toggleBtn.dataset.subcategory = subcategory;
@@ -15989,16 +16080,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         editBtn.dataset.name = name;
         editBtn.dataset.category = categoryKey;
         if (subcategory) editBtn.dataset.subcategory = subcategory;
-        editBtn.textContent = texts[currentLang].editBtn;
-        editBtn.setAttribute('data-help', texts[currentLang].editBtnHelp || texts[currentLang].editBtn);
+        var editLabel = resolveText("editBtn", "Edit");
+        var editHelp = resolveText("editBtnHelp", editLabel);
+        editBtn.textContent = editLabel;
+        editBtn.setAttribute('data-help', editHelp || editLabel);
         header.appendChild(editBtn);
         var deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
         deleteBtn.dataset.name = name;
         deleteBtn.dataset.category = categoryKey;
         if (subcategory) deleteBtn.dataset.subcategory = subcategory;
-        deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
-        deleteBtn.setAttribute('data-help', texts[currentLang].deleteDeviceBtnHelp || texts[currentLang].deleteDeviceBtn);
+        var deleteLabel = resolveText("deleteDeviceBtn", "Delete");
+        var deleteHelp = resolveText("deleteDeviceBtnHelp", deleteLabel);
+        deleteBtn.textContent = deleteLabel;
+        deleteBtn.setAttribute('data-help', deleteHelp || deleteLabel);
         header.appendChild(deleteBtn);
         li.appendChild(header);
         var detailsDiv = document.createElement("div");
@@ -16313,6 +16408,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return getCurrentSetupState;
     }], ['setSliderBowlValue', function () {
       return setSliderBowlValue;
+    }], ['getSliderBowlSelect', function () {
+      return getSliderBowlSelect;
+    }], ['getEasyrigSelect', function () {
+      return getEasyrigSelect;
     }], ['crewRoles', function () {
       return crewRoles;
     }], ['formatFullBackupFilename', function () {
@@ -16425,6 +16524,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return resolveSharedImportMode;
     }], ['resetPlannerStateAfterFactoryReset', function () {
       return resetPlannerStateAfterFactoryReset;
+    }], ['resetCustomFontsForFactoryReset', function () {
+      return resetCustomFontsForFactoryReset;
     }], ['updateStorageSummary', function () {
       return updateStorageSummary;
     }], ['normaliseMarkVariants', function () {

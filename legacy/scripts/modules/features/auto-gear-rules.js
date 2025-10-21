@@ -72,6 +72,66 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     logMissingAutoGearHelper(name);
     return null;
   }
+  function ensureFallbackAutoGearHelper(name, implementation) {
+    if (typeof name !== 'string' || !name || typeof implementation !== 'function') {
+      return false;
+    }
+    var installed = false;
+    if (GLOBAL_SCOPE && (_typeof(GLOBAL_SCOPE) === 'object' || typeof GLOBAL_SCOPE === 'function')) {
+      var existing = function () {
+        try {
+          return GLOBAL_SCOPE[name];
+        } catch (readError) {
+          void readError;
+          return undefined;
+        }
+      }();
+      if (typeof existing !== 'function') {
+        try {
+          Object.defineProperty(GLOBAL_SCOPE, name, {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: implementation
+          });
+          installed = true;
+        } catch (defineError) {
+          void defineError;
+          try {
+            GLOBAL_SCOPE[name] = implementation;
+            installed = true;
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      }
+    }
+    var exports = resolveAutoGearUiExports();
+    if (exports && typeof exports[name] !== 'function') {
+      try {
+        exports[name] = implementation;
+        installed = true;
+      } catch (assignExportError) {
+        void assignExportError;
+      }
+    }
+    return installed;
+  }
+  function fallbackNormalizeVideoDistributionOptionValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') {
+      return '__none__';
+    }
+    return trimmed;
+  }
+  ensureFallbackAutoGearHelper('normalizeVideoDistributionOptionValue', fallbackNormalizeVideoDistributionOptionValue);
   function getFallbackViewfinderLabel(value) {
     if (value === '__none__') {
       var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
@@ -99,6 +159,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return fallback(value);
+  }
+  function normalizeVideoDistributionOption(value) {
+    var helper = resolveAutoGearHelperFunction('normalizeVideoDistributionOptionValue');
+    if (typeof helper === 'function') {
+      try {
+        return helper.call(GLOBAL_SCOPE, value);
+      } catch (error) {
+        logMissingAutoGearHelper('normalizeVideoDistributionOptionValue', error);
+      }
+    }
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') {
+      return '__none__';
+    }
+    return trimmed;
   }
   function getSafeViewfinderFallbackLabel(value) {
     return invokeAutoGearLabelHelper('getViewfinderFallbackLabel', getFallbackViewfinderLabel, value);
@@ -1148,7 +1230,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     Array.from(select.options || []).forEach(function (option) {
       if (!option) return;
       var rawValue = typeof option.value === 'string' ? option.value.trim() : '';
-      var normalized = normalizeVideoDistributionOptionValue(rawValue);
+      var normalized = normalizeVideoDistributionOption(rawValue);
       if (!normalized || normalized === '__none__') return;
       if (seen.has(normalized)) return;
       seen.add(normalized);
@@ -1167,7 +1249,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     optionValues.forEach(function (rawValue) {
       var trimmed = typeof rawValue === 'string' ? rawValue.trim() : '';
       if (!trimmed) return;
-      var normalized = normalizeVideoDistributionOptionValue(trimmed);
+      var normalized = normalizeVideoDistributionOption(trimmed);
       if (!normalized || handledTriggers.has(normalized)) return;
       handledTriggers.add(normalized);
       var infoForSelection = _objectSpread(_objectSpread({}, baseInfo || {}), {}, {
@@ -2045,7 +2127,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (backupName && typeof notifyAutoSaveFromBackup === 'function') {
         try {
-          notifyAutoSaveFromBackup(failureMessage, backupName);
+          notifyAutoSaveFromBackup(failureMessage, backupName, 'error');
         } catch (notifyError) {
           console.warn('Failed to announce automatic backup after reset failure', notifyError);
         }

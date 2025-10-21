@@ -2504,11 +2504,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var configuration = options && _typeof(options) === 'object' ? options : {};
           var resolvedTemperatureKeys = resolveTemperatureKeyDefaults();
           var temperatureQueueKey = typeof configuration.temperatureQueueKey === 'string' ? configuration.temperatureQueueKey : resolvedTemperatureKeys.queueKey;
-          // Prevent prototype pollution keys for temperatureQueueKey
-          var pollutedKeys = ['__proto__', 'prototype', 'constructor'];
-          if (pollutedKeys.indexOf(temperatureQueueKey) !== -1) {
-            throw new Error("Unsafe key for temperatureQueueKey: " + temperatureQueueKey);
-          }
           var temperatureRenderName = typeof configuration.temperatureRenderName === 'string' ? configuration.temperatureRenderName : resolvedTemperatureKeys.renderName;
           var scopes = [];
           var seenScopes = typeof Set === 'function' ? new Set() : null;
@@ -2630,11 +2625,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             assignedTemperatureRenderer = renderer;
             withEachScope(function applyRenderer(scope) {
               if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-                return;
-              }
-              // Defensive: refuse to operate if temperatureQueueKey is a polluted key
-              var pollutedKeys = ['__proto__', 'prototype', 'constructor'];
-              if (pollutedKeys.indexOf(temperatureQueueKey) !== -1) {
                 return;
               }
               try {

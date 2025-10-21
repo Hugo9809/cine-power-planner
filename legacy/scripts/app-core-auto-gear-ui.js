@@ -875,7 +875,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function setAutoGearScenarioModeSelectElement(value) {
     autoGearScenarioModeSelectElement = value || null;
   }
-  var AUTO_GEAR_UI_EXPORTS = _defineProperty(_defineProperty({
+  var AUTO_GEAR_UI_EXPORTS = _defineProperty(_defineProperty(_defineProperty({
     autoGearRuleNameInput: autoGearRuleNameInput,
     autoGearRuleNameLabel: autoGearRuleNameLabel,
     autoGearScenariosSelect: autoGearScenariosSelect,
@@ -989,9 +989,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     refreshAutoGearVideoDistributionOptions: refreshAutoGearVideoDistributionOptions,
     collectAutoGearSelectedValues: collectAutoGearSelectedValues,
     getAutoGearScenarioModeSelectElement: getAutoGearScenarioModeSelectElement,
-    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement,
-    normalizeVideoDistributionOptionValue: normalizeVideoDistributionOptionValue
-  }, "getViewfinderFallbackLabel", getViewfinderFallbackLabel), "getVideoDistributionFallbackLabel", getVideoDistributionFallbackLabel);
+    setAutoGearScenarioModeSelectElement: setAutoGearScenarioModeSelectElement
+  }, "getViewfinderFallbackLabel", getViewfinderFallbackLabel), "getVideoDistributionFallbackLabel", getVideoDistributionFallbackLabel), "normalizeVideoDistributionOptionValue", normalizeVideoDistributionOptionValue);
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = AUTO_GEAR_UI_EXPORTS;
   }

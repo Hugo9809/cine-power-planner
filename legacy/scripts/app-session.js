@@ -4917,12 +4917,37 @@ var rememberSettingsMountVoltagesBaseline = function rememberSettingsMountVoltag
 var revertSettingsMountVoltagesIfNeeded = function revertSettingsMountVoltagesIfNeeded() {};
 var handlePinkModeIconPress = function handlePinkModeIconPress() {};
 var triggerPinkModeIconAnimation = function triggerPinkModeIconAnimation() {};
-var FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = function FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN() {};
+function callPinkModeSupport(methodName, args, warningMessage) {
+  if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
+    return undefined;
+  }
+  var method = PINK_MODE_SUPPORT_API[methodName];
+  if (typeof method !== 'function') {
+    return undefined;
+  }
+  try {
+    return method.apply(PINK_MODE_SUPPORT_API, Array.isArray(args) ? args : []);
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function' && warningMessage) {
+      console.warn(warningMessage, error);
+    }
+  }
+  return undefined;
+}
+var FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = function FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN() {
+  return callPinkModeSupport('triggerPinkModeIconRain', null, 'cineSession: triggerPinkModeIconRain failed.');
+};
 var sessionTriggerPinkModeIconRain = typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function' ? window.triggerPinkModeIconRain : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
 var startPinkModeIconRotation = function startPinkModeIconRotation() {};
 var stopPinkModeIconRotation = function stopPinkModeIconRotation() {};
-var sessionStartPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function' ? window.startPinkModeAnimatedIcons : function () {};
-var sessionStopPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function' ? window.stopPinkModeAnimatedIcons : function () {};
+var FALLBACK_START_PINK_MODE_ANIMATED_ICONS = function FALLBACK_START_PINK_MODE_ANIMATED_ICONS() {
+  return callPinkModeSupport('startPinkModeAnimatedIcons', null, 'cineSession: startPinkModeAnimatedIcons failed.');
+};
+var sessionStartPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function' ? window.startPinkModeAnimatedIcons : FALLBACK_START_PINK_MODE_ANIMATED_ICONS;
+var FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS = function FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS() {
+  return callPinkModeSupport('stopPinkModeAnimatedIcons', null, 'cineSession: stopPinkModeAnimatedIcons failed.');
+};
+var sessionStopPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function' ? window.stopPinkModeAnimatedIcons : FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS;
 var startPinkModeAnimatedIconRotation = function startPinkModeAnimatedIconRotation() {};
 var stopPinkModeAnimatedIconRotation = function stopPinkModeAnimatedIconRotation() {};
 var applyPinkModeIcon = function applyPinkModeIcon() {};
@@ -5261,8 +5286,98 @@ function applyAppearanceModuleBindings(module) {
   sessionTriggerPinkModeIconRain = module.triggerPinkModeIconRain || sessionTriggerPinkModeIconRain;
   startPinkModeIconRotation = module.startPinkModeIconRotation || startPinkModeIconRotation;
   stopPinkModeIconRotation = module.stopPinkModeIconRotation || stopPinkModeIconRotation;
-  sessionStartPinkModeAnimatedIcons = module.startPinkModeAnimatedIcons || sessionStartPinkModeAnimatedIcons;
-  sessionStopPinkModeAnimatedIcons = module.stopPinkModeAnimatedIcons || sessionStopPinkModeAnimatedIcons;
+  if (typeof module.startPinkModeAnimatedIcons === 'function') {
+    var previousStart = sessionStartPinkModeAnimatedIcons;
+    var moduleStart = module.startPinkModeAnimatedIcons;
+    sessionStartPinkModeAnimatedIcons = function sessionStartPinkModeAnimatedIcons() {
+      var iconsContext = appearanceContext && appearanceContext.icons ? appearanceContext.icons : null;
+      var previousIconsStart = iconsContext ? iconsContext.startPinkModeAnimatedIcons : undefined;
+      var hasWindow = typeof window !== 'undefined';
+      var previousWindowStart = hasWindow ? window.startPinkModeAnimatedIcons : undefined;
+      var fallbackInvoked = false;
+      var fallbackResult;
+      var trackFallbackStart = function trackFallbackStart() {
+        fallbackInvoked = true;
+        fallbackResult = previousStart.apply(void 0, arguments);
+        return fallbackResult;
+      };
+      if (iconsContext) {
+        iconsContext.startPinkModeAnimatedIcons = trackFallbackStart;
+      }
+      if (hasWindow) {
+        window.startPinkModeAnimatedIcons = trackFallbackStart;
+      }
+      try {
+        var result = moduleStart.apply(void 0, arguments);
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        if (typeof result === 'undefined') {
+          return previousStart.apply(void 0, arguments);
+        }
+        return result;
+      } catch (startError) {
+        void startError;
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        return previousStart.apply(void 0, arguments);
+      } finally {
+        if (iconsContext) {
+          iconsContext.startPinkModeAnimatedIcons = previousIconsStart;
+        }
+        if (hasWindow) {
+          window.startPinkModeAnimatedIcons = previousWindowStart;
+        }
+      }
+    };
+  }
+  if (typeof module.stopPinkModeAnimatedIcons === 'function') {
+    var previousStop = sessionStopPinkModeAnimatedIcons;
+    var moduleStop = module.stopPinkModeAnimatedIcons;
+    sessionStopPinkModeAnimatedIcons = function sessionStopPinkModeAnimatedIcons() {
+      var iconsContext = appearanceContext && appearanceContext.icons ? appearanceContext.icons : null;
+      var previousIconsStop = iconsContext ? iconsContext.stopPinkModeAnimatedIcons : undefined;
+      var hasWindow = typeof window !== 'undefined';
+      var previousWindowStop = hasWindow ? window.stopPinkModeAnimatedIcons : undefined;
+      var fallbackInvoked = false;
+      var fallbackResult;
+      var trackFallbackStop = function trackFallbackStop() {
+        fallbackInvoked = true;
+        fallbackResult = previousStop.apply(void 0, arguments);
+        return fallbackResult;
+      };
+      if (iconsContext) {
+        iconsContext.stopPinkModeAnimatedIcons = trackFallbackStop;
+      }
+      if (hasWindow) {
+        window.stopPinkModeAnimatedIcons = trackFallbackStop;
+      }
+      try {
+        var result = moduleStop.apply(void 0, arguments);
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        if (typeof result === 'undefined') {
+          return previousStop.apply(void 0, arguments);
+        }
+        return result;
+      } catch (stopError) {
+        void stopError;
+        if (fallbackInvoked) {
+          return fallbackResult;
+        }
+        return previousStop.apply(void 0, arguments);
+      } finally {
+        if (iconsContext) {
+          iconsContext.stopPinkModeAnimatedIcons = previousIconsStop;
+        }
+        if (hasWindow) {
+          window.stopPinkModeAnimatedIcons = previousWindowStop;
+        }
+      }
+    };
+  }
   startPinkModeAnimatedIconRotation = module.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
   stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
   applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
@@ -10618,14 +10733,22 @@ function resetPlannerStateAfterFactoryReset() {
       console.warn('Failed to reset controller selections during factory reset', error);
     }
     try {
-      var sliderSelect = getSliderBowlSelect();
-      if (sliderSelect) sliderSelect.value = '';
+      if (typeof getSliderBowlSelect === 'function') {
+        var sliderSelect = getSliderBowlSelect();
+        if (sliderSelect) sliderSelect.value = '';
+      } else {
+        console.warn('Skipping slider bowl selection reset during factory reset because helper is unavailable');
+      }
     } catch (error) {
       console.warn('Failed to reset slider bowl selection during factory reset', error);
     }
     try {
-      var easyrigSelect = getEasyrigSelect();
-      if (easyrigSelect) easyrigSelect.value = '';
+      if (typeof getEasyrigSelect === 'function') {
+        var easyrigSelect = getEasyrigSelect();
+        if (easyrigSelect) easyrigSelect.value = '';
+      } else {
+        console.warn('Skipping Easyrig selection reset during factory reset because helper is unavailable');
+      }
     } catch (error) {
       console.warn('Failed to reset Easyrig selection during factory reset', error);
     }
@@ -10685,7 +10808,11 @@ function resetPlannerStateAfterFactoryReset() {
       console.warn('Failed to reset custom logo preview during factory reset', error);
     }
     try {
-      resetCustomFontsForFactoryReset();
+      if (typeof resetCustomFontsForFactoryReset === 'function') {
+        resetCustomFontsForFactoryReset();
+      } else {
+        console.warn('Skipping custom font reset during factory reset because helper is unavailable');
+      }
     } catch (error) {
       console.warn('Failed to reset custom fonts during factory reset', error);
     }
@@ -11947,14 +12074,187 @@ function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateReject
     }, ms);
   });
 }
+function observeServiceWorkerControllerChangeForSession(navigatorLike) {
+  var nav = navigatorLike && _typeof(navigatorLike) === 'object' ? navigatorLike : null;
+  if (!nav || !nav.serviceWorker) {
+    return null;
+  }
+  var serviceWorker = nav.serviceWorker;
+  if (!serviceWorker) {
+    return null;
+  }
+  var resolved = false;
+  var detach = null;
+  var resolver = null;
+  var attached = false;
+  var finalize = function finalize(value) {
+    if (resolved) {
+      return;
+    }
+    resolved = true;
+    var currentResolver = resolver;
+    resolver = null;
+    if (typeof detach === 'function') {
+      try {
+        detach();
+      } catch (error) {
+        void error;
+      }
+      detach = null;
+    }
+    if (typeof currentResolver === 'function') {
+      try {
+        currentResolver(value);
+      } catch (resolveError) {
+        void resolveError;
+      }
+    }
+  };
+  var promise = new Promise(function (resolve) {
+    resolver = resolve;
+    if (serviceWorker.controller) {
+      finalize(true);
+      return;
+    }
+    var handler = function handler() {
+      finalize(true);
+    };
+    try {
+      if (typeof serviceWorker.addEventListener === 'function') {
+        serviceWorker.addEventListener('controllerchange', handler);
+        detach = function detach() {
+          try {
+            serviceWorker.removeEventListener('controllerchange', handler);
+          } catch (removeError) {
+            void removeError;
+          }
+        };
+        attached = true;
+      } else if ('oncontrollerchange' in serviceWorker) {
+        var previous = serviceWorker.oncontrollerchange;
+        serviceWorker.oncontrollerchange = function controllerchangeProxy(event) {
+          if (typeof previous === 'function') {
+            try {
+              previous.call(this, event);
+            } catch (previousError) {
+              console.warn('Existing service worker controllerchange handler failed', previousError);
+            }
+          }
+          handler(event);
+        };
+        detach = function detach() {
+          try {
+            serviceWorker.oncontrollerchange = previous;
+          } catch (restoreError) {
+            void restoreError;
+          }
+        };
+        attached = true;
+      } else {
+        finalize(false);
+      }
+    } catch (error) {
+      console.warn('Failed to observe service worker controllerchange', error);
+      finalize(false);
+    }
+  });
+  if (!attached && !serviceWorker.controller) {
+    finalize(false);
+    return null;
+  }
+  return {
+    promise: promise,
+    cancel: function cancel() {
+      finalize(false);
+    }
+  };
+}
+function collectServiceWorkerRegistrationsForReload(_x4) {
+  return _collectServiceWorkerRegistrationsForReload.apply(this, arguments);
+}
+function _collectServiceWorkerRegistrationsForReload() {
+  _collectServiceWorkerRegistrationsForReload = _asyncToGenerator(_regenerator().m(function _callee4(serviceWorker) {
+    var registrations, pushRegistration, regs, reg, readyReg, _t6, _t7;
+    return _regenerator().w(function (_context4) {
+      while (1) switch (_context4.p = _context4.n) {
+        case 0:
+          if (serviceWorker) {
+            _context4.n = 1;
+            break;
+          }
+          return _context4.a(2, []);
+        case 1:
+          registrations = [];
+          pushRegistration = function pushRegistration(registration) {
+            if (registration) {
+              registrations.push(registration);
+            }
+          };
+          _context4.p = 2;
+          if (!(typeof serviceWorker.getRegistrations === 'function')) {
+            _context4.n = 4;
+            break;
+          }
+          _context4.n = 3;
+          return serviceWorker.getRegistrations();
+        case 3:
+          regs = _context4.v;
+          if (Array.isArray(regs)) {
+            regs.forEach(pushRegistration);
+          }
+          _context4.n = 10;
+          break;
+        case 4:
+          if (!(typeof serviceWorker.getRegistration === 'function')) {
+            _context4.n = 6;
+            break;
+          }
+          _context4.n = 5;
+          return serviceWorker.getRegistration();
+        case 5:
+          reg = _context4.v;
+          pushRegistration(reg);
+          _context4.n = 10;
+          break;
+        case 6:
+          if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
+            _context4.n = 10;
+            break;
+          }
+          _context4.p = 7;
+          _context4.n = 8;
+          return serviceWorker.ready;
+        case 8:
+          readyReg = _context4.v;
+          pushRegistration(readyReg);
+          _context4.n = 10;
+          break;
+        case 9:
+          _context4.p = 9;
+          _t6 = _context4.v;
+          console.warn('Failed to await active service worker', _t6);
+        case 10:
+          _context4.n = 12;
+          break;
+        case 11:
+          _context4.p = 11;
+          _t7 = _context4.v;
+          console.warn('Failed to query service worker registrations', _t7);
+        case 12:
+          return _context4.a(2, registrations);
+      }
+    }, _callee4, null, [[7, 9], [2, 11]]);
+  }));
+  return _collectServiceWorkerRegistrationsForReload.apply(this, arguments);
+}
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
-  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee6() {
-    var reloadFallback, offlineModule, beforeReloadHref, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t0, _t1, _t10;
-    return _regenerator().w(function (_context6) {
-      while (1) switch (_context6.p = _context6.n) {
+  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee7() {
+    var reloadFallback, offlineModule, beforeReloadHref, sessionNavigator, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t0, _t1, _t10;
+    return _regenerator().w(function (_context7) {
+      while (1) switch (_context7.p = _context7.n) {
         case 0:
           try {
             flushProjectAutoSaveOnExit({
@@ -11966,17 +12266,21 @@ function _clearCachesAndReload() {
           reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
+          sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
+          sessionCaches = typeof caches !== 'undefined' ? caches : undefined;
+          serviceWorkerLike = sessionNavigator && sessionNavigator.serviceWorker ? sessionNavigator.serviceWorker : null;
+          serviceWorkerRegistrationsPromise = serviceWorkerLike ? collectServiceWorkerRegistrationsForReload(serviceWorkerLike) : Promise.resolve([]);
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context6.n = 6;
+            _context7.n = 6;
             break;
           }
-          _context6.p = 1;
+          _context7.p = 1;
           reloadAttempt = offlineModule.reloadApp({
             window: window,
-            navigator: typeof navigator !== 'undefined' ? navigator : undefined,
-            caches: typeof caches !== 'undefined' ? caches : undefined
+            navigator: sessionNavigator,
+            caches: sessionCaches
           });
-          _context6.n = 2;
+          _context7.n = 2;
           return awaitPromiseWithSoftTimeout(reloadAttempt, OFFLINE_RELOAD_TIMEOUT_MS, function () {
             console.warn('Offline module reload timed out; continuing with manual fallback after soft timeout.', {
               timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS
@@ -11985,35 +12289,35 @@ function _clearCachesAndReload() {
             console.warn('Offline module reload promise rejected after timeout', lateError);
           });
         case 2:
-          _yield$awaitPromiseWi = _context6.v;
+          _yield$awaitPromiseWi = _context7.v;
           timedOut = _yield$awaitPromiseWi.timedOut;
           result = _yield$awaitPromiseWi.result;
           if (timedOut) {
-            _context6.n = 4;
+            _context7.n = 4;
             break;
           }
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
-            _context6.n = 4;
+            _context7.n = 4;
             break;
           }
-          _context6.n = 3;
+          _context7.n = 3;
           return waitForReloadNavigation(beforeReloadHref).catch(function () {
             return false;
           });
         case 3:
-          navigationObserved = _context6.v;
+          navigationObserved = _context7.v;
           if (!navigationObserved) {
-            _context6.n = 4;
+            _context7.n = 4;
             break;
           }
-          return _context6.a(2);
+          return _context7.a(2);
         case 4:
-          _context6.n = 6;
+          _context7.n = 6;
           break;
         case 5:
-          _context6.p = 5;
-          _t0 = _context6.v;
+          _context7.p = 5;
+          _t0 = _context7.v;
           console.warn('Offline module reload failed, falling back to manual refresh', _t0);
         case 6:
           uiCacheCleared = false;
@@ -12035,82 +12339,25 @@ function _clearCachesAndReload() {
           }
           serviceWorkerCleanupPromise = Promise.resolve(false);
           cacheCleanupPromise = Promise.resolve(false);
-          if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
-            _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
-              var registrations, regs, reg, readyReg, _t6, _t7, _t8;
-              return _regenerator().w(function (_context4) {
-                while (1) switch (_context4.p = _context4.n) {
+          if (serviceWorkerLike) {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
+              var _registrations, _t8;
+              return _regenerator().w(function (_context5) {
+                while (1) switch (_context5.p = _context5.n) {
                   case 0:
-                    _context4.p = 0;
-                    registrations = [];
-                    _context4.p = 1;
-                    if (!(typeof serviceWorker.getRegistrations === 'function')) {
-                      _context4.n = 3;
+                    _context5.p = 0;
+                    _context5.n = 1;
+                    return serviceWorkerRegistrationsPromise;
+                  case 1:
+                    _registrations = _context5.v;
+                    if (_registrations.length) {
+                      _context5.n = 2;
                       break;
                     }
-                    _context4.n = 2;
-                    return serviceWorker.getRegistrations();
+                    return _context5.a(2, false);
                   case 2:
-                    regs = _context4.v;
-                    if (Array.isArray(regs)) {
-                      regs.forEach(function (reg) {
-                        if (reg) {
-                          registrations.push(reg);
-                        }
-                      });
-                    }
-                    _context4.n = 9;
-                    break;
-                  case 3:
-                    if (!(typeof serviceWorker.getRegistration === 'function')) {
-                      _context4.n = 5;
-                      break;
-                    }
-                    _context4.n = 4;
-                    return serviceWorker.getRegistration();
-                  case 4:
-                    reg = _context4.v;
-                    if (reg) {
-                      registrations.push(reg);
-                    }
-                    _context4.n = 9;
-                    break;
-                  case 5:
-                    if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-                      _context4.n = 9;
-                      break;
-                    }
-                    _context4.p = 6;
-                    _context4.n = 7;
-                    return serviceWorker.ready;
-                  case 7:
-                    readyReg = _context4.v;
-                    if (readyReg) {
-                      registrations.push(readyReg);
-                    }
-                    _context4.n = 9;
-                    break;
-                  case 8:
-                    _context4.p = 8;
-                    _t6 = _context4.v;
-                    console.warn('Failed to await active service worker', _t6);
-                  case 9:
-                    _context4.n = 11;
-                    break;
-                  case 10:
-                    _context4.p = 10;
-                    _t7 = _context4.v;
-                    console.warn('Failed to query service worker registrations', _t7);
-                  case 11:
-                    if (registrations.length) {
-                      _context4.n = 12;
-                      break;
-                    }
-                    return _context4.a(2, false);
-                  case 12:
-                    _context4.n = 13;
-                    return Promise.all(registrations.map(function (reg) {
+                    _context5.n = 3;
+                    return Promise.all(_registrations.map(function (reg) {
                       if (!reg || typeof reg.unregister !== 'function') {
                         return Promise.resolve(false);
                       }
@@ -12119,33 +12366,33 @@ function _clearCachesAndReload() {
                         return false;
                       });
                     }));
-                  case 13:
-                    return _context4.a(2, true);
-                  case 14:
-                    _context4.p = 14;
-                    _t8 = _context4.v;
+                  case 3:
+                    return _context5.a(2, true);
+                  case 4:
+                    _context5.p = 4;
+                    _t8 = _context5.v;
                     console.warn('Service worker cleanup failed', _t8);
-                    return _context4.a(2, false);
+                    return _context5.a(2, false);
                 }
-              }, _callee4, null, [[6, 8], [1, 10], [0, 14]]);
+              }, _callee5, null, [[0, 4]]);
             }))();
           }
-          if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
+          if (sessionCaches && typeof sessionCaches.keys === 'function') {
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee6() {
               var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t9;
-              return _regenerator().w(function (_context5) {
-                while (1) switch (_context5.p = _context5.n) {
+              return _regenerator().w(function (_context6) {
+                while (1) switch (_context6.p = _context6.n) {
                   case 0:
-                    _context5.p = 0;
-                    _context5.n = 1;
-                    return caches.keys();
+                    _context6.p = 0;
+                    _context6.n = 1;
+                    return sessionCaches.keys();
                   case 1:
-                    keys = _context5.v;
+                    keys = _context6.v;
                     if (!(!Array.isArray(keys) || !keys.length)) {
-                      _context5.n = 2;
+                      _context6.n = 2;
                       break;
                     }
-                    return _context5.a(2, false);
+                    return _context6.a(2, false);
                   case 2:
                     explicitName = resolveCineCacheNameForReload();
                     lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
@@ -12153,18 +12400,18 @@ function _clearCachesAndReload() {
                       return isRelevantCacheKeyForReload(key, explicitName, lowerExplicit);
                     });
                     if (relevantKeys.length) {
-                      _context5.n = 3;
+                      _context6.n = 3;
                       break;
                     }
-                    return _context5.a(2, false);
+                    return _context6.a(2, false);
                   case 3:
                     removedAny = false;
-                    _context5.n = 4;
+                    _context6.n = 4;
                     return Promise.all(relevantKeys.map(function (key) {
-                      if (!key || typeof caches.delete !== 'function') {
+                      if (!key || typeof sessionCaches.delete !== 'function') {
                         return Promise.resolve(false);
                       }
-                      return caches.delete(key).then(function (result) {
+                      return sessionCaches.delete(key).then(function (result) {
                         removedAny = removedAny || !!result;
                         return result;
                       }).catch(function (cacheError) {
@@ -12173,19 +12420,27 @@ function _clearCachesAndReload() {
                       });
                     }));
                   case 4:
-                    return _context5.a(2, removedAny);
+                    return _context6.a(2, removedAny);
                   case 5:
-                    _context5.p = 5;
-                    _t9 = _context5.v;
+                    _context6.p = 5;
+                    _t9 = _context6.v;
                     console.warn('Cache clear failed', _t9);
-                    return _context5.a(2, false);
+                    return _context6.a(2, false);
                 }
-              }, _callee5, null, [[0, 5]]);
+              }, _callee6, null, [[0, 5]]);
             }))();
           }
-          _context6.p = 7;
-          _context6.n = 8;
-          return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
+          controllerChangeWatcher = null;
+          serviceWorkerGatePromise = serviceWorkerCleanupPromise;
+          if (sessionNavigator && sessionNavigator.serviceWorker) {
+            controllerChangeWatcher = observeServiceWorkerControllerChangeForSession(sessionNavigator);
+            if (controllerChangeWatcher && controllerChangeWatcher.promise && serviceWorkerCleanupPromise && typeof serviceWorkerCleanupPromise.then === 'function') {
+              serviceWorkerGatePromise = Promise.race([serviceWorkerCleanupPromise, controllerChangeWatcher.promise]);
+            }
+          }
+          _context7.p = 7;
+          _context7.n = 8;
+          return awaitPromiseWithSoftTimeout(serviceWorkerGatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
             console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
               timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
             });
@@ -12193,13 +12448,23 @@ function _clearCachesAndReload() {
             console.warn('Service worker cleanup failed after reload triggered', lateError);
           });
         case 8:
-          _context6.n = 10;
+          _context7.n = 10;
           break;
         case 9:
-          _context6.p = 9;
-          _t1 = _context6.v;
+          _context7.p = 9;
+          _t1 = _context7.v;
           console.warn('Service worker cleanup failed', _t1);
         case 10:
+          _context7.p = 10;
+          if (controllerChangeWatcher && typeof controllerChangeWatcher.cancel === 'function') {
+            try {
+              controllerChangeWatcher.cancel();
+            } catch (controllerCleanupError) {
+              void controllerCleanupError;
+            }
+          }
+          return _context7.f(10);
+        case 11:
           try {
             if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
               reloadFallback.triggerNow();
@@ -12215,20 +12480,20 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          _context6.p = 11;
-          _context6.n = 12;
+          _context7.p = 12;
+          _context7.n = 13;
           return cacheCleanupPromise;
-        case 12:
-          _context6.n = 14;
-          break;
         case 13:
-          _context6.p = 13;
-          _t10 = _context6.v;
-          console.warn('Cache clear failed', _t10);
+          _context7.n = 15;
+          break;
         case 14:
-          return _context6.a(2);
+          _context7.p = 14;
+          _t10 = _context7.v;
+          console.warn('Cache clear failed', _t10);
+        case 15:
+          return _context7.a(2);
       }
-    }, _callee6, null, [[11, 13], [7, 9], [1, 5]]);
+    }, _callee7, null, [[12, 14], [7, 9, 10, 11], [1, 5]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -15774,14 +16039,33 @@ function createFilterStorageValueSelect(type, selected) {
   });
   return select;
 }
+function resolveFilterDetailsStorageElement() {
+  if (typeof filterDetailsStorage !== 'undefined' && filterDetailsStorage) {
+    return filterDetailsStorage;
+  }
+  if (typeof document === 'undefined') return null;
+  var element = document.getElementById('filterDetails');
+  if (!element) return null;
+  try {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      globalThis.filterDetailsStorage = element;
+    } else if (typeof window !== 'undefined' && window) {
+      window.filterDetailsStorage = element;
+    }
+  } catch (ex) {
+    void ex;
+  }
+  return element;
+}
 function renderFilterDetailsStorage(details) {
-  if (!filterDetailsStorage) return;
-  filterDetailsStorage.innerHTML = '';
+  var storageRoot = resolveFilterDetailsStorageElement();
+  if (!storageRoot) return;
+  storageRoot.innerHTML = '';
   if (!details.length) {
-    filterDetailsStorage.hidden = true;
+    storageRoot.hidden = true;
     return;
   }
-  filterDetailsStorage.hidden = true;
+  storageRoot.hidden = true;
   details.forEach(function (detail) {
     var type = detail.type,
       size = detail.size,
@@ -15793,12 +16077,12 @@ function renderFilterDetailsStorage(details) {
       sizeSelect.hidden = true;
       sizeSelect.setAttribute('aria-hidden', 'true');
       sizeSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(sizeSelect);
+      storageRoot.appendChild(sizeSelect);
     }
     if (needsValues) {
       var valuesSelect = createFilterStorageValueSelect(type, values);
       valuesSelect.addEventListener('change', handleFilterDetailChange);
-      filterDetailsStorage.appendChild(valuesSelect);
+      storageRoot.appendChild(valuesSelect);
     }
   });
 }

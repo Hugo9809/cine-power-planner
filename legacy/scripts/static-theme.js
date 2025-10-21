@@ -50,7 +50,11 @@
     var highContrastEnabled = safeGet('highContrast') === 'true';
     root.classList.toggle('high-contrast', highContrastEnabled);
     body.classList.toggle('high-contrast', highContrastEnabled);
-    var reduceMotionEnabled = safeGet('reduceMotion') === 'true';
+    var storedReduceMotion = safeGet('reduceMotion');
+    if (storedReduceMotion === null && typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      storedReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'true' : 'false';
+    }
+    var reduceMotionEnabled = storedReduceMotion === 'true';
     root.classList.toggle('reduce-motion', reduceMotionEnabled);
     body.classList.toggle('reduce-motion', reduceMotionEnabled);
     var relaxedSpacingEnabled = safeGet('relaxedSpacing') === 'true';

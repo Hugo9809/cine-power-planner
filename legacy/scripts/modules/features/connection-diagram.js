@@ -1805,18 +1805,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var top = rect.top;
         if (popupRect) {
           var pointer = lastPointerPosition;
-          var pointerOnRightSide = pointer && viewportWidth && Number.isFinite(pointer.x) && pointer.x >= viewportWidth * 0.55;
-          if (pointerOnRightSide) {
-            var preferredLeft = rect.left - popupRect.width - margin;
-            if (preferredLeft >= margin) {
-              left = preferredLeft;
-            } else if (viewportWidth) {
-              left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
-            } else {
-              left = Math.max(margin, preferredLeft);
+          var usePointerPosition = !entry && pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y);
+          if (usePointerPosition) {
+            var preferredLeft = pointer.x + margin;
+            if (viewportWidth && preferredLeft + popupRect.width > viewportWidth - margin) {
+              preferredLeft = pointer.x - popupRect.width - margin;
             }
-          } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
-            left = Math.max(margin, rect.left - popupRect.width - margin);
+            if (viewportWidth) {
+              if (preferredLeft + popupRect.width > viewportWidth - margin) {
+                preferredLeft = viewportWidth - popupRect.width - margin;
+              }
+              if (preferredLeft < margin) {
+                var alternativeLeft = pointer.x + margin;
+                var clampedAlternative = Math.min(alternativeLeft, viewportWidth - popupRect.width - margin);
+                preferredLeft = Math.max(margin, clampedAlternative);
+              }
+            }
+            left = preferredLeft;
+            top = pointer.y - popupRect.height * 0.5;
+          } else {
+            var pointerOnRightSide = pointer && viewportWidth && Number.isFinite(pointer.x) && pointer.x >= viewportWidth * 0.55;
+            if (pointerOnRightSide) {
+              var _preferredLeft = rect.left - popupRect.width - margin;
+              if (_preferredLeft >= margin) {
+                left = _preferredLeft;
+              } else if (viewportWidth) {
+                left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
+              } else {
+                left = Math.max(margin, _preferredLeft);
+              }
+            } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
+              left = Math.max(margin, rect.left - popupRect.width - margin);
+            }
           }
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
@@ -1826,8 +1846,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               left = margin;
             }
           }
-          if (viewportHeight && top + popupRect.height > viewportHeight - margin) {
-            top = Math.max(margin, viewportHeight - popupRect.height - margin);
+          if (viewportHeight) {
+            if (top + popupRect.height > viewportHeight - margin) {
+              top = viewportHeight - popupRect.height - margin;
+            }
+            if (top < margin) {
+              top = margin;
+            }
           }
         }
         popup.style.left = "".concat(Math.round(left), "px");

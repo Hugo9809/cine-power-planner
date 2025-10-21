@@ -13,7 +13,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         continue;
       }
       var parsed = Number(candidate);
-      if (isFinite(parsed) && parsed >= 0) {
+      if (Number.isFinite(parsed) && parsed >= 0) {
         return parsed;
       }
     }
@@ -170,25 +170,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     triggerInterceptor = null;
   }
-
   function notifyModuleReady(scope, moduleApi) {
     if (!moduleApi) {
       return;
     }
-
     onboardingModuleReady = true;
     lastDeferredLoadFailed = false;
     moduleTimeoutWarningIssued = false;
-
     uninstallTriggerInterceptor(scope);
-
     if (!pendingTriggerCallbacks.length) {
       return;
     }
-
     var callbacks = pendingTriggerCallbacks.slice();
     pendingTriggerCallbacks.length = 0;
-
     for (var index = 0; index < callbacks.length; index += 1) {
       var callback = callbacks[index];
       if (typeof callback !== 'function') {
@@ -203,7 +197,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
-
   function replayTrigger(trigger, moduleApi, scope) {
     schedule(function () {
       try {
@@ -219,7 +212,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }, scope);
   }
-
   function queueTriggerReplay(trigger, scope) {
     if (pendingTriggerNodes && trigger) {
       try {
@@ -231,7 +223,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
     pendingTriggerCallbacks.push(function (moduleApi) {
       if (pendingTriggerNodes && trigger) {
         try {
@@ -243,15 +234,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       replayTrigger(trigger, moduleApi, scope);
     });
   }
-
   function getModuleReadyPromise(scope) {
     if (moduleReadyPromise) {
-      var existingScope = scope || getGlobalScope();
-      if (existingScope && existingScope.cineFeaturesOnboardingTour) {
-        notifyModuleReady(existingScope, existingScope.cineFeaturesOnboardingTour);
+      var currentScope = scope || getGlobalScope();
+      if (currentScope && currentScope.cineFeaturesOnboardingTour) {
+        notifyModuleReady(currentScope, currentScope.cineFeaturesOnboardingTour);
         if (resolveModuleReadyPromise) {
           try {
-            resolveModuleReadyPromise(existingScope.cineFeaturesOnboardingTour);
+            resolveModuleReadyPromise(currentScope.cineFeaturesOnboardingTour);
           } catch (resolveError) {
             void resolveError;
           }
@@ -260,19 +250,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return moduleReadyPromise;
     }
-
     var target = scope || getGlobalScope();
     if (!target) {
       return Promise.resolve(null);
     }
-
     if (target.cineFeaturesOnboardingTour) {
       notifyModuleReady(target, target.cineFeaturesOnboardingTour);
       return Promise.resolve(target.cineFeaturesOnboardingTour);
     }
-
     var monitorStart = Date.now();
-
     moduleReadyPromise = new Promise(function (resolve) {
       resolveModuleReadyPromise = resolve;
       function check() {
@@ -295,13 +281,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         schedule(check, currentScope);
       }
-
       check();
     }).finally(function () {
       moduleReadyPromise = null;
       resolveModuleReadyPromise = null;
     });
-
     return moduleReadyPromise;
   }
   function waitForModule(scope) {
@@ -319,7 +303,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return onboardingModulePromise;
     }
     var timeoutToken = {};
-
     onboardingModulePromise = requestDeferredLoad(scope, reason).catch(function (error) {
       void error;
       return false;
@@ -331,9 +314,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           reason: 'deferred-load-unavailable'
         };
       }
-
       lastDeferredLoadFailed = false;
-
       var modulePromise = waitForModule(scope);
       var timeoutPromise = new Promise(function (resolve) {
         try {
@@ -345,7 +326,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           resolve(timeoutToken);
         }
       });
-
       return Promise.race([modulePromise, timeoutPromise]).then(function (result) {
         if (result === timeoutToken) {
           if (modulePromise && typeof modulePromise.then === 'function') {
@@ -385,6 +365,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return onboardingModulePromise;
   }
+  function parseStoredStateValue(rawValue) {
+    if (!rawValue) {
+      return null;
+    }
+    if (_typeof(rawValue) === 'object') {
+      return rawValue;
+    }
+    if (typeof rawValue !== 'string') {
+      return null;
+    }
+    var trimmed = rawValue.trim();
+    if (!trimmed) {
+      return null;
+    }
+    try {
+      var parsed = JSON.parse(trimmed);
+      if (parsed && _typeof(parsed) === 'object') {
+        return parsed;
+      }
+      if (parsed === true) {
+        return {
+          completed: true
+        };
+      }
+      if (parsed === false) {
+        return {
+          completed: false
+        };
+      }
+      if (typeof parsed === 'string') {
+        if (parsed === 'completed') {
+          return {
+            completed: true
+          };
+        }
+        if (parsed === 'skipped') {
+          return {
+            skipped: true
+          };
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+    if (trimmed === 'completed') {
+      return {
+        completed: true
+      };
+    }
+    if (trimmed === 'skipped') {
+      return {
+        skipped: true
+      };
+    }
+    if (trimmed === 'true') {
+      return {
+        completed: true
+      };
+    }
+    if (trimmed === 'false') {
+      return {
+        completed: false
+      };
+    }
+    return null;
+  }
   function readStoredState(scope) {
     var storageCandidates = [];
     try {
@@ -411,8 +457,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       try {
         var value = storage.getItem(STORAGE_KEY);
-        if (value) {
-          return value;
+        var parsed = parseStoredStateValue(value);
+        if (parsed) {
+          return parsed;
         }
       } catch (error) {
         void error;
@@ -425,7 +472,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var stored = readStoredState(scope);
-    if (stored) {
+    if (stored && _typeof(stored) === 'object' && (stored.completed === true || stored.skipped === true)) {
       return;
     }
     schedule(function () {
