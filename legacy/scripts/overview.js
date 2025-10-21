@@ -1596,30 +1596,26 @@ function generatePrintableOverview() {
     if (!success) {
       return handleFailure();
     }
-    if (success && typeof success.then === 'function') {
-      return success
-        .then(function (result) {
-          if (!result) {
-            return handleFailure();
-          }
-          var ensureCleanup = function ensureCleanup() {
-            return runPendingPrintCleanup('overview-closed');
-          };
-          overviewDialog.addEventListener('close', ensureCleanup, {
-            once: true
-          });
-          return true;
-        })
-        .catch(function () {
-          return handleFailure();
-        });
-    }
     var ensureCleanup = function ensureCleanup() {
       return runPendingPrintCleanup('overview-closed');
     };
     overviewDialog.addEventListener('close', ensureCleanup, {
       once: true
     });
+    if (success && typeof success.then === 'function') {
+      return success
+        .then(function (result) {
+          if (!result) {
+            overviewDialog.removeEventListener('close', ensureCleanup);
+            return handleFailure();
+          }
+          return true;
+        })
+        .catch(function (error) {
+          overviewDialog.removeEventListener('close', ensureCleanup);
+          return handleFailure(error);
+        });
+    }
     return true;
   };
   var openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
