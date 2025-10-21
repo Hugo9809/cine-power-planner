@@ -24,6 +24,18 @@ function createInteractiveElement(initialText = '') {
   return element;
 }
 
+function createDatalistElement(initialValues = []) {
+  let html = initialValues.map((value) => `<option value="${value}"></option>`).join('');
+  return {
+    get innerHTML() {
+      return html;
+    },
+    set innerHTML(value) {
+      html = value;
+    },
+  };
+}
+
 const FEEDBACK_FIELD_CONFIG = [
   { id: 'fbUsername', key: 'username', trim: true },
   { id: 'fbDate', key: 'date', trim: false },
@@ -567,6 +579,194 @@ describe('cineResults module', () => {
     expect(lastRuntimeRecorded).toBeCloseTo(3.195, 3);
     const temperatureNoteValue = renderTemperatureNote.mock.calls[renderTemperatureNote.mock.calls.length - 1][0];
     expect(temperatureNoteValue).toBeCloseTo(3.195, 3);
+  });
+
+  test('updateCalculations populates runtime feedback datalists with camera metadata', () => {
+    const mountOptions = createDatalistElement(['PL', 'EF']);
+    const resolutionOptions = createDatalistElement(['1080p']);
+    const codecOptions = createDatalistElement([]);
+    const framerateOptions = createDatalistElement([]);
+
+    const datalistElements = {
+      mountOptions,
+      resolutionOptions,
+      codecOptions,
+      framerateOptions,
+    };
+
+    const doc = {
+      getElementById: jest.fn((id) => datalistElements[id] || null),
+      createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
+    };
+
+    const cameraSelect = { value: 'CameraA' };
+    const monitorSelect = { value: 'None', options: [], selectedIndex: -1 };
+    const videoSelect = { value: 'None', options: [], selectedIndex: -1 };
+    const distanceSelect = { value: 'None', options: [], selectedIndex: -1 };
+    const batterySelect = { value: 'None', options: [], selectedIndex: -1 };
+    const hotswapSelect = { value: 'None' };
+    const motorSelects = [];
+    const controllerSelects = [];
+
+    const totalPowerElem = createElement('');
+    const totalCurrent144Elem = createElement('');
+    const totalCurrent12Elem = createElement('');
+    const batteryLifeElem = createElement('');
+    const batteryCountElem = createElement('');
+    const batteryLifeLabelElem = createElement('');
+    const runtimeAverageNoteElem = createElement('');
+    const pinWarnElem = createElement('');
+    const dtapWarnElem = createElement('');
+    const hotswapWarnElem = createElement('');
+    const batteryComparisonSection = { style: { display: 'none' } };
+    const batteryTableElem = createElement('');
+    batteryTableElem.innerHTML = '';
+    const resultsPlainSummaryElem = createElement('');
+    const resultsPlainSummaryTextElem = createElement('');
+    const resultsPlainSummaryNoteElem = createElement('');
+
+    const breakdownListElem = {
+      _html: '',
+      entries: [],
+      insertAdjacentHTML: jest.fn(function insertAdjacentHTML(_, html) {
+        this.entries.push(html);
+      }),
+      appendChild: jest.fn(),
+      set innerHTML(value) {
+        this._html = value;
+        this.entries = [];
+      },
+      get innerHTML() {
+        return this._html;
+      },
+    };
+
+    const setupDiagramContainer = {};
+
+    const devices = JSON.parse(JSON.stringify(BASE_DEVICES));
+    devices.cameras.CameraA.lensMount = [
+      { type: 'LPL', mount: 'native' },
+      { type: 'PL', mount: 'adapted' },
+      { type: 'EF', mount: 'native' },
+    ];
+    devices.cameras.CameraA.resolutions = ['4.5K', '4K UHD', '1080p'];
+    devices.cameras.CameraA.recordingCodecs = ['ARRIRAW', 'ProRes 4444 XQ'];
+    devices.cameras.CameraA.frameRates = ['4.5K: up to 60 fps', 'HD: up to 200 fps'];
+
+    const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
+
+    let lastRuntimeHoursValue = 1;
+    const refreshTotalCurrentLabels = jest.fn();
+    const updateBatteryOptions = jest.fn();
+    const setStatusMessage = jest.fn();
+    const setStatusLevel = jest.fn();
+    const closePowerWarningDialog = jest.fn();
+    const showPowerWarningDialog = jest.fn();
+    const drawPowerDiagram = jest.fn();
+    const renderFeedbackTable = jest.fn(() => null);
+    const getCurrentSetupKey = jest.fn(() => 'key-2');
+    const renderTemperatureNote = jest.fn();
+    const checkFizCompatibility = jest.fn();
+    const checkFizController = jest.fn();
+    const checkArriCompatibility = jest.fn();
+    const renderSetupDiagram = jest.fn();
+    const refreshGearListIfVisible = jest.fn();
+    const supportsBMountCamera = jest.fn(() => true);
+    const supportsGoldMountCamera = jest.fn(() => true);
+    const getCssVariableValue = jest.fn(() => '#000000');
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    const getLastRuntimeHours = jest.fn(() => lastRuntimeHoursValue);
+    const setLastRuntimeHours = jest.fn((value) => {
+      lastRuntimeHoursValue = value;
+    });
+
+    cineResults.updateCalculations({
+      document: doc,
+      elements: {
+        cameraSelect,
+        monitorSelect,
+        videoSelect,
+        distanceSelect,
+        batterySelect,
+        hotswapSelect,
+        totalPowerElem,
+        breakdownListElem,
+        totalCurrent144Elem,
+        totalCurrent12Elem,
+        batteryLifeElem,
+        batteryCountElem,
+        batteryLifeLabelElem,
+        runtimeAverageNoteElem,
+        pinWarnElem,
+        dtapWarnElem,
+        hotswapWarnElem,
+        batteryComparisonSection,
+        batteryTableElem,
+        setupDiagramContainer,
+        resultsPlainSummaryElem,
+        resultsPlainSummaryTextElem,
+        resultsPlainSummaryNoteElem,
+      },
+      motorSelects,
+      controllerSelects,
+      getDevices: () => devices,
+      getTexts: () => texts,
+      getCurrentLang: () => 'en',
+      getCollator: () => null,
+      getSelectedPlate: () => '',
+      getMountVoltageConfig: () => ({ high: 34, low: 24 }),
+      refreshTotalCurrentLabels,
+      updateBatteryOptions,
+      setStatusMessage,
+      setStatusLevel,
+      closePowerWarningDialog,
+      showPowerWarningDialog,
+      drawPowerDiagram,
+      renderFeedbackTable,
+      getCurrentSetupKey,
+      renderTemperatureNote,
+      checkFizCompatibility,
+      checkFizController,
+      checkArriCompatibility,
+      renderSetupDiagram,
+      refreshGearListIfVisible,
+      supportsBMountCamera,
+      supportsGoldMountCamera,
+      getCssVariableValue,
+      escapeHtml,
+      getLastRuntimeHours,
+      setLastRuntimeHours,
+    });
+
+    const parseValues = (html) => (
+      html
+        ? html.split('<option value="').slice(1).map((part) => part.split('"')[0])
+        : []
+    );
+
+    expect(parseValues(mountOptions.innerHTML)).toEqual([
+      'LPL (native)',
+      'PL (adapted)',
+      'EF (native)',
+    ]);
+    expect(parseValues(resolutionOptions.innerHTML)).toEqual([
+      '4.5K',
+      '4K UHD',
+      '1080p',
+    ]);
+    expect(parseValues(codecOptions.innerHTML)).toEqual([
+      'ARRIRAW',
+      'ProRes 4444 XQ',
+    ]);
+    expect(parseValues(framerateOptions.innerHTML)).toEqual([
+      '4.5K: up to 60 fps',
+      'HD: up to 200 fps',
+    ]);
   });
 
   test('updateCalculations uses preview selections when DOM inputs are empty', () => {
