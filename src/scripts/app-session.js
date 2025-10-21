@@ -5989,11 +5989,11 @@ function callPinkModeSupport(methodName, args, warningMessage) {
     return undefined;
   }
 
-  const result = invokePinkModeSupport(methodName, args, warningMessage);
-
   if (pendingPinkModeSupportCalls.length) {
     flushPendingPinkModeSupportCalls();
   }
+
+  const result = invokePinkModeSupport(methodName, args, warningMessage);
 
   return result;
 }
