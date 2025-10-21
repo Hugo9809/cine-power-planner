@@ -5889,7 +5889,26 @@ let rememberSettingsMountVoltagesBaseline = () => {};
 let revertSettingsMountVoltagesIfNeeded = () => {};
 let handlePinkModeIconPress = () => {};
 let triggerPinkModeIconAnimation = () => {};
-function callPinkModeSupport(methodName, args, warningMessage) {
+
+const pendingPinkModeSupportCalls = [];
+let pinkModeSupportFlushScheduled = false;
+const PINK_MODE_SUPPORT_QUEUE_LIMIT = 25;
+
+function clonePinkModeSupportArgs(args) {
+  if (!Array.isArray(args)) {
+    return args;
+  }
+
+  try {
+    return args.slice();
+  } catch (error) {
+    void error;
+  }
+
+  return args;
+}
+
+function invokePinkModeSupport(methodName, args, warningMessage) {
   if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
     return undefined;
   }
@@ -5913,6 +5932,70 @@ function callPinkModeSupport(methodName, args, warningMessage) {
   }
 
   return undefined;
+}
+
+function flushPendingPinkModeSupportCalls() {
+  pinkModeSupportFlushScheduled = false;
+
+  if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
+    if (pendingPinkModeSupportCalls.length && typeof setTimeout === 'function') {
+      pinkModeSupportFlushScheduled = true;
+      setTimeout(flushPendingPinkModeSupportCalls, 50);
+    }
+    return;
+  }
+
+  while (pendingPinkModeSupportCalls.length) {
+    const entry = pendingPinkModeSupportCalls.shift();
+    if (!entry) {
+      continue;
+    }
+    try {
+      invokePinkModeSupport(entry.methodName, entry.args, entry.warningMessage);
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+function schedulePinkModeSupportFlush() {
+  if (pinkModeSupportFlushScheduled || typeof setTimeout !== 'function') {
+    return;
+  }
+
+  pinkModeSupportFlushScheduled = true;
+  setTimeout(flushPendingPinkModeSupportCalls, 0);
+}
+
+function enqueuePinkModeSupportCall(methodName, args, warningMessage) {
+  if (pendingPinkModeSupportCalls.length >= PINK_MODE_SUPPORT_QUEUE_LIMIT) {
+    pendingPinkModeSupportCalls.shift();
+  }
+
+  pendingPinkModeSupportCalls.push({
+    methodName,
+    args: clonePinkModeSupportArgs(args),
+    warningMessage,
+  });
+
+  schedulePinkModeSupportFlush();
+}
+
+function callPinkModeSupport(methodName, args, warningMessage) {
+  const apiReady = typeof PINK_MODE_SUPPORT_API !== 'undefined' && PINK_MODE_SUPPORT_API;
+
+  if (!apiReady) {
+    enqueuePinkModeSupportCall(methodName, args, warningMessage);
+    return undefined;
+  }
+
+  const result = invokePinkModeSupport(methodName, args, warningMessage);
+
+  if (pendingPinkModeSupportCalls.length) {
+    flushPendingPinkModeSupportCalls();
+  }
+
+  return result;
 }
 
 const FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = () =>
