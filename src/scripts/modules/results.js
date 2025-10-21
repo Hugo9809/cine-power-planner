@@ -3236,25 +3236,23 @@ function setupRuntimeFeedback(options) {
       return trimmed;
     }
 
-    function resolveCameraSelectionLabel() {
-      var select = runtimeFeedbackState && runtimeFeedbackState.elements
-        ? runtimeFeedbackState.elements.cameraSelect
-        : null;
-      if (!select && doc && typeof doc.getElementById === 'function') {
+    function resolveSelectLabel(select, fallbackId, warnMessage) {
+      var target = select;
+      if (!target && doc && typeof doc.getElementById === 'function' && fallbackId) {
         try {
-          select = doc.getElementById('cameraSelect');
+          target = doc.getElementById(fallbackId);
         } catch (error) {
           void error;
-          select = null;
+          target = null;
         }
       }
-      if (!select) {
+      if (!target) {
         return '';
       }
       var resolved = '';
       try {
-        var options = select.options;
-        var selectedIndex = typeof select.selectedIndex === 'number' ? select.selectedIndex : -1;
+        var options = target.options;
+        var selectedIndex = typeof target.selectedIndex === 'number' ? target.selectedIndex : -1;
         if (options && selectedIndex >= 0 && selectedIndex < options.length) {
           var option = options[selectedIndex];
           if (option) {
@@ -3269,14 +3267,23 @@ function setupRuntimeFeedback(options) {
             }
           }
         }
-        if (!resolved && typeof select.value === 'string') {
-          resolved = select.value;
+        if (!resolved && typeof target.value === 'string') {
+          resolved = target.value;
         }
       } catch (error) {
-        safeWarn('cineResults could not inspect camera selection for runtime feedback prefill.', error);
+        if (warnMessage) {
+          safeWarn(warnMessage, error);
+        }
         resolved = '';
       }
       return sanitizePrefillValue(resolved);
+    }
+
+    function resolveCameraSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.cameraSelect
+        : null;
+      return resolveSelectLabel(select, 'cameraSelect', 'cineResults could not inspect camera selection for runtime feedback prefill.');
     }
 
     function resolveBatteryPlateSelectionLabel() {
@@ -3298,43 +3305,84 @@ function setupRuntimeFeedback(options) {
       var select = runtimeFeedbackState && runtimeFeedbackState.elements
         ? runtimeFeedbackState.elements.batteryPlateSelect
         : null;
-      if (!select && doc && typeof doc.getElementById === 'function') {
-        try {
-          select = doc.getElementById('batteryPlateSelect');
-        } catch (error) {
-          void error;
-          select = null;
-        }
-      }
-      if (!select) {
-        return '';
-      }
-      var resolved = '';
-      try {
-        var options = select.options;
-        var selectedIndex = typeof select.selectedIndex === 'number' ? select.selectedIndex : -1;
-        if (options && selectedIndex >= 0 && selectedIndex < options.length) {
-          var option = options[selectedIndex];
-          if (option) {
-            if (typeof option.text === 'string' && option.text) {
-              resolved = option.text;
-            } else if (typeof option.textContent === 'string' && option.textContent) {
-              resolved = option.textContent;
-            } else if (typeof option.label === 'string' && option.label) {
-              resolved = option.label;
-            } else if (typeof option.value === 'string' && option.value) {
-              resolved = option.value;
-            }
+      return resolveSelectLabel(select, 'batteryPlateSelect', 'cineResults could not inspect battery plate selection for runtime feedback prefill.');
+    }
+
+    function resolveBatterySelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.batterySelect
+        : null;
+      return resolveSelectLabel(select, 'batterySelect', 'cineResults could not inspect battery selection for runtime feedback prefill.');
+    }
+
+    function resolveMonitorSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.monitorSelect
+        : null;
+      return resolveSelectLabel(select, 'monitorSelect', 'cineResults could not inspect monitor selection for runtime feedback prefill.');
+    }
+
+    function resolveWirelessVideoSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.videoSelect
+        : null;
+      return resolveSelectLabel(select, 'videoSelect', 'cineResults could not inspect wireless video selection for runtime feedback prefill.');
+    }
+
+    function resolveCollectionSelectionLabels(collection, fallbackIds, warnMessage) {
+      var labels = [];
+      var elements = Array.isArray(collection) ? collection : [];
+      if ((!elements || !elements.length) && doc && typeof doc.getElementById === 'function' && Array.isArray(fallbackIds)) {
+        var fallbackElements = [];
+        for (var fallbackIndex = 0; fallbackIndex < fallbackIds.length; fallbackIndex += 1) {
+          var fallbackId = fallbackIds[fallbackIndex];
+          if (!fallbackId) {
+            continue;
+          }
+          var element = null;
+          try {
+            element = doc.getElementById(fallbackId);
+          } catch (error) {
+            void error;
+            element = null;
+          }
+          if (element) {
+            fallbackElements.push(element);
           }
         }
-        if (!resolved && typeof select.value === 'string') {
-          resolved = select.value;
-        }
-      } catch (error) {
-        safeWarn('cineResults could not inspect battery plate selection for runtime feedback prefill.', error);
-        resolved = '';
+        elements = fallbackElements;
       }
-      return sanitizePrefillValue(resolved);
+      for (var index = 0; index < elements.length; index += 1) {
+        var element = elements[index];
+        var fallbackId = Array.isArray(fallbackIds) && index < fallbackIds.length ? fallbackIds[index] : null;
+        var label = resolveSelectLabel(element, fallbackId, warnMessage);
+        if (label && labels.indexOf(label) === -1) {
+          labels.push(label);
+        }
+      }
+      return labels;
+    }
+
+    function resolveMotorSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.motorSelects
+        : null;
+      return resolveCollectionSelectionLabels(
+        collection,
+        ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'],
+        'cineResults could not inspect FIZ motor selection for runtime feedback prefill.'
+      );
+    }
+
+    function resolveControllerSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.controllerSelects
+        : null;
+      return resolveCollectionSelectionLabels(
+        collection,
+        ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'],
+        'cineResults could not inspect FIZ controller selection for runtime feedback prefill.'
+      );
     }
 
     function setPrefillValue(input, value) {
@@ -3359,6 +3407,11 @@ function setupRuntimeFeedback(options) {
       var fieldEntries = getFeedbackFieldEntries(doc);
       var cameraEntry = null;
       var batteryPlateEntry = null;
+      var batteryEntry = null;
+      var wirelessVideoEntry = null;
+      var monitorEntry = null;
+      var controllerEntry = null;
+      var motorEntry = null;
       for (var index = 0; index < fieldEntries.length; index += 1) {
         var entry = fieldEntries[index];
         if (!entry || !entry.map) {
@@ -3368,6 +3421,16 @@ function setupRuntimeFeedback(options) {
           cameraEntry = entry;
         } else if (entry.map.key === 'batteryPlate' && !batteryPlateEntry) {
           batteryPlateEntry = entry;
+        } else if (entry.map.key === 'battery' && !batteryEntry) {
+          batteryEntry = entry;
+        } else if (entry.map.key === 'wirelessVideo' && !wirelessVideoEntry) {
+          wirelessVideoEntry = entry;
+        } else if (entry.map.key === 'monitor' && !monitorEntry) {
+          monitorEntry = entry;
+        } else if (entry.map.key === 'controllers' && !controllerEntry) {
+          controllerEntry = entry;
+        } else if (entry.map.key === 'motors' && !motorEntry) {
+          motorEntry = entry;
         }
       }
 
@@ -3376,6 +3439,23 @@ function setupRuntimeFeedback(options) {
       }
       if (batteryPlateEntry && batteryPlateEntry.element) {
         setPrefillValue(batteryPlateEntry.element, resolveBatteryPlateSelectionLabel());
+      }
+      if (batteryEntry && batteryEntry.element) {
+        setPrefillValue(batteryEntry.element, resolveBatterySelectionLabel());
+      }
+      if (wirelessVideoEntry && wirelessVideoEntry.element) {
+        setPrefillValue(wirelessVideoEntry.element, resolveWirelessVideoSelectionLabel());
+      }
+      if (monitorEntry && monitorEntry.element) {
+        setPrefillValue(monitorEntry.element, resolveMonitorSelectionLabel());
+      }
+      if (controllerEntry && controllerEntry.element) {
+        var controllers = resolveControllerSelectionLabels();
+        setPrefillValue(controllerEntry.element, controllers.join(', '));
+      }
+      if (motorEntry && motorEntry.element) {
+        var motors = resolveMotorSelectionLabels();
+        setPrefillValue(motorEntry.element, motors.join(', '));
       }
     }
 
