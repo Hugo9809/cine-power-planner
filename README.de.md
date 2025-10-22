@@ -192,7 +192,7 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 - **Monitoring-sensitiver Gear-Editor** – Blendet zusätzliche Monitor- und Videoverteilungsoptionen nur ein, wenn Szenarien sie verlangen.
 - **Akzent- & Typografie-Regler** – Passe Akzentfarbe, Schriftgröße und Schriftart an; Dark-, Pink- und High-Contrast-Themes bleiben zwischen Besuchen erhalten.
 - **Global-Search-Kürzel** – `/` oder `Strg+K` (`⌘K` auf macOS) fokussiert sofort die Funktionssuche – auch bei eingeklapptem Menü.
-- **Neu laden erzwingen** – Aktualisiere Service-Worker-Assets ohne gespeicherte Projekte oder Geräte zu löschen.
+- **Neu laden erzwingen** – Aktualisiere Service-Worker-Assets ohne gespeicherte Projekte oder Geräte zu löschen. Eine robuste Verbindungsprüfung pingt den Server jetzt vor der Bereinigung an, damit Caches bei fehlendem Netzwerk unangetastet bleiben.
 - **Favoriten anpinnen** – Markiere Einträge mit Sternen, damit Lieblingskameras, Akkus und Zubehör oben bleiben und im Backup landen.
 - **Werkseinstellungen mit Sicherung** – Automatisches Backup vor jedem Zurücksetzen, damit keine Daten verloren gehen.
 

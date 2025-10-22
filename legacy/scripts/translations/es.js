@@ -181,7 +181,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "darkModeHelp": "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
       "pinkModeHelp": "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez.",
       "reloadAppLabel": "Forzar recarga",
-      "reloadAppHelp": "Borra la caché, cancela el registro de service workers obsoletos y recarga la aplicación sin eliminar los datos guardados. El navegador ahora precarga el paquete actualizado mientras se ejecuta la limpieza, de modo que la nueva versión aparece más rápido.",
+      "reloadAppHelp": "Borra la caché, cancela el registro de service workers obsoletos y recarga la aplicación sin eliminar los datos guardados. La app ahora comprueba la conexión antes de limpiar y precarga el paquete actualizado para que la nueva versión aparezca más rápido.",
       "favoriteToggleLabel": "Alternar favorito",
       "favoriteToggleHelp": "Marca la selección actual como favorita para fijarla al principio de la lista.",
       "savedSetupsLabel": "Proyectos guardados:",

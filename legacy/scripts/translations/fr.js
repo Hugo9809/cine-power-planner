@@ -181,7 +181,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "darkModeHelp": "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
       "pinkModeHelp": "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois.",
       "reloadAppLabel": "Forcer le rechargement",
-      "reloadAppHelp": "Efface le cache, annule l’enregistrement des service workers obsolètes et recharge l’application sans supprimer les données enregistrées. Le navigateur précharge désormais le nouveau lot pendant le nettoyage, ce qui affiche plus rapidement la nouvelle version.",
+      "reloadAppHelp": "Efface le cache, annule l’enregistrement des service workers obsolètes et recharge l’application sans supprimer les données enregistrées. L’application vérifie désormais la connexion avant le nettoyage et précharge le nouveau lot pour afficher plus rapidement la nouvelle version.",
       "favoriteToggleLabel": "Basculer favori",
       "favoriteToggleHelp": "Marquez la sélection actuelle comme favori pour l’épingler en haut de la liste.",
       "savedSetupsLabel": "Configurations enregistrées :",

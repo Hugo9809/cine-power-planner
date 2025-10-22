@@ -779,6 +779,7 @@
   })();
 
   const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+  const FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS = 3500;
   const RELOAD_WARMUP_MAX_WAIT_MS = 180;
   let reloadWarmupFailureLogged = false;
 
@@ -1697,6 +1698,238 @@
 
     const globalFetch = resolveGlobal('fetch');
     return typeof globalFetch === 'function' ? globalFetch : null;
+  }
+
+  function createAbortController() {
+    if (typeof AbortController !== 'function') {
+      return null;
+    }
+
+    try {
+      return new AbortController();
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+
+  function createTimeoutError(message) {
+    const error = new Error(message || 'Operation timed out');
+    error.name = 'TimeoutError';
+    error.code = 'ETIMEDOUT';
+    return error;
+  }
+
+  function fetchWithTimeout(fetchFn, url, init, timeoutMs) {
+    if (typeof fetchFn !== 'function') {
+      return Promise.resolve({ successful: false, error: new Error('Fetch unavailable'), timedOut: false });
+    }
+
+    const options = init ? { ...init } : {};
+    const controller = createAbortController();
+    let timeoutId = null;
+    let timedOut = false;
+
+    if (controller && typeof controller.signal !== 'undefined') {
+      try {
+        options.signal = controller.signal;
+      } catch (signalError) {
+        void signalError;
+      }
+    }
+
+    let timeoutPromise = null;
+
+    if (typeof timeoutMs === 'number' && timeoutMs > 0 && typeof setTimeout === 'function') {
+      timeoutPromise = new Promise((_, reject) => {
+        try {
+          timeoutId = setTimeout(() => {
+            timedOut = true;
+            if (controller && typeof controller.abort === 'function') {
+              try {
+                controller.abort();
+              } catch (abortError) {
+                void abortError;
+              }
+            }
+            reject(createTimeoutError('Connectivity probe timed out'));
+          }, timeoutMs);
+        } catch (scheduleError) {
+          void scheduleError;
+          timeoutPromise = null;
+        }
+      });
+    }
+
+    const cleanup = () => {
+      if (timeoutId) {
+        try {
+          clearTimeout(timeoutId);
+        } catch (error) {
+          void error;
+        }
+      }
+    };
+
+    const fetchPromise = (() => {
+      try {
+        return fetchFn(url, options);
+      } catch (error) {
+        cleanup();
+        return Promise.reject(error);
+      }
+    })();
+
+    const racePromise = timeoutPromise ? Promise.race([fetchPromise, timeoutPromise]) : fetchPromise;
+
+    return racePromise
+      .then((value) => {
+        cleanup();
+        return { successful: true, value, timedOut: false };
+      })
+      .catch((error) => {
+        cleanup();
+        return { successful: false, error, timedOut };
+      });
+  }
+
+  function isSuccessfulConnectivityResponse(response) {
+    if (!response) {
+      return false;
+    }
+
+    try {
+      if (response.ok === true) {
+        return true;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    let status = 0;
+    try {
+      status = typeof response.status === 'number' ? response.status : 0;
+    } catch (error) {
+      void error;
+      status = 0;
+    }
+
+    if (status === 0) {
+      return true;
+    }
+
+    return status >= 200 && status < 400;
+  }
+
+  function resolveConnectivityProbeUrl(forceReloadUrl, locationLike) {
+    if (forceReloadUrl && typeof forceReloadUrl.nextHref === 'string' && forceReloadUrl.nextHref) {
+      return forceReloadUrl.nextHref;
+    }
+
+    if (forceReloadUrl && typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref) {
+      return forceReloadUrl.originalHref;
+    }
+
+    const href = readLocationHrefSafe(locationLike);
+    if (href) {
+      return href;
+    }
+
+    const pathname = readLocationPathnameSafe(locationLike);
+    if (pathname) {
+      return pathname;
+    }
+
+    return 'index.html';
+  }
+
+  async function probeReloadConnectivity({
+    navigatorLike,
+    windowLike,
+    locationLike,
+    fetchFn,
+    forceReloadUrl,
+    timeoutMs,
+  }) {
+    if (isNavigatorExplicitlyOffline(navigatorLike)) {
+      return { reachable: false, reason: 'offline' };
+    }
+
+    const effectiveFetch = fetchFn || resolveFetch(undefined, windowLike);
+
+    if (typeof effectiveFetch !== 'function') {
+      return { reachable: true, reason: 'fetch-unavailable' };
+    }
+
+    const probeUrl = resolveConnectivityProbeUrl(forceReloadUrl, locationLike);
+
+    let headFailureDetail = null;
+    const headResult = await fetchWithTimeout(
+      effectiveFetch,
+      probeUrl,
+      {
+        method: 'HEAD',
+        cache: 'no-store',
+        credentials: 'same-origin',
+      },
+      timeoutMs,
+    );
+
+    if (headResult.successful) {
+      if (isSuccessfulConnectivityResponse(headResult.value)) {
+        return { reachable: true, reason: 'head-ok' };
+      }
+
+      let status = 0;
+      try {
+        status = headResult.value && typeof headResult.value.status === 'number' ? headResult.value.status : 0;
+      } catch (statusError) {
+        void statusError;
+        status = 0;
+      }
+      headFailureDetail = { source: 'head', status };
+    } else if (headResult.timedOut) {
+      return { reachable: false, reason: 'timeout', detail: headResult.error };
+    } else if (headResult.error) {
+      headFailureDetail = { source: 'head', error: headResult.error };
+    }
+
+    const getResult = await fetchWithTimeout(
+      effectiveFetch,
+      probeUrl,
+      {
+        method: 'GET',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+          Pragma: 'no-cache',
+        },
+      },
+      timeoutMs,
+    );
+
+    if (getResult.successful) {
+      if (isSuccessfulConnectivityResponse(getResult.value)) {
+        return { reachable: true, reason: 'get-ok' };
+      }
+
+      return {
+        reachable: false,
+        reason: 'get-failed',
+        detail: {
+          status:
+            getResult.value && typeof getResult.value.status === 'number' ? getResult.value.status : undefined,
+          head: headFailureDetail,
+        },
+      };
+    }
+
+    if (getResult.timedOut) {
+      return { reachable: false, reason: 'timeout', detail: getResult.error };
+    }
+
+    return { reachable: false, reason: 'unreachable', detail: getResult.error || headFailureDetail || headResult.error };
   }
 
   function resolveXmlHttpRequest(windowLike) {
@@ -3113,7 +3346,19 @@
     );
 
     const navigatorLike = resolveNavigator(options.navigator);
-    if (isNavigatorExplicitlyOffline(navigatorLike)) {
+    const connectivity = await probeReloadConnectivity({
+      navigatorLike,
+      windowLike: win,
+      locationLike: location,
+      fetchFn: resolveFetch(options.fetch, win),
+      forceReloadUrl,
+      timeoutMs:
+        typeof options.connectivityProbeTimeoutMs === 'number'
+          ? options.connectivityProbeTimeoutMs
+          : FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS,
+    });
+
+    if (!connectivity.reachable) {
       const notifyOffline =
         typeof options.onOfflineReloadBlocked === 'function'
           ? options.onOfflineReloadBlocked
@@ -3121,15 +3366,19 @@
 
       if (typeof notifyOffline === 'function') {
         try {
-          notifyOffline({ reason: 'offline', source: 'reloadApp' });
+          notifyOffline({ reason: connectivity.reason || 'offline', source: 'reloadApp' });
         } catch (notifyError) {
           safeWarn('Failed to announce offline reload guard', notifyError);
         }
       }
 
+      if (connectivity.detail && connectivity.reason !== 'offline') {
+        safeWarn('Connectivity probe blocked forced reload', connectivity.detail);
+      }
+
       return {
         blocked: true,
-        reason: 'offline',
+        reason: connectivity.reason || 'offline',
         uiCacheCleared: false,
         serviceWorkersUnregistered: false,
         serviceWorkerStatusKnown: false,

@@ -305,7 +305,8 @@ localization steps.
   deleting projects or devices. The reload now preloads the fresh bundle while
   cleanup runs so updates land faster without risking stored data. It now
   triggers an immediate auto-save and backup flush before the caches clear so no
-  in-flight edits are lost.
+  in-flight edits are lost. A resilient connectivity probe now pings the server
+  before any cleanup so caches stay intact whenever the network is unreachable.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping

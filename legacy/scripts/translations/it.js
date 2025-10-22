@@ -181,7 +181,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "darkModeHelp": "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
       "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
       "reloadAppLabel": "Ricarica forzata",
-      "reloadAppHelp": "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. Il browser ora precarica il nuovo pacchetto mentre la pulizia è in corso così la nuova versione arriva più velocemente.",
+      "reloadAppHelp": "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. L'app ora controlla la connessione prima della pulizia e precarica il nuovo pacchetto così la nuova versione arriva più velocemente.",
       "favoriteToggleLabel": "Preferito",
       "favoriteToggleHelp": "Contrassegna la selezione corrente come preferita per fissarla in cima all'elenco.",
       "savedSetupsLabel": "Configurazioni salvate:",
