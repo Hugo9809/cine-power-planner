@@ -192,7 +192,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 - **Editor sensibile al monitoring** – Mostra campi aggiuntivi per monitor e distribuzione video solo quando richiesti dagli scenari.
 - **Controlli di accento e tipografia** – Regola colore di accento, dimensione e famiglia di font; i temi scuro, rosa e alto contrasto restano attivi tra le sessioni.
 - **Scorciatoie di ricerca globale** – Premi `/` o `Ctrl+K` (`⌘K` su macOS) per focalizzare subito la ricerca anche con navigazione mobile chiusa.
-- **Pulsante Forza ricarica** – Aggiorna le risorse del service worker senza eliminare progetti o dispositivi.
+- **Pulsante Forza ricarica** – Aggiorna le risorse del service worker senza eliminare progetti o dispositivi. Una sonda di connettività resiliente ora esegue un ping al server prima della pulizia, così le cache restano intatte se la rete manca.
 - **Preferiti fissati** – Aggiungi una stella alle voci per mantenere camere, batterie e accessori principali in cima e inclusi nei backup.
 - **Ripristino alle impostazioni di fabbrica con salvaguardia** – Scarica automaticamente un backup prima di cancellare progetti, dispositivi e preferenze.
 

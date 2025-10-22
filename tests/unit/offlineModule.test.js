@@ -237,6 +237,114 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp keeps caches when connectivity probe fails hard', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      onLine: true,
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve(['cine-power-planner-primary'])),
+      delete: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const fetchError = new TypeError('Network unreachable');
+    const fetchMock = jest.fn(() => Promise.reject(fetchError));
+
+    const reloadWindow = jest.fn();
+    const notifyOffline = jest.fn();
+
+    const result = await offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      fetch: fetchMock,
+      window: {},
+      reloadWindow,
+      onOfflineReloadBlocked: notifyOffline,
+    });
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(notifyOffline).toHaveBeenCalledWith({ reason: 'unreachable', source: 'reloadApp' });
+    expect(clearUiCacheStorageEntries).not.toHaveBeenCalled();
+    expect(navigatorMock.serviceWorker.getRegistrations).not.toHaveBeenCalled();
+    expect(cachesMock.keys).not.toHaveBeenCalled();
+    expect(reloadWindow).not.toHaveBeenCalled();
+    expect(result).toEqual(
+      expect.objectContaining({
+        blocked: true,
+        reason: 'unreachable',
+        reloadTriggered: false,
+        navigationTriggered: false,
+        uiCacheCleared: false,
+        cachesCleared: false,
+      }),
+    );
+
+    delete global.clearUiCacheStorageEntries;
+  });
+
+  test('reloadApp blocks when connectivity probe receives HTTP errors', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      onLine: true,
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve(['cine-power-planner-primary'])),
+      delete: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const headResponse = { ok: false, status: 503 };
+    const getResponse = { ok: false, status: 503 };
+    const fetchMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(headResponse))
+      .mockImplementationOnce(() => Promise.resolve(getResponse));
+
+    const reloadWindow = jest.fn();
+    const notifyOffline = jest.fn();
+
+    const result = await offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      fetch: fetchMock,
+      window: {},
+      reloadWindow,
+      onOfflineReloadBlocked: notifyOffline,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(notifyOffline).toHaveBeenCalledWith({ reason: 'get-failed', source: 'reloadApp' });
+    expect(clearUiCacheStorageEntries).not.toHaveBeenCalled();
+    expect(navigatorMock.serviceWorker.getRegistrations).not.toHaveBeenCalled();
+    expect(cachesMock.keys).not.toHaveBeenCalled();
+    expect(reloadWindow).not.toHaveBeenCalled();
+    expect(result).toEqual(
+      expect.objectContaining({
+        blocked: true,
+        reason: 'get-failed',
+        reloadTriggered: false,
+        navigationTriggered: false,
+        uiCacheCleared: false,
+        cachesCleared: false,
+      }),
+    );
+
+    delete global.clearUiCacheStorageEntries;
+  });
+
   test('reloadApp begins querying service worker registrations before clearing UI caches completes', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;

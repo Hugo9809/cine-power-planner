@@ -918,7 +918,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "cancelSettings": "Cancel",
       "cancelSettingsHelp": "Close Settings without saving; previous colors and logo are restored.",
       "reloadAppLabel": "Force reload",
-      "reloadAppHelp": "Clear cached files, unregister outdated service workers and reload without removing saved data. The browser now preloads the fresh bundle while cleanup runs so the new version appears faster.",
+      "reloadAppHelp": "Clear cached files, unregister outdated service workers and reload without removing saved data. The app now verifies connectivity before cleanup and preloads the fresh bundle so the new version appears faster.",
       "favoriteToggleLabel": "Toggle favorite",
       "favoriteToggleHelp": "Mark the current selection as a favorite to pin it to the top of the list.",
       "savedSetupsLabel": "Saved Projects:",

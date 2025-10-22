@@ -192,7 +192,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 - **Éditeur sensible au monitoring** – Affiche les champs de monitoring supplémentaires uniquement lorsque les scénarios l’exigent pour garder la création de règles focalisée.
 - **Contrôles d’accent et typographie** – Ajustez couleur d’accent, taille et famille de police ; les thèmes sombre, rose et contraste élevé persistent entre les sessions.
 - **Raccourcis de recherche globale** – Pressez `/` ou `Ctrl+K` (`⌘K` sur macOS) pour cibler la recherche instantanément, même avec la navigation mobile repliée.
-- **Bouton Forcer le rechargement** – Rafraîchit les ressources du service worker sans effacer projets ni appareils.
+- **Bouton Forcer le rechargement** – Rafraîchit les ressources du service worker sans effacer projets ni appareils. Une sonde de connectivité robuste interroge désormais le serveur avant le nettoyage pour préserver les caches lorsque le réseau est indisponible.
 - **Favoris épinglés** – Étoile les entrées pour garder caméras, batteries et accessoires préférés en tête de liste et inclus dans les backups.
 - **Réinitialisation usine sécurisée** – Télécharge automatiquement un backup avant toute suppression de projets, appareils ou préférences.
 
