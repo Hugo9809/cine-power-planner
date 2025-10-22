@@ -387,7 +387,7 @@
         variants.push(candidate);
       }
 
-      function createPinkModeNetworkRequestVariants(request, fallbackUrl) {
+      function createPinkModeNetworkRequestVariants(request, fallbackUrl, normalized) {
         const variants = [];
         const seen = new Set();
 
@@ -421,6 +421,53 @@
             seen,
             createPinkModeAssetRequest(url) || url
           );
+        }
+
+        if (typeof normalized === 'string' && normalized) {
+          const normalizedVariants = [];
+          normalizedVariants.push(normalized);
+
+          const normalizedWithoutLeadingDot =
+            normalized.charAt(0) === '.' ? normalized.slice(1) : normalized;
+          if (normalizedWithoutLeadingDot) {
+            normalizedVariants.push(normalizedWithoutLeadingDot);
+          }
+
+          if (normalized.charAt(0) !== '/') {
+            normalizedVariants.push(`./${normalized}`);
+            normalizedVariants.push(`/${normalized}`);
+          } else {
+            const trimmed = normalized.replace(/^\/+/, '');
+            if (trimmed) {
+              normalizedVariants.push(trimmed);
+              normalizedVariants.push(`./${trimmed}`);
+            }
+          }
+
+          const encoded = encodeURI(normalized);
+          if (encoded && encoded !== normalized) {
+            normalizedVariants.push(encoded);
+            if (encoded.charAt(0) !== '/') {
+              normalizedVariants.push(`./${encoded}`);
+              normalizedVariants.push(`/${encoded}`);
+            }
+            const decodedEncoded = decodePinkModeUriCandidate(encoded);
+            if (decodedEncoded) {
+              normalizedVariants.push(decodedEncoded);
+              if (decodedEncoded.charAt(0) !== '/') {
+                normalizedVariants.push(`./${decodedEncoded}`);
+                normalizedVariants.push(`/${decodedEncoded}`);
+              }
+            }
+          }
+
+          for (const variant of normalizedVariants) {
+            registerPinkModeNetworkVariant(
+              variants,
+              seen,
+              createPinkModeAssetRequest(variant) || variant
+            );
+          }
         }
 
         return variants;
@@ -522,7 +569,8 @@
 
           const networkCandidates = createPinkModeNetworkRequestVariants(
             request,
-            fallbackUrl
+            fallbackUrl,
+            normalized
           );
 
           for (const candidate of networkCandidates) {
