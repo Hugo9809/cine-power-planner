@@ -1,7 +1,9 @@
 /* global getSafeLocalStorage, SAFE_LOCAL_STORAGE */
 
 (function () {
-  const STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
+  const PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
+  const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
+  const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const LOAD_REASON_PREFIX = 'onboarding-tour:';
@@ -507,19 +509,22 @@
       if (!storage || typeof storage.getItem !== 'function') {
         continue;
       }
-      try {
-        const value = storage.getItem(STORAGE_KEY);
-        const parsed = parseStoredStateValue(value);
-        if (parsed) {
-          if (parsed.completed === true || parsed.skipped === true) {
-            return parsed;
+      for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        const key = STORAGE_KEYS[keyIndex];
+        try {
+          const value = storage.getItem(key);
+          const parsed = parseStoredStateValue(value);
+          if (parsed) {
+            if (parsed.completed === true || parsed.skipped === true) {
+              return parsed;
+            }
+            if (!fallbackState) {
+              fallbackState = parsed;
+            }
           }
-          if (!fallbackState) {
-            fallbackState = parsed;
-          }
+        } catch (error) {
+          void error;
         }
-      } catch (error) {
-        void error;
       }
     }
 

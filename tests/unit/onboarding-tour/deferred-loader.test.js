@@ -21,13 +21,15 @@ describe('onboarding loader hook', () => {
   }
 
   function createStorageStub(initialValue = null) {
-    let value = initialValue;
+    const values = new Map();
+    if (initialValue !== null && typeof initialValue !== 'undefined') {
+      values.set('cinePowerPlanner_onboardingTutorial', initialValue);
+      values.set('cameraPowerPlanner_onboardingTutorial', initialValue);
+    }
     return {
-      getItem: jest.fn(() => value),
+      getItem: jest.fn(key => (values.has(key) ? values.get(key) : null)),
       setItem: jest.fn((key, next) => {
-        if (key === 'cameraPowerPlanner_onboardingTutorial') {
-          value = next;
-        }
+        values.set(key, next);
       }),
     };
   }
