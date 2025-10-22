@@ -98,6 +98,10 @@ function collectServiceWorkerAssets(projectRoot) {
     }
   });
 
+  // Guarantee the manifest always lists itself so the service worker can recover
+  // after regeneration, even when the file is being created for the first time.
+  assets.add(normalizeAssetPath('service-worker-assets.js'));
+
   fs.readdirSync(normalizedRoot, { withFileTypes: true })
     .filter(entry => entry.isFile() && README_PATTERN.test(entry.name))
     .forEach(entry => {
