@@ -2,7 +2,9 @@
 
 Run this drill whenever service-worker assets, icons or persistence code change.
 It confirms cached builds match the repository and that offline safeguards keep
-protecting user data.
+protecting user data. Before starting, regenerate the manifest (`npm run generate:sw-assets`)
+and run `npm test -- service-worker-assets-manifest` so the guard rails confirm the
+manifest includes `./service-worker-assets.js`.
 
 ## Prerequisites
 
@@ -13,26 +15,32 @@ protecting user data.
 
 ## Drill steps
 
-1. **Prime the cache**
+1. **Verify the manifest list**
+   - Open `service-worker-assets.js` and confirm the array includes
+     `"./service-worker-assets.js"` (search within the file if needed).
+   - If it is missing, rerun `npm run generate:sw-assets` and investigate the
+     failing test before proceeding—offline reloads depend on this entry to ship
+     refreshed manifests.
+2. **Prime the cache**
    - Serve the repository locally and load `http://localhost:<port>/index.html`.
    - Wait for the service worker ready prompt; verify the **Force reload** action
      appears, then dismiss the prompt (close it or press <kbd>Esc</kbd>) so the
      cached build keeps running under service-worker control.
    - Capture console logs for cache population messages.
-2. **Offline validation**
+3. **Offline validation**
    - Disconnect the network.
    - Refresh the app; confirm icons, fonts and modules load from the cache.
    - Run a manual save and export a project bundle; verify no network requests
      occur.
-3. **Autosave cadence check**
+4. **Autosave cadence check**
    - Make >50 changes or wait 10 minutes to trigger autosave.
    - Confirm the autosave ledger logs the run and the cache remains intact.
-4. **Backup/restore rehearsal**
+5. **Backup/restore rehearsal**
    - Export a planner backup.
    - Clear application data (localStorage + caches).
    - Restore the backup via the sandbox, then promote it.
    - Ensure the service worker reinstalls seamlessly and logs the restore.
-5. **Cache reset test**
+6. **Cache reset test**
    - Click the toolbar’s 🔄 **Force reload** button (or open the help dialog and follow its Force reload link).
    - Confirm the app reloads cleanly, rehydrates from storage and preserves user
      data.

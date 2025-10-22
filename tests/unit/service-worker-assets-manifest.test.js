@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { collectServiceWorkerAssets } = require('../../tools/serviceWorkerAssetManifest');
 
@@ -29,6 +30,18 @@ function listTopLevelReadmes(directoryPath) {
 }
 
 describe('service worker asset manifest', () => {
+  test('includes manifest module even when the file is missing', () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cine-sw-assets-'));
+
+    try {
+      const generatedAssets = collectServiceWorkerAssets(tempRoot);
+
+      expect(generatedAssets).toContain('./service-worker-assets.js');
+    } finally {
+      fs.rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   test('matches generated manifest output', () => {
     const projectRoot = path.resolve(__dirname, '..', '..');
     const generatedAssets = collectServiceWorkerAssets(projectRoot);
