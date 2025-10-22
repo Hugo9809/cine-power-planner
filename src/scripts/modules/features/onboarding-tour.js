@@ -122,7 +122,9 @@
     return;
   }
 
-  const STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
+  const PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
+  const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
+  const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
   const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
@@ -1665,6 +1667,68 @@
     storedStateCacheSource = source || storedStateCacheSource || null;
   }
 
+    function createStorageEntry(serialized, key) {
+      if (typeof serialized !== 'string') {
+        return null;
+      }
+      const trimmed = serialized.trim();
+      const metrics = {
+        priority: key === PRIMARY_STORAGE_KEY ? 2 : 1,
+        version: 0,
+        hasContent: trimmed ? 1 : 0,
+        parsed: 0,
+        timestamp: 0,
+      };
+      let parsedValue = null;
+      let parseError = null;
+      try {
+        const candidate = JSON.parse(serialized);
+        if (candidate && typeof candidate === 'object') {
+          parsedValue = candidate;
+        }
+      } catch (error) {
+        parseError = error;
+      }
+      if (parsedValue) {
+        metrics.parsed = 1;
+        if (typeof parsedValue.timestamp === 'number' && !Number.isNaN(parsedValue.timestamp)) {
+          metrics.timestamp = parsedValue.timestamp;
+        }
+        if (parsedValue.version === STORAGE_VERSION) {
+          metrics.version = 2;
+        } else if (typeof parsedValue.version === 'number') {
+          metrics.version = 1;
+        }
+      }
+      return {
+        key,
+        raw: serialized,
+        parsed: parsedValue,
+        parseError,
+        metrics,
+      };
+    }
+
+    function isBetterStorageEntry(candidate, current) {
+      if (!candidate) {
+        return false;
+      }
+      if (!current) {
+        return true;
+      }
+      const fields = ['priority', 'version', 'hasContent', 'parsed', 'timestamp'];
+      for (let index = 0; index < fields.length; index += 1) {
+        const field = fields[index];
+        const candidateValue = candidate.metrics[field] || 0;
+        const currentValue = current.metrics[field] || 0;
+        if (candidateValue === currentValue) {
+          continue;
+        }
+        return candidateValue > currentValue;
+      }
+      return false;
+    }
+
     function loadStoredState() {
       const storages = collectStorageCandidates();
       if (!storages.length) {
@@ -1676,62 +1740,61 @@
         return fallbackState;
       }
 
-      let raw = null;
-      let cacheSource = null;
+      let bestEntry = null;
       let readError = null;
 
-      for (let index = 0; index < storages.length; index += 1) {
-        const storage = storages[index];
+      for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+        const storage = storages[storageIndex];
         if (!storage || typeof storage.getItem !== 'function') {
           continue;
         }
-        let candidate = null;
-        try {
-          candidate = storage.getItem(STORAGE_KEY);
-        } catch (error) {
-          if (!readError) {
-            readError = error;
-          }
-          continue;
-        }
-
-        if (candidate === null || typeof candidate === 'undefined') {
-          continue;
-        }
-
-        if (typeof candidate === 'string') {
-          if (!candidate && raw !== null) {
+        for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+          const key = STORAGE_KEYS[keyIndex];
+          let candidate = null;
+          try {
+            candidate = storage.getItem(key);
+          } catch (error) {
+            if (!readError) {
+              readError = error;
+            }
             continue;
           }
-          raw = candidate;
-          cacheSource = 'storage';
-          if (candidate) {
-            break;
-          }
-          continue;
-        }
 
-        try {
-          raw = JSON.stringify(candidate);
-          cacheSource = 'storage';
-          break;
-        } catch (stringifyError) {
-          void stringifyError;
-        }
-
-        try {
-          const coerced = String(candidate);
-          if (coerced) {
-            raw = coerced;
-            cacheSource = 'storage';
-            break;
+          if (candidate === null || typeof candidate === 'undefined') {
+            continue;
           }
-        } catch (coerceError) {
-          void coerceError;
+
+          let serialized = null;
+          if (typeof candidate === 'string') {
+            serialized = candidate;
+          } else {
+            try {
+              serialized = JSON.stringify(candidate);
+            } catch (stringifyError) {
+              void stringifyError;
+            }
+            if (serialized === null) {
+              try {
+                const coerced = String(candidate);
+                serialized = coerced;
+              } catch (coerceError) {
+                void coerceError;
+              }
+            }
+          }
+
+          if (typeof serialized !== 'string') {
+            continue;
+          }
+
+          const entry = createStorageEntry(serialized, key);
+          if (entry && (!bestEntry || isBetterStorageEntry(entry, bestEntry))) {
+            bestEntry = entry;
+          }
         }
       }
 
-      if (raw === null) {
+      if (!bestEntry) {
         if (storedStateCache && storedStateCacheSource === 'memory') {
           return storedStateCache;
         }
@@ -1743,9 +1806,13 @@
         return fallbackState;
       }
 
+      const raw = bestEntry.raw;
       if (typeof raw !== 'string' || !raw) {
         const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        updateStoredStateCache(fallbackState, raw, cacheSource || 'storage');
+        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+          return saveState(fallbackState);
+        }
+        updateStoredStateCache(fallbackState, raw, 'storage');
         return fallbackState;
       }
 
@@ -1753,32 +1820,42 @@
         return storedStateCache;
       }
 
-      try {
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object') {
-          const emptyState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-          updateStoredStateCache(emptyState, raw, cacheSource || 'storage');
-          return emptyState;
-        }
-        if (parsed.version !== STORAGE_VERSION) {
-          const migratedState = normalizeStateSnapshot({
-            ...parsed,
-            version: STORAGE_VERSION,
-            completed: false,
-            skipped: false,
-          });
-          updateStoredStateCache(migratedState, raw, cacheSource || 'storage');
-          return migratedState;
-        }
-        const normalized = normalizeStateSnapshot(parsed);
-        updateStoredStateCache(normalized, raw, cacheSource || 'storage');
-        return normalized;
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
+      if (bestEntry.parseError) {
+        safeWarn('cine.features.onboardingTour could not parse onboarding state.', bestEntry.parseError);
         const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        updateStoredStateCache(fallbackState, raw, cacheSource || 'storage');
+        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+          return saveState(fallbackState);
+        }
+        updateStoredStateCache(fallbackState, raw, 'storage');
         return fallbackState;
       }
+
+      const parsed = bestEntry.parsed;
+      if (!parsed || typeof parsed !== 'object') {
+        const emptyState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+          return saveState(emptyState);
+        }
+        updateStoredStateCache(emptyState, raw, 'storage');
+        return emptyState;
+      }
+
+      if (parsed.version !== STORAGE_VERSION) {
+        const migratedState = normalizeStateSnapshot({
+          ...parsed,
+          version: STORAGE_VERSION,
+          completed: false,
+          skipped: false,
+        });
+        return saveState(migratedState);
+      }
+
+      const normalized = normalizeStateSnapshot(parsed);
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(normalized);
+      }
+      updateStoredStateCache(normalized, raw, 'storage');
+      return normalized;
     }
 
     function saveState(nextState) {
@@ -1795,18 +1872,25 @@
       let persisted = false;
       let writeError = null;
 
-      for (let index = 0; index < storages.length; index += 1) {
-        const storage = storages[index];
+      for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+        const storage = storages[storageIndex];
         if (!storage || typeof storage.setItem !== 'function') {
           continue;
         }
-        try {
-          storage.setItem(STORAGE_KEY, serialized);
-          persisted = true;
-        } catch (error) {
-          if (!writeError) {
-            writeError = error;
+        let wroteToStorage = false;
+        for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+          const key = STORAGE_KEYS[keyIndex];
+          try {
+            storage.setItem(key, serialized);
+            wroteToStorage = true;
+          } catch (error) {
+            if (!writeError) {
+              writeError = error;
+            }
           }
+        }
+        if (wroteToStorage) {
+          persisted = true;
         }
       }
 
