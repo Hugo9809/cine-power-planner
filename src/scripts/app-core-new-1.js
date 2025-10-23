@@ -15179,15 +15179,32 @@ function dispatchGearProviderDataChanged(reason) {
 }
 
 function getContactsSnapshot() {
-  return contactsCache.map(contact => ({
-    id: contact.id,
-    name: contact.name || '',
-    role: contact.role || '',
-    phone: contact.phone || '',
-    email: contact.email || '',
-    avatar: contact.avatar || '',
-    label: getContactDisplayLabel(contact)
-  }));
+  return contactsCache.map(contact => {
+    if (!contact || typeof contact !== 'object') {
+      return null;
+    }
+    const createdAt = Number.isFinite(contact.createdAt) ? contact.createdAt : Date.now();
+    const updatedAt = Number.isFinite(contact.updatedAt) ? contact.updatedAt : createdAt;
+    const snapshot = {
+      id: contact.id,
+      name: contact.name || '',
+      role: contact.role || '',
+      phone: contact.phone || '',
+      email: contact.email || '',
+      website: contact.website || '',
+      notes: contact.notes || '',
+      avatar: contact.avatar || '',
+      createdAt,
+      updatedAt,
+    };
+    const label = typeof getContactDisplayLabel === 'function'
+      ? getContactDisplayLabel(contact)
+      : (contact.label || snapshot.name || snapshot.email || snapshot.phone || snapshot.id || '');
+    if (label) {
+      snapshot.label = label;
+    }
+    return snapshot;
+  }).filter(Boolean);
 }
 
 function assignUserProfileState(updates = {}) {
@@ -17569,6 +17586,7 @@ const sharedKeyMap = {
   autoGearCoverage: "z",
   diagramPositions: "y",
   metadata: "t",
+  contacts: "n",
 };
 const sharedKeyMapKeys = Object.keys(sharedKeyMap);
 const sharedHasOwn = Object.prototype.hasOwnProperty;

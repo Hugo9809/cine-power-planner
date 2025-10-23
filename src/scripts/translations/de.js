@@ -202,7 +202,7 @@
     "updateSetupBtn": "Aktualisieren",
     "clearFilter": "Filter löschen",
     "shareSetupBtn": "Projekt exportieren",
-    "shareSetupPrompt": "Projektdatei bereit zum Export.",
+    "shareSetupPrompt": "Projektdatei bereit zum Export. Crewkontakte werden mit exportiert.",
     "shareLinkCopied": "Projektdatei heruntergeladen.",
     "shareExportFailed": "Projekt-Export fehlgeschlagen.",
     "shareLinkTooLong": "Projektdaten sind zu groß zum Exportieren.",

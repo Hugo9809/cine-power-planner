@@ -202,7 +202,7 @@
     "updateSetupBtn": "Aggiorna",
     "clearFilter": "Cancella filtro",
     "shareSetupBtn": "Esporta progetto",
-    "shareSetupPrompt": "File di progetto pronto per l'esportazione.",
+    "shareSetupPrompt": "File di progetto pronto per l’esportazione. I contatti della troupe sono inclusi.",
     "shareLinkCopied": "File di progetto scaricato.",
     "shareExportFailed": "Esportazione del progetto non riuscita.",
     "shareLinkTooLong": "I dati del progetto sono troppo grandi per essere esportati.",

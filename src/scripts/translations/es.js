@@ -202,7 +202,7 @@
     "updateSetupBtn": "Actualizar",
     "clearFilter": "Limpiar filtro",
     "shareSetupBtn": "Exportar proyecto",
-    "shareSetupPrompt": "Archivo de proyecto listo para descargar.",
+    "shareSetupPrompt": "Archivo del proyecto listo para exportar. Los contactos del equipo se incluyen.",
     "shareLinkCopied": "Archivo de proyecto descargado.",
     "shareExportFailed": "Error al exportar el proyecto.",
     "shareLinkTooLong": "Los datos del proyecto son demasiado grandes para exportarlos.",

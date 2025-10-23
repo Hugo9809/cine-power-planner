@@ -40,9 +40,10 @@ workstations.
 ## Share & import
 
 - **Project export:** From the selector, choose **Export Project**. The bundle
-  includes project data, referenced custom devices, runtime estimates and (if
-  selected) automatic gear rules. Favorites and other global data remain
-  local—ship a full planner backup alongside the bundle when those must travel.
+  includes project data, crew contacts (with phone, email, website, notes and
+  avatars), referenced custom devices, runtime estimates and (if selected)
+  automatic gear rules. Favorites and other global data remain local—ship a full
+  planner backup alongside the bundle when those must travel.
 - **Share workflow:** Copy the bundle to the receiving workstation via physical
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to

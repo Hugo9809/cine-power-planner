@@ -37,7 +37,9 @@
           enhanceGearItemElement,
           settingsFocusScale, focusScalePreference: true, normalizeFocusScale,
           applyFocusScalePreference: true, applyTemperatureUnitPreference: true,
-          updateLensWorkflowCatalog, FOCUS_SCALE_STORAGE_KEY_NAME */
+          updateLensWorkflowCatalog, FOCUS_SCALE_STORAGE_KEY_NAME,
+          contactsCache: true, sortContacts, saveContactsToStorage, renderContactsList,
+          updateContactPickers, normalizeContactEntry, sanitizeContactValue */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
@@ -5337,11 +5339,166 @@ function applyImportedOwnedGearMarkers(markers, options = {}) {
   return applied;
 }
 
+function mergeSharedContactsIntoCache(sharedContacts) {
+  if (!Array.isArray(sharedContacts) || !sharedContacts.length) {
+    return { added: 0, updated: 0 };
+  }
+
+  if (typeof contactsCache === 'undefined') {
+    return { added: 0, updated: 0 };
+  }
+
+  const sanitize = value => {
+    if (typeof sanitizeContactValue === 'function') {
+      return sanitizeContactValue(value);
+    }
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
+  const existingContacts = Array.isArray(contactsCache) ? contactsCache.slice() : [];
+  let added = 0;
+  let updated = 0;
+
+  sharedContacts.forEach(entry => {
+    if (!entry || typeof entry !== 'object') {
+      return;
+    }
+
+    const normalized = typeof normalizeContactEntry === 'function'
+      ? normalizeContactEntry(entry)
+      : { ...entry };
+    if (!normalized || typeof normalized !== 'object') {
+      return;
+    }
+
+    const id = sanitize(normalized.id || entry.id);
+    if (!id) {
+      return;
+    }
+
+    const existingIndex = existingContacts.findIndex(contact => contact && contact.id === id);
+    const createdAt = Number.isFinite(normalized.createdAt)
+      ? normalized.createdAt
+      : Number.isFinite(entry.createdAt)
+        ? entry.createdAt
+        : Date.now();
+    const updatedAtCandidate = Number.isFinite(normalized.updatedAt)
+      ? normalized.updatedAt
+      : Number.isFinite(entry.updatedAt)
+        ? entry.updatedAt
+        : createdAt;
+
+    if (existingIndex !== -1) {
+      const existing = existingContacts[existingIndex];
+      let changed = false;
+      ['name', 'role', 'phone', 'email', 'website', 'notes'].forEach(field => {
+        const incoming = sanitize(
+          Object.prototype.hasOwnProperty.call(normalized, field)
+            ? normalized[field]
+            : entry[field]
+        );
+        if (!incoming) {
+          return;
+        }
+        const currentValue = sanitize(existing[field]);
+        if (!currentValue) {
+          existing[field] = incoming;
+          changed = true;
+        }
+      });
+      const incomingAvatar = sanitize(normalized.avatar || entry.avatar);
+      if (incomingAvatar && !sanitize(existing.avatar)) {
+        existing.avatar = incomingAvatar;
+        changed = true;
+      }
+      if (!Number.isFinite(existing.createdAt) && Number.isFinite(createdAt)) {
+        existing.createdAt = createdAt;
+        changed = true;
+      }
+      if (
+        Number.isFinite(updatedAtCandidate)
+        && (!Number.isFinite(existing.updatedAt) || existing.updatedAt < updatedAtCandidate)
+      ) {
+        existing.updatedAt = updatedAtCandidate;
+        changed = true;
+      } else if (changed && Number.isFinite(existing.updatedAt)) {
+        existing.updatedAt = Date.now();
+      } else if (changed && !Number.isFinite(existing.updatedAt)) {
+        existing.updatedAt = Date.now();
+      }
+      if (changed) {
+        updated += 1;
+      }
+      return;
+    }
+
+    const newContact = {
+      id,
+      name: sanitize(normalized.name || entry.name),
+      role: sanitize(normalized.role || entry.role),
+      phone: sanitize(normalized.phone || entry.phone),
+      email: sanitize(normalized.email || entry.email),
+      website: sanitize(normalized.website || entry.website),
+      notes: sanitize(normalized.notes || entry.notes),
+      avatar: sanitize(normalized.avatar || entry.avatar),
+      createdAt,
+      updatedAt: updatedAtCandidate,
+    };
+    if (!newContact.avatar) {
+      delete newContact.avatar;
+    }
+    existingContacts.push(newContact);
+    added += 1;
+  });
+
+  if (!added && !updated) {
+    return { added: 0, updated: 0 };
+  }
+
+  try {
+    if (typeof sortContacts === 'function') {
+      contactsCache = sortContacts(existingContacts);
+    } else {
+      contactsCache = existingContacts.filter(Boolean);
+    }
+  } catch (sortError) {
+    console.warn('Shared contact merge could not sort contacts', sortError);
+    contactsCache = existingContacts.filter(Boolean);
+  }
+
+  if (typeof saveContactsToStorage === 'function') {
+    try {
+      saveContactsToStorage(contactsCache);
+    } catch (saveError) {
+      console.warn('Shared contact merge could not persist contacts', saveError);
+    }
+  }
+  if (typeof renderContactsList === 'function') {
+    try {
+      renderContactsList();
+    } catch (renderError) {
+      void renderError;
+    }
+  }
+  if (typeof updateContactPickers === 'function') {
+    try {
+      updateContactPickers();
+    } catch (pickerError) {
+      void pickerError;
+    }
+  }
+
+  return { added, updated };
+}
+
 function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
       typeof shared === 'string' ? JSON.parse(shared) : shared
     );
+    if (decoded && decoded.contacts) {
+      mergeSharedContactsIntoCache(decoded.contacts);
+    }
     deactivateSharedImportProjectPreset();
     const sharedRulesFromData = Array.isArray(decoded.autoGearRules) ? decoded.autoGearRules : null;
     const providedRules = Array.isArray(options.sharedAutoGearRules) && options.sharedAutoGearRules.length
