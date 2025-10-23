@@ -22,7 +22,9 @@ describe('shared project gear list handling', () => {
         saveSetups: jest.fn(),
         loadSetups: jest.fn(() => ({})),
         updateCalculations: jest.fn(),
-        populateSetupSelect: jest.fn()
+        populateSetupSelect: jest.fn(),
+        loadOwnGear: jest.fn(() => []),
+        saveOwnGear: jest.fn(),
       }
     });
   });
@@ -255,6 +257,63 @@ describe('shared project gear list handling', () => {
     const importedCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
     expect(importedCalls.length).toBeGreaterThan(0);
     expect(importedCalls.some(([, data]) => data.gearListAndProjectRequirementsGenerated === true)).toBe(true);
+  });
+
+  test('applySharedSetup merges shared own gear items before markers render', () => {
+    const { utils, globals } = env;
+    const sharedData = {
+      setupName: 'Own Gear Import',
+      gearList: `
+        <h2>Own Gear Import</h2>
+        <h3>Gear List</h3>
+        <div class="gear-item" data-gear-name="Onboard Monitor" data-gear-own-gear-id="own-gear-1"></div>
+      `,
+      ownedGearMarkers: [
+        {
+          ownedId: 'own-gear-1',
+          providerValue: 'user',
+          providerLabel: 'Crew',
+          ownerDisplayName: 'Camera Dept.',
+          ownerProfileName: 'Camera Dept.',
+          ownerType: 'user',
+          contactId: '',
+          gearName: 'Onboard Monitor',
+        },
+      ],
+      ownedGearItems: [
+        { id: 'own-gear-1', name: 'Onboard Monitor', quantity: '2', notes: 'Calibrated weekly' },
+        { id: 'own-gear-2', name: 'Director Monitor', source: 'custom' },
+      ],
+    };
+
+    globals.loadOwnGear.mockReturnValue([
+      { id: 'own-gear-1', name: 'Onboard Monitor', notes: 'Local notes' },
+    ]);
+    globals.saveOwnGear.mockClear();
+
+    utils.applySharedSetup(sharedData);
+
+    expect(globals.saveOwnGear).toHaveBeenCalledTimes(1);
+    const savedRecords = globals.saveOwnGear.mock.calls[0][0];
+    expect(savedRecords).toEqual([
+      {
+        id: 'own-gear-1',
+        name: 'Onboard Monitor',
+        notes: 'Local notes\nCalibrated weekly',
+        quantity: '2',
+      },
+      {
+        id: 'own-gear-2',
+        name: 'Director Monitor',
+        source: 'custom',
+      },
+    ]);
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    const appliedBadges = gearListOutput.querySelectorAll('[data-gear-owned-export]');
+    expect(appliedBadges.length).toBeGreaterThan(0);
+
+    globals.loadOwnGear.mockReturnValue([]);
   });
 
   test('applySharedSetup saves unnamed imports under a generated key', () => {

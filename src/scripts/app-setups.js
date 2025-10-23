@@ -3249,6 +3249,7 @@ function createSharedProjectMetadata({
   hasAutoGearRules,
   includeOwnedGearMarks,
   hasOwnedGearMarkers,
+  hasOwnedGearItems,
 }) {
   const metadata = {
     type: 'camera-power-planner/project-bundle',
@@ -3256,6 +3257,7 @@ function createSharedProjectMetadata({
   };
 
   metadata.includesOwnedGearMarkers = Boolean(includeOwnedGearMarks && hasOwnedGearMarkers);
+  metadata.includesOwnedGearItems = Boolean(includeOwnedGearMarks && hasOwnedGearItems);
 
   const version = resolveLocalAppVersionForShare();
   if (version) {
@@ -3358,6 +3360,60 @@ function collectOwnedGearMarkersForExport(root) {
     markers.push(marker);
   });
   return markers;
+}
+
+function collectOwnedGearRecordsForExport(markers) {
+  if (!Array.isArray(markers) || !markers.length) {
+    return [];
+  }
+
+  const referencedIds = new Set();
+  for (let index = 0; index < markers.length; index += 1) {
+    const marker = markers[index];
+    if (!marker || typeof marker.ownedId !== 'string') {
+      continue;
+    }
+    const trimmedId = marker.ownedId.trim();
+    if (trimmedId) {
+      referencedIds.add(trimmedId);
+    }
+  }
+
+  if (!referencedIds.size) {
+    return [];
+  }
+
+  let storedRecords = [];
+  try {
+    storedRecords = loadOwnGearRecordsForEditor();
+  } catch (error) {
+    console.warn('Unable to read stored own gear records for export.', error);
+    storedRecords = [];
+  }
+
+  if (!Array.isArray(storedRecords) || !storedRecords.length) {
+    return [];
+  }
+
+  const exported = [];
+  const exportedIds = new Set();
+  for (let index = 0; index < storedRecords.length; index += 1) {
+    const record = storedRecords[index];
+    if (!record || typeof record !== 'object') {
+      continue;
+    }
+    const recordId = typeof record.id === 'string' ? record.id.trim() : '';
+    if (!recordId || !referencedIds.has(recordId) || exportedIds.has(recordId)) {
+      continue;
+    }
+    const normalized = normalizeOwnGearRecordForEditor(record);
+    if (normalized) {
+      exported.push({ ...normalized });
+      exportedIds.add(recordId);
+    }
+  }
+
+  return exported;
 }
 
 function applyOwnedGearMarkersToHtml(html, markers, options = {}) {
@@ -3525,6 +3581,9 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
     currentSetup.gearSelectors = gearSelectors;
   }
   const ownedGearMarkers = includeOwnedGear ? collectOwnedGearMarkersForExport(gearListOutput) : [];
+  const ownedGearRecords = includeOwnedGear && ownedGearMarkers.length
+    ? collectOwnedGearRecordsForExport(ownedGearMarkers)
+    : [];
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
   if (currentSetup.gearListAndProjectRequirementsGenerated) {
@@ -3541,6 +3600,9 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
         currentSetup.ownedGearMarkers = ownedGearMarkers.map((entry) => ({ ...entry }));
       }
     }
+  }
+  if (includeOwnedGear && ownedGearRecords.length) {
+    currentSetup.ownedGearItems = ownedGearRecords.map((entry) => ({ ...entry }));
   }
   if (currentSetup.gearListAndProjectRequirementsGenerated && projectInfoSnapshotForExport) {
     currentSetup.projectInfo = projectInfoSnapshotForExport;
@@ -3565,6 +3627,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
     hasAutoGearRules,
     includeOwnedGearMarks: includeOwnedGear,
     hasOwnedGearMarkers: ownedGearMarkers.length > 0,
+    hasOwnedGearItems: ownedGearRecords.length > 0,
   });
   if (metadata && typeof metadata === 'object') {
     currentSetup.metadata = metadata;
@@ -3595,6 +3658,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       includeAutoGear: Boolean(includeAutoGear),
       includeOwnedGear: Boolean(includeOwnedGear),
       ownedGearMarkerCount: Array.isArray(ownedGearMarkers) ? ownedGearMarkers.length : 0,
+      ownedGearItemCount: Array.isArray(ownedGearRecords) ? ownedGearRecords.length : 0,
       metadata: metadataFlags,
     };
   })();

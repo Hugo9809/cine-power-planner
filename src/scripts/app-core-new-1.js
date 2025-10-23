@@ -17563,6 +17563,7 @@ const sharedKeyMap = {
   gearSelectors: "e",
   gearList: "l",
   ownedGearMarkers: "u",
+  ownedGearItems: "n",
   changedDevices: "x",
   feedback: "f",
   autoGearRules: "a",

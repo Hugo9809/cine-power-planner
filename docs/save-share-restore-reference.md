@@ -41,8 +41,15 @@ workstations.
 
 - **Project export:** From the selector, choose **Export Project**. The bundle
   includes project data, referenced custom devices, runtime estimates and (if
-  selected) automatic gear rules. Favorites and other global data remain
-  local—ship a full planner backup alongside the bundle when those must travel.
+  selected) automatic gear rules. When you include owned gear, the share also
+  carries the referenced inventory entries so IDs, quantities, notes and
+  sourcing details match the markers rendered in the gear list. Favorites and
+  other global data remain local—ship a full planner backup alongside the
+  bundle when those must travel.
+- **Owned gear merge:** During import the planner merges shared owned-gear
+  entries by identifier before markers render. Existing local records keep their
+  notes and sourcing, while new quantities or notes from the bundle append to
+  avoid duplicates and preserve context.
 - **Share workflow:** Copy the bundle to the receiving workstation via physical
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to

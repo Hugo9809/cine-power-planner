@@ -682,4 +682,67 @@ describe('project sharing helpers', () => {
     createElementSpy.mockRestore();
     alertSpy.mockRestore();
   });
+
+  test('downloadSharedProject exports referenced owned gear records', () => {
+    env = setupScriptEnvironment();
+    const { downloadSharedProject } = env.utils;
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    gearListOutput.innerHTML = `
+      <div class="gear-item" data-gear-name="Onboard Monitor" data-gear-own-gear-id="own-gear-1" data-gear-provider="user" data-gear-provider-label="Crew"></div>
+      <div class="gear-item" data-gear-name="Wireless TX" data-gear-own-gear-id="own-gear-2" data-gear-provider="contact:ac" data-gear-provider-label="1st AC"></div>
+    `;
+
+    const originalLoadOwnGear = window.loadOwnGear;
+    window.loadOwnGear = jest.fn(() => [
+      { id: 'own-gear-1', name: 'Onboard Monitor', quantity: '1', notes: 'Calibrated weekly' },
+      { id: 'own-gear-2', name: 'Wireless TX', quantity: '2', source: 'custom' },
+      { id: 'own-gear-3', name: 'Spare Battery', quantity: '4' },
+    ]);
+
+    const capturedPayloads = [];
+    const OriginalBlob = global.Blob;
+    global.Blob = function MockBlob(parts, options) {
+      this.parts = parts;
+      this.options = options || {};
+    };
+
+    const clickSpy = jest
+      .spyOn(window.HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    const createSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockImplementation((blob) => {
+        const serialized = blob && Array.isArray(blob.parts) ? blob.parts.join('') : '';
+        if (serialized) {
+          capturedPayloads.push({ payload: JSON.parse(serialized), name: 'shared.json' });
+        }
+        return 'blob:owned-gear';
+      });
+    const revokeSpy = jest
+      .spyOn(window.URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    expect(() => downloadSharedProject('shared.json', false, true)).not.toThrow();
+    expect(capturedPayloads[0]).toBeDefined();
+    expect(capturedPayloads[0].payload.ownedGearItems).toEqual([
+      { id: 'own-gear-1', name: 'Onboard Monitor', quantity: '1', notes: 'Calibrated weekly' },
+      { id: 'own-gear-2', name: 'Wireless TX', quantity: '2', source: 'custom' },
+    ]);
+    expect(capturedPayloads[0].payload.metadata.includesOwnedGearItems).toBe(true);
+
+    clickSpy.mockRestore();
+    createSpy.mockRestore();
+    revokeSpy.mockRestore();
+    if (OriginalBlob) {
+      global.Blob = OriginalBlob;
+    } else {
+      delete global.Blob;
+    }
+    if (originalLoadOwnGear) {
+      window.loadOwnGear = originalLoadOwnGear;
+    } else {
+      delete window.loadOwnGear;
+    }
+  });
 });

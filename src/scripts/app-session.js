@@ -42,7 +42,8 @@
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
           ensureContactForImportedOwner, setGearItemProvider,
-          dispatchGearProviderDataChanged */
+          dispatchGearProviderDataChanged, loadOwnGear, saveOwnGear,
+          normalizeOwnGearRecord */
 // Keep a baseline set of match types so that the session search feature
 // continues to work even when globals have not been initialised yet (for
 // example during unit tests or offline restore flows).
@@ -5487,6 +5488,13 @@ function applySharedSetup(shared, options = {}) {
     if (decoded.gearSelectors && gearDisplayed) {
       applyGearListSelectors(decoded.gearSelectors);
     }
+    if (Array.isArray(decoded.ownedGearItems) && decoded.ownedGearItems.length) {
+      try {
+        mergeSharedOwnGearItems(decoded.ownedGearItems);
+      } catch (ownGearMergeError) {
+        console.warn('Unable to merge shared own gear entries during import.', ownGearMergeError);
+      }
+    }
     if (gearDisplayed && Array.isArray(decoded.ownedGearMarkers) && decoded.ownedGearMarkers.length) {
       applyImportedOwnedGearMarkers(decoded.ownedGearMarkers, { root: gearListOutput });
     }
@@ -5741,6 +5749,265 @@ function removeSharedQueryParamFromLocation() {
   if (currentUrl !== nextUrl) {
     history.replaceState(null, '', nextUrl);
   }
+}
+
+function normalizeSharedOwnGearEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  if (typeof normalizeOwnGearRecord === 'function') {
+    try {
+      const normalized = normalizeOwnGearRecord(entry);
+      if (normalized && typeof normalized === 'object') {
+        const normalizedId = typeof normalized.id === 'string' ? normalized.id.trim() : '';
+        const normalizedName = typeof normalized.name === 'string' ? normalized.name.trim() : '';
+        if (normalizedId && normalizedName) {
+          const result = { id: normalizedId, name: normalizedName };
+          if (typeof normalized.quantity === 'string' && normalized.quantity.trim()) {
+            result.quantity = normalized.quantity.trim();
+          }
+          if (typeof normalized.notes === 'string' && normalized.notes.trim()) {
+            result.notes = normalized.notes.trim();
+          }
+          if (typeof normalized.source === 'string' && normalized.source.trim()) {
+            result.source = normalized.source.trim();
+          }
+          return result;
+        }
+      }
+    } catch (normalizationError) {
+      console.warn('Unable to normalize shared own gear entry via runtime helper.', normalizationError);
+    }
+  }
+
+  const id = typeof entry.id === 'string' ? entry.id.trim() : '';
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!id || !name) {
+    return null;
+  }
+  const normalized = { id, name };
+  if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+    normalized.quantity = entry.quantity.trim();
+  }
+  if (typeof entry.notes === 'string' && entry.notes.trim()) {
+    normalized.notes = entry.notes.trim();
+  }
+  if (typeof entry.source === 'string' && entry.source.trim()) {
+    normalized.source = entry.source.trim();
+  }
+  return normalized;
+}
+
+function mergeOwnGearNotes(existingNotes, incomingNotes) {
+  const first = typeof existingNotes === 'string' ? existingNotes.trim() : '';
+  const second = typeof incomingNotes === 'string' ? incomingNotes.trim() : '';
+  if (!first && !second) {
+    return '';
+  }
+  if (!first) {
+    return second;
+  }
+  if (!second) {
+    return first;
+  }
+  if (first.toLowerCase() === second.toLowerCase()) {
+    return first;
+  }
+  const seen = new Set();
+  const combined = [];
+  [first, second].forEach(note => {
+    const trimmed = note.trim();
+    if (!trimmed) {
+      return;
+    }
+    const normalized = trimmed.toLowerCase();
+    if (seen.has(normalized)) {
+      return;
+    }
+    seen.add(normalized);
+    combined.push(trimmed);
+  });
+  return combined.join('\n');
+}
+
+function dispatchOwnGearChangeEvent() {
+  if (
+    typeof document === 'undefined'
+    || !document
+    || typeof document.dispatchEvent !== 'function'
+    || typeof CustomEvent !== 'function'
+  ) {
+    return;
+  }
+  try {
+    document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+  } catch (error) {
+    console.warn('Unable to dispatch own gear change event after shared import.', error);
+  }
+}
+
+function mergeSharedOwnGearItems(entries) {
+  if (!Array.isArray(entries) || !entries.length) {
+    return false;
+  }
+
+  const normalizedIncoming = entries
+    .map(normalizeSharedOwnGearEntry)
+    .filter(Boolean);
+
+  if (!normalizedIncoming.length) {
+    return false;
+  }
+
+  let storedRecords = [];
+  if (typeof loadOwnGear === 'function') {
+    try {
+      const loaded = loadOwnGear();
+      if (Array.isArray(loaded)) {
+        storedRecords = loaded.slice();
+      }
+    } catch (loadError) {
+      console.warn('Unable to load existing own gear before shared import merge.', loadError);
+      storedRecords = [];
+    }
+  }
+
+  const existingMap = new Map();
+  const order = [];
+  for (let index = 0; index < storedRecords.length; index += 1) {
+    const record = storedRecords[index];
+    if (!record || typeof record !== 'object') {
+      continue;
+    }
+    const normalized = normalizeSharedOwnGearEntry(record);
+    if (!normalized) {
+      continue;
+    }
+    const id = normalized.id;
+    if (existingMap.has(id)) {
+      continue;
+    }
+    order.push(id);
+    existingMap.set(id, { original: { ...record }, normalized });
+  }
+
+  let changed = false;
+
+  for (let index = 0; index < normalizedIncoming.length; index += 1) {
+    const entry = normalizedIncoming[index];
+    const id = entry.id;
+    if (!existingMap.has(id)) {
+      order.push(id);
+      existingMap.set(id, { original: { ...entry }, normalized: entry });
+      changed = true;
+      continue;
+    }
+
+    const currentInfo = existingMap.get(id);
+    const currentNormalized = currentInfo && currentInfo.normalized ? currentInfo.normalized : null;
+    const currentRecord = currentInfo && currentInfo.original ? { ...currentInfo.original } : {};
+
+    const currentName = currentNormalized && typeof currentNormalized.name === 'string'
+      ? currentNormalized.name
+      : '';
+    const incomingName = entry.name;
+    if (incomingName && incomingName !== currentName) {
+      const preferIncoming = !currentName || incomingName.length >= currentName.length;
+      if (preferIncoming || !currentRecord.name) {
+        currentRecord.name = incomingName;
+        changed = true;
+      }
+    }
+
+    const currentQuantity = currentNormalized && typeof currentNormalized.quantity === 'string'
+      ? currentNormalized.quantity
+      : '';
+    const incomingQuantity = typeof entry.quantity === 'string' ? entry.quantity : '';
+    if (!currentQuantity && incomingQuantity) {
+      currentRecord.quantity = incomingQuantity;
+      changed = true;
+    } else if (currentQuantity && incomingQuantity && currentQuantity !== incomingQuantity) {
+      if (incomingQuantity.length > currentQuantity.length) {
+        currentRecord.quantity = incomingQuantity;
+        changed = true;
+      }
+    }
+
+    const currentSource = currentNormalized && typeof currentNormalized.source === 'string'
+      ? currentNormalized.source
+      : '';
+    const incomingSource = typeof entry.source === 'string' ? entry.source : '';
+    if (!currentSource && incomingSource) {
+      currentRecord.source = incomingSource;
+      changed = true;
+    }
+
+    const currentNotes = currentNormalized && typeof currentNormalized.notes === 'string'
+      ? currentNormalized.notes
+      : '';
+    const combinedNotes = mergeOwnGearNotes(currentNotes, entry.notes || '');
+    if (combinedNotes !== currentNotes) {
+      if (combinedNotes) {
+        currentRecord.notes = combinedNotes;
+      } else if (Object.prototype.hasOwnProperty.call(currentRecord, 'notes')) {
+        delete currentRecord.notes;
+      }
+      changed = true;
+    }
+
+    existingMap.set(id, {
+      original: currentRecord,
+      normalized: normalizeSharedOwnGearEntry(currentRecord) || entry,
+    });
+  }
+
+  if (!changed && order.length) {
+    // No new data merged; nothing to persist.
+    return false;
+  }
+
+  const mergedList = [];
+  for (let index = 0; index < order.length; index += 1) {
+    const id = order[index];
+    const info = existingMap.get(id);
+    if (!info) {
+      continue;
+    }
+    const normalized = normalizeSharedOwnGearEntry(info.original);
+    if (normalized) {
+      mergedList.push(normalized);
+    }
+  }
+
+  // Capture any remaining entries that were only present in the shared payload.
+  existingMap.forEach((info, id) => {
+    if (!order.includes(id)) {
+      const normalized = normalizeSharedOwnGearEntry(info.original);
+      if (normalized) {
+        mergedList.push(normalized);
+        order.push(id);
+      }
+    }
+  });
+
+  if (!mergedList.length) {
+    return false;
+  }
+
+  if (typeof saveOwnGear !== 'function') {
+    return false;
+  }
+
+  try {
+    saveOwnGear(mergedList);
+    dispatchOwnGearChangeEvent();
+    return true;
+  } catch (saveError) {
+    console.warn('Unable to persist own gear items merged from shared import.', saveError);
+  }
+
+  return false;
 }
 
 function applySharedSetupFromUrl() {
