@@ -939,7 +939,7 @@
     "updateSetupBtn": "Update",
     "clearFilter": "Clear filter",
     "shareSetupBtn": "Export Project",
-    "shareSetupPrompt": "Project file ready to export.",
+    "shareSetupPrompt": "Project file ready to export. Crew contacts are included.",
     "shareLinkCopied": "Project file downloaded.",
     "shareExportFailed": "Project export failed.",
     "shareLinkTooLong": "Project data is too large to export.",

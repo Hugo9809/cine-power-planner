@@ -201,6 +201,7 @@ describe('project sharing helpers', () => {
       c: 'fx6',
       w: { manual: true },
       f: [],
+      n: [{ id: 'contact-1', name: 'Jordan', phone: '+1 555 0100' }],
     };
 
     const decoded = decodeSharedSetup(compact);
@@ -210,12 +211,14 @@ describe('project sharing helpers', () => {
       camera: 'fx6',
       powerSelection: { manual: true },
       feedback: [],
+      contacts: [{ id: 'contact-1', name: 'Jordan', phone: '+1 555 0100' }],
     });
     expect(compact).toEqual({
       s: 'Run and Gun',
       c: 'fx6',
       w: { manual: true },
       f: [],
+      n: [{ id: 'contact-1', name: 'Jordan', phone: '+1 555 0100' }],
     });
   });
 
@@ -456,6 +459,98 @@ describe('project sharing helpers', () => {
     expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
     const payload = JSON.parse(downloadPayloadMock.mock.calls[0][0]);
     expect(payload.metadata.includesAutoGearRules).toBe(true);
+  });
+
+  test('shared project bundle preserves contact metadata through import', () => {
+    const downloadBackupPayloadMock = jest.fn(payload => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        downloadBackupPayload: downloadBackupPayloadMock,
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'Contacts Export',
+          typedName: 'Contacts Export',
+          storageKey: 'Contacts Export',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const { downloadSharedProject, applySharedSetup } = env.utils;
+    const baseCreated = 1700000000000;
+    const baseUpdated = 1700000500000;
+
+    expect(Array.isArray(global.contactsCache)).toBe(true);
+    global.contactsCache.splice(0, global.contactsCache.length, {
+      id: 'contact-shared',
+      name: 'Jordan Fields',
+      role: 'producer',
+      phone: '+1 555 0100',
+      email: 'jordan@example.com',
+      website: 'https://jordanfilms.example',
+      notes: 'Prefers SMS updates',
+      avatar: 'data:image/png;base64,sharedavatar',
+      createdAt: baseCreated,
+      updatedAt: baseUpdated,
+    });
+
+    downloadSharedProject('contacts.json', false);
+
+    expect(downloadBackupPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadBackupPayloadMock.mock.calls[0];
+    const sharedData = JSON.parse(payload);
+
+    expect(Array.isArray(sharedData.contacts)).toBe(true);
+    expect(sharedData.contacts).toEqual([
+      expect.objectContaining({
+        id: 'contact-shared',
+        name: 'Jordan Fields',
+        phone: '+1 555 0100',
+        email: 'jordan@example.com',
+        website: 'https://jordanfilms.example',
+        notes: 'Prefers SMS updates',
+        avatar: 'data:image/png;base64,sharedavatar',
+        createdAt: baseCreated,
+        updatedAt: baseUpdated,
+      }),
+    ]);
+    expect(sharedData.contacts[0].label).toContain('Jordan');
+
+    global.contactsCache.splice(0, global.contactsCache.length, {
+      id: 'contact-shared',
+      name: 'Jordan Fields',
+      role: 'producer',
+      phone: 'Local line',
+      email: '',
+      website: '',
+      notes: '',
+      avatar: '',
+      createdAt: baseCreated,
+      updatedAt: baseCreated,
+    });
+
+    const renderContactsListSpy = jest
+      .spyOn(global, 'renderContactsList')
+      .mockImplementation(() => {});
+    const updateContactPickersSpy = jest
+      .spyOn(global, 'updateContactPickers')
+      .mockImplementation(() => {});
+
+    applySharedSetup(sharedData);
+
+    renderContactsListSpy.mockRestore();
+    updateContactPickersSpy.mockRestore();
+
+    const merged = global.contactsCache.find(contact => contact.id === 'contact-shared');
+    expect(merged).toBeDefined();
+    expect(merged.phone).toBe('Local line');
+    expect(merged.email).toBe('jordan@example.com');
+    expect(merged.website).toBe('https://jordanfilms.example');
+    expect(merged.notes).toBe('Prefers SMS updates');
+    expect(merged.avatar).toBe('data:image/png;base64,sharedavatar');
+    expect(merged.updatedAt).toBeGreaterThanOrEqual(baseUpdated);
   });
 
   test('downloadSharedProject includes split project and gear HTML when available', () => {

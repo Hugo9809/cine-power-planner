@@ -3560,6 +3560,64 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
     }
   }
 
+  const sharedContacts = (() => {
+    if (typeof getContactsSnapshot !== 'function') {
+      return [];
+    }
+    try {
+      const snapshot = getContactsSnapshot();
+      if (!Array.isArray(snapshot) || !snapshot.length) {
+        return [];
+      }
+      const sanitizeString = value => (typeof value === 'string' ? value.trim() : '');
+      return snapshot
+        .map(entry => {
+          if (!entry || typeof entry !== 'object') {
+            return null;
+          }
+          const id = sanitizeString(entry.id);
+          if (!id) {
+            return null;
+          }
+          const createdAt = Number.isFinite(entry.createdAt)
+            ? entry.createdAt
+            : Date.now();
+          const updatedAt = Number.isFinite(entry.updatedAt)
+            ? entry.updatedAt
+            : createdAt;
+          const base = {
+            id,
+            name: sanitizeString(entry.name),
+            role: sanitizeString(entry.role),
+            phone: sanitizeString(entry.phone),
+            email: sanitizeString(entry.email),
+            website: sanitizeString(entry.website),
+            notes: sanitizeString(entry.notes),
+            avatar: sanitizeString(entry.avatar),
+            createdAt,
+            updatedAt,
+          };
+          const label = sanitizeString(
+            typeof getContactDisplayLabel === 'function'
+              ? getContactDisplayLabel({ ...entry, ...base })
+              : (entry && typeof entry.label === 'string' ? entry.label : '')
+          );
+          if (label) {
+            base.label = label;
+          }
+          return base;
+        })
+        .filter(Boolean);
+    } catch (error) {
+      console.warn('Unable to prepare shared contact snapshot', error);
+      return [];
+    }
+  })();
+
+  if (sharedContacts.length) {
+    currentSetup.contacts = sharedContacts;
+  }
+
   const metadata = createSharedProjectMetadata({
     includeAutoGear,
     hasAutoGearRules,
@@ -3596,6 +3654,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       includeOwnedGear: Boolean(includeOwnedGear),
       ownedGearMarkerCount: Array.isArray(ownedGearMarkers) ? ownedGearMarkers.length : 0,
       metadata: metadataFlags,
+      contacts: Array.isArray(sharedContacts) ? sharedContacts.length : 0,
     };
   })();
 
