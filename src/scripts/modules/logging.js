@@ -3624,7 +3624,10 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
 
     Promise.resolve(readyPromise)
       .then(worker => {
-        if (!worker || typeof worker.postMessage !== 'function') {
+        const controller = serviceWorker.controller || null;
+        const targetWorker = worker || controller;
+
+        if (!targetWorker || typeof targetWorker.postMessage !== 'function') {
           finalizeServiceWorkerLogRequest(requestId);
           scheduleServiceWorkerLogPoll();
           return;
@@ -3659,7 +3662,7 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
 
         const postWithoutChannel = () => {
           try {
-            worker.postMessage(message);
+            targetWorker.postMessage(message);
           } catch (error) {
             safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
             finalizeWithPoll();
@@ -3685,11 +3688,11 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
             return false;
           }
 
-          if (serviceWorker.controller) {
-            return true;
+          if (!controller) {
+            return false;
           }
 
-          return Boolean(worker && typeof worker.state === 'string' && worker.state === 'activated');
+          return targetWorker === controller;
         };
 
         if (!shouldUseMessageChannel()) {
@@ -3713,7 +3716,7 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
         }
 
         try {
-          worker.postMessage(message, [channel.port2]);
+          targetWorker.postMessage(message, [channel.port2]);
         } catch (error) {
           closeMessageChannel(channel);
           channel = null;
