@@ -12752,7 +12752,23 @@ function gearListGenerateHtmlImpl(info = {}) {
 
 
 function gearListGetCurrentHtmlImpl() {
-    if (!gearListOutput && !projectRequirementsOutput) return '';
+    const scope = getGlobalScope();
+    const lastCombined = scope && typeof scope.__cineLastGearListHtml === 'string'
+        ? scope.__cineLastGearListHtml
+        : '';
+
+    if (!gearListOutput && !projectRequirementsOutput) {
+        return lastCombined;
+    }
+
+    const cannotCloneProject = projectRequirementsOutput
+        && typeof projectRequirementsOutput.cloneNode !== 'function';
+    const cannotCloneGearList = gearListOutput
+        && typeof gearListOutput.cloneNode !== 'function';
+
+    if (cannotCloneProject || cannotCloneGearList) {
+        return lastCombined;
+    }
 
     let projHtml = '';
     if (projectRequirementsOutput) {
@@ -12767,6 +12783,9 @@ function gearListGetCurrentHtmlImpl() {
     let gearHtml = '';
     if (gearListOutput) {
         const clone = gearListOutput.cloneNode(true);
+        const originalRoot = typeof gearListOutput.querySelector === 'function'
+            ? gearListOutput
+            : null;
         const actions = clone.querySelector('#gearListActions');
         if (actions) actions.remove();
         const editBtn = clone.querySelector('#editProjectBtn');
@@ -12774,7 +12793,7 @@ function gearListGetCurrentHtmlImpl() {
         ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
             const sel = clone.querySelector(`#gearList${role}Monitor`);
             if (sel) {
-                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor`);
+                const originalSel = originalRoot ? originalRoot.querySelector(`#gearList${role}Monitor`) : null;
                 const val = originalSel ? originalSel.value : sel.value;
                 Array.from(sel.options).forEach(opt => {
                     if (opt.value === val) {
@@ -12788,7 +12807,7 @@ function gearListGetCurrentHtmlImpl() {
         ['Director', 'Combo', 'Dop'].forEach(role => {
             const sel = clone.querySelector(`#gearList${role}Monitor15`);
             if (sel) {
-                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
+                const originalSel = originalRoot ? originalRoot.querySelector(`#gearList${role}Monitor15`) : null;
                 const val = originalSel ? originalSel.value : sel.value;
                 Array.from(sel.options).forEach(opt => {
                     if (opt.value === val) {
@@ -12801,7 +12820,7 @@ function gearListGetCurrentHtmlImpl() {
         });
         const cageSel = clone.querySelector('#gearListCage');
         if (cageSel) {
-            const originalSel = gearListOutput.querySelector('#gearListCage');
+            const originalSel = originalRoot ? originalRoot.querySelector('#gearListCage') : null;
             const val = originalSel ? originalSel.value : cageSel.value;
             Array.from(cageSel.options).forEach(opt => {
                 if (opt.value === val) {
@@ -12813,7 +12832,7 @@ function gearListGetCurrentHtmlImpl() {
         }
         const easyrigSel = clone.querySelector('#gearListEasyrig');
         if (easyrigSel) {
-            const originalSel = gearListOutput.querySelector('#gearListEasyrig');
+            const originalSel = originalRoot ? originalRoot.querySelector('#gearListEasyrig') : null;
             const val = originalSel ? originalSel.value : easyrigSel.value;
             Array.from(easyrigSel.options).forEach(opt => {
                 if (opt.value === val) {
@@ -12825,7 +12844,7 @@ function gearListGetCurrentHtmlImpl() {
         }
         const sliderSel = clone.querySelector('#gearListSliderBowl');
         if (sliderSel) {
-            const originalSel = gearListOutput.querySelector('#gearListSliderBowl');
+            const originalSel = originalRoot ? originalRoot.querySelector('#gearListSliderBowl') : null;
             const val = originalSel ? originalSel.value : sliderSel.value;
             Array.from(sliderSel.options).forEach(opt => {
                 if (opt.value === val) {
@@ -12838,7 +12857,7 @@ function gearListGetCurrentHtmlImpl() {
         const monitorBatterySelects = clone.querySelectorAll('select[data-monitor-battery-key]');
         monitorBatterySelects.forEach(sel => {
             if (!sel.id) return;
-            const originalSel = gearListOutput.querySelector(`#${sel.id}`);
+            const originalSel = originalRoot ? originalRoot.querySelector(`#${sel.id}`) : null;
             const val = originalSel ? originalSel.value : sel.value;
             Array.from(sel.options).forEach(opt => {
                 if (opt.value === val) {
@@ -12850,7 +12869,7 @@ function gearListGetCurrentHtmlImpl() {
         });
         const eyeSel = clone.querySelector('#gearListEyeLeatherColor');
         if (eyeSel) {
-            const originalSel = gearListOutput.querySelector('#gearListEyeLeatherColor');
+            const originalSel = originalRoot ? originalRoot.querySelector('#gearListEyeLeatherColor') : null;
             const val = originalSel ? originalSel.value : eyeSel.value;
             Array.from(eyeSel.options).forEach(opt => {
                 if (opt.value === val) {
@@ -12863,7 +12882,7 @@ function gearListGetCurrentHtmlImpl() {
         [1, 2].forEach(i => {
             const colorSel = clone.querySelector(`#gearListProGaffColor${i}`);
             if (colorSel) {
-                const originalSel = gearListOutput.querySelector(`#gearListProGaffColor${i}`);
+                const originalSel = originalRoot ? originalRoot.querySelector(`#gearListProGaffColor${i}`) : null;
                 const val = originalSel ? originalSel.value : colorSel.value;
                 Array.from(colorSel.options).forEach(opt => {
                     if (opt.value === val) {
@@ -12875,7 +12894,7 @@ function gearListGetCurrentHtmlImpl() {
             }
             const widthSel = clone.querySelector(`#gearListProGaffWidth${i}`);
             if (widthSel) {
-                const originalSel = gearListOutput.querySelector(`#gearListProGaffWidth${i}`);
+                const originalSel = originalRoot ? originalRoot.querySelector(`#gearListProGaffWidth${i}`) : null;
                 const val = originalSel ? originalSel.value : widthSel.value;
                 Array.from(widthSel.options).forEach(opt => {
                     if (opt.value === val) {
@@ -12904,16 +12923,16 @@ function gearListGetCurrentHtmlImpl() {
     }
 
     if (!projHtml && !gearHtml) {
-        return '';
+        return lastCombined;
     }
 
     const projectName = safeGetCurrentProjectName();
     const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
     const combined = `${titleHtml}${projHtml}${gearHtml}`.trim();
-    if (combined && typeof globalThis !== 'undefined') {
-        globalThis.__cineLastGearListHtml = combined;
+    if (combined && scope) {
+        scope.__cineLastGearListHtml = combined;
     }
-    return combined;
+    return combined || lastCombined;
 }
 
 function getGearListSelectors() {

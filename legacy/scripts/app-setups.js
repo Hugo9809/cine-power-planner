@@ -11921,7 +11921,14 @@ function gearListGenerateHtmlImpl() {
   return body;
 }
 function gearListGetCurrentHtmlImpl() {
-  if (!gearListOutput && !projectRequirementsOutput) return '';
+  var scope = getGlobalScope();
+  var lastCombined = scope && typeof scope.__cineLastGearListHtml === 'string' ? scope.__cineLastGearListHtml : '';
+  if (!gearListOutput && !projectRequirementsOutput) return lastCombined;
+  var cannotCloneProject = projectRequirementsOutput && typeof projectRequirementsOutput.cloneNode !== 'function';
+  var cannotCloneGearList = gearListOutput && typeof gearListOutput.cloneNode !== 'function';
+  if (cannotCloneProject || cannotCloneGearList) {
+    return lastCombined;
+  }
   var projHtml = '';
   if (projectRequirementsOutput) {
     var projClone = projectRequirementsOutput.cloneNode(true);
@@ -11934,6 +11941,7 @@ function gearListGetCurrentHtmlImpl() {
   var gearHtml = '';
   if (gearListOutput) {
     var clone = gearListOutput.cloneNode(true);
+    var originalRoot = typeof gearListOutput.querySelector === 'function' ? gearListOutput : null;
     var actions = clone.querySelector('#gearListActions');
     if (actions) actions.remove();
     var _editBtn = clone.querySelector('#editProjectBtn');
@@ -11941,7 +11949,7 @@ function gearListGetCurrentHtmlImpl() {
     ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(function (role) {
       var sel = clone.querySelector("#gearList".concat(role, "Monitor"));
       if (sel) {
-        var originalSel = gearListOutput.querySelector("#gearList".concat(role, "Monitor"));
+        var originalSel = originalRoot ? originalRoot.querySelector("#gearList".concat(role, "Monitor")) : null;
         var val = originalSel ? originalSel.value : sel.value;
         Array.from(sel.options).forEach(function (opt) {
           if (opt.value === val) {
@@ -11955,7 +11963,7 @@ function gearListGetCurrentHtmlImpl() {
     ['Director', 'Combo', 'Dop'].forEach(function (role) {
       var sel = clone.querySelector("#gearList".concat(role, "Monitor15"));
       if (sel) {
-        var originalSel = gearListOutput.querySelector("#gearList".concat(role, "Monitor15"));
+        var originalSel = originalRoot ? originalRoot.querySelector("#gearList".concat(role, "Monitor15")) : null;
         var val = originalSel ? originalSel.value : sel.value;
         Array.from(sel.options).forEach(function (opt) {
           if (opt.value === val) {
@@ -11968,7 +11976,7 @@ function gearListGetCurrentHtmlImpl() {
     });
     var cageSel = clone.querySelector('#gearListCage');
     if (cageSel) {
-      var originalSel = gearListOutput.querySelector('#gearListCage');
+      var originalSel = originalRoot ? originalRoot.querySelector('#gearListCage') : null;
       var val = originalSel ? originalSel.value : cageSel.value;
       Array.from(cageSel.options).forEach(function (opt) {
         if (opt.value === val) {
@@ -11980,7 +11988,7 @@ function gearListGetCurrentHtmlImpl() {
     }
     var easyrigSel = clone.querySelector('#gearListEasyrig');
     if (easyrigSel) {
-      var _originalSel = gearListOutput.querySelector('#gearListEasyrig');
+      var _originalSel = originalRoot ? originalRoot.querySelector('#gearListEasyrig') : null;
       var _val = _originalSel ? _originalSel.value : easyrigSel.value;
       Array.from(easyrigSel.options).forEach(function (opt) {
         if (opt.value === _val) {
@@ -11992,7 +12000,7 @@ function gearListGetCurrentHtmlImpl() {
     }
     var sliderSel = clone.querySelector('#gearListSliderBowl');
     if (sliderSel) {
-      var _originalSel2 = gearListOutput.querySelector('#gearListSliderBowl');
+      var _originalSel2 = originalRoot ? originalRoot.querySelector('#gearListSliderBowl') : null;
       var _val2 = _originalSel2 ? _originalSel2.value : sliderSel.value;
       Array.from(sliderSel.options).forEach(function (opt) {
         if (opt.value === _val2) {
@@ -12005,7 +12013,7 @@ function gearListGetCurrentHtmlImpl() {
     var monitorBatterySelects = clone.querySelectorAll('select[data-monitor-battery-key]');
     monitorBatterySelects.forEach(function (sel) {
       if (!sel.id) return;
-      var originalSel = gearListOutput.querySelector("#".concat(sel.id));
+      var originalSel = originalRoot ? originalRoot.querySelector("#".concat(sel.id)) : null;
       var val = originalSel ? originalSel.value : sel.value;
       Array.from(sel.options).forEach(function (opt) {
         if (opt.value === val) {
@@ -12017,7 +12025,7 @@ function gearListGetCurrentHtmlImpl() {
     });
     var eyeSel = clone.querySelector('#gearListEyeLeatherColor');
     if (eyeSel) {
-      var _originalSel3 = gearListOutput.querySelector('#gearListEyeLeatherColor');
+      var _originalSel3 = originalRoot ? originalRoot.querySelector('#gearListEyeLeatherColor') : null;
       var _val3 = _originalSel3 ? _originalSel3.value : eyeSel.value;
       Array.from(eyeSel.options).forEach(function (opt) {
         if (opt.value === _val3) {
@@ -12030,7 +12038,7 @@ function gearListGetCurrentHtmlImpl() {
     [1, 2].forEach(function (i) {
       var colorSel = clone.querySelector("#gearListProGaffColor".concat(i));
       if (colorSel) {
-        var _originalSel4 = gearListOutput.querySelector("#gearListProGaffColor".concat(i));
+        var _originalSel4 = originalRoot ? originalRoot.querySelector("#gearListProGaffColor".concat(i)) : null;
         var _val4 = _originalSel4 ? _originalSel4.value : colorSel.value;
         Array.from(colorSel.options).forEach(function (opt) {
           if (opt.value === _val4) {
@@ -12042,7 +12050,7 @@ function gearListGetCurrentHtmlImpl() {
       }
       var widthSel = clone.querySelector("#gearListProGaffWidth".concat(i));
       if (widthSel) {
-        var _originalSel5 = gearListOutput.querySelector("#gearListProGaffWidth".concat(i));
+        var _originalSel5 = originalRoot ? originalRoot.querySelector("#gearListProGaffWidth".concat(i)) : null;
         var _val5 = _originalSel5 ? _originalSel5.value : widthSel.value;
         Array.from(widthSel.options).forEach(function (opt) {
           if (opt.value === _val5) {
@@ -12070,15 +12078,15 @@ function gearListGetCurrentHtmlImpl() {
     gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
   }
   if (!projHtml && !gearHtml) {
-    return '';
+    return lastCombined;
   }
   var projectName = safeGetCurrentProjectName();
   var titleHtml = projectName ? "<h2>".concat(projectName, "</h2>") : '';
   var combined = "".concat(titleHtml).concat(projHtml).concat(gearHtml).trim();
-  if (combined && typeof globalThis !== 'undefined') {
-    globalThis.__cineLastGearListHtml = combined;
+  if (combined && scope) {
+    scope.__cineLastGearListHtml = combined;
   }
-  return combined;
+  return combined || lastCombined;
 }
 function getGearListSelectors() {
   var selectors = {};
