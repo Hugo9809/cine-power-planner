@@ -3316,7 +3316,7 @@ body.high-contrast .diff-value-changed {
   align-items: center;
   justify-content: center;
   padding: var(--modal-frame-padding);
-  z-index: 200;
+  z-index: 700;
   overflow: hidden;
   overscroll-behavior: contain;
 }
@@ -6511,7 +6511,7 @@ body.pink-mode .pink-mode-icon {
   left: 0;
   inset: 0;
   pointer-events: none;
-  z-index: 600;
+  z-index: 1200;
   overflow: visible;
 }
 
@@ -6561,6 +6561,8 @@ body.pink-mode .pink-mode-icon {
   touch-action: none;
   user-select: none;
   -webkit-user-drag: none;
+  mix-blend-mode: screen;
+  --pink-mode-animation-opacity-peak: 0.72;
 }
 
 .pink-mode-animation-instance.pink-mode-icon-rain svg {
@@ -6581,7 +6583,7 @@ body.pink-mode .pink-mode-icon {
   }
 
   18% {
-    opacity: 0.9;
+    opacity: var(--pink-mode-animation-opacity-peak, 0.9);
     transform: translate3d(
         var(--pink-mode-animation-translate-x-settle, 0px),
         var(--pink-mode-animation-translate-y-settle, 0px),
@@ -6592,7 +6594,7 @@ body.pink-mode .pink-mode-icon {
   }
 
   82% {
-    opacity: 0.9;
+    opacity: var(--pink-mode-animation-opacity-peak, 0.9);
     transform: translate3d(
         var(--pink-mode-animation-translate-x-drift, 0px),
         var(--pink-mode-animation-translate-y-drift, -4%),
@@ -6623,7 +6625,7 @@ body.pink-mode .pink-mode-icon {
   }
 
   12% {
-    opacity: 1;
+    opacity: var(--pink-mode-animation-opacity-peak, 1);
     transform: translate3d(0, -2vh, 0)
       scale(var(--pink-mode-rain-scale, 1))
       rotate(var(--pink-mode-rain-rotation, 0deg));
