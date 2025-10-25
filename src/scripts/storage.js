@@ -413,6 +413,7 @@ var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
+var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
 var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
   typeof Symbol === 'function'
     ? Symbol.for('cinePowerPlanner.mountVoltageKey')
@@ -5482,6 +5483,7 @@ var SIMPLE_STORAGE_KEYS = [
   'fontFamily',
   'language',
   'iosPwaHelpShown',
+  CAMERA_COLOR_STORAGE_KEY,
   TEMPERATURE_UNIT_STORAGE_KEY_NAME,
 ];
 
@@ -14395,6 +14397,7 @@ function clearAllData() {
     'fontFamily',
     'language',
     'iosPwaHelpShown',
+    CAMERA_COLOR_STORAGE_KEY,
   ];
   preferenceKeys.forEach((key) => {
     deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
@@ -14696,6 +14699,28 @@ function clearAllData() {
     const focusScale = readLocalStorageValue(FOCUS_SCALE_STORAGE_KEY_NAME);
     if (focusScale) {
       preferences.focusScale = focusScale;
+    }
+
+    const cameraColorsRaw = readLocalStorageValue(CAMERA_COLOR_STORAGE_KEY);
+    if (cameraColorsRaw) {
+      let parsedCameraColors = null;
+      if (typeof cameraColorsRaw === 'string') {
+        const trimmedCameraColors = cameraColorsRaw.trim();
+        if (trimmedCameraColors) {
+          try {
+            parsedCameraColors = JSON.parse(trimmedCameraColors);
+          } catch (cameraColorParseError) {
+            console.warn('Failed to parse stored camera color preferences for backup', cameraColorParseError);
+            parsedCameraColors = null;
+          }
+        }
+      }
+
+      if (parsedCameraColors && typeof parsedCameraColors === 'object') {
+        preferences.cameraColors = storageJsonDeepClone(parsedCameraColors);
+      } else if (typeof cameraColorsRaw === 'string' && cameraColorsRaw.trim()) {
+        preferences.cameraColors = cameraColorsRaw;
+      }
     }
 
     return preferences;
@@ -15288,6 +15313,7 @@ function convertStorageSnapshotToData(snapshot) {
     'fontFamily',
     'language',
     'iosPwaHelpShown',
+    CAMERA_COLOR_STORAGE_KEY,
   ];
 
   const mountVoltageKeyName = getMountVoltageStorageKeyName();
@@ -15465,6 +15491,16 @@ function convertStorageSnapshotToData(snapshot) {
     }
   }
 
+  const cameraColorsEntry = readSnapshotEntry(snapshot, CAMERA_COLOR_STORAGE_KEY);
+  if (cameraColorsEntry) {
+    markSnapshotEntry(cameraColorsEntry);
+    const storedCameraColors = parseSnapshotJSONValue(cameraColorsEntry);
+    if (storedCameraColors !== undefined) {
+      preferences.cameraColors = storedCameraColors;
+      hasAssignments = true;
+    }
+  }
+
   const mountVoltageEntry = readSnapshotEntry(snapshot, mountVoltageKeyName);
   if (mountVoltageEntry) {
     markSnapshotEntry(mountVoltageEntry);
@@ -15503,6 +15539,7 @@ function importAllData(allData, options = {}) {
 
   const hasOwn = (key) => Object.prototype.hasOwnProperty.call(allData, key);
   const mountVoltageKeyName = getMountVoltageStorageKeyName();
+  const cameraColorKeyName = CAMERA_COLOR_STORAGE_KEY;
 
   if (hasOwn('devices')) {
     saveDeviceData(allData.devices);
@@ -15630,6 +15667,69 @@ function importAllData(allData, options = {}) {
         if (typeof resetMountVoltagePreferences === 'function') {
           resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
         }
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, 'cameraColors')) {
+      const rawCameraColors = prefs.cameraColors;
+      const applyImportedCameraColors = (palette) => {
+        if (!palette || typeof palette !== 'object') {
+          return false;
+        }
+
+        let applied = false;
+        if (typeof window !== 'undefined' && window && typeof window.setCameraLetterColors === 'function') {
+          try {
+            window.setCameraLetterColors(palette);
+            applied = true;
+          } catch (cameraColorApplyError) {
+            console.warn('Unable to apply imported camera color preferences', cameraColorApplyError);
+            applied = false;
+          }
+        }
+
+        let serializedPalette = null;
+        try {
+          serializedPalette = JSON.stringify(palette);
+        } catch (cameraColorSerializeError) {
+          console.warn('Unable to serialize imported camera color preferences', cameraColorSerializeError);
+          serializedPalette = null;
+        }
+
+        if (serializedPalette) {
+          try {
+            safeSetLocalStorage(cameraColorKeyName, serializedPalette);
+          } catch (cameraColorPersistError) {
+            console.warn('Unable to persist imported camera color preferences', cameraColorPersistError);
+          }
+        }
+
+        return applied;
+      };
+
+      if (rawCameraColors && typeof rawCameraColors === 'object') {
+        applyImportedCameraColors(rawCameraColors);
+      } else if (typeof rawCameraColors === 'string') {
+        const trimmedCameraColors = rawCameraColors.trim();
+        if (trimmedCameraColors) {
+          let parsedCameraColors = null;
+          try {
+            parsedCameraColors = JSON.parse(trimmedCameraColors);
+          } catch (cameraColorParseError) {
+            console.warn('Unable to parse imported camera color palette', cameraColorParseError);
+            parsedCameraColors = null;
+          }
+          if (parsedCameraColors && typeof parsedCameraColors === 'object') {
+            applyImportedCameraColors(parsedCameraColors);
+          } else {
+            try {
+              safeSetLocalStorage(cameraColorKeyName, trimmedCameraColors);
+            } catch (cameraColorStoreError) {
+              console.warn('Unable to store raw imported camera color palette', cameraColorStoreError);
+            }
+          }
+        }
+      } else if (rawCameraColors === null) {
+        safeSetLocalStorage(cameraColorKeyName, null);
       }
     }
   }

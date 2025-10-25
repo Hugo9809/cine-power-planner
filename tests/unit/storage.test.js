@@ -89,6 +89,7 @@ const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
 const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
 const FULL_BACKUP_HISTORY_KEY = 'cameraPowerPlanner_fullBackups';
+const CAMERA_COLOR_KEY = 'cameraPowerPlanner_cameraColors';
 
 const BACKUP_SUFFIX = '__backup';
 const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
@@ -2210,6 +2211,12 @@ describe('export/import all data', () => {
     localStorage.setItem('language', 'de');
     localStorage.setItem('iosPwaHelpShown', 'true');
     localStorage.setItem(TEMPERATURE_UNIT_KEY, 'fahrenheit');
+    const cameraPalette = {
+      A: '#112233',
+      B: '#445566',
+      C: '#778899',
+    };
+    localStorage.setItem(CAMERA_COLOR_KEY, JSON.stringify(cameraPalette));
     localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
     localStorage.setItem(
       'cameraPowerPlanner_customFonts',
@@ -2275,6 +2282,7 @@ describe('export/import all data', () => {
         language: 'de',
         iosPwaHelpShown: true,
         temperatureUnit: 'fahrenheit',
+        cameraColors: cameraPalette,
       },
       customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
       customFonts: [
@@ -3260,6 +3268,47 @@ describe('migration backups before overwriting data', () => {
     const parsed = JSON.parse(rawBackup);
     expect(parsed.data).toEqual(legacyPayload.data);
     expect(parsed.createdAt).toBe(new Date(numericTimestamp).toISOString());
+  });
+
+  test('camera colour palette survives export/import round trip', () => {
+    const palette = {
+      A: '#aa0000',
+      B: '#00aa00',
+      C: '#0000aa',
+      D: '#aaaa00',
+    };
+
+    localStorage.setItem(CAMERA_COLOR_KEY, JSON.stringify(palette));
+
+    const exported = exportAllData();
+    expect(exported.preferences).toEqual(expect.objectContaining({ cameraColors: palette }));
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    const previousSetter = window.setCameraLetterColors;
+    const appliedPalettes = [];
+    window.setCameraLetterColors = jest.fn((incomingPalette) => {
+      appliedPalettes.push(incomingPalette);
+      localStorage.setItem(CAMERA_COLOR_KEY, JSON.stringify(incomingPalette));
+    });
+
+    try {
+      importAllData(exported);
+    } finally {
+      if (typeof previousSetter === 'function') {
+        window.setCameraLetterColors = previousSetter;
+      } else {
+        delete window.setCameraLetterColors;
+      }
+    }
+
+    expect(appliedPalettes).toHaveLength(1);
+    expect(appliedPalettes[0]).toEqual(palette);
+
+    const storedPaletteRaw = localStorage.getItem(CAMERA_COLOR_KEY);
+    expect(typeof storedPaletteRaw).toBe('string');
+    expect(JSON.parse(storedPaletteRaw)).toEqual(palette);
   });
 });
 
