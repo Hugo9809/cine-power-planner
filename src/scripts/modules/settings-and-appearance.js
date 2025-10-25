@@ -1370,8 +1370,15 @@
       }
     }
 
-    function handlePinkModeIconPress() {
-      triggerPinkModeIconRain();
+    function handlePinkModeIconPress(nextState) {
+      const shouldTrigger =
+        typeof nextState === 'boolean'
+          ? nextState
+          : isPinkModeActive();
+
+      if (shouldTrigger) {
+        triggerPinkModeIconRain();
+      }
     }
 
     function startPinkModeAnimatedIconRotation() {
