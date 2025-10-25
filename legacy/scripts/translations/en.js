@@ -178,7 +178,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "featureSearchTypeDevice": "Device",
       "featureSearchTypeHelp": "Help topic",
       "darkModeHelp": "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
-      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time.",
+      "pinkModeHelp": "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time. Press the unicorn icon once to trigger a burst of pink icon rain.",
       "settingsButton": "Settings",
       "settingsButtonHelp": "Open Settings to personalize language, colors, fonts, accessibility options and backups.",
       "settingsHeading": "Settings",

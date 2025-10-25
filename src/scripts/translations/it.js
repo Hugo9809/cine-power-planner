@@ -187,7 +187,7 @@
     "featureSearchTypeDevice": "Dispositivo",
     "featureSearchTypeHelp": "Argomento di supporto",
     "darkModeHelp": "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
-    "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
+    "pinkModeHelp": "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva. Tocca una volta l’icona dell’unicorno per avviare una pioggia di icone rosa.",
     "reloadAppLabel": "Ricarica forzata",
     "reloadAppHelp": "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. L'app ora controlla la connessione prima della pulizia e precarica il nuovo pacchetto così la nuova versione arriva più velocemente.",
     "reloadAppOfflineNotice": "Offline: il ricaricamento forzato verifica prima la connessione. Ricollegati e riprova.",

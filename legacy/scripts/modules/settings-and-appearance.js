@@ -592,12 +592,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var pinkModeIconRotationTimer = null;
     var pinkModeIconIndex = 0;
-    var PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
-    var PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS = 6000;
     var PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     var PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
     var PINK_MODE_ICON_INTERVAL_MS = context.pinkModeIconIntervalMs || 1500;
-    var pinkModeIconPressTimestamps = [];
     var pinkModeEnabled = false;
     var settingsInitialPinkMode = false;
     var settingsInitialTemperatureUnit = 'celsius';
@@ -1248,23 +1245,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-    function prunePinkModeIconPressHistory(now) {
-      var cutoff = now - PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS;
-      if (cutoff <= 0 || !pinkModeIconPressTimestamps.length) {
-        return;
-      }
-      pinkModeIconPressTimestamps = pinkModeIconPressTimestamps.filter(function (timestamp) {
-        return timestamp >= cutoff;
-      });
-    }
     function handlePinkModeIconPress() {
-      var now = Date.now();
-      prunePinkModeIconPressHistory(now);
-      pinkModeIconPressTimestamps.push(now);
-      if (pinkModeIconPressTimestamps.length >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT && typeof icons.triggerPinkModeIconRain === 'function') {
-        pinkModeIconPressTimestamps = [];
-        triggerPinkModeIconRain();
-      }
+      triggerPinkModeIconRain();
     }
     function startPinkModeAnimatedIconRotation() {
       startPinkModeIconRotation();
