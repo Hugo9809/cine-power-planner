@@ -1477,7 +1477,7 @@ function generatePrintableOverview() {
   var gearListHtml = gearSectionHtml || '';
   var deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
   var deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
-  var gearListActionsHtml = gearListHtml ? "<div class=\"overview-gear-actions\"><button id=\"overviewDeleteGearListBtn\" class=\"overview-delete-gear-btn\" title=\"".concat(escapeHtmlSafe(deleteGearListHelp), "\" data-help=\"").concat(escapeHtmlSafe(deleteGearListHelp), "\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF254;</span>").concat(escapeHtmlSafe(deleteGearListLabel), "</button></div>") : '';
+  var gearListActionsHtml = '';
   var logoHtml = customLogo ? "<img id=\"printLogo\" src=\"".concat(customLogo, "\" alt=\"Logo\" />") : '';
   var contentClass = customLogo ? 'logo-present' : '';
   var generatedOnDisplay = "".concat(escapeHtmlSafe(generatedOnDisplayLabel), " ").concat(escapeHtmlSafe(dateTimeString));
@@ -1511,6 +1511,20 @@ function generatePrintableOverview() {
     overviewDialog.setAttribute('data-overview-outside-close', '');
   }
   var content = overviewDialog.querySelector('#overviewDialogContent');
+
+  if (content) {
+    var overviewGearActions = content.querySelector('.overview-gear-actions');
+    if (overviewGearActions && typeof overviewGearActions.remove === 'function') {
+      overviewGearActions.remove();
+    }
+
+    var addItemButtons = content.querySelectorAll('.gear-custom-add-btn, [data-gear-custom-add]');
+    addItemButtons.forEach(function (button) {
+      if (button && typeof button.remove === 'function') {
+        button.remove();
+      }
+    });
+  }
   var runConfiguredPrintWorkflow = function runConfiguredPrintWorkflow() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!overviewDialog || !content) {
