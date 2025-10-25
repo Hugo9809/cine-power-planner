@@ -1731,15 +1731,6 @@
 
     function loadStoredState() {
       const storages = collectStorageCandidates();
-      if (!storages.length) {
-        if (storedStateCache && storedStateCacheSource === 'memory') {
-          return storedStateCache;
-        }
-        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        updateStoredStateCache(fallbackState, null, 'memory');
-        return fallbackState;
-      }
-
       let bestEntry = null;
       let readError = null;
 
@@ -1794,6 +1785,15 @@
         }
       }
 
+      if (!storages.length && !bestEntry) {
+        if (storedStateCache && storedStateCacheSource === 'memory') {
+          return storedStateCache;
+        }
+        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+        updateStoredStateCache(fallbackState, null, 'memory');
+        return fallbackState;
+      }
+
       if (!bestEntry) {
         if (storedStateCache && storedStateCacheSource === 'memory') {
           return storedStateCache;
@@ -1807,12 +1807,13 @@
       }
 
       const raw = bestEntry.raw;
+      const sourceTag = 'storage';
       if (typeof raw !== 'string' || !raw) {
         const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
         if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
           return saveState(fallbackState);
         }
-        updateStoredStateCache(fallbackState, raw, 'storage');
+        updateStoredStateCache(fallbackState, raw, sourceTag);
         return fallbackState;
       }
 
@@ -1826,7 +1827,7 @@
         if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
           return saveState(fallbackState);
         }
-        updateStoredStateCache(fallbackState, raw, 'storage');
+        updateStoredStateCache(fallbackState, raw, sourceTag);
         return fallbackState;
       }
 
@@ -1836,7 +1837,7 @@
         if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
           return saveState(emptyState);
         }
-        updateStoredStateCache(emptyState, raw, 'storage');
+        updateStoredStateCache(emptyState, raw, sourceTag);
         return emptyState;
       }
 
@@ -1854,7 +1855,7 @@
       if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
         return saveState(normalized);
       }
-      updateStoredStateCache(normalized, raw, 'storage');
+      updateStoredStateCache(normalized, raw, sourceTag);
       return normalized;
     }
 

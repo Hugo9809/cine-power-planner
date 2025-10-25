@@ -763,4 +763,5 @@ describe('onboarding tour manual start', () => {
       delete global.sessionStorage;
     }
   });
+
 });
