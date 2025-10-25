@@ -10,6 +10,11 @@ const LOG_ENTRY_MESSAGE_TYPE = 'cine-sw:log-entry';
 const LOG_STATE_REQUEST_TYPE = 'cine-sw:log-state-request';
 const LOG_STATE_RESPONSE_TYPE = 'cine-sw:log-state';
 const CACHE_MATCH_IGNORE_SEARCH_OPTIONS = Object.freeze({ ignoreSearch: true });
+const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
+const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
+const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
+const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
+const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
 
 let logEntryCounter = 0;
 let logBroadcastChannel = null;
@@ -636,6 +641,76 @@ function scheduleCachePut(event, request, response, errorMessage, cachePromiseOv
   cachePutTask.catch(() => {});
 }
 
+function isConnectivityProbeRequest(request, requestUrl) {
+  if (!request) {
+    return false;
+  }
+
+  try {
+    if (
+      request.headers &&
+      typeof request.headers.get === 'function' &&
+      request.headers.get(CONNECTIVITY_PROBE_HEADER)
+    ) {
+      return true;
+    }
+  } catch (headerError) {
+    serviceWorkerLog.warn('Unable to inspect connectivity probe header.', headerError);
+  }
+
+  if (!requestUrl) {
+    return false;
+  }
+
+  try {
+    if (
+      requestUrl.searchParams &&
+      typeof requestUrl.searchParams.has === 'function' &&
+      requestUrl.searchParams.has(CONNECTIVITY_PROBE_QUERY_PARAM)
+    ) {
+      return true;
+    }
+  } catch (searchError) {
+    serviceWorkerLog.warn('Unable to inspect connectivity probe query parameter.', searchError);
+  }
+
+  return false;
+}
+
+function annotateConnectivityProbeResponse(response, marker) {
+  if (!response || typeof Response !== 'function') {
+    return response;
+  }
+
+  let resultMarker = marker;
+
+  if (typeof resultMarker !== 'string') {
+    try {
+      resultMarker = String(marker);
+    } catch (stringifyError) {
+      serviceWorkerLog.warn('Unable to stringify connectivity probe marker.', stringifyError);
+      return response;
+    }
+  }
+
+  if (!resultMarker) {
+    return response;
+  }
+
+  try {
+    const headers = new Headers(response.headers || undefined);
+    headers.set(CONNECTIVITY_PROBE_RESULT_HEADER, resultMarker);
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  } catch (annotationError) {
+    serviceWorkerLog.warn('Unable to annotate connectivity probe response.', annotationError);
+    return response;
+  }
+}
+
 function shouldBypassCache(request, requestUrl) {
   if (!request) {
     return false;
@@ -888,6 +963,7 @@ if (typeof self !== 'undefined') {
     const isSameOrigin = requestUrl.origin === self.location.origin;
     const isAppIconRequest = isSameOrigin && requestUrl.pathname.includes('/src/icons/');
     const bypassCache = shouldBypassCache(event.request, requestUrl);
+    const isConnectivityProbe = isConnectivityProbeRequest(event.request, requestUrl);
     const shouldIgnoreSearch =
       isNavigationRequest && (!requestUrl.searchParams || !requestUrl.searchParams.has('forceReload'));
     const preloadResponsePromise =
@@ -949,10 +1025,13 @@ if (typeof self !== 'undefined') {
         }
         try {
           const freshResponse = await fetch(event.request, { cache: 'no-store' });
-          if (freshResponse && freshResponse.ok && isSameOrigin) {
+          if (freshResponse && freshResponse.ok && isSameOrigin && !isConnectivityProbe) {
             scheduleCachePut(event, event.request, freshResponse, 'Unable to store fresh response in cache');
           }
           if (freshResponse) {
+            if (isConnectivityProbe) {
+              return annotateConnectivityProbeResponse(freshResponse, CONNECTIVITY_PROBE_RESULT_NETWORK);
+            }
             return freshResponse;
           }
         } catch (networkError) {
@@ -963,6 +1042,12 @@ if (typeof self !== 'undefined') {
               cacheName: CACHE_NAME,
               error: networkError,
             });
+            if (isConnectivityProbe) {
+              return annotateConnectivityProbeResponse(
+                cachedFallback,
+                CONNECTIVITY_PROBE_RESULT_FALLBACK,
+              );
+            }
             return cachedFallback;
           }
 
@@ -986,6 +1071,9 @@ if (typeof self !== 'undefined') {
 
       const cachedResponse = await caches.match(event.request, cacheMatchOptions);
       if (cachedResponse) {
+        if (isConnectivityProbe) {
+          return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+        }
         return cachedResponse;
       }
 

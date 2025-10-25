@@ -289,6 +289,68 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp blocks when connectivity probe is satisfied by cached fallback', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      onLine: true,
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve(['cine-power-planner-primary'])),
+      delete: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const buildFallbackResponse = () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: name => (name && name.toLowerCase() === 'x-cine-connectivity-probe-result' ? 'fallback' : null),
+      },
+    });
+
+    const fetchMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(buildFallbackResponse()))
+      .mockImplementationOnce(() => Promise.resolve(buildFallbackResponse()));
+
+    const reloadWindow = jest.fn();
+    const notifyOffline = jest.fn();
+
+    const result = await offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      fetch: fetchMock,
+      window: {},
+      reloadWindow,
+      onOfflineReloadBlocked: notifyOffline,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(notifyOffline).toHaveBeenCalledWith({ reason: 'cache-fallback', source: 'reloadApp' });
+    expect(clearUiCacheStorageEntries).not.toHaveBeenCalled();
+    expect(navigatorMock.serviceWorker.getRegistrations).not.toHaveBeenCalled();
+    expect(cachesMock.keys).not.toHaveBeenCalled();
+    expect(reloadWindow).not.toHaveBeenCalled();
+    expect(result).toEqual(
+      expect.objectContaining({
+        blocked: true,
+        reason: 'cache-fallback',
+        reloadTriggered: false,
+        navigationTriggered: false,
+        uiCacheCleared: false,
+        cachesCleared: false,
+      }),
+    );
+
+    delete global.clearUiCacheStorageEntries;
+  });
+
   test('reloadApp blocks when connectivity probe receives HTTP errors', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
