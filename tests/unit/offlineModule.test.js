@@ -345,6 +345,62 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reloadApp blocks when connectivity probe head request encounters a network error even if get succeeds', async () => {
+    const clearUiCacheStorageEntries = jest.fn();
+    global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
+
+    const unregister = jest.fn(() => Promise.resolve(true));
+    const navigatorMock = {
+      onLine: true,
+      serviceWorker: {
+        getRegistrations: jest.fn(() => Promise.resolve([{ unregister }])),
+      },
+    };
+
+    const cachesMock = {
+      keys: jest.fn(() => Promise.resolve(['cine-power-planner-primary'])),
+      delete: jest.fn(() => Promise.resolve(true)),
+    };
+
+    const headError = new TypeError('Network unreachable during head');
+    const getResponse = { ok: true, status: 200, type: 'basic', url: '/index.html' };
+    const fetchMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.reject(headError))
+      .mockImplementationOnce(() => Promise.resolve(getResponse));
+
+    const reloadWindow = jest.fn();
+    const notifyOffline = jest.fn();
+
+    const result = await offline.reloadApp({
+      navigator: navigatorMock,
+      caches: cachesMock,
+      fetch: fetchMock,
+      window: {},
+      reloadWindow,
+      onOfflineReloadBlocked: notifyOffline,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(notifyOffline).toHaveBeenCalledWith({ reason: 'unreachable', source: 'reloadApp' });
+    expect(clearUiCacheStorageEntries).not.toHaveBeenCalled();
+    expect(navigatorMock.serviceWorker.getRegistrations).not.toHaveBeenCalled();
+    expect(cachesMock.keys).not.toHaveBeenCalled();
+    expect(reloadWindow).not.toHaveBeenCalled();
+    expect(result).toEqual(
+      expect.objectContaining({
+        blocked: true,
+        reason: 'unreachable',
+        reloadTriggered: false,
+        navigationTriggered: false,
+        uiCacheCleared: false,
+        cachesCleared: false,
+      }),
+    );
+
+    delete global.clearUiCacheStorageEntries;
+  });
+
   test('reloadApp begins querying service worker registrations before clearing UI caches completes', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;

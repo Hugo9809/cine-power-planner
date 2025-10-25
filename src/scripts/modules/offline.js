@@ -1864,6 +1864,7 @@
     const probeUrl = resolveConnectivityProbeUrl(forceReloadUrl, locationLike);
 
     let headFailureDetail = null;
+    let headFailureBlocksConnectivity = false;
     const headResult = await fetchWithTimeout(
       effectiveFetch,
       probeUrl,
@@ -1892,6 +1893,7 @@
       return { reachable: false, reason: 'timeout', detail: headResult.error };
     } else if (headResult.error) {
       headFailureDetail = { source: 'head', error: headResult.error };
+      headFailureBlocksConnectivity = isLikelyConnectivityNetworkError(headResult.error);
     }
 
     const getResult = await fetchWithTimeout(
@@ -1910,6 +1912,17 @@
     );
 
     if (getResult.successful) {
+      if (headFailureBlocksConnectivity) {
+        return {
+          reachable: false,
+          reason: 'unreachable',
+          detail: {
+            head: headFailureDetail,
+            get: summarizeSuccessfulConnectivityResponse(getResult.value),
+          },
+        };
+      }
+
       if (isSuccessfulConnectivityResponse(getResult.value)) {
         return { reachable: true, reason: 'get-ok' };
       }
@@ -1929,7 +1942,73 @@
       return { reachable: false, reason: 'timeout', detail: getResult.error };
     }
 
-    return { reachable: false, reason: 'unreachable', detail: getResult.error || headFailureDetail || headResult.error };
+    return {
+      reachable: false,
+      reason: 'unreachable',
+      detail: getResult.error || headFailureDetail || headResult.error,
+    };
+  }
+
+  function summarizeSuccessfulConnectivityResponse(response) {
+    if (!response) {
+      return {};
+    }
+
+    const summary = {};
+
+    try {
+      if (typeof response.status === 'number') {
+        summary.status = response.status;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    try {
+      if (typeof response.type === 'string' && response.type) {
+        summary.type = response.type;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    try {
+      if (typeof response.url === 'string' && response.url) {
+        summary.url = response.url;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return summary;
+  }
+
+  function isLikelyConnectivityNetworkError(error) {
+    if (!error) {
+      return false;
+    }
+
+    try {
+      const name = typeof error.name === 'string' ? error.name : '';
+      const message = typeof error.message === 'string' ? error.message : '';
+
+      if (name === 'TypeError') {
+        return true;
+      }
+
+      if (name === 'NetworkError') {
+        return true;
+      }
+
+      if (message) {
+        const normalizedMessage = message.toLowerCase();
+        return normalizedMessage.includes('networkerror') || normalizedMessage.includes('network error');
+      }
+    } catch (inspectionError) {
+      void inspectionError;
+    }
+
+    return false;
   }
 
   function resolveXmlHttpRequest(windowLike) {
