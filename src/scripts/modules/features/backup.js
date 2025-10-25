@@ -136,6 +136,7 @@
     'fontFamily',
     'customLogo',
     'language',
+    'cineRentalPrintSections',
   ]);
 
   if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {

@@ -1,7 +1,8 @@
 // storage.js - Handles reading from and writing to localStorage.
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
-          resetMountVoltagePreferences, applyFocusScalePreference */
+          resetMountVoltagePreferences, applyFocusScalePreference,
+          savePrintPreferences */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName, loadUserProfile, saveUserProfile */
 
 // Everything in this module is intentionally defensive. Persistent data keeps
@@ -14394,6 +14395,7 @@ function clearAllData() {
     'fontSize',
     'fontFamily',
     'language',
+    'cineRentalPrintSections',
     'iosPwaHelpShown',
   ];
   preferenceKeys.forEach((key) => {
@@ -14619,6 +14621,73 @@ function clearAllData() {
     return null;
   }
 
+  function normalizePrintPreferences(value) {
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    let parsed = value;
+    if (typeof parsed === 'string') {
+      const trimmed = parsed.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const attempted = tryParseJSONLike(trimmed);
+      if (attempted && attempted.success) {
+        parsed = attempted.parsed;
+      } else {
+        try {
+          parsed = JSON.parse(trimmed);
+        } catch (parseError) {
+          console.warn('Unable to parse stored print preferences', parseError);
+          return null;
+        }
+      }
+    }
+
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return null;
+    }
+
+    let sectionsSource = parsed;
+    let layoutValue = 'standard';
+    if (
+      Object.prototype.hasOwnProperty.call(parsed, 'sections')
+      && parsed.sections
+      && typeof parsed.sections === 'object'
+      && !Array.isArray(parsed.sections)
+    ) {
+      sectionsSource = parsed.sections;
+      if (typeof parsed.layout === 'string' && parsed.layout.trim()) {
+        layoutValue = parsed.layout.trim();
+      } else {
+        layoutValue = 'standard';
+      }
+    } else {
+      layoutValue = 'rental';
+    }
+
+    const sections = {};
+    let hasSection = false;
+    const sectionKeys = Object.keys(sectionsSource);
+    for (let index = 0; index < sectionKeys.length; index += 1) {
+      const key = sectionKeys[index];
+      const sectionValue = parseStoredBoolean(sectionsSource[key]);
+      if (sectionValue === null) {
+        continue;
+      }
+      sections[key] = sectionValue;
+      hasSection = true;
+    }
+
+    const normalized = {
+      sections: hasSection ? sections : {},
+      layout: typeof layoutValue === 'string' && layoutValue ? layoutValue : 'standard',
+    };
+
+    return normalized;
+  }
+
   function collectPreferenceSnapshot() {
     const preferences = {};
 
@@ -14696,6 +14765,12 @@ function clearAllData() {
     const focusScale = readLocalStorageValue(FOCUS_SCALE_STORAGE_KEY_NAME);
     if (focusScale) {
       preferences.focusScale = focusScale;
+    }
+
+    const printPreferencesRaw = readLocalStorageValue('cineRentalPrintSections');
+    const printPreferences = normalizePrintPreferences(printPreferencesRaw);
+    if (printPreferences) {
+      preferences.cineRentalPrintSections = storageJsonDeepClone(printPreferences);
     }
 
     return preferences;
@@ -14837,6 +14912,48 @@ function clearAllData() {
         alertStorageError();
       }
     }
+  }
+
+  function persistPrintPreferences(preferences) {
+    if (preferences === undefined) {
+      return;
+    }
+
+    if (preferences === null) {
+      if (typeof savePrintPreferences === 'function') {
+        try {
+          savePrintPreferences(null);
+          return;
+        } catch (clearError) {
+          console.warn('Unable to clear print preferences via savePrintPreferences', clearError);
+        }
+      }
+      safeSetLocalStorage('cineRentalPrintSections', null);
+      return;
+    }
+
+    if (!preferences || typeof preferences !== 'object') {
+      return;
+    }
+
+    let serialized = null;
+    try {
+      serialized = JSON.stringify(preferences);
+    } catch (serializeError) {
+      console.warn('Unable to serialize print preferences for storage', serializeError);
+      return;
+    }
+
+    if (typeof savePrintPreferences === 'function') {
+      try {
+        savePrintPreferences(storageJsonDeepClone(preferences));
+        return;
+      } catch (persistError) {
+        console.warn('Unable to persist print preferences via savePrintPreferences', persistError);
+      }
+    }
+
+    safeSetLocalStorage('cineRentalPrintSections', serialized);
   }
 
 function normalizeImportedBoolean(value) {
@@ -15287,6 +15404,7 @@ function convertStorageSnapshotToData(snapshot) {
     'fontSize',
     'fontFamily',
     'language',
+    'cineRentalPrintSections',
     'iosPwaHelpShown',
   ];
 
@@ -15431,6 +15549,23 @@ function convertStorageSnapshotToData(snapshot) {
         hasAssignments = true;
         return;
       }
+    }
+    if (key === 'cineRentalPrintSections') {
+      const normalizedPrintPreferences = normalizePrintPreferences(raw);
+      if (normalizedPrintPreferences) {
+        preferences.cineRentalPrintSections = normalizedPrintPreferences;
+        hasAssignments = true;
+        return;
+      }
+      const parsedPrintPreferences = parseSnapshotJSONValue(entry);
+      if (parsedPrintPreferences !== undefined) {
+        const normalizedParsedPrintPreferences = normalizePrintPreferences(parsedPrintPreferences);
+        if (normalizedParsedPrintPreferences) {
+          preferences.cineRentalPrintSections = normalizedParsedPrintPreferences;
+          hasAssignments = true;
+        }
+      }
+      return;
     }
     const stringValue = parseSnapshotStringValue(entry);
     if (stringValue !== undefined) {
@@ -15600,6 +15735,17 @@ function importAllData(allData, options = {}) {
         }
       } else if (scale === null) {
         safeSetLocalStorage(FOCUS_SCALE_STORAGE_KEY_NAME, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, 'cineRentalPrintSections')) {
+      const storedPrintPreferences = prefs.cineRentalPrintSections;
+      if (storedPrintPreferences === null) {
+        persistPrintPreferences(null);
+      } else {
+        const normalizedPrintPreferences = normalizePrintPreferences(storedPrintPreferences);
+        if (normalizedPrintPreferences) {
+          persistPrintPreferences(normalizedPrintPreferences);
+        }
       }
     }
     if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {

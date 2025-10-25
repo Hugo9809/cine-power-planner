@@ -89,6 +89,7 @@ const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
 const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
 const FULL_BACKUP_HISTORY_KEY = 'cameraPowerPlanner_fullBackups';
+const PRINT_PREFERENCES_KEY = 'cineRentalPrintSections';
 
 const BACKUP_SUFFIX = '__backup';
 const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
@@ -2345,6 +2346,49 @@ describe('export/import all data', () => {
     const exported = exportAllData();
 
     expect(exported.schemaCache).toBe(schemaPayload);
+  });
+
+  test('export/import cycle preserves custom print layout preferences', () => {
+    const customPrintPreferences = {
+      layout: 'rental',
+      sections: {
+        project: true,
+        power: false,
+        gear: true,
+      },
+    };
+    localStorage.setItem(PRINT_PREFERENCES_KEY, JSON.stringify(customPrintPreferences));
+
+    const exported = exportAllData();
+
+    expect(exported.preferences.cineRentalPrintSections).toEqual(customPrintPreferences);
+
+    localStorage.clear();
+
+    const originalSavePrintPreferences = global.savePrintPreferences;
+    const savePrintPreferencesMock = jest.fn((value) => {
+      if (value === null) {
+        localStorage.removeItem(PRINT_PREFERENCES_KEY);
+        return true;
+      }
+      localStorage.setItem(PRINT_PREFERENCES_KEY, JSON.stringify(value));
+      return true;
+    });
+    global.savePrintPreferences = savePrintPreferencesMock;
+
+    try {
+      importAllData(exported);
+    } finally {
+      if (typeof originalSavePrintPreferences === 'undefined') {
+        delete global.savePrintPreferences;
+      } else {
+        global.savePrintPreferences = originalSavePrintPreferences;
+      }
+    }
+
+    expect(savePrintPreferencesMock).toHaveBeenCalledTimes(1);
+    expect(savePrintPreferencesMock).toHaveBeenCalledWith(customPrintPreferences);
+    expect(JSON.parse(localStorage.getItem(PRINT_PREFERENCES_KEY))).toEqual(customPrintPreferences);
   });
 
   test('importAllData restores planner data', () => {
