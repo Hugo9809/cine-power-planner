@@ -24,6 +24,12 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
+  const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
+  const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
+  const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
+  const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
+  const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+
   /**
    * Resolve the shared module linker which exposes already-booted runtime
    * components. We keep the lookup defensive because offline start-up must
@@ -1821,6 +1827,64 @@
     return status >= 200 && status < 400;
   }
 
+  function appendConnectivityProbeToken(url, token) {
+    if (!url || typeof url !== 'string') {
+      return url;
+    }
+
+    if (typeof token === 'undefined' || token === null) {
+      return url;
+    }
+
+    let tokenString;
+    if (typeof token === 'string') {
+      tokenString = token;
+    } else {
+      try {
+        tokenString = String(token);
+      } catch (stringifyError) {
+        void stringifyError;
+        return url;
+      }
+    }
+
+    if (!tokenString) {
+      return url;
+    }
+
+    let base = url;
+    let fragment = '';
+
+    const hashIndex = base.indexOf('#');
+    if (hashIndex !== -1) {
+      fragment = base.slice(hashIndex);
+      base = base.slice(0, hashIndex);
+    }
+
+    const separator = base.indexOf('?') === -1 ? '?' : '&';
+    const encodedParam = encodeURIComponent(CONNECTIVITY_PROBE_QUERY_PARAM);
+    const encodedToken = encodeURIComponent(tokenString);
+
+    return `${base}${separator}${encodedParam}=${encodedToken}${fragment}`;
+  }
+
+  function readConnectivityProbeResult(response) {
+    if (!response || !response.headers || typeof response.headers.get !== 'function') {
+      return null;
+    }
+
+    try {
+      const headerValue = response.headers.get(CONNECTIVITY_PROBE_RESULT_HEADER);
+      if (typeof headerValue === 'string' && headerValue) {
+        return headerValue.toLowerCase();
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
   function resolveConnectivityProbeUrl(forceReloadUrl, locationLike) {
     if (forceReloadUrl && typeof forceReloadUrl.nextHref === 'string' && forceReloadUrl.nextHref) {
       return forceReloadUrl.nextHref;
@@ -1861,7 +1925,20 @@
       return { reachable: true, reason: 'fetch-unavailable' };
     }
 
-    const probeUrl = resolveConnectivityProbeUrl(forceReloadUrl, locationLike);
+    const probeToken = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    const probeUrl = appendConnectivityProbeToken(
+      resolveConnectivityProbeUrl(forceReloadUrl, locationLike),
+      probeToken,
+    );
+
+    const probeHeaders = {
+      'Cache-Control': 'no-store, max-age=0',
+      Pragma: 'no-cache',
+    };
+
+    if (typeof probeToken === 'string' && probeToken) {
+      probeHeaders[CONNECTIVITY_PROBE_HEADER] = probeToken;
+    }
 
     let headFailureDetail = null;
     const headResult = await fetchWithTimeout(
@@ -1871,15 +1948,12 @@
         method: 'HEAD',
         cache: 'no-store',
         credentials: 'same-origin',
+        headers: probeHeaders,
       },
       timeoutMs,
     );
 
     if (headResult.successful) {
-      if (isSuccessfulConnectivityResponse(headResult.value)) {
-        return { reachable: true, reason: 'head-ok' };
-      }
-
       let status = 0;
       try {
         status = headResult.value && typeof headResult.value.status === 'number' ? headResult.value.status : 0;
@@ -1887,7 +1961,19 @@
         void statusError;
         status = 0;
       }
-      headFailureDetail = { source: 'head', status };
+
+      const headProbeResult = readConnectivityProbeResult(headResult.value);
+      if (headProbeResult && headProbeResult !== CONNECTIVITY_PROBE_RESULT_NETWORK) {
+        headFailureDetail = {
+          source: 'head',
+          status,
+          probeResult: headProbeResult || CONNECTIVITY_PROBE_RESULT_FALLBACK,
+        };
+      } else if (isSuccessfulConnectivityResponse(headResult.value)) {
+        return { reachable: true, reason: 'head-ok' };
+      } else {
+        headFailureDetail = { source: 'head', status };
+      }
     } else if (headResult.timedOut) {
       return { reachable: false, reason: 'timeout', detail: headResult.error };
     } else if (headResult.error) {
@@ -1902,14 +1988,28 @@
         cache: 'no-store',
         credentials: 'same-origin',
         headers: {
-          'Cache-Control': 'no-store, max-age=0',
-          Pragma: 'no-cache',
+          ...probeHeaders,
         },
       },
       timeoutMs,
     );
 
     if (getResult.successful) {
+      const getProbeResult = readConnectivityProbeResult(getResult.value);
+
+      if (getProbeResult && getProbeResult !== CONNECTIVITY_PROBE_RESULT_NETWORK) {
+        return {
+          reachable: false,
+          reason: 'cache-fallback',
+          detail: {
+            status:
+              getResult.value && typeof getResult.value.status === 'number' ? getResult.value.status : undefined,
+            head: headFailureDetail,
+            probeResult: getProbeResult || CONNECTIVITY_PROBE_RESULT_FALLBACK,
+          },
+        };
+      }
+
       if (isSuccessfulConnectivityResponse(getResult.value)) {
         return { reachable: true, reason: 'get-ok' };
       }

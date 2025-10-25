@@ -17,6 +17,11 @@ air-gapped workflows.
       that force reload requires connectivity while the header reload control
       remains disabled. This ensures caches and service workers stay intact
       until a connection is restored.
+- [ ] While still in developer tools, watch the reload connectivity probe: it
+      now appends a `__cineReloadProbe__` token and expects
+      `x-cine-connectivity-probe-result: network`. When offline you should see
+      the response marked `fallback`, confirming the service worker protected
+      caches and blocked the reload.
 - [ ] Export planner backups and project bundles; store copies on redundant
       physical media.
 - [ ] Print essential docs (operations checklist, save/share reference,
