@@ -46,7 +46,12 @@ const DIRECTORY_RULES = [
 ];
 
 function normalizeAssetPath(relativePath) {
-  return `./${relativePath.split(path.sep).join('/')}`;
+  const unixPath = relativePath.split(path.sep).join('/');
+  const encodedPath = unixPath
+    .split('/')
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
+  return `./${encodedPath}`;
 }
 
 function isHiddenEntry(name) {
