@@ -122,6 +122,22 @@ describe('onboarding loader hook', () => {
     expect(global.cineEnsureDeferredScriptsLoaded).not.toHaveBeenCalled();
   });
 
+  test('first-run detection does not load when onboarding was skipped via storage', async () => {
+    const storedValue = JSON.stringify({ version: 2, completed: false, skipped: true });
+    const safeStorage = createStorageStub(storedValue);
+    global.getSafeLocalStorage = jest.fn(() => safeStorage);
+    const legacyStorage = createStorageStub(storedValue);
+    global.SAFE_LOCAL_STORAGE = legacyStorage;
+    global.localStorage = createStorageStub(storedValue);
+
+    require(modulePath);
+
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+
+    expect(global.cineEnsureDeferredScriptsLoaded).not.toHaveBeenCalled();
+  });
+
   test('ensure helper resolves once onboarding module becomes available', async () => {
     require(modulePath);
 
