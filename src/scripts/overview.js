@@ -1613,9 +1613,7 @@ function generatePrintableOverview(config = {}) {
     const gearListHtml = gearSectionHtml || '';
     const deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
     const deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
-    const gearListActionsHtml = gearListHtml
-        ? `<div class="overview-gear-actions"><button id="overviewDeleteGearListBtn" class="overview-delete-gear-btn" title="${escapeHtmlSafe(deleteGearListHelp)}" data-help="${escapeHtmlSafe(deleteGearListHelp)}"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>${escapeHtmlSafe(deleteGearListLabel)}</button></div>`
-        : '';
+    const gearListActionsHtml = '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
     const contentClass = customLogo ? 'logo-present' : '';
@@ -1675,6 +1673,20 @@ function generatePrintableOverview(config = {}) {
         overviewDialog.setAttribute('data-overview-outside-close', '');
     }
     const content = overviewDialog.querySelector('#overviewDialogContent');
+
+    if (content) {
+        const overviewGearActions = content.querySelector('.overview-gear-actions');
+        if (overviewGearActions) {
+            overviewGearActions.remove();
+        }
+
+        const addItemButtons = content.querySelectorAll('.gear-custom-add-btn, [data-gear-custom-add]');
+        addItemButtons.forEach(button => {
+            if (button && typeof button.remove === 'function') {
+                button.remove();
+            }
+        });
+    }
 
     const runConfiguredPrintWorkflow = (options = {}) => {
         if (!overviewDialog || !content) {
