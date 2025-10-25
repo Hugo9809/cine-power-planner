@@ -728,7 +728,17 @@ async function precacheAssets(cacheName, assets) {
 
     await Promise.all(
       assetsWithoutRootAlias.map(async asset => {
-        const request = new Request(asset);
+        let requestUrl = asset;
+
+        if (typeof self !== 'undefined' && self && self.location) {
+          try {
+            requestUrl = new URL(asset, self.location).href;
+          } catch (urlError) {
+            serviceWorkerLog.warn(`Unable to resolve asset URL for ${asset}`, urlError);
+          }
+        }
+
+        const request = new Request(requestUrl);
 
         try {
           await cache.add(request);
