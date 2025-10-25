@@ -9771,8 +9771,14 @@ body.light-mode #topBar select:focus-visible {
 }
 
 .lens-mount-box {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  width: 100%;
+}
+
+.lens-mount-box .info-box {
+  width: 100%;
 }
 
 .info-label {
