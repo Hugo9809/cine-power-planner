@@ -1,7 +1,8 @@
 // storage.js - Handles reading from and writing to localStorage.
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
-          resetMountVoltagePreferences, applyFocusScalePreference */
+          resetMountVoltagePreferences, applyFocusScalePreference,
+          savePrintPreferences */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName, loadUserProfile, saveUserProfile */
 
 // Everything in this module is intentionally defensive. Persistent data keeps
@@ -414,6 +415,7 @@ var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
 var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+var PRINT_PREFERENCES_STORAGE_KEY = 'cineRentalPrintSections';
 var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
   typeof Symbol === 'function'
     ? Symbol.for('cinePowerPlanner.mountVoltageKey')
@@ -3021,6 +3023,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   DOCUMENTATION_TRACKER_STORAGE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
   FOCUS_SCALE_STORAGE_KEY_NAME,
+  PRINT_PREFERENCES_STORAGE_KEY,
 ]);
 
 Array.from(RAW_STORAGE_BACKUP_KEYS).forEach((key) => {
@@ -3065,6 +3068,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: 'fontFamily' }),
   () => ({ key: 'language' }),
   () => ({ key: 'iosPwaHelpShown' }),
+  () => ({ key: PRINT_PREFERENCES_STORAGE_KEY }),
   () => ({ key: TEMPERATURE_UNIT_STORAGE_KEY_NAME }),
   () => ({ key: getMountVoltageStorageKeyName(), backupKey: getMountVoltageStorageBackupKeyName() }),
 ];
@@ -14398,6 +14402,7 @@ function clearAllData() {
     'language',
     'iosPwaHelpShown',
     CAMERA_COLOR_STORAGE_KEY,
+    PRINT_PREFERENCES_STORAGE_KEY,
   ];
   preferenceKeys.forEach((key) => {
     deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
@@ -14622,6 +14627,85 @@ function clearAllData() {
     return null;
   }
 
+  function interpretPrintPreferencesValue(rawValue) {
+    if (rawValue === null || rawValue === undefined) {
+      return null;
+    }
+
+    let serialized = null;
+    let candidate = rawValue;
+
+    if (typeof rawValue === 'string') {
+      const trimmed = rawValue.trim();
+      if (!trimmed) {
+        return null;
+      }
+      serialized = trimmed;
+      try {
+        candidate = JSON.parse(trimmed);
+      } catch (parseError) {
+        void parseError;
+        return { normalized: null, serialized };
+      }
+    }
+
+    if (!candidate || typeof candidate !== 'object') {
+      if (serialized) {
+        return { normalized: null, serialized };
+      }
+      return null;
+    }
+
+    const hasSectionsContainer =
+      typeof candidate.sections === 'object' && candidate.sections !== null;
+    const sectionsSource = hasSectionsContainer ? candidate.sections : candidate;
+    const sections = {};
+
+    if (sectionsSource && typeof sectionsSource === 'object') {
+      const sectionKeys = Object.keys(sectionsSource);
+      for (let index = 0; index < sectionKeys.length; index += 1) {
+        const sectionKey = sectionKeys[index];
+        const sectionValue = sectionsSource[sectionKey];
+        if (typeof sectionValue === 'boolean') {
+          sections[sectionKey] = sectionValue;
+        }
+      }
+    }
+
+    let layout = null;
+    if (typeof candidate.layout === 'string') {
+      const trimmedLayout = candidate.layout.trim();
+      if (trimmedLayout) {
+        layout = trimmedLayout;
+      }
+    }
+
+    if (!layout) {
+      layout = hasSectionsContainer ? 'standard' : 'rental';
+    }
+
+    const normalized = {
+      sections,
+      layout,
+    };
+
+    if (hasSectionsContainer) {
+      const candidateKeys = Object.keys(candidate);
+      for (let index = 0; index < candidateKeys.length; index += 1) {
+        const key = candidateKeys[index];
+        if (key === 'sections' || key === 'layout') {
+          continue;
+        }
+        normalized[key] = storageJsonDeepClone(candidate[key]);
+      }
+    }
+
+    return {
+      normalized,
+      serialized,
+    };
+  }
+
   function collectPreferenceSnapshot() {
     const preferences = {};
 
@@ -14720,6 +14804,20 @@ function clearAllData() {
         preferences.cameraColors = storageJsonDeepClone(parsedCameraColors);
       } else if (typeof cameraColorsRaw === 'string' && cameraColorsRaw.trim()) {
         preferences.cameraColors = cameraColorsRaw;
+      }
+    }
+
+    const printPreferencesRaw = readLocalStorageValue(PRINT_PREFERENCES_STORAGE_KEY);
+    if (printPreferencesRaw !== null && printPreferencesRaw !== undefined) {
+      const interpretedPrintPreferences = interpretPrintPreferencesValue(printPreferencesRaw);
+      if (interpretedPrintPreferences) {
+        if (interpretedPrintPreferences.normalized) {
+          preferences[PRINT_PREFERENCES_STORAGE_KEY] = storageJsonDeepClone(
+            interpretedPrintPreferences.normalized,
+          );
+        } else if (interpretedPrintPreferences.serialized) {
+          preferences[PRINT_PREFERENCES_STORAGE_KEY] = interpretedPrintPreferences.serialized;
+        }
       }
     }
 
@@ -15314,6 +15412,7 @@ function convertStorageSnapshotToData(snapshot) {
     'language',
     'iosPwaHelpShown',
     CAMERA_COLOR_STORAGE_KEY,
+    PRINT_PREFERENCES_STORAGE_KEY,
   ];
 
   const mountVoltageKeyName = getMountVoltageStorageKeyName();
@@ -15449,6 +15548,25 @@ function convertStorageSnapshotToData(snapshot) {
       return;
     }
     markSnapshotEntry(entry);
+    if (key === PRINT_PREFERENCES_STORAGE_KEY) {
+      const snapshotPrintValue = parseSnapshotStringValue(entry);
+      if (snapshotPrintValue !== undefined) {
+        const interpretedPreferences = interpretPrintPreferencesValue(snapshotPrintValue);
+        if (interpretedPreferences) {
+          if (interpretedPreferences.normalized) {
+            preferences[key] = storageJsonDeepClone(interpretedPreferences.normalized);
+            hasAssignments = true;
+            return;
+          }
+          if (interpretedPreferences.serialized) {
+            preferences[key] = interpretedPreferences.serialized;
+            hasAssignments = true;
+            return;
+          }
+        }
+      }
+      return;
+    }
     const raw = extractSnapshotStoredValue(entry);
     if (booleanPreferenceKeys.has(key)) {
       const normalized = normalizeImportedBoolean(raw);
@@ -15637,6 +15755,63 @@ function importAllData(allData, options = {}) {
         }
       } else if (scale === null) {
         safeSetLocalStorage(FOCUS_SCALE_STORAGE_KEY_NAME, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, PRINT_PREFERENCES_STORAGE_KEY)) {
+      const rawPrintPreferences = prefs[PRINT_PREFERENCES_STORAGE_KEY];
+      if (rawPrintPreferences === null) {
+        safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, null);
+      } else {
+        const interpretedPreferences = interpretPrintPreferencesValue(rawPrintPreferences);
+        if (interpretedPreferences) {
+          if (interpretedPreferences.normalized) {
+            const normalizedPrintPreferences = storageJsonDeepClone(
+              interpretedPreferences.normalized,
+            );
+            let serializedPrintPreferences = null;
+            try {
+              serializedPrintPreferences = JSON.stringify(normalizedPrintPreferences);
+            } catch (printPreferenceSerializationError) {
+              console.warn(
+                'Unable to serialize imported print preferences',
+                printPreferenceSerializationError,
+              );
+              serializedPrintPreferences = null;
+            }
+            if (serializedPrintPreferences !== null) {
+              try {
+                safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, serializedPrintPreferences);
+              } catch (printPreferencePersistError) {
+                console.warn(
+                  'Unable to persist imported print preferences',
+                  printPreferencePersistError,
+                );
+              }
+            }
+            if (typeof savePrintPreferences === 'function') {
+              try {
+                savePrintPreferences(normalizedPrintPreferences);
+              } catch (printPreferenceApplyError) {
+                console.warn(
+                  'Unable to apply imported print preferences',
+                  printPreferenceApplyError,
+                );
+              }
+            }
+          } else if (interpretedPreferences.serialized) {
+            try {
+              safeSetLocalStorage(
+                PRINT_PREFERENCES_STORAGE_KEY,
+                interpretedPreferences.serialized,
+              );
+            } catch (printPreferenceStringPersistError) {
+              console.warn(
+                'Unable to store imported print preferences string value',
+                printPreferenceStringPersistError,
+              );
+            }
+          }
+        }
       }
     }
     if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {

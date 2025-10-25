@@ -90,6 +90,7 @@ const CUSTOM_LOGO_KEY = 'customLogo';
 const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
 const FULL_BACKUP_HISTORY_KEY = 'cameraPowerPlanner_fullBackups';
 const CAMERA_COLOR_KEY = 'cameraPowerPlanner_cameraColors';
+const PRINT_PREFERENCES_KEY = 'cineRentalPrintSections';
 
 const BACKUP_SUFFIX = '__backup';
 const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
@@ -2353,6 +2354,57 @@ describe('export/import all data', () => {
     const exported = exportAllData();
 
     expect(exported.schemaCache).toBe(schemaPayload);
+  });
+
+  test('exportAllData/importAllData round-trips print layout preferences offline', () => {
+    localStorage.clear();
+
+    const printPreferences = {
+      sections: {
+        project: false,
+        devices: true,
+        diagram: false,
+      },
+      layout: 'rental',
+    };
+
+    localStorage.setItem(PRINT_PREFERENCES_KEY, JSON.stringify(printPreferences));
+
+    const exported = exportAllData();
+
+    expect(exported.preferences).toBeDefined();
+    expect(exported.preferences.cineRentalPrintSections).toEqual(printPreferences);
+
+    localStorage.clear();
+
+    const previousSavePrintPreferences = global.savePrintPreferences;
+    try {
+      delete global.savePrintPreferences;
+
+      importAllData({
+        preferences: {
+          cineRentalPrintSections: printPreferences,
+        },
+      });
+    } finally {
+      if (typeof previousSavePrintPreferences === 'function') {
+        global.savePrintPreferences = previousSavePrintPreferences;
+      } else if (previousSavePrintPreferences !== undefined) {
+        global.savePrintPreferences = previousSavePrintPreferences;
+      } else {
+        delete global.savePrintPreferences;
+      }
+    }
+
+    const storedPrintPreferencesRaw = localStorage.getItem(PRINT_PREFERENCES_KEY);
+    expect(storedPrintPreferencesRaw).not.toBeNull();
+    const storedPrintPreferences = JSON.parse(decodeStoredValue(storedPrintPreferencesRaw));
+    expect(storedPrintPreferences).toEqual(printPreferences);
+
+    const roundTripExport = exportAllData();
+    expect(roundTripExport.preferences.cineRentalPrintSections).toEqual(printPreferences);
+
+    localStorage.clear();
   });
 
   test('importAllData restores planner data', () => {

@@ -135,6 +135,7 @@
     'fontSize',
     'fontFamily',
     'customLogo',
+    'cineRentalPrintSections',
     'language',
   ]);
 

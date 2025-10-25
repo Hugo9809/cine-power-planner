@@ -134,6 +134,7 @@ describe('cineFeatureBackup module', () => {
     expect(Object.isFrozen(backupModule.constants)).toBe(true);
     expect(Object.isFrozen(backupModule.constants.BACKUP_STORAGE_KEY_PREFIXES)).toBe(true);
     expect(Object.isFrozen(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS)).toBe(true);
+    expect(backupModule.constants.BACKUP_STORAGE_KNOWN_KEYS).toContain('cineRentalPrintSections');
   });
 
   test('parses automatic backup names for primary and deletion snapshots', () => {
