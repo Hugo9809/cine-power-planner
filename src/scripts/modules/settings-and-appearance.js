@@ -676,12 +676,9 @@
 
     let pinkModeIconRotationTimer = null;
     let pinkModeIconIndex = 0;
-    const PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
-    const PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS = 6000;
     const PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     const PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
     const PINK_MODE_ICON_INTERVAL_MS = context.pinkModeIconIntervalMs || 1500;
-    let pinkModeIconPressTimestamps = [];
 
     let pinkModeEnabled = false;
     let settingsInitialPinkMode = false;
@@ -1373,25 +1370,8 @@
       }
     }
 
-    function prunePinkModeIconPressHistory(now) {
-      const cutoff = now - PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS;
-      if (cutoff <= 0 || !pinkModeIconPressTimestamps.length) {
-        return;
-      }
-      pinkModeIconPressTimestamps = pinkModeIconPressTimestamps.filter(timestamp => timestamp >= cutoff);
-    }
-
     function handlePinkModeIconPress() {
-      const now = Date.now();
-      prunePinkModeIconPressHistory(now);
-      pinkModeIconPressTimestamps.push(now);
-      if (
-        pinkModeIconPressTimestamps.length >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT
-        && typeof icons.triggerPinkModeIconRain === 'function'
-      ) {
-        pinkModeIconPressTimestamps = [];
-        triggerPinkModeIconRain();
-      }
+      triggerPinkModeIconRain();
     }
 
     function startPinkModeAnimatedIconRotation() {
