@@ -761,6 +761,85 @@
     return fallbackExposeGlobal;
   })();
 
+  function assignProperty(target, key, value, options) {
+    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+      return false;
+    }
+
+    try {
+      if (target[key] === value) {
+        return true;
+      }
+    } catch (readError) {
+      void readError;
+    }
+
+    const configurable = options && typeof options.configurable === 'boolean'
+      ? options.configurable
+      : true;
+    const enumerable = options && typeof options.enumerable === 'boolean'
+      ? options.enumerable
+      : false;
+    const writable = options && typeof options.writable === 'boolean'
+      ? options.writable
+      : true;
+
+    try {
+      Object.defineProperty(target, key, {
+        configurable,
+        enumerable,
+        writable,
+        value,
+      });
+      return true;
+    } catch (defineError) {
+      void defineError;
+      try {
+        target[key] = value;
+        return true;
+      } catch (assignmentError) {
+        void assignmentError;
+      }
+    }
+
+    return false;
+  }
+
+  function ensureNamespace(scope, key, options) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    let existing = null;
+    try {
+      existing = scope[key];
+    } catch (readError) {
+      void readError;
+      existing = null;
+    }
+
+    if (existing && (typeof existing === 'object' || typeof existing === 'function')) {
+      return existing;
+    }
+
+    const created = {};
+    const assigned = assignProperty(scope, key, created, options);
+    if (assigned) {
+      try {
+        const resolved = scope[key];
+        if (resolved && (typeof resolved === 'object' || typeof resolved === 'function')) {
+          return resolved;
+        }
+      } catch (assignmentCheckError) {
+        void assignmentCheckError;
+      }
+
+      return created;
+    }
+
+    return null;
+  }
+
   function createStableStringify() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.stableStringify === 'function') {
       return GLOBAL_SCOPE.stableStringify;
@@ -1117,10 +1196,63 @@
     return null;
   }
 
+  function exposeVersionGlobals(version) {
+    if (typeof version !== 'string' || !version) {
+      return;
+    }
+
+    const scope = GLOBAL_SCOPE;
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    const propertyOptions = {
+      configurable: true,
+      enumerable: true,
+      writable: false,
+    };
+
+    const appExposed = assignProperty(scope, 'APP_VERSION', version, propertyOptions);
+    if (!appExposed) {
+      safeWarn('Unable to expose APP_VERSION globally for cineCoreShared.');
+    }
+
+    const cppExposed = assignProperty(scope, 'CPP_APP_VERSION', version, propertyOptions);
+    if (!cppExposed) {
+      safeWarn('Unable to expose CPP_APP_VERSION globally for cineCoreShared.');
+    }
+
+    const namespace = ensureNamespace(scope, 'cinePowerPlanner', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+    });
+
+    if (namespace) {
+      const namespaceApp = assignProperty(namespace, 'APP_VERSION', version, propertyOptions);
+      if (!namespaceApp) {
+        safeWarn('Unable to expose cinePowerPlanner.APP_VERSION globally.');
+      }
+
+      const namespaceCpp = assignProperty(namespace, 'CPP_APP_VERSION', version, propertyOptions);
+      if (!namespaceCpp) {
+        safeWarn('Unable to expose cinePowerPlanner.CPP_APP_VERSION globally.');
+      }
+
+      const namespaceVersion = assignProperty(namespace, 'version', version, propertyOptions);
+      if (!namespaceVersion) {
+        safeWarn('Unable to expose cinePowerPlanner.version globally.');
+      }
+    } else {
+      safeWarn('Unable to resolve cinePowerPlanner namespace for version exposure.');
+    }
+  }
+
   const APP_VERSION = resolveAppVersion() || '0.0.0';
 
   const shared = freezeDeep({
     APP_VERSION,
+    CPP_APP_VERSION: APP_VERSION,
     stableStringify,
     humanizeKey,
     resolveConnectorSummaryGenerator,
@@ -1147,16 +1279,7 @@
   });
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
-    if (!GLOBAL_SCOPE.APP_VERSION) {
-      const exposedVersion = exposeGlobal('APP_VERSION', APP_VERSION, {
-        configurable: true,
-        enumerable: false,
-        writable: false,
-      });
-      if (!exposedVersion) {
-        safeWarn('Unable to expose APP_VERSION globally for cineCoreShared.');
-      }
-    }
+    exposeVersionGlobals(APP_VERSION);
 
     const exposedShared = exposeGlobal('cineCoreShared', shared, {
       configurable: true,
