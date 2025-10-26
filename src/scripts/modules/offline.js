@@ -449,8 +449,6 @@
     return connectivityState;
   }
 
-  connectivityState = emitConnectivityState({ status: 'unknown', source: 'cineOffline' });
-
   /**
    * Publish the module API to the runtime registry. Broadcasting the interface
    * allows other modules (for example persistence) to coordinate with offline
@@ -1050,6 +1048,8 @@
 
     return fallbackSafeWarn;
   })();
+
+  connectivityState = emitConnectivityState({ status: 'unknown', source: 'cineOffline' });
 
   const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
   const FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS = 3500;

@@ -348,10 +348,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     broadcastConnectivityState(nextState);
     return connectivityState;
   }
-  connectivityState = emitConnectivityState({
-    status: 'unknown',
-    source: 'cineOffline'
-  });
   function informModuleGlobals(name, api) {
     if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
       MODULE_LINKER.recordModule(name, api);
@@ -840,6 +836,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackSafeWarn;
   }();
+  connectivityState = emitConnectivityState({
+    status: 'unknown',
+    source: 'cineOffline'
+  });
   var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
   var FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS = 3500;
   var RELOAD_WARMUP_MAX_WAIT_MS = 180;
