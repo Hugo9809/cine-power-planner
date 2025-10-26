@@ -32,6 +32,12 @@ workstations.
   with physical copies.
 - **Archive storage:** Keep at least two copies (primary + offsite). Log
   locations in `review-findings.md` and the verification packet manifest.
+- **Local backup vault:** Automatic hourly exports now queue into the local
+  vault when the browser blocks downloads (for example, before the first user
+  gesture). Crews will see an actionable banner pointing to the vault and can
+  open it anytime from the banner action to download or copy each JSON payload
+  while offline. Document queued exports in the verification packet and clear
+  the vault once each file is archived.
 - **Guard verification artifacts:** Attach the most recent
   `getLastCriticalStorageGuardResult()` dump and corresponding autosave ledger
   entry to the backup record so auditors can confirm the mirrored keys existed
