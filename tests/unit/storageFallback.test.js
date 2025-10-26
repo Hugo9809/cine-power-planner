@@ -152,8 +152,9 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       if (local && typeof local.getItem === 'function') {
         localStorageValue = local.getItem(FAVORITES_KEY);
       }
-    } catch (error) {
-      localStorageValue = null;
+      } catch (storageAccessError) {
+        localStorageValue = null;
+        void storageAccessError;
     }
 
     expect(localStorageValue).toBeNull();
@@ -403,10 +404,11 @@ describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
     });
 
     let realLocalStorage = null;
-    try {
-      realLocalStorage = global.localStorage;
-    } catch (error) {
-      realLocalStorage = null;
+      try {
+        realLocalStorage = global.localStorage;
+      } catch (storageAccessError) {
+        realLocalStorage = null;
+        void storageAccessError;
     }
 
     const blockedStorage = {

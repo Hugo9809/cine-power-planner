@@ -1138,8 +1138,6 @@ function collectAutoGearSelectedValues(selected, key) {
     collectAutoGearSelectedValues,
     getAutoGearScenarioModeSelectElement,
     setAutoGearScenarioModeSelectElement,
-    getViewfinderFallbackLabel,
-    getVideoDistributionFallbackLabel,
     normalizeVideoDistributionOptionValue
   };
 

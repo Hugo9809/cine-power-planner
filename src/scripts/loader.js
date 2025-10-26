@@ -721,6 +721,13 @@ function scheduleScriptRetry(url, retryCallback) {
       state.timerId = setTimeout(invokeRetry, delay);
     } catch (scheduleError) {
       state.timerId = null;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(
+          'Falling back to immediate script retry after scheduling failure:',
+          url,
+          scheduleError
+        );
+      }
       invokeRetry();
     }
   } else {

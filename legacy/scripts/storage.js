@@ -296,10 +296,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
   var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
   var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
+  var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+  var PRINT_PREFERENCES_STORAGE_KEY = 'cineRentalPrintSections';
   var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.mountVoltageKey') : null;
   var PROJECT_STORAGE_READ_CACHE = null;
   var STORAGE_CACHE_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.storageCache') : '__cineStorageStateCache';
   var STORAGE_STATE_CACHE_WEAKMAP = typeof WeakMap === 'function' && typeof Map === 'function' ? new WeakMap() : null;
+  var CONTACTS_MODULE_API = null;
+  var CONTACTS_MODULE_RESOLUTION_ATTEMPTED = false;
   var COMPRESSION_STRATEGY_CACHE = typeof Map === 'function' ? new Map() : null;
   var COMPRESSION_STRATEGY_CACHE_KEYS = [];
   var COMPRESSION_STRATEGY_CACHE_LIMIT = 6;
@@ -2415,7 +2419,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var MAX_SAVE_ATTEMPTS = 3;
   var MAX_QUOTA_RECOVERY_STEPS = 100;
   var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
-  var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, OWN_GEAR_STORAGE_KEY, DOCUMENTATION_TRACKER_STORAGE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME, FOCUS_SCALE_STORAGE_KEY_NAME]);
+  var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, CONTACTS_STORAGE_KEY, OWN_GEAR_STORAGE_KEY, DOCUMENTATION_TRACKER_STORAGE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME, FOCUS_SCALE_STORAGE_KEY_NAME, PRINT_PREFERENCES_STORAGE_KEY]);
   Array.from(RAW_STORAGE_BACKUP_KEYS).forEach(function (key) {
     getStorageKeyVariants(key).forEach(function (variant) {
       if (typeof variant === 'string' && variant) {
@@ -2446,6 +2450,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }, function () {
     return {
       key: FAVORITES_STORAGE_KEY
+    };
+  }, function () {
+    return {
+      key: CONTACTS_STORAGE_KEY
     };
   }, function () {
     return {
@@ -2550,6 +2558,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }, function () {
     return {
       key: 'iosPwaHelpShown'
+    };
+  }, function () {
+    return {
+      key: PRINT_PREFERENCES_STORAGE_KEY
     };
   }, function () {
     return {
@@ -4666,7 +4678,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, FULL_BACKUP_HISTORY_STORAGE_KEY];
-  var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', TEMPERATURE_UNIT_STORAGE_KEY_NAME];
+  var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, TEMPERATURE_UNIT_STORAGE_KEY_NAME];
   var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
   var SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
   var storageErrorAlertShown = false;
@@ -6373,6 +6385,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
       var normalizedRaw = typeof raw === 'string' ? maybeDecompressStoredString(raw) : raw;
+      if (typeof raw === 'string' && raw && normalizedRaw === raw && raw.includes("\"".concat(STORAGE_COMPRESSION_FLAG_KEY, "\":true")) && raw.includes("\"namespace\":\"".concat(STORAGE_COMPRESSION_NAMESPACE))) {
+        console.warn("".concat(errorMessage, " Compressed value could not be decoded").concat(label ? " (".concat(label, ")") : '', "."));
+        shouldAlert = true;
+        return {
+          ok: false,
+          reason: 'compressed'
+        };
+      }
       try {
         var parsed = JSON.parse(normalizedRaw);
         if (typeof validate === 'function' && !validate(parsed)) {
@@ -10928,6 +10948,195 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensurePreWriteMigrationBackup(safeStorage, FAVORITES_STORAGE_KEY);
     saveJSONToStorage(safeStorage, FAVORITES_STORAGE_KEY, favs, "Error saving favorites to localStorage:");
   }
+  function resolveContactsModuleApi() {
+    if (CONTACTS_MODULE_API) {
+      return CONTACTS_MODULE_API;
+    }
+    if (!CONTACTS_MODULE_RESOLUTION_ATTEMPTED) {
+      CONTACTS_MODULE_RESOLUTION_ATTEMPTED = true;
+      if (typeof require === 'function') {
+        CONTACTS_MODULE_API = require('./modules/features/contacts.js');
+      }
+    }
+    if (CONTACTS_MODULE_API) {
+      return CONTACTS_MODULE_API;
+    }
+    var scope = GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object' ? GLOBAL_SCOPE : null;
+    if (scope && scope.cineFeaturesContacts && _typeof(scope.cineFeaturesContacts) === 'object') {
+      CONTACTS_MODULE_API = scope.cineFeaturesContacts;
+      return CONTACTS_MODULE_API;
+    }
+    var moduleBase = scope && _typeof(scope.cineModuleBase) === 'object' ? scope.cineModuleBase : null;
+    if (moduleBase && typeof moduleBase.resolveModule === 'function') {
+      try {
+        var resolved = moduleBase.resolveModule('cine.features.contacts', scope);
+        if (resolved && _typeof(resolved) === 'object') {
+          CONTACTS_MODULE_API = resolved;
+          return CONTACTS_MODULE_API;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return CONTACTS_MODULE_API;
+  }
+  function fallbackSanitizeContactValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    return value.trim();
+  }
+  function fallbackGenerateContactId(moduleApi) {
+    if (moduleApi && typeof moduleApi.generateContactId === 'function') {
+      try {
+        var generated = moduleApi.generateContactId();
+        if (typeof generated === 'string' && generated) {
+          return generated;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return "contact-".concat(Date.now().toString(36), "-").concat(Math.random().toString(36).slice(2, 8));
+  }
+  function fallbackNormalizeContactEntry(entry, moduleApi) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return null;
+    }
+    var sanitize = fallbackSanitizeContactValue;
+    var id = sanitize(entry.id) || fallbackGenerateContactId(moduleApi);
+    var name = sanitize(entry.name);
+    var role = sanitize(entry.role);
+    var phone = sanitize(entry.phone);
+    var email = sanitize(entry.email);
+    var website = sanitize(entry.website || entry.url);
+    var notes = sanitize(entry.notes || entry.note || entry.text);
+    var avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+    var avatar = avatarSource && avatarSource.startsWith('data:') ? avatarSource : '';
+    var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+    var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+    var normalized = {
+      id: id,
+      name: name,
+      role: role,
+      phone: phone,
+      email: email,
+      website: website,
+      notes: notes,
+      createdAt: createdAt,
+      updatedAt: updatedAt
+    };
+    if (avatar) {
+      normalized.avatar = avatar;
+    }
+    return normalized;
+  }
+  function fallbackSortContacts(list) {
+    if (!Array.isArray(list)) {
+      return [];
+    }
+    var cloned = list.filter(function (entry) {
+      return entry && _typeof(entry) === 'object';
+    }).map(function (entry) {
+      return _objectSpread({}, entry);
+    });
+    cloned.sort(function (a, b) {
+      var nameA = (a && a.name ? a.name : '').toLowerCase();
+      var nameB = (b && b.name ? b.name : '').toLowerCase();
+      if (nameA && nameB && nameA !== nameB) {
+        try {
+          return nameA.localeCompare(nameB);
+        } catch (error) {
+          void error;
+        }
+      }
+      if (nameA && !nameB) {
+        return -1;
+      }
+      if (!nameA && nameB) {
+        return 1;
+      }
+      var createdA = a && typeof a.createdAt === 'number' ? a.createdAt : 0;
+      var createdB = b && typeof b.createdAt === 'number' ? b.createdAt : 0;
+      return createdA - createdB;
+    });
+    return cloned;
+  }
+  function normalizeContactsList(entries) {
+    if (!Array.isArray(entries)) {
+      return [];
+    }
+    var moduleApi = resolveContactsModuleApi();
+    if (moduleApi && typeof moduleApi.sortContacts === 'function') {
+      try {
+        var sorted = moduleApi.sortContacts(entries);
+        if (Array.isArray(sorted)) {
+          return sorted.filter(function (entry) {
+            return entry && _typeof(entry) === 'object';
+          });
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Error normalizing contacts via module.', error);
+        }
+      }
+    }
+    var normalizer = moduleApi && typeof moduleApi.normalizeContactEntry === 'function' ? moduleApi.normalizeContactEntry : null;
+    var normalized = [];
+    for (var index = 0; index < entries.length; index += 1) {
+      var entry = entries[index];
+      if (!entry) {
+        continue;
+      }
+      var normalizedEntry = null;
+      if (normalizer) {
+        try {
+          normalizedEntry = normalizer(entry);
+        } catch (error) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Error normalizing contact entry via module.', error);
+          }
+          normalizedEntry = null;
+        }
+      }
+      if (!normalizedEntry) {
+        normalizedEntry = fallbackNormalizeContactEntry(entry, moduleApi);
+      }
+      if (normalizedEntry && _typeof(normalizedEntry) === 'object') {
+        normalized.push(normalizedEntry);
+      }
+    }
+    return fallbackSortContacts(normalized);
+  }
+  function loadContacts() {
+    applyLegacyStorageMigrations();
+    var safeStorage = getSafeLocalStorage();
+    var parsed = loadJSONFromStorage(safeStorage, CONTACTS_STORAGE_KEY, 'Error loading contacts from localStorage:', [], {
+      validate: function validate(value) {
+        return value === null || Array.isArray(value);
+      }
+    });
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return normalizeContactsList(parsed);
+  }
+  function saveContacts(contacts) {
+    var safeStorage = getSafeLocalStorage();
+    if (contacts === null || contacts === undefined) {
+      deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, 'Error deleting contacts from localStorage:');
+      return;
+    }
+    if (!Array.isArray(contacts)) {
+      console.warn('Ignoring invalid contacts payload. Expected an array.');
+      return;
+    }
+    var normalized = normalizeContactsList(contacts);
+    ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
+    saveJSONToStorage(safeStorage, CONTACTS_STORAGE_KEY, normalized, 'Error saving contacts to localStorage:', {
+      disableCompression: true
+    });
+  }
   function normalizeOwnGearItem(entry) {
     if (!entry || _typeof(entry) !== 'object') {
       return null;
@@ -10983,16 +11192,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       disableCompression: true
     });
   }
+  function normalizeUserProfileField(value) {
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return String(value);
+    }
+    if (typeof value === 'bigint') {
+      return value.toString();
+    }
+    if (value && _typeof(value) === 'object') {
+      try {
+        var primitive = value.valueOf();
+        if (primitive !== value) {
+          return normalizeUserProfileField(primitive);
+        }
+        if (typeof value.toString === 'function') {
+          var stringified = value.toString();
+          if (typeof stringified === 'string' && stringified && stringified !== '[object Object]') {
+            return stringified.trim();
+          }
+        }
+      } catch (coercionError) {
+        void coercionError;
+      }
+    }
+    return '';
+  }
   function normalizeUserProfile(entry) {
     if (!entry || _typeof(entry) !== 'object') {
       return null;
     }
-    var name = typeof entry.name === 'string' ? entry.name.trim() : '';
-    var role = typeof entry.role === 'string' ? entry.role.trim() : '';
-    var avatarSource = typeof entry.avatar === 'string' ? entry.avatar.trim() : '';
+    var name = normalizeUserProfileField(entry.name);
+    var role = normalizeUserProfileField(entry.role);
+    var avatarSource = normalizeUserProfileField(entry.avatar);
     var avatar = avatarSource && avatarSource.toLowerCase().startsWith('data:') ? avatarSource : '';
-    var phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
-    var email = typeof entry.email === 'string' ? entry.email.trim() : '';
+    var phone = normalizeUserProfileField(entry.phone);
+    var email = normalizeUserProfileField(entry.email);
     if (!name && !role && !avatar && !phone && !email) {
       return {
         name: '',
@@ -11984,6 +12221,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+    deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
@@ -12000,7 +12238,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
     }
-    var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+    var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
     preferenceKeys.forEach(function (key) {
       deleteFromStorage(safeStorage, key, msg, {
         disableBackup: true
@@ -12187,6 +12425,79 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function interpretPrintPreferencesValue(rawValue) {
+    if (rawValue === null || rawValue === undefined) {
+      return null;
+    }
+    var serialized = null;
+    var candidate = rawValue;
+    if (typeof rawValue === 'string') {
+      var trimmed = rawValue.trim();
+      if (!trimmed) {
+        return null;
+      }
+      serialized = trimmed;
+      try {
+        candidate = JSON.parse(trimmed);
+      } catch (parseError) {
+        void parseError;
+        return {
+          normalized: null,
+          serialized: serialized
+        };
+      }
+    }
+    if (!candidate || _typeof(candidate) !== 'object') {
+      if (serialized) {
+        return {
+          normalized: null,
+          serialized: serialized
+        };
+      }
+      return null;
+    }
+    var hasSectionsContainer = _typeof(candidate.sections) === 'object' && candidate.sections !== null;
+    var sectionsSource = hasSectionsContainer ? candidate.sections : candidate;
+    var sections = {};
+    if (sectionsSource && _typeof(sectionsSource) === 'object') {
+      var sectionKeys = Object.keys(sectionsSource);
+      for (var index = 0; index < sectionKeys.length; index += 1) {
+        var sectionKey = sectionKeys[index];
+        var sectionValue = sectionsSource[sectionKey];
+        if (typeof sectionValue === 'boolean') {
+          sections[sectionKey] = sectionValue;
+        }
+      }
+    }
+    var layout = null;
+    if (typeof candidate.layout === 'string') {
+      var trimmedLayout = candidate.layout.trim();
+      if (trimmedLayout) {
+        layout = trimmedLayout;
+      }
+    }
+    if (!layout) {
+      layout = hasSectionsContainer ? 'standard' : 'rental';
+    }
+    var normalized = {
+      sections: sections,
+      layout: layout
+    };
+    if (hasSectionsContainer) {
+      var candidateKeys = Object.keys(candidate);
+      for (var _index1 = 0; _index1 < candidateKeys.length; _index1 += 1) {
+        var key = candidateKeys[_index1];
+        if (key === 'sections' || key === 'layout') {
+          continue;
+        }
+        normalized[key] = storageJsonDeepClone(candidate[key]);
+      }
+    }
+    return {
+      normalized: normalized,
+      serialized: serialized
+    };
+  }
   function collectPreferenceSnapshot() {
     var preferences = {};
     var darkMode = parseStoredBoolean(readLocalStorageValue('darkMode'));
@@ -12251,6 +12562,37 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (focusScale) {
       preferences.focusScale = focusScale;
     }
+    var cameraColorsRaw = readLocalStorageValue(CAMERA_COLOR_STORAGE_KEY);
+    if (cameraColorsRaw) {
+      var parsedCameraColors = null;
+      if (typeof cameraColorsRaw === 'string') {
+        var trimmedCameraColors = cameraColorsRaw.trim();
+        if (trimmedCameraColors) {
+          try {
+            parsedCameraColors = JSON.parse(trimmedCameraColors);
+          } catch (cameraColorParseError) {
+            console.warn('Failed to parse stored camera color preferences for backup', cameraColorParseError);
+            parsedCameraColors = null;
+          }
+        }
+      }
+      if (parsedCameraColors && _typeof(parsedCameraColors) === 'object') {
+        preferences.cameraColors = storageJsonDeepClone(parsedCameraColors);
+      } else if (typeof cameraColorsRaw === 'string' && cameraColorsRaw.trim()) {
+        preferences.cameraColors = cameraColorsRaw;
+      }
+    }
+    var printPreferencesRaw = readLocalStorageValue(PRINT_PREFERENCES_STORAGE_KEY);
+    if (printPreferencesRaw !== null && printPreferencesRaw !== undefined) {
+      var interpretedPrintPreferences = interpretPrintPreferencesValue(printPreferencesRaw);
+      if (interpretedPrintPreferences) {
+        if (interpretedPrintPreferences.normalized) {
+          preferences[PRINT_PREFERENCES_STORAGE_KEY] = storageJsonDeepClone(interpretedPrintPreferences.normalized);
+        } else if (interpretedPrintPreferences.serialized) {
+          preferences[PRINT_PREFERENCES_STORAGE_KEY] = interpretedPrintPreferences.serialized;
+        }
+      }
+    }
     return preferences;
   }
   function normalizeCustomFontEntries(entries) {
@@ -12288,6 +12630,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       feedback: loadFeedback(),
       project: loadProject(),
       favorites: loadFavorites(),
+      contacts: loadContacts(),
       ownGear: loadOwnGear(),
       userProfile: null,
       autoGearRules: loadAutoGearRules(),
@@ -12453,6 +12796,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return [];
+  }
+  function normalizeImportedContacts(value) {
+    var entries = normalizeImportedArray(value, ['contacts', 'entries', 'items', 'list', 'values', 'data'], function (entry) {
+      return entry && _typeof(entry) === 'object';
+    });
+    if (!Array.isArray(entries)) {
+      return [];
+    }
+    return normalizeContactsList(entries);
   }
   function normalizeImportedAutoGearRules(value) {
     var rules = normalizeImportedArray(value, ["rules", "items", "entries", "list", "values", "data"], function (entry) {
@@ -12727,7 +13079,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(snapshot)) {
       return null;
     }
-    var exportStructureKeys = ['devices', 'setups', 'session', 'feedback', 'favorites', 'preferences', 'project', 'projects', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearSeeded', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearBackupRetention', 'autoGearShowBackups', 'fullBackupHistory', 'fullBackups'];
+    var exportStructureKeys = ['devices', 'setups', 'session', 'feedback', 'favorites', 'contacts', 'preferences', 'project', 'projects', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearSeeded', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearBackupRetention', 'autoGearShowBackups', 'fullBackupHistory', 'fullBackups'];
     var resemblesExportPayload = exportStructureKeys.some(function (key) {
       return Object.prototype.hasOwnProperty.call(snapshot, key);
     });
@@ -12737,7 +13089,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var data = {};
     var hasAssignments = false;
     var hasSnapshotKeys = false;
-    var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+    var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
     var mountVoltageKeyName = getMountVoltageStorageKeyName();
     var simpleSnapshotKeys = new Set([CUSTOM_LOGO_STORAGE_KEY].concat(preferenceKeys, [mountVoltageKeyName]).filter(function (key) {
       return typeof key === 'string' && key;
@@ -12775,6 +13127,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
     assignJSONValue(PROJECT_STORAGE_KEY, 'project');
     assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+    assignJSONValue(CONTACTS_STORAGE_KEY, 'contacts');
     assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
     assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
     assignJSONValue(DOCUMENTATION_TRACKER_STORAGE_KEY, 'documentationTracker');
@@ -12841,6 +13194,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return;
       }
       markSnapshotEntry(entry);
+      if (key === PRINT_PREFERENCES_STORAGE_KEY) {
+        var snapshotPrintValue = parseSnapshotStringValue(entry);
+        if (snapshotPrintValue !== undefined) {
+          var interpretedPreferences = interpretPrintPreferencesValue(snapshotPrintValue);
+          if (interpretedPreferences) {
+            if (interpretedPreferences.normalized) {
+              preferences[key] = storageJsonDeepClone(interpretedPreferences.normalized);
+              hasAssignments = true;
+              return;
+            }
+            if (interpretedPreferences.serialized) {
+              preferences[key] = interpretedPreferences.serialized;
+              hasAssignments = true;
+              return;
+            }
+          }
+        }
+        return;
+      }
       var raw = extractSnapshotStoredValue(entry);
       if (booleanPreferenceKeys.has(key)) {
         var normalized = normalizeImportedBoolean(raw);
@@ -12878,6 +13250,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           preferences.focusScale = normalizedScale;
           hasAssignments = true;
         }
+      }
+    }
+    var cameraColorsEntry = readSnapshotEntry(snapshot, CAMERA_COLOR_STORAGE_KEY);
+    if (cameraColorsEntry) {
+      markSnapshotEntry(cameraColorsEntry);
+      var storedCameraColors = parseSnapshotJSONValue(cameraColorsEntry);
+      if (storedCameraColors !== undefined) {
+        preferences.cameraColors = storedCameraColors;
+        hasAssignments = true;
       }
     }
     var mountVoltageEntry = readSnapshotEntry(snapshot, mountVoltageKeyName);
@@ -12918,6 +13299,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return Object.prototype.hasOwnProperty.call(allData, key);
     };
     var mountVoltageKeyName = getMountVoltageStorageKeyName();
+    var cameraColorKeyName = CAMERA_COLOR_STORAGE_KEY;
     if (hasOwn('devices')) {
       saveDeviceData(allData.devices);
     }
@@ -12934,6 +13316,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (hasOwn('favorites')) {
       saveFavorites(allData.favorites);
+    }
+    if (hasOwn('contacts')) {
+      if (allData.contacts === null) {
+        saveContacts(null);
+      } else {
+        var contacts = normalizeImportedContacts(allData.contacts);
+        saveContacts(contacts);
+      }
     }
     if (hasOwn('ownGear')) {
       var entries = normalizeImportedArray(allData.ownGear, ['items', 'entries', 'list', 'values', 'data'], function (entry) {
@@ -13002,6 +13392,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeSetLocalStorage(FOCUS_SCALE_STORAGE_KEY_NAME, null);
         }
       }
+      if (Object.prototype.hasOwnProperty.call(prefs, PRINT_PREFERENCES_STORAGE_KEY)) {
+        var rawPrintPreferences = prefs[PRINT_PREFERENCES_STORAGE_KEY];
+        if (rawPrintPreferences === null) {
+          safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, null);
+        } else {
+          var interpretedPreferences = interpretPrintPreferencesValue(rawPrintPreferences);
+          if (interpretedPreferences) {
+            if (interpretedPreferences.normalized) {
+              var normalizedPrintPreferences = storageJsonDeepClone(interpretedPreferences.normalized);
+              var serializedPrintPreferences = null;
+              try {
+                serializedPrintPreferences = JSON.stringify(normalizedPrintPreferences);
+              } catch (printPreferenceSerializationError) {
+                console.warn('Unable to serialize imported print preferences', printPreferenceSerializationError);
+                serializedPrintPreferences = null;
+              }
+              if (serializedPrintPreferences !== null) {
+                try {
+                  safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, serializedPrintPreferences);
+                } catch (printPreferencePersistError) {
+                  console.warn('Unable to persist imported print preferences', printPreferencePersistError);
+                }
+              }
+              if (typeof savePrintPreferences === 'function') {
+                try {
+                  savePrintPreferences(normalizedPrintPreferences);
+                } catch (printPreferenceApplyError) {
+                  console.warn('Unable to apply imported print preferences', printPreferenceApplyError);
+                }
+              }
+            } else if (interpretedPreferences.serialized) {
+              try {
+                safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, interpretedPreferences.serialized);
+              } catch (printPreferenceStringPersistError) {
+                console.warn('Unable to store imported print preferences string value', printPreferenceStringPersistError);
+              }
+            }
+          }
+        }
+      }
       if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {
         var rawVoltages = prefs.mountVoltages;
         if (rawVoltages && _typeof(rawVoltages) === 'object') {
@@ -13039,6 +13469,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               triggerUpdate: true
             });
           }
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(prefs, 'cameraColors')) {
+        var rawCameraColors = prefs.cameraColors;
+        var applyImportedCameraColors = function applyImportedCameraColors(palette) {
+          if (!palette || _typeof(palette) !== 'object') {
+            return false;
+          }
+          var applied = false;
+          if (typeof window !== 'undefined' && window && typeof window.setCameraLetterColors === 'function') {
+            try {
+              window.setCameraLetterColors(palette);
+              applied = true;
+            } catch (cameraColorApplyError) {
+              console.warn('Unable to apply imported camera color preferences', cameraColorApplyError);
+              applied = false;
+            }
+          }
+          var serializedPalette = null;
+          try {
+            serializedPalette = JSON.stringify(palette);
+          } catch (cameraColorSerializeError) {
+            console.warn('Unable to serialize imported camera color preferences', cameraColorSerializeError);
+            serializedPalette = null;
+          }
+          if (serializedPalette) {
+            try {
+              safeSetLocalStorage(cameraColorKeyName, serializedPalette);
+            } catch (cameraColorPersistError) {
+              console.warn('Unable to persist imported camera color preferences', cameraColorPersistError);
+            }
+          }
+          return applied;
+        };
+        if (rawCameraColors && _typeof(rawCameraColors) === 'object') {
+          applyImportedCameraColors(rawCameraColors);
+        } else if (typeof rawCameraColors === 'string') {
+          var trimmedCameraColors = rawCameraColors.trim();
+          if (trimmedCameraColors) {
+            var parsedCameraColors = null;
+            try {
+              parsedCameraColors = JSON.parse(trimmedCameraColors);
+            } catch (cameraColorParseError) {
+              console.warn('Unable to parse imported camera color palette', cameraColorParseError);
+              parsedCameraColors = null;
+            }
+            if (parsedCameraColors && _typeof(parsedCameraColors) === 'object') {
+              applyImportedCameraColors(parsedCameraColors);
+            } else {
+              try {
+                safeSetLocalStorage(cameraColorKeyName, trimmedCameraColors);
+              } catch (cameraColorStoreError) {
+                console.warn('Unable to store raw imported camera color palette', cameraColorStoreError);
+              }
+            }
+          }
+        } else if (rawCameraColors === null) {
+          safeSetLocalStorage(cameraColorKeyName, null);
         }
       }
     }
@@ -13214,6 +13702,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     saveSessionState: saveSessionState,
     loadFavorites: loadFavorites,
     saveFavorites: saveFavorites,
+    loadContacts: loadContacts,
+    saveContacts: saveContacts,
     loadOwnGear: loadOwnGear,
     saveOwnGear: saveOwnGear,
     loadUserProfile: loadUserProfile,

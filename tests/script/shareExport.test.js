@@ -462,7 +462,7 @@ describe('project sharing helpers', () => {
   });
 
   test('shared project bundle preserves contact metadata through import', () => {
-    const downloadBackupPayloadMock = jest.fn(payload => ({ success: true, method: 'blob' }));
+    const downloadBackupPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
 
     env = setupScriptEnvironment({
       disableFreeze: true,

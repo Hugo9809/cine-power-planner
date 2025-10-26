@@ -91,7 +91,6 @@ describe('camera handle auto gear rules', () => {
     };
 
     jest.isolateModules(() => {
-      // eslint-disable-next-line global-require
       require(modulePath);
     });
   });

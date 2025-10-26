@@ -26,6 +26,7 @@ var FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keyS
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
+var FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK = 'Force reload requires an internet connection. Try again once you are back online.';
 function getSessionCloneScope() {
   if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
     return CORE_GLOBAL_SCOPE;
@@ -106,6 +107,94 @@ function resolveSessionRuntimeFunction(name) {
     }
   }
   return null;
+}
+function isNavigatorExplicitlyOffline(navigatorLike) {
+  if (!navigatorLike || _typeof(navigatorLike) !== 'object') {
+    return false;
+  }
+  if (typeof navigatorLike.onLine !== 'boolean') {
+    return false;
+  }
+  return navigatorLike.onLine === false;
+}
+function resolveForceReloadOfflineNotice() {
+  var notice = '';
+  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    var indicator = document.getElementById('offlineIndicator');
+    if (indicator) {
+      var dataset = indicator.dataset || {};
+      var dataNotice = typeof dataset.forceReloadNotice === 'string' && dataset.forceReloadNotice.trim() ? dataset.forceReloadNotice.trim() : null;
+      var dataHelp = typeof dataset.reloadNotice === 'string' && dataset.reloadNotice.trim() ? dataset.reloadNotice.trim() : null;
+      var helpAttr = typeof indicator.getAttribute === 'function' ? indicator.getAttribute('data-help') : null;
+      var helpAttrNormalized = typeof helpAttr === 'string' && helpAttr.trim() ? helpAttr.trim() : null;
+      var textContent = typeof indicator.textContent === 'string' && indicator.textContent.trim() ? indicator.textContent.trim() : null;
+      notice = dataNotice || dataHelp || helpAttrNormalized || textContent || '';
+      if (!notice) {
+        var baseLabel = typeof dataset.baseLabel === 'string' && dataset.baseLabel.trim() ? dataset.baseLabel.trim() : null;
+        if (baseLabel) {
+          notice = baseLabel;
+        }
+      }
+      if (notice) {
+        return notice;
+      }
+    }
+  }
+  var resolveLocale = resolveSessionRuntimeFunction('resolveLocaleString');
+  if (typeof resolveLocale === 'function') {
+    try {
+      var localized = resolveLocale('reloadAppOfflineNotice');
+      if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+      }
+    } catch (localeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveForceReloadOfflineNotice: failed to resolve locale string', localeError);
+      }
+    }
+  }
+  return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+}
+function announceForceReloadOfflineNotice() {
+  var notice = resolveForceReloadOfflineNotice();
+  var handled = false;
+  if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    var indicator = document.getElementById('offlineIndicator');
+    if (indicator) {
+      handled = true;
+      if (indicator.dataset) {
+        indicator.dataset.forceReloadNotice = notice;
+        indicator.dataset.reloadNotice = notice;
+      }
+      if (typeof indicator.setAttribute === 'function') {
+        indicator.setAttribute('data-help', notice);
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-live', 'polite');
+      }
+      if (typeof indicator.removeAttribute === 'function') {
+        indicator.removeAttribute('hidden');
+      }
+      if (typeof indicator.textContent === 'string' || _typeof(indicator.textContent) === 'object') {
+        indicator.textContent = notice;
+      }
+    }
+  }
+  if (!handled && typeof window !== 'undefined' && typeof window.alert === 'function') {
+    try {
+      window.alert(notice);
+    } catch (alertError) {
+      void alertError;
+    }
+  }
+}
+try {
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    if (typeof globalThis.announceForceReloadOfflineNotice !== 'function') {
+      globalThis.announceForceReloadOfflineNotice = announceForceReloadOfflineNotice;
+    }
+  }
+} catch (exposeError) {
+  void exposeError;
 }
 function safeGetCurrentProjectName() {
   var defaultValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -4306,10 +4395,148 @@ function applyImportedOwnedGearMarkers(markers) {
   }
   return applied;
 }
+function mergeSharedContactsIntoCache(sharedContacts) {
+  if (!Array.isArray(sharedContacts) || !sharedContacts.length) {
+    return {
+      added: 0,
+      updated: 0
+    };
+  }
+  if (typeof contactsCache === 'undefined') {
+    return {
+      added: 0,
+      updated: 0
+    };
+  }
+  var sanitize = function sanitize(value) {
+    if (typeof sanitizeContactValue === 'function') {
+      return sanitizeContactValue(value);
+    }
+    return typeof value === 'string' ? value.trim() : '';
+  };
+  var existingContacts = Array.isArray(contactsCache) ? contactsCache.slice() : [];
+  var added = 0;
+  var updated = 0;
+  sharedContacts.forEach(function (entry) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return;
+    }
+    var normalized = typeof normalizeContactEntry === 'function' ? normalizeContactEntry(entry) : _objectSpread({}, entry);
+    if (!normalized || _typeof(normalized) !== 'object') {
+      return;
+    }
+    var id = sanitize(normalized.id || entry.id);
+    if (!id) {
+      return;
+    }
+    var existingIndex = existingContacts.findIndex(function (contact) {
+      return contact && contact.id === id;
+    });
+    var createdAt = Number.isFinite(normalized.createdAt) ? normalized.createdAt : Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+    var updatedAtCandidate = Number.isFinite(normalized.updatedAt) ? normalized.updatedAt : Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+    if (existingIndex !== -1) {
+      var existing = existingContacts[existingIndex];
+      var changed = false;
+      ['name', 'role', 'phone', 'email', 'website', 'notes'].forEach(function (field) {
+        var incoming = sanitize(Object.prototype.hasOwnProperty.call(normalized, field) ? normalized[field] : entry[field]);
+        if (!incoming) {
+          return;
+        }
+        var currentValue = sanitize(existing[field]);
+        if (!currentValue) {
+          existing[field] = incoming;
+          changed = true;
+        }
+      });
+      var incomingAvatar = sanitize(normalized.avatar || entry.avatar);
+      if (incomingAvatar && !sanitize(existing.avatar)) {
+        existing.avatar = incomingAvatar;
+        changed = true;
+      }
+      if (!Number.isFinite(existing.createdAt) && Number.isFinite(createdAt)) {
+        existing.createdAt = createdAt;
+        changed = true;
+      }
+      if (Number.isFinite(updatedAtCandidate) && (!Number.isFinite(existing.updatedAt) || existing.updatedAt < updatedAtCandidate)) {
+        existing.updatedAt = updatedAtCandidate;
+        changed = true;
+      } else if (changed && Number.isFinite(existing.updatedAt)) {
+        existing.updatedAt = Date.now();
+      } else if (changed && !Number.isFinite(existing.updatedAt)) {
+        existing.updatedAt = Date.now();
+      }
+      if (changed) {
+        updated += 1;
+      }
+      return;
+    }
+    var newContact = {
+      id: id,
+      name: sanitize(normalized.name || entry.name),
+      role: sanitize(normalized.role || entry.role),
+      phone: sanitize(normalized.phone || entry.phone),
+      email: sanitize(normalized.email || entry.email),
+      website: sanitize(normalized.website || entry.website),
+      notes: sanitize(normalized.notes || entry.notes),
+      avatar: sanitize(normalized.avatar || entry.avatar),
+      createdAt: createdAt,
+      updatedAt: updatedAtCandidate
+    };
+    if (!newContact.avatar) {
+      delete newContact.avatar;
+    }
+    existingContacts.push(newContact);
+    added += 1;
+  });
+  if (!added && !updated) {
+    return {
+      added: 0,
+      updated: 0
+    };
+  }
+  try {
+    if (typeof sortContacts === 'function') {
+      contactsCache = sortContacts(existingContacts);
+    } else {
+      contactsCache = existingContacts.filter(Boolean);
+    }
+  } catch (sortError) {
+    console.warn('Shared contact merge could not sort contacts', sortError);
+    contactsCache = existingContacts.filter(Boolean);
+  }
+  if (typeof saveContactsToStorage === 'function') {
+    try {
+      saveContactsToStorage(contactsCache);
+    } catch (saveError) {
+      console.warn('Shared contact merge could not persist contacts', saveError);
+    }
+  }
+  if (typeof renderContactsList === 'function') {
+    try {
+      renderContactsList();
+    } catch (renderError) {
+      void renderError;
+    }
+  }
+  if (typeof updateContactPickers === 'function') {
+    try {
+      updateContactPickers();
+    } catch (pickerError) {
+      void pickerError;
+    }
+  }
+  return {
+    added: added,
+    updated: updated
+  };
+}
 function applySharedSetup(shared) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   try {
     var decoded = decodeSharedSetup(typeof shared === 'string' ? JSON.parse(shared) : shared);
+    if (decoded && decoded.contacts) {
+      mergeSharedContactsIntoCache(decoded.contacts);
+    }
     deactivateSharedImportProjectPreset();
     var sharedRulesFromData = Array.isArray(decoded.autoGearRules) ? decoded.autoGearRules : null;
     var providedRules = Array.isArray(options.sharedAutoGearRules) && options.sharedAutoGearRules.length ? options.sharedAutoGearRules : sharedRulesFromData;
@@ -4917,7 +5144,21 @@ var rememberSettingsMountVoltagesBaseline = function rememberSettingsMountVoltag
 var revertSettingsMountVoltagesIfNeeded = function revertSettingsMountVoltagesIfNeeded() {};
 var handlePinkModeIconPress = function handlePinkModeIconPress() {};
 var triggerPinkModeIconAnimation = function triggerPinkModeIconAnimation() {};
-function callPinkModeSupport(methodName, args, warningMessage) {
+var pendingPinkModeSupportCalls = [];
+var pinkModeSupportFlushScheduled = false;
+var PINK_MODE_SUPPORT_QUEUE_LIMIT = 25;
+function clonePinkModeSupportArgs(args) {
+  if (!Array.isArray(args)) {
+    return args;
+  }
+  try {
+    return args.slice();
+  } catch (error) {
+    void error;
+  }
+  return args;
+}
+function invokePinkModeSupport(methodName, args, warningMessage) {
   if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
     return undefined;
   }
@@ -4933,6 +5174,57 @@ function callPinkModeSupport(methodName, args, warningMessage) {
     }
   }
   return undefined;
+}
+function flushPendingPinkModeSupportCalls() {
+  pinkModeSupportFlushScheduled = false;
+  if (typeof PINK_MODE_SUPPORT_API === 'undefined' || !PINK_MODE_SUPPORT_API) {
+    if (pendingPinkModeSupportCalls.length && typeof setTimeout === 'function') {
+      pinkModeSupportFlushScheduled = true;
+      setTimeout(flushPendingPinkModeSupportCalls, 50);
+    }
+    return;
+  }
+  while (pendingPinkModeSupportCalls.length) {
+    var entry = pendingPinkModeSupportCalls.shift();
+    if (!entry) {
+      continue;
+    }
+    try {
+      invokePinkModeSupport(entry.methodName, entry.args, entry.warningMessage);
+    } catch (error) {
+      void error;
+    }
+  }
+}
+function schedulePinkModeSupportFlush() {
+  if (pinkModeSupportFlushScheduled || typeof setTimeout !== 'function') {
+    return;
+  }
+  pinkModeSupportFlushScheduled = true;
+  setTimeout(flushPendingPinkModeSupportCalls, 0);
+}
+function enqueuePinkModeSupportCall(methodName, args, warningMessage) {
+  if (pendingPinkModeSupportCalls.length >= PINK_MODE_SUPPORT_QUEUE_LIMIT) {
+    pendingPinkModeSupportCalls.shift();
+  }
+  pendingPinkModeSupportCalls.push({
+    methodName: methodName,
+    args: clonePinkModeSupportArgs(args),
+    warningMessage: warningMessage
+  });
+  schedulePinkModeSupportFlush();
+}
+function callPinkModeSupport(methodName, args, warningMessage) {
+  var apiReady = typeof PINK_MODE_SUPPORT_API !== 'undefined' && PINK_MODE_SUPPORT_API;
+  if (!apiReady) {
+    enqueuePinkModeSupportCall(methodName, args, warningMessage);
+    return undefined;
+  }
+  var result = invokePinkModeSupport(methodName, args, warningMessage);
+  if (pendingPinkModeSupportCalls.length) {
+    flushPendingPinkModeSupportCalls();
+  }
+  return result;
 }
 var FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = function FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN() {
   return callPinkModeSupport('triggerPinkModeIconRain', null, 'cineSession: triggerPinkModeIconRain failed.');
@@ -5831,10 +6123,7 @@ rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 if (pinkModeToggle) {
-  pinkModeToggle.addEventListener("click", function (event) {
-    if (event && event.isTrusted) {
-      handlePinkModeIconPress();
-    }
+  pinkModeToggle.addEventListener('click', function () {
     persistPinkModePreference(!document.body.classList.contains('pink-mode'));
   });
 }
@@ -12252,10 +12541,21 @@ function clearCachesAndReload() {
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee7() {
-    var reloadFallback, offlineModule, beforeReloadHref, sessionNavigator, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t0, _t1, _t10;
+    var sessionNavigator, reloadFallback, offlineModule, beforeReloadHref, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t0, _t1, _t10;
     return _regenerator().w(function (_context7) {
       while (1) switch (_context7.p = _context7.n) {
         case 0:
+          sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
+          if (!isNavigatorExplicitlyOffline(sessionNavigator)) {
+            _context7.n = 1;
+            break;
+          }
+          announceForceReloadOfflineNotice();
+          return _context7.a(2, {
+            blocked: true,
+            reason: 'offline'
+          });
+        case 1:
           try {
             flushProjectAutoSaveOnExit({
               reason: 'before-manual-reload'
@@ -12266,21 +12566,21 @@ function _clearCachesAndReload() {
           reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
-          sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
           sessionCaches = typeof caches !== 'undefined' ? caches : undefined;
           serviceWorkerLike = sessionNavigator && sessionNavigator.serviceWorker ? sessionNavigator.serviceWorker : null;
           serviceWorkerRegistrationsPromise = serviceWorkerLike ? collectServiceWorkerRegistrationsForReload(serviceWorkerLike) : Promise.resolve([]);
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context7.n = 6;
+            _context7.n = 7;
             break;
           }
-          _context7.p = 1;
+          _context7.p = 2;
           reloadAttempt = offlineModule.reloadApp({
             window: window,
             navigator: sessionNavigator,
-            caches: sessionCaches
+            caches: sessionCaches,
+            onOfflineReloadBlocked: announceForceReloadOfflineNotice
           });
-          _context7.n = 2;
+          _context7.n = 3;
           return awaitPromiseWithSoftTimeout(reloadAttempt, OFFLINE_RELOAD_TIMEOUT_MS, function () {
             console.warn('Offline module reload timed out; continuing with manual fallback after soft timeout.', {
               timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS
@@ -12288,38 +12588,38 @@ function _clearCachesAndReload() {
           }, function (lateError) {
             console.warn('Offline module reload promise rejected after timeout', lateError);
           });
-        case 2:
+        case 3:
           _yield$awaitPromiseWi = _context7.v;
           timedOut = _yield$awaitPromiseWi.timedOut;
           result = _yield$awaitPromiseWi.result;
           if (timedOut) {
-            _context7.n = 4;
+            _context7.n = 5;
             break;
           }
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
-            _context7.n = 4;
+            _context7.n = 5;
             break;
           }
-          _context7.n = 3;
+          _context7.n = 4;
           return waitForReloadNavigation(beforeReloadHref).catch(function () {
             return false;
           });
-        case 3:
+        case 4:
           navigationObserved = _context7.v;
           if (!navigationObserved) {
-            _context7.n = 4;
+            _context7.n = 5;
             break;
           }
           return _context7.a(2);
-        case 4:
-          _context7.n = 6;
-          break;
         case 5:
-          _context7.p = 5;
+          _context7.n = 7;
+          break;
+        case 6:
+          _context7.p = 6;
           _t0 = _context7.v;
           console.warn('Offline module reload failed, falling back to manual refresh', _t0);
-        case 6:
+        case 7:
           uiCacheCleared = false;
           try {
             if (typeof clearUiCacheStorageEntries === 'function') {
@@ -12438,8 +12738,8 @@ function _clearCachesAndReload() {
               serviceWorkerGatePromise = Promise.race([serviceWorkerCleanupPromise, controllerChangeWatcher.promise]);
             }
           }
-          _context7.p = 7;
-          _context7.n = 8;
+          _context7.p = 8;
+          _context7.n = 9;
           return awaitPromiseWithSoftTimeout(serviceWorkerGatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
             console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
               timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -12447,15 +12747,15 @@ function _clearCachesAndReload() {
           }, function (lateError) {
             console.warn('Service worker cleanup failed after reload triggered', lateError);
           });
-        case 8:
-          _context7.n = 10;
-          break;
         case 9:
-          _context7.p = 9;
-          _t1 = _context7.v;
-          console.warn('Service worker cleanup failed', _t1);
+          _context7.n = 11;
+          break;
         case 10:
           _context7.p = 10;
+          _t1 = _context7.v;
+          console.warn('Service worker cleanup failed', _t1);
+        case 11:
+          _context7.p = 11;
           if (controllerChangeWatcher && typeof controllerChangeWatcher.cancel === 'function') {
             try {
               controllerChangeWatcher.cancel();
@@ -12463,8 +12763,8 @@ function _clearCachesAndReload() {
               void controllerCleanupError;
             }
           }
-          return _context7.f(10);
-        case 11:
+          return _context7.f(11);
+        case 12:
           try {
             if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
               reloadFallback.triggerNow();
@@ -12480,20 +12780,20 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          _context7.p = 12;
-          _context7.n = 13;
+          _context7.p = 13;
+          _context7.n = 14;
           return cacheCleanupPromise;
-        case 13:
-          _context7.n = 15;
-          break;
         case 14:
-          _context7.p = 14;
+          _context7.n = 16;
+          break;
+        case 15:
+          _context7.p = 15;
           _t10 = _context7.v;
           console.warn('Cache clear failed', _t10);
-        case 15:
+        case 16:
           return _context7.a(2);
       }
-    }, _callee7, null, [[12, 14], [7, 9, 10, 11], [1, 5]]);
+    }, _callee7, null, [[13, 15], [8, 10, 11, 12], [2, 6]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -16123,9 +16423,9 @@ function ensureFilterDetailEditButton(element) {
   }
   var setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function' ? scope.setButtonLabelWithIcon : null;
   var iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
-  var sliderGlyph = iconRegistry && iconRegistry.sliders ? iconRegistry.sliders : null;
-  if (setLabelWithIcon && sliderGlyph) {
-    setLabelWithIcon.call(scope, button, '', sliderGlyph);
+  var editGlyph = iconRegistry ? iconRegistry.sliders || iconRegistry.gears || iconRegistry.gearList || iconRegistry.settingsGeneral || iconRegistry.note || null : null;
+  if (setLabelWithIcon && editGlyph) {
+    setLabelWithIcon.call(scope, button, '', editGlyph);
   } else if (editLabel) {
     button.textContent = editLabel;
   }

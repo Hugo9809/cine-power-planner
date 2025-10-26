@@ -592,9 +592,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var pinkModeIconRotationTimer = null;
     var pinkModeIconIndex = 0;
+    var pinkModeIconPressCount = 0;
+    var pinkModeIconPressResetTimer = null;
     var PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     var PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
     var PINK_MODE_ICON_INTERVAL_MS = context.pinkModeIconIntervalMs || 1500;
+    var PINK_MODE_ICON_PRESS_RESET_MS = typeof context.pinkModeIconPressResetMs === 'number' && context.pinkModeIconPressResetMs >= 0 ? context.pinkModeIconPressResetMs : 0;
     var pinkModeEnabled = false;
     var settingsInitialPinkMode = false;
     var settingsInitialTemperatureUnit = 'celsius';
@@ -1236,6 +1239,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cineSettingsAppearance: unable to schedule pink mode rotation.', error);
       }
     }
+    function clearPinkModeIconPressResetTimer() {
+      if (pinkModeIconPressResetTimer) {
+        try {
+          clearTimeout(pinkModeIconPressResetTimer);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to clear pink mode press reset timer.', error);
+        }
+        pinkModeIconPressResetTimer = null;
+      }
+    }
+    function schedulePinkModeIconPressReset() {
+      if (PINK_MODE_ICON_PRESS_RESET_MS <= 0) {
+        return;
+      }
+      clearPinkModeIconPressResetTimer();
+      try {
+        pinkModeIconPressResetTimer = setTimeout(function () {
+          pinkModeIconPressResetTimer = null;
+          pinkModeIconPressCount = 0;
+        }, PINK_MODE_ICON_PRESS_RESET_MS);
+        if (pinkModeIconPressResetTimer && typeof pinkModeIconPressResetTimer.unref === 'function') {
+          pinkModeIconPressResetTimer.unref();
+        }
+      } catch (error) {
+        pinkModeIconPressResetTimer = null;
+        safeWarn('cineSettingsAppearance: unable to schedule pink mode press reset.', error);
+      }
+    }
+    function resetPinkModeIconPressCount() {
+      pinkModeIconPressCount = 0;
+      clearPinkModeIconPressResetTimer();
+    }
     function triggerPinkModeIconRain() {
       if (typeof icons.triggerPinkModeIconRain === 'function') {
         try {
@@ -1246,6 +1281,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     function handlePinkModeIconPress() {
+      pinkModeIconPressCount += 1;
+      if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
+        schedulePinkModeIconPressReset();
+      }
+      if (pinkModeIconPressCount < 3) {
+        return;
+      }
+      if (PINK_MODE_ICON_PRESS_RESET_MS <= 0 && pinkModeIconPressCount > 3) {
+        pinkModeIconPressCount = 3;
+      }
       triggerPinkModeIconRain();
     }
     function startPinkModeAnimatedIconRotation() {
@@ -1255,6 +1300,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function stopPinkModeAnimatedIconRotation() {
       stopPinkModeAnimatedIcons();
       stopPinkModeIconRotation();
+      resetPinkModeIconPressCount();
     }
     function applyPinkMode(enabled) {
       var root = getRoot();
