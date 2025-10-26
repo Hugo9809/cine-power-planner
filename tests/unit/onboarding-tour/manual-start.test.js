@@ -29,6 +29,20 @@ describe('onboarding tour manual start', () => {
     },
   };
 
+  function createTrackableStorage(initialValues = {}) {
+    const entries = Object.entries(initialValues);
+    const store = new Map(entries);
+    return {
+      getItem: jest.fn(key => (store.has(key) ? store.get(key) : null)),
+      setItem: jest.fn((key, value) => {
+        store.set(key, value);
+      }),
+      removeItem: jest.fn(key => {
+        store.delete(key);
+      }),
+    };
+  }
+
   function loadModule(options = {}) {
     jest.resetModules();
     delete global.cineModuleBase;
@@ -143,9 +157,13 @@ describe('onboarding tour manual start', () => {
     global.requestAnimationFrame = cb => setTimeout(() => cb(Date.now()), 0);
     global.cancelAnimationFrame = handle => clearTimeout(handle);
 
+    let currentReadyState = options.readyState || 'complete';
     Object.defineProperty(document, 'readyState', {
       configurable: true,
-      get: () => 'complete',
+      get: () => currentReadyState,
+      set: value => {
+        currentReadyState = value;
+      },
     });
 
     document.body.innerHTML = `
@@ -706,6 +724,38 @@ describe('onboarding tour manual start', () => {
     await new Promise(resolve => setTimeout(resolve, 60));
 
     expect(progress.textContent).toBe('Étape 1 sur 32');
+  });
+
+  test('auto start honors skipped state refreshed during initialization', () => {
+    const skipState = JSON.stringify({ version: 2, completed: false, skipped: true });
+    const safeStorage = createTrackableStorage();
+    const secondaryStorage = createTrackableStorage();
+    const sessionStorageStub = createTrackableStorage();
+
+    loadModule({
+      readyState: 'loading',
+      safeStorage,
+      safeLocalStorage: secondaryStorage,
+      localStorage: secondaryStorage,
+      sessionStorage: sessionStorageStub,
+    });
+
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    try {
+      safeStorage.setItem('cinePowerPlanner_onboardingTutorial', skipState);
+      secondaryStorage.setItem('cinePowerPlanner_onboardingTutorial', skipState);
+      sessionStorageStub.setItem('cinePowerPlanner_onboardingTutorial', skipState);
+
+      document.readyState = 'complete';
+      document.dispatchEvent(new Event('DOMContentLoaded'));
+
+      expect(setTimeoutSpy).not.toHaveBeenCalledWith(expect.any(Function), 600);
+    } finally {
+      setTimeoutSpy.mockRestore();
+      delete global.localStorage;
+      delete global.sessionStorage;
+    }
   });
 
   test('skipping onboarding persists across reloads when primary storage is unavailable', async () => {

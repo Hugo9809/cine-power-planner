@@ -1611,9 +1611,10 @@
 
   function normalizeStateSnapshot(state) {
     const snapshot = state && typeof state === 'object' ? { ...state } : {};
+    const skipRequested = snapshot.skipped === true;
     snapshot.version = STORAGE_VERSION;
     snapshot.completed = Boolean(snapshot.completed);
-    snapshot.skipped = Boolean(snapshot.skipped) && !snapshot.completed;
+    snapshot.skipped = skipRequested && !snapshot.completed;
     const allowedKeys = DEFAULT_STEP_KEYS;
     snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps, allowedKeys);
     snapshot.activeStep = typeof snapshot.activeStep === 'string' && snapshot.activeStep
@@ -1626,7 +1627,7 @@
     if (signature !== STEP_SIGNATURE) {
       snapshot.stepSignature = STEP_SIGNATURE;
       snapshot.completed = false;
-      snapshot.skipped = false;
+      snapshot.skipped = skipRequested;
       if (!snapshot.activeStep) {
         for (let index = 0; index < allowedKeys.length; index += 1) {
           const key = allowedKeys[index];
@@ -1642,6 +1643,7 @@
     if (snapshot.completedSteps.length < allowedKeys.length) {
       snapshot.completed = false;
     }
+    snapshot.skipped = (skipRequested || snapshot.skipped === true) && !snapshot.completed;
     if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
       snapshot.timestamp = getTimestamp();
     }
@@ -1908,7 +1910,15 @@
       return sanitized;
     }
 
-  let storedState = loadStoredState();
+  let storedState = null;
+
+  function refreshStoredState() {
+    const nextState = loadStoredState();
+    storedState = nextState;
+    return nextState;
+  }
+
+  refreshStoredState();
 
   function normalizeLanguageCandidate(rawValue, availableTexts) {
     if (!rawValue || (typeof rawValue !== 'string' && typeof rawValue !== 'number')) {
@@ -6339,7 +6349,7 @@
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
-    storedState = loadStoredState();
+    storedState = refreshStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
 
@@ -6798,7 +6808,7 @@
       event.preventDefault();
     }
     const startFromHelp = () => {
-      storedState = loadStoredState();
+      storedState = refreshStoredState();
       const hasProgress = Boolean(
         storedState
         && Array.isArray(storedState.completedSteps)
@@ -6898,6 +6908,7 @@
   }
 
   function init() {
+    refreshStoredState();
     attachHelpButton();
     applyHelpButtonLabel();
     if (shouldAutoStart()) {
@@ -6913,7 +6924,7 @@
 
   function handleFactoryReset() {
     const persisted = saveState({ version: STORAGE_VERSION });
-    storedState = persisted || loadStoredState();
+    storedState = persisted || refreshStoredState();
     applyHelpButtonLabel();
     if (!active && shouldAutoStart()) {
       scheduleAutoStart();
@@ -6959,11 +6970,11 @@
     skip: skipTutorial,
     reset() {
       const persisted = saveState({ version: STORAGE_VERSION });
-      storedState = persisted || loadStoredState();
+      storedState = persisted || refreshStoredState();
       applyHelpButtonLabel();
     },
     getStatus() {
-      const state = loadStoredState();
+      const state = refreshStoredState();
       return clone(state);
     },
     isActive() {
