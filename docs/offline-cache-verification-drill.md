@@ -2,9 +2,10 @@
 
 Run this drill whenever service-worker assets, icons or persistence code change.
 It confirms cached builds match the repository and that offline safeguards keep
-protecting user data. Before starting, regenerate the manifest (`npm run generate:sw-assets`)
-and run `npm test -- service-worker-assets-manifest` so the guard rails confirm the
-manifest includes `./service-worker-assets.js`.
+protecting user data. Before starting, run `npm run check-consistency`. The
+script now compares the in-memory manifest with `service-worker-assets.js` and
+fails when they drift. If it reports differences, regenerate the manifest with
+`npm run generate:sw-assets`, rerun the check, then continue with the drill.
 
 ## Prerequisites
 
@@ -16,11 +17,12 @@ manifest includes `./service-worker-assets.js`.
 ## Drill steps
 
 1. **Verify the manifest list**
+   - Confirm `npm run check-consistency` completed without manifest errors.
    - Open `service-worker-assets.js` and confirm the array includes
      `"./service-worker-assets.js"` (search within the file if needed).
-   - If it is missing, rerun `npm run generate:sw-assets` and investigate the
-     failing test before proceeding—offline reloads depend on this entry to ship
-     refreshed manifests.
+   - If it is missing or out of sync, rerun `npm run generate:sw-assets`,
+     rerun the check and investigate the diff before proceeding—offline reloads
+     depend on this entry to ship refreshed manifests.
 2. **Prime the cache**
    - Serve the repository locally and load `http://localhost:<port>/index.html`.
    - Wait for the service worker ready prompt; verify the **Force reload** action

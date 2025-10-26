@@ -90,12 +90,13 @@ Considera questi passaggi come vincolanti per ogni merge, così la documentazion
 
 Prima di un merge o di un rilascio sul campo, completa questa lista compatta per proteggere dati, documentazione e traduzioni:
 
-1. **Prova i workflow critici.** Segui l’[Avvio rapido](#avvio-rapido) o [`docs/operations-checklist.md`](docs/operations-checklist.md) per confermare salvataggi, condivisione, import, backup e ripristino offline end-to-end.
-2. **Aggiorna il materiale scritto.** Rinfresca help center, README localizzati e manuali. Usa la [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) per assicurarti che nessuna lingua o flusso resti indietro.
-3. **Raccogli gli artefatti di verifica.** Compila il [Documentation Verification Packet](docs/documentation-verification-packet.md) e la [Verification Log Template](docs/verification-log-template.md) con note di prova, hash degli export e screenshot di priming della cache più recenti.
-4. **Valida gli switch di lingua.** Scorri tutte le lingue dell’app per confermare che i nuovi string funzionino senza caricare asset esterni.
-5. **Archivia copie ridondanti.** Esporta `planner-backup.json`, i bundle progetto correnti, le regole automatiche in JSON e uno ZIP del repository. Conserva tutto su almeno due supporti offline con una nota di retention.
-6. **Registra lo stato del service worker.** Annota versione riportata, comportamento dell’indicatore offline e timestamp dell’ultimo **Forza ricarica** manuale così le troupe sanno quale revisione è attiva.
+1. **Esegui il guardiano del manifesto.** Lancia `npm run check-consistency` per validare i metadati dei dispositivi e verificare che `service-worker-assets.js` corrisponda al manifesto generato in memoria. Se segnala divergenze, esegui `npm run generate:sw-assets`, versiona il file aggiornato e ripeti il controllo prima di proseguire.
+2. **Prova i workflow critici.** Segui l’[Avvio rapido](#avvio-rapido) o [`docs/operations-checklist.md`](docs/operations-checklist.md) per confermare salvataggi, condivisione, import, backup e ripristino offline end-to-end.
+3. **Aggiorna il materiale scritto.** Rinfresca help center, README localizzati e manuali. Usa la [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) per assicurarti che nessuna lingua o flusso resti indietro.
+4. **Raccogli gli artefatti di verifica.** Compila il [Documentation Verification Packet](docs/documentation-verification-packet.md) e la [Verification Log Template](docs/verification-log-template.md) con note di prova, hash degli export e screenshot di priming della cache più recenti.
+5. **Valida gli switch di lingua.** Scorri tutte le lingue dell’app per confermare che i nuovi string funzionino senza caricare asset esterni.
+6. **Archivia copie ridondanti.** Esporta `planner-backup.json`, i bundle progetto correnti, le regole automatiche in JSON e uno ZIP del repository. Conserva tutto su almeno due supporti offline con una nota di retention.
+7. **Registra lo stato del service worker.** Annota versione riportata, comportamento dell’indicatore offline e timestamp dell’ultimo **Forza ricarica** manuale così le troupe sanno quale revisione è attiva.
 
 ## Panoramica
 

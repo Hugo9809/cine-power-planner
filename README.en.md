@@ -127,12 +127,13 @@ Treat these steps as blocking tasks for every merge so documentation remains as 
 
 Before you merge or ship a field build, walk through this condensed checklist to protect user data, documentation and translations:
 
-1. **Rehearse critical workflows.** Run the [Quick Start](#quick-start) drill or [`docs/operations-checklist.md`](docs/operations-checklist.md) to confirm saves, shares, imports, backups and restores still work end-to-end offline.
-2. **Refresh written guidance.** Update help center topics, localized README files and printed manuals. Use the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) to confirm no language or workflow was missed.
-3. **Capture verification artifacts.** Fill in the [Documentation Verification Packet](docs/documentation-verification-packet.md) and [Verification Log Template](docs/verification-log-template.md) with the latest rehearsal notes, export hashes and cache-priming screenshots.
-4. **Validate translation toggles.** Switch through every language in the app to ensure updated strings render correctly without fetching external assets.
-5. **Store redundant archives.** Export `planner-backup.json`, current project bundles, automatic gear rule JSON and a ZIP of the repository. Place the set on at least two offline media locations with a short retention note.
-6. **Log service worker state.** Record the reported version, offline indicator behavior and the timestamp of the last manual **Force reload** so crews can audit which revision they are running.
+1. **Run the manifest guard.** Execute `npm run check-consistency` to validate device metadata and confirm `service-worker-assets.js` matches the in-memory manifest. If it flags drift, run `npm run generate:sw-assets`, commit the regenerated file and rerun the check before proceeding.
+2. **Rehearse critical workflows.** Run the [Quick Start](#quick-start) drill or [`docs/operations-checklist.md`](docs/operations-checklist.md) to confirm saves, shares, imports, backups and restores still work end-to-end offline.
+3. **Refresh written guidance.** Update help center topics, localized README files and printed manuals. Use the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) to confirm no language or workflow was missed.
+4. **Capture verification artifacts.** Fill in the [Documentation Verification Packet](docs/documentation-verification-packet.md) and [Verification Log Template](docs/verification-log-template.md) with the latest rehearsal notes, export hashes and cache-priming screenshots.
+5. **Validate translation toggles.** Switch through every language in the app to ensure updated strings render correctly without fetching external assets.
+6. **Store redundant archives.** Export `planner-backup.json`, current project bundles, automatic gear rule JSON and a ZIP of the repository. Place the set on at least two offline media locations with a short retention note.
+7. **Log service worker state.** Record the reported version, offline indicator behavior and the timestamp of the last manual **Force reload** so crews can audit which revision they are running.
 
 ## Overview
 

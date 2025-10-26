@@ -90,12 +90,13 @@ Behandle diese Schritte als verpflichtend für jeden Merge, damit die Dokumentat
 
 Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimierte Liste durch, um Daten, Dokumentation und Übersetzungen zu schützen:
 
-1. **Kritische Workflows proben.** Führe den [Schnellstart](#schnellstart) oder [`docs/operations-checklist.md`](docs/operations-checklist.md) aus, um Speichern, Teilen, Importieren, Backup und Wiederherstellen offline zu verifizieren.
-2. **Schriftliche Hilfen aktualisieren.** Aktualisiere Hilfecenter, lokalisierte README-Dateien und Druckanleitungen. Nutze die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md), um sicherzustellen, dass keine Sprache fehlt.
-3. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
-4. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
-5. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
-6. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten manuellen **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
+1. **Manifest-Wächter ausführen.** Starte `npm run check-consistency`, um Gerätedaten und `service-worker-assets.js` gegen die im Speicher erzeugte Manifestliste zu prüfen. Falls eine Abweichung gemeldet wird, `npm run generate:sw-assets` ausführen, die Datei committen und den Wächter erneut laufen lassen.
+2. **Kritische Workflows proben.** Führe den [Schnellstart](#schnellstart) oder [`docs/operations-checklist.md`](docs/operations-checklist.md) aus, um Speichern, Teilen, Importieren, Backup und Wiederherstellen offline zu verifizieren.
+3. **Schriftliche Hilfen aktualisieren.** Aktualisiere Hilfecenter, lokalisierte README-Dateien und Druckanleitungen. Nutze die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md), um sicherzustellen, dass keine Sprache fehlt.
+4. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
+5. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
+6. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
+7. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten manuellen **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
 
 ## Überblick
 

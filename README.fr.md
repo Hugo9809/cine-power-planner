@@ -90,12 +90,13 @@ Considérez ces étapes comme incontournables à chaque merge afin que la docume
 
 Avant de fusionner ou de publier une build terrain, cochez cette liste condensée pour protéger données, documentation et traductions :
 
-1. **Répéter les workflows critiques.** Suivez le [Démarrage rapide](#démarrage-rapide) ou [`docs/operations-checklist.md`](docs/operations-checklist.md) pour confirmer que sauvegarde, partage, import, backup et restauration restent opérationnels hors ligne de bout en bout.
-2. **Actualiser la documentation écrite.** Mettez à jour centre d’aide, READMEs localisés et manuels imprimés. Utilisez la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour garantir qu’aucune langue ni workflow n’est oublié.
-3. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) et la [trame de journal de vérification](docs/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
-4. **Valider les bascules de langue.** Parcourez chaque langue dans l’app pour confirmer que les nouveaux libellés s’affichent correctement sans charger de ressources externes.
-5. **Stocker des archives redondantes.** Exportez `planner-backup.json`, les bundles projet actuels, les règles automatiques en JSON et une archive ZIP du dépôt. Placez le tout sur au moins deux supports hors ligne accompagnés d’une note de rétention.
-6. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** manuel pour que les équipes sachent quelle révision est active.
+1. **Lancer le garde-manifeste.** Exécutez `npm run check-consistency` pour valider les métadonnées des équipements et confirmer que `service-worker-assets.js` reflète le manifeste généré en mémoire. En cas d’écart, lancez `npm run generate:sw-assets`, validez le fichier mis à jour et relancez la vérification avant d’avancer.
+2. **Répéter les workflows critiques.** Suivez le [Démarrage rapide](#démarrage-rapide) ou [`docs/operations-checklist.md`](docs/operations-checklist.md) pour confirmer que sauvegarde, partage, import, backup et restauration restent opérationnels hors ligne de bout en bout.
+3. **Actualiser la documentation écrite.** Mettez à jour centre d’aide, READMEs localisés et manuels imprimés. Utilisez la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour garantir qu’aucune langue ni workflow n’est oublié.
+4. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) et la [trame de journal de vérification](docs/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
+5. **Valider les bascules de langue.** Parcourez chaque langue dans l’app pour confirmer que les nouveaux libellés s’affichent correctement sans charger de ressources externes.
+6. **Stocker des archives redondantes.** Exportez `planner-backup.json`, les bundles projet actuels, les règles automatiques en JSON et une archive ZIP du dépôt. Placez le tout sur au moins deux supports hors ligne accompagnés d’une note de rétention.
+7. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** manuel pour que les équipes sachent quelle révision est active.
 
 ## Vue d’ensemble
 
