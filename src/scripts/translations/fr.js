@@ -195,7 +195,7 @@
     "featureSearchTypeDevice": "Appareil",
     "featureSearchTypeHelp": "Sujet d’aide",
     "darkModeHelp": "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
-    "pinkModeHelp": "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois. Touchez une fois l’icône de licorne pour déclencher une pluie d’icônes roses.",
+    "pinkModeHelp": "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois. Des icônes flottantes apparaissent au hasard à l’écran et, en en touchant une trois fois, une pluie d’icônes roses se déclenche.",
     "reloadAppLabel": "Forcer le rechargement",
     "reloadAppHelp": "Efface le cache, annule l’enregistrement des service workers obsolètes et recharge l’application sans supprimer les données enregistrées. L’application vérifie désormais la connexion avant le nettoyage, signale les basculements dans la bannière hors ligne et précharge le nouveau lot pour afficher plus rapidement la nouvelle version.",
     "reloadAppOfflineNotice": "Hors ligne ou dégradé : le rechargement forcé teste d’abord la connexion. Reconnectez-vous puis réessayez.",
