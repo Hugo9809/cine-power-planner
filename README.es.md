@@ -229,6 +229,7 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
 - **Navegadores modernos.** Validado en las últimas versiones de Chromium, Firefox y Safari. Activa service workers, acceso a `localStorage` (almacenamiento del sitio) y almacenamiento persistente.
 - **Dispositivos orientados a offline.** Portátiles y tabletas deben permitir almacenamiento persistente. Ejecuta la app una vez en línea para que el service worker almacene todos los recursos y practica la recarga offline antes de viajar.
 - **Espacio local suficiente.** Las producciones grandes acumulan proyectos, backups y listas. Vigila el espacio del perfil y exporta regularmente a medios redundantes.
+- **Alerta del vault duradero.** Si el navegador bloquea `localStorage`, el planner cambia automáticamente al vault offline basado en IndexedDB, captura una copia de seguridad de emergencia y muestra una alerta bloqueante. Exporta y descarga esa copia antes de continuar.
 - **Sin dependencias externas.** Todos los iconos, fuentes y scripts se entregan con el repositorio. Copia también `animated icons 3/` y los Uicons locales al mover la carpeta.
 
 ## Ensayo de guardado, compartido e importación

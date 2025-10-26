@@ -457,6 +457,7 @@
     "alertExportAndRevertSuccess": "Base exportée et réinitialisée.",
     "alertStorageError": "Erreur de stockage : accès aux données locales impossible. Les modifications peuvent ne pas être enregistrées.",
     "alertSessionFallback": "Avertissement : le stockage local est indisponible. Les données ne persisteront que pour cet onglet du navigateur.",
+    "alertDurableFallback": "Le stockage local est bloqué. Nous avons créé une sauvegarde d’urgence dans le coffre hors ligne. Exportez et téléchargez cette sauvegarde avant de continuer.",
     "placeholder_deviceName": "Nom de l'appareil",
     "placeholder_watt": "ex. 12.5",
     "placeholder_capacity": "ex. 98",

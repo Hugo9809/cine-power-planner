@@ -229,6 +229,7 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
 - **Navigateurs modernes.** Validé sur les dernières versions de Chromium, Firefox et Safari. Activez service workers, l’accès à `localStorage` (stockage du site) et le stockage persistant.
 - **Appareils adaptés au hors ligne.** Laptops et tablettes doivent autoriser le stockage persistant. Lancez l’application une fois en ligne pour mettre en cache toutes les ressources puis répétez la procédure de rechargement hors ligne avant le départ.
 - **Espace local suffisant.** Les productions importantes accumulent projets, backups et listes. Surveillez l’espace disponible du profil navigateur et exportez régulièrement vers des supports redondants.
+- **Alerte du coffre durable.** Si le navigateur bloque `localStorage`, le planner bascule automatiquement vers le coffre hors ligne basé sur IndexedDB, capture une sauvegarde d’urgence et affiche une alerte bloquante. Exportez et téléchargez cette sauvegarde avant de continuer.
 - **Aucune dépendance externe.** Tous les icônes, polices et scripts sont fournis. Copiez également `animated icons 3/` et les Uicons locaux lors du transfert du dossier.
 
 ## Exercice sauvegarde/partage/import

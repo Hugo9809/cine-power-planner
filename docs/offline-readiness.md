@@ -28,6 +28,10 @@ air-gapped workflows.
       translation guide) for offline reference.
 - [ ] Verify icons, fonts and Uicons load locally by inspecting the network
       panel while offline (should show no remote requests).
+- [ ] Simulate blocked `localStorage` (Application panel → clear access or run in
+      private browsing) and confirm the durable vault alert appears, the
+      emergency backup entry is created and the team exports the redundancy
+      before continuing work.
 
 ## Field kit inventory
 

@@ -5512,6 +5512,15 @@ if (GLOBAL_SCOPE) {
   }
 }
 
+var durableFallbackAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[DURABLE_FALLBACK_ALERT_FLAG_NAME] === 'boolean') {
+    durableFallbackAlertShown = GLOBAL_SCOPE[DURABLE_FALLBACK_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[DURABLE_FALLBACK_ALERT_FLAG_NAME] = false;
+  }
+}
+
 var DEVICE_COLLECTION_KEYS = [
   'cameras',
   'monitors',
@@ -5564,6 +5573,14 @@ var getStorageManager = () =>
 // in-memory store to avoid runtime errors even though the data will be lost on
 // reload.
 var STORAGE_TEST_KEY = '__storage_test__';
+var DURABLE_STORAGE_DB_NAME = 'cine-power-planner-durable';
+var DURABLE_STORAGE_VERSION = 1;
+var DURABLE_STORAGE_STORE_NAME = 'kv';
+var DURABLE_STORAGE_EMERGENCY_BACKUP_PREFIX = '__cineDurableEmergencyBackup__';
+var DURABLE_STORAGE_MAX_EMERGENCY_HISTORY = 5;
+var DURABLE_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerDurableFallbackAlertShown';
+
+var durableStorageState = null;
 
 var QUOTA_ERROR_NAMES = new Set([
   'QuotaExceededError',
@@ -5709,6 +5726,515 @@ function createMemoryStorage() {
   };
 }
 
+function resolveIndexedDBFromScope(scope) {
+  if (!scope || typeof scope !== 'object') {
+    return null;
+  }
+
+  try {
+    if (scope.indexedDB && typeof scope.indexedDB.open === 'function') {
+      return scope.indexedDB;
+    }
+  } catch (error) {
+    console.warn('Unable to access indexedDB from scope during durable storage detection', error);
+  }
+
+  return null;
+}
+
+function resolveDurableIndexedDB() {
+  const scopes = [
+    GLOBAL_SCOPE,
+    GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null,
+    GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal ? GLOBAL_SCOPE.__cineGlobal : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const candidate = resolveIndexedDBFromScope(scopes[index]);
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function openDurableDatabase(indexedDB) {
+  return new Promise((resolve, reject) => {
+    let request;
+    try {
+      request = indexedDB.open(DURABLE_STORAGE_DB_NAME, DURABLE_STORAGE_VERSION);
+    } catch (openError) {
+      reject(openError);
+      return;
+    }
+
+    const handleError = (event) => {
+      const error = (request && request.error) || (event && event.target && event.target.error);
+      reject(error || new Error('Unknown durable storage open error'));
+    };
+
+    request.onerror = handleError;
+    request.onblocked = handleError;
+    request.onupgradeneeded = (event) => {
+      try {
+        const database = event.target.result;
+        if (database && (!database.objectStoreNames || !database.objectStoreNames.contains(DURABLE_STORAGE_STORE_NAME))) {
+          database.createObjectStore(DURABLE_STORAGE_STORE_NAME);
+        }
+      } catch (upgradeError) {
+        console.warn('Unable to create durable storage object store during upgrade', upgradeError);
+        handleError({ target: { error: upgradeError } });
+      }
+    };
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+  });
+}
+
+function loadDurableEntries(database) {
+  return new Promise((resolve, reject) => {
+    if (!database) {
+      resolve(Object.create(null));
+      return;
+    }
+
+    let transaction;
+    try {
+      transaction = database.transaction(DURABLE_STORAGE_STORE_NAME, 'readonly');
+    } catch (transactionError) {
+      reject(transactionError);
+      return;
+    }
+
+    let store;
+    try {
+      store = transaction.objectStore(DURABLE_STORAGE_STORE_NAME);
+    } catch (storeError) {
+      reject(storeError);
+      return;
+    }
+
+    const entries = Object.create(null);
+    let request;
+    try {
+      request = typeof store.openCursor === 'function' ? store.openCursor() : null;
+    } catch (cursorError) {
+      reject(cursorError);
+      return;
+    }
+
+    if (!request) {
+      resolve(entries);
+      return;
+    }
+
+    request.onerror = (event) => {
+      const error = request.error || (event && event.target && event.target.error);
+      reject(error || new Error('Unknown durable storage cursor error'));
+    };
+
+    request.onsuccess = (event) => {
+      const cursor = event.target && event.target.result;
+      if (!cursor) {
+        resolve(entries);
+        return;
+      }
+
+      try {
+        const key = String(cursor.key);
+        const value = cursor.value;
+        if (value !== null && value !== undefined) {
+          entries[key] = typeof value === 'string' ? value : String(value);
+        }
+      } catch (cursorReadError) {
+        console.warn('Unable to read entry from durable storage cursor', cursorReadError);
+      }
+
+      try {
+        cursor.continue();
+      } catch (continueError) {
+        console.warn('Unable to advance durable storage cursor', continueError);
+        resolve(entries);
+      }
+    };
+  });
+}
+
+function idbPut(database, key, value) {
+  if (!database) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    let transaction;
+    try {
+      transaction = database.transaction(DURABLE_STORAGE_STORE_NAME, 'readwrite');
+    } catch (transactionError) {
+      reject(transactionError);
+      return;
+    }
+
+    let store;
+    try {
+      store = transaction.objectStore(DURABLE_STORAGE_STORE_NAME);
+    } catch (storeError) {
+      reject(storeError);
+      return;
+    }
+
+    let request;
+    try {
+      request = store.put(value, key);
+    } catch (putError) {
+      reject(putError);
+      return;
+    }
+
+    request.onerror = () => {
+      reject(request.error || new Error('Unknown durable storage write error'));
+    };
+    request.onsuccess = () => {
+      resolve();
+    };
+  });
+}
+
+function idbDelete(database, key) {
+  if (!database) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    let transaction;
+    try {
+      transaction = database.transaction(DURABLE_STORAGE_STORE_NAME, 'readwrite');
+    } catch (transactionError) {
+      reject(transactionError);
+      return;
+    }
+
+    let store;
+    try {
+      store = transaction.objectStore(DURABLE_STORAGE_STORE_NAME);
+    } catch (storeError) {
+      reject(storeError);
+      return;
+    }
+
+    let request;
+    try {
+      request = store.delete(key);
+    } catch (deleteError) {
+      reject(deleteError);
+      return;
+    }
+
+    request.onerror = () => {
+      reject(request.error || new Error('Unknown durable storage delete error'));
+    };
+    request.onsuccess = () => {
+      resolve();
+    };
+  });
+}
+
+function idbClear(database) {
+  if (!database) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    let transaction;
+    try {
+      transaction = database.transaction(DURABLE_STORAGE_STORE_NAME, 'readwrite');
+    } catch (transactionError) {
+      reject(transactionError);
+      return;
+    }
+
+    let store;
+    try {
+      store = transaction.objectStore(DURABLE_STORAGE_STORE_NAME);
+    } catch (storeError) {
+      reject(storeError);
+      return;
+    }
+
+    let request;
+    try {
+      request = store.clear();
+    } catch (clearError) {
+      reject(clearError);
+      return;
+    }
+
+    request.onerror = () => {
+      reject(request.error || new Error('Unknown durable storage clear error'));
+    };
+    request.onsuccess = () => {
+      resolve();
+    };
+  });
+}
+
+function updateDurableKeyList(state) {
+  state.keys = Array.from(state.map.keys());
+}
+
+function enqueueDurableOperation(state, executor) {
+  if (!state || state.failed) {
+    return;
+  }
+
+  state.queue = state.queue
+    .then(() => state.readyPromise)
+    .then((database) => {
+      if (!database || state.failed) {
+        return;
+      }
+      return executor(database);
+    })
+    .catch((error) => {
+      state.failed = true;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Durable storage operation failed', error);
+      }
+      if (
+        safeLocalStorageInfo &&
+        safeLocalStorageInfo.storage === state.storage &&
+        safeLocalStorageInfo.type === 'durable'
+      ) {
+        downgradeSafeLocalStorageToMemory('durable storage failure', error, state.storage);
+      }
+    });
+}
+
+function initializeDurableStorage(state, indexedDB) {
+  return openDurableDatabase(indexedDB)
+    .then((database) => {
+      state.database = database;
+      return loadDurableEntries(database);
+    })
+    .then((existingEntries) => {
+      if (existingEntries && typeof existingEntries === 'object') {
+        Object.keys(existingEntries).forEach((key) => {
+          if (key === null || key === undefined) {
+            return;
+          }
+          if (!state.map.has(key)) {
+            state.map.set(key, existingEntries[key]);
+          }
+        });
+        updateDurableKeyList(state);
+      }
+      return state.database;
+    })
+    .catch((error) => {
+      state.failed = true;
+      throw error;
+    });
+}
+
+function createDurableStorageState(indexedDB) {
+  const state = {
+    map: new Map(),
+    keys: [],
+    storage: null,
+    queue: Promise.resolve(),
+    readyPromise: null,
+    database: null,
+    failed: false,
+  };
+
+  const storage = {
+    get length() {
+      return state.keys.length;
+    },
+    key(index) {
+      return index >= 0 && index < state.keys.length ? state.keys[index] : null;
+    },
+    getItem(key) {
+      if (key === null || key === undefined) {
+        return null;
+      }
+      const normalizedKey = String(key);
+      if (!state.map.has(normalizedKey)) {
+        return null;
+      }
+      return maybeDecompressStoredString(state.map.get(normalizedKey));
+    },
+    setItem(key, value) {
+      if (key === null || key === undefined) {
+        return;
+      }
+      const normalizedKey = String(key);
+      const stringValue = String(value);
+      state.map.set(normalizedKey, stringValue);
+      updateDurableKeyList(state);
+      enqueueDurableOperation(state, (database) => idbPut(database, normalizedKey, stringValue));
+    },
+    removeItem(key) {
+      if (key === null || key === undefined) {
+        return;
+      }
+      const normalizedKey = String(key);
+      if (!state.map.has(normalizedKey)) {
+        return;
+      }
+      state.map.delete(normalizedKey);
+      updateDurableKeyList(state);
+      enqueueDurableOperation(state, (database) => idbDelete(database, normalizedKey));
+    },
+    clear() {
+      state.map.clear();
+      updateDurableKeyList(state);
+      enqueueDurableOperation(state, (database) => idbClear(database));
+    },
+    keys() {
+      return state.keys.slice();
+    },
+  };
+
+  state.storage = storage;
+  state.readyPromise = initializeDurableStorage(state, indexedDB).catch((error) => {
+    state.failed = true;
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Unable to initialize durable storage', error);
+    }
+    if (
+      safeLocalStorageInfo &&
+      safeLocalStorageInfo.type === 'durable' &&
+      safeLocalStorageInfo.storage === storage
+    ) {
+      downgradeSafeLocalStorageToMemory('durable storage initialization failure', error, storage);
+    }
+    throw error;
+  });
+
+  return state;
+}
+
+function ensureDurableStorageState(indexedDB) {
+  if (durableStorageState && !durableStorageState.failed) {
+    return durableStorageState;
+  }
+
+  if (!indexedDB) {
+    indexedDB = resolveDurableIndexedDB();
+  }
+
+  if (!indexedDB) {
+    return null;
+  }
+
+  durableStorageState = createDurableStorageState(indexedDB);
+  return durableStorageState;
+}
+
+function applySnapshotToDurableStorage(state, snapshot) {
+  if (!state || !snapshot || typeof snapshot !== 'object') {
+    return;
+  }
+
+  const keys = Object.keys(snapshot);
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    const value = snapshot[key];
+    if (value === null || value === undefined) {
+      continue;
+    }
+    try {
+      state.storage.setItem(key, value);
+    } catch (applyError) {
+      console.warn('Unable to copy entry into durable storage fallback', key, applyError);
+    }
+  }
+}
+
+function limitDurableEmergencyBackups(state) {
+  if (!state || typeof state.storage?.keys !== 'function') {
+    return;
+  }
+
+  const keys = state.storage.keys();
+  const emergencyKeys = [];
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    if (typeof key === 'string' && key.startsWith(DURABLE_STORAGE_EMERGENCY_BACKUP_PREFIX)) {
+      emergencyKeys.push(key);
+    }
+  }
+
+  if (emergencyKeys.length <= DURABLE_STORAGE_MAX_EMERGENCY_HISTORY) {
+    return;
+  }
+
+  emergencyKeys.sort();
+  while (emergencyKeys.length > DURABLE_STORAGE_MAX_EMERGENCY_HISTORY) {
+    const oldestKey = emergencyKeys.shift();
+    try {
+      state.storage.removeItem(oldestKey);
+    } catch (removeError) {
+      console.warn('Unable to prune durable emergency backup entry', oldestKey, removeError);
+      break;
+    }
+  }
+}
+
+function queueDurableEmergencyBackup(state, snapshot, context) {
+  if (!state || !state.storage || !snapshot || typeof snapshot !== 'object') {
+    return;
+  }
+
+  const timestamp = new Date().toISOString();
+  const backupKey = `${DURABLE_STORAGE_EMERGENCY_BACKUP_PREFIX}${timestamp}`;
+  const payload = {
+    createdAt: timestamp,
+    reason: context && context.reason ? context.reason : 'unknown',
+    fallbackFrom: context && context.storageType ? context.storageType : 'unknown',
+    errorMessage: context && context.errorMessage ? context.errorMessage : null,
+    entries: snapshot,
+  };
+
+  let serialized = null;
+  try {
+    serialized = JSON.stringify(payload);
+  } catch (serializationError) {
+    console.warn('Unable to serialize durable emergency backup payload', serializationError);
+  }
+
+  if (serialized) {
+    try {
+      state.storage.setItem(backupKey, serialized);
+    } catch (storeError) {
+      console.warn('Unable to persist durable emergency backup entry', storeError);
+    }
+  }
+
+  limitDurableEmergencyBackups(state);
+}
+
+function activateDurableStorageFallback(snapshot, context) {
+  const indexedDB = resolveDurableIndexedDB();
+  if (!indexedDB) {
+    return null;
+  }
+
+  const state = ensureDurableStorageState(indexedDB);
+  if (!state || state.failed) {
+    return null;
+  }
+
+  applySnapshotToDurableStorage(state, snapshot);
+  queueDurableEmergencyBackup(state, snapshot, context);
+  return state;
+}
+
 function initializeSafeLocalStorage() {
   const localCandidates = collectLocalStorageCandidates();
 
@@ -5728,6 +6254,14 @@ function initializeSafeLocalStorage() {
       console.warn('localStorage is unavailable:', error);
       lastFailedUpgradeCandidate = candidate;
     }
+  }
+
+  const durableContext = { reason: 'initialization', storageType: 'local' };
+  const durableState = activateDurableStorageFallback(Object.create(null), durableContext);
+  if (durableState && durableState.storage) {
+    alertDurableFallback();
+    lastFailedUpgradeCandidate = null;
+    return { storage: durableState.storage, type: 'durable' };
   }
 
   if (typeof window !== 'undefined') {
@@ -5944,6 +6478,28 @@ function downgradeSafeLocalStorageToMemory(reason, error, failingStorage) {
     snapshot = snapshotStorageEntries(activeStorage, { suppressAlerts: true });
   } catch (snapshotError) {
     console.warn('Unable to capture storage snapshot during downgrade', snapshotError);
+  }
+
+  const currentType = safeLocalStorageInfo.type || 'unknown';
+  const isDurableActive = currentType === 'durable';
+
+  if (!isDurableActive) {
+    const context = {
+      reason: reason || 'downgrade',
+      storageType: currentType,
+    };
+    if (error && typeof error === 'object' && typeof error.message === 'string') {
+      context.errorMessage = error.message;
+    }
+
+    const durableState = activateDurableStorageFallback(snapshot, context);
+    if (durableState && durableState.storage) {
+      safeLocalStorageInfo = { storage: durableState.storage, type: 'durable' };
+      lastFailedUpgradeCandidate = null;
+      alertDurableFallback();
+      updateGlobalSafeLocalStorageReference();
+      return;
+    }
   }
 
   let fallbackStorage = null;
@@ -7129,6 +7685,34 @@ function alertStorageError(reason) {
     void err;
     // ignore and fall back to default
   }
+  window.alert(msg);
+}
+
+function alertDurableFallback() {
+  if (durableFallbackAlertShown) {
+    return;
+  }
+
+  durableFallbackAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[DURABLE_FALLBACK_ALERT_FLAG_NAME] = true;
+  }
+
+  if (typeof window === 'undefined' || typeof window.alert !== 'function') {
+    return;
+  }
+
+  let msg =
+    'Local storage is blocked. We created an emergency backup in the offline vault. Export and download the backup before you continue.';
+  try {
+    if (typeof texts !== 'undefined') {
+      const lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
+      msg = texts[lang]?.alertDurableFallback || msg;
+    }
+  } catch (err) {
+    void err;
+  }
+
   window.alert(msg);
 }
 

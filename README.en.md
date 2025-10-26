@@ -386,7 +386,7 @@ the safety nets that protect user data even when you stay offline.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |
-| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
+| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage and falls back to the offline durable vault when blocked—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
 | Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
 | Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices and (optionally) automatic gear rules—favorites stay local. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
@@ -409,6 +409,7 @@ entire crew repeats the same offline-first routines on every workstation.
 - **Sufficient local storage.** Large productions can accumulate many projects,
   backups and gear lists. Monitor available disk space in your browser profile
   and export archives regularly to redundant media to avoid storage eviction.
+- **Durable vault prompt awareness.** If the browser blocks `localStorage`, the planner automatically switches to its IndexedDB-based offline vault, captures an emergency backup snapshot and shows a blocking alert. Export and download that backup before continuing work.
 - **No external dependencies.** All icons, fonts and helper scripts ship with
   the repository. Keep the folder intact (including `animated icons 3/` and
   locally stored Uicons) when copying it between machines so visuals and

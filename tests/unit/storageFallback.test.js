@@ -1,6 +1,7 @@
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
+const { createIndexedDbMock } = require('../helpers/indexedDbMock');
 
 const createQuotaStorage = (initialData = {}) => {
   const store = { ...initialData };
@@ -33,6 +34,17 @@ const createQuotaStorage = (initialData = {}) => {
       Object.keys(store).forEach((key) => delete store[key]);
     }),
   };
+};
+
+const flushDurableOperations = async () => {
+  await Promise.resolve();
+  await new Promise((resolve) => {
+    if (typeof setImmediate === 'function') {
+      setImmediate(resolve);
+      return;
+    }
+    setTimeout(resolve, 0);
+  });
 };
 
 describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
@@ -101,6 +113,8 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       defineBlockedDescriptor(global);
     }
 
+    global.indexedDB = createIndexedDbMock();
+
     storageModule = require('../../src/scripts/storage');
   });
 
@@ -135,41 +149,44 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     }
 
     delete global.window.sessionStorage;
+    delete global.indexedDB;
   });
 
-  test('falls back to sessionStorage when localStorage is unavailable', () => {
-    const { saveFavorites, loadFavorites } = storageModule;
+  test('falls back to durable storage when localStorage is unavailable', async () => {
+    const { saveFavorites, loadFavorites, getSafeLocalStorage } = storageModule;
 
     saveFavorites({ cameraSelect: ['Alexa Mini'] });
 
-    expect(global.sessionStorage.getItem(FAVORITES_KEY)).toBe(
+    const safeStorage = getSafeLocalStorage();
+    expect(safeStorage).toBeDefined();
+    expect(safeStorage).not.toBe(global.sessionStorage);
+
+    expect(safeStorage.getItem(FAVORITES_KEY)).toBe(
       JSON.stringify({ cameraSelect: ['Alexa Mini'] })
     );
+    expect(global.sessionStorage.getItem(FAVORITES_KEY)).toBeNull();
 
-    let localStorageValue = null;
-    try {
-      const local = global.localStorage;
-      if (local && typeof local.getItem === 'function') {
-        localStorageValue = local.getItem(FAVORITES_KEY);
-      }
-    } catch (error) {
-      localStorageValue = null;
-    }
+    const keys = typeof safeStorage.keys === 'function' ? safeStorage.keys() : [];
+    expect(keys).toContain(FAVORITES_KEY);
 
-    expect(localStorageValue).toBeNull();
+    await flushDurableOperations();
+    const durableStore = global.indexedDB.__stores.get('kv');
+    expect(durableStore.get(FAVORITES_KEY)).toBe(
+      JSON.stringify({ cameraSelect: ['Alexa Mini'] })
+    );
     expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
   });
 
-  test('notifies the user when falling back to sessionStorage', () => {
+  test('notifies the user when falling back to the durable vault', () => {
     const expectedMessage =
-      'Warning: Local storage is unavailable. Data will only persist for this browser tab.';
+      'Local storage is blocked. We created an emergency backup in the offline vault. Export and download the backup before you continue.';
 
     expect(global.window.alert).toHaveBeenCalledTimes(1);
     expect(global.window.alert).toHaveBeenCalledWith(expectedMessage);
   });
 
-  test('does not compress entries stored in sessionStorage fallback', () => {
-    const { saveDeviceData } = storageModule;
+  test('does not compress entries stored in the durable vault fallback', () => {
+    const { saveDeviceData, getSafeLocalStorage } = storageModule;
     const heavyNote = 'Important storage note '.repeat(1200);
     const heavyDeviceData = {
       cameras: {},
@@ -211,7 +228,7 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
 
     saveDeviceData(heavyDeviceData);
 
-    const stored = global.sessionStorage.getItem(DEVICE_KEY);
+    const stored = getSafeLocalStorage().getItem(DEVICE_KEY);
     expect(typeof stored).toBe('string');
     expect(stored).not.toContain('__cineStorageCompressed');
 

@@ -440,6 +440,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertExportAndRevertSuccess": "Datenbank exportiert und erfolgreich auf Standardwerte zurückgesetzt.",
       "alertStorageError": "Speicherfehler: Auf lokale Daten konnte nicht zugegriffen werden. Änderungen werden möglicherweise nicht gespeichert.",
       "alertSessionFallback": "Warnung: Der lokale Speicher ist nicht verfügbar. Daten bleiben nur für diesen Browser-Tab erhalten.",
+      "alertDurableFallback": "Der lokale Speicher ist blockiert. Wir haben im Offline-Tresor eine Notfall-Sicherung erstellt. Bitte exportiere und lade die Sicherung herunter, bevor du weitermachst.",
       "placeholder_deviceName": "Gerätename",
       "placeholder_watt": "z.B. 12.5",
       "placeholder_capacity": "z.B. 98",

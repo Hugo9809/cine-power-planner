@@ -229,6 +229,7 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
 - **Moderne Evergreen-Browser.** Validiert mit aktuellen Chromium-, Firefox- und Safari-Versionen. Service Worker, Zugriff auf `localStorage` (Website-Speicher) und persistenter Speicher müssen aktiv sein.
 - **Offline-freundliche Geräte.** Laptops/Tablets sollten dauerhaften Speicher erlauben. Starte die App einmal online, damit der Service Worker alle Assets cacht, und übe den Offline-Reload vor der Reise.
 - **Ausreichender lokaler Speicher.** Große Produktionen erzeugen viele Projekte, Backups und Gerätelisten. Beobachte den Speicherplatz deines Browserprofils und exportiere regelmäßig auf redundante Medien.
+- **Hinweis auf den dauerhaften Tresor.** Blockiert der Browser `localStorage`, wechselt der Planner automatisch in den Offline-IndexedDB-Tresor, erstellt eine Notfall-Sicherung und zeigt einen blockierenden Hinweis. Exportiere und lade diese Sicherung herunter, bevor du weiterarbeitest.
 - **Keine externen Abhängigkeiten.** Alle Icons, Fonts und Hilfsskripte liegen im Repository. Kopiere Ordner wie `animated icons 3/` und lokale Uicons mit, damit Optik und Scripts identisch bleiben.
 
 ## Speicher-, Teil- & Import-Drill

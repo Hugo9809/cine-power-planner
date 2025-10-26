@@ -1177,6 +1177,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertExportAndRevertSuccess": "Database exported and reverted to defaults successfully.",
       "alertStorageError": "Storage error: Unable to access local data. Changes may not be saved.",
       "alertSessionFallback": "Warning: Local storage is unavailable. Data will only persist for this browser tab.",
+      "alertDurableFallback": "Local storage is blocked. We created an emergency backup in the offline vault. Export and download the backup before you continue.",
       "placeholder_deviceName": "Device name",
       "placeholder_watt": "e.g. 12.5",
       "placeholder_capacity": "e.g. 98",

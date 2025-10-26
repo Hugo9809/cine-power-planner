@@ -23,6 +23,23 @@ workstations.
 - **Redundant mirrors:** `storage.js` keeps timestamped mirrors so reverting to a
   previous autosave never touches live data directly.
 
+### Durable vault fallback
+
+- **Automatic downgrade:** If the browser throws on `localStorage`,
+  `downgradeSafeLocalStorageToMemory()` now prefers the IndexedDB-based durable
+  vault. The captured snapshot is copied into the vault before any session data
+  is mutated.
+- **Emergency snapshot:** Every downgrade writes a JSON payload to
+  `__cineDurableEmergencyBackup__<ISO timestamp>` so the crew has a frozen copy
+  of the last known-good state even if further writes fail.
+- **Blocking alert:** The UI displays the new “alertDurableFallback” message and
+  blocks interaction until operators acknowledge the prompt. Export the freshly
+  created emergency backup immediately and log the download alongside the usual
+  verification artifacts.
+- **Rolling history:** The vault retains the five newest emergency entries.
+  Archive exported files to redundant media so pruning never deletes the only
+  redundant copy.
+
 ## Backup
 
 - **Planner backup:** **Settings → Backup & Restore → Backup** exports

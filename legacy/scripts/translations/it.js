@@ -440,6 +440,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "alertExportAndRevertSuccess": "Database esportato e ripristinato in predefiniti.",
       "alertStorageError": "Errore di archiviazione: impossibile accedere ai dati locali. Le modifiche potrebbero non essere salvate.",
       "alertSessionFallback": "Avviso: l'archiviazione locale non è disponibile. I dati resteranno solo per questa scheda del browser.",
+      "alertDurableFallback": "L'archiviazione locale è bloccata. Abbiamo creato un backup di emergenza nel vault offline. Esporta e scarica il backup prima di proseguire.",
       "placeholder_deviceName": "Nome del dispositivo",
       "placeholder_watt": "es. 12.5",
       "placeholder_capacity": "es. 98",

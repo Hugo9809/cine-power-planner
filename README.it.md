@@ -229,6 +229,7 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
 - **Browser moderni.** Validato sulle ultime versioni di Chromium, Firefox e Safari. Attiva service worker, accesso a `localStorage` (archiviazione del sito) e archiviazione persistente.
 - **Dispositivi orientati all’offline.** Laptop e tablet devono consentire storage persistente. Avvia l’app una volta online per mettere in cache tutte le risorse e ripeti la procedura di ricarica offline prima di partire.
 - **Spazio locale adeguato.** Produzioni grandi accumulano progetti, backup e liste. Monitora lo spazio del profilo e esporta regolarmente su supporti ridondanti.
+- **Avviso del vault durevole.** Se il browser blocca `localStorage`, il planner passa automaticamente al vault offline basato su IndexedDB, crea un backup di emergenza e mostra un avviso bloccante. Esporta e scarica quel backup prima di proseguire.
 - **Zero dipendenze esterne.** Tutte le icone, i font e gli script sono inclusi. Copia anche `animated icons 3/` e gli Uicons locali quando trasferisci la cartella.
 
 ## Drill di salvataggio, condivisione e import

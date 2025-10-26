@@ -457,6 +457,7 @@
     "alertExportAndRevertSuccess": "Base de datos exportada y restablecida.",
     "alertStorageError": "Error de almacenamiento: no se pudo acceder a los datos locales. Es posible que los cambios no se guarden.",
     "alertSessionFallback": "Aviso: el almacenamiento local no está disponible. Los datos solo persistirán en esta pestaña del navegador.",
+    "alertDurableFallback": "El almacenamiento local está bloqueado. Creamos una copia de seguridad de emergencia en la bóveda sin conexión. Exporta y descarga la copia antes de continuar.",
     "placeholder_deviceName": "Nombre del dispositivo",
     "placeholder_watt": "ej. 12.5",
     "placeholder_capacity": "ej. 98",
