@@ -1500,6 +1500,7 @@
     "queuedBackupBannerMessageOther": "{count} Sicherungen im lokalen Tresor gespeichert.",
     "queuedBackupBannerGesture": "Mit dem Planer interagieren, um sie sicher zu exportieren.",
     "queuedBackupBannerAction": "Lokalen Sicherungstresor öffnen",
+    "queuedBackupFallbackHint": "Notfall-Speicher aktiv. Exportiere die wartenden Backups sofort.",
     "storageSessionStored": "Gespeichert",
     "storageSessionNotStored": "Nicht gespeichert",
     "storageKeyTotalSize": "Voraussichtliche Backup-Größe",

@@ -55,6 +55,39 @@ function createDeepFreeze() {
   return freeze;
 }
 
+function createStorageMock(initial = {}) {
+  const store = new Map();
+  if (initial && typeof initial === 'object') {
+    Object.keys(initial).forEach((key) => {
+      store.set(String(key), String(initial[key]));
+    });
+  }
+  return {
+    get length() {
+      return store.size;
+    },
+    key(index) {
+      const keys = Array.from(store.keys());
+      return index >= 0 && index < keys.length ? keys[index] : null;
+    },
+    getItem(key) {
+      if (!store.has(String(key))) {
+        return null;
+      }
+      return store.get(String(key));
+    },
+    setItem(key, value) {
+      store.set(String(key), String(value));
+    },
+    removeItem(key) {
+      store.delete(String(key));
+    },
+    clear() {
+      store.clear();
+    },
+  };
+}
+
 function evaluateBackupModule(options = {}) {
   const exposures = new Map();
   const registerCalls = [];
@@ -307,6 +340,8 @@ describe('cineFeatureBackup module', () => {
     const createObjectURLMock = jest.fn(() => blobUrl);
     const revokeObjectURLMock = jest.fn();
 
+    const fallbackStorage = createStorageMock();
+
     const { backupModule, context } = evaluateBackupModule({
       overrides: {
         setTimeout: setTimeoutMock,
@@ -323,6 +358,8 @@ describe('cineFeatureBackup module', () => {
         navigator: {},
         window: {},
         document: {},
+        getSafeLocalStorage: () => fallbackStorage,
+        sessionStorage: fallbackStorage,
       },
     });
 
@@ -373,6 +410,8 @@ describe('cineFeatureBackup module', () => {
     const createObjectURLMock = jest.fn(() => blobUrl);
     const revokeObjectURLMock = jest.fn();
 
+    const fallbackStorage = createStorageMock();
+
     const { backupModule, context } = evaluateBackupModule({
       overrides: {
         setTimeout: setTimeoutMock,
@@ -389,6 +428,8 @@ describe('cineFeatureBackup module', () => {
         navigator: {},
         window: {},
         document: {},
+        getSafeLocalStorage: () => fallbackStorage,
+        sessionStorage: fallbackStorage,
       },
     });
 
@@ -414,5 +455,43 @@ describe('cineFeatureBackup module', () => {
     const entries = await backupModule.getQueuedBackupPayloads();
     expect(entries).toHaveLength(1);
     expect(entries[0]).toMatchObject({ fileName, payload });
+  });
+
+  test('fallback vault persists queued payloads across reload without IndexedDB', async () => {
+    const fallbackStorage = createStorageMock();
+    const overrides = {
+      navigator: {},
+      window: {},
+      document: {},
+      getSafeLocalStorage: () => fallbackStorage,
+      sessionStorage: fallbackStorage,
+    };
+
+    const { backupModule } = evaluateBackupModule({ overrides });
+
+    const payload = '{"persist":true}';
+    const fileName = 'cine-backup.json';
+    const record = backupModule.queueBackupPayloadForVault(fileName, payload);
+
+    const firstEntries = await backupModule.getQueuedBackupPayloads();
+    expect(firstEntries).toHaveLength(1);
+    expect(firstEntries[0]).toMatchObject({ id: record.id, fileName, payload });
+    expect(backupModule.isBackupVaultFallbackActive()).toBe(true);
+
+    const storageKey = backupModule.constants.BACKUP_VAULT_FALLBACK_STORAGE_KEY;
+    expect(typeof storageKey).toBe('string');
+    expect(storageKey.length).toBeGreaterThan(0);
+    expect(fallbackStorage.getItem(storageKey)).toEqual(expect.stringContaining(record.id));
+
+    const reloaded = evaluateBackupModule({ overrides });
+    const reloadedEntries = await reloaded.backupModule.getQueuedBackupPayloads();
+    expect(reloadedEntries).toHaveLength(1);
+    expect(reloadedEntries[0]).toMatchObject({ id: record.id, fileName, payload });
+    expect(reloaded.backupModule.isBackupVaultFallbackActive()).toBe(true);
+    expect(reloaded.backupModule.getBackupVaultFallbackState()).toMatchObject({
+      active: true,
+      storageType: 'fallback',
+      durable: true,
+    });
   });
 });

@@ -129,9 +129,63 @@
   const BACKUP_VAULT_DB_NAME = 'cinePowerPlannerBackupVault';
   const BACKUP_VAULT_STORE_NAME = 'queuedBackups';
   const BACKUP_VAULT_DB_VERSION = 1;
+  const BACKUP_VAULT_FALLBACK_STORAGE_KEY = 'cineBackupVaultFallbackRecords';
 
   let backupVaultDbPromise = null;
   const backupVaultTransientRecords = new Map();
+  let fallbackVaultStorageInitialized = false;
+  let fallbackVaultStorageReference = null;
+  let fallbackVaultStorageType = 'none';
+  let fallbackStorageRecordCount = 0;
+  let memoryFallbackEntryCount = 0;
+  let backupVaultFallbackMode = false;
+  let backupVaultFallbackModeDetail = { storageType: 'indexeddb' };
+
+  function setBackupVaultFallbackMode(active, detail) {
+    const normalizedDetail = detail && typeof detail === 'object' ? detail : {};
+    const storageType = typeof normalizedDetail.storageType === 'string'
+      ? normalizedDetail.storageType
+      : (active ? (memoryFallbackEntryCount > 0 ? 'memory' : 'fallback') : 'indexeddb');
+    const durable = storageType !== 'memory';
+    const changed = backupVaultFallbackMode !== Boolean(active)
+      || backupVaultFallbackModeDetail.storageType !== storageType;
+    backupVaultFallbackMode = Boolean(active);
+    backupVaultFallbackModeDetail = { storageType, durable };
+    if (changed) {
+      dispatchBackupVaultEvent('cineBackupVault:fallbackChanged', {
+        active: backupVaultFallbackMode,
+        storageType,
+        durable,
+      });
+    }
+  }
+
+  function refreshBackupVaultFallbackMode(detail) {
+    const active = memoryFallbackEntryCount > 0 || fallbackStorageRecordCount > 0;
+    const normalizedDetail = detail && typeof detail === 'object' ? { ...detail } : {};
+    if (!active) {
+      normalizedDetail.storageType = 'indexeddb';
+    } else if (memoryFallbackEntryCount > 0) {
+      normalizedDetail.storageType = 'memory';
+    } else if (fallbackStorageRecordCount > 0) {
+      normalizedDetail.storageType = 'fallback';
+    } else if (typeof normalizedDetail.storageType !== 'string') {
+      normalizedDetail.storageType = 'indexeddb';
+    }
+    setBackupVaultFallbackMode(active, normalizedDetail);
+  }
+
+  function getBackupVaultFallbackState() {
+    return {
+      active: backupVaultFallbackMode,
+      storageType: backupVaultFallbackModeDetail.storageType,
+      durable: backupVaultFallbackModeDetail.durable,
+    };
+  }
+
+  function isBackupVaultFallbackActive() {
+    return backupVaultFallbackMode;
+  }
 
   function createMemoryBackupVault() {
     let entries = [];
@@ -144,19 +198,294 @@
           const bTime = typeof b.createdAtMs === 'number' ? b.createdAtMs : 0;
           return aTime - bTime;
         });
-        return Promise.resolve({ id: record.id, persisted: true });
+        memoryFallbackEntryCount = entries.length;
+        refreshBackupVaultFallbackMode({ storageType: 'memory' });
+        return Promise.resolve({
+          id: record.id,
+          persisted: true,
+          durable: false,
+          storageType: 'memory',
+        });
       },
       list() {
         return Promise.resolve(entries.map(entry => ({ ...entry })));
       },
       remove(id) {
         entries = entries.filter(entry => entry && entry.id !== id);
+        memoryFallbackEntryCount = entries.length;
+        refreshBackupVaultFallbackMode(memoryFallbackEntryCount > 0 ? { storageType: 'memory' } : null);
         return Promise.resolve(true);
       },
     };
   }
 
   const memoryBackupVault = createMemoryBackupVault();
+
+  function resetFallbackVaultStorageReference() {
+    fallbackVaultStorageInitialized = false;
+    fallbackVaultStorageReference = null;
+    fallbackVaultStorageType = 'none';
+  }
+
+  function isStorageLike(candidate) {
+    if (!candidate || typeof candidate !== 'object') {
+      return false;
+    }
+    return typeof candidate.getItem === 'function' && typeof candidate.setItem === 'function';
+  }
+
+  function getBackupVaultFallbackStorage() {
+    if (fallbackVaultStorageInitialized && isStorageLike(fallbackVaultStorageReference)) {
+      return {
+        storage: fallbackVaultStorageReference,
+        type: fallbackVaultStorageType,
+      };
+    }
+
+    const candidates = [
+      () => {
+        if (typeof getSafeLocalStorage === 'function') {
+          try {
+            return getSafeLocalStorage();
+          } catch (error) {
+            console.warn('getSafeLocalStorage threw while resolving backup vault fallback storage', error);
+          }
+        }
+        return null;
+      },
+      () => {
+        if (typeof SAFE_LOCAL_STORAGE !== 'undefined' && SAFE_LOCAL_STORAGE) {
+          return SAFE_LOCAL_STORAGE;
+        }
+        return null;
+      },
+      () => {
+        if (GLOBAL_SCOPE && GLOBAL_SCOPE.sessionStorage) {
+          return GLOBAL_SCOPE.sessionStorage;
+        }
+        return null;
+      },
+      () => {
+        if (typeof sessionStorage !== 'undefined') {
+          return sessionStorage;
+        }
+        return null;
+      },
+      () => {
+        if (GLOBAL_SCOPE && GLOBAL_SCOPE.localStorage) {
+          return GLOBAL_SCOPE.localStorage;
+        }
+        return null;
+      },
+      () => {
+        if (typeof localStorage !== 'undefined') {
+          return localStorage;
+        }
+        return null;
+      },
+    ];
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const resolver = candidates[index];
+      if (typeof resolver !== 'function') {
+        continue;
+      }
+      let storage = null;
+      try {
+        storage = resolver();
+      } catch (resolveError) {
+        console.warn('Backup vault fallback storage resolver failed', resolveError);
+        storage = null;
+      }
+      if (!isStorageLike(storage)) {
+        continue;
+      }
+      fallbackVaultStorageInitialized = true;
+      fallbackVaultStorageReference = storage;
+      fallbackVaultStorageType = index <= 1 ? 'safe-local-storage'
+        : (index <= 3 ? 'session-storage' : 'local-storage');
+      return {
+        storage: fallbackVaultStorageReference,
+        type: fallbackVaultStorageType,
+      };
+    }
+
+    fallbackVaultStorageInitialized = true;
+    fallbackVaultStorageReference = null;
+    fallbackVaultStorageType = 'none';
+    return { storage: null, type: 'none' };
+  }
+
+  function readFallbackVaultRecords() {
+    const { storage } = getBackupVaultFallbackStorage();
+    if (!isStorageLike(storage)) {
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode();
+      return [];
+    }
+
+    let raw = null;
+    try {
+      raw = storage.getItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to read fallback backup vault storage contents', error);
+      resetFallbackVaultStorageReference();
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode(memoryFallbackEntryCount > 0 ? { storageType: 'memory' } : null);
+      return [];
+    }
+
+    if (typeof raw !== 'string' || !raw) {
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode();
+      return [];
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (parseError) {
+      console.warn('Failed to parse fallback backup vault entries', parseError);
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode(memoryFallbackEntryCount > 0 ? { storageType: 'memory' } : null);
+      return [];
+    }
+
+    if (!Array.isArray(parsed)) {
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode();
+      return [];
+    }
+
+    const entries = [];
+    for (let index = 0; index < parsed.length; index += 1) {
+      const candidate = parsed[index];
+      if (!candidate || typeof candidate !== 'object' || typeof candidate.id !== 'string') {
+        continue;
+      }
+      entries.push({ ...candidate });
+    }
+    fallbackStorageRecordCount = entries.length;
+    refreshBackupVaultFallbackMode(entries.length > 0 ? { storageType: 'fallback' } : null);
+    return entries;
+  }
+
+  function writeFallbackVaultRecords(records) {
+    const { storage } = getBackupVaultFallbackStorage();
+    if (!isStorageLike(storage)) {
+      fallbackStorageRecordCount = 0;
+      refreshBackupVaultFallbackMode(memoryFallbackEntryCount > 0 ? { storageType: 'memory' } : null);
+      return false;
+    }
+    const normalized = Array.isArray(records) ? records : [];
+    let serialized = '[]';
+    try {
+      serialized = JSON.stringify(normalized);
+    } catch (serializeError) {
+      console.warn('Failed to serialize fallback backup vault entries', serializeError);
+      return false;
+    }
+    try {
+      storage.setItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY, serialized);
+      fallbackStorageRecordCount = normalized.length;
+      refreshBackupVaultFallbackMode(normalized.length > 0 ? { storageType: 'fallback' } : null);
+      return true;
+    } catch (persistError) {
+      console.warn('Failed to persist fallback backup vault entries', persistError);
+      resetFallbackVaultStorageReference();
+      refreshBackupVaultFallbackMode(memoryFallbackEntryCount > 0 ? { storageType: 'memory' } : null);
+      return false;
+    }
+  }
+
+  function persistFallbackVaultRecord(record) {
+    const entries = readFallbackVaultRecords();
+    const deduped = new Map();
+    entries.forEach((entry) => {
+      if (!entry || typeof entry !== 'object' || typeof entry.id !== 'string') {
+        return;
+      }
+      deduped.set(entry.id, { ...entry });
+    });
+    deduped.set(record.id, { ...record });
+    const updated = Array.from(deduped.values());
+    updated.sort((a, b) => {
+      const aTime = typeof a.createdAtMs === 'number' ? a.createdAtMs : 0;
+      const bTime = typeof b.createdAtMs === 'number' ? b.createdAtMs : 0;
+      return aTime - bTime;
+    });
+
+    if (writeFallbackVaultRecords(updated)) {
+      return Promise.resolve({
+        id: record.id,
+        persisted: true,
+        durable: true,
+        storageType: 'fallback',
+      });
+    }
+
+    return memoryBackupVault.save(record);
+  }
+
+  function removeFallbackVaultRecordEntry(id) {
+    if (!id) {
+      return Promise.resolve(false);
+    }
+    const entries = readFallbackVaultRecords();
+    if (!entries.length) {
+      return Promise.resolve(false);
+    }
+    const filtered = entries.filter(entry => entry && entry.id !== id);
+    if (filtered.length === entries.length) {
+      fallbackStorageRecordCount = entries.length;
+      refreshBackupVaultFallbackMode(entries.length > 0 ? { storageType: 'fallback' } : null);
+      return Promise.resolve(false);
+    }
+    const persisted = writeFallbackVaultRecords(filtered);
+    return Promise.resolve(Boolean(persisted));
+  }
+
+  function combineBackupVaultRecordSets(indexedRecords, fallbackRecords, memoryRecords) {
+    const deduped = new Map();
+    const addRecords = (records, storageType) => {
+      if (!Array.isArray(records)) {
+        return;
+      }
+      records.forEach((record) => {
+        if (!record || typeof record !== 'object' || typeof record.id !== 'string') {
+          return;
+        }
+        const clone = { ...record, storageType };
+        if (storageType !== 'memory') {
+          clone.durable = true;
+        } else {
+          clone.durable = false;
+        }
+        const existing = deduped.get(clone.id);
+        if (!existing) {
+          deduped.set(clone.id, clone);
+          return;
+        }
+        const existingTime = typeof existing.createdAtMs === 'number' ? existing.createdAtMs : 0;
+        const candidateTime = typeof clone.createdAtMs === 'number' ? clone.createdAtMs : 0;
+        if (candidateTime >= existingTime) {
+          deduped.set(clone.id, clone);
+        }
+      });
+    };
+
+    addRecords(indexedRecords, 'indexeddb');
+    addRecords(fallbackRecords, 'fallback');
+    addRecords(memoryRecords, 'memory');
+
+    const entries = Array.from(deduped.values());
+    entries.sort((a, b) => {
+      const aTime = typeof a.createdAtMs === 'number' ? a.createdAtMs : 0;
+      const bTime = typeof b.createdAtMs === 'number' ? b.createdAtMs : 0;
+      return aTime - bTime;
+    });
+    return entries;
+  }
 
   function isIndexedDBAvailable() {
     return typeof indexedDB !== 'undefined' && indexedDB !== null;
@@ -287,13 +616,19 @@
     }
     return withBackupVaultStore('readwrite', (store) => {
       if (!store) {
-        return memoryBackupVault.save(record);
+        return persistFallbackVaultRecord(record);
       }
       return new Promise((resolve, reject) => {
         try {
           const request = store.put(record);
           request.addEventListener('success', () => {
-            resolve({ id: record.id, persisted: true });
+            refreshBackupVaultFallbackMode({ storageType: 'indexeddb' });
+            resolve({
+              id: record.id,
+              persisted: true,
+              durable: true,
+              storageType: 'indexeddb',
+            });
           });
           request.addEventListener('error', () => {
             reject(request.error);
@@ -303,18 +638,18 @@
         }
       }).catch((error) => {
         console.warn('Failed to persist backup vault record to IndexedDB', error);
-        return memoryBackupVault.save(record);
+        return persistFallbackVaultRecord(record);
       });
     }).catch((error) => {
       console.warn('Backup vault persistence failed', error);
-      return memoryBackupVault.save(record);
+      return persistFallbackVaultRecord(record);
     });
   }
 
   function listBackupVaultRecords() {
-    return withBackupVaultStore('readonly', (store) => {
+    const indexedPromise = withBackupVaultStore('readonly', (store) => {
       if (!store) {
-        return memoryBackupVault.list();
+        return [];
       }
       return new Promise((resolve, reject) => {
         try {
@@ -330,11 +665,23 @@
         }
       }).catch((error) => {
         console.warn('Failed to read backup vault records from IndexedDB', error);
-        return memoryBackupVault.list();
+        return [];
       });
     }).catch((error) => {
       console.warn('Backup vault record enumeration failed', error);
-      return memoryBackupVault.list();
+      return [];
+    });
+
+    const fallbackPromise = Promise.resolve().then(() => readFallbackVaultRecords()).catch((error) => {
+      console.warn('Failed to enumerate fallback backup vault records', error);
+      return [];
+    });
+
+    const memoryPromise = memoryBackupVault.list().catch(() => []);
+
+    return Promise.all([indexedPromise, fallbackPromise, memoryPromise]).then((results) => {
+      const [indexedRecords, fallbackRecords, memoryRecords] = results;
+      return combineBackupVaultRecordSets(indexedRecords, fallbackRecords, memoryRecords);
     });
   }
 
@@ -343,14 +690,15 @@
       return Promise.resolve(false);
     }
     backupVaultTransientRecords.delete(id);
-    return withBackupVaultStore('readwrite', (store) => {
+    const indexedRemoval = withBackupVaultStore('readwrite', (store) => {
       if (!store) {
-        return memoryBackupVault.remove(id);
+        return false;
       }
       return new Promise((resolve, reject) => {
         try {
           const request = store.delete(id);
           request.addEventListener('success', () => {
+            refreshBackupVaultFallbackMode();
             resolve(true);
           });
           request.addEventListener('error', () => {
@@ -361,11 +709,23 @@
         }
       }).catch((error) => {
         console.warn('Failed to remove backup vault record from IndexedDB', error);
-        return memoryBackupVault.remove(id);
+        return false;
       });
     }).catch((error) => {
       console.warn('Backup vault record removal failed', error);
-      return memoryBackupVault.remove(id);
+      return false;
+    });
+
+    return Promise.all([
+      Promise.resolve(indexedRemoval),
+      removeFallbackVaultRecordEntry(id),
+      memoryBackupVault.remove(id),
+    ]).then((results) => {
+      const removed = results.some(result => Boolean(result));
+      if (!removed) {
+        refreshBackupVaultFallbackMode();
+      }
+      return removed;
     });
   }
 
@@ -415,7 +775,14 @@
       }
       backupVaultTransientRecords.forEach((record, id) => {
         if (!deduped.has(id)) {
-          deduped.set(id, { ...record });
+          const clone = { ...record };
+          if (typeof clone.storageType !== 'string') {
+            clone.storageType = 'transient';
+          }
+          if (typeof clone.durable !== 'boolean') {
+            clone.durable = false;
+          }
+          deduped.set(id, clone);
         }
       });
       const entries = Array.from(deduped.values());
@@ -432,8 +799,11 @@
     const record = createBackupVaultRecord(fileName, payload, metadata || {});
     backupVaultTransientRecords.set(record.id, { ...record });
     try {
-      persistBackupVaultRecord(record).then(() => {
+      persistBackupVaultRecord(record).then((result) => {
         backupVaultTransientRecords.delete(record.id);
+        if (result && result.durable === false) {
+          console.warn('Backup vault record stored using non-durable fallback storage.', result);
+        }
       }).catch((error) => {
         console.warn('Failed to persist queued backup payload. Using in-memory vault fallback.', error);
       });
@@ -2199,6 +2569,8 @@
     removeBackupVaultRecord,
     openQueuedBackupVaultWindow,
     resolveQueuedBackupMessage,
+    isBackupVaultFallbackActive,
+    getBackupVaultFallbackState,
     isAutoBackupName,
     parseAutoBackupName,
     isPlainObject,
@@ -2210,6 +2582,7 @@
       BACKUP_METADATA_BASE_KEYS: Array.from(BACKUP_METADATA_BASE_KEYS),
       BACKUP_DATA_KEYS: BACKUP_DATA_KEYS.slice(),
       BACKUP_DATA_COMPLEX_KEYS: Array.from(BACKUP_DATA_COMPLEX_KEYS),
+      BACKUP_VAULT_FALLBACK_STORAGE_KEY,
     }),
   });
 
@@ -2252,6 +2625,8 @@
     ['removeBackupVaultRecord', removeBackupVaultRecord],
     ['openQueuedBackupVaultWindow', openQueuedBackupVaultWindow],
     ['resolveQueuedBackupMessage', resolveQueuedBackupMessage],
+    ['isBackupVaultFallbackActive', isBackupVaultFallbackActive],
+    ['getBackupVaultFallbackState', getBackupVaultFallbackState],
     ['isAutoBackupName', isAutoBackupName],
     ['parseAutoBackupName', parseAutoBackupName],
     ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX],

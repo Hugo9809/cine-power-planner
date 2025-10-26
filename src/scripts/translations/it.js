@@ -1500,6 +1500,7 @@
     "queuedBackupBannerMessageOther": "{count} backup salvati nel vault locale.",
     "queuedBackupBannerGesture": "Interagisci con il planner per esportarli in sicurezza.",
     "queuedBackupBannerAction": "Apri il vault locale",
+    "queuedBackupFallbackHint": "Archiviazione di emergenza attiva. Esporta subito i backup in coda.",
     "storageSessionStored": "Salvata",
     "storageSessionNotStored": "Non salvata",
     "storageKeyTotalSize": "Dimensione approssimativa del backup",
