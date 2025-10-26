@@ -7446,6 +7446,20 @@ function loadJSONFromStorage(
     const normalizedRaw = typeof raw === 'string'
       ? maybeDecompressStoredString(raw)
       : raw;
+
+    if (
+      typeof raw === 'string'
+      && raw
+      && normalizedRaw === raw
+      && raw.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`)
+      && raw.includes(`"namespace":"${STORAGE_COMPRESSION_NAMESPACE}`)
+    ) {
+      console.warn(
+        `${errorMessage} Compressed value could not be decoded${label ? ` (${label})` : ''}.`,
+      );
+      shouldAlert = true;
+      return { ok: false, reason: 'compressed' };
+    }
     try {
       const parsed = JSON.parse(normalizedRaw);
       if (typeof validate === 'function' && !validate(parsed)) {
