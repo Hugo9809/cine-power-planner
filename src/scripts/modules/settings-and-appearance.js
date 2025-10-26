@@ -676,9 +676,15 @@
 
     let pinkModeIconRotationTimer = null;
     let pinkModeIconIndex = 0;
+    let pinkModeIconPressCount = 0;
+    let pinkModeIconPressResetTimer = null;
     const PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     const PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
     const PINK_MODE_ICON_INTERVAL_MS = context.pinkModeIconIntervalMs || 1500;
+    const PINK_MODE_ICON_PRESS_RESET_MS =
+      typeof context.pinkModeIconPressResetMs === 'number' && context.pinkModeIconPressResetMs >= 0
+        ? context.pinkModeIconPressResetMs
+        : 0;
 
     let pinkModeEnabled = false;
     let settingsInitialPinkMode = false;
@@ -1360,6 +1366,46 @@
       }
     }
 
+    function clearPinkModeIconPressResetTimer() {
+      if (pinkModeIconPressResetTimer) {
+        try {
+          clearTimeout(pinkModeIconPressResetTimer);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to clear pink mode press reset timer.', error);
+        }
+        pinkModeIconPressResetTimer = null;
+      }
+    }
+
+    function schedulePinkModeIconPressReset() {
+      if (PINK_MODE_ICON_PRESS_RESET_MS <= 0) {
+        return;
+      }
+
+      clearPinkModeIconPressResetTimer();
+
+      try {
+        pinkModeIconPressResetTimer = setTimeout(() => {
+          pinkModeIconPressResetTimer = null;
+          pinkModeIconPressCount = 0;
+        }, PINK_MODE_ICON_PRESS_RESET_MS);
+        if (
+          pinkModeIconPressResetTimer &&
+          typeof pinkModeIconPressResetTimer.unref === 'function'
+        ) {
+          pinkModeIconPressResetTimer.unref();
+        }
+      } catch (error) {
+        pinkModeIconPressResetTimer = null;
+        safeWarn('cineSettingsAppearance: unable to schedule pink mode press reset.', error);
+      }
+    }
+
+    function resetPinkModeIconPressCount() {
+      pinkModeIconPressCount = 0;
+      clearPinkModeIconPressResetTimer();
+    }
+
     function triggerPinkModeIconRain() {
       if (typeof icons.triggerPinkModeIconRain === 'function') {
         try {
@@ -1371,6 +1417,20 @@
     }
 
     function handlePinkModeIconPress() {
+      pinkModeIconPressCount += 1;
+
+      if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
+        schedulePinkModeIconPressReset();
+      }
+
+      if (pinkModeIconPressCount < 3) {
+        return;
+      }
+
+      if (PINK_MODE_ICON_PRESS_RESET_MS <= 0 && pinkModeIconPressCount > 3) {
+        pinkModeIconPressCount = 3;
+      }
+
       triggerPinkModeIconRain();
     }
 
@@ -1382,6 +1442,7 @@
     function stopPinkModeAnimatedIconRotation() {
       stopPinkModeAnimatedIcons();
       stopPinkModeIconRotation();
+      resetPinkModeIconPressCount();
     }
 
     function applyPinkMode(enabled) {
