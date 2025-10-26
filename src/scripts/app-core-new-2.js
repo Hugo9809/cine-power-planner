@@ -8955,6 +8955,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return fallback;
     }
 
+    const CONNECTIVITY_REASON_TEXT_KEYS = {
+      offline: 'reloadAppOfflineNotice',
+      'cache-fallback': 'offlineIndicatorReasonCacheFallback',
+      'get-failed': 'offlineIndicatorReasonGetFailed',
+      timeout: 'offlineIndicatorReasonTimeout',
+      unreachable: 'offlineIndicatorReasonUnreachable',
+      'reload-blocked': 'offlineIndicatorReasonReloadBlocked',
+      default: 'offlineIndicatorReasonUnknown',
+    };
+
+    function resolveConnectivityReasonText(langTexts, reason) {
+      const key = CONNECTIVITY_REASON_TEXT_KEYS[reason] || CONNECTIVITY_REASON_TEXT_KEYS.default;
+      return resolveStatusText(langTexts, key);
+    }
+
     function isValidTimestamp(date) {
       return date instanceof Date && !Number.isNaN(date.getTime());
     }
@@ -8977,6 +8992,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date)
         ? fullBackupInfo.date
         : null;
+
+      const connectivityState = typeof window !== 'undefined' && window && typeof window.cineConnectivityStatus === 'object'
+        ? window.cineConnectivityStatus
+        : null;
+
+      if (connectivityState) {
+        const connectivityStatus = typeof connectivityState.status === 'string' ? connectivityState.status : null;
+        if (connectivityStatus === 'offline' || connectivityStatus === 'degraded') {
+          const connectivityReason = typeof connectivityState.reason === 'string' ? connectivityState.reason : null;
+          const template = resolveStatusText(langTexts, 'storageStatusReminderConnectivity');
+          if (template) {
+            const reasonText = resolveConnectivityReasonText(langTexts, connectivityReason);
+            const reminderText = template.replace('{reason}', reasonText || '').replace(/\s+/g, ' ').trim();
+            if (reminderText) {
+              reminders.push(reminderText);
+            }
+          }
+        }
+      }
 
       const manualTimeText = manualDate
         ? (formatStatusTimestamp(manualDate, lang, langTexts) || formatAbsoluteTimestamp(manualDate, lang))

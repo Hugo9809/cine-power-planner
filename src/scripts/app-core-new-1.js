@@ -5631,9 +5631,9 @@ function updateInstallBannerPosition() {
 /**
  * Initialize the offline status indicator.
  *
- * Looks for an element with the id `offlineIndicator` and toggles its
- * visibility based on the browser's online state. If the element is not
- * found, the function quietly does nothing.
+ * Subscribes to navigator events and the service-worker diagnostics channel so
+ * the banner reflects degraded connectivity reported by the service worker
+ * even when the browser still believes it is online.
  */
 function setupOfflineIndicator() {
   if (
@@ -5671,7 +5671,39 @@ function setupOfflineIndicator() {
     if (!offlineIndicator.dataset.forceReloadNotice || !offlineIndicator.dataset.forceReloadNotice.trim()) {
       offlineIndicator.dataset.forceReloadNotice = FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
     }
+    if (!offlineIndicator.dataset.degradedLabel || !offlineIndicator.dataset.degradedLabel.trim()) {
+      offlineIndicator.dataset.degradedLabel = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+    }
+    if (!offlineIndicator.dataset.degradedHelp || !offlineIndicator.dataset.degradedHelp.trim()) {
+      offlineIndicator.dataset.degradedHelp = offlineIndicator.dataset.baseHelp || currentLabel;
+    }
+    if (!offlineIndicator.dataset.reasonCacheFallback || !offlineIndicator.dataset.reasonCacheFallback.trim()) {
+      offlineIndicator.dataset.reasonCacheFallback = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+    }
+    if (!offlineIndicator.dataset.reasonGetFailed || !offlineIndicator.dataset.reasonGetFailed.trim()) {
+      offlineIndicator.dataset.reasonGetFailed = offlineIndicator.dataset.reasonCacheFallback;
+    }
+    if (!offlineIndicator.dataset.reasonTimeout || !offlineIndicator.dataset.reasonTimeout.trim()) {
+      offlineIndicator.dataset.reasonTimeout = offlineIndicator.dataset.reasonCacheFallback;
+    }
+    if (!offlineIndicator.dataset.reasonUnreachable || !offlineIndicator.dataset.reasonUnreachable.trim()) {
+      offlineIndicator.dataset.reasonUnreachable = offlineIndicator.dataset.reasonCacheFallback;
+    }
+    if (!offlineIndicator.dataset.reasonReloadBlocked || !offlineIndicator.dataset.reasonReloadBlocked.trim()) {
+      offlineIndicator.dataset.reasonReloadBlocked = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+    }
+    if (!offlineIndicator.dataset.reasonUnknown || !offlineIndicator.dataset.reasonUnknown.trim()) {
+      offlineIndicator.dataset.reasonUnknown = offlineIndicator.dataset.degradedHelp || currentLabel;
+    }
   }
+
+  const CONNECTIVITY_STATUS_MESSAGE_TYPE = 'cine-sw:connectivity-status';
+  const SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+
+  let lastConnectivityState = null;
+  let connectivityChannel = null;
+  let connectivityChannelFailed = false;
+  let unsubscribeConnectivity = null;
 
   const resolveOfflineNotice = () => {
     const indicatorNotice = offlineIndicator.dataset?.forceReloadNotice;
@@ -5687,10 +5719,101 @@ function setupOfflineIndicator() {
     return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
   };
 
-  const updateReloadButtonState = (isOnline, offlineNotice) => {
+  const getNavigatorOnline = () => (typeof navigator.onLine === 'boolean' ? navigator.onLine !== false : true);
+  const getBaseLabel = () => (offlineIndicator.dataset?.baseLabel && offlineIndicator.dataset.baseLabel.trim())
+    ? offlineIndicator.dataset.baseLabel.trim()
+    : currentLabel;
+  const getBaseHelp = () => (offlineIndicator.dataset?.baseHelp && offlineIndicator.dataset.baseHelp.trim())
+    ? offlineIndicator.dataset.baseHelp.trim()
+    : getBaseLabel();
+  const getDegradedLabel = () => (offlineIndicator.dataset?.degradedLabel && offlineIndicator.dataset.degradedLabel.trim())
+    ? offlineIndicator.dataset.degradedLabel.trim()
+    : resolveOfflineNotice();
+  const getDegradedHelp = () => (offlineIndicator.dataset?.degradedHelp && offlineIndicator.dataset.degradedHelp.trim())
+    ? offlineIndicator.dataset.degradedHelp.trim()
+    : getDegradedLabel();
+
+  const CONNECTIVITY_REASON_KEYS = {
+    'cache-fallback': 'reasonCacheFallback',
+    'get-failed': 'reasonGetFailed',
+    timeout: 'reasonTimeout',
+    unreachable: 'reasonUnreachable',
+    'reload-blocked': 'reasonReloadBlocked',
+    offline: 'forceReloadNotice',
+  };
+
+  const resolveReasonText = (reason) => {
+    if (!reason) {
+      const fallback = offlineIndicator.dataset?.reasonUnknown;
+      return typeof fallback === 'string' && fallback.trim() ? fallback.trim() : '';
+    }
+
+    if (reason === 'navigator-offline') {
+      return resolveOfflineNotice();
+    }
+
+    const key = CONNECTIVITY_REASON_KEYS[reason] || 'reasonUnknown';
+    const value = offlineIndicator.dataset?.[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+
+    if (key !== 'reasonUnknown') {
+      const unknown = offlineIndicator.dataset?.reasonUnknown;
+      if (typeof unknown === 'string' && unknown.trim()) {
+        return unknown.trim();
+      }
+    }
+
+    return '';
+  };
+
+  const describeConnectivityDetail = (detail) => {
+    if (!detail) {
+      return '';
+    }
+
+    if (typeof detail === 'string') {
+      return detail.trim();
+    }
+
+    if (typeof detail !== 'object') {
+      return '';
+    }
+
+    const parts = [];
+    if (typeof detail.status === 'number' && Number.isFinite(detail.status)) {
+      parts.push(`HTTP ${detail.status}`);
+    }
+    if (typeof detail.statusText === 'string' && detail.statusText.trim()) {
+      parts.push(detail.statusText.trim());
+    }
+    if (typeof detail.message === 'string' && detail.message.trim()) {
+      parts.push(detail.message.trim());
+    }
+    if (typeof detail.error === 'string' && detail.error.trim()) {
+      parts.push(detail.error.trim());
+    }
+    if (!parts.length && detail.error && typeof detail.error === 'object') {
+      const nested = describeConnectivityDetail(detail.error);
+      if (nested) {
+        parts.push(nested);
+      }
+    }
+    if (!parts.length && detail.reason && typeof detail.reason === 'string') {
+      parts.push(detail.reason.trim());
+    }
+    return parts.join(' ').trim();
+  };
+
+  const updateReloadButtonState = (status, offlineNotice) => {
     if (!reloadButton) {
       return;
     }
+
+    const noticeText = typeof offlineNotice === 'string' && offlineNotice.trim()
+      ? offlineNotice.trim()
+      : resolveOfflineNotice();
 
     if (reloadButton.dataset) {
       if (!reloadButton.dataset.onlineTitle || !reloadButton.dataset.onlineTitle.trim()) {
@@ -5721,11 +5844,11 @@ function setupOfflineIndicator() {
       }
 
       if (!reloadButton.dataset.offlineNotice || !reloadButton.dataset.offlineNotice.trim()) {
-        reloadButton.dataset.offlineNotice = offlineNotice;
+        reloadButton.dataset.offlineNotice = noticeText;
       }
     }
 
-    if (isOnline) {
+    if (status === 'online') {
       reloadButton.removeAttribute('disabled');
       reloadButton.removeAttribute('aria-disabled');
       const title = reloadButton.dataset?.onlineTitle || 'Force reload';
@@ -5735,59 +5858,273 @@ function setupOfflineIndicator() {
       const ariaLabel = reloadButton.dataset?.onlineAriaLabel || title;
       reloadButton.setAttribute('aria-label', ariaLabel);
     } else {
-      const notice = reloadButton.dataset?.offlineNotice || offlineNotice;
       reloadButton.setAttribute('disabled', 'disabled');
       reloadButton.setAttribute('aria-disabled', 'true');
-      reloadButton.setAttribute('title', notice);
-      reloadButton.setAttribute('data-help', notice);
-      reloadButton.setAttribute('aria-label', notice);
+      reloadButton.setAttribute('title', noticeText);
+      reloadButton.setAttribute('data-help', noticeText);
+      reloadButton.setAttribute('aria-label', noticeText);
+      if (reloadButton.dataset) {
+        reloadButton.dataset.offlineNotice = noticeText;
+        reloadButton.dataset.degradedNotice = noticeText;
+      }
     }
   };
 
-  const updateOnlineStatus = () => {
-    const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
-    const offlineNotice = resolveOfflineNotice();
-    const baseLabel = offlineIndicator.dataset?.baseLabel && offlineIndicator.dataset.baseLabel.trim()
-      ? offlineIndicator.dataset.baseLabel.trim()
-      : currentLabel;
-    const baseHelp = offlineIndicator.dataset?.baseHelp && offlineIndicator.dataset.baseHelp.trim()
-      ? offlineIndicator.dataset.baseHelp.trim()
-      : baseLabel;
+  const sanitizeConnectivityState = (state) => {
+    if (!state || typeof state !== 'object') {
+      return null;
+    }
 
-    if (isOnline) {
+    const status = typeof state.status === 'string' && state.status ? state.status : 'unknown';
+    const reason = typeof state.reason === 'string' && state.reason ? state.reason : null;
+    const timestamp = typeof state.timestamp === 'number' && Number.isFinite(state.timestamp)
+      ? state.timestamp
+      : Date.now();
+    let detail = null;
+    if (state.detail && typeof state.detail === 'object') {
+      detail = state.detail;
+    } else if (typeof state.detail === 'string' && state.detail.trim()) {
+      detail = state.detail.trim();
+    }
+
+    return { status, reason, detail, timestamp };
+  };
+
+  const refreshOfflineIndicator = () => {
+    const navigatorOnline = getNavigatorOnline();
+    let effectiveStatus = navigatorOnline ? 'online' : 'offline';
+    let effectiveReason = navigatorOnline ? null : 'navigator-offline';
+    let effectiveDetail = null;
+    let effectiveTimestamp = null;
+
+    if (lastConnectivityState) {
+      const stateStatus = lastConnectivityState.status;
+      if (stateStatus === 'offline') {
+        effectiveStatus = 'offline';
+        effectiveReason = lastConnectivityState.reason || effectiveReason || 'offline';
+        effectiveDetail = lastConnectivityState.detail || null;
+        effectiveTimestamp = lastConnectivityState.timestamp || null;
+      } else if (stateStatus === 'degraded' && effectiveStatus !== 'offline') {
+        effectiveStatus = 'degraded';
+        effectiveReason = lastConnectivityState.reason || 'unknown';
+        effectiveDetail = lastConnectivityState.detail || null;
+        effectiveTimestamp = lastConnectivityState.timestamp || null;
+      } else if (stateStatus === 'online' && navigatorOnline) {
+        effectiveStatus = 'online';
+        effectiveReason = lastConnectivityState.reason || null;
+        effectiveDetail = lastConnectivityState.detail || null;
+        effectiveTimestamp = lastConnectivityState.timestamp || null;
+      }
+    }
+
+    if (offlineIndicator.dataset) {
+      offlineIndicator.dataset.connectivityStatus = effectiveStatus;
+      if (effectiveReason) {
+        offlineIndicator.dataset.connectivityReason = effectiveReason;
+      } else if (offlineIndicator.dataset.connectivityReason) {
+        delete offlineIndicator.dataset.connectivityReason;
+      }
+      if (effectiveTimestamp) {
+        offlineIndicator.dataset.connectivityTimestamp = String(effectiveTimestamp);
+      } else if (offlineIndicator.dataset.connectivityTimestamp) {
+        delete offlineIndicator.dataset.connectivityTimestamp;
+      }
+    }
+
+    if (effectiveStatus === 'online') {
+      const baseLabel = getBaseLabel();
+      const baseHelp = getBaseHelp();
       if (typeof offlineIndicator.textContent === 'string' || typeof offlineIndicator.textContent === 'object') {
         offlineIndicator.textContent = baseLabel;
       }
       offlineIndicator.setAttribute('data-help', baseHelp);
+      offlineIndicator.setAttribute('role', 'status');
+      offlineIndicator.setAttribute('aria-live', 'polite');
       if (!offlineIndicator.hasAttribute('hidden')) {
         offlineIndicator.setAttribute('hidden', '');
       }
-    } else {
+      updateReloadButtonState('online', resolveOfflineNotice());
+    } else if (effectiveStatus === 'offline') {
+      const offlineNotice = resolveOfflineNotice();
       if (offlineIndicator.dataset) {
         offlineIndicator.dataset.forceReloadNotice = offlineNotice;
+        offlineIndicator.dataset.reloadNotice = offlineNotice;
       }
       if (typeof offlineIndicator.textContent === 'string' || typeof offlineIndicator.textContent === 'object') {
         offlineIndicator.textContent = offlineNotice;
       }
       offlineIndicator.setAttribute('data-help', offlineNotice);
+      offlineIndicator.setAttribute('role', 'status');
+      offlineIndicator.setAttribute('aria-live', 'polite');
       offlineIndicator.removeAttribute('hidden');
+      updateReloadButtonState('offline', offlineNotice);
+    } else {
+      const degradedLabel = getDegradedLabel();
+      const reasonText = resolveReasonText(effectiveReason);
+      const detailText = describeConnectivityDetail(effectiveDetail);
+      const summaryParts = [];
+      if (reasonText) summaryParts.push(reasonText);
+      if (detailText && detailText !== reasonText) summaryParts.push(detailText);
+      const summary = summaryParts.join(' ').trim();
+      const displayText = summary ? `${degradedLabel} — ${summary}` : degradedLabel;
+      const degradedHelp = getDegradedHelp();
+      const helpParts = [];
+      if (summary) {
+        helpParts.push(summary);
+      }
+      if (degradedHelp && (!summary || degradedHelp.indexOf(summary) === -1)) {
+        helpParts.push(degradedHelp);
+      }
+      const helpText = helpParts.join(' ').trim() || degradedHelp || displayText;
+
+      if (offlineIndicator.dataset) {
+        offlineIndicator.dataset.forceReloadNotice = displayText;
+        offlineIndicator.dataset.reloadNotice = displayText;
+      }
+
+      if (typeof offlineIndicator.textContent === 'string' || typeof offlineIndicator.textContent === 'object') {
+        offlineIndicator.textContent = displayText;
+      }
+      offlineIndicator.setAttribute('data-help', helpText);
+      offlineIndicator.setAttribute('role', 'status');
+      offlineIndicator.setAttribute('aria-live', 'polite');
+      offlineIndicator.removeAttribute('hidden');
+      updateReloadButtonState('degraded', displayText);
     }
 
-    updateReloadButtonState(isOnline, offlineNotice);
     if (typeof updateInstallBannerPosition === 'function') {
       updateInstallBannerPosition();
     }
   };
 
+  const applyConnectivityState = (state) => {
+    const sanitized = sanitizeConnectivityState(state);
+    if (!sanitized) {
+      return;
+    }
+
+    if (
+      lastConnectivityState &&
+      lastConnectivityState.status === sanitized.status &&
+      lastConnectivityState.reason === sanitized.reason &&
+      lastConnectivityState.timestamp === sanitized.timestamp
+    ) {
+      return;
+    }
+
+    lastConnectivityState = sanitized;
+    refreshOfflineIndicator();
+    if (typeof callCoreFunctionIfAvailable === 'function') {
+      callCoreFunctionIfAvailable('updateStorageSummary', [], { defer: true });
+    }
+  };
+
+  const handleConnectivityBroadcast = (event) => {
+    if (!event) {
+      return;
+    }
+
+    let data = null;
+    try {
+      data = event.data || null;
+    } catch (error) {
+      void error;
+      data = null;
+    }
+
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+
+    if (data.type === CONNECTIVITY_STATUS_MESSAGE_TYPE) {
+      const state = data.state && typeof data.state === 'object' ? data.state : null;
+      if (state) {
+        applyConnectivityState(state);
+      }
+    }
+  };
+
+  const ensureConnectivityBroadcast = () => {
+    if (connectivityChannel || connectivityChannelFailed) {
+      return;
+    }
+
+    if (typeof BroadcastChannel !== 'function') {
+      connectivityChannelFailed = true;
+      return;
+    }
+
+    try {
+      connectivityChannel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+      connectivityChannel.addEventListener('message', handleConnectivityBroadcast);
+    } catch (error) {
+      connectivityChannelFailed = true;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('setupOfflineIndicator: Unable to listen for connectivity updates', error);
+      }
+    }
+  };
+
+  const resolveOfflineModule = () => {
+    try {
+      if (typeof cineOffline !== 'undefined' && cineOffline) {
+        return cineOffline;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    const candidates = [
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && typeof candidate.cineOffline === 'object') {
+        return candidate.cineOffline;
+      }
+    }
+
+    return null;
+  };
+
+  const offlineModule = resolveOfflineModule();
+
+  if (offlineModule && typeof offlineModule.subscribeConnectivityStatus === 'function') {
+    try {
+      unsubscribeConnectivity = offlineModule.subscribeConnectivityStatus(applyConnectivityState);
+    } catch (error) {
+      void error;
+      unsubscribeConnectivity = null;
+    }
+  }
+
+  const initialState = offlineModule && typeof offlineModule.getConnectivityState === 'function'
+    ? offlineModule.getConnectivityState()
+    : (typeof window !== 'undefined' && window && typeof window.cineConnectivityStatus === 'object'
+      ? window.cineConnectivityStatus
+      : null);
+
+  if (initialState) {
+    applyConnectivityState(initialState);
+  }
+
+  ensureConnectivityBroadcast();
+
   if (
     typeof window !== 'undefined' &&
     typeof window.addEventListener === 'function'
   ) {
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+    window.addEventListener('online', refreshOfflineIndicator);
+    window.addEventListener('offline', refreshOfflineIndicator);
   }
 
-  updateOnlineStatus();
+  refreshOfflineIndicator();
+
+  return unsubscribeConnectivity;
 }
 
 if (typeof window !== 'undefined') {
@@ -10169,6 +10506,14 @@ async function setLanguage(lang) {
       offlineElem.dataset.baseLabel = offlineLabel;
       offlineElem.dataset.baseHelp = offlineHelp;
       offlineElem.dataset.forceReloadNotice = offlineNotice;
+      offlineElem.dataset.degradedLabel = texts[lang].offlineIndicatorDegraded || offlineNotice;
+      offlineElem.dataset.degradedHelp = texts[lang].offlineIndicatorDegradedHelp || offlineHelp;
+      offlineElem.dataset.reasonCacheFallback = texts[lang].offlineIndicatorReasonCacheFallback || offlineNotice;
+      offlineElem.dataset.reasonGetFailed = texts[lang].offlineIndicatorReasonGetFailed || offlineNotice;
+      offlineElem.dataset.reasonTimeout = texts[lang].offlineIndicatorReasonTimeout || offlineNotice;
+      offlineElem.dataset.reasonUnreachable = texts[lang].offlineIndicatorReasonUnreachable || offlineNotice;
+      offlineElem.dataset.reasonReloadBlocked = texts[lang].offlineIndicatorReasonReloadBlocked || offlineNotice;
+      offlineElem.dataset.reasonUnknown = texts[lang].offlineIndicatorReasonUnknown || offlineHelp;
     }
 
     if (isExplicitlyOffline) {

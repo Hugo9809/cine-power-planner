@@ -29,6 +29,8 @@
   const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
   const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
   const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+  const SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+  const CONNECTIVITY_STATUS_MESSAGE_TYPE = 'cine-sw:connectivity-status';
 
   /**
    * Resolve the shared module linker which exposes already-booted runtime
@@ -183,6 +185,271 @@
     ? MODULE_LINKER.getModuleGlobals()
     : null)
     || fallbackResolveModuleGlobals();
+
+  let connectivityBroadcastChannel = null;
+  let connectivityBroadcastFailed = false;
+  let connectivityState = null;
+  const connectivityListeners = new Set();
+
+  function sanitizeConnectivityError(error) {
+    if (!error) {
+      return null;
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (typeof error === 'number') {
+      return Number.isFinite(error) ? error : null;
+    }
+
+    if (typeof error === 'boolean') {
+      return error;
+    }
+
+    if (typeof error === 'object') {
+      const normalized = {};
+      const name = typeof error.name === 'string' && error.name ? error.name : null;
+      const message = typeof error.message === 'string' && error.message ? error.message : null;
+      const code = typeof error.code === 'string' && error.code ? error.code : null;
+      if (name) {
+        normalized.name = name;
+      }
+      if (message) {
+        normalized.message = message;
+      }
+      if (code) {
+        normalized.code = code;
+      }
+      if (typeof error.status === 'number' && Number.isFinite(error.status)) {
+        normalized.status = error.status;
+      }
+      if (typeof error.type === 'string' && error.type) {
+        normalized.type = error.type;
+      }
+      if (Object.keys(normalized).length === 0) {
+        try {
+          const stringified = String(error);
+          if (stringified && stringified !== '[object Object]') {
+            return stringified;
+          }
+        } catch (stringifyError) {
+          void stringifyError;
+        }
+        return null;
+      }
+      return normalized;
+    }
+
+    try {
+      return String(error);
+    } catch (stringifyError) {
+      void stringifyError;
+      return null;
+    }
+  }
+
+  function normalizeConnectivityDetail(detail) {
+    if (!detail) {
+      return null;
+    }
+
+    if (typeof detail !== 'object') {
+      return sanitizeConnectivityError(detail);
+    }
+
+    const normalized = {};
+
+    if (typeof detail.status === 'number' && Number.isFinite(detail.status)) {
+      normalized.status = detail.status;
+    }
+
+    if (typeof detail.statusText === 'string' && detail.statusText) {
+      normalized.statusText = detail.statusText;
+    }
+
+    if (typeof detail.probeResult === 'string' && detail.probeResult) {
+      normalized.probeResult = detail.probeResult;
+    }
+
+    if (typeof detail.reason === 'string' && detail.reason) {
+      normalized.reason = detail.reason;
+    }
+
+    if (typeof detail.stage === 'string' && detail.stage) {
+      normalized.stage = detail.stage;
+    }
+
+    if (typeof detail.source === 'string' && detail.source) {
+      normalized.source = detail.source;
+    }
+
+    if (typeof detail.message === 'string' && detail.message) {
+      normalized.message = detail.message;
+    }
+
+    if (typeof detail.code === 'string' && detail.code) {
+      normalized.code = detail.code;
+    }
+
+    if (detail.head && typeof detail.head === 'object') {
+      const headDetail = normalizeConnectivityDetail(detail.head);
+      if (headDetail) {
+        normalized.head = headDetail;
+      }
+    }
+
+    if (detail.error) {
+      const errorDetail = sanitizeConnectivityError(detail.error);
+      if (errorDetail) {
+        normalized.error = errorDetail;
+      }
+    }
+
+    if (detail.detail && typeof detail.detail === 'object' && detail.detail !== detail) {
+      const nested = normalizeConnectivityDetail(detail.detail);
+      if (nested) {
+        normalized.detail = nested;
+      }
+    }
+
+    if (!Object.keys(normalized).length) {
+      return null;
+    }
+
+    return normalized;
+  }
+
+  function getConnectivityBroadcastChannel() {
+    if (connectivityBroadcastFailed) {
+      return null;
+    }
+
+    if (connectivityBroadcastChannel) {
+      return connectivityBroadcastChannel;
+    }
+
+    if (typeof BroadcastChannel !== 'function') {
+      connectivityBroadcastFailed = true;
+      return null;
+    }
+
+    try {
+      connectivityBroadcastChannel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+      return connectivityBroadcastChannel;
+    } catch (error) {
+      connectivityBroadcastFailed = true;
+      safeWarn('cineOffline: Unable to open connectivity broadcast channel', error);
+      return null;
+    }
+  }
+
+  function assignGlobalConnectivityState(state) {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+      return;
+    }
+
+    try {
+      GLOBAL_SCOPE.cineConnectivityStatus = state;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function notifyConnectivityListeners(state) {
+    connectivityListeners.forEach((listener) => {
+      try {
+        listener(state);
+      } catch (error) {
+        safeWarn('cineOffline: connectivity listener failed', error);
+      }
+    });
+  }
+
+  function broadcastConnectivityState(state) {
+    const channel = getConnectivityBroadcastChannel();
+    if (!channel) {
+      return;
+    }
+
+    try {
+      channel.postMessage({
+        type: CONNECTIVITY_STATUS_MESSAGE_TYPE,
+        state,
+      });
+    } catch (error) {
+      safeWarn('cineOffline: Unable to broadcast connectivity state', error);
+      try {
+        channel.close();
+      } catch (closeError) {
+        void closeError;
+      }
+      connectivityBroadcastChannel = null;
+      connectivityBroadcastFailed = true;
+    }
+  }
+
+  function freezeConnectivityState(nextState) {
+    try {
+      return freezeDeep(nextState);
+    } catch (error) {
+      safeWarn('cineOffline: Unable to freeze connectivity state', error);
+      return nextState;
+    }
+  }
+
+  function buildConnectivityState(update) {
+    const previous = connectivityState && typeof connectivityState === 'object'
+      ? connectivityState
+      : {
+        status: 'unknown',
+        reason: null,
+        detail: null,
+        timestamp: Date.now(),
+        source: 'cineOffline',
+      };
+
+    const next = {
+      status: typeof update.status === 'string' && update.status ? update.status : previous.status || 'unknown',
+      reason: typeof update.reason === 'string' && update.reason ? update.reason : null,
+      detail: typeof update.detail === 'undefined' ? previous.detail : normalizeConnectivityDetail(update.detail),
+      timestamp: typeof update.timestamp === 'number' && Number.isFinite(update.timestamp)
+        ? update.timestamp
+        : Date.now(),
+      source: typeof update.source === 'string' && update.source ? update.source : (previous.source || 'cineOffline'),
+    };
+
+    return freezeConnectivityState(next);
+  }
+
+  function emitConnectivityState(update) {
+    if (!update || typeof update !== 'object') {
+      return connectivityState;
+    }
+
+    const nextState = buildConnectivityState(update);
+
+    if (
+      connectivityState &&
+      connectivityState.status === nextState.status &&
+      connectivityState.reason === nextState.reason &&
+      connectivityState.detail === nextState.detail &&
+      connectivityState.source === nextState.source
+    ) {
+      connectivityState = nextState;
+      assignGlobalConnectivityState(nextState);
+      return connectivityState;
+    }
+
+    connectivityState = nextState;
+    assignGlobalConnectivityState(nextState);
+    notifyConnectivityListeners(nextState);
+    broadcastConnectivityState(nextState);
+    return connectivityState;
+  }
+
+  connectivityState = emitConnectivityState({ status: 'unknown', source: 'cineOffline' });
 
   /**
    * Publish the module API to the runtime registry. Broadcasting the interface
@@ -2032,6 +2299,69 @@
     return { reachable: false, reason: 'unreachable', detail: getResult.error || headFailureDetail || headResult.error };
   }
 
+  function subscribeConnectivityStatus(listener) {
+    if (typeof listener !== 'function') {
+      return function unsubscribeNoop() {};
+    }
+
+    connectivityListeners.add(listener);
+
+    return function unsubscribeConnectivityListener() {
+      try {
+        connectivityListeners.delete(listener);
+      } catch (error) {
+        void error;
+      }
+    };
+  }
+
+  function unsubscribeConnectivityStatus(listener) {
+    if (typeof listener !== 'function') {
+      return;
+    }
+
+    try {
+      connectivityListeners.delete(listener);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function reportConnectivityProbeResult(result, meta) {
+    if (!result || typeof result !== 'object') {
+      return;
+    }
+
+    const detail = result.detail && typeof result.detail === 'object'
+      ? {
+        ...result.detail,
+        stage: (meta && meta.stage) || 'probe',
+        source: (meta && meta.source) || 'probe',
+      }
+      : {
+        stage: (meta && meta.stage) || 'probe',
+        source: (meta && meta.source) || 'probe',
+      };
+
+    if (result.reachable) {
+      emitConnectivityState({
+        status: 'online',
+        reason: typeof result.reason === 'string' && result.reason ? result.reason : 'probe-ok',
+        detail,
+        source: (meta && meta.source) || 'probe',
+      });
+      return;
+    }
+
+    const status = result.reason === 'offline' ? 'offline' : 'degraded';
+    emitConnectivityState({
+      status,
+      reason: typeof result.reason === 'string' && result.reason ? result.reason : 'unknown',
+      detail,
+      source: (meta && meta.source) || 'probe',
+    });
+  }
+
   function resolveXmlHttpRequest(windowLike) {
     const win = windowLike || resolveWindow();
 
@@ -3458,6 +3788,8 @@
           : FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS,
     });
 
+    reportConnectivityProbeResult(connectivity, { stage: 'reload-app-probe', source: 'reloadApp.probe' });
+
     if (!connectivity.reachable) {
       const notifyOffline =
         typeof options.onOfflineReloadBlocked === 'function'
@@ -3475,6 +3807,17 @@
       if (connectivity.detail && connectivity.reason !== 'offline') {
         safeWarn('Connectivity probe blocked forced reload', connectivity.detail);
       }
+
+      emitConnectivityState({
+        status: 'degraded',
+        reason: 'reload-blocked',
+        detail: {
+          previousReason: connectivity.reason || 'offline',
+          stage: 'reload-app',
+          source: 'reloadApp.blocked',
+        },
+        source: 'reloadApp.blocked',
+      });
 
       return {
         blocked: true,
@@ -3796,6 +4139,11 @@
   const offlineAPI = {
     registerServiceWorker,
     reloadApp,
+    getConnectivityState() {
+      return connectivityState;
+    },
+    subscribeConnectivityStatus,
+    unsubscribeConnectivityStatus,
     __internal: {
       collectFallbackUiCacheStorages,
       clearUiCacheEntriesFallback,
