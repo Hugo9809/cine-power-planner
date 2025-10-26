@@ -61,6 +61,10 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 - **Captura un snapshot de estado.** Completa el [Informe de estado de la documentación](docs/documentation-status-report-template.md) cuando actualices ayudas o traducciones; resume qué cambió, las evidencias offline reunidas y dónde residen copias y registros.
 - **Localiza con confianza.** Consulta la [Guía de traducción](docs/translation-guide.md) y los README específicos de cada idioma cada vez que añadas o ajustes idiomas para que el contenido offline siga alineado.
 
+## Referencia de versión
+
+- El planner publica la versión actual como `window.APP_VERSION`, `window.CPP_APP_VERSION` y `window.cinePowerPlanner.version` para que las automatizaciones sin conexión, las revisiones de documentación y las comprobaciones del service worker puedan confirmar las compilaciones sin volver a conectarse a la red.
+
 ## Kit de auditoría sin conexión
 
 Usa estas guías incluidas cada vez que necesites demostrar que el planner funciona sin conectividad o documentar cómo viajan los datos entre máquinas:

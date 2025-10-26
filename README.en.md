@@ -98,6 +98,10 @@ drive without phoning home.
 - **File a status snapshot.** Complete the [Documentation Status Report](docs/documentation-status-report-template.md) whenever you update help topics, translations or manuals. It captures which surfaces changed, the offline rehearsal evidence you gathered and where the backups plus verification logs now live so future audits can retrace the release without reconnecting to the network.
 - **Localize with confidence.** Reference the [Translation Guide](docs/translation-guide.md) and language-specific README files whenever you add or update locales so offline readers stay aligned with the latest workflows.
 
+## Version reference
+
+- The planner publishes the active release as `window.APP_VERSION`, `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` so offline automations, documentation drills and service-worker diagnostics can confirm builds without reconnecting to the network.
+
 ## Offline Audit Toolkit
 
 Use these bundled guides any time you need to prove the planner is safe to run without connectivity or document how data traveled between machines:
