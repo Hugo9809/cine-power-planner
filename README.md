@@ -143,6 +143,13 @@ drive without phoning home.
   and language-specific README files whenever you add or update locales so
   offline readers stay aligned with the latest workflows.
 
+## Version reference
+
+- The planner publishes the active release as `window.APP_VERSION`,
+  `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` so offline
+  automations, documentation drills and service-worker diagnostics can confirm
+  builds without reconnecting to the network.
+
 ## Offline Audit Toolkit
 
 Use these bundled guides any time you need to prove the planner is safe to run

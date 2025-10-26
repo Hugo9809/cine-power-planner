@@ -19,6 +19,7 @@ restore workflows protect every bit of user data.
    - [ ] While online, open DevTools storage inspector for `localStorage`.
    - [ ] Disable the network temporarily, reload once to confirm the loader falls back to the inline legacy bundle without writing `cameraPowerPlanner_forceLegacyBundle`.
    - [ ] Restore connectivity and reload; verify the app returns to the modern bundle automatically and the legacy flag remains absent.
+   - [ ] In the DevTools console confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` match the release identifier recorded for this rehearsal.
 2. **Manual save**
    - [ ] Modify project notes, press **Save** (or `Ctrl+S` / `⌘S`).
    - [ ] Verify confirmation toast, check autosave ledger entry.

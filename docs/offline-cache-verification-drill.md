@@ -32,6 +32,9 @@ manifest includes `./service-worker-assets.js`.
    - Refresh the app; confirm icons, fonts and modules load from the cache.
    - Run a manual save and export a project bundle; verify no network requests
      occur.
+   - In DevTools confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and
+     `window.cinePowerPlanner.version` still report the expected release value
+     while offline.
 4. **Autosave cadence check**
    - Make >50 changes or wait 10 minutes to trigger autosave.
    - Confirm the autosave ledger logs the run and the cache remains intact.

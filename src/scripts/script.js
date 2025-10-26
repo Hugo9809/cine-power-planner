@@ -195,6 +195,100 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return null;
   }
 
+  function assignProperty(target, key, value, options) {
+    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+      return false;
+    }
+
+    try {
+      if (target[key] === value) {
+        return true;
+      }
+    } catch (readError) {
+      void readError;
+    }
+
+    const enumerableOption = options && typeof options.enumerable === 'boolean'
+      ? options.enumerable
+      : false;
+
+    try {
+      Object.defineProperty(target, key, {
+        configurable: true,
+        enumerable: enumerableOption,
+        writable: true,
+        value,
+      });
+      return true;
+    } catch (defineError) {
+      void defineError;
+      try {
+        target[key] = value;
+        return true;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+
+    return false;
+  }
+
+  function ensureNamespace(scope, key) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    let existing = null;
+    try {
+      existing = scope[key];
+    } catch (readError) {
+      void readError;
+      existing = null;
+    }
+
+    if (existing && (typeof existing === 'object' || typeof existing === 'function')) {
+      return existing;
+    }
+
+    const created = {};
+    const assigned = assignProperty(scope, key, created, { enumerable: false });
+    if (assigned) {
+      try {
+        const resolved = scope[key];
+        if (resolved && (typeof resolved === 'object' || typeof resolved === 'function')) {
+          return resolved;
+        }
+      } catch (assignmentCheckError) {
+        void assignmentCheckError;
+      }
+
+      return created;
+    }
+
+    return null;
+  }
+
+  function exposeVersionGlobally(version) {
+    if (typeof version !== 'string' || !version) {
+      return;
+    }
+
+    const scope = resolveGlobalScope();
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    assignProperty(scope, 'APP_VERSION', version, { enumerable: true });
+    assignProperty(scope, 'CPP_APP_VERSION', version, { enumerable: true });
+
+    const namespace = ensureNamespace(scope, 'cinePowerPlanner');
+    if (namespace) {
+      assignProperty(namespace, 'APP_VERSION', version, { enumerable: true });
+      assignProperty(namespace, 'CPP_APP_VERSION', version, { enumerable: true });
+      assignProperty(namespace, 'version', version, { enumerable: true });
+    }
+  }
+
   function resolveAppVersion() {
     const scope = resolveGlobalScope();
     if (scope && typeof scope.CPP_APP_VERSION === 'string' && scope.CPP_APP_VERSION) {
@@ -232,11 +326,21 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     );
   }
 
+  exposeVersionGlobally(APP_VERSION);
+
   if (aggregatedExports) {
     if (moduleAppVersion && typeof moduleAppVersion === 'string') {
       aggregatedExports.APP_VERSION = moduleAppVersion;
-    } else if (!aggregatedExports.APP_VERSION) {
-      aggregatedExports.APP_VERSION = APP_VERSION;
+      if (!aggregatedExports.CPP_APP_VERSION) {
+        aggregatedExports.CPP_APP_VERSION = moduleAppVersion;
+      }
+    } else {
+      if (!aggregatedExports.APP_VERSION) {
+        aggregatedExports.APP_VERSION = APP_VERSION;
+      }
+      if (!aggregatedExports.CPP_APP_VERSION) {
+        aggregatedExports.CPP_APP_VERSION = APP_VERSION;
+      }
     }
   }
 }
