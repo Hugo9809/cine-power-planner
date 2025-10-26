@@ -14,6 +14,104 @@ const createHeaders = entries => ({
   },
 });
 
+describe('service worker connectivity probe handling', () => {
+  const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
+  const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
+  const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+
+  let originalCaches;
+  let originalSelf;
+  let originalFetch;
+  let eventListeners;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    originalCaches = global.caches;
+    originalSelf = global.self;
+    originalFetch = global.fetch;
+    eventListeners = {};
+
+    global.self = {
+      location: { origin: 'https://example.test', href: 'https://example.test/' },
+      addEventListener: (eventName, handler) => {
+        eventListeners[eventName] = handler;
+      },
+      clients: { claim: jest.fn(), matchAll: jest.fn().mockResolvedValue([]) },
+      registration: {},
+    };
+
+    global.caches = {
+      match: jest.fn(),
+      open: jest.fn().mockResolvedValue({ match: jest.fn(), put: jest.fn() }),
+    };
+
+    global.fetch = jest.fn().mockRejectedValue(new Error('network unavailable'));
+  });
+
+  afterEach(() => {
+    if (typeof originalCaches === 'undefined') {
+      delete global.caches;
+    } else {
+      global.caches = originalCaches;
+    }
+
+    if (typeof originalSelf === 'undefined') {
+      delete global.self;
+    } else {
+      global.self = originalSelf;
+    }
+
+    if (typeof originalFetch === 'undefined') {
+      delete global.fetch;
+    } else {
+      global.fetch = originalFetch;
+    }
+  });
+
+  const loadServiceWorker = () => {
+    const module = require('../../service-worker.js');
+    return { module, fetchHandler: eventListeners.fetch };
+  };
+
+  test('cached connectivity probe responses carry fallback marker when offline', async () => {
+    const { fetchHandler } = loadServiceWorker();
+
+    expect(typeof fetchHandler).toBe('function');
+
+    const cachedShell = new Response('<html></html>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' },
+    });
+
+    global.caches.match.mockResolvedValue(cachedShell);
+
+    const request = new Request('https://example.test/index.html?__cineReloadProbe__=1', {
+      headers: new Headers({ [CONNECTIVITY_PROBE_HEADER]: 'probe-token' }),
+    });
+
+    let respondPromise;
+    const respondWith = jest.fn(promise => {
+      respondPromise = promise;
+    });
+
+    fetchHandler({
+      request,
+      respondWith,
+      preloadResponse: null,
+    });
+
+    expect(respondWith).toHaveBeenCalledTimes(1);
+
+    const response = await respondPromise;
+
+    expect(global.caches.match).toHaveBeenCalledWith(request, { ignoreSearch: true });
+    expect(response.headers.get(CONNECTIVITY_PROBE_RESULT_HEADER)).toBe(
+      CONNECTIVITY_PROBE_RESULT_FALLBACK,
+    );
+  });
+});
+
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./src/styles/overview.css', './src/styles/overview-print.css', './src/scripts/overview.js']));
