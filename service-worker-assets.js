@@ -340,6 +340,8 @@
   "./tools/findMissingAttributes.js",
   "./tools/generateSchema.js",
   "./tools/normalizeData.js",
+  "./tools/runDomTests.js",
+  "./tools/runUnitTests.js",
   "./tools/unifyPorts.js"
 ];
 

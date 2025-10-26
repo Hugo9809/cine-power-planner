@@ -18,6 +18,8 @@ const TOOL_WHITELIST = new Set([
   'findMissingAttributes.js',
   'generateSchema.js',
   'normalizeData.js',
+  'runDomTests.js',
+  'runUnitTests.js',
   'unifyPorts.js',
 ]);
 
