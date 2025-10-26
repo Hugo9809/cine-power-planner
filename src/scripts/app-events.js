@@ -11,7 +11,7 @@
           setLensDeviceMountOptions, getLensDeviceMountOptions,
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
-          normalizeFocusScale */
+          normalizeFocusScale, buildSettingsBackupPackage */
 
 const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   if (typeof require === 'function') {
