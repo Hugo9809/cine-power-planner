@@ -555,6 +555,10 @@
         metadata: record.metadata,
         payload: record.payload,
       })));
+      const serializedRecordsForHtml = serializedRecords
+        .replace(/&/g, '\\u0026')
+        .replace(/</g, '\\u003c')
+        .replace(/>/g, '\\u003e');
 
       const popupBlockedMessage = resolveBackupTexts().fallbackTexts
         && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
@@ -584,8 +588,11 @@
           `</head><body>\n` +
           `<div class="banner"><strong>${title}</strong><p>${intro}</p></div>\n` +
           `<main id="vault"></main>\n` +
+          `<script id="vault-data" type="application/json">${serializedRecordsForHtml}</script>\n` +
           `<script>\n` +
-          `const records = ${serializedRecords};\n` +
+          `const dataScript = document.getElementById('vault-data');\n` +
+          `const records = dataScript ? JSON.parse(dataScript.textContent || '[]') : [];\n` +
+          `if (dataScript && typeof dataScript.remove === 'function') { dataScript.remove(); }\n` +
           `const container = document.getElementById('vault');\n` +
           `if (!records.length) {\n` +
           `  const empty = document.createElement('p');\n` +
