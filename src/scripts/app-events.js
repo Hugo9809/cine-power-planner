@@ -167,6 +167,112 @@ const setButtonLabelWithIconForEvents = (function resolveSetButtonLabelWithIconF
   };
 })();
 
+const BACKUP_FEATURE_FOR_EVENTS = (function resolveBackupFeatureForEvents() {
+  if (typeof require === 'function') {
+    try {
+      const required = require('./modules/features/backup.js');
+      if (required && typeof required === 'object') {
+        return required;
+      }
+    } catch (requireError) {
+      void requireError;
+    }
+  }
+
+  const scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (scopeError) {
+    void scopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      const feature = scope.cineFeatureBackup;
+      if (feature && typeof feature === 'object') {
+        return feature;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+
+  return {};
+})();
+
+const queueBackupPayloadForVaultForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.queueBackupPayloadForVault === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.queueBackupPayloadForVault
+  : null;
+const getQueuedBackupPayloadsForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.getQueuedBackupPayloads === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.getQueuedBackupPayloads
+  : null;
+const removeQueuedBackupRecordForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.removeBackupVaultRecord === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.removeBackupVaultRecord
+  : null;
+const openQueuedBackupVaultWindowForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.openQueuedBackupVaultWindow === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.openQueuedBackupVaultWindow
+  : null;
+const resolveQueuedBackupMessageForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.resolveQueuedBackupMessage === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.resolveQueuedBackupMessage
+  : null;
+const downloadBackupPayloadForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload
+  : null;
+
+const buildSettingsBackupPackageForEvents = (function resolveBuildSettingsBackupPackage() {
+  if (typeof buildSettingsBackupPackage === 'function') {
+    return buildSettingsBackupPackage;
+  }
+  const scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (scopeError) {
+    void scopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    if (typeof scope.buildSettingsBackupPackage === 'function') {
+      return scope.buildSettingsBackupPackage;
+    }
+  }
+  return null;
+})();
+
 // Locate a logging helper without assuming a specific runtime. The application
 // runs in browsers, service workers and occasionally Node based tooling, so we
 // patiently walk through every known global scope until we find the shared
@@ -3045,31 +3151,385 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
   }
   return null;
 }
-const autoBackupInterval = setInterval(() => {
-  autoBackup({ reason: 'interval' });
-}, AUTO_BACKUP_INTERVAL_MS);
-if (typeof autoBackupInterval.unref === 'function') {
-  autoBackupInterval.unref();
+const QUEUED_BACKUP_GESTURE_EVENTS = ['pointerdown', 'keydown', 'touchstart'];
+let queuedBackupBanner = null;
+let queuedBackupBannerMessageEl = null;
+let queuedBackupBannerActionEl = null;
+let queuedBackupGestureBound = false;
+let queuedBackupFlushScheduled = false;
+let queuedBackupFlushInProgress = false;
+let autoBackupSchedulerTimer = null;
+let autoGearBackupSchedulerTimer = null;
+let hourlyBackupSchedulerTimer = null;
+
+function getQueuedBackupBannerTexts() {
+  const langTexts = (typeof texts === 'object' && texts && texts[currentLang]) || {};
+  const fallbackTexts = (typeof texts === 'object' && texts && texts.en) || {};
+  return {
+    singular: langTexts.queuedBackupBannerMessageOne
+      || fallbackTexts.queuedBackupBannerMessageOne
+      || '1 backup saved in the local vault.',
+    plural: langTexts.queuedBackupBannerMessageOther
+      || fallbackTexts.queuedBackupBannerMessageOther
+      || '{count} backups saved in the local vault.',
+    gesture: langTexts.queuedBackupBannerGesture
+      || fallbackTexts.queuedBackupBannerGesture
+      || 'Interact with the planner to export them safely.',
+    action: langTexts.queuedBackupBannerAction
+      || fallbackTexts.queuedBackupBannerAction
+      || 'Open local backup vault',
+  };
 }
 
-const autoGearBackupInterval = setInterval(() => {
-  if (!autoGearRulesDirtySinceBackup) return;
-  createAutoGearBackup();
-}, AUTO_GEAR_BACKUP_INTERVAL_MS);
-if (typeof autoGearBackupInterval.unref === 'function') {
-  autoGearBackupInterval.unref();
+function ensureQueuedBackupBannerElements() {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+  if (queuedBackupBanner && queuedBackupBannerMessageEl && queuedBackupBannerActionEl) {
+    return queuedBackupBanner;
+  }
+
+  const banner = document.createElement('section');
+  banner.id = 'cineQueuedBackupBanner';
+  banner.style.position = 'fixed';
+  banner.style.right = '1.5rem';
+  banner.style.left = '1.5rem';
+  banner.style.bottom = '1.5rem';
+  banner.style.maxWidth = '28rem';
+  banner.style.marginLeft = 'auto';
+  banner.style.padding = '1rem 1.25rem';
+  banner.style.borderRadius = '1.25rem';
+  banner.style.background = 'rgba(15, 22, 36, 0.92)';
+  banner.style.color = '#f5f7fb';
+  banner.style.boxShadow = '0 1.5rem 3.5rem rgba(5, 8, 17, 0.28)';
+  banner.style.zIndex = '9999';
+  banner.style.display = 'none';
+  banner.style.flexDirection = 'column';
+  banner.style.gap = '0.75rem';
+  banner.setAttribute('role', 'status');
+  banner.setAttribute('aria-live', 'assertive');
+  banner.setAttribute('aria-hidden', 'true');
+
+  const messageEl = document.createElement('p');
+  messageEl.style.margin = '0';
+  messageEl.style.lineHeight = '1.5';
+  messageEl.style.fontSize = '0.95rem';
+
+  const actionEl = document.createElement('button');
+  actionEl.type = 'button';
+  actionEl.style.alignSelf = 'flex-start';
+  actionEl.style.background = '#ffbf3c';
+  actionEl.style.color = '#11131a';
+  actionEl.style.border = 'none';
+  actionEl.style.borderRadius = '999px';
+  actionEl.style.padding = '0.55rem 1.5rem';
+  actionEl.style.fontWeight = '600';
+  actionEl.style.cursor = 'pointer';
+  actionEl.addEventListener('click', (event) => {
+    try {
+      event.preventDefault();
+    } catch (preventDefaultError) {
+      void preventDefaultError;
+    }
+    if (typeof openQueuedBackupVaultWindowForEvents === 'function') {
+      Promise.resolve()
+        .then(() => openQueuedBackupVaultWindowForEvents())
+        .catch((vaultError) => {
+          console.warn('Failed to open queued backup vault window', vaultError);
+        });
+    }
+  });
+
+  banner.appendChild(messageEl);
+  banner.appendChild(actionEl);
+  try {
+    (document.body || document.documentElement).appendChild(banner);
+  } catch (appendError) {
+    console.warn('Failed to attach queued backup banner to document', appendError);
+  }
+
+  queuedBackupBanner = banner;
+  queuedBackupBannerMessageEl = messageEl;
+  queuedBackupBannerActionEl = actionEl;
+  return banner;
 }
 
-const hourlyBackupInterval = setInterval(() => {
-  const fileName = createSettingsBackup(false);
-  showNotification(
-    fileName ? 'success' : 'error',
-    fileName ? `Full app backup downloaded (${fileName})` : 'Full app backup failed',
-  );
-}, 60 * 60 * 1000);
-if (typeof hourlyBackupInterval.unref === 'function') {
-  hourlyBackupInterval.unref();
+function showQueuedBackupBanner(count) {
+  const banner = ensureQueuedBackupBannerElements();
+  if (!banner || !queuedBackupBannerMessageEl || !queuedBackupBannerActionEl) {
+    return;
+  }
+  const textsForBanner = getQueuedBackupBannerTexts();
+  const countValue = typeof count === 'number' && Number.isFinite(count) ? count : 1;
+  const baseMessageTemplate = countValue === 1 ? textsForBanner.singular : textsForBanner.plural;
+  const message = baseMessageTemplate.replace('{count}', String(countValue));
+  const gesture = textsForBanner.gesture.replace('{count}', String(countValue));
+  queuedBackupBannerMessageEl.textContent = `${message} ${gesture}`.trim();
+  queuedBackupBannerActionEl.textContent = textsForBanner.action;
+  banner.style.display = 'flex';
+  banner.setAttribute('aria-hidden', 'false');
+  attachQueuedBackupGestureListeners();
 }
+
+function hideQueuedBackupBanner() {
+  if (!queuedBackupBanner) {
+    return;
+  }
+  queuedBackupBanner.style.display = 'none';
+  queuedBackupBanner.setAttribute('aria-hidden', 'true');
+}
+
+function attachQueuedBackupGestureListeners() {
+  if (queuedBackupGestureBound || typeof document === 'undefined') {
+    return;
+  }
+  const handler = handleQueuedBackupGesture;
+  for (let index = 0; index < QUEUED_BACKUP_GESTURE_EVENTS.length; index += 1) {
+    const eventName = QUEUED_BACKUP_GESTURE_EVENTS[index];
+    try {
+      document.addEventListener(eventName, handler, { passive: true });
+    } catch (listenerError) {
+      document.addEventListener(eventName, handler);
+    }
+  }
+  queuedBackupGestureBound = true;
+}
+
+function detachQueuedBackupGestureListeners() {
+  if (!queuedBackupGestureBound || typeof document === 'undefined') {
+    return;
+  }
+  const handler = handleQueuedBackupGesture;
+  for (let index = 0; index < QUEUED_BACKUP_GESTURE_EVENTS.length; index += 1) {
+    const eventName = QUEUED_BACKUP_GESTURE_EVENTS[index];
+    try {
+      document.removeEventListener(eventName, handler, { passive: true });
+    } catch (listenerError) {
+      document.removeEventListener(eventName, handler);
+    }
+  }
+  queuedBackupGestureBound = false;
+}
+
+function handleQueuedBackupGesture() {
+  requestQueuedBackupFlush('gesture');
+}
+
+function requestQueuedBackupFlush(trigger) {
+  if (queuedBackupFlushScheduled) {
+    return;
+  }
+  if (typeof getQueuedBackupPayloadsForEvents !== 'function'
+    || typeof downloadBackupPayloadForEvents !== 'function') {
+    return;
+  }
+  queuedBackupFlushScheduled = true;
+  Promise.resolve().then(() => {
+    queuedBackupFlushScheduled = false;
+    flushQueuedBackupVault(trigger);
+  });
+}
+
+function updateQueuedBackupBannerFromVault() {
+  if (typeof getQueuedBackupPayloadsForEvents !== 'function') {
+    hideQueuedBackupBanner();
+    detachQueuedBackupGestureListeners();
+    return Promise.resolve(0);
+  }
+  return Promise.resolve(getQueuedBackupPayloadsForEvents())
+    .then((entries) => {
+      const count = Array.isArray(entries) ? entries.length : 0;
+      if (count > 0) {
+        showQueuedBackupBanner(count);
+      } else {
+        hideQueuedBackupBanner();
+        detachQueuedBackupGestureListeners();
+      }
+      return count;
+    })
+    .catch((error) => {
+      console.warn('Failed to update queued backup banner from vault', error);
+      hideQueuedBackupBanner();
+      detachQueuedBackupGestureListeners();
+      return 0;
+    });
+}
+
+async function flushQueuedBackupVault(trigger) {
+  if (queuedBackupFlushInProgress) {
+    return;
+  }
+  if (typeof getQueuedBackupPayloadsForEvents !== 'function'
+    || typeof downloadBackupPayloadForEvents !== 'function') {
+    return;
+  }
+  queuedBackupFlushInProgress = true;
+  try {
+    const entries = await Promise.resolve(getQueuedBackupPayloadsForEvents())
+      .then((value) => (Array.isArray(value) ? value : []))
+      .catch((error) => {
+        console.warn('Failed to read queued backups for deferred download', error);
+        return [];
+      });
+    if (!entries.length) {
+      hideQueuedBackupBanner();
+      detachQueuedBackupGestureListeners();
+      return;
+    }
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      let result = null;
+      try {
+        result = downloadBackupPayloadForEvents(entry.payload, entry.fileName, {
+          skipQueue: true,
+          source: entry && entry.metadata && entry.metadata.source ? entry.metadata.source : 'automatic',
+          reason: trigger || 'gesture-flush',
+          queueMetadata: entry && entry.metadata ? entry.metadata : {},
+        });
+      } catch (downloadError) {
+        console.warn('Deferred backup download attempt threw an error', downloadError);
+        result = null;
+      }
+      if (result && result.success) {
+        if (typeof removeQueuedBackupRecordForEvents === 'function') {
+          try {
+            await removeQueuedBackupRecordForEvents(entry.id);
+          } catch (removeError) {
+            console.warn('Failed to remove queued backup after export', removeError);
+          }
+        }
+      } else {
+        const message = result && result.queueMessage
+          ? result.queueMessage
+          : (resolveQueuedBackupMessageForEvents
+            ? resolveQueuedBackupMessageForEvents(entry.fileName)
+            : 'Automatic downloads are still blocked. Keep working offline and try again after interacting with the planner.');
+        if (typeof showNotification === 'function') {
+          try {
+            showNotification('warning', message);
+          } catch (notifyError) {
+            void notifyError;
+          }
+        }
+        break;
+      }
+    }
+  } finally {
+    queuedBackupFlushInProgress = false;
+    updateQueuedBackupBannerFromVault();
+  }
+}
+
+function handleQueuedBackupVaultQueuedEvent() {
+  updateQueuedBackupBannerFromVault();
+  attachQueuedBackupGestureListeners();
+}
+
+function scheduleAutoBackupTimer() {
+  if (autoBackupSchedulerTimer) {
+    try {
+      clearTimeout(autoBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  autoBackupSchedulerTimer = setTimeout(() => {
+    try {
+      autoBackup({ reason: 'interval' });
+    } catch (autoBackupError) {
+      console.warn('Scheduled auto backup run failed', autoBackupError);
+    }
+    scheduleAutoBackupTimer();
+  }, AUTO_BACKUP_INTERVAL_MS);
+  if (autoBackupSchedulerTimer && typeof autoBackupSchedulerTimer.unref === 'function') {
+    autoBackupSchedulerTimer.unref();
+  }
+}
+
+function scheduleAutoGearBackupTimer() {
+  if (autoGearBackupSchedulerTimer) {
+    try {
+      clearTimeout(autoGearBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  autoGearBackupSchedulerTimer = setTimeout(() => {
+    try {
+      if (autoGearRulesDirtySinceBackup) {
+        createAutoGearBackup();
+      }
+    } catch (gearBackupError) {
+      console.warn('Scheduled auto gear backup failed', gearBackupError);
+    }
+    scheduleAutoGearBackupTimer();
+  }, AUTO_GEAR_BACKUP_INTERVAL_MS);
+  if (autoGearBackupSchedulerTimer && typeof autoGearBackupSchedulerTimer.unref === 'function') {
+    autoGearBackupSchedulerTimer.unref();
+  }
+}
+
+function queueScheduledFullBackup() {
+  if (typeof queueBackupPayloadForVaultForEvents !== 'function'
+    || typeof buildSettingsBackupPackageForEvents !== 'function') {
+    return;
+  }
+  try {
+    const packageInfo = buildSettingsBackupPackageForEvents(new Date());
+    if (!packageInfo || typeof packageInfo.payload !== 'string') {
+      return;
+    }
+    queueBackupPayloadForVaultForEvents(packageInfo.fileName, packageInfo.payload, {
+      source: 'hourly-scheduler',
+      reason: 'hourly-auto',
+      createdAt: packageInfo.iso,
+    });
+    if (resolveQueuedBackupMessageForEvents) {
+      try {
+        const queuedMessage = resolveQueuedBackupMessageForEvents(packageInfo.fileName);
+        if (queuedMessage && typeof showNotification === 'function') {
+          showNotification('info', queuedMessage);
+        }
+      } catch (messageError) {
+        void messageError;
+      }
+    }
+    updateQueuedBackupBannerFromVault();
+  } catch (queueError) {
+    console.warn('Failed to queue scheduled full backup payload', queueError);
+  }
+}
+
+function scheduleHourlyBackupTimer() {
+  if (hourlyBackupSchedulerTimer) {
+    try {
+      clearTimeout(hourlyBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  hourlyBackupSchedulerTimer = setTimeout(() => {
+    queueScheduledFullBackup();
+    scheduleHourlyBackupTimer();
+  }, 60 * 60 * 1000);
+  if (hourlyBackupSchedulerTimer && typeof hourlyBackupSchedulerTimer.unref === 'function') {
+    hourlyBackupSchedulerTimer.unref();
+  }
+}
+
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+}
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  document.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+}
+
+if (typeof setTimeout === 'function') {
+  scheduleAutoBackupTimer();
+  scheduleAutoGearBackupTimer();
+  scheduleHourlyBackupTimer();
+}
+updateQueuedBackupBannerFromVault();
 
 function showDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;

@@ -10462,47 +10462,75 @@ function collectFullBackupData() {
   return { data, diagnostics };
 }
 
-function performSettingsBackup(notify = true, timestamp = new Date()) {
+function buildSettingsBackupPackage(timestamp = new Date()) {
+  const { iso, fileName } = formatFullBackupFilename(timestamp);
+  const safeStorage = resolveSafeLocalStorage();
+  const settings = captureStorageSnapshot(safeStorage);
+  const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+  const { data: backupData, diagnostics } = collectFullBackupData();
+  const backupVersion =
+    ACTIVE_APP_VERSION
+    || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+  const backup = {
+    version: backupVersion || undefined,
+    generatedAt: iso,
+    settings,
+    sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
+    data: backupData,
+  };
+  if (Array.isArray(diagnostics) && diagnostics.length) {
+    backup.diagnostics = diagnostics;
+  }
+  const payload = JSON.stringify(backup);
+
+  return {
+    fileName,
+    payload,
+    iso,
+    backup,
+    diagnostics,
+  };
+}
+
+function performSettingsBackup(notify = true, timestamp = new Date(), options = {}) {
   try {
+    const config = typeof options === 'object' && options !== null ? options : {};
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
-    const shouldNotify = isEvent ? true : Boolean(notify);
-    const { iso, fileName } = formatFullBackupFilename(timestamp);
-    const safeStorage = resolveSafeLocalStorage();
-    const settings = captureStorageSnapshot(safeStorage);
-    const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
-    const { data: backupData, diagnostics } = collectFullBackupData();
-    const backupVersion =
-      ACTIVE_APP_VERSION
-      || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
-    const backup = {
-      version: backupVersion || undefined,
-      generatedAt: iso,
-      settings,
-      sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-      data: backupData,
-    };
-    if (Array.isArray(diagnostics) && diagnostics.length) {
-      backup.diagnostics = diagnostics;
+    const shouldNotify = config.deferDownload ? false : (isEvent ? true : Boolean(notify));
+    const { fileName, payload, iso } = buildSettingsBackupPackage(timestamp);
+
+    if (config.deferDownload) {
+      return {
+        fileName,
+        payload,
+        createdAt: iso,
+      };
     }
-    const payload = JSON.stringify(backup);
+
     const downloadResult = downloadBackupPayload(payload, fileName);
-    if (!downloadResult || !downloadResult.success) {
+    if (!downloadResult || (!downloadResult.success && !downloadResult.queued)) {
       throw new Error('No supported download method available');
     }
-    try {
-      recordFullBackupHistoryEntryFn({ createdAt: iso, fileName });
-    } catch (historyError) {
-      console.warn('Failed to record full backup history entry', historyError);
-    }
-    if (downloadResult.method === 'window-fallback') {
-      const manualMessage = getManualDownloadFallbackMessage();
-      showNotification('warning', manualMessage);
-      if (typeof alert === 'function') {
-        alert(manualMessage);
+
+    if (downloadResult.success) {
+      try {
+        recordFullBackupHistoryEntryFn({ createdAt: iso, fileName });
+      } catch (historyError) {
+        console.warn('Failed to record full backup history entry', historyError);
       }
-    } else if (shouldNotify) {
-      showNotification('success', 'Full app backup downloaded');
+      if (downloadResult.method === 'window-fallback') {
+        const manualMessage = getManualDownloadFallbackMessage();
+        showNotification('warning', manualMessage);
+        if (typeof alert === 'function') {
+          alert(manualMessage);
+        }
+      } else if (shouldNotify) {
+        showNotification('success', 'Full app backup downloaded');
+      }
+    } else if (downloadResult.queued && downloadResult.queueMessage) {
+      showNotification('warning', downloadResult.queueMessage);
     }
+
     return { fileName, downloadResult };
   } catch (e) {
     console.warn('Backup failed', e);
@@ -19103,6 +19131,7 @@ if (typeof module !== "undefined" && module.exports) {
     computeGearListCount,
     autoBackup,
     createSettingsBackup,
+    buildSettingsBackupPackage,
     captureStorageSnapshot,
     sanitizeBackupPayload,
     extractBackupSections,

@@ -296,7 +296,7 @@ describe('cineFeatureBackup module', () => {
     expect(result).toEqual({ success: true, method: 'manual', permission: permissionMonitor });
   });
 
-  test('returns failure when manual fallback window cannot be created', () => {
+  test('queues payload when downloads are blocked without a manual fallback', async () => {
     const blobUrl = 'blob:manual-test';
     const setTimeoutMock = jest.fn((callback) => {
       if (typeof callback === 'function') {
@@ -347,6 +347,72 @@ describe('cineFeatureBackup module', () => {
     expect(triggerStub).toHaveBeenCalledTimes(2);
     expect(fallbackStub).toHaveBeenCalledTimes(1);
     expect(revokeObjectURLMock).toHaveBeenCalledWith(blobUrl);
-    expect(result).toEqual({ success: false, method: null, permission: permissionMonitor });
+    expect(result).toMatchObject({
+      success: false,
+      method: null,
+      permission: permissionMonitor,
+      queued: true,
+      queueMessage: expect.stringContaining('backup'),
+    });
+    expect(typeof result.queueEntryId === 'string' && result.queueEntryId.length > 0).toBe(true);
+
+    const entries = await backupModule.getQueuedBackupPayloads();
+    expect(Array.isArray(entries)).toBe(true);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({ fileName, payload });
+  });
+
+  test('skipQueue option avoids duplicating queued payloads during flush attempts', async () => {
+    const blobUrl = 'blob:manual-test';
+    const setTimeoutMock = jest.fn((callback) => {
+      if (typeof callback === 'function') {
+        callback();
+      }
+      return 0;
+    });
+    const createObjectURLMock = jest.fn(() => blobUrl);
+    const revokeObjectURLMock = jest.fn();
+
+    const { backupModule, context } = evaluateBackupModule({
+      overrides: {
+        setTimeout: setTimeoutMock,
+        Blob: class TestBlob {
+          constructor(parts, options) {
+            this.parts = parts;
+            this.options = options;
+          }
+        },
+        URL: {
+          createObjectURL: createObjectURLMock,
+          revokeObjectURL: revokeObjectURLMock,
+        },
+        navigator: {},
+        window: {},
+        document: {},
+      },
+    });
+
+    const permissionMonitor = { state: 'stubbed' };
+    const monitorStub = jest.fn(() => permissionMonitor);
+    const triggerStub = jest.fn(() => false);
+    const fallbackStub = jest.fn(() => false);
+
+    context.__setBackupTestStubs({
+      monitorAutomaticDownloadPermission: monitorStub,
+      triggerBackupDownload: triggerStub,
+      openBackupFallbackWindow: fallbackStub,
+    });
+
+    const payload = '{"data":true}';
+    const fileName = 'cine-backup.json';
+    const firstResult = backupModule.downloadBackupPayload(payload, fileName);
+    expect(firstResult).toMatchObject({ queued: true, permission: permissionMonitor });
+
+    const secondResult = backupModule.downloadBackupPayload(payload, fileName, { skipQueue: true });
+    expect(secondResult).toMatchObject({ success: false, queued: false });
+
+    const entries = await backupModule.getQueuedBackupPayloads();
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({ fileName, payload });
   });
 });

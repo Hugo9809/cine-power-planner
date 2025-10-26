@@ -126,6 +126,529 @@
 
   const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 
+  const BACKUP_VAULT_DB_NAME = 'cinePowerPlannerBackupVault';
+  const BACKUP_VAULT_STORE_NAME = 'queuedBackups';
+  const BACKUP_VAULT_DB_VERSION = 1;
+
+  let backupVaultDbPromise = null;
+  const backupVaultTransientRecords = new Map();
+
+  function createMemoryBackupVault() {
+    let entries = [];
+    return {
+      save(record) {
+        entries = entries.filter(entry => entry && entry.id !== record.id);
+        entries.push({ ...record });
+        entries.sort((a, b) => {
+          const aTime = typeof a.createdAtMs === 'number' ? a.createdAtMs : 0;
+          const bTime = typeof b.createdAtMs === 'number' ? b.createdAtMs : 0;
+          return aTime - bTime;
+        });
+        return Promise.resolve({ id: record.id, persisted: true });
+      },
+      list() {
+        return Promise.resolve(entries.map(entry => ({ ...entry })));
+      },
+      remove(id) {
+        entries = entries.filter(entry => entry && entry.id !== id);
+        return Promise.resolve(true);
+      },
+    };
+  }
+
+  const memoryBackupVault = createMemoryBackupVault();
+
+  function isIndexedDBAvailable() {
+    return typeof indexedDB !== 'undefined' && indexedDB !== null;
+  }
+
+  function openBackupVaultDb() {
+    if (!isIndexedDBAvailable()) {
+      return Promise.resolve(null);
+    }
+    if (backupVaultDbPromise) {
+      return backupVaultDbPromise;
+    }
+    backupVaultDbPromise = new Promise((resolve) => {
+      let resolved = false;
+      try {
+        const request = indexedDB.open(BACKUP_VAULT_DB_NAME, BACKUP_VAULT_DB_VERSION);
+        request.addEventListener('upgradeneeded', (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(BACKUP_VAULT_STORE_NAME)) {
+            const store = db.createObjectStore(BACKUP_VAULT_STORE_NAME, { keyPath: 'id' });
+            store.createIndex('createdAtMs', 'createdAtMs', { unique: false });
+          }
+        });
+        request.addEventListener('success', () => {
+          const db = request.result;
+          resolved = true;
+          resolve(db);
+        });
+        request.addEventListener('error', () => {
+          if (!resolved) {
+            console.warn('Failed to open backup vault IndexedDB database', request.error);
+          }
+          resolve(null);
+        });
+      } catch (openError) {
+        console.warn('Unable to open backup vault IndexedDB database', openError);
+        resolve(null);
+      }
+    });
+    return backupVaultDbPromise;
+  }
+
+  function withBackupVaultStore(mode, executor) {
+    return openBackupVaultDb().then((db) => {
+      if (!db) {
+        return executor(null);
+      }
+      return new Promise((resolve, reject) => {
+        let completed = false;
+        try {
+          const transaction = db.transaction(BACKUP_VAULT_STORE_NAME, mode);
+          const store = transaction.objectStore(BACKUP_VAULT_STORE_NAME);
+          const result = executor(store, transaction);
+          transaction.addEventListener('complete', () => {
+            if (completed) {
+              return;
+            }
+            completed = true;
+            resolve(result);
+          });
+          transaction.addEventListener('error', () => {
+            if (completed) {
+              return;
+            }
+            completed = true;
+            reject(transaction.error);
+          });
+        } catch (transactionError) {
+          reject(transactionError);
+        }
+      }).catch((error) => {
+        console.warn('Backup vault IndexedDB transaction failed', error);
+        return executor(null);
+      });
+    });
+  }
+
+  function ensureVaultRecordMetadata(metadata) {
+    const source = metadata && typeof metadata.source === 'string' && metadata.source
+      ? metadata.source
+      : 'automatic';
+    const reason = metadata && typeof metadata.reason === 'string' && metadata.reason
+      ? metadata.reason
+      : 'unknown';
+    const permissionState = metadata && typeof metadata.permissionState === 'string' && metadata.permissionState
+      ? metadata.permissionState
+      : 'unknown';
+    const createdAtIso = metadata && typeof metadata.createdAt === 'string' && metadata.createdAt
+      ? metadata.createdAt
+      : new Date().toISOString();
+    const createdAtMs = metadata && typeof metadata.createdAtMs === 'number' && Number.isFinite(metadata.createdAtMs)
+      ? metadata.createdAtMs
+      : Date.now();
+
+    return {
+      source,
+      reason,
+      permissionState,
+      createdAt: createdAtIso,
+      createdAtMs,
+    };
+  }
+
+  function createBackupVaultRecord(fileName, payload, metadata = {}) {
+    const normalizedFileName = typeof fileName === 'string' && fileName ? fileName : 'cine-power-planner-backup.json';
+    const recordMetadata = ensureVaultRecordMetadata(metadata);
+    const recordId = metadata && typeof metadata.id === 'string' && metadata.id
+      ? metadata.id
+      : `queued-${recordMetadata.createdAtMs}-${Math.random().toString(16).slice(2, 10)}`;
+
+    return {
+      id: recordId,
+      fileName: normalizedFileName,
+      payload,
+      createdAt: recordMetadata.createdAt,
+      createdAtMs: recordMetadata.createdAtMs,
+      metadata: {
+        source: recordMetadata.source,
+        reason: recordMetadata.reason,
+        permissionState: recordMetadata.permissionState,
+      },
+    };
+  }
+
+  function persistBackupVaultRecord(record) {
+    if (!record || typeof record !== 'object' || !record.id) {
+      return Promise.resolve(null);
+    }
+    return withBackupVaultStore('readwrite', (store) => {
+      if (!store) {
+        return memoryBackupVault.save(record);
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const request = store.put(record);
+          request.addEventListener('success', () => {
+            resolve({ id: record.id, persisted: true });
+          });
+          request.addEventListener('error', () => {
+            reject(request.error);
+          });
+        } catch (putError) {
+          reject(putError);
+        }
+      }).catch((error) => {
+        console.warn('Failed to persist backup vault record to IndexedDB', error);
+        return memoryBackupVault.save(record);
+      });
+    }).catch((error) => {
+      console.warn('Backup vault persistence failed', error);
+      return memoryBackupVault.save(record);
+    });
+  }
+
+  function listBackupVaultRecords() {
+    return withBackupVaultStore('readonly', (store) => {
+      if (!store) {
+        return memoryBackupVault.list();
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const request = store.getAll();
+          request.addEventListener('success', () => {
+            resolve(Array.isArray(request.result) ? request.result : []);
+          });
+          request.addEventListener('error', () => {
+            reject(request.error);
+          });
+        } catch (getAllError) {
+          reject(getAllError);
+        }
+      }).catch((error) => {
+        console.warn('Failed to read backup vault records from IndexedDB', error);
+        return memoryBackupVault.list();
+      });
+    }).catch((error) => {
+      console.warn('Backup vault record enumeration failed', error);
+      return memoryBackupVault.list();
+    });
+  }
+
+  function removeBackupVaultRecord(id) {
+    if (!id) {
+      return Promise.resolve(false);
+    }
+    backupVaultTransientRecords.delete(id);
+    return withBackupVaultStore('readwrite', (store) => {
+      if (!store) {
+        return memoryBackupVault.remove(id);
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const request = store.delete(id);
+          request.addEventListener('success', () => {
+            resolve(true);
+          });
+          request.addEventListener('error', () => {
+            reject(request.error);
+          });
+        } catch (deleteError) {
+          reject(deleteError);
+        }
+      }).catch((error) => {
+        console.warn('Failed to remove backup vault record from IndexedDB', error);
+        return memoryBackupVault.remove(id);
+      });
+    }).catch((error) => {
+      console.warn('Backup vault record removal failed', error);
+      return memoryBackupVault.remove(id);
+    });
+  }
+
+  function dispatchBackupVaultEvent(type, detail) {
+    if (!type) {
+      return;
+    }
+    const targets = [];
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.dispatchEvent === 'function') {
+      targets.push(GLOBAL_SCOPE);
+    }
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.document && typeof GLOBAL_SCOPE.document.dispatchEvent === 'function') {
+      targets.push(GLOBAL_SCOPE.document);
+    }
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.window && typeof GLOBAL_SCOPE.window.dispatchEvent === 'function') {
+      targets.push(GLOBAL_SCOPE.window);
+    }
+    const CustomEventCtor = typeof CustomEvent === 'function' ? CustomEvent : null;
+    targets.forEach((target) => {
+      if (!target || typeof target.dispatchEvent !== 'function') {
+        return;
+      }
+      try {
+        if (CustomEventCtor) {
+          target.dispatchEvent(new CustomEvent(type, { detail }));
+        } else if (typeof Event === 'function') {
+          const event = new Event(type);
+          event.detail = detail;
+          target.dispatchEvent(event);
+        }
+      } catch (dispatchError) {
+        console.warn('Failed to dispatch backup vault event', dispatchError);
+      }
+    });
+  }
+
+  function getQueuedBackupPayloads() {
+    return listBackupVaultRecords().then((records) => {
+      const deduped = new Map();
+      if (Array.isArray(records)) {
+        records.forEach((record) => {
+          if (!record || !record.id || deduped.has(record.id)) {
+            return;
+          }
+          deduped.set(record.id, { ...record });
+        });
+      }
+      backupVaultTransientRecords.forEach((record, id) => {
+        if (!deduped.has(id)) {
+          deduped.set(id, { ...record });
+        }
+      });
+      const entries = Array.from(deduped.values());
+      entries.sort((a, b) => {
+        const aTime = typeof a.createdAtMs === 'number' ? a.createdAtMs : 0;
+        const bTime = typeof b.createdAtMs === 'number' ? b.createdAtMs : 0;
+        return aTime - bTime;
+      });
+      return entries;
+    });
+  }
+
+  function queueBackupPayloadForVault(fileName, payload, metadata) {
+    const record = createBackupVaultRecord(fileName, payload, metadata || {});
+    backupVaultTransientRecords.set(record.id, { ...record });
+    try {
+      persistBackupVaultRecord(record).then(() => {
+        backupVaultTransientRecords.delete(record.id);
+      }).catch((error) => {
+        console.warn('Failed to persist queued backup payload. Using in-memory vault fallback.', error);
+      });
+    } catch (persistError) {
+      console.warn('Queued backup persistence threw unexpectedly', persistError);
+    }
+    dispatchBackupVaultEvent('cineBackupVault:queued', {
+      id: record.id,
+      fileName: record.fileName,
+      createdAt: record.createdAt,
+      metadata: record.metadata,
+    });
+    return record;
+  }
+
+  function resolveBackupTexts() {
+    const textsSource = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.texts === 'object' ? GLOBAL_SCOPE.texts : null;
+    const langCandidate = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.currentLang === 'string'
+      ? GLOBAL_SCOPE.currentLang
+      : (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.appLanguage === 'string' ? GLOBAL_SCOPE.appLanguage : 'en');
+    const lang = langCandidate && typeof langCandidate === 'string' ? langCandidate : 'en';
+    const langTexts = textsSource && textsSource[lang] ? textsSource[lang] : null;
+    const fallbackTexts = textsSource && textsSource.en ? textsSource.en : null;
+    return { langTexts, fallbackTexts };
+  }
+
+  function resolveQueuedBackupMessage(fileName) {
+    const { langTexts, fallbackTexts } = resolveBackupTexts();
+    const template = (langTexts && langTexts.queuedBackupDownloadDeferred)
+      || (fallbackTexts && fallbackTexts.queuedBackupDownloadDeferred)
+      || 'Automatic downloads were blocked. The backup was saved to the local vault.';
+    return template.replace('{fileName}', fileName || 'cine-power-planner-backup.json');
+  }
+
+  function resolveBackupVaultEmptyMessage() {
+    const { langTexts, fallbackTexts } = resolveBackupTexts();
+    return (langTexts && langTexts.queuedBackupVaultEmpty)
+      || (fallbackTexts && fallbackTexts.queuedBackupVaultEmpty)
+      || 'No queued backups are stored in the local vault.';
+  }
+
+  function resolveBackupVaultWindowTitle() {
+    const { langTexts, fallbackTexts } = resolveBackupTexts();
+    return (langTexts && langTexts.queuedBackupVaultTitle)
+      || (fallbackTexts && fallbackTexts.queuedBackupVaultTitle)
+      || 'Local backup vault';
+  }
+
+  function resolveBackupVaultWindowIntro() {
+    const { langTexts, fallbackTexts } = resolveBackupTexts();
+    return (langTexts && langTexts.queuedBackupVaultIntro)
+      || (fallbackTexts && fallbackTexts.queuedBackupVaultIntro)
+      || 'Automatic downloads were blocked. Use the actions below to export or copy each backup while offline.';
+  }
+
+  function openQueuedBackupVaultWindow() {
+    return getQueuedBackupPayloads().then((records) => {
+      if (!records || !records.length) {
+        const message = resolveBackupVaultEmptyMessage();
+        if (typeof GLOBAL_SCOPE.showNotification === 'function') {
+          try {
+            GLOBAL_SCOPE.showNotification('info', message);
+          } catch (notifyError) {
+            void notifyError;
+          }
+        }
+        if (typeof alert === 'function') {
+          try {
+            alert(message);
+          } catch (alertError) {
+            void alertError;
+          }
+        }
+        return false;
+      }
+
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        console.warn('Cannot open queued backup vault window outside of a browser context');
+        return false;
+      }
+
+      let vaultWindow = null;
+      try {
+        vaultWindow = window.open('', 'cineBackupVault', 'noopener,noreferrer,width=780,height=720');
+      } catch (openError) {
+        console.warn('Failed to open local backup vault window', openError);
+        vaultWindow = null;
+      }
+
+      if (!vaultWindow) {
+        const message = resolveBackupTexts().fallbackTexts
+          && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
+          ? resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
+          : 'Enable pop-ups to review queued backups stored in the local vault.';
+        if (typeof GLOBAL_SCOPE.showNotification === 'function') {
+          try {
+            GLOBAL_SCOPE.showNotification('error', message);
+          } catch (notifyError) {
+            void notifyError;
+          }
+        }
+        if (typeof alert === 'function') {
+          try {
+            alert(message);
+          } catch (alertError) {
+            void alertError;
+          }
+        }
+        return false;
+      }
+
+      const title = resolveBackupVaultWindowTitle();
+      const intro = resolveBackupVaultWindowIntro();
+      const serializedRecords = JSON.stringify(records.map((record) => ({
+        id: record.id,
+        fileName: record.fileName,
+        createdAt: record.createdAt,
+        createdAtMs: record.createdAtMs,
+        metadata: record.metadata,
+        payload: record.payload,
+      })));
+
+      const popupBlockedMessage = resolveBackupTexts().fallbackTexts
+        && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
+        ? resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
+        : 'Enable pop-ups to review queued backups stored in the local vault.';
+
+      const doc = vaultWindow.document;
+      try {
+        doc.open();
+        doc.write(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" />\n` +
+          `<title>${title}</title>\n` +
+          `<style>\n` +
+          `:root { color-scheme: light dark; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }\n` +
+          `body { margin: 0; padding: 1.5rem; background: #0f1624; color: #f5f7fb; }\n` +
+          `h1 { margin-top: 0; font-size: 1.5rem; }\n` +
+          `p { line-height: 1.6; max-width: 38rem; }\n` +
+          `.backup-entry { background: rgba(15, 22, 36, 0.65); border: 1px solid rgba(111, 120, 141, 0.35); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }\n` +
+          `.backup-entry header { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: baseline; justify-content: space-between; }\n` +
+          `.backup-entry h2 { font-size: 1rem; margin: 0; }\n` +
+          `.backup-entry button { background: #ffbf3c; border: none; border-radius: 999px; padding: 0.5rem 1.25rem; font-weight: 600; cursor: pointer; color: #11131a; }\n` +
+          `.backup-entry button:focus { outline: 2px solid #ffffff; outline-offset: 2px; }\n` +
+          `.backup-entry textarea { width: 100%; min-height: 10rem; margin-top: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.75rem; background: rgba(6, 10, 18, 0.92); color: #f5f7fb; font-family: 'Fira Code', 'SFMono-Regular', 'Consolas', 'Menlo', monospace; }\n` +
+          `.empty { margin-top: 2rem; font-style: italic; color: rgba(245, 247, 251, 0.7); }\n` +
+          `.banner { margin-bottom: 1.5rem; padding: 1rem 1.25rem; border-radius: 1rem; background: rgba(255, 191, 60, 0.18); border: 1px solid rgba(255, 191, 60, 0.4); color: #ffe3a4; }\n` +
+          `.banner strong { display: block; font-size: 1.1rem; margin-bottom: 0.35rem; }\n` +
+          `</style>\n` +
+          `</head><body>\n` +
+          `<div class="banner"><strong>${title}</strong><p>${intro}</p></div>\n` +
+          `<main id="vault"></main>\n` +
+          `<script>\n` +
+          `const records = ${serializedRecords};\n` +
+          `const container = document.getElementById('vault');\n` +
+          `if (!records.length) {\n` +
+          `  const empty = document.createElement('p');\n` +
+          `  empty.className = 'empty';\n` +
+          `  empty.textContent = ${JSON.stringify(resolveBackupVaultEmptyMessage())};\n` +
+          `  container.appendChild(empty);\n` +
+          `}\n` +
+          `records.forEach((record, index) => {\n` +
+          `  const entry = document.createElement('section');\n` +
+          `  entry.className = 'backup-entry';\n` +
+          `  const header = document.createElement('header');\n` +
+          `  const heading = document.createElement('h2');\n` +
+          `  heading.textContent = record.fileName + ' — ' + (record.createdAt || '');\n` +
+          `  header.appendChild(heading);\n` +
+          `  const downloadButton = document.createElement('button');\n` +
+          `  downloadButton.type = 'button';\n` +
+          `  downloadButton.textContent = 'Download JSON';\n` +
+          `  downloadButton.addEventListener('click', () => {\n` +
+          `    try {\n` +
+          `      const blob = new Blob([record.payload], { type: 'application/json' });\n` +
+          `      const url = URL.createObjectURL(blob);\n` +
+          `      const link = document.createElement('a');\n` +
+          `      link.href = url;\n` +
+          `      link.download = record.fileName || 'cine-power-planner-backup.json';\n` +
+          `      link.click();\n` +
+          `      setTimeout(() => URL.revokeObjectURL(url), 0);\n` +
+          `    } catch (error) {\n` +
+          `      alert('Download blocked — copy the JSON below instead.');\n` +
+          `    }\n` +
+          `  });\n` +
+          `  header.appendChild(downloadButton);\n` +
+          `  entry.appendChild(header);\n` +
+          `  const textArea = document.createElement('textarea');\n` +
+          `  textArea.readOnly = true;\n` +
+          `  textArea.value = record.payload;\n` +
+          `  entry.appendChild(textArea);\n` +
+          `  container.appendChild(entry);\n` +
+          `});\n` +
+          `</script>\n` +
+          `</body></html>`);
+        doc.close();
+      } catch (renderError) {
+        console.warn('Failed to render queued backup vault window', renderError);
+        try {
+          doc.close();
+        } catch (closeError) {
+          void closeError;
+        }
+        vaultWindow.close();
+        if (typeof GLOBAL_SCOPE.showNotification === 'function') {
+          try {
+            GLOBAL_SCOPE.showNotification('error', popupBlockedMessage);
+          } catch (notifyError) {
+            void notifyError;
+          }
+        }
+        return false;
+      }
+
+      return true;
+    });
+  }
+
   const BACKUP_STORAGE_KNOWN_KEYS = new Set([
     'darkMode',
     'pinkMode',
@@ -1479,9 +2002,17 @@
     }
   }
 
-  function downloadBackupPayload(payload, fileName) {
+  function downloadBackupPayload(payload, fileName, options = {}) {
     const permissionMonitor = monitorAutomaticDownloadPermission();
-    const failureResult = { success: false, method: null, permission: permissionMonitor };
+    const config = typeof options === 'object' && options !== null ? options : {};
+    const skipQueue = config.skipQueue === true;
+    const failureResult = {
+      success: false,
+      method: null,
+      permission: permissionMonitor,
+      queued: false,
+      queueMessage: resolveQueuedBackupMessage(fileName),
+    };
 
     if (typeof payload !== 'string') {
       return failureResult;
@@ -1549,6 +2080,24 @@
     const opened = openBackupFallbackWindow(payload, fileName);
     if (opened) {
       return { success: true, method: 'manual', permission: permissionMonitor };
+    }
+
+    if (!skipQueue) {
+      const metadata = config.queueMetadata && typeof config.queueMetadata === 'object'
+        ? config.queueMetadata
+        : {};
+      const record = queueBackupPayloadForVault(fileName, payload, {
+        reason: metadata.reason || config.reason || 'download-blocked',
+        permissionState: metadata.permissionState
+          || (permissionMonitor && typeof permissionMonitor.state === 'string'
+            ? permissionMonitor.state
+            : 'unknown'),
+        source: metadata.source || config.source || 'automatic',
+        createdAt: metadata.createdAt || null,
+        createdAtMs: metadata.createdAtMs || null,
+      });
+      failureResult.queued = true;
+      failureResult.queueEntryId = record && typeof record.id === 'string' ? record.id : null;
     }
 
     return failureResult;
@@ -1645,6 +2194,11 @@
     encodeBackupDataUrl,
     openBackupFallbackWindow,
     downloadBackupPayload,
+    queueBackupPayloadForVault,
+    getQueuedBackupPayloads,
+    removeBackupVaultRecord,
+    openQueuedBackupVaultWindow,
+    resolveQueuedBackupMessage,
     isAutoBackupName,
     parseAutoBackupName,
     isPlainObject,
@@ -1693,6 +2247,11 @@
     ['encodeBackupDataUrl', encodeBackupDataUrl],
     ['openBackupFallbackWindow', openBackupFallbackWindow],
     ['downloadBackupPayload', downloadBackupPayload],
+    ['queueBackupPayloadForVault', queueBackupPayloadForVault],
+    ['getQueuedBackupPayloads', getQueuedBackupPayloads],
+    ['removeBackupVaultRecord', removeBackupVaultRecord],
+    ['openQueuedBackupVaultWindow', openQueuedBackupVaultWindow],
+    ['resolveQueuedBackupMessage', resolveQueuedBackupMessage],
     ['isAutoBackupName', isAutoBackupName],
     ['parseAutoBackupName', parseAutoBackupName],
     ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX],
