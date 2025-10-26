@@ -24,6 +24,8 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
+  let resolvedFreezeDeep;
+
   const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
   const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
   const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
@@ -988,8 +990,6 @@
       return value;
     }
   }
-
-  let resolvedFreezeDeep;
 
   function freezeDeep(value, seen) {
     const deepFreeze = resolveCachedFreezeDeep();
