@@ -197,10 +197,6 @@ function forEachCamera(cb) {
   }
 }
 
-function hasNormalizedMarker(bundle) {
-  return Boolean(bundle && Object.prototype.hasOwnProperty.call(bundle, NORMALIZED_FLAG_KEY) && bundle[NORMALIZED_FLAG_KEY]);
-}
-
 function markBundleNormalized(bundle) {
   if (!bundle || typeof bundle !== 'object') return;
   try {

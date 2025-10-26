@@ -3067,7 +3067,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return registration && registration.active || serviceWorker.controller || null;
     }) : Promise.resolve(serviceWorker.controller || null);
     Promise.resolve(readyPromise).then(function (worker) {
-      if (!worker || typeof worker.postMessage !== 'function') {
+      var controller = serviceWorker.controller || null;
+      var targetWorker = worker || controller;
+      if (!targetWorker || typeof targetWorker.postMessage !== 'function') {
         finalizeServiceWorkerLogRequest(requestId);
         scheduleServiceWorkerLogPoll();
         return;
@@ -3098,7 +3100,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
       var postWithoutChannel = function postWithoutChannel() {
         try {
-          worker.postMessage(message);
+          targetWorker.postMessage(message);
         } catch (error) {
           safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
           finalizeWithPoll();
@@ -3121,10 +3123,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (typeof MessageChannel !== 'function') {
           return false;
         }
-        if (serviceWorker.controller) {
-          return true;
+        if (!controller) {
+          return false;
         }
-        return Boolean(worker && typeof worker.state === 'string' && worker.state === 'activated');
+        return targetWorker === controller;
       };
       if (!shouldUseMessageChannel()) {
         postWithoutChannel();
@@ -3143,7 +3145,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       try {
-        worker.postMessage(message, [channel.port2]);
+        targetWorker.postMessage(message, [channel.port2]);
       } catch (error) {
         closeMessageChannel(channel);
         channel = null;

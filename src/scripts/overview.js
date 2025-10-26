@@ -1611,8 +1611,6 @@ function generatePrintableOverview(config = {}) {
     }
     const projectRequirementsHtml = projectSectionHtml || '';
     const gearListHtml = gearSectionHtml || '';
-    const deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
-    const deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
     const gearListActionsHtml = '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';

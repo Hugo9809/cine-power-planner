@@ -1,6 +1,8 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  var STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
+  var PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
+  var LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
+  var STORAGE_KEYS = [PRIMARY_STORAGE_KEY].concat(LEGACY_STORAGE_KEYS);
   var HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   var LOAD_REASON_PREFIX = 'onboarding-tour:';
@@ -433,39 +435,58 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function readStoredState(scope) {
     var storageCandidates = [];
+    var pushCandidate = function pushCandidate(candidate) {
+      if (!candidate) {
+        return;
+      }
+      if (storageCandidates.indexOf(candidate) !== -1) {
+        return;
+      }
+      storageCandidates.push(candidate);
+    };
     try {
       if (typeof getSafeLocalStorage === 'function') {
         var safeStorage = getSafeLocalStorage();
-        if (safeStorage) {
-          storageCandidates.push(safeStorage);
-        }
+        pushCandidate(safeStorage);
       }
     } catch (error) {
       void error;
     }
     if ((typeof SAFE_LOCAL_STORAGE === "undefined" ? "undefined" : _typeof(SAFE_LOCAL_STORAGE)) === 'object' && SAFE_LOCAL_STORAGE) {
-      storageCandidates.push(SAFE_LOCAL_STORAGE);
+      pushCandidate(SAFE_LOCAL_STORAGE);
     }
     var currentScope = scope || getGlobalScope();
     if (currentScope && _typeof(currentScope.localStorage) === 'object' && currentScope.localStorage) {
-      storageCandidates.push(currentScope.localStorage);
+      pushCandidate(currentScope.localStorage);
     }
+    if (currentScope && _typeof(currentScope.sessionStorage) === 'object' && currentScope.sessionStorage) {
+      pushCandidate(currentScope.sessionStorage);
+    }
+    var fallbackState = null;
     for (var index = 0; index < storageCandidates.length; index += 1) {
       var storage = storageCandidates[index];
       if (!storage || typeof storage.getItem !== 'function') {
         continue;
       }
-      try {
-        var value = storage.getItem(STORAGE_KEY);
-        var parsed = parseStoredStateValue(value);
-        if (parsed) {
-          return parsed;
+      for (var keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        var key = STORAGE_KEYS[keyIndex];
+        try {
+          var value = storage.getItem(key);
+          var parsed = parseStoredStateValue(value);
+          if (parsed) {
+            if (parsed.completed === true || parsed.skipped === true) {
+              return parsed;
+            }
+            if (!fallbackState) {
+              fallbackState = parsed;
+            }
+          }
+        } catch (error) {
+          void error;
         }
-      } catch (error) {
-        void error;
       }
     }
-    return null;
+    return fallbackState;
   }
   function detectFirstRun(scope) {
     if (onboardingModuleReady) {

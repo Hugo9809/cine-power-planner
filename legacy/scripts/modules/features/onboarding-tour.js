@@ -114,7 +114,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   if (!DOCUMENT) {
     return;
   }
-  var STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
+  var PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
+  var LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
+  var STORAGE_KEYS = [PRIMARY_STORAGE_KEY].concat(LEGACY_STORAGE_KEYS);
   var STORAGE_VERSION = 2;
   var OVERLAY_ID = 'onboardingTutorialOverlay';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
@@ -322,6 +324,65 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var SAFE_STORAGE = resolveStorage();
+  function pushUniqueStorage(target, storage) {
+    if (!target || !Array.isArray(target)) {
+      return;
+    }
+    if (!storage) {
+      return;
+    }
+    try {
+      var hasGet = typeof storage.getItem === 'function';
+      var hasSet = typeof storage.setItem === 'function';
+      if (!hasGet && !hasSet) {
+        return;
+      }
+    } catch (error) {
+      void error;
+      return;
+    }
+    if (target.indexOf(storage) !== -1) {
+      return;
+    }
+    target.push(storage);
+  }
+  function collectStorageCandidates() {
+    var storages = [];
+    pushUniqueStorage(storages, SAFE_STORAGE);
+    try {
+      if (typeof getSafeLocalStorage === 'function') {
+        var safeStorage = getSafeLocalStorage();
+        pushUniqueStorage(storages, safeStorage);
+      }
+    } catch (error) {
+      void error;
+    }
+    if ((typeof SAFE_LOCAL_STORAGE === "undefined" ? "undefined" : _typeof(SAFE_LOCAL_STORAGE)) === 'object' && SAFE_LOCAL_STORAGE) {
+      pushUniqueStorage(storages, SAFE_LOCAL_STORAGE);
+    }
+    var scopes = collectCandidateScopes(GLOBAL_SCOPE);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope) {
+        continue;
+      }
+      try {
+        if (scope.localStorage) {
+          pushUniqueStorage(storages, scope.localStorage);
+        }
+      } catch (error) {
+        void error;
+      }
+      try {
+        if (scope.sessionStorage) {
+          pushUniqueStorage(storages, scope.sessionStorage);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return storages;
+  }
   var storedStateCache = null;
   var storedStateCacheRaw = null;
   var storedStateCacheSource = null;
@@ -1388,8 +1449,117 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     storedStateCacheRaw = typeof rawValue === 'string' ? rawValue : rawValue || null;
     storedStateCacheSource = source || storedStateCacheSource || null;
   }
+  function createStorageEntry(serialized, key) {
+    if (typeof serialized !== 'string') {
+      return null;
+    }
+    var trimmed = serialized.trim();
+    var metrics = {
+      priority: key === PRIMARY_STORAGE_KEY ? 2 : 1,
+      version: 0,
+      hasContent: trimmed ? 1 : 0,
+      parsed: 0,
+      timestamp: 0
+    };
+    var parsedValue = null;
+    var parseError = null;
+    try {
+      var candidate = JSON.parse(serialized);
+      if (candidate && _typeof(candidate) === 'object') {
+        parsedValue = candidate;
+      }
+    } catch (error) {
+      parseError = error;
+    }
+    if (parsedValue) {
+      metrics.parsed = 1;
+      if (typeof parsedValue.timestamp === 'number' && !Number.isNaN(parsedValue.timestamp)) {
+        metrics.timestamp = parsedValue.timestamp;
+      }
+      if (parsedValue.version === STORAGE_VERSION) {
+        metrics.version = 2;
+      } else if (typeof parsedValue.version === 'number') {
+        metrics.version = 1;
+      }
+    }
+    return {
+      key: key,
+      raw: serialized,
+      parsed: parsedValue,
+      parseError: parseError,
+      metrics: metrics
+    };
+  }
+  function isBetterStorageEntry(candidate, current) {
+    if (!candidate) {
+      return false;
+    }
+    if (!current) {
+      return true;
+    }
+    var fields = ['priority', 'version', 'hasContent', 'parsed', 'timestamp'];
+    for (var index = 0; index < fields.length; index += 1) {
+      var field = fields[index];
+      var candidateValue = candidate.metrics[field] || 0;
+      var currentValue = current.metrics[field] || 0;
+      if (candidateValue === currentValue) {
+        continue;
+      }
+      return candidateValue > currentValue;
+    }
+    return false;
+  }
   function loadStoredState() {
-    if (!SAFE_STORAGE || typeof SAFE_STORAGE.getItem !== 'function') {
+    var storages = collectStorageCandidates();
+    var bestEntry = null;
+    var readError = null;
+    for (var storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+      var storage = storages[storageIndex];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      for (var keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        var key = STORAGE_KEYS[keyIndex];
+        var candidate = null;
+        try {
+          candidate = storage.getItem(key);
+        } catch (error) {
+          if (!readError) {
+            readError = error;
+          }
+          continue;
+        }
+        if (candidate === null || typeof candidate === 'undefined') {
+          continue;
+        }
+        var serialized = null;
+        if (typeof candidate === 'string') {
+          serialized = candidate;
+        } else {
+          try {
+            serialized = JSON.stringify(candidate);
+          } catch (stringifyError) {
+            void stringifyError;
+          }
+          if (serialized === null) {
+            try {
+              var coerced = String(candidate);
+              serialized = coerced;
+            } catch (coerceError) {
+              void coerceError;
+            }
+          }
+        }
+        if (typeof serialized !== 'string') {
+          continue;
+        }
+        var entry = createStorageEntry(serialized, key);
+        if (entry && (!bestEntry || isBetterStorageEntry(entry, bestEntry))) {
+          bestEntry = entry;
+        }
+      }
+    }
+    if (!storages.length && !bestEntry) {
       if (storedStateCache && storedStateCacheSource === 'memory') {
         return storedStateCache;
       }
@@ -1399,62 +1569,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       updateStoredStateCache(fallbackState, null, 'memory');
       return fallbackState;
     }
-    var raw = null;
-    try {
-      raw = SAFE_STORAGE.getItem(STORAGE_KEY);
-    } catch (error) {
-      safeWarn('cine.features.onboardingTour could not read onboarding state.', error);
-      if (storedStateCache) {
+    if (!bestEntry) {
+      if (storedStateCache && storedStateCacheSource === 'memory') {
         return storedStateCache;
       }
-      raw = null;
-    }
-    if (typeof raw !== 'string' || !raw) {
+      if (readError) {
+        safeWarn('cine.features.onboardingTour could not read onboarding state.', readError);
+      }
       var _fallbackState = normalizeStateSnapshot({
         version: STORAGE_VERSION
       });
-      updateStoredStateCache(_fallbackState, raw, 'storage');
+      updateStoredStateCache(_fallbackState, null, 'memory');
       return _fallbackState;
+    }
+    var raw = bestEntry.raw;
+    var sourceTag = 'storage';
+    if (typeof raw !== 'string' || !raw) {
+      var _fallbackState2 = normalizeStateSnapshot({
+        version: STORAGE_VERSION
+      });
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(_fallbackState2);
+      }
+      updateStoredStateCache(_fallbackState2, raw, sourceTag);
+      return _fallbackState2;
     }
     if (storedStateCache && storedStateCacheSource === 'storage' && raw === storedStateCacheRaw) {
       return storedStateCache;
     }
-    try {
-      var parsed = JSON.parse(raw);
-      if (!parsed || _typeof(parsed) !== 'object') {
-        var emptyState = normalizeStateSnapshot({
-          version: STORAGE_VERSION
-        });
-        updateStoredStateCache(emptyState, raw, 'storage');
-        return emptyState;
-      }
-      if (parsed.version !== STORAGE_VERSION) {
-        var migratedState = normalizeStateSnapshot(_objectSpread(_objectSpread({}, parsed), {}, {
-          version: STORAGE_VERSION,
-          completed: false,
-          skipped: false
-        }));
-        updateStoredStateCache(migratedState, raw, 'storage');
-        return migratedState;
-      }
-      var normalized = normalizeStateSnapshot(parsed);
-      updateStoredStateCache(normalized, raw, 'storage');
-      return normalized;
-    } catch (error) {
-      safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
-      var _fallbackState2 = normalizeStateSnapshot({
+    if (bestEntry.parseError) {
+      safeWarn('cine.features.onboardingTour could not parse onboarding state.', bestEntry.parseError);
+      var _fallbackState3 = normalizeStateSnapshot({
         version: STORAGE_VERSION
       });
-      updateStoredStateCache(_fallbackState2, raw, 'storage');
-      return _fallbackState2;
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(_fallbackState3);
+      }
+      updateStoredStateCache(_fallbackState3, raw, sourceTag);
+      return _fallbackState3;
     }
+    var parsed = bestEntry.parsed;
+    if (!parsed || _typeof(parsed) !== 'object') {
+      var emptyState = normalizeStateSnapshot({
+        version: STORAGE_VERSION
+      });
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(emptyState);
+      }
+      updateStoredStateCache(emptyState, raw, sourceTag);
+      return emptyState;
+    }
+    if (parsed.version !== STORAGE_VERSION) {
+      var migratedState = normalizeStateSnapshot(_objectSpread(_objectSpread({}, parsed), {}, {
+        version: STORAGE_VERSION,
+        completed: false,
+        skipped: false
+      }));
+      return saveState(migratedState);
+    }
+    var normalized = normalizeStateSnapshot(parsed);
+    if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+      return saveState(normalized);
+    }
+    updateStoredStateCache(normalized, raw, sourceTag);
+    return normalized;
   }
   function saveState(nextState) {
-    if (!SAFE_STORAGE || typeof SAFE_STORAGE.setItem !== 'function') {
-      return normalizeStateSnapshot(_objectSpread(_objectSpread({}, nextState), {}, {
-        version: STORAGE_VERSION
-      }));
-    }
     var sanitized = normalizeStateSnapshot(_objectSpread(_objectSpread({}, nextState), {}, {
       version: STORAGE_VERSION
     }));
@@ -1462,15 +1642,39 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       timestamp: getTimestamp()
     });
     var serialized = JSON.stringify(payload);
-    try {
-      SAFE_STORAGE.setItem(STORAGE_KEY, serialized);
+    var storages = collectStorageCandidates();
+    var persisted = false;
+    var writeError = null;
+    for (var storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+      var storage = storages[storageIndex];
+      if (!storage || typeof storage.setItem !== 'function') {
+        continue;
+      }
+      var wroteToStorage = false;
+      for (var keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        var key = STORAGE_KEYS[keyIndex];
+        try {
+          storage.setItem(key, serialized);
+          wroteToStorage = true;
+        } catch (error) {
+          if (!writeError) {
+            writeError = error;
+          }
+        }
+      }
+      if (wroteToStorage) {
+        persisted = true;
+      }
+    }
+    if (persisted) {
       updateStoredStateCache(payload, serialized, 'storage');
       return payload;
-    } catch (error) {
-      safeWarn('cine.features.onboardingTour could not persist onboarding state.', error);
-      updateStoredStateCache(sanitized, null, 'memory');
-      return sanitized;
     }
+    if (writeError) {
+      safeWarn('cine.features.onboardingTour could not persist onboarding state.', writeError);
+    }
+    updateStoredStateCache(sanitized, null, 'memory');
+    return sanitized;
   }
   var storedState = loadStoredState();
   function normalizeLanguageCandidate(rawValue, availableTexts) {

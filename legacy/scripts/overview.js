@@ -1475,8 +1475,6 @@ function generatePrintableOverview() {
   }
   var projectRequirementsHtml = projectSectionHtml || '';
   var gearListHtml = gearSectionHtml || '';
-  var deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
-  var deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
   var gearListActionsHtml = '';
   var logoHtml = customLogo ? "<img id=\"printLogo\" src=\"".concat(customLogo, "\" alt=\"Logo\" />") : '';
   var contentClass = customLogo ? 'logo-present' : '';
@@ -1511,13 +1509,11 @@ function generatePrintableOverview() {
     overviewDialog.setAttribute('data-overview-outside-close', '');
   }
   var content = overviewDialog.querySelector('#overviewDialogContent');
-
   if (content) {
     var overviewGearActions = content.querySelector('.overview-gear-actions');
-    if (overviewGearActions && typeof overviewGearActions.remove === 'function') {
+    if (overviewGearActions) {
       overviewGearActions.remove();
     }
-
     var addItemButtons = content.querySelectorAll('.gear-custom-add-btn, [data-gear-custom-add]');
     addItemButtons.forEach(function (button) {
       if (button && typeof button.remove === 'function') {

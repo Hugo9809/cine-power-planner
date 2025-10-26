@@ -8099,6 +8099,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallback;
     }
+    var CONNECTIVITY_REASON_TEXT_KEYS = {
+      offline: 'reloadAppOfflineNotice',
+      'cache-fallback': 'offlineIndicatorReasonCacheFallback',
+      'get-failed': 'offlineIndicatorReasonGetFailed',
+      timeout: 'offlineIndicatorReasonTimeout',
+      unreachable: 'offlineIndicatorReasonUnreachable',
+      'reload-blocked': 'offlineIndicatorReasonReloadBlocked',
+      default: 'offlineIndicatorReasonUnknown'
+    };
+    function resolveConnectivityReasonText(langTexts, reason) {
+      var key = CONNECTIVITY_REASON_TEXT_KEYS[reason] || CONNECTIVITY_REASON_TEXT_KEYS.default;
+      return resolveStatusText(langTexts, key);
+    }
     function isValidTimestamp(date) {
       return date instanceof Date && !Number.isNaN(date.getTime());
     }
@@ -8115,6 +8128,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var manualDate = manualInfo && isValidTimestamp(manualInfo.date) ? manualInfo.date : null;
       var autoDate = autoInfo && isValidTimestamp(autoInfo.date) ? autoInfo.date : null;
       var fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date) ? fullBackupInfo.date : null;
+      var connectivityState = typeof window !== 'undefined' && window && _typeof(window.cineConnectivityStatus) === 'object' ? window.cineConnectivityStatus : null;
+      if (connectivityState) {
+        var connectivityStatus = typeof connectivityState.status === 'string' ? connectivityState.status : null;
+        if (connectivityStatus === 'offline' || connectivityStatus === 'degraded') {
+          var connectivityReason = typeof connectivityState.reason === 'string' ? connectivityState.reason : null;
+          var template = resolveStatusText(langTexts, 'storageStatusReminderConnectivity');
+          if (template) {
+            var reasonText = resolveConnectivityReasonText(langTexts, connectivityReason);
+            var reminderText = template.replace('{reason}', reasonText || '').replace(/\s+/g, ' ').trim();
+            if (reminderText) {
+              reminders.push(reminderText);
+            }
+          }
+        }
+      }
       var manualTimeText = manualDate ? formatStatusTimestamp(manualDate, lang, langTexts) || formatAbsoluteTimestamp(manualDate, lang) : '';
       var autoTimeText = autoDate ? formatStatusTimestamp(autoDate, lang, langTexts) || formatAbsoluteTimestamp(autoDate, lang) : '';
       var fullTimeText = fullBackupDate ? formatStatusTimestamp(fullBackupDate, lang, langTexts) || formatAbsoluteTimestamp(fullBackupDate, lang) : '';
@@ -8124,9 +8152,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           reminders.push(text);
         }
       } else if (manualDate && now - manualDate.getTime() > STORAGE_STATUS_STALE_PROJECT_MS) {
-        var template = resolveStatusText(langTexts, 'storageStatusReminderRefreshProject');
-        if (template) {
-          reminders.push(template.replace('{time}', manualTimeText));
+        var _template0 = resolveStatusText(langTexts, 'storageStatusReminderRefreshProject');
+        if (_template0) {
+          reminders.push(_template0.replace('{time}', manualTimeText));
         }
       }
       if (!autoInfo || autoInfo.hasAny !== true) {
@@ -8135,9 +8163,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           reminders.push(_text);
         }
       } else if (autoDate && now - autoDate.getTime() > STORAGE_STATUS_STALE_AUTO_MS) {
-        var _template0 = resolveStatusText(langTexts, 'storageStatusReminderAutoBackup');
-        if (_template0) {
-          reminders.push(_template0.replace('{time}', autoTimeText));
+        var _template1 = resolveStatusText(langTexts, 'storageStatusReminderAutoBackup');
+        if (_template1) {
+          reminders.push(_template1.replace('{time}', autoTimeText));
         }
       }
       if (!fullBackupInfo || fullBackupInfo.hasAny !== true) {
@@ -8146,9 +8174,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           reminders.push(_text2);
         }
       } else if (fullBackupDate && now - fullBackupDate.getTime() > STORAGE_STATUS_STALE_FULL_MS) {
-        var _template1 = resolveStatusText(langTexts, 'storageStatusReminderFullBackup');
-        if (_template1) {
-          reminders.push(_template1.replace('{time}', fullTimeText));
+        var _template10 = resolveStatusText(langTexts, 'storageStatusReminderFullBackup');
+        if (_template10) {
+          reminders.push(_template10.replace('{time}', fullTimeText));
         }
       }
       if (reminders.length > 0) {

@@ -191,7 +191,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         function _readResponseTextSafe() {
           _readResponseTextSafe = _asyncToGenerator(_regenerator().m(function _callee2(response) {
-            var _t2;
+            var _t3;
             return _regenerator().w(function (_context2) {
               while (1) switch (_context2.p = _context2.n) {
                 case 0:
@@ -208,8 +208,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   return _context2.a(2, _context2.v);
                 case 3:
                   _context2.p = 3;
-                  _t2 = _context2.v;
-                  console.warn('Could not read pink mode asset response text', _t2);
+                  _t3 = _context2.v;
+                  console.warn('Could not read pink mode asset response text', _t3);
                   return _context2.a(2, null);
               }
             }, _callee2, null, [[1, 3]]);
@@ -221,7 +221,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         function _fetchPinkModeAssetFromNetwork() {
           _fetchPinkModeAssetFromNetwork = _asyncToGenerator(_regenerator().m(function _callee3(requestOrUrl) {
-            var response, _t3;
+            var response, _t4;
             return _regenerator().w(function (_context3) {
               while (1) switch (_context3.p = _context3.n) {
                 case 0:
@@ -252,8 +252,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   break;
                 case 5:
                   _context3.p = 5;
-                  _t3 = _context3.v;
-                  void _t3;
+                  _t4 = _context3.v;
+                  void _t4;
                 case 6:
                   return _context3.a(2, null);
               }
@@ -266,7 +266,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         function _fetchPinkModeAssetFromCaches() {
           _fetchPinkModeAssetFromCaches = _asyncToGenerator(_regenerator().m(function _callee4(requestOrUrl) {
-            var cached, _t4;
+            var cached, _t5;
             return _regenerator().w(function (_context4) {
               while (1) switch (_context4.p = _context4.n) {
                 case 0:
@@ -292,8 +292,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   return _context4.a(2, readResponseTextSafe(cached.clone()));
                 case 4:
                   _context4.p = 4;
-                  _t4 = _context4.v;
-                  console.warn('Could not load pink mode asset from cache storage', _t4);
+                  _t5 = _context4.v;
+                  console.warn('Could not load pink mode asset from cache storage', _t5);
                   return _context4.a(2, null);
               }
             }, _callee4, null, [[1, 4]]);
@@ -408,6 +408,95 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var pinkModeAssetTextCache = new Map();
         var pinkModeAssetTextPromiseCache = new Map();
+        function decodePinkModeUriCandidate(value) {
+          if (typeof value !== 'string' || !value) {
+            return null;
+          }
+          try {
+            var decoded = decodeURI(value);
+            if (decoded && decoded !== value) {
+              return decoded;
+            }
+          } catch (error) {
+            void error;
+          }
+          return null;
+        }
+        function registerPinkModeNetworkVariant(variants, seen, candidate) {
+          if (!candidate) {
+            return;
+          }
+          var key = typeof candidate === 'string' ? candidate : candidate && typeof candidate.url === 'string' ? candidate.url : null;
+          if (!key || seen.has(key)) {
+            return;
+          }
+          seen.add(key);
+          variants.push(candidate);
+        }
+        function createPinkModeNetworkRequestVariants(request, fallbackUrl, normalized) {
+          var variants = [];
+          var seen = new Set();
+          if (request) {
+            registerPinkModeNetworkVariant(variants, seen, request);
+            if (typeof request.url === 'string') {
+              var decodedRequestUrl = decodePinkModeUriCandidate(request.url);
+              if (decodedRequestUrl) {
+                registerPinkModeNetworkVariant(variants, seen, createPinkModeAssetRequest(decodedRequestUrl) || decodedRequestUrl);
+              }
+            }
+          }
+          var urlCandidates = [];
+          if (typeof fallbackUrl === 'string' && fallbackUrl) {
+            urlCandidates.push(fallbackUrl);
+            var decodedFallbackUrl = decodePinkModeUriCandidate(fallbackUrl);
+            if (decodedFallbackUrl) {
+              urlCandidates.push(decodedFallbackUrl);
+            }
+          }
+          for (var _i = 0, _urlCandidates = urlCandidates; _i < _urlCandidates.length; _i++) {
+            var url = _urlCandidates[_i];
+            registerPinkModeNetworkVariant(variants, seen, createPinkModeAssetRequest(url) || url);
+          }
+          if (typeof normalized === 'string' && normalized) {
+            var normalizedVariants = [];
+            normalizedVariants.push(normalized);
+            var normalizedWithoutLeadingDot = normalized.charAt(0) === '.' ? normalized.slice(1) : normalized;
+            if (normalizedWithoutLeadingDot) {
+              normalizedVariants.push(normalizedWithoutLeadingDot);
+            }
+            if (normalized.charAt(0) !== '/') {
+              normalizedVariants.push("./".concat(normalized));
+              normalizedVariants.push("/".concat(normalized));
+            } else {
+              var trimmed = normalized.replace(/^\/+/, '');
+              if (trimmed) {
+                normalizedVariants.push(trimmed);
+                normalizedVariants.push("./".concat(trimmed));
+              }
+            }
+            var encoded = encodeURI(normalized);
+            if (encoded && encoded !== normalized) {
+              normalizedVariants.push(encoded);
+              if (encoded.charAt(0) !== '/') {
+                normalizedVariants.push("./".concat(encoded));
+                normalizedVariants.push("/".concat(encoded));
+              }
+              var decodedEncoded = decodePinkModeUriCandidate(encoded);
+              if (decodedEncoded) {
+                normalizedVariants.push(decodedEncoded);
+                if (decodedEncoded.charAt(0) !== '/') {
+                  normalizedVariants.push("./".concat(decodedEncoded));
+                  normalizedVariants.push("/".concat(decodedEncoded));
+                }
+              }
+            }
+            for (var _i2 = 0, _normalizedVariants = normalizedVariants; _i2 < _normalizedVariants.length; _i2++) {
+              var variant = _normalizedVariants[_i2];
+              registerPinkModeNetworkVariant(variants, seen, createPinkModeAssetRequest(variant) || variant);
+            }
+          }
+          return variants;
+        }
         function createPinkModeCacheKeyVariants(normalized, resolvedUrl, request) {
           var variants = [];
           if (request) {
@@ -418,6 +507,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           if (resolvedUrl) {
             variants.push(resolvedUrl);
+            var decodedResolvedUrl = decodePinkModeUriCandidate(resolvedUrl);
+            if (decodedResolvedUrl) {
+              variants.push(decodedResolvedUrl);
+            }
           }
           if (!normalized) {
             return variants;
@@ -444,11 +537,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               variants.push("./".concat(encoded));
               variants.push("/".concat(encoded));
             }
+            var decodedEncoded = decodePinkModeUriCandidate(encoded);
+            if (decodedEncoded) {
+              variants.push(decodedEncoded);
+              if (decodedEncoded.charAt(0) !== '/') {
+                variants.push("./".concat(decodedEncoded));
+                variants.push("/".concat(decodedEncoded));
+              }
+            }
           }
           var deduped = [];
           var seen = new Set();
-          for (var _i = 0, _variants = variants; _i < _variants.length; _i++) {
-            var variant = _variants[_i];
+          for (var _i3 = 0, _variants = variants; _i3 < _variants.length; _i3++) {
+            var variant = _variants[_i3];
             if (!variant) {
               continue;
             }
@@ -473,7 +574,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return pinkModeAssetTextPromiseCache.get(normalized);
           }
           var promise = _asyncToGenerator(_regenerator().m(function _callee() {
-            var resolvedUrl, encodedNormalized, fallbackUrl, request, networkResult, cacheVariants, _iterator, _step, variant, cacheResult, xhrResult, _t;
+            var resolvedUrl, encodedNormalized, fallbackUrl, request, networkCandidates, _iterator, _step, candidate, networkResult, cacheVariants, _iterator2, _step2, variant, cacheResult, xhrResult, _t, _t2;
             return _regenerator().w(function (_context) {
               while (1) switch (_context.p = _context.n) {
                 case 0:
@@ -481,66 +582,90 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   encodedNormalized = encodeURI(normalized);
                   fallbackUrl = resolvedUrl || encodedNormalized || normalized;
                   request = createPinkModeAssetRequest(fallbackUrl);
-                  _context.n = 1;
-                  return fetchPinkModeAssetFromNetwork(request || fallbackUrl);
-                case 1:
+                  networkCandidates = createPinkModeNetworkRequestVariants(request, fallbackUrl, normalized);
+                  _iterator = _createForOfIteratorHelper(networkCandidates);
+                  _context.p = 1;
+                  _iterator.s();
+                case 2:
+                  if ((_step = _iterator.n()).done) {
+                    _context.n = 5;
+                    break;
+                  }
+                  candidate = _step.value;
+                  _context.n = 3;
+                  return fetchPinkModeAssetFromNetwork(candidate);
+                case 3:
                   networkResult = _context.v;
                   if (!(networkResult !== null)) {
-                    _context.n = 2;
+                    _context.n = 4;
                     break;
                   }
                   pinkModeAssetTextCache.set(normalized, networkResult);
                   return _context.a(2, networkResult);
-                case 2:
-                  cacheVariants = createPinkModeCacheKeyVariants(normalized, resolvedUrl || fallbackUrl, request);
-                  _iterator = _createForOfIteratorHelper(cacheVariants);
-                  _context.p = 3;
-                  _iterator.s();
                 case 4:
-                  if ((_step = _iterator.n()).done) {
-                    _context.n = 7;
+                  _context.n = 2;
+                  break;
+                case 5:
+                  _context.n = 7;
+                  break;
+                case 6:
+                  _context.p = 6;
+                  _t = _context.v;
+                  _iterator.e(_t);
+                case 7:
+                  _context.p = 7;
+                  _iterator.f();
+                  return _context.f(7);
+                case 8:
+                  cacheVariants = createPinkModeCacheKeyVariants(normalized, resolvedUrl || fallbackUrl, request);
+                  _iterator2 = _createForOfIteratorHelper(cacheVariants);
+                  _context.p = 9;
+                  _iterator2.s();
+                case 10:
+                  if ((_step2 = _iterator2.n()).done) {
+                    _context.n = 13;
                     break;
                   }
-                  variant = _step.value;
-                  _context.n = 5;
+                  variant = _step2.value;
+                  _context.n = 11;
                   return fetchPinkModeAssetFromCaches(variant);
-                case 5:
+                case 11:
                   cacheResult = _context.v;
                   if (!(cacheResult !== null)) {
-                    _context.n = 6;
+                    _context.n = 12;
                     break;
                   }
                   pinkModeAssetTextCache.set(normalized, cacheResult);
                   return _context.a(2, cacheResult);
-                case 6:
-                  _context.n = 4;
+                case 12:
+                  _context.n = 10;
                   break;
-                case 7:
-                  _context.n = 9;
+                case 13:
+                  _context.n = 15;
                   break;
-                case 8:
-                  _context.p = 8;
-                  _t = _context.v;
-                  _iterator.e(_t);
-                case 9:
-                  _context.p = 9;
-                  _iterator.f();
-                  return _context.f(9);
-                case 10:
-                  _context.n = 11;
+                case 14:
+                  _context.p = 14;
+                  _t2 = _context.v;
+                  _iterator2.e(_t2);
+                case 15:
+                  _context.p = 15;
+                  _iterator2.f();
+                  return _context.f(15);
+                case 16:
+                  _context.n = 17;
                   return fetchPinkModeAssetViaXHR(fallbackUrl || normalized);
-                case 11:
+                case 17:
                   xhrResult = _context.v;
                   if (!(xhrResult !== null)) {
-                    _context.n = 12;
+                    _context.n = 18;
                     break;
                   }
                   pinkModeAssetTextCache.set(normalized, xhrResult);
                   return _context.a(2, xhrResult);
-                case 12:
+                case 18:
                   return _context.a(2, null);
               }
-            }, _callee, null, [[3, 8, 9, 10]]);
+            }, _callee, null, [[9, 14, 15, 16], [1, 6, 7, 8]]);
           }))().catch(function (error) {
             console.warn('Could not load pink mode asset', error);
             return null;
@@ -826,11 +951,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return;
           }
           var callbacks = pinkModeBodyReadyQueue.splice(0, pinkModeBodyReadyQueue.length);
-          var _iterator2 = _createForOfIteratorHelper(callbacks),
-            _step2;
+          var _iterator3 = _createForOfIteratorHelper(callbacks),
+            _step3;
           try {
-            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-              var callback = _step2.value;
+            for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+              var callback = _step3.value;
               if (typeof callback !== 'function') {
                 continue;
               }
@@ -841,9 +966,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
           } catch (err) {
-            _iterator2.e(err);
+            _iterator3.e(err);
           } finally {
-            _iterator2.f();
+            _iterator3.f();
           }
         }
         function schedulePinkModeBodyReadyCheck() {
@@ -1165,8 +1290,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return null;
           }
           var fallbacks = [ownerDocument.scrollingElement, ownerDocument.body, ownerDocument.documentElement];
-          for (var _i2 = 0, _fallbacks = fallbacks; _i2 < _fallbacks.length; _i2++) {
-            var fallback = _fallbacks[_i2];
+          for (var _i4 = 0, _fallbacks = fallbacks; _i4 < _fallbacks.length; _i4++) {
+            var fallback = _fallbacks[_i4];
             if (!fallback || _typeof(fallback) !== 'object' || fallback === candidateHost) {
               continue;
             }
@@ -1202,11 +1327,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return Object.freeze([]);
           }
           var regions = [];
-          var _iterator3 = _createForOfIteratorHelper(elements),
-            _step3;
+          var _iterator4 = _createForOfIteratorHelper(elements),
+            _step4;
           try {
-            for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-              var element = _step3.value;
+            for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+              var element = _step4.value;
               if (!element) {
                 continue;
               }
@@ -1242,9 +1367,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }
           } catch (err) {
-            _iterator3.e(err);
+            _iterator4.e(err);
           } finally {
-            _iterator3.f();
+            _iterator4.f();
           }
           return Object.freeze(regions);
         }
@@ -1253,11 +1378,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return Object.freeze([]);
           }
           var regions = [];
-          var _iterator4 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-            _step4;
+          var _iterator5 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+            _step5;
           try {
-            for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-              var instance = _step4.value;
+            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+              var instance = _step5.value;
               if (!instance || !instance.container) {
                 continue;
               }
@@ -1297,9 +1422,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }
           } catch (err) {
-            _iterator4.e(err);
+            _iterator5.e(err);
           } finally {
-            _iterator4.f();
+            _iterator5.f();
           }
           return Object.freeze(regions);
         }
@@ -1486,11 +1611,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             bottom: baseY + size / 2
           };
           if (Array.isArray(avoidRegions) && avoidRegions.length) {
-            var _iterator5 = _createForOfIteratorHelper(avoidRegions),
-              _step5;
+            var _iterator6 = _createForOfIteratorHelper(avoidRegions),
+              _step6;
             try {
-              for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-                var region = _step5.value;
+              for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+                var region = _step6.value;
                 if (!region) {
                   continue;
                 }
@@ -1500,16 +1625,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }
             } catch (err) {
-              _iterator5.e(err);
+              _iterator6.e(err);
             } finally {
-              _iterator5.f();
+              _iterator6.f();
             }
           }
-          var _iterator6 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
-            _step6;
+          var _iterator7 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
+            _step7;
           try {
-            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-              var point = _step6.value;
+            for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+              var point = _step7.value;
               var sampleX = baseX + point.x * size;
               var sampleY = baseY + point.y * size;
               if (viewportWidth !== null && (sampleX < 0 || sampleX > viewportWidth)) {
@@ -1519,11 +1644,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 continue;
               }
               var elementsAtPoint = typeof document.elementsFromPoint === 'function' ? document.elementsFromPoint(sampleX, sampleY) : [document.elementFromPoint(sampleX, sampleY)].filter(Boolean);
-              var _iterator7 = _createForOfIteratorHelper(elementsAtPoint),
-                _step7;
+              var _iterator8 = _createForOfIteratorHelper(elementsAtPoint),
+                _step8;
               try {
-                for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-                  var element = _step7.value;
+                for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+                  var element = _step8.value;
                   if (!element) {
                     continue;
                   }
@@ -1541,15 +1666,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   }
                 }
               } catch (err) {
-                _iterator7.e(err);
+                _iterator8.e(err);
               } finally {
-                _iterator7.f();
+                _iterator8.f();
               }
             }
           } catch (err) {
-            _iterator6.e(err);
+            _iterator7.e(err);
           } finally {
-            _iterator6.f();
+            _iterator7.f();
           }
           return true;
         }
@@ -1669,11 +1794,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return false;
           }
           var activeTemplateNames = new Set();
-          var _iterator8 = _createForOfIteratorHelper(pinkModeIconRainInstances),
-            _step8;
+          var _iterator9 = _createForOfIteratorHelper(pinkModeIconRainInstances),
+            _step9;
           try {
-            for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-              var _instance = _step8.value;
+            for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+              var _instance = _step9.value;
               if (!_instance) continue;
               var templateName = _instance.templateName;
               if (typeof templateName === 'string' && templateName) {
@@ -1681,15 +1806,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
           } catch (err) {
-            _iterator8.e(err);
+            _iterator9.e(err);
           } finally {
-            _iterator8.f();
+            _iterator9.f();
           }
-          var _iterator9 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-            _step9;
+          var _iterator0 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+            _step0;
           try {
-            for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-              var _instance2 = _step9.value;
+            for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+              var _instance2 = _step0.value;
               if (!_instance2) continue;
               var _templateName = _instance2.templateName;
               if (typeof _templateName === 'string' && _templateName) {
@@ -1697,9 +1822,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
           } catch (err) {
-            _iterator9.e(err);
+            _iterator0.e(err);
           } finally {
-            _iterator9.f();
+            _iterator0.f();
           }
           var availableTemplates = sanitizedTemplates.filter(function (template) {
             if (!template || typeof template.name !== 'string') {
@@ -1855,7 +1980,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             console.warn('Could not trigger pink mode icon rain', error);
           });
         }
-
         function ensurePinkModeAnimatedIconPopulation(templates, options) {
           if (!pinkModeAnimatedIconsActive) {
             return;
@@ -1871,7 +1995,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           var immediate = Boolean(options && options.immediate);
           var staggerMs = options && typeof options.staggerMs === 'number' ? Math.max(0, options.staggerMs) : PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS;
-          var _loop = function _loop(index) {
+          for (var index = 0; index < missing; index += 1) {
             var scheduleSpawn = function scheduleSpawn() {
               if (!pinkModeAnimatedIconsActive || pinkModeAnimatedIconInstances.size >= PINK_MODE_ANIMATED_ICON_MAX_ACTIVE) {
                 return;
@@ -1886,17 +2010,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             if (delay <= 0) {
               scheduleSpawn();
-              return "continue";
-            }
-            if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+            } else if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
               window.setTimeout(scheduleSpawn, delay);
-              return "continue";
+            } else {
+              scheduleSpawn();
             }
-            scheduleSpawn();
-          };
-          for (var index = 0; index < missing; index += 1) {
-            var _ret = _loop(index);
-            if (_ret === "continue") continue;
           }
         }
         function spawnPinkModeAnimatedIconInstance(templates) {
@@ -1913,11 +2031,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return false;
           }
           var activeTemplateNames = new Set();
-          var _iterator0 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-            _step0;
+          var _iterator1 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+            _step1;
           try {
-            for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-              var _instance3 = _step0.value;
+            for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+              var _instance3 = _step1.value;
               if (!_instance3) {
                 continue;
               }
@@ -1927,9 +2045,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
           } catch (err) {
-            _iterator0.e(err);
+            _iterator1.e(err);
           } finally {
-            _iterator0.f();
+            _iterator1.f();
           }
           var availableTemplates = sanitizedTemplates.filter(function (template) {
             if (!template || typeof template.name !== 'string') {

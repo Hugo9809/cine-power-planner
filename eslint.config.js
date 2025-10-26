@@ -30,6 +30,25 @@ const additionalAppScriptFiles = {
   ],
 };
 
+const scriptDir = path.join(__dirname, 'src', 'scripts');
+let discoveredAppCoreFiles = [];
+
+try {
+  discoveredAppCoreFiles = fs
+    .readdirSync(scriptDir)
+    .filter(name => name.startsWith('app-core-') && name.endsWith('.js'))
+    .map(name => name.slice(0, -3));
+} catch (readError) {
+  void readError;
+}
+
+if (Array.isArray(discoveredAppCoreFiles) && discoveredAppCoreFiles.length) {
+  const existing = additionalAppScriptFiles['app-core'] || [];
+  additionalAppScriptFiles['app-core'] = Array.from(
+    new Set([...existing, ...discoveredAppCoreFiles])
+  );
+}
+
 const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names]) => {
   const fileKeys = [key, ...(additionalAppScriptFiles[key] || [])];
   const combinedNames = [...new Set([...names, ...(additionalGlobalsByKey[key] || [])])];
@@ -49,6 +68,11 @@ const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names])
         ...(key === 'app-core'
           ? {
             'no-undef': 'off',
+            'no-redeclare': 'off',
+          }
+          : {}),
+        ...(key === 'app-setups'
+          ? {
             'no-redeclare': 'off',
           }
           : {}),

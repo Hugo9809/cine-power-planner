@@ -993,6 +993,13 @@
           scripts.loaded = true;
           return getLocaleData(locale);
         } catch (requireError) {
+          if (typeof console !== 'undefined' && typeof console.error === 'function') {
+            console.error(
+              'Failed to require translation bundle for locale during offline load:',
+              locale,
+              requireError
+            );
+          }
           throw requireError;
         }
       }
@@ -1085,16 +1092,16 @@
         require('./translations/' + DEFAULT_LANGUAGE + '.js');
         return registerLocaleData(DEFAULT_LANGUAGE, getLocaleData(DEFAULT_LANGUAGE));
       } catch (requireError) {
-        void requireError;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(
+            'Default locale require failed; deferring to asynchronous translation loader.',
+            requireError
+          );
+        }
       }
     }
 
-    var loaded = null;
-    try {
-      loaded = loadLocaleScript(DEFAULT_LANGUAGE);
-    } catch (loadError) {
-      throw loadError;
-    }
+    var loaded = loadLocaleScript(DEFAULT_LANGUAGE);
 
     if (loaded && typeof loaded.then === 'function') {
       return loaded.then(function applyDefault(data) {
@@ -1122,12 +1129,7 @@
         return registerLocaleData(DEFAULT_LANGUAGE, defaultData || {});
       }
 
-      var localeResult = null;
-      try {
-        localeResult = loadLocaleScript(locale);
-      } catch (localeError) {
-        throw localeError;
-      }
+      var localeResult = loadLocaleScript(locale);
 
       if (localeResult && typeof localeResult.then === 'function') {
         return localeResult.then(function applyLocale(data) {

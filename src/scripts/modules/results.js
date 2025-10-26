@@ -1166,11 +1166,11 @@
       }
     }
 
-    for (var key in map) {
-      if (!Object.prototype.hasOwnProperty.call(map, key)) {
+    for (var mapKey in map) {
+      if (!Object.prototype.hasOwnProperty.call(map, mapKey)) {
         continue;
       }
-      sortFrameRateOptionsInPlace(map[key]);
+      sortFrameRateOptionsInPlace(map[mapKey]);
     }
 
     return map;

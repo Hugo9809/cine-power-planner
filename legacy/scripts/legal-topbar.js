@@ -103,16 +103,17 @@
     if (!trimmed) {
       return null;
     }
+    var lowerTrimmed = trimmed.toLowerCase();
+    if (lowerTrimmed.startsWith('javascript:') || lowerTrimmed.startsWith('data:') || lowerTrimmed.startsWith('vbscript:') || lowerTrimmed.startsWith('file:') || lowerTrimmed.startsWith('//')) {
+      return null;
+    }
     try {
       var currentLocation = typeof window !== 'undefined' ? window.location : null;
       if (!currentLocation || typeof currentLocation.href !== 'string') {
         return trimmed.charAt(0) === '/' ? trimmed : null;
       }
       var resolvedUrl = new URL(trimmed, currentLocation.href);
-      if (resolvedUrl.protocol !== currentLocation.protocol) {
-        return null;
-      }
-      if (resolvedUrl.origin !== currentLocation.origin) {
+      if (!(resolvedUrl.protocol === "http:" || resolvedUrl.protocol === "https:") || resolvedUrl.protocol !== currentLocation.protocol || resolvedUrl.origin !== currentLocation.origin) {
         return null;
       }
       return resolvedUrl.href;
@@ -169,18 +170,16 @@
       if (currentValue) {
         languageSelect.value = currentValue;
       }
-      // Precompute allowed destinations from select options
-      var allowedDestinations = Array.prototype.slice.call(languageSelect.options).map(function(opt) {
-        return opt.value.trim();
-      });
       languageSelect.addEventListener('change', function (event) {
         var target = event.target;
         if (!target) return;
         var selectedOption = target.selectedOptions && target.selectedOptions[0];
-        var destination = selectedOption ? selectedOption.value.trim() : target.value.trim();
-        // Only navigate if destination is one of allowedDestinations
-        if (destination && allowedDestinations.indexOf(destination) !== -1) {
-          window.location.assign(destination);
+        var destination = selectedOption ? selectedOption.value : target.value;
+        if (destination) {
+          var safeDestination = resolveSafeDestination(destination);
+          if (safeDestination) {
+            window.location.assign(safeDestination);
+          }
         }
       });
     }

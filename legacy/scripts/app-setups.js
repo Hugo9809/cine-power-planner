@@ -449,7 +449,82 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
   });
   var addressEntries = addressAccumulator.entries;
   if (addressEntries.length) {
+    var locationFieldSet = new Set(['productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode']);
+    var locationValues = {
+      productionCompanyCity: [],
+      productionCompanyRegion: [],
+      productionCompanyPostalCode: []
+    };
+    var filteredEntries = [];
+    var locationInsertIndex = null;
     addressEntries.forEach(function (entry) {
+      var value = entry.value,
+        fields = entry.fields;
+      var isLocationEntry = Array.isArray(fields) ? fields.some(function (field) {
+        return locationFieldSet.has(field);
+      }) : false;
+      if (isLocationEntry) {
+        if (locationInsertIndex === null) {
+          locationInsertIndex = filteredEntries.length;
+        }
+        fields.forEach(function (field) {
+          if (locationFieldSet.has(field)) {
+            locationValues[field].push(value);
+          }
+        });
+      } else {
+        filteredEntries.push(entry);
+      }
+    });
+    var pickFirstValue = function pickFirstValue(arr) {
+      if (!Array.isArray(arr)) return '';
+      var found = arr.find(function (item) {
+        return typeof item === 'string' && item.trim();
+      });
+      return found ? found.trim() : '';
+    };
+    var cityValue = pickFirstValue(locationValues.productionCompanyCity);
+    var regionValue = pickFirstValue(locationValues.productionCompanyRegion);
+    var postalValue = pickFirstValue(locationValues.productionCompanyPostalCode);
+    var locationParts = [];
+    var locationFields = [];
+    if (cityValue) {
+      locationParts.push(cityValue);
+      locationFields.push('productionCompanyCity');
+    }
+    var regionPostalParts = [];
+    if (regionValue) {
+      regionPostalParts.push(regionValue);
+      locationFields.push('productionCompanyRegion');
+    }
+    if (postalValue) {
+      regionPostalParts.push(postalValue);
+      locationFields.push('productionCompanyPostalCode');
+    }
+    if (regionPostalParts.length) {
+      var combinedRegionPostal = regionPostalParts.join(', ');
+      if (cityValue) {
+        locationParts.push(combinedRegionPostal);
+      } else {
+        locationParts.push(combinedRegionPostal);
+      }
+    }
+    var combinedLocationLine = locationParts.join(', ').trim();
+    if (combinedLocationLine) {
+      var normalizedCombined = combinedLocationLine.toLowerCase();
+      var hasExisting = filteredEntries.some(function (entry) {
+        var entryValue = typeof entry.value === 'string' ? entry.value.trim() : '';
+        return entryValue && entryValue.toLowerCase() === normalizedCombined;
+      });
+      if (!hasExisting) {
+        var insertAt = locationInsertIndex === null ? filteredEntries.length : locationInsertIndex;
+        filteredEntries.splice(insertAt, 0, {
+          value: combinedLocationLine,
+          fields: locationFields
+        });
+      }
+    }
+    filteredEntries.forEach(function (entry) {
       var value = entry.value,
         fields = entry.fields;
       addLine(value, 'req-sub-line', fields);
@@ -2802,6 +2877,27 @@ function formatOwnedGearExportLabel(ownerName) {
   }
   return base.replace('%s', ownerName);
 }
+function getGearItemDisplayName(element) {
+  if (!element || typeof element.getAttribute !== 'function') {
+    return '';
+  }
+  var nameAttr = element.getAttribute('data-gear-name') || '';
+  var labelAttr = element.getAttribute('data-gear-label') || '';
+  var base = (nameAttr || labelAttr || '').trim();
+  var attributesAttr = (element.getAttribute('data-gear-attributes') || '').trim();
+  if (!attributesAttr) {
+    return base;
+  }
+  if (!base) {
+    return attributesAttr;
+  }
+  var normalizedBase = base.toLowerCase();
+  var normalizedAttributes = attributesAttr.toLowerCase();
+  if (normalizedBase.includes(normalizedAttributes)) {
+    return base;
+  }
+  return "".concat(base, " (").concat(attributesAttr, ")");
+}
 function collectOwnedGearMarkersForExport(root) {
   var scope = root || gearListOutput;
   if (!scope || typeof scope.querySelectorAll !== 'function') {
@@ -2835,7 +2931,7 @@ function collectOwnedGearMarkersForExport(root) {
       ownerProfileName: info.profileName || '',
       ownerType: info.type || '',
       contactId: info.contactId || '',
-      gearName: element.getAttribute('data-gear-name') || ''
+      gearName: getGearItemDisplayName(element)
     };
     markers.push(marker);
   });
@@ -3041,6 +3137,54 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       currentSetup.autoGearCoverage = coverage;
     }
   }
+  var sharedContacts = function () {
+    if (typeof getContactsSnapshot !== 'function') {
+      return [];
+    }
+    try {
+      var snapshot = getContactsSnapshot();
+      if (!Array.isArray(snapshot) || !snapshot.length) {
+        return [];
+      }
+      var sanitizeString = function sanitizeString(value) {
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      return snapshot.map(function (entry) {
+        if (!entry || _typeof(entry) !== 'object') {
+          return null;
+        }
+        var id = sanitizeString(entry.id);
+        if (!id) {
+          return null;
+        }
+        var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+        var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+        var base = {
+          id: id,
+          name: sanitizeString(entry.name),
+          role: sanitizeString(entry.role),
+          phone: sanitizeString(entry.phone),
+          email: sanitizeString(entry.email),
+          website: sanitizeString(entry.website),
+          notes: sanitizeString(entry.notes),
+          avatar: sanitizeString(entry.avatar),
+          createdAt: createdAt,
+          updatedAt: updatedAt
+        };
+        var label = sanitizeString(typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(_objectSpread(_objectSpread({}, entry), base)) : entry && typeof entry.label === 'string' ? entry.label : '');
+        if (label) {
+          base.label = label;
+        }
+        return base;
+      }).filter(Boolean);
+    } catch (error) {
+      console.warn('Unable to prepare shared contact snapshot', error);
+      return [];
+    }
+  }();
+  if (sharedContacts.length) {
+    currentSetup.contacts = sharedContacts;
+  }
   var metadata = createSharedProjectMetadata({
     includeAutoGear: includeAutoGear,
     hasAutoGearRules: hasAutoGearRules,
@@ -3078,7 +3222,8 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       includeAutoGear: Boolean(includeAutoGear),
       includeOwnedGear: Boolean(includeOwnedGear),
       ownedGearMarkerCount: Array.isArray(ownedGearMarkers) ? ownedGearMarkers.length : 0,
-      metadata: metadataFlags
+      metadata: metadataFlags,
+      contacts: Array.isArray(sharedContacts) ? sharedContacts.length : 0
     };
   }();
   var notifyShareFailure = function notifyShareFailure(error) {
@@ -4792,6 +4937,23 @@ function freezeProjectFormDataSnapshot(info) {
   }
   return PROJECT_FORM_FREEZE(snapshot);
 }
+function sanitizeCrewAvatarValue(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  var dataUrlMatch = trimmed.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/i);
+  if (dataUrlMatch) {
+    return trimmed;
+  }
+  if (/^[a-zA-Z0-9._-]+$/.test(trimmed)) {
+    return trimmed;
+  }
+  return '';
+}
 function collectProjectFormData() {
   var _crewContainer, _storageNeedsContaine;
   if (!projectForm) return {};
@@ -4827,20 +4989,24 @@ function collectProjectFormData() {
     var phoneInput = row.querySelector('.person-phone');
     var emailInput = row.querySelector('.person-email');
     var websiteInput = row.querySelector('.person-website');
+    var avatarInput = row.querySelector('.person-avatar-data');
     var role = typeof roleValue === 'string' ? roleValue.trim() : roleValue == null ? '' : String(roleValue);
     var name = typeof (nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) === 'string' ? nameInput.value.trim() : '';
     var phone = typeof (phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) === 'string' ? phoneInput.value.trim() : '';
     var email = typeof (emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) === 'string' ? emailInput.value.trim() : '';
     var website = typeof (websiteInput === null || websiteInput === void 0 ? void 0 : websiteInput.value) === 'string' ? websiteInput.value.trim() : '';
+    var avatarRaw = typeof (avatarInput === null || avatarInput === void 0 ? void 0 : avatarInput.value) === 'string' ? avatarInput.value.trim() : '';
+    var avatar = sanitizeCrewAvatarValue(avatarRaw);
     return {
       role: role,
       name: name,
       phone: phone,
       email: email,
-      website: website
+      website: website,
+      avatar: avatar
     };
   }).filter(function (person) {
-    return person.role || person.name || person.phone || person.email || person.website;
+    return person.role || person.name || person.phone || person.email || person.website || person.avatar;
   });
   var collectRanges = function collectRanges(container, startSel, endSel) {
     return Array.from((container === null || container === void 0 ? void 0 : container.querySelectorAll('.period-row')) || []).map(function (row) {
@@ -5175,7 +5341,8 @@ function populateProjectForm() {
             name: profileName || '',
             phone: profilePhone || '',
             email: profileEmail || '',
-            avatar: profileAvatar || ''
+            avatar: profileAvatar || '',
+            userProfileLinked: true
           });
         }
       }
@@ -5410,8 +5577,7 @@ function ensureOnboardMonitorRiggingAutoGearHighlight(table) {
   };
   var spans = Array.from(table.querySelectorAll('.gear-item')).filter(function (span) {
     if (!span) return false;
-    var dataName = typeof span.getAttribute === 'function' ? span.getAttribute('data-gear-name') : '';
-    var textSource = dataName || span.textContent || '';
+    var textSource = getGearItemDisplayName(span) || span.textContent || '';
     return normalizeAutoGearName(textSource) === target;
   });
   if (!spans.length) {
@@ -5510,11 +5676,11 @@ function analyzeAutoGearSegment(nodes) {
     return node.nodeType === 1 && node.classList && node.classList.contains('gear-item');
   });
   if (span) {
-    var name = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+    var displayName = getGearItemDisplayName(span) || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     var _count = getSpanCount(span);
     return {
       span: span,
-      name: name,
+      name: displayName,
       count: _count
     };
   }
@@ -6106,7 +6272,7 @@ function addAutoGearItem(cell, item, rule) {
   var targetNotesKey = normalizeAutoGearNotesKey(normalizedItem.notes);
   for (var _i1 = 0, _spans = spans; _i1 < _spans.length; _i1++) {
     var _span = _spans[_i1];
-    var spanName = _span.getAttribute('data-gear-name') || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+    var spanName = getGearItemDisplayName(_span) || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     if (matchesAutoGearItem(name, spanName)) {
       var spanNotesKey = getAutoGearSpanNotesKey(_span);
       if (targetNotesKey) {
@@ -6986,7 +7152,7 @@ function applyRentalExclusionsState(state) {
   });
   var spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
   spans.forEach(function (span) {
-    var name = span.getAttribute('data-gear-name');
+    var name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
     setRentalExclusionState(span, exclusions.has(name));
   });
 }
@@ -7085,7 +7251,7 @@ function collectStandardItemSuggestions(categoryKey) {
     names.add(normalized);
   };
   group.querySelectorAll('.gear-standard-items .gear-item').forEach(function (item) {
-    var dataName = item.getAttribute('data-gear-name');
+    var dataName = getGearItemDisplayName(item) || item.getAttribute('data-gear-name');
     if (dataName) {
       addName(dataName);
     } else {
@@ -9730,15 +9896,17 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
     category: categoryLabel
   });
   var editLabel = resolveGearListCustomText('gearListEditCustomItem', 'Edit custom item');
-  var minusIcon = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.minus, {
+  var hasIconRegistry = (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS;
+  var editGlyph = hasIconRegistry ? ICON_GLYPHS.sliders || ICON_GLYPHS.gears || ICON_GLYPHS.gearList || ICON_GLYPHS.settingsGeneral || ICON_GLYPHS.note || null : null;
+  var minusIcon = typeof iconMarkup === 'function' && hasIconRegistry ? iconMarkup(ICON_GLYPHS.minus, {
     className: 'btn-icon'
   }) : '';
-  var editIcon = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.sliders, {
+  var editIcon = typeof iconMarkup === 'function' && editGlyph ? iconMarkup(editGlyph, {
     className: 'btn-icon'
   }) : '';
   var rentalTexts = getGearListRentalToggleTexts();
   var noteLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel : '';
-  template.innerHTML = "\n    <div class=\"gear-custom-item\" data-gear-custom-entry=\"".concat(escapeHtml(categoryKey), "\">\n      <div class=\"gear-custom-item-summary\">\n        <span class=\"gear-custom-item-preview\" aria-hidden=\"true\"></span>\n        <span class=\"gear-item-note\" hidden></span>\n      </div>\n      <div class=\"gear-custom-item-actions\">\n        <button\n          type=\"button\"\n          class=\"gear-item-edit-btn\"\n          data-gear-edit\n          aria-label=\"").concat(escapeHtml(editLabel), "\"\n        >\n          ").concat(editIcon, "\n        </button>\n        <button\n          type=\"button\"\n          class=\"gear-custom-remove-btn\"\n          data-gear-custom-remove=\"").concat(escapeHtml(categoryKey), "\"\n          data-gear-custom-category=\"").concat(escapeHtml(categoryLabel), "\"\n          aria-label=\"").concat(escapeHtml(removeAria), "\"\n        >\n          ").concat(minusIcon, "<span>").concat(escapeHtml(removeLabel), "</span>\n        </button>\n      </div>\n    </div>\n  ").trim();
+  template.innerHTML = "\n    <div class=\"gear-custom-item\" data-gear-custom-entry=\"".concat(escapeHtml(categoryKey), "\">\n      <div class=\"gear-custom-item-summary\">\n        <span class=\"gear-custom-item-preview\" aria-hidden=\"true\"></span>\n        <span class=\"gear-item-note\" hidden></span>\n      </div>\n      <div class=\"gear-custom-item-actions\">\n        <button\n          type=\"button\"\n          class=\"gear-item-edit-btn\"\n          data-gear-edit\n          aria-label=\"").concat(escapeHtml(editLabel), "\"\n        >\n          ").concat(editIcon || "<span class=\"gear-item-edit-fallback\">".concat(escapeHtml(editLabel), "</span>"), "\n        </button>\n        <button\n          type=\"button\"\n          class=\"gear-custom-remove-btn\"\n          data-gear-custom-remove=\"").concat(escapeHtml(categoryKey), "\"\n          data-gear-custom-category=\"").concat(escapeHtml(categoryLabel), "\"\n          aria-label=\"").concat(escapeHtml(removeAria), "\"\n        >\n          ").concat(minusIcon, "<span>").concat(escapeHtml(removeLabel), "</span>\n        </button>\n      </div>\n    </div>\n  ").trim();
   var element = template.content.firstElementChild;
   if (!element) return null;
   if (noteLabel) {
@@ -10271,7 +10439,7 @@ function gearListGenerateHtmlImpl() {
     var crewEntriesHtml = [];
     var crewEntriesText = [];
     info.people.filter(function (p) {
-      return p.role && p.name;
+      return p && typeof p.name === 'string' && p.name.trim();
     }).forEach(function (p) {
       var roleLabel = crewRoleLabels[p.role] || p.role || '';
       var safeRole = escapeHtml(roleLabel);
@@ -10710,7 +10878,7 @@ function gearListGenerateHtmlImpl() {
     var hiddenLabelHtml = cageLabelText ? "<span class=\"visually-hidden\">".concat(escapeHtml(cageLabelText), "</span>") : '';
     var wrapperHtml = "<span class=\"cage-select-wrapper\"><span>1x</span>".concat(hiddenLabelHtml, "<select id=\"gearListCage\"").concat(ariaLabelAttr, ">").concat(options, "</select></span>");
     var attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
-    var dataName = attributesText ? "".concat(cageLabelText, " (").concat(attributesText, ")") : cageLabelText;
+    var dataName = cageLabelText;
     var cageExtraAttributes = selectedNames.cage && hasCameraForLinking ? buildCameraLinkAttributes(selectedNames.cage) : '';
     cageSelectHtml = wrapGearItemHtml(wrapperHtml, {
       name: dataName,
@@ -11923,7 +12091,9 @@ function gearListGenerateHtmlImpl() {
 function gearListGetCurrentHtmlImpl() {
   var scope = getGlobalScope();
   var lastCombined = scope && typeof scope.__cineLastGearListHtml === 'string' ? scope.__cineLastGearListHtml : '';
-  if (!gearListOutput && !projectRequirementsOutput) return lastCombined;
+  if (!gearListOutput && !projectRequirementsOutput) {
+    return lastCombined;
+  }
   var cannotCloneProject = projectRequirementsOutput && typeof projectRequirementsOutput.cloneNode !== 'function';
   var cannotCloneGearList = gearListOutput && typeof gearListOutput.cloneNode !== 'function';
   if (cannotCloneProject || cannotCloneGearList) {
@@ -12122,7 +12292,7 @@ function getGearListSelectors() {
   if (gearListOutput) {
     var rentalState = {};
     gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
-      var name = span.getAttribute('data-gear-name');
+      var name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
       if (span.getAttribute('data-rental-excluded') === 'true') {
         rentalState[name] = true;
@@ -13359,15 +13529,14 @@ function syncGearListCageItem(select) {
   var option = select.options && select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
   var optionText = option && typeof option.text === 'string' ? option.text.trim() : option && option.textContent ? option.textContent.trim() : '';
   var label = resolveGearListCageLabel();
-  var combinedName = optionText ? "".concat(label, " (").concat(optionText, ")") : label;
   gearItem.setAttribute('data-gear-quantity', '1');
   if (label) {
     gearItem.setAttribute('data-gear-label', label);
   } else {
     gearItem.removeAttribute('data-gear-label');
   }
-  if (combinedName) {
-    gearItem.setAttribute('data-gear-name', combinedName);
+  if (label) {
+    gearItem.setAttribute('data-gear-name', label);
   } else {
     gearItem.removeAttribute('data-gear-name');
   }

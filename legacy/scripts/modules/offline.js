@@ -4,6 +4,11 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -26,6 +31,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var FALLBACK_SCOPE = detectGlobalScope();
+  var CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
+  var CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
+  var CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
+  var CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
+  var CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+  var SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+  var CONNECTIVITY_STATUS_MESSAGE_TYPE = 'cine-sw:connectivity-status';
   function resolveModuleLinker(scope) {
     if (typeof require === 'function') {
       try {
@@ -123,6 +135,223 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var MODULE_GLOBALS = (MODULE_LINKER && typeof MODULE_LINKER.getModuleGlobals === 'function' ? MODULE_LINKER.getModuleGlobals() : null) || fallbackResolveModuleGlobals();
+  var connectivityBroadcastChannel = null;
+  var connectivityBroadcastFailed = false;
+  var connectivityState = null;
+  var connectivityListeners = new Set();
+  function sanitizeConnectivityError(error) {
+    if (!error) {
+      return null;
+    }
+    if (typeof error === 'string') {
+      return error;
+    }
+    if (typeof error === 'number') {
+      return Number.isFinite(error) ? error : null;
+    }
+    if (typeof error === 'boolean') {
+      return error;
+    }
+    if (_typeof(error) === 'object') {
+      var normalized = {};
+      var name = typeof error.name === 'string' && error.name ? error.name : null;
+      var message = typeof error.message === 'string' && error.message ? error.message : null;
+      var code = typeof error.code === 'string' && error.code ? error.code : null;
+      if (name) {
+        normalized.name = name;
+      }
+      if (message) {
+        normalized.message = message;
+      }
+      if (code) {
+        normalized.code = code;
+      }
+      if (typeof error.status === 'number' && Number.isFinite(error.status)) {
+        normalized.status = error.status;
+      }
+      if (typeof error.type === 'string' && error.type) {
+        normalized.type = error.type;
+      }
+      if (Object.keys(normalized).length === 0) {
+        try {
+          var stringified = String(error);
+          if (stringified && stringified !== '[object Object]') {
+            return stringified;
+          }
+        } catch (stringifyError) {
+          void stringifyError;
+        }
+        return null;
+      }
+      return normalized;
+    }
+    try {
+      return String(error);
+    } catch (stringifyError) {
+      void stringifyError;
+      return null;
+    }
+  }
+  function normalizeConnectivityDetail(detail) {
+    if (!detail) {
+      return null;
+    }
+    if (_typeof(detail) !== 'object') {
+      return sanitizeConnectivityError(detail);
+    }
+    var normalized = {};
+    if (typeof detail.status === 'number' && Number.isFinite(detail.status)) {
+      normalized.status = detail.status;
+    }
+    if (typeof detail.statusText === 'string' && detail.statusText) {
+      normalized.statusText = detail.statusText;
+    }
+    if (typeof detail.probeResult === 'string' && detail.probeResult) {
+      normalized.probeResult = detail.probeResult;
+    }
+    if (typeof detail.reason === 'string' && detail.reason) {
+      normalized.reason = detail.reason;
+    }
+    if (typeof detail.stage === 'string' && detail.stage) {
+      normalized.stage = detail.stage;
+    }
+    if (typeof detail.source === 'string' && detail.source) {
+      normalized.source = detail.source;
+    }
+    if (typeof detail.message === 'string' && detail.message) {
+      normalized.message = detail.message;
+    }
+    if (typeof detail.code === 'string' && detail.code) {
+      normalized.code = detail.code;
+    }
+    if (detail.head && _typeof(detail.head) === 'object') {
+      var headDetail = normalizeConnectivityDetail(detail.head);
+      if (headDetail) {
+        normalized.head = headDetail;
+      }
+    }
+    if (detail.error) {
+      var errorDetail = sanitizeConnectivityError(detail.error);
+      if (errorDetail) {
+        normalized.error = errorDetail;
+      }
+    }
+    if (detail.detail && _typeof(detail.detail) === 'object' && detail.detail !== detail) {
+      var nested = normalizeConnectivityDetail(detail.detail);
+      if (nested) {
+        normalized.detail = nested;
+      }
+    }
+    if (!Object.keys(normalized).length) {
+      return null;
+    }
+    return normalized;
+  }
+  function getConnectivityBroadcastChannel() {
+    if (connectivityBroadcastFailed) {
+      return null;
+    }
+    if (connectivityBroadcastChannel) {
+      return connectivityBroadcastChannel;
+    }
+    if (typeof BroadcastChannel !== 'function') {
+      connectivityBroadcastFailed = true;
+      return null;
+    }
+    try {
+      connectivityBroadcastChannel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+      return connectivityBroadcastChannel;
+    } catch (error) {
+      connectivityBroadcastFailed = true;
+      safeWarn('cineOffline: Unable to open connectivity broadcast channel', error);
+      return null;
+    }
+  }
+  function assignGlobalConnectivityState(state) {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+      return;
+    }
+    try {
+      GLOBAL_SCOPE.cineConnectivityStatus = state;
+    } catch (error) {
+      void error;
+    }
+  }
+  function notifyConnectivityListeners(state) {
+    connectivityListeners.forEach(function (listener) {
+      try {
+        listener(state);
+      } catch (error) {
+        safeWarn('cineOffline: connectivity listener failed', error);
+      }
+    });
+  }
+  function broadcastConnectivityState(state) {
+    var channel = getConnectivityBroadcastChannel();
+    if (!channel) {
+      return;
+    }
+    try {
+      channel.postMessage({
+        type: CONNECTIVITY_STATUS_MESSAGE_TYPE,
+        state: state
+      });
+    } catch (error) {
+      safeWarn('cineOffline: Unable to broadcast connectivity state', error);
+      try {
+        channel.close();
+      } catch (closeError) {
+        void closeError;
+      }
+      connectivityBroadcastChannel = null;
+      connectivityBroadcastFailed = true;
+    }
+  }
+  function freezeConnectivityState(nextState) {
+    try {
+      return freezeDeep(nextState);
+    } catch (error) {
+      safeWarn('cineOffline: Unable to freeze connectivity state', error);
+      return nextState;
+    }
+  }
+  function buildConnectivityState(update) {
+    var previous = connectivityState && _typeof(connectivityState) === 'object' ? connectivityState : {
+      status: 'unknown',
+      reason: null,
+      detail: null,
+      timestamp: Date.now(),
+      source: 'cineOffline'
+    };
+    var next = {
+      status: typeof update.status === 'string' && update.status ? update.status : previous.status || 'unknown',
+      reason: typeof update.reason === 'string' && update.reason ? update.reason : null,
+      detail: typeof update.detail === 'undefined' ? previous.detail : normalizeConnectivityDetail(update.detail),
+      timestamp: typeof update.timestamp === 'number' && Number.isFinite(update.timestamp) ? update.timestamp : Date.now(),
+      source: typeof update.source === 'string' && update.source ? update.source : previous.source || 'cineOffline'
+    };
+    return freezeConnectivityState(next);
+  }
+  function emitConnectivityState(update) {
+    if (!update || _typeof(update) !== 'object') {
+      return connectivityState;
+    }
+    var nextState = buildConnectivityState(update);
+    if (connectivityState && connectivityState.status === nextState.status && connectivityState.reason === nextState.reason && connectivityState.detail === nextState.detail && connectivityState.source === nextState.source) {
+      connectivityState = nextState;
+      assignGlobalConnectivityState(nextState);
+      return connectivityState;
+    }
+    connectivityState = nextState;
+    assignGlobalConnectivityState(nextState);
+    notifyConnectivityListeners(nextState);
+    broadcastConnectivityState(nextState);
+    return connectivityState;
+  }
+  connectivityState = emitConnectivityState({
+    status: 'unknown',
+    source: 'cineOffline'
+  });
   function informModuleGlobals(name, api) {
     if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
       MODULE_LINKER.recordModule(name, api);
@@ -612,6 +841,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return fallbackSafeWarn;
   }();
   var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+  var FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS = 3500;
   var RELOAD_WARMUP_MAX_WAIT_MS = 180;
   var reloadWarmupFailureLogged = false;
   function createDelay(ms) {
@@ -1405,6 +1635,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return resolveGlobal('navigator');
   }
+  function isNavigatorExplicitlyOffline(navigatorLike) {
+    if (!navigatorLike || _typeof(navigatorLike) !== 'object') {
+      return false;
+    }
+    if (typeof navigatorLike.onLine !== 'boolean') {
+      return false;
+    }
+    return navigatorLike.onLine === false;
+  }
   function resolveCaches(explicitCaches) {
     if (explicitCaches) {
       return explicitCaches;
@@ -1446,6 +1685,407 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var globalFetch = resolveGlobal('fetch');
     return typeof globalFetch === 'function' ? globalFetch : null;
+  }
+  function createAbortController() {
+    if (typeof AbortController !== 'function') {
+      return null;
+    }
+    try {
+      return new AbortController();
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+  function createTimeoutError(message) {
+    var error = new Error(message || 'Operation timed out');
+    error.name = 'TimeoutError';
+    error.code = 'ETIMEDOUT';
+    return error;
+  }
+  function fetchWithTimeout(fetchFn, url, init, timeoutMs) {
+    if (typeof fetchFn !== 'function') {
+      return Promise.resolve({
+        successful: false,
+        error: new Error('Fetch unavailable'),
+        timedOut: false
+      });
+    }
+    var options = init ? _objectSpread({}, init) : {};
+    var controller = createAbortController();
+    var timeoutId = null;
+    var timedOut = false;
+    if (controller && typeof controller.signal !== 'undefined') {
+      try {
+        options.signal = controller.signal;
+      } catch (signalError) {
+        void signalError;
+      }
+    }
+    var timeoutPromise = null;
+    if (typeof timeoutMs === 'number' && timeoutMs > 0 && typeof setTimeout === 'function') {
+      timeoutPromise = new Promise(function (_, reject) {
+        try {
+          timeoutId = setTimeout(function () {
+            timedOut = true;
+            if (controller && typeof controller.abort === 'function') {
+              try {
+                controller.abort();
+              } catch (abortError) {
+                void abortError;
+              }
+            }
+            reject(createTimeoutError('Connectivity probe timed out'));
+          }, timeoutMs);
+        } catch (scheduleError) {
+          void scheduleError;
+          timeoutPromise = null;
+        }
+      });
+    }
+    var cleanup = function cleanup() {
+      if (timeoutId) {
+        try {
+          clearTimeout(timeoutId);
+        } catch (error) {
+          void error;
+        }
+      }
+    };
+    var fetchPromise = function () {
+      try {
+        return fetchFn(url, options);
+      } catch (error) {
+        cleanup();
+        return Promise.reject(error);
+      }
+    }();
+    var racePromise = timeoutPromise ? Promise.race([fetchPromise, timeoutPromise]) : fetchPromise;
+    return racePromise.then(function (value) {
+      cleanup();
+      return {
+        successful: true,
+        value: value,
+        timedOut: false
+      };
+    }).catch(function (error) {
+      cleanup();
+      return {
+        successful: false,
+        error: error,
+        timedOut: timedOut
+      };
+    });
+  }
+  function isSuccessfulConnectivityResponse(response) {
+    if (!response) {
+      return false;
+    }
+    try {
+      if (response.ok === true) {
+        return true;
+      }
+    } catch (error) {
+      void error;
+    }
+    var status = 0;
+    try {
+      status = typeof response.status === 'number' ? response.status : 0;
+    } catch (error) {
+      void error;
+      status = 0;
+    }
+    if (status === 0) {
+      return true;
+    }
+    return status >= 200 && status < 400;
+  }
+  function appendConnectivityProbeToken(url, token) {
+    if (!url || typeof url !== 'string') {
+      return url;
+    }
+    if (typeof token === 'undefined' || token === null) {
+      return url;
+    }
+    var tokenString;
+    if (typeof token === 'string') {
+      tokenString = token;
+    } else {
+      try {
+        tokenString = String(token);
+      } catch (stringifyError) {
+        void stringifyError;
+        return url;
+      }
+    }
+    if (!tokenString) {
+      return url;
+    }
+    var base = url;
+    var fragment = '';
+    var hashIndex = base.indexOf('#');
+    if (hashIndex !== -1) {
+      fragment = base.slice(hashIndex);
+      base = base.slice(0, hashIndex);
+    }
+    var separator = base.indexOf('?') === -1 ? '?' : '&';
+    var encodedParam = encodeURIComponent(CONNECTIVITY_PROBE_QUERY_PARAM);
+    var encodedToken = encodeURIComponent(tokenString);
+    return "".concat(base).concat(separator).concat(encodedParam, "=").concat(encodedToken).concat(fragment);
+  }
+  function readConnectivityProbeResult(response) {
+    if (!response || !response.headers || typeof response.headers.get !== 'function') {
+      return null;
+    }
+    try {
+      var headerValue = response.headers.get(CONNECTIVITY_PROBE_RESULT_HEADER);
+      if (typeof headerValue === 'string' && headerValue) {
+        return headerValue.toLowerCase();
+      }
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+  function resolveConnectivityProbeUrl(forceReloadUrl, locationLike) {
+    if (forceReloadUrl && typeof forceReloadUrl.nextHref === 'string' && forceReloadUrl.nextHref) {
+      return forceReloadUrl.nextHref;
+    }
+    if (forceReloadUrl && typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref) {
+      return forceReloadUrl.originalHref;
+    }
+    var href = readLocationHrefSafe(locationLike);
+    if (href) {
+      return href;
+    }
+    var pathname = readLocationPathnameSafe(locationLike);
+    if (pathname) {
+      return pathname;
+    }
+    return 'index.html';
+  }
+  function probeReloadConnectivity(_x) {
+    return _probeReloadConnectivity.apply(this, arguments);
+  }
+  function _probeReloadConnectivity() {
+    _probeReloadConnectivity = _asyncToGenerator(_regenerator().m(function _callee3(_ref3) {
+      var navigatorLike, windowLike, locationLike, fetchFn, forceReloadUrl, timeoutMs, effectiveFetch, probeToken, probeUrl, probeHeaders, headFailureDetail, headResult, status, headProbeResult, getResult, getProbeResult;
+      return _regenerator().w(function (_context3) {
+        while (1) switch (_context3.n) {
+          case 0:
+            navigatorLike = _ref3.navigatorLike, windowLike = _ref3.windowLike, locationLike = _ref3.locationLike, fetchFn = _ref3.fetchFn, forceReloadUrl = _ref3.forceReloadUrl, timeoutMs = _ref3.timeoutMs;
+            if (!isNavigatorExplicitlyOffline(navigatorLike)) {
+              _context3.n = 1;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'offline'
+            });
+          case 1:
+            effectiveFetch = fetchFn || resolveFetch(undefined, windowLike);
+            if (!(typeof effectiveFetch !== 'function')) {
+              _context3.n = 2;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: true,
+              reason: 'fetch-unavailable'
+            });
+          case 2:
+            probeToken = "".concat(Date.now().toString(36), "-").concat(Math.random().toString(36).slice(2));
+            probeUrl = appendConnectivityProbeToken(resolveConnectivityProbeUrl(forceReloadUrl, locationLike), probeToken);
+            probeHeaders = {
+              'Cache-Control': 'no-store, max-age=0',
+              Pragma: 'no-cache'
+            };
+            if (typeof probeToken === 'string' && probeToken) {
+              probeHeaders[CONNECTIVITY_PROBE_HEADER] = probeToken;
+            }
+            headFailureDetail = null;
+            _context3.n = 3;
+            return fetchWithTimeout(effectiveFetch, probeUrl, {
+              method: 'HEAD',
+              cache: 'no-store',
+              credentials: 'same-origin',
+              headers: probeHeaders
+            }, timeoutMs);
+          case 3:
+            headResult = _context3.v;
+            if (!headResult.successful) {
+              _context3.n = 7;
+              break;
+            }
+            status = 0;
+            try {
+              status = headResult.value && typeof headResult.value.status === 'number' ? headResult.value.status : 0;
+            } catch (statusError) {
+              void statusError;
+              status = 0;
+            }
+            headProbeResult = readConnectivityProbeResult(headResult.value);
+            if (!(headProbeResult && headProbeResult !== CONNECTIVITY_PROBE_RESULT_NETWORK)) {
+              _context3.n = 4;
+              break;
+            }
+            headFailureDetail = {
+              source: 'head',
+              status: status,
+              probeResult: headProbeResult || CONNECTIVITY_PROBE_RESULT_FALLBACK
+            };
+            _context3.n = 6;
+            break;
+          case 4:
+            if (!isSuccessfulConnectivityResponse(headResult.value)) {
+              _context3.n = 5;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: true,
+              reason: 'head-ok'
+            });
+          case 5:
+            headFailureDetail = {
+              source: 'head',
+              status: status
+            };
+          case 6:
+            _context3.n = 9;
+            break;
+          case 7:
+            if (!headResult.timedOut) {
+              _context3.n = 8;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'timeout',
+              detail: headResult.error
+            });
+          case 8:
+            if (headResult.error) {
+              headFailureDetail = {
+                source: 'head',
+                error: headResult.error
+              };
+            }
+          case 9:
+            _context3.n = 10;
+            return fetchWithTimeout(effectiveFetch, probeUrl, {
+              method: 'GET',
+              cache: 'no-store',
+              credentials: 'same-origin',
+              headers: _objectSpread({}, probeHeaders)
+            }, timeoutMs);
+          case 10:
+            getResult = _context3.v;
+            if (!getResult.successful) {
+              _context3.n = 13;
+              break;
+            }
+            getProbeResult = readConnectivityProbeResult(getResult.value);
+            if (!(getProbeResult && getProbeResult !== CONNECTIVITY_PROBE_RESULT_NETWORK)) {
+              _context3.n = 11;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'cache-fallback',
+              detail: {
+                status: getResult.value && typeof getResult.value.status === 'number' ? getResult.value.status : undefined,
+                head: headFailureDetail,
+                probeResult: getProbeResult || CONNECTIVITY_PROBE_RESULT_FALLBACK
+              }
+            });
+          case 11:
+            if (!isSuccessfulConnectivityResponse(getResult.value)) {
+              _context3.n = 12;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: true,
+              reason: 'get-ok'
+            });
+          case 12:
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'get-failed',
+              detail: {
+                status: getResult.value && typeof getResult.value.status === 'number' ? getResult.value.status : undefined,
+                head: headFailureDetail
+              }
+            });
+          case 13:
+            if (!getResult.timedOut) {
+              _context3.n = 14;
+              break;
+            }
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'timeout',
+              detail: getResult.error
+            });
+          case 14:
+            return _context3.a(2, {
+              reachable: false,
+              reason: 'unreachable',
+              detail: getResult.error || headFailureDetail || headResult.error
+            });
+        }
+      }, _callee3);
+    }));
+    return _probeReloadConnectivity.apply(this, arguments);
+  }
+  function subscribeConnectivityStatus(listener) {
+    if (typeof listener !== 'function') {
+      return function unsubscribeNoop() {};
+    }
+    connectivityListeners.add(listener);
+    return function unsubscribeConnectivityListener() {
+      try {
+        connectivityListeners.delete(listener);
+      } catch (error) {
+        void error;
+      }
+    };
+  }
+  function unsubscribeConnectivityStatus(listener) {
+    if (typeof listener !== 'function') {
+      return;
+    }
+    try {
+      connectivityListeners.delete(listener);
+    } catch (error) {
+      void error;
+    }
+  }
+  function reportConnectivityProbeResult(result, meta) {
+    if (!result || _typeof(result) !== 'object') {
+      return;
+    }
+    var detail = result.detail && _typeof(result.detail) === 'object' ? _objectSpread(_objectSpread({}, result.detail), {}, {
+      stage: meta && meta.stage || 'probe',
+      source: meta && meta.source || 'probe'
+    }) : {
+      stage: meta && meta.stage || 'probe',
+      source: meta && meta.source || 'probe'
+    };
+    if (result.reachable) {
+      emitConnectivityState({
+        status: 'online',
+        reason: typeof result.reason === 'string' && result.reason ? result.reason : 'probe-ok',
+        detail: detail,
+        source: meta && meta.source || 'probe'
+      });
+      return;
+    }
+    var status = result.reason === 'offline' ? 'offline' : 'degraded';
+    emitConnectivityState({
+      status: status,
+      reason: typeof result.reason === 'string' && result.reason ? result.reason : 'unknown',
+      detail: detail,
+      source: meta && meta.source || 'probe'
+    });
   }
   function resolveXmlHttpRequest(windowLike) {
     var win = windowLike || resolveWindow();
@@ -1557,9 +2197,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         label: '__cineGlobal'
       });
     }
-    candidates.forEach(function (_ref3) {
-      var scope = _ref3.scope,
-        label = _ref3.label;
+    candidates.forEach(function (_ref4) {
+      var scope = _ref4.scope,
+        label = _ref4.label;
       inspectScopeForStorages(storages, scope, label);
     });
     var win = resolveWindow(options.window);
@@ -1618,21 +2258,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return clearedAny;
   }
-  function collectServiceWorkerRegistrations(_x) {
+  function collectServiceWorkerRegistrations(_x2) {
     return _collectServiceWorkerRegistrations.apply(this, arguments);
   }
   function _collectServiceWorkerRegistrations() {
-    _collectServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee3(navigatorOverride) {
+    _collectServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee4(navigatorOverride) {
       var nav, serviceWorker, registrations, pushRegistration, regs, reg, readyReg, _t6, _t7;
-      return _regenerator().w(function (_context3) {
-        while (1) switch (_context3.p = _context3.n) {
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.p = _context4.n) {
           case 0:
             nav = resolveNavigator(navigatorOverride);
             if (!(!nav || !nav.serviceWorker)) {
-              _context3.n = 1;
+              _context4.n = 1;
               break;
             }
-            return _context3.a(2, []);
+            return _context4.a(2, []);
           case 1:
             serviceWorker = nav.serviceWorker;
             registrations = [];
@@ -1641,138 +2281,138 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 registrations.push(registration);
               }
             };
-            _context3.p = 2;
+            _context4.p = 2;
             if (!(typeof serviceWorker.getRegistrations === 'function')) {
-              _context3.n = 4;
+              _context4.n = 4;
               break;
             }
-            _context3.n = 3;
+            _context4.n = 3;
             return serviceWorker.getRegistrations();
           case 3:
-            regs = _context3.v;
+            regs = _context4.v;
             if (Array.isArray(regs)) {
               regs.forEach(pushRegistration);
             }
-            _context3.n = 10;
+            _context4.n = 10;
             break;
           case 4:
             if (!(typeof serviceWorker.getRegistration === 'function')) {
-              _context3.n = 6;
+              _context4.n = 6;
               break;
             }
-            _context3.n = 5;
+            _context4.n = 5;
             return serviceWorker.getRegistration();
           case 5:
-            reg = _context3.v;
+            reg = _context4.v;
             pushRegistration(reg);
-            _context3.n = 10;
+            _context4.n = 10;
             break;
           case 6:
             if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-              _context3.n = 10;
+              _context4.n = 10;
               break;
             }
-            _context3.p = 7;
-            _context3.n = 8;
+            _context4.p = 7;
+            _context4.n = 8;
             return serviceWorker.ready;
           case 8:
-            readyReg = _context3.v;
+            readyReg = _context4.v;
             pushRegistration(readyReg);
-            _context3.n = 10;
+            _context4.n = 10;
             break;
           case 9:
-            _context3.p = 9;
-            _t6 = _context3.v;
+            _context4.p = 9;
+            _t6 = _context4.v;
             safeWarn('Failed to await active service worker', _t6);
           case 10:
-            _context3.n = 12;
+            _context4.n = 12;
             break;
           case 11:
-            _context3.p = 11;
-            _t7 = _context3.v;
+            _context4.p = 11;
+            _t7 = _context4.v;
             safeWarn('Failed to query service worker registrations', _t7);
           case 12:
-            return _context3.a(2, registrations);
+            return _context4.a(2, registrations);
         }
-      }, _callee3, null, [[7, 9], [2, 11]]);
+      }, _callee4, null, [[7, 9], [2, 11]]);
     }));
     return _collectServiceWorkerRegistrations.apply(this, arguments);
   }
-  function resolvePrefetchedServiceWorkerRegistrations(_x2) {
+  function resolvePrefetchedServiceWorkerRegistrations(_x3) {
     return _resolvePrefetchedServiceWorkerRegistrations.apply(this, arguments);
   }
   function _resolvePrefetchedServiceWorkerRegistrations() {
-    _resolvePrefetchedServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee4(prefetchedRegistrations) {
+    _resolvePrefetchedServiceWorkerRegistrations = _asyncToGenerator(_regenerator().m(function _callee5(prefetchedRegistrations) {
       var resolved, _t8;
-      return _regenerator().w(function (_context4) {
-        while (1) switch (_context4.p = _context4.n) {
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.p = _context5.n) {
           case 0:
             if (prefetchedRegistrations) {
-              _context4.n = 1;
-              break;
-            }
-            return _context4.a(2, []);
-          case 1:
-            _context4.p = 1;
-            _context4.n = 2;
-            return Promise.resolve(prefetchedRegistrations);
-          case 2:
-            resolved = _context4.v;
-            if (Array.isArray(resolved)) {
-              _context4.n = 3;
-              break;
-            }
-            return _context4.a(2, []);
-          case 3:
-            return _context4.a(2, resolved.filter(function (registration) {
-              return !!registration;
-            }));
-          case 4:
-            _context4.p = 4;
-            _t8 = _context4.v;
-            safeWarn('Failed to resolve prefetched service worker registrations', _t8);
-            return _context4.a(2, []);
-        }
-      }, _callee4, null, [[1, 4]]);
-    }));
-    return _resolvePrefetchedServiceWorkerRegistrations.apply(this, arguments);
-  }
-  function unregisterServiceWorkers(_x3, _x4) {
-    return _unregisterServiceWorkers.apply(this, arguments);
-  }
-  function _unregisterServiceWorkers() {
-    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee5(navigatorOverride, prefetchedRegistrations) {
-      var nav, registrations;
-      return _regenerator().w(function (_context5) {
-        while (1) switch (_context5.n) {
-          case 0:
-            nav = resolveNavigator(navigatorOverride);
-            if (!(!nav || !nav.serviceWorker)) {
               _context5.n = 1;
               break;
             }
-            return _context5.a(2, false);
+            return _context5.a(2, []);
           case 1:
+            _context5.p = 1;
             _context5.n = 2;
+            return Promise.resolve(prefetchedRegistrations);
+          case 2:
+            resolved = _context5.v;
+            if (Array.isArray(resolved)) {
+              _context5.n = 3;
+              break;
+            }
+            return _context5.a(2, []);
+          case 3:
+            return _context5.a(2, resolved.filter(function (registration) {
+              return !!registration;
+            }));
+          case 4:
+            _context5.p = 4;
+            _t8 = _context5.v;
+            safeWarn('Failed to resolve prefetched service worker registrations', _t8);
+            return _context5.a(2, []);
+        }
+      }, _callee5, null, [[1, 4]]);
+    }));
+    return _resolvePrefetchedServiceWorkerRegistrations.apply(this, arguments);
+  }
+  function unregisterServiceWorkers(_x4, _x5) {
+    return _unregisterServiceWorkers.apply(this, arguments);
+  }
+  function _unregisterServiceWorkers() {
+    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee6(navigatorOverride, prefetchedRegistrations) {
+      var nav, registrations;
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.n) {
+          case 0:
+            nav = resolveNavigator(navigatorOverride);
+            if (!(!nav || !nav.serviceWorker)) {
+              _context6.n = 1;
+              break;
+            }
+            return _context6.a(2, false);
+          case 1:
+            _context6.n = 2;
             return resolvePrefetchedServiceWorkerRegistrations(prefetchedRegistrations);
           case 2:
-            registrations = _context5.v;
+            registrations = _context6.v;
             if (registrations.length) {
-              _context5.n = 4;
+              _context6.n = 4;
               break;
             }
-            _context5.n = 3;
+            _context6.n = 3;
             return collectServiceWorkerRegistrations(nav);
           case 3:
-            registrations = _context5.v;
+            registrations = _context6.v;
           case 4:
             if (registrations.length) {
-              _context5.n = 5;
+              _context6.n = 5;
               break;
             }
-            return _context5.a(2, false);
+            return _context6.a(2, false);
           case 5:
-            _context5.n = 6;
+            _context6.n = 6;
             return Promise.all(registrations.map(function (registration) {
               if (!registration || typeof registration.unregister !== 'function') {
                 return Promise.resolve(false);
@@ -1783,9 +2423,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 6:
-            return _context5.a(2, true);
+            return _context6.a(2, true);
         }
-      }, _callee5);
+      }, _callee6);
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
@@ -1907,46 +2547,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  function clearCacheStorage(_x5) {
+  function clearCacheStorage(_x6) {
     return _clearCacheStorage.apply(this, arguments);
   }
   function _clearCacheStorage() {
-    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee6(cachesOverride) {
+    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee7(cachesOverride) {
       var cachesInstance, exposedName, lowerExplicit, keys, relevantKeys, removedAny, _t9;
-      return _regenerator().w(function (_context6) {
-        while (1) switch (_context6.p = _context6.n) {
+      return _regenerator().w(function (_context7) {
+        while (1) switch (_context7.p = _context7.n) {
           case 0:
             cachesInstance = resolveCaches(cachesOverride);
             if (!(!cachesInstance || typeof cachesInstance.keys !== 'function')) {
-              _context6.n = 1;
+              _context7.n = 1;
               break;
             }
-            return _context6.a(2, false);
+            return _context7.a(2, false);
           case 1:
             exposedName = resolveExposedCacheName();
             lowerExplicit = exposedName ? exposedName.toLowerCase() : null;
-            _context6.p = 2;
-            _context6.n = 3;
+            _context7.p = 2;
+            _context7.n = 3;
             return cachesInstance.keys();
           case 3:
-            keys = _context6.v;
+            keys = _context7.v;
             if (!(!Array.isArray(keys) || !keys.length)) {
-              _context6.n = 4;
+              _context7.n = 4;
               break;
             }
-            return _context6.a(2, false);
+            return _context7.a(2, false);
           case 4:
             relevantKeys = keys.filter(function (key) {
               return isRelevantCacheKey(key, exposedName, lowerExplicit);
             });
             if (relevantKeys.length) {
-              _context6.n = 5;
+              _context7.n = 5;
               break;
             }
-            return _context6.a(2, false);
+            return _context7.a(2, false);
           case 5:
             removedAny = false;
-            _context6.n = 6;
+            _context7.n = 6;
             return Promise.all(relevantKeys.map(function (key) {
               if (!key || typeof cachesInstance.delete !== 'function') {
                 return Promise.resolve(false);
@@ -1963,14 +2603,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 6:
-            return _context6.a(2, removedAny);
+            return _context7.a(2, removedAny);
           case 7:
-            _context6.p = 7;
-            _t9 = _context6.v;
+            _context7.p = 7;
+            _t9 = _context7.v;
             safeWarn('Cache clear failed', _t9);
-            return _context6.a(2, false);
+            return _context7.a(2, false);
         }
-      }, _callee6, null, [[2, 7]]);
+      }, _callee7, null, [[2, 7]]);
     }));
     return _clearCacheStorage.apply(this, arguments);
   }
@@ -2700,12 +3340,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return _reloadApp.apply(this, arguments);
   }
   function _reloadApp() {
-    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee9() {
+    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee0() {
       var options,
         win,
         location,
         forceReloadUrl,
         navigatorLike,
+        connectivity,
+        notifyOffline,
         serviceWorkerRegistrationsPromise,
         uiCacheCleared,
         clearUiCacheStorageEntriesFn,
@@ -2732,17 +3374,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         reloadTriggered,
         reloadFn,
         cachesCleared,
-        _args9 = arguments,
+        _args0 = arguments,
         _t10,
         _t11;
-      return _regenerator().w(function (_context9) {
-        while (1) switch (_context9.p = _context9.n) {
+      return _regenerator().w(function (_context0) {
+        while (1) switch (_context0.p = _context0.n) {
           case 0:
-            options = _args9.length > 0 && _args9[0] !== undefined ? _args9[0] : {};
+            options = _args0.length > 0 && _args0[0] !== undefined ? _args0[0] : {};
             win = resolveWindow(options.window);
             location = resolveLocation(options.location || win && win.location);
             forceReloadUrl = coerceForceReloadUrlDescriptor(location, buildForceReloadUrl(location, 'forceReload'), 'forceReload');
             navigatorLike = resolveNavigator(options.navigator);
+            _context0.n = 1;
+            return probeReloadConnectivity({
+              navigatorLike: navigatorLike,
+              windowLike: win,
+              locationLike: location,
+              fetchFn: resolveFetch(options.fetch, win),
+              forceReloadUrl: forceReloadUrl,
+              timeoutMs: typeof options.connectivityProbeTimeoutMs === 'number' ? options.connectivityProbeTimeoutMs : FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS
+            });
+          case 1:
+            connectivity = _context0.v;
+            reportConnectivityProbeResult(connectivity, {
+              stage: 'reload-app-probe',
+              source: 'reloadApp.probe'
+            });
+            if (connectivity.reachable) {
+              _context0.n = 2;
+              break;
+            }
+            notifyOffline = typeof options.onOfflineReloadBlocked === 'function' ? options.onOfflineReloadBlocked : resolveGlobal('announceForceReloadOfflineNotice');
+            if (typeof notifyOffline === 'function') {
+              try {
+                notifyOffline({
+                  reason: connectivity.reason || 'offline',
+                  source: 'reloadApp'
+                });
+              } catch (notifyError) {
+                safeWarn('Failed to announce offline reload guard', notifyError);
+              }
+            }
+            if (connectivity.detail && connectivity.reason !== 'offline') {
+              safeWarn('Connectivity probe blocked forced reload', connectivity.detail);
+            }
+            emitConnectivityState({
+              status: 'degraded',
+              reason: 'reload-blocked',
+              detail: {
+                previousReason: connectivity.reason || 'offline',
+                stage: 'reload-app',
+                source: 'reloadApp.blocked'
+              },
+              source: 'reloadApp.blocked'
+            });
+            return _context0.a(2, {
+              blocked: true,
+              reason: connectivity.reason || 'offline',
+              uiCacheCleared: false,
+              serviceWorkersUnregistered: false,
+              serviceWorkerStatusKnown: false,
+              warmupCompleted: false,
+              cachesCleared: false,
+              reloadTriggered: false,
+              navigationTriggered: false
+            });
+          case 2:
             serviceWorkerRegistrationsPromise = navigatorLike && navigatorLike.serviceWorker ? collectServiceWorkerRegistrations(navigatorLike) : Promise.resolve([]);
             uiCacheCleared = false;
             clearUiCacheStorageEntriesFn = typeof options.clearUiCacheStorageEntries === 'function' ? options.clearUiCacheStorageEntries : typeof resolveGlobal('clearUiCacheStorageEntries') === 'function' ? resolveGlobal('clearUiCacheStorageEntries') : null;
@@ -2761,41 +3458,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee7() {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee8() {
               var _t0;
-              return _regenerator().w(function (_context7) {
-                while (1) switch (_context7.p = _context7.n) {
-                  case 0:
-                    _context7.p = 0;
-                    _context7.n = 1;
-                    return unregisterServiceWorkers(options.navigator, serviceWorkerRegistrationsPromise);
-                  case 1:
-                    return _context7.a(2, _context7.v);
-                  case 2:
-                    _context7.p = 2;
-                    _t0 = _context7.v;
-                    safeWarn('Service worker cleanup failed', _t0);
-                    return _context7.a(2, false);
-                }
-              }, _callee7, null, [[0, 2]]);
-            }))();
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee8() {
-              var _t1;
               return _regenerator().w(function (_context8) {
                 while (1) switch (_context8.p = _context8.n) {
                   case 0:
                     _context8.p = 0;
                     _context8.n = 1;
-                    return clearCacheStorage(options.caches);
+                    return unregisterServiceWorkers(options.navigator, serviceWorkerRegistrationsPromise);
                   case 1:
                     return _context8.a(2, _context8.v);
                   case 2:
                     _context8.p = 2;
-                    _t1 = _context8.v;
-                    safeWarn('Cache clear failed', _t1);
+                    _t0 = _context8.v;
+                    safeWarn('Service worker cleanup failed', _t0);
                     return _context8.a(2, false);
                 }
               }, _callee8, null, [[0, 2]]);
+            }))();
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee9() {
+              var _t1;
+              return _regenerator().w(function (_context9) {
+                while (1) switch (_context9.p = _context9.n) {
+                  case 0:
+                    _context9.p = 0;
+                    _context9.n = 1;
+                    return clearCacheStorage(options.caches);
+                  case 1:
+                    return _context9.a(2, _context9.v);
+                  case 2:
+                    _context9.p = 2;
+                    _t1 = _context9.v;
+                    safeWarn('Cache clear failed', _t1);
+                    return _context9.a(2, false);
+                }
+              }, _callee9, null, [[0, 2]]);
             }))();
             warmupHandle = scheduleReloadWarmup({
               window: win,
@@ -2867,8 +3564,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             serviceWorkersUnregistered = false;
             warmupFinishedBeforeReload = false;
             serviceWorkerStatusKnown = false;
-            _context9.p = 1;
-            _context9.n = 2;
+            _context0.p = 3;
+            _context0.n = 4;
             return awaitPromiseWithSoftTimeout(gatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
               safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
                 timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -2882,8 +3579,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               var detail = lateError && lateError.error ? lateError.error : lateError;
               safeWarn('Service worker cleanup failed after reload triggered', detail);
             });
-          case 2:
-            serviceWorkerAwaitResult = _context9.v;
+          case 4:
+            serviceWorkerAwaitResult = _context0.v;
             if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
               gateResult = serviceWorkerAwaitResult.result;
               if (gateResult && gateResult.source === 'serviceWorker') {
@@ -2906,15 +3603,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }
             }
-            _context9.n = 4;
+            _context0.n = 6;
             break;
-          case 3:
-            _context9.p = 3;
-            _t10 = _context9.v;
+          case 5:
+            _context0.p = 5;
+            _t10 = _context0.v;
             detail = _t10 && _t10.error ? _t10.error : _t10;
             safeWarn('Reload preparation gate failed', detail);
-          case 4:
-            _context9.p = 4;
+          case 6:
+            _context0.p = 6;
             if (controllerChangeWatcher) {
               try {
                 controllerChangeWatcher.cancel();
@@ -2922,8 +3619,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 void controllerCleanupError;
               }
             }
-            return _context9.f(4);
-          case 5:
+            return _context0.f(6);
+          case 7:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
             try {
@@ -2943,20 +3640,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
             cachesCleared = false;
-            _context9.p = 6;
-            _context9.n = 7;
+            _context0.p = 8;
+            _context0.n = 9;
             return cacheCleanupPromise;
-          case 7:
-            cachesCleared = _context9.v;
-            _context9.n = 9;
+          case 9:
+            cachesCleared = _context0.v;
+            _context0.n = 11;
             break;
-          case 8:
-            _context9.p = 8;
-            _t11 = _context9.v;
+          case 10:
+            _context0.p = 10;
+            _t11 = _context0.v;
             safeWarn('Cache cleanup promise rejected', _t11);
             cachesCleared = false;
-          case 9:
-            return _context9.a(2, {
+          case 11:
+            return _context0.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
               serviceWorkerStatusKnown: serviceWorkerStatusKnown,
@@ -2966,7 +3663,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               navigationTriggered: reloadTriggered
             });
         }
-      }, _callee9, null, [[6, 8], [1, 3, 4, 5]]);
+      }, _callee0, null, [[8, 10], [3, 5, 6, 7]]);
     }));
     return _reloadApp.apply(this, arguments);
   }
@@ -3040,6 +3737,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var offlineAPI = {
     registerServiceWorker: registerServiceWorker,
     reloadApp: reloadApp,
+    getConnectivityState: function getConnectivityState() {
+      return connectivityState;
+    },
+    subscribeConnectivityStatus: subscribeConnectivityStatus,
+    unsubscribeConnectivityStatus: unsubscribeConnectivityStatus,
     __internal: {
       collectFallbackUiCacheStorages: collectFallbackUiCacheStorages,
       clearUiCacheEntriesFallback: clearUiCacheEntriesFallback,

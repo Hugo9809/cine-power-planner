@@ -108,7 +108,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
   var SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
   var BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
-  var BACKUP_STORAGE_KNOWN_KEYS = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'customLogo', 'language']);
+  var BACKUP_STORAGE_KNOWN_KEYS = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'customLogo', 'cineRentalPrintSections', 'language']);
   if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
     BACKUP_STORAGE_KNOWN_KEYS.add(IOS_PWA_HELP_STORAGE_KEY);
   } else if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.IOS_PWA_HELP_STORAGE_KEY === 'string' && GLOBAL_SCOPE.IOS_PWA_HELP_STORAGE_KEY) {
@@ -1177,7 +1177,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       heading.textContent = fileName || 'Manual backup';
       heading.style.margin = '0';
       heading.style.fontSize = '1.5rem';
-      heading.style.fontWeight = '600';
+      heading.style.fontWeight = '400';
       var description = doc.createElement('p');
       if (typeof getManualDownloadFallbackMessage === 'function') {
         description.textContent = getManualDownloadFallbackMessage();

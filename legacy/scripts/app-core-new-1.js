@@ -4621,6 +4621,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   var pendingInstallBannerPositionUpdate = false;
+  var FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK = 'Force reload requires an internet connection. Try again once you are back online.';
   function scheduleInstallBannerPositionUpdate() {
     if (pendingInstallBannerPositionUpdate) return;
     if (typeof window === 'undefined') return;
@@ -4663,24 +4664,420 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var offlineIndicator = document.getElementById('offlineIndicator');
     if (!offlineIndicator) return;
-    var updateOnlineStatus = function updateOnlineStatus() {
-      var isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
-      if (isOnline) {
+    var reloadButton = document.getElementById('reloadButton');
+    var dataset = offlineIndicator.dataset || {};
+    var currentLabel = typeof offlineIndicator.textContent === 'string' && offlineIndicator.textContent.trim() ? offlineIndicator.textContent.trim() : 'Offline';
+    if (offlineIndicator.dataset) {
+      if (!dataset.baseLabel || !dataset.baseLabel.trim()) {
+        offlineIndicator.dataset.baseLabel = currentLabel;
+      }
+      var currentHelp = typeof offlineIndicator.getAttribute === 'function' ? offlineIndicator.getAttribute('data-help') : null;
+      if (!offlineIndicator.dataset.baseHelp || !offlineIndicator.dataset.baseHelp.trim()) {
+        if (typeof currentHelp === 'string' && currentHelp.trim()) {
+          offlineIndicator.dataset.baseHelp = currentHelp.trim();
+        } else {
+          offlineIndicator.dataset.baseHelp = offlineIndicator.dataset.baseLabel || currentLabel;
+        }
+      }
+      if (!offlineIndicator.dataset.forceReloadNotice || !offlineIndicator.dataset.forceReloadNotice.trim()) {
+        offlineIndicator.dataset.forceReloadNotice = FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+      }
+      if (!offlineIndicator.dataset.degradedLabel || !offlineIndicator.dataset.degradedLabel.trim()) {
+        offlineIndicator.dataset.degradedLabel = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+      }
+      if (!offlineIndicator.dataset.degradedHelp || !offlineIndicator.dataset.degradedHelp.trim()) {
+        offlineIndicator.dataset.degradedHelp = offlineIndicator.dataset.baseHelp || currentLabel;
+      }
+      if (!offlineIndicator.dataset.reasonCacheFallback || !offlineIndicator.dataset.reasonCacheFallback.trim()) {
+        offlineIndicator.dataset.reasonCacheFallback = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+      }
+      if (!offlineIndicator.dataset.reasonGetFailed || !offlineIndicator.dataset.reasonGetFailed.trim()) {
+        offlineIndicator.dataset.reasonGetFailed = offlineIndicator.dataset.reasonCacheFallback;
+      }
+      if (!offlineIndicator.dataset.reasonTimeout || !offlineIndicator.dataset.reasonTimeout.trim()) {
+        offlineIndicator.dataset.reasonTimeout = offlineIndicator.dataset.reasonCacheFallback;
+      }
+      if (!offlineIndicator.dataset.reasonUnreachable || !offlineIndicator.dataset.reasonUnreachable.trim()) {
+        offlineIndicator.dataset.reasonUnreachable = offlineIndicator.dataset.reasonCacheFallback;
+      }
+      if (!offlineIndicator.dataset.reasonReloadBlocked || !offlineIndicator.dataset.reasonReloadBlocked.trim()) {
+        offlineIndicator.dataset.reasonReloadBlocked = offlineIndicator.dataset.forceReloadNotice || FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+      }
+      if (!offlineIndicator.dataset.reasonUnknown || !offlineIndicator.dataset.reasonUnknown.trim()) {
+        offlineIndicator.dataset.reasonUnknown = offlineIndicator.dataset.degradedHelp || currentLabel;
+      }
+    }
+    var CONNECTIVITY_STATUS_MESSAGE_TYPE = 'cine-sw:connectivity-status';
+    var SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+    var lastConnectivityState = null;
+    var connectivityChannel = null;
+    var connectivityChannelFailed = false;
+    var unsubscribeConnectivity = null;
+    var resolveOfflineNotice = function resolveOfflineNotice() {
+      var _offlineIndicator$dat, _reloadButton$dataset;
+      var indicatorNotice = (_offlineIndicator$dat = offlineIndicator.dataset) === null || _offlineIndicator$dat === void 0 ? void 0 : _offlineIndicator$dat.forceReloadNotice;
+      if (typeof indicatorNotice === 'string' && indicatorNotice.trim()) {
+        return indicatorNotice.trim();
+      }
+      var buttonNotice = reloadButton === null || reloadButton === void 0 || (_reloadButton$dataset = reloadButton.dataset) === null || _reloadButton$dataset === void 0 ? void 0 : _reloadButton$dataset.offlineNotice;
+      if (typeof buttonNotice === 'string' && buttonNotice.trim()) {
+        return buttonNotice.trim();
+      }
+      return FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK;
+    };
+    var getNavigatorOnline = function getNavigatorOnline() {
+      return typeof navigator.onLine === 'boolean' ? navigator.onLine !== false : true;
+    };
+    var getBaseLabel = function getBaseLabel() {
+      var _offlineIndicator$dat2;
+      return (_offlineIndicator$dat2 = offlineIndicator.dataset) !== null && _offlineIndicator$dat2 !== void 0 && _offlineIndicator$dat2.baseLabel && offlineIndicator.dataset.baseLabel.trim() ? offlineIndicator.dataset.baseLabel.trim() : currentLabel;
+    };
+    var getBaseHelp = function getBaseHelp() {
+      var _offlineIndicator$dat3;
+      return (_offlineIndicator$dat3 = offlineIndicator.dataset) !== null && _offlineIndicator$dat3 !== void 0 && _offlineIndicator$dat3.baseHelp && offlineIndicator.dataset.baseHelp.trim() ? offlineIndicator.dataset.baseHelp.trim() : getBaseLabel();
+    };
+    var getDegradedLabel = function getDegradedLabel() {
+      var _offlineIndicator$dat4;
+      return (_offlineIndicator$dat4 = offlineIndicator.dataset) !== null && _offlineIndicator$dat4 !== void 0 && _offlineIndicator$dat4.degradedLabel && offlineIndicator.dataset.degradedLabel.trim() ? offlineIndicator.dataset.degradedLabel.trim() : resolveOfflineNotice();
+    };
+    var getDegradedHelp = function getDegradedHelp() {
+      var _offlineIndicator$dat5;
+      return (_offlineIndicator$dat5 = offlineIndicator.dataset) !== null && _offlineIndicator$dat5 !== void 0 && _offlineIndicator$dat5.degradedHelp && offlineIndicator.dataset.degradedHelp.trim() ? offlineIndicator.dataset.degradedHelp.trim() : getDegradedLabel();
+    };
+    var CONNECTIVITY_REASON_KEYS = {
+      'cache-fallback': 'reasonCacheFallback',
+      'get-failed': 'reasonGetFailed',
+      timeout: 'reasonTimeout',
+      unreachable: 'reasonUnreachable',
+      'reload-blocked': 'reasonReloadBlocked',
+      offline: 'forceReloadNotice'
+    };
+    var resolveReasonText = function resolveReasonText(reason) {
+      var _offlineIndicator$dat7;
+      if (!reason) {
+        var _offlineIndicator$dat6;
+        var fallback = (_offlineIndicator$dat6 = offlineIndicator.dataset) === null || _offlineIndicator$dat6 === void 0 ? void 0 : _offlineIndicator$dat6.reasonUnknown;
+        return typeof fallback === 'string' && fallback.trim() ? fallback.trim() : '';
+      }
+      if (reason === 'navigator-offline') {
+        return resolveOfflineNotice();
+      }
+      var key = CONNECTIVITY_REASON_KEYS[reason] || 'reasonUnknown';
+      var value = (_offlineIndicator$dat7 = offlineIndicator.dataset) === null || _offlineIndicator$dat7 === void 0 ? void 0 : _offlineIndicator$dat7[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+      if (key !== 'reasonUnknown') {
+        var _offlineIndicator$dat8;
+        var unknown = (_offlineIndicator$dat8 = offlineIndicator.dataset) === null || _offlineIndicator$dat8 === void 0 ? void 0 : _offlineIndicator$dat8.reasonUnknown;
+        if (typeof unknown === 'string' && unknown.trim()) {
+          return unknown.trim();
+        }
+      }
+      return '';
+    };
+    var _describeConnectivityDetail = function describeConnectivityDetail(detail) {
+      if (!detail) {
+        return '';
+      }
+      if (typeof detail === 'string') {
+        return detail.trim();
+      }
+      if (_typeof(detail) !== 'object') {
+        return '';
+      }
+      var parts = [];
+      if (typeof detail.status === 'number' && Number.isFinite(detail.status)) {
+        parts.push("HTTP ".concat(detail.status));
+      }
+      if (typeof detail.statusText === 'string' && detail.statusText.trim()) {
+        parts.push(detail.statusText.trim());
+      }
+      if (typeof detail.message === 'string' && detail.message.trim()) {
+        parts.push(detail.message.trim());
+      }
+      if (typeof detail.error === 'string' && detail.error.trim()) {
+        parts.push(detail.error.trim());
+      }
+      if (!parts.length && detail.error && _typeof(detail.error) === 'object') {
+        var nested = _describeConnectivityDetail(detail.error);
+        if (nested) {
+          parts.push(nested);
+        }
+      }
+      if (!parts.length && detail.reason && typeof detail.reason === 'string') {
+        parts.push(detail.reason.trim());
+      }
+      return parts.join(' ').trim();
+    };
+    var updateReloadButtonState = function updateReloadButtonState(status, offlineNotice) {
+      if (!reloadButton) {
+        return;
+      }
+      var noticeText = typeof offlineNotice === 'string' && offlineNotice.trim() ? offlineNotice.trim() : resolveOfflineNotice();
+      if (reloadButton.dataset) {
+        if (!reloadButton.dataset.onlineTitle || !reloadButton.dataset.onlineTitle.trim()) {
+          var currentTitle = reloadButton.getAttribute('title');
+          if (typeof currentTitle === 'string' && currentTitle.trim()) {
+            reloadButton.dataset.onlineTitle = currentTitle.trim();
+          } else {
+            reloadButton.dataset.onlineTitle = 'Force reload';
+          }
+        }
+        if (!reloadButton.dataset.onlineHelp || !reloadButton.dataset.onlineHelp.trim()) {
+          var _currentHelp = reloadButton.getAttribute('data-help');
+          if (typeof _currentHelp === 'string' && _currentHelp.trim()) {
+            reloadButton.dataset.onlineHelp = _currentHelp.trim();
+          } else {
+            reloadButton.dataset.onlineHelp = reloadButton.dataset.onlineTitle;
+          }
+        }
+        if (!reloadButton.dataset.onlineAriaLabel || !reloadButton.dataset.onlineAriaLabel.trim()) {
+          var ariaLabel = reloadButton.getAttribute('aria-label');
+          if (typeof ariaLabel === 'string' && ariaLabel.trim()) {
+            reloadButton.dataset.onlineAriaLabel = ariaLabel.trim();
+          } else {
+            reloadButton.dataset.onlineAriaLabel = reloadButton.dataset.onlineTitle;
+          }
+        }
+        if (!reloadButton.dataset.offlineNotice || !reloadButton.dataset.offlineNotice.trim()) {
+          reloadButton.dataset.offlineNotice = noticeText;
+        }
+      }
+      if (status === 'online') {
+        var _reloadButton$dataset2, _reloadButton$dataset3, _reloadButton$dataset4;
+        reloadButton.removeAttribute('disabled');
+        reloadButton.removeAttribute('aria-disabled');
+        var title = ((_reloadButton$dataset2 = reloadButton.dataset) === null || _reloadButton$dataset2 === void 0 ? void 0 : _reloadButton$dataset2.onlineTitle) || 'Force reload';
+        var help = ((_reloadButton$dataset3 = reloadButton.dataset) === null || _reloadButton$dataset3 === void 0 ? void 0 : _reloadButton$dataset3.onlineHelp) || title;
+        reloadButton.setAttribute('title', title);
+        reloadButton.setAttribute('data-help', help);
+        var _ariaLabel = ((_reloadButton$dataset4 = reloadButton.dataset) === null || _reloadButton$dataset4 === void 0 ? void 0 : _reloadButton$dataset4.onlineAriaLabel) || title;
+        reloadButton.setAttribute('aria-label', _ariaLabel);
+      } else {
+        reloadButton.setAttribute('disabled', 'disabled');
+        reloadButton.setAttribute('aria-disabled', 'true');
+        reloadButton.setAttribute('title', noticeText);
+        reloadButton.setAttribute('data-help', noticeText);
+        reloadButton.setAttribute('aria-label', noticeText);
+        if (reloadButton.dataset) {
+          reloadButton.dataset.offlineNotice = noticeText;
+          reloadButton.dataset.degradedNotice = noticeText;
+        }
+      }
+    };
+    var sanitizeConnectivityState = function sanitizeConnectivityState(state) {
+      if (!state || _typeof(state) !== 'object') {
+        return null;
+      }
+      var status = typeof state.status === 'string' && state.status ? state.status : 'unknown';
+      var reason = typeof state.reason === 'string' && state.reason ? state.reason : null;
+      var timestamp = typeof state.timestamp === 'number' && Number.isFinite(state.timestamp) ? state.timestamp : Date.now();
+      var detail = null;
+      if (state.detail && _typeof(state.detail) === 'object') {
+        detail = state.detail;
+      } else if (typeof state.detail === 'string' && state.detail.trim()) {
+        detail = state.detail.trim();
+      }
+      return {
+        status: status,
+        reason: reason,
+        detail: detail,
+        timestamp: timestamp
+      };
+    };
+    var refreshOfflineIndicator = function refreshOfflineIndicator() {
+      var navigatorOnline = getNavigatorOnline();
+      var effectiveStatus = navigatorOnline ? 'online' : 'offline';
+      var effectiveReason = navigatorOnline ? null : 'navigator-offline';
+      var effectiveDetail = null;
+      var effectiveTimestamp = null;
+      if (lastConnectivityState) {
+        var stateStatus = lastConnectivityState.status;
+        if (stateStatus === 'offline') {
+          effectiveStatus = 'offline';
+          effectiveReason = lastConnectivityState.reason || effectiveReason || 'offline';
+          effectiveDetail = lastConnectivityState.detail || null;
+          effectiveTimestamp = lastConnectivityState.timestamp || null;
+        } else if (stateStatus === 'degraded' && effectiveStatus !== 'offline') {
+          effectiveStatus = 'degraded';
+          effectiveReason = lastConnectivityState.reason || 'unknown';
+          effectiveDetail = lastConnectivityState.detail || null;
+          effectiveTimestamp = lastConnectivityState.timestamp || null;
+        } else if (stateStatus === 'online' && navigatorOnline) {
+          effectiveStatus = 'online';
+          effectiveReason = lastConnectivityState.reason || null;
+          effectiveDetail = lastConnectivityState.detail || null;
+          effectiveTimestamp = lastConnectivityState.timestamp || null;
+        }
+      }
+      if (offlineIndicator.dataset) {
+        offlineIndicator.dataset.connectivityStatus = effectiveStatus;
+        if (effectiveReason) {
+          offlineIndicator.dataset.connectivityReason = effectiveReason;
+        } else if (offlineIndicator.dataset.connectivityReason) {
+          delete offlineIndicator.dataset.connectivityReason;
+        }
+        if (effectiveTimestamp) {
+          offlineIndicator.dataset.connectivityTimestamp = String(effectiveTimestamp);
+        } else if (offlineIndicator.dataset.connectivityTimestamp) {
+          delete offlineIndicator.dataset.connectivityTimestamp;
+        }
+      }
+      if (effectiveStatus === 'online') {
+        var baseLabel = getBaseLabel();
+        var baseHelp = getBaseHelp();
+        if (typeof offlineIndicator.textContent === 'string' || _typeof(offlineIndicator.textContent) === 'object') {
+          offlineIndicator.textContent = baseLabel;
+        }
+        offlineIndicator.setAttribute('data-help', baseHelp);
+        offlineIndicator.setAttribute('role', 'status');
+        offlineIndicator.setAttribute('aria-live', 'polite');
         if (!offlineIndicator.hasAttribute('hidden')) {
           offlineIndicator.setAttribute('hidden', '');
         }
-      } else {
+        updateReloadButtonState('online', resolveOfflineNotice());
+      } else if (effectiveStatus === 'offline') {
+        var offlineNotice = resolveOfflineNotice();
+        if (offlineIndicator.dataset) {
+          offlineIndicator.dataset.forceReloadNotice = offlineNotice;
+          offlineIndicator.dataset.reloadNotice = offlineNotice;
+        }
+        if (typeof offlineIndicator.textContent === 'string' || _typeof(offlineIndicator.textContent) === 'object') {
+          offlineIndicator.textContent = offlineNotice;
+        }
+        offlineIndicator.setAttribute('data-help', offlineNotice);
+        offlineIndicator.setAttribute('role', 'status');
+        offlineIndicator.setAttribute('aria-live', 'polite');
         offlineIndicator.removeAttribute('hidden');
+        updateReloadButtonState('offline', offlineNotice);
+      } else {
+        var degradedLabel = getDegradedLabel();
+        var reasonText = resolveReasonText(effectiveReason);
+        var detailText = _describeConnectivityDetail(effectiveDetail);
+        var summaryParts = [];
+        if (reasonText) summaryParts.push(reasonText);
+        if (detailText && detailText !== reasonText) summaryParts.push(detailText);
+        var summary = summaryParts.join(' ').trim();
+        var displayText = summary ? "".concat(degradedLabel, " \u2014 ").concat(summary) : degradedLabel;
+        var degradedHelp = getDegradedHelp();
+        var helpParts = [];
+        if (summary) {
+          helpParts.push(summary);
+        }
+        if (degradedHelp && (!summary || degradedHelp.indexOf(summary) === -1)) {
+          helpParts.push(degradedHelp);
+        }
+        var helpText = helpParts.join(' ').trim() || degradedHelp || displayText;
+        if (offlineIndicator.dataset) {
+          offlineIndicator.dataset.forceReloadNotice = displayText;
+          offlineIndicator.dataset.reloadNotice = displayText;
+        }
+        if (typeof offlineIndicator.textContent === 'string' || _typeof(offlineIndicator.textContent) === 'object') {
+          offlineIndicator.textContent = displayText;
+        }
+        offlineIndicator.setAttribute('data-help', helpText);
+        offlineIndicator.setAttribute('role', 'status');
+        offlineIndicator.setAttribute('aria-live', 'polite');
+        offlineIndicator.removeAttribute('hidden');
+        updateReloadButtonState('degraded', displayText);
       }
       if (typeof updateInstallBannerPosition === 'function') {
         updateInstallBannerPosition();
       }
     };
-    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
+    var applyConnectivityState = function applyConnectivityState(state) {
+      var sanitized = sanitizeConnectivityState(state);
+      if (!sanitized) {
+        return;
+      }
+      if (lastConnectivityState && lastConnectivityState.status === sanitized.status && lastConnectivityState.reason === sanitized.reason && lastConnectivityState.timestamp === sanitized.timestamp) {
+        return;
+      }
+      lastConnectivityState = sanitized;
+      refreshOfflineIndicator();
+      if (typeof callCoreFunctionIfAvailable === 'function') {
+        callCoreFunctionIfAvailable('updateStorageSummary', [], {
+          defer: true
+        });
+      }
+    };
+    var handleConnectivityBroadcast = function handleConnectivityBroadcast(event) {
+      if (!event) {
+        return;
+      }
+      var data = null;
+      try {
+        data = event.data || null;
+      } catch (error) {
+        void error;
+        data = null;
+      }
+      if (!data || _typeof(data) !== 'object') {
+        return;
+      }
+      if (data.type === CONNECTIVITY_STATUS_MESSAGE_TYPE) {
+        var state = data.state && _typeof(data.state) === 'object' ? data.state : null;
+        if (state) {
+          applyConnectivityState(state);
+        }
+      }
+    };
+    var ensureConnectivityBroadcast = function ensureConnectivityBroadcast() {
+      if (connectivityChannel || connectivityChannelFailed) {
+        return;
+      }
+      if (typeof BroadcastChannel !== 'function') {
+        connectivityChannelFailed = true;
+        return;
+      }
+      try {
+        connectivityChannel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+        connectivityChannel.addEventListener('message', handleConnectivityBroadcast);
+      } catch (error) {
+        connectivityChannelFailed = true;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('setupOfflineIndicator: Unable to listen for connectivity updates', error);
+        }
+      }
+    };
+    var resolveOfflineModule = function resolveOfflineModule() {
+      try {
+        if (typeof cineOffline !== 'undefined' && cineOffline) {
+          return cineOffline;
+        }
+      } catch (error) {
+        void error;
+      }
+      var candidates = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (candidate && _typeof(candidate.cineOffline) === 'object') {
+          return candidate.cineOffline;
+        }
+      }
+      return null;
+    };
+    var offlineModule = resolveOfflineModule();
+    if (offlineModule && typeof offlineModule.subscribeConnectivityStatus === 'function') {
+      try {
+        unsubscribeConnectivity = offlineModule.subscribeConnectivityStatus(applyConnectivityState);
+      } catch (error) {
+        void error;
+        unsubscribeConnectivity = null;
+      }
     }
-    updateOnlineStatus();
+    var initialState = offlineModule && typeof offlineModule.getConnectivityState === 'function' ? offlineModule.getConnectivityState() : typeof window !== 'undefined' && window && _typeof(window.cineConnectivityStatus) === 'object' ? window.cineConnectivityStatus : null;
+    if (initialState) {
+      applyConnectivityState(initialState);
+    }
+    ensureConnectivityBroadcast();
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('online', refreshOfflineIndicator);
+      window.addEventListener('offline', refreshOfflineIndicator);
+    }
+    refreshOfflineIndicator();
+    return unsubscribeConnectivity;
   }
   if (typeof window !== 'undefined') {
     setupOfflineIndicator();
@@ -8249,7 +8646,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function _setLanguage() {
     _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
       var _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en74, _texts$en75, _texts$en76, _texts$en78, _texts$en183, _texts$en184, _texts$lang, _texts$en185, _texts$lang2, _texts$en186, _texts$lang3, _texts$en187, _texts$lang4, _texts$en188, _texts$en250;
-      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineHelp, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en30, extraLabel, _texts$en31, heading, _texts$en32, filenameLabel, _texts$en33, confirmLabel, _texts$en34, cancelLabel, _texts$en35, _texts$en36, label, help, _texts$en37, _texts$en38, _label5, _help2, sharedImportLegendText, _texts$en39, title, _texts$en40, message, _texts$en41, _label6, _texts$en42, _label7, _texts$en43, legend, _texts$en44, _texts$en45, _label8, _help3, _texts$en46, _texts$en47, _label9, _help4, _texts$en48, _texts$en49, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en50, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en51, _texts$en52, generalLabel, generalHelp, _texts$en53, sectionHeading, _texts$en54, _sectionHeading, _texts$en55, _sectionHeading2, _texts$en56, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en77, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en80, _texts$en81, headingHelp, _texts$en82, _texts$en83, _heading, _texts$en84, _description, _texts$en86, _texts$en87, _texts$en88, _label10, _help6, _texts$en89, _label11, _texts$en90, _label12, _texts$en91, _texts$en92, _label13, _help7, _texts$en93, _texts$en94, _label14, _help8, _texts$en95, _texts$en96, _label15, _help9, _texts$en97, _texts$en98, _label16, _help0, _texts$en99, _texts$en100, _label17, _help1, _texts$en101, placeholder, _texts$en102, _texts$en103, _label18, _help10, _texts$en104, _label19, _texts$en105, _texts$en106, _description2, _texts$en107, _texts$en108, _label20, _help11, _texts$en109, hiddenText, _texts$en110, _texts$en111, _label21, _help12, _texts$en112, _label22, _texts$en113, _label23, _texts$en114, emptyText, _texts$en115, _texts$en116, _label24, _help13, _texts$en117, _texts$en118, _label25, _help14, _texts$en119, _label26, _texts$en120, _texts$en121, _label27, _help15, _texts$en122, _texts$en123, _label28, _help16, _texts$en124, _texts$en125, modeLabel, modeHelp, _texts$en126, _texts$en127, baseLabel, baseHelp, _texts$en128, _texts$en129, factorLabel, factorHelp, _texts$en130, _texts$en131, _texts$en132, _texts$en133, _texts$en134, _texts$en135, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en136, _texts$en137, _label30, _help18, _texts$en138, _texts$en139, _label31, _help19, _texts$en140, _texts$en141, _label32, _help20, _texts$en142, _texts$en143, _label33, _help21, _texts$en144, _texts$en145, _label34, _help22, _texts$en146, _texts$en147, _label35, _help23, _texts$en148, _texts$en149, _texts$en150, _texts$en151, _label36, _help24, _texts$en152, _texts$en153, _label37, _help25, _texts$en154, _label38, _texts$en155, _texts$en156, _texts$en157, greaterLabel, lessLabel, equalLabel, _texts$en158, _texts$en159, _label39, _help26, _texts$en160, _help27, _texts$en161, _texts$en162, _label40, _help28, _texts$en163, _texts$en164, _label41, _help29, _texts$en165, _texts$en166, _label42, _help30, _texts$en167, _texts$en168, _label43, _help31, _texts$en169, _texts$en170, _label44, _help32, _texts$en171, _texts$en172, _label45, _help33, _texts$en173, _texts$en174, _label46, _help34, _texts$en175, _texts$en176, _label47, _help35, _texts$en177, _texts$en178, _label48, _help36, _texts$en179, _texts$en180, _label49, _help37, _texts$en181, _texts$en182, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en189, _texts$en190, _texts$en191, _texts$en192, _label51, _help39, _placeholder3, _texts$en193, _texts$en194, _label52, hint, helpText, _texts$en195, _label53, _texts$en196, _label54, _texts$en197, _label55, _texts$en198, _label56, _texts$en199, _texts$en200, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _texts$en205, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en206, _label57, _texts$en207, _label58, _texts$en208, _texts$en209, _texts$en210, _texts$en211, _label59, _help40, _placeholder4, _texts$en212, _texts$en213, _label60, _hint, _helpText4, _texts$en214, _label61, _texts$en215, _label62, _texts$en216, _label63, _texts$en217, _label64, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _texts$en224, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en225, _label65, _texts$en226, _label66, _texts$en227, _heading2, _texts$en228, _description3, _texts$en229, _heading3, _texts$en230, _label67, _texts$en231, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en232, _texts$en233, _headingText, _headingHelp, _texts$en234, _texts$en235, _texts$en236, requestLabel, requestHelp, _texts$en237, idleText, _texts$en238, _texts$en239, _headingText2, _headingHelp2, _texts$en240, _texts$en241, _texts$en242, backupLabel, backupHelp, _texts$en243, _texts$en244, openLabel, openHelp, _texts$en245, _texts$en246, statusHeading, statusHelp, _texts$en247, _texts$en248, _texts$en249, statusDefaultText, _texts$en251, sectionHelp, _texts$en252, _texts$en253, _headingText3, _headingHelp3, _texts$en254, _texts$en255, _filterLabel, _texts$en256, _texts$en257, _texts$en258, _texts$en259, _texts$en260, optionTexts, filterHelp, _texts$en261, namespaceLabel, _texts$en262, _texts$en263, _placeholder5, namespaceHelp, _texts$en264, historyLabel, _texts$en265, historyHelp, _texts$en266, _texts$en267, limitHelp, limitAria, _texts$en268, consoleLabel, _texts$en269, consoleHelp, _texts$en270, consoleCaptureLabel, _texts$en271, consoleCaptureHelp, _texts$en272, captureLabel, _texts$en273, captureHelp, _texts$en274, persistLabel, _texts$en275, persistHelp, _texts$en276, exportLabel, _texts$en277, exportHelp, _texts$en278, statusText, _texts$en279, _emptyText, _texts$en280, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en281, _texts$en282, _texts$en283, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en284, _texts$en285, proceedLabel, proceedHelp, _texts$en286, _texts$en287, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en288, _label69, saveHelp, _texts$en289, _cancelLabel, cancelHelp, menuToggle, _texts$en290, _texts$en291, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en292, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en293, _closeLabel3, _closeHelp, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en294, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
+      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en30, extraLabel, _texts$en31, heading, _texts$en32, filenameLabel, _texts$en33, confirmLabel, _texts$en34, cancelLabel, _texts$en35, _texts$en36, label, help, _texts$en37, _texts$en38, _label5, _help2, sharedImportLegendText, _texts$en39, title, _texts$en40, message, _texts$en41, _label6, _texts$en42, _label7, _texts$en43, legend, _texts$en44, _texts$en45, _label8, _help3, _texts$en46, _texts$en47, _label9, _help4, _texts$en48, _texts$en49, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en50, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en51, _texts$en52, generalLabel, generalHelp, _texts$en53, sectionHeading, _texts$en54, _sectionHeading, _texts$en55, _sectionHeading2, _texts$en56, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en77, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en80, _texts$en81, headingHelp, _texts$en82, _texts$en83, _heading, _texts$en84, _description, _texts$en86, _texts$en87, _texts$en88, _label10, _help6, _texts$en89, _label11, _texts$en90, _label12, _texts$en91, _texts$en92, _label13, _help7, _texts$en93, _texts$en94, _label14, _help8, _texts$en95, _texts$en96, _label15, _help9, _texts$en97, _texts$en98, _label16, _help0, _texts$en99, _texts$en100, _label17, _help1, _texts$en101, placeholder, _texts$en102, _texts$en103, _label18, _help10, _texts$en104, _label19, _texts$en105, _texts$en106, _description2, _texts$en107, _texts$en108, _label20, _help11, _texts$en109, hiddenText, _texts$en110, _texts$en111, _label21, _help12, _texts$en112, _label22, _texts$en113, _label23, _texts$en114, emptyText, _texts$en115, _texts$en116, _label24, _help13, _texts$en117, _texts$en118, _label25, _help14, _texts$en119, _label26, _texts$en120, _texts$en121, _label27, _help15, _texts$en122, _texts$en123, _label28, _help16, _texts$en124, _texts$en125, modeLabel, modeHelp, _texts$en126, _texts$en127, baseLabel, baseHelp, _texts$en128, _texts$en129, factorLabel, factorHelp, _texts$en130, _texts$en131, _texts$en132, _texts$en133, _texts$en134, _texts$en135, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en136, _texts$en137, _label30, _help18, _texts$en138, _texts$en139, _label31, _help19, _texts$en140, _texts$en141, _label32, _help20, _texts$en142, _texts$en143, _label33, _help21, _texts$en144, _texts$en145, _label34, _help22, _texts$en146, _texts$en147, _label35, _help23, _texts$en148, _texts$en149, _texts$en150, _texts$en151, _label36, _help24, _texts$en152, _texts$en153, _label37, _help25, _texts$en154, _label38, _texts$en155, _texts$en156, _texts$en157, greaterLabel, lessLabel, equalLabel, _texts$en158, _texts$en159, _label39, _help26, _texts$en160, _help27, _texts$en161, _texts$en162, _label40, _help28, _texts$en163, _texts$en164, _label41, _help29, _texts$en165, _texts$en166, _label42, _help30, _texts$en167, _texts$en168, _label43, _help31, _texts$en169, _texts$en170, _label44, _help32, _texts$en171, _texts$en172, _label45, _help33, _texts$en173, _texts$en174, _label46, _help34, _texts$en175, _texts$en176, _label47, _help35, _texts$en177, _texts$en178, _label48, _help36, _texts$en179, _texts$en180, _label49, _help37, _texts$en181, _texts$en182, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en189, _texts$en190, _texts$en191, _texts$en192, _label51, _help39, _placeholder3, _texts$en193, _texts$en194, _label52, hint, helpText, _texts$en195, _label53, _texts$en196, _label54, _texts$en197, _label55, _texts$en198, _label56, _texts$en199, _texts$en200, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _texts$en205, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en206, _label57, _texts$en207, _label58, _texts$en208, _texts$en209, _texts$en210, _texts$en211, _label59, _help40, _placeholder4, _texts$en212, _texts$en213, _label60, _hint, _helpText4, _texts$en214, _label61, _texts$en215, _label62, _texts$en216, _label63, _texts$en217, _label64, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _texts$en224, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en225, _label65, _texts$en226, _label66, _texts$en227, _heading2, _texts$en228, _description3, _texts$en229, _heading3, _texts$en230, _label67, _texts$en231, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en232, _texts$en233, _headingText, _headingHelp, _texts$en234, _texts$en235, _texts$en236, requestLabel, requestHelp, _texts$en237, idleText, _texts$en238, _texts$en239, _headingText2, _headingHelp2, _texts$en240, _texts$en241, _texts$en242, backupLabel, backupHelp, _texts$en243, _texts$en244, openLabel, openHelp, _texts$en245, _texts$en246, statusHeading, statusHelp, _texts$en247, _texts$en248, _texts$en249, statusDefaultText, _texts$en251, sectionHelp, _texts$en252, _texts$en253, _headingText3, _headingHelp3, _texts$en254, _texts$en255, _filterLabel, _texts$en256, _texts$en257, _texts$en258, _texts$en259, _texts$en260, optionTexts, filterHelp, _texts$en261, namespaceLabel, _texts$en262, _texts$en263, _placeholder5, namespaceHelp, _texts$en264, historyLabel, _texts$en265, historyHelp, _texts$en266, _texts$en267, limitHelp, limitAria, _texts$en268, consoleLabel, _texts$en269, consoleHelp, _texts$en270, consoleCaptureLabel, _texts$en271, consoleCaptureHelp, _texts$en272, captureLabel, _texts$en273, captureHelp, _texts$en274, persistLabel, _texts$en275, persistHelp, _texts$en276, exportLabel, _texts$en277, exportHelp, _texts$en278, statusText, _texts$en279, _emptyText, _texts$en280, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en281, _texts$en282, _texts$en283, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en284, _texts$en285, proceedLabel, proceedHelp, _texts$en286, _texts$en287, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en288, _label69, saveHelp, _texts$en289, _cancelLabel, cancelHelp, menuToggle, _texts$en290, _texts$en291, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en292, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en293, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en294, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -8647,9 +9044,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             if (skipLink) skipLink.textContent = texts[lang].skipToContent;
             offlineElem = document.getElementById("offlineIndicator");
             if (offlineElem) {
-              offlineElem.textContent = texts[lang].offlineIndicator;
-              offlineHelp = texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
-              offlineElem.setAttribute("data-help", offlineHelp);
+              offlineLabel = texts[lang].offlineIndicator;
+              offlineNotice = texts[lang].reloadAppOfflineNotice || offlineLabel;
+              offlineHelp = texts[lang].offlineIndicatorHelp || offlineNotice;
+              isExplicitlyOffline = typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' ? navigator.onLine === false : false;
+              if (offlineElem.dataset) {
+                offlineElem.dataset.baseLabel = offlineLabel;
+                offlineElem.dataset.baseHelp = offlineHelp;
+                offlineElem.dataset.forceReloadNotice = offlineNotice;
+                offlineElem.dataset.degradedLabel = texts[lang].offlineIndicatorDegraded || offlineNotice;
+                offlineElem.dataset.degradedHelp = texts[lang].offlineIndicatorDegradedHelp || offlineHelp;
+                offlineElem.dataset.reasonCacheFallback = texts[lang].offlineIndicatorReasonCacheFallback || offlineNotice;
+                offlineElem.dataset.reasonGetFailed = texts[lang].offlineIndicatorReasonGetFailed || offlineNotice;
+                offlineElem.dataset.reasonTimeout = texts[lang].offlineIndicatorReasonTimeout || offlineNotice;
+                offlineElem.dataset.reasonUnreachable = texts[lang].offlineIndicatorReasonUnreachable || offlineNotice;
+                offlineElem.dataset.reasonReloadBlocked = texts[lang].offlineIndicatorReasonReloadBlocked || offlineNotice;
+                offlineElem.dataset.reasonUnknown = texts[lang].offlineIndicatorReasonUnknown || offlineHelp;
+              }
+              if (isExplicitlyOffline) {
+                offlineElem.textContent = offlineNotice;
+                offlineElem.setAttribute('data-help', offlineNotice);
+                offlineElem.removeAttribute('hidden');
+              } else {
+                offlineElem.textContent = offlineLabel;
+                offlineElem.setAttribute('data-help', offlineHelp);
+              }
             }
             applyInstallTexts(lang);
             legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
@@ -10849,9 +11268,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (reloadButton) {
-              reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
-              reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
-              reloadButton.setAttribute("data-help", texts[lang].reloadAppHelp || texts[lang].reloadAppLabel);
+              reloadLabel = texts[lang].reloadAppLabel;
+              reloadHelp = texts[lang].reloadAppHelp || reloadLabel;
+              _offlineNotice = texts[lang].reloadAppOfflineNotice || reloadLabel;
+              reloadButton.setAttribute('title', reloadLabel);
+              reloadButton.setAttribute('aria-label', reloadLabel);
+              reloadButton.setAttribute('data-help', reloadHelp);
+              if (reloadButton.dataset) {
+                reloadButton.dataset.onlineTitle = reloadLabel;
+                reloadButton.dataset.onlineHelp = reloadHelp;
+                reloadButton.dataset.offlineNotice = _offlineNotice;
+              }
+              if (reloadButton.hasAttribute('aria-disabled')) {
+                reloadButton.setAttribute('title', _offlineNotice);
+                reloadButton.setAttribute('data-help', _offlineNotice);
+              }
             }
             if (featureSearch) {
               featureSearch.setAttribute("placeholder", texts[lang].featureSearchPlaceholder);
@@ -12234,11 +12665,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (allowedTypes.includes(type)) return true;
       } catch (e) {}
       return false;
-    } else if (/^\s*javascript:/i.test(url)) {
+    }
+    if (/^\s*(javascript:|https?:|\/\/)/i.test(url)) {
       return false;
-    } else if (/^\s*https?:\/\//i.test(url)) {
-      return true;
-    } else if (/^[./\w-]/.test(url)) {
+    }
+    if (/^[a-zA-Z0-9._-]+$/.test(url)) {
       return true;
     }
     return false;
@@ -12690,16 +13121,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function getContactsSnapshot() {
     return contactsCache.map(function (contact) {
-      return {
+      if (!contact || _typeof(contact) !== 'object') {
+        return null;
+      }
+      var createdAt = Number.isFinite(contact.createdAt) ? contact.createdAt : Date.now();
+      var updatedAt = Number.isFinite(contact.updatedAt) ? contact.updatedAt : createdAt;
+      var snapshot = {
         id: contact.id,
         name: contact.name || '',
         role: contact.role || '',
         phone: contact.phone || '',
         email: contact.email || '',
+        website: contact.website || '',
+        notes: contact.notes || '',
         avatar: contact.avatar || '',
-        label: getContactDisplayLabel(contact)
+        createdAt: createdAt,
+        updatedAt: updatedAt
       };
-    });
+      var label = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(contact) : contact.label || snapshot.name || snapshot.email || snapshot.phone || snapshot.id || '';
+      if (label) {
+        snapshot.label = label;
+      }
+      return snapshot;
+    }).filter(Boolean);
   }
   function assignUserProfileState() {
     var updates = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -13021,18 +13465,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var badge = row.querySelector('.person-linked-badge');
     if (!badge) return;
     var contactId = row.dataset.contactId;
-    if (!contactId) {
-      badge.hidden = true;
+    var isUserProfileLinked = row.dataset.userProfileLinked === '1';
+    if (contactId) {
+      var contact = getContactById(contactId);
+      var baseLabel = getContactsText('linkedBadge', 'Linked to contact');
+      if (contact && contact.name) {
+        badge.textContent = "".concat(baseLabel, ": ").concat(contact.name);
+      } else {
+        badge.textContent = baseLabel;
+      }
+      badge.hidden = false;
       return;
     }
-    var contact = getContactById(contactId);
-    var baseLabel = getContactsText('linkedBadge', 'Linked to contact');
-    if (contact && contact.name) {
-      badge.textContent = "".concat(baseLabel, ": ").concat(contact.name);
-    } else {
-      badge.textContent = baseLabel;
+    if (isUserProfileLinked) {
+      badge.textContent = getContactsText('linkedProfileBadge', 'Linked to user profile');
+      badge.hidden = false;
+      return;
     }
-    badge.hidden = false;
+    badge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+    badge.hidden = true;
   }
   function handleCrewRowManualChange(row) {
     if (!row || row.dataset.syncingContact === '1') return;
@@ -13952,6 +14403,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!crewContainer) return;
     var row = document.createElement('div');
     row.className = 'person-row';
+    if (data.userProfileLinked) {
+      row.dataset.userProfileLinked = '1';
+    }
     var documentLang = '';
     if (typeof document !== 'undefined' && document && document.documentElement) {
       documentLang = document.documentElement.lang || '';
@@ -14053,8 +14507,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
     var linkedBadge = document.createElement('span');
     linkedBadge.className = 'person-linked-badge';
-    linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
-    linkedBadge.hidden = true;
+    if (data.userProfileLinked) {
+      linkedBadge.textContent = getContactsText('linkedProfileBadge', 'Linked to user profile');
+      linkedBadge.hidden = false;
+    } else {
+      linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+      linkedBadge.hidden = true;
+    }
     var saveContactBtn = document.createElement('button');
     saveContactBtn.type = 'button';
     saveContactBtn.className = 'person-save-contact';
@@ -15045,7 +15504,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     autoGearRules: "a",
     autoGearCoverage: "z",
     diagramPositions: "y",
-    metadata: "t"
+    metadata: "t",
+    contacts: "n"
   };
   var sharedKeyMapKeys = Object.keys(sharedKeyMap);
   var sharedHasOwn = Object.prototype.hasOwnProperty;

@@ -78,7 +78,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return isFinite(value);
   }
   function fallbackToCodePointChar(value, radix) {
-    var codePoint = parseInt(value, radix, 10);
+    var codePoint = parseInt(value, radix);
     if (!isFiniteNumber(codePoint) || codePoint < 0) {
       return '';
     }
@@ -151,12 +151,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     if (typeof glyph === 'string') {
-      var char = fallbackNormalizeGlyphChar(glyph);
-      if (!char) {
+      var _char = fallbackNormalizeGlyphChar(glyph);
+      if (!_char) {
         return null;
       }
       return {
-        char: char,
+        char: _char,
         font: 'uicons',
         className: ''
       };
@@ -179,13 +179,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     var rawChar = typeof glyph.char === 'string' && glyph.char ? glyph.char : typeof glyph.character === 'string' && glyph.character ? glyph.character : typeof glyph.glyph === 'string' && glyph.glyph ? glyph.glyph : typeof glyph.unicode === 'string' && glyph.unicode ? glyph.unicode : '';
-    var normalizedChar = fallbackNormalizeGlyphChar(rawChar);
-    if (!normalizedChar) {
+    var char = fallbackNormalizeGlyphChar(rawChar);
+    if (!char) {
       return null;
     }
     var font = typeof glyph.font === 'string' && glyph.font.trim() ? glyph.font.trim() : 'uicons';
     return {
-      char: normalizedChar,
+      char: char,
       font: font,
       className: className,
       style: style,
@@ -211,29 +211,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var styleParts = [];
     if (isFiniteNumber(resolved.size) && resolved.size > 0) {
-      styleParts.push('--icon-size: ' + resolved.size + 'px');
+      styleParts.push("--icon-size: ".concat(resolved.size, "px"));
     } else if (typeof resolved.size === 'string' && resolved.size.trim()) {
-      styleParts.push('--icon-size: ' + resolved.size.trim());
+      styleParts.push("--icon-size: ".concat(resolved.size.trim()));
     }
     if (isFiniteNumber(resolved.scale) && resolved.scale > 0) {
-      styleParts.push('--icon-scale: ' + resolved.scale);
+      styleParts.push("--icon-scale: ".concat(resolved.scale));
     } else if (typeof resolved.scale === 'string' && resolved.scale.trim()) {
-      styleParts.push('--icon-scale: ' + resolved.scale.trim());
+      styleParts.push("--icon-scale: ".concat(resolved.scale.trim()));
     }
     if (typeof resolved.style === 'string' && resolved.style.trim()) {
       styleParts.push(resolved.style.trim());
     }
-    var styleAttr = styleParts.length ? ' style="' + styleParts.join(';') + '"' : '';
+    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
     if (resolved.markup) {
-      return '<span class="' + classes.join(' ') + '"' + styleAttr + ' aria-hidden="true">' + resolved.markup + '</span>';
+      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(resolved.markup, "</span>");
     }
     var char = typeof resolved.char === 'string' ? resolved.char : '';
     if (!char) {
       return '';
     }
     var font = typeof resolved.font === 'string' ? resolved.font : 'uicons';
-    var fontAttr = font ? ' data-icon-font="' + fallbackEscapeAttribute(font) + '"' : '';
-    return '<span class="' + classes.join(' ') + '"' + styleAttr + fontAttr + ' aria-hidden="true">' + escapeHtml(char) + '</span>';
+    var fontAttr = font ? " data-icon-font=\"".concat(fallbackEscapeAttribute(font), "\"") : '';
+    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr).concat(fontAttr, " aria-hidden=\"true\">").concat(escapeHtml(char), "</span>");
   }
   function resolveButtonIconMarkup(glyph) {
     if (!glyph) {
