@@ -21,7 +21,9 @@ air-gapped workflows.
       now appends a `__cineReloadProbe__` token and expects
       `x-cine-connectivity-probe-result: network`. When offline you should see
       the response marked `fallback`, confirming the service worker protected
-      caches and blocked the reload.
+      caches and blocked the reload. The service worker now ignores probe query
+      tokens when looking up cached shells so degraded reload attempts still
+      deliver the annotated fallback instead of failing outright.
 - [ ] Export planner backups and project bundles; store copies on redundant
       physical media.
 - [ ] Print essential docs (operations checklist, save/share reference,

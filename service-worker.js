@@ -1016,7 +1016,8 @@ if (typeof self !== 'undefined') {
     }
 
     event.respondWith((async () => {
-      const cacheMatchOptions = shouldIgnoreSearch ? { ignoreSearch: true } : undefined;
+      const cacheMatchOptions =
+        shouldIgnoreSearch || isConnectivityProbe ? CACHE_MATCH_IGNORE_SEARCH_OPTIONS : undefined;
 
       if (bypassCache) {
         if (preloadResponsePromise) {
@@ -1070,6 +1071,9 @@ if (typeof self !== 'undefined') {
                 cacheName: CACHE_NAME,
                 error: networkError,
               });
+              if (isConnectivityProbe) {
+                return annotateConnectivityProbeResponse(fallback, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+              }
               return fallback;
             }
           }
@@ -1117,6 +1121,9 @@ if (typeof self !== 'undefined') {
             cacheName: CACHE_NAME,
             error,
           });
+          if (isConnectivityProbe) {
+            return annotateConnectivityProbeResponse(offlineShell, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+          }
           return offlineShell;
         }
 

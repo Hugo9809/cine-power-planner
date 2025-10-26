@@ -311,7 +311,9 @@ localization steps.
   cleanup runs so updates land faster without risking stored data. It now
   triggers an immediate auto-save and backup flush before the caches clear so no
   in-flight edits are lost. A resilient connectivity probe now pings the server
-  before any cleanup so caches stay intact whenever the network is unreachable.
+  before any cleanup so caches stay intact whenever the network is unreachable,
+  and cached fallbacks ignore probe query tokens so degraded reload attempts
+  still surface the `fallback` marker instead of failing outright.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping
