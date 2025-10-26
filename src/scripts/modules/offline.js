@@ -987,7 +987,21 @@
     }
   }
 
-  const freezeDeep = (function resolveFreezeDeep() {
+  let resolvedFreezeDeep;
+
+  function freezeDeep(value, seen) {
+    const deepFreeze = resolveCachedFreezeDeep();
+    return deepFreeze(value, seen);
+  }
+
+  function resolveCachedFreezeDeep() {
+    if (!resolvedFreezeDeep) {
+      resolvedFreezeDeep = resolveFreezeDeep();
+    }
+    return resolvedFreezeDeep;
+  }
+
+  function resolveFreezeDeep() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
       return MODULE_GLOBALS.freezeDeep;
     }
@@ -1008,7 +1022,7 @@
     }
 
     return fallbackFreezeDeep;
-  })();
+  }
 
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
