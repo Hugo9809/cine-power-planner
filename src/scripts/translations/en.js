@@ -879,6 +879,7 @@
     "queuedBackupBannerMessageOther": "{count} backups saved in the local vault.",
     "queuedBackupBannerGesture": "Interact with the planner to export them safely.",
     "queuedBackupBannerAction": "Open local backup vault",
+    "queuedBackupFallbackHint": "Emergency fallback storage active. Export queued backups immediately.",
     "storageSessionStored": "Stored",
     "storageSessionNotStored": "Not stored",
     "storageKeyTotalSize": "Approximate backup size",

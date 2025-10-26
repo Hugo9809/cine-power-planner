@@ -236,6 +236,9 @@ const resolveQueuedBackupMessageForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.res
 const downloadBackupPayloadForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload === 'function'
   ? BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload
   : null;
+const isBackupVaultFallbackActiveForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive === 'function'
+  ? BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive
+  : null;
 
 const buildSettingsBackupPackageForEvents = (function resolveBuildSettingsBackupPackage() {
   if (typeof buildSettingsBackupPackage === 'function') {
@@ -3178,6 +3181,9 @@ function getQueuedBackupBannerTexts() {
     action: langTexts.queuedBackupBannerAction
       || fallbackTexts.queuedBackupBannerAction
       || 'Open local backup vault',
+    fallbackHint: langTexts.queuedBackupFallbackHint
+      || fallbackTexts.queuedBackupFallbackHint
+      || 'Emergency fallback storage active. Export queued backups immediately.',
   };
 }
 
@@ -3254,7 +3260,7 @@ function ensureQueuedBackupBannerElements() {
   return banner;
 }
 
-function showQueuedBackupBanner(count) {
+function showQueuedBackupBanner(count, fallbackActive) {
   const banner = ensureQueuedBackupBannerElements();
   if (!banner || !queuedBackupBannerMessageEl || !queuedBackupBannerActionEl) {
     return;
@@ -3264,7 +3270,11 @@ function showQueuedBackupBanner(count) {
   const baseMessageTemplate = countValue === 1 ? textsForBanner.singular : textsForBanner.plural;
   const message = baseMessageTemplate.replace('{count}', String(countValue));
   const gesture = textsForBanner.gesture.replace('{count}', String(countValue));
-  queuedBackupBannerMessageEl.textContent = `${message} ${gesture}`.trim();
+  const parts = [`${message} ${gesture}`.trim()];
+  if (fallbackActive) {
+    parts.push(textsForBanner.fallbackHint);
+  }
+  queuedBackupBannerMessageEl.textContent = parts.join(' ').trim();
   queuedBackupBannerActionEl.textContent = textsForBanner.action;
   banner.style.display = 'flex';
   banner.setAttribute('aria-hidden', 'false');
@@ -3339,8 +3349,11 @@ function updateQueuedBackupBannerFromVault() {
   return Promise.resolve(getQueuedBackupPayloadsForEvents())
     .then((entries) => {
       const count = Array.isArray(entries) ? entries.length : 0;
+      const fallbackActive = typeof isBackupVaultFallbackActiveForEvents === 'function'
+        ? Boolean(isBackupVaultFallbackActiveForEvents())
+        : false;
       if (count > 0) {
-        showQueuedBackupBanner(count);
+        showQueuedBackupBanner(count, fallbackActive);
       } else {
         hideQueuedBackupBanner();
         detachQueuedBackupGestureListeners();
@@ -3423,6 +3436,10 @@ async function flushQueuedBackupVault(trigger) {
 function handleQueuedBackupVaultQueuedEvent() {
   updateQueuedBackupBannerFromVault();
   attachQueuedBackupGestureListeners();
+}
+
+function handleQueuedBackupFallbackChangedEvent() {
+  updateQueuedBackupBannerFromVault();
 }
 
 function scheduleAutoBackupTimer() {
@@ -3519,9 +3536,11 @@ function scheduleHourlyBackupTimer() {
 
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
   window.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+  window.addEventListener('cineBackupVault:fallbackChanged', handleQueuedBackupFallbackChangedEvent);
 }
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
   document.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+  document.addEventListener('cineBackupVault:fallbackChanged', handleQueuedBackupFallbackChangedEvent);
 }
 
 if (typeof setTimeout === 'function') {

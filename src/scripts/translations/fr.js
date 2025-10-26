@@ -1500,6 +1500,7 @@
     "queuedBackupBannerMessageOther": "{count} sauvegardes enregistrées dans le coffre local.",
     "queuedBackupBannerGesture": "Interagissez avec le planificateur pour les exporter en toute sécurité.",
     "queuedBackupBannerAction": "Ouvrir le coffre local",
+    "queuedBackupFallbackHint": "Stockage de secours actif. Exportez immédiatement les sauvegardes en file d’attente.",
     "storageSessionStored": "Enregistrée",
     "storageSessionNotStored": "Non enregistrée",
     "storageKeyTotalSize": "Taille approximative de la sauvegarde",

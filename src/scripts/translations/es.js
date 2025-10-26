@@ -1500,6 +1500,7 @@
     "queuedBackupBannerMessageOther": "{count} copias guardadas en la bóveda local.",
     "queuedBackupBannerGesture": "Interactúa con el planificador para exportarlas con seguridad.",
     "queuedBackupBannerAction": "Abrir bóveda de copias local",
+    "queuedBackupFallbackHint": "Almacenamiento de emergencia activo. Exporta de inmediato las copias en cola.",
     "storageSessionStored": "Guardada",
     "storageSessionNotStored": "No guardada",
     "storageKeyTotalSize": "Tamaño aproximado de la copia",

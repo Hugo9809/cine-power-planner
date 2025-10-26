@@ -36,8 +36,11 @@ workstations.
   vault when the browser blocks downloads (for example, before the first user
   gesture). Crews will see an actionable banner pointing to the vault and can
   open it anytime from the banner action to download or copy each JSON payload
-  while offline. Document queued exports in the verification packet and clear
-  the vault once each file is archived.
+  while offline. The banner also warns when the vault is running on emergency
+  fallback storage so teams know to export queued files immediately. Queued
+  payloads mirror into safe local storage when IndexedDB is unavailable, so
+  entries survive reloads even on restricted devices. Document queued exports
+  in the verification packet and clear the vault once each file is archived.
 - **Guard verification artifacts:** Attach the most recent
   `getLastCriticalStorageGuardResult()` dump and corresponding autosave ledger
   entry to the backup record so auditors can confirm the mirrored keys existed
