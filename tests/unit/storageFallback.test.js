@@ -225,6 +225,141 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
   });
 });
 
+describe('SAFE_LOCAL_STORAGE compressed entry handling', () => {
+  const FAVORITES_BACKUP_KEY = `${FAVORITES_KEY}__backup`;
+  const compressedWrapper = JSON.stringify({
+    __cineStorageCompressed: true,
+    version: 1,
+    algorithm: 'lz-string',
+    namespace: 'camera-power-planner:storage-compression',
+    data: 'mock-compressed-payload',
+    originalLength: 42,
+    compressedPayloadLength: 21,
+    compressionVariant: 'utf16',
+  });
+
+  const createStorage = (initialData = {}) => {
+    const store = { ...initialData };
+    return {
+      get length() {
+        return Object.keys(store).length;
+      },
+      key: jest.fn((index) => {
+        const keys = Object.keys(store);
+        return index >= 0 && index < keys.length ? keys[index] : null;
+      }),
+      getItem: jest.fn((key) =>
+        Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null,
+      ),
+      setItem: jest.fn((key, value) => {
+        store[key] = String(value);
+      }),
+      removeItem: jest.fn((key) => {
+        delete store[key];
+      }),
+      clear: jest.fn(() => {
+        Object.keys(store).forEach((key) => delete store[key]);
+      }),
+    };
+  };
+
+  let originalLZString;
+  let originalWindow;
+  let originalLocalStorage;
+  let originalSessionStorage;
+  let originalNavigator;
+  let originalCineGlobal;
+  let consoleWarnSpy;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    originalLZString = global.LZString;
+    originalWindow = global.window;
+    originalLocalStorage = global.localStorage;
+    originalSessionStorage = global.sessionStorage;
+    originalNavigator = global.navigator;
+    originalCineGlobal = global.__cineGlobal;
+    delete global.LZString;
+
+    const localStorage = createStorage({
+      [FAVORITES_KEY]: compressedWrapper,
+      [FAVORITES_BACKUP_KEY]: JSON.stringify({ cameraSelect: ['Backup'] }),
+    });
+    const sessionStorage = createStorage();
+
+    global.__cineGlobal = { SAFE_LOCAL_STORAGE: localStorage };
+    global.window = {
+      localStorage,
+      sessionStorage,
+      alert: jest.fn(),
+    };
+    global.localStorage = localStorage;
+    global.sessionStorage = sessionStorage;
+    global.navigator = {
+      storage: {
+        persist: jest.fn().mockResolvedValue(false),
+        persisted: jest.fn().mockResolvedValue(false),
+      },
+    };
+
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+
+    if (originalLZString === undefined) {
+      delete global.LZString;
+    } else {
+      global.LZString = originalLZString;
+    }
+
+    if (originalCineGlobal === undefined) {
+      delete global.__cineGlobal;
+    } else {
+      global.__cineGlobal = originalCineGlobal;
+    }
+
+    if (originalWindow === undefined) {
+      delete global.window;
+    } else {
+      global.window = originalWindow;
+    }
+
+    if (originalLocalStorage === undefined) {
+      delete global.localStorage;
+    } else {
+      global.localStorage = originalLocalStorage;
+    }
+
+    if (originalSessionStorage === undefined) {
+      delete global.sessionStorage;
+    } else {
+      global.sessionStorage = originalSessionStorage;
+    }
+
+    if (originalNavigator === undefined) {
+      delete global.navigator;
+    } else {
+      global.navigator = originalNavigator;
+    }
+  });
+
+  test('recovers from backup when compressed primary value cannot be decoded', () => {
+    const storageModule = require('../../src/scripts/storage');
+    const result = storageModule.loadFavorites();
+
+    expect(result).toEqual({ cameraSelect: ['Backup'] });
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Compressed value could not be decoded'),
+    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Recovered cameraPowerPlanner_favorites from backup copy.'),
+    );
+  });
+});
+
 describe('SAFE_LOCAL_STORAGE alternate localStorage discovery', () => {
   let originalWindowLocalStorageDescriptor;
   let originalGlobalLocalStorageDescriptor;
