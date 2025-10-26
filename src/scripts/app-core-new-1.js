@@ -6013,6 +6013,10 @@ function setupOfflineIndicator() {
     }
 
     lastConnectivityState = sanitized;
+
+    if (typeof window !== 'undefined' && window) {
+      window.cineConnectivityStatus = sanitized;
+    }
     refreshOfflineIndicator();
     if (typeof callCoreFunctionIfAvailable === 'function') {
       callCoreFunctionIfAvailable('updateStorageSummary', [], { defer: true });
