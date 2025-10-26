@@ -341,6 +341,13 @@ body.pink-mode {
   --logo-accent-color: #f255a8;
   --logo-background-color: #f255a8;
   --logo-center-color: #ffffff;
+  --notification-text: #3c0b28;
+  --notification-spinner-track: color-mix(
+    in srgb,
+    var(--notification-text) 35%,
+    transparent
+  );
+  --notification-spinner-indicator: var(--notification-text);
 }
 
 body.dark-mode {
