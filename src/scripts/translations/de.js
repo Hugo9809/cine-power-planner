@@ -187,7 +187,7 @@
     "featureSearchTypeDevice": "Gerät",
     "featureSearchTypeHelp": "Hilfethema",
     "darkModeHelp": "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
-    "pinkModeHelp": "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert. Tippe einmal auf das Einhorn-Symbol, um einen Regen pinker Icons auszulösen.",
+    "pinkModeHelp": "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert. Wenn du den Pinkmodus einschaltest, streut das Einhorn-Symbol sofort einen Regen pinker Icons.",
     "reloadAppLabel": "Neu laden erzwingen",
     "reloadAppHelp": "Leert den Cache, meldet veraltete Service Worker ab und erzwingt ein Neuladen, ohne gespeicherte Daten zu entfernen. Die App prüft jetzt vor der Bereinigung kurz die Verbindung und lädt das neue Paket dabei vor, sodass die neue Version schneller erscheint.",
     "reloadAppOfflineNotice": "Offline – das erzwungene Neuladen testet zuerst die Verbindung. Stelle sie wieder her und versuche es erneut.",

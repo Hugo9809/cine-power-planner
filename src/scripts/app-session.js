@@ -7191,10 +7191,19 @@ rememberSettingsMountVoltagesBaseline();
 
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", event => {
-    if (event && event.isTrusted) {
+    const body =
+      typeof document !== 'undefined' && document && document.body
+        ? document.body
+        : null;
+    const nextEnabled = body && body.classList
+      ? !body.classList.contains('pink-mode')
+      : !pinkModeEnabled;
+
+    persistPinkModePreference(nextEnabled);
+
+    if (event && event.isTrusted && nextEnabled) {
       handlePinkModeIconPress();
     }
-    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
   });
 }
 
