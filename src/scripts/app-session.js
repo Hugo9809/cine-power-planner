@@ -7190,10 +7190,7 @@ rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
 if (pinkModeToggle) {
-  pinkModeToggle.addEventListener("click", event => {
-    if (event && event.isTrusted) {
-      handlePinkModeIconPress();
-    }
+  pinkModeToggle.addEventListener('click', () => {
     persistPinkModePreference(!document.body.classList.contains('pink-mode'));
   });
 }
