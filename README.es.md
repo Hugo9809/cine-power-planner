@@ -90,12 +90,13 @@ Trata estos pasos como requisitos obligatorios para cada merge, de modo que la d
 
 Antes de fusionar o publicar una build para campo, completa esta lista condensada para proteger datos, documentación y traducciones:
 
-1. **Ensaya los flujos críticos.** Ejecuta la [Guía rápida](#guía-rápida) o [`docs/operations-checklist.md`](docs/operations-checklist.md) para confirmar que guardado, compartido, importación, copia de seguridad y restauración siguen funcionando offline de extremo a extremo.
-2. **Actualiza la guía escrita.** Revisa el centro de ayuda, los README localizados y los manuales impresos. Usa la [Matriz de cobertura de documentación](docs/documentation-coverage-matrix.md) para asegurar que no falta ningún idioma ni flujo.
-3. **Captura artefactos de verificación.** Completa el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y la [Plantilla de registro de verificación](docs/verification-log-template.md) con las notas de ensayo, hashes de exportaciones y capturas de precalentamiento de caché más recientes.
-4. **Valida los toggles de idioma.** Cambia por cada idioma de la app para confirmar que los textos actualizados se representan correctamente sin cargar assets externos.
-5. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, las reglas automáticas en JSON y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
-6. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** manual para que los equipos sepan qué revisión ejecutan.
+1. **Ejecuta el guardia de manifiesto.** Corre `npm run check-consistency` para validar los metadatos de dispositivos y confirmar que `service-worker-assets.js` coincide con el manifiesto generado en memoria. Si detecta diferencias, ejecuta `npm run generate:sw-assets`, guarda el archivo actualizado y repite la verificación antes de seguir.
+2. **Ensaya los flujos críticos.** Ejecuta la [Guía rápida](#guía-rápida) o [`docs/operations-checklist.md`](docs/operations-checklist.md) para confirmar que guardado, compartido, importación, copia de seguridad y restauración siguen funcionando offline de extremo a extremo.
+3. **Actualiza la guía escrita.** Revisa el centro de ayuda, los README localizados y los manuales impresos. Usa la [Matriz de cobertura de documentación](docs/documentation-coverage-matrix.md) para asegurar que no falta ningún idioma ni flujo.
+4. **Captura artefactos de verificación.** Completa el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y la [Plantilla de registro de verificación](docs/verification-log-template.md) con las notas de ensayo, hashes de exportaciones y capturas de precalentamiento de caché más recientes.
+5. **Valida los toggles de idioma.** Cambia por cada idioma de la app para confirmar que los textos actualizados se representan correctamente sin cargar assets externos.
+6. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, las reglas automáticas en JSON y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
+7. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** manual para que los equipos sepan qué revisión ejecutan.
 
 ## Panorama general
 

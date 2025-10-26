@@ -35,17 +35,21 @@ offline.
 
 ## Release checklist
 
-1. Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
+1. Run `npm run check-consistency` to confirm device data and the
+   service-worker manifest stay aligned. If it reports drift, regenerate the
+   manifest with `npm run generate:sw-assets`, commit the update and rerun the
+   guard before proceeding.
+2. Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
    after touching service worker assets, icons or persistence code.
-2. Execute the [Operations Checklist](operations-checklist.md) start-to-finish,
+3. Execute the [Operations Checklist](operations-checklist.md) start-to-finish,
    logging every save/share/import/backup/restore step.
-3. Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md),
+4. Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md),
    [Documentation Maintenance Guide](documentation-maintenance.md) and
    [Translation Guide](translation-guide.md) to reflect any new UI labels or
    workflows.
-4. Export the verification packet, planner backup and project bundles. Store two
+5. Export the verification packet, planner backup and project bundles. Store two
    physical copies and log their locations in `review-findings.md`.
-5. Capture console diagnostics (`window.__cineRuntimeIntegrity`) and attach them
+6. Capture console diagnostics (`window.__cineRuntimeIntegrity`) and attach them
    to the release archive for offline audits.
 
 ## Incident response
