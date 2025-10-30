@@ -13233,7 +13233,7 @@ async function setLanguage(lang) {
   if (restoreRehearsalProceedButton) {
     const proceedLabel = texts[lang].restoreRehearsalProceed
       || texts.en?.restoreRehearsalProceed
-      || 'Continue rehearsal restore';
+      || 'Resume restore rehearsal';
     const proceedHelp = texts[lang].restoreRehearsalProceedHelp
       || texts.en?.restoreRehearsalProceedHelp
       || proceedLabel;

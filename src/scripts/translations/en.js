@@ -698,7 +698,7 @@
     "restoreRehearsalRuleRequiredLabel": "Required scenarios",
     "restoreRehearsalRuleAlwaysLabel": "Always active",
     "restoreRehearsalRuleFallback": "Automatic rule change",
-    "restoreRehearsalProceed": "Continue rehearsal restore",
+    "restoreRehearsalProceed": "Resume restore rehearsal",
     "restoreRehearsalProceedHelp": "Stage the sandbox snapshot to continue the rehearsal.",
     "restoreRehearsalProceedMessage": "Sandbox snapshot staged. Live data remains untouched until you perform a full restore.",
     "restoreRehearsalAbort": "Abort rehearsal",
