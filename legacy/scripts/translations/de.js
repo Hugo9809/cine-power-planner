@@ -1701,7 +1701,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsWarnings": {
             "title": "Power Summary: Warnungen und Backups",
-            "body": "Prüfe die Warnfelder für die Anschlüsse: Grün bedeutet, dass die Pin- oder D-Tap-Batterieversorgung sicher ist, Gelb, dass die Batterieversorgung nahe ihrer Maximalbelastung liegt, und Rot, dass das Kamerarig mehr Leistung zieht, als das Pack liefern kann."
+            "body": "Prüfe die Warnkästen für die Anschlüsse: Grün bedeutet, dass die Pin- oder D-Tap-Versorgung sicher ist, Gelb weist auf eine Belastung nahe der Grenze hin, und Rot zeigt an, dass das Rig mehr zieht, als diese Leitung liefern kann. Notiere, welcher Anschluss die Warnung ausgelöst hat, verteile oder reduziere Verbraucher, bis beide Kästen wieder grün sind, stelle sicher, dass jede Primärversorgung über eine geladene Reserve mit passender Laufzeit verfügt, bestätige, dass der Autosave-Banner-Zeitstempel mit der Share-/Export-Vorschau übereinstimmt, bevor du eine neue Kopie herausgibst, und führe Power Summary erneut aus, damit die gelöschte Warnung in den Offline-Caches landet."
           },
           "batteryComparison": {
             "title": "Batterieoptionen vergleichen",
