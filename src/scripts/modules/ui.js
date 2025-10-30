@@ -578,7 +578,7 @@
       typeof process !== 'undefined' &&
       process &&
       process.release &&
-      process.release.name === 'node'
+      value === process.release
     ) {
       return true;
     }
@@ -690,6 +690,77 @@
       void freezeError;
       return value;
     }
+  }
+
+  function ensureFrozen(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return value;
+    }
+
+    let target = value;
+
+    if (typeof Object.freeze === 'function') {
+      try {
+        target = Object.freeze(target);
+      } catch (freezeError) {
+        void freezeError;
+      }
+    }
+
+    let alreadyFrozen = false;
+    if (typeof Object.isFrozen === 'function') {
+      try {
+        alreadyFrozen = Object.isFrozen(target);
+      } catch (stateError) {
+        void stateError;
+        alreadyFrozen = false;
+      }
+    }
+
+    if (alreadyFrozen) {
+      return target;
+    }
+
+    try {
+      const keys = Object.getOwnPropertyNames(target);
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        const descriptor = Object.getOwnPropertyDescriptor(target, key);
+        if (!descriptor) {
+          continue;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+          if (descriptor.configurable || descriptor.writable) {
+            Object.defineProperty(target, key, {
+              configurable: false,
+              enumerable: descriptor.enumerable,
+              writable: false,
+              value: descriptor.value,
+            });
+          }
+        } else if (descriptor.configurable) {
+          Object.defineProperty(target, key, {
+            configurable: false,
+            enumerable: descriptor.enumerable,
+            get: descriptor.get,
+            set: descriptor.set,
+          });
+        }
+      }
+
+      if (typeof Object.preventExtensions === 'function') {
+        try {
+          Object.preventExtensions(target);
+        } catch (preventError) {
+          void preventError;
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return target;
   }
 
   const freezeDeep = (function resolveFreezeDeep() {
@@ -875,7 +946,7 @@
       const key = contextKeys[contextIndex];
       contextObject[key] = contextValues[key];
     }
-    Object.freeze(contextObject);
+    ensureFrozen(contextObject);
 
     const controller = {};
     Object.defineProperty(controller, 'context', {
@@ -894,7 +965,7 @@
       };
     }
 
-    return freezeDeep(controller);
+    return ensureFrozen(freezeDeep(controller));
   }
 
   function sanitizeInteraction(name, handler) {
@@ -902,7 +973,7 @@
     if (!fn) {
       throw new TypeError(`cineUi interaction "${name}" must be a function.`);
     }
-    return freezeDeep({ handler: fn });
+    return ensureFrozen(freezeDeep({ handler: fn }));
   }
 
   function sanitizeInitializer(name, initializer) {
@@ -910,7 +981,7 @@
     if (!fn) {
       throw new TypeError(`cineUi initializer "${name}" must be a function.`);
     }
-    return freezeDeep({ initializer: fn });
+    return ensureFrozen(freezeDeep({ initializer: fn }));
   }
 
   function warnDuplicate(name, type) {
