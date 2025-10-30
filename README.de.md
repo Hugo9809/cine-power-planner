@@ -127,6 +127,17 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 - **Konstante Darstellung.** Gebündelte Uicons, OpenMoji und Typografie-Dateien garantieren identische Optik – egal ob im Studio oder im Feld ohne Netz.
 - **Jede Änderung absichern.** Vor jeder Wiederherstellung legt der Planner ein erzwungenes Backup an und bewahrt frühere Revisionen, damit kein Import deine Arbeit überschreibt. Prüfprotokolle und Checksum-Notizen reisen mit jedem Archiv, um die Integrität auch offline nachzuweisen.
 
+## Versprechen zur Datenbewahrung
+
+Der Schutz der Crew-Workflows und ihrer Daten hat oberste Priorität. Wenn du mit Cine Power Planner planst, profitierst du von denselben Schutzschichten, die wir vor jedem Release proben:
+
+- **Nur verifizierte Schutzmaßnahmen.** Speichern-/Teilen-/Import-/Backup-/Restore-Workflows werden zusammen mit dem [Documentation Verification Packet](docs/documentation-verification-packet.md) dokumentiert, damit Field-Crews jede Sicherung prüfen können, bevor sie offline reisen.
+- **Hilfe & Übersetzungen im Gleichschritt.** Die [Dokumentations-Update-Checkliste](docs/documentation-update-checklist.md) und der [Translation Guide](docs/translation-guide.md) sorgen dafür, dass neue Verhaltensweisen in Hilfethemen, lokalisierten READMEs und gedruckten Leitfäden landen, bevor Bundles ausgeliefert werden.
+- **Backups an jeder Station.** Der [Backup Rotation Guide](docs/backup-rotation-guide.md) und die [Operations Checklist](docs/operations-checklist.md) beschreiben, wie redundante Archive, Probenachweise und Prüfprotokolle gestaffelt werden, damit kein Projekt ohne Wiederherstellungspfad bleibt.
+- **Auditierbare Belege.** Wir erfassen Konsolenexporte von `window.__cineRuntimeIntegrity`, unterschriebene Proben-Logs und Bundle-Hashes, damit Compliance-Teams und Crews den Datenschutz ohne Aufwand auditieren können.
+
+Wenn eine Änderung Speichern, Teilen, Importieren, Backups, Wiederherstellungen oder die Dokumentation betrifft, bleibt sie blockierend, bis diese Schutzmaßnahmen durchlaufen und protokolliert sind. Diese Disziplin bewahrt Benutzerdaten selbst auf luftgetrennten Systemen.
+
 ## Inhaltsverzeichnis
 
 - [Hauptfunktionen](#hauptfunktionen)
@@ -139,6 +150,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 - [Release- & Dokumentations-Checkliste](#release--dokumentations-checkliste)
 - [Überblick](#überblick)
 - [Grundprinzipien](#grundprinzipien)
+- [Versprechen zur Datenbewahrung](#versprechen-zur-datenbewahrung)
 - [Übersetzungen](#übersetzungen)
 - [Was ist neu](#was-ist-neu)
 - [Schnellstart](#schnellstart)

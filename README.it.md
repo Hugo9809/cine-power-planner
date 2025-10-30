@@ -127,6 +127,17 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 - **Presentazione coerente.** Uicons locali, risorse OpenMoji e font inclusi garantiscono la stessa resa visiva in studio o su un portatile offline.
 - **Proteggi ogni modifica.** Prima di qualsiasi ripristino, il planner crea un backup forzato e conserva le revisioni precedenti così nessun import sovrascrive il tuo lavoro. I registri di verifica e le note di checksum viaggiano con ogni archivio per dimostrarne l’integrità anche offline.
 
+## Impegno per la conservazione dei dati
+
+Proteggere i flussi di lavoro della troupe e i relativi dati è la priorità assoluta. Quando pianifichi con Cine Power Planner, ottieni gli stessi livelli di protezione che proviamo prima di ogni release:
+
+- **Solo salvaguardie verificate.** I flussi di salvataggio/condivisione/import/backup/ripristino vengono pubblicati insieme alle prove annotate nel [Documentation Verification Packet](docs/documentation-verification-packet.md), così le troupe possono convalidare ogni tutela prima di partire offline.
+- **Guida e traduzioni in sincronia.** La [Documentation Update Checklist](docs/documentation-update-checklist.md) e il [Translation Guide](docs/translation-guide.md) assicurano che ogni cambiamento arrivi nei temi di aiuto, nei README localizzati e nelle guide stampate prima di distribuire i pacchetti.
+- **Backup ovunque servano.** Il [Backup Rotation Guide](docs/backup-rotation-guide.md) e la [Operations Checklist](docs/operations-checklist.md) spiegano come scaglionare archivi ridondanti, evidenze delle prove e registri di verifica per mantenere ogni progetto con un percorso di recupero.
+- **Prove verificabili.** Registriamo export della console da `window.__cineRuntimeIntegrity`, log delle prove firmati e hash dei bundle per permettere a compliance e troupe di auditare la protezione dei dati senza attriti.
+
+Qualsiasi modifica che tocchi salvataggi, condivisioni, import, backup, ripristini o documentazione rimane bloccante finché queste protezioni non vengono eseguite e documentate. Questa disciplina mantiene i dati degli utenti al sicuro anche su macchine isolate.
+
 ## Indice
 
 - [Funzionalità principali](#funzionalità-principali)
@@ -139,6 +150,7 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 - [Checklist di rilascio e documentazione](#checklist-di-rilascio-e-documentazione)
 - [Panoramica](#panoramica)
 - [Principi chiave](#principi-chiave)
+- [Impegno per la conservazione dei dati](#impegno-per-la-conservazione-dei-dati)
 - [Traduzioni](#traduzioni)
 - [Novità](#novità)
 - [Avvio rapido](#avvio-rapido)
