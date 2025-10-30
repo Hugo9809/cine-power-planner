@@ -22,7 +22,29 @@ validate backups without inspecting code online.
 | `cameraPowerPlanner_autoGearBackups` | `storage.js` (`loadAutomaticGearBackups`) | Array of timestamped snapshots `{ createdAt, rules }`. | Populated before every rule change/import. |
 | `cameraPowerPlanner_autoGearPresets` | `storage.js` (`loadAutomaticGearPresets`) | Object mapping preset IDs to scenario rule collections. | Imported/exported with project bundles. |
 | `cameraPowerPlanner_autoGearMonitorDefaults` | `storage.js` (`loadAutomaticGearMonitorDefaults`) | Object storing preferred monitors `{ scenarioId: monitorId }`. | Keeps helper defaults deterministic. |
-| `cameraPowerPlanner_autoGearBackupRetention` | `storage.js` (`loadAutomaticGearBackupRetention`) | Object `{ limit: number, lastPruneAt: ISO }`. | Controls rolling backups for presets. |
+| `cameraPowerPlanner_schemaCache` | `storage.js` (`exportAllData`) | Stringified JSON cache of device schema records. | Maintained by `modules/core/device-schema.js`; exports capture the stored string verbatim. |
+| `cameraPowerPlanner_customFonts` | `storage.js` (`readStoredCustomFonts`) | JSON string containing an array of `{ id, name, data }`. | Entries normalized through `normalizeCustomFontEntries`. |
+| `cameraPowerPlanner_mountVoltages` | `storage.js` (`collectPreferenceSnapshot`) | JSON string (or legacy raw string) mapping mount names to `{ high, low }` numeric thresholds. | See `modules/core/mount-voltage.js` for defaults and validation. |
+| `cameraPowerPlanner_cameraColors` | `storage.js` (`collectPreferenceSnapshot`) | JSON palette keyed by camera letters (`A`–`E`) with `#RRGGBB` values. | Managed by `getCameraLetterColorsSafeSession` in `app-session.js`. |
+| `cameraPowerPlanner_temperatureUnit` | `storage.js` (`collectPreferenceSnapshot`) | String preference (normalized to `"celsius"`/`"fahrenheit"` when applied). | Normalized by `normalizeTemperatureUnitValue` in `app-session.js`. |
+| `cameraPowerPlanner_focusScale` | `storage.js` (`collectPreferenceSnapshot`) | String token (resolved to `"metric"`/`"imperial"` during runtime). | Normalized via `normalizeFocusScale`/`normalizeFocusScaleValue` in `app-session.js`. |
+| `cameraPowerPlanner_autoGearSeeded` | `storage.js` (`loadAutoGearSeedFlag`) | Boolean flag stored as `'1'` for seeded state. | Toggled by `saveAutoGearSeedFlag`. |
+| `cameraPowerPlanner_autoGearActivePreset` | `storage.js` (`loadAutoGearActivePresetId`) | String preset ID. | Cleared when presets are removed. |
+| `cameraPowerPlanner_autoGearAutoPreset` | `storage.js` (`loadAutoGearAutoPresetId`) | String preset ID automatically loaded on startup. | Maintains autosave slot, purging previous entry when overwritten. |
+| `cameraPowerPlanner_autoGearShowBackups` | `storage.js` (`loadAutoGearBackupVisibility`) | Boolean flag stored as `'1'` when backups panel should be visible. | Managed by `saveAutoGearBackupVisibility`. |
+| `cameraPowerPlanner_autoGearBackupRetention` | `storage.js` (`loadAutoGearBackupRetention`) | Number clamped between configured min/max. | `normalizeAutoGearBackupRetentionValue` coerces legacy payloads. |
+| `cameraPowerPlanner_fullBackups` | `storage.js` (`loadFullBackupHistory`) | Array of `{ createdAt, fileName? }` entries. | Entries normalized by `normalizeFullBackupHistoryEntry`; legacy imports may provide `fullBackups`. |
+
+### Preference snapshot fields
+
+`collectPreferenceSnapshot()` exports a `preferences` object inside backups. In addition to basic toggles (dark mode, high contrast, etc.), several structured values require specific shapes:
+
+- `mountVoltages`: Object keyed by supported mounts (V-Mount, Gold-Mount, B-Mount) with `{ high, low }` numbers, matching `normalizeMountVoltageSource` in `modules/core/mount-voltage.js`.
+- `cameraColors`: Palette map (`A`–`E`) containing `#RRGGBB` strings as produced by `getCameraLetterColorsSafeSession` in `app-session.js`.
+- `temperatureUnit`: String normalized to `"celsius"` or `"fahrenheit"` via `normalizeTemperatureUnitValue` in `app-session.js`.
+- `focusScale`: String normalized to `"metric"` or `"imperial"` using `normalizeFocusScale` fallbacks in `app-session.js`.
+- `showAutoBackups`: Boolean flag mirroring `autoGearShowBackups`; toggles visibility of automatic gear backups in the UI.
+- `mountVoltages`, `cameraColors`, `temperatureUnit`, and `focusScale` accept legacy string payloads but are re-serialized following the helpers above during import.
 
 ## Planner backup structure
 
@@ -32,7 +54,7 @@ validate backups without inspecting code online.
 {
   "version": "<semantic version>",
   "exportedAt": "<ISO timestamp>",
-  "projects": [...],
+  "project": {...},
   "setups": [...],
   "devices": [...],
   "ownGear": [...],
@@ -42,15 +64,24 @@ validate backups without inspecting code online.
   "autoGearBackups": [...],
   "autoGearPresets": {...},
   "autoGearMonitorDefaults": {...},
+  "autoGearSeeded": <boolean>,
+  "autoGearActivePresetId": "<string>",
+  "autoGearAutoPresetId": "<string>",
+  "autoGearShowBackups": <boolean>,
+  "autoGearBackupRetention": <number>,
   "session": {...},
   "feedback": {...},
   "userProfile": {...},
-  "documentationTracker": {...}
+  "documentationTracker": {...},
+  "preferences": {...},
+  "customLogo": "<data URI>",
+  "customFonts": [...],
+  "schemaCache": "<stringified schema cache>",
+  "fullBackupHistory": [...]
 }
 ```
 
-All arrays/objects follow the shapes above. The backup also includes a checksum
-field inside the verification packet manifest, not in the JSON payload.
+Legacy restore payloads may also include `fullBackups`; the importer maps that field through `normalizeFullBackupHistoryEntry` before persisting. All arrays/objects follow the shapes above. The backup also includes a checksum field inside the verification packet manifest, not in the JSON payload.
 
 ## Validation references
 
