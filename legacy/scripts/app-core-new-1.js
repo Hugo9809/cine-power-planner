@@ -11152,7 +11152,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
             }
             if (restoreRehearsalProceedButton) {
-              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.restoreRehearsalProceed) || 'Continue rehearsal restore';
+              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.restoreRehearsalProceed) || 'Resume restore rehearsal';
               proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.restoreRehearsalProceedHelp) || proceedLabel;
               setButtonLabelWithIconBinding(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
               restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
