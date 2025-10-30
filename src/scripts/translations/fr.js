@@ -1724,7 +1724,7 @@
         },
         "resultsWarnings": {
           "title": "Power Summary : Alertes et sauvegardes",
-          "body": "Vérifiez les encadrés d’alerte des connecteurs : le vert signifie que l’alimentation de batterie à broches ou D-Tap est sûre, le jaune que l’alimentation de batterie approche de sa limite maximale et le rouge que le rig caméra demande plus de puissance que le pack ne peut fournir."
+          "body": "Vérifiez les encadrés d’alerte des connecteurs : le vert signifie que l’alimentation à broches ou D-Tap est sûre, le jaune qu’elle approche de sa limite et le rouge que le rig consomme plus que ce que cette ligne peut fournir. Notez quel connecteur a déclenché l’alerte, rééquilibrez ou réduisez la charge jusqu’à ce que les deux encadrés redeviennent verts, assurez-vous que chaque alimentation principale dispose d’un secours chargé avec une autonomie équivalente, vérifiez que l’horodatage de la bannière d’autosauvegarde correspond à l’aperçu Partage/Export avant de diffuser une nouvelle copie, puis relancez Power Summary pour confirmer que l’alerte est levée et que l’état mis à jour est synchronisé hors ligne."
         },
         "batteryComparison": {
           "title": "Comparez les options de batterie",

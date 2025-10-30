@@ -1724,7 +1724,7 @@
         },
         "resultsWarnings": {
           "title": "Power Summary: Avvisi e backup",
-          "body": "Controlla i riquadri di avviso dei connettori: il verde indica che l'alimentazione della batteria pin o D-Tap è sicura, il giallo che l'alimentazione della batteria è vicina al limite e il rosso che il rig di camera sta assorbendo più potenza di quanta la batteria possa fornire."
+          "body": "Controlla i riquadri di avviso dei connettori: il verde indica che l’alimentazione a pin o D-Tap è sicura, il giallo che sta raggiungendo il limite e il rosso che il rig assorbe più di quanto quella linea possa fornire. Annota quale connettore ha generato l’avviso, riequilibra o riduci il carico finché entrambi i riquadri tornano verdi, verifica che ogni alimentazione primaria disponga di un backup carico con autonomia equivalente, conferma che il timestamp del banner di salvataggio automatico corrisponda all’anteprima di Condividi/Esporta prima di distribuire una nuova copia e riesegui Power Summary per assicurarti che l’avviso risolto sia sincronizzato anche nelle cache offline."
         },
         "batteryComparison": {
           "title": "Confronta le batterie",

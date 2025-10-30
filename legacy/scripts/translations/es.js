@@ -1701,7 +1701,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsWarnings": {
             "title": "Power Summary: Avisos y copias",
-            "body": "Revisa los cuadros de alerta de conectores: el verde muestra que la alimentación de batería de pines o D-Tap es segura, el amarillo indica que la alimentación de batería está cerca de su máximo y el rojo que el rig de cámara demanda más potencia de la que el paquete de baterías puede entregar."
+            "body": "Revisa los cuadros de alerta de los conectores: el verde indica que la alimentación por pines o D-Tap es segura, el amarillo señala que se acerca al límite y el rojo que el rig exige más de lo que esa línea puede entregar. Registra qué conector disparó la alerta, redistribuye o reduce la carga hasta que ambos cuadros vuelvan a verde, verifica que cada alimentación principal tenga un respaldo cargado con autonomía equivalente, confirma que la marca de tiempo del banner de autoguardado coincide con la vista previa de Compartir/Exportar antes de distribuir una copia nueva y vuelve a ejecutar Power Summary para asegurar que la alerta despejada se sincroniza en las cachés sin conexión."
           },
           "batteryComparison": {
             "title": "Compara opciones de batería",
