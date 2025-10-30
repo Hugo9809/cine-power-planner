@@ -113,4 +113,38 @@ describe('contacts backup lifecycle', () => {
     const restoredContacts = storageApi.loadContacts();
     expect(restoredContacts).toEqual(exported.contacts);
   });
+
+  test('saveContacts preserves numeric fields without dropping data', () => {
+    const { storage } = createMockStorage();
+    const storageApi = bootstrapStorageModule(storage);
+
+    jest.spyOn(Date, 'now').mockReturnValue(1730000000000);
+    jest.spyOn(Math, 'random').mockReturnValue(0.987654321);
+
+    storageApi.saveContacts([
+      {
+        id: 42,
+        name: '  Casey  ',
+        role: '  First AC ',
+        phone: 15551234567,
+        email: 1010,
+        website: 2020,
+        notes: { valueOf: () => '  Focus notes  ' },
+      },
+    ]);
+
+    const contacts = storageApi.loadContacts();
+    expect(contacts).toHaveLength(1);
+
+    const [casey] = contacts;
+    expect(casey.id).toBe('42');
+    expect(casey.name).toBe('Casey');
+    expect(casey.role).toBe('First AC');
+    expect(casey.phone).toBe('15551234567');
+    expect(casey.email).toBe('1010');
+    expect(casey.website).toBe('2020');
+    expect(casey.notes).toBe('Focus notes');
+    expect(casey.createdAt).toBe(1730000000000);
+    expect(casey.updatedAt).toBe(1730000000000);
+  });
 });
