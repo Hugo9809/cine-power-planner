@@ -28,8 +28,13 @@ runtime. Offline crews rely on these instructions to protect user data.
    - Run the [Operations Checklist](operations-checklist.md) to confirm steps.
    - Execute the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
      if assets or caching behaviour changed.
-   - Capture console output (`window.__cineRuntimeIntegrity`) and attach to the
-     verification log.
+   - Capture console output (`window.__cineRuntimeIntegrity`) or re-run
+     `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and
+     attach the report to the verification log so documentation references the
+     exact guard validation you exercised.
+   - While still disconnected, open the in-app help center plus every updated
+     localized README to confirm the topics match the new behaviour and render
+     without remote dependencies.
 5. **Review & approval**
    - Peer review docs against the running app.
    - Secure localisation approval for updated strings.

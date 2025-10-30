@@ -38,11 +38,18 @@ instructions.
       if service worker assets or icons changed.
 - [ ] Restore backups in the rehearsal sandbox to confirm documentation for
       backup/restore remains correct.
+- [ ] Capture a fresh `window.__cineRuntimeIntegrity` report (or run
+      `window.cineRuntime.verifyCriticalFlows()` with the `warnOnFailure`
+      flag) and file it with the verification packet so runtime safeguards and
+      documented guardrails stay in sync.
 - [ ] Store the rehearsal **Compare versions** diff logs, checksum logs and sandbox screenshots with
       the verification packet and confirm redundant media copies before ticking
       the drill item so save/share/restore docs stay aligned with runtime
       safeguards.
 - [ ] Validate translations in-app using the language switcher.
+- [ ] While still offline, open the in-app help center and each localized
+      README you touched to confirm the updated guidance renders without remote
+      dependencies and mirrors the rehearsed workflows.
 
 ## Finalise
 
