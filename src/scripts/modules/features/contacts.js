@@ -81,11 +81,52 @@
 
   function sanitizeContactValue(value) {
     // Every field in the contact form is stored as a trimmed string so backup
-    // exports stay compact and predictable.
-    if (typeof value !== 'string') {
+    // exports stay compact and predictable. Numeric and boolean values from
+    // older backups are coerced to strings instead of being dropped so that no
+    // contact information is lost during migrations.
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) {
+        return '';
+      }
+      return String(value).trim();
+    }
+
+    if (typeof value === 'bigint') {
+      try {
+        return value.toString();
+      } catch (bigintError) {
+        void bigintError;
+      }
       return '';
     }
-    return value.trim();
+
+    if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    }
+
+    if (value && typeof value === 'object') {
+      try {
+        const primitive = value.valueOf();
+        if (primitive !== value) {
+          return sanitizeContactValue(primitive);
+        }
+
+        if (typeof value.toString === 'function') {
+          const stringified = value.toString();
+          if (typeof stringified === 'string' && stringified && stringified !== '[object Object]') {
+            return stringified.trim();
+          }
+        }
+      } catch (coercionError) {
+        void coercionError;
+      }
+    }
+
+    return '';
   }
 
   function normalizeContactEntry(entry) {

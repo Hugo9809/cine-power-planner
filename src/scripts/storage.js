@@ -12878,10 +12878,49 @@ function resolveContactsModuleApi() {
 }
 
 function fallbackSanitizeContactValue(value) {
-  if (typeof value !== 'string') {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      return '';
+    }
+    return String(value).trim();
+  }
+
+  if (typeof value === 'bigint') {
+    try {
+      return value.toString();
+    } catch (bigintError) {
+      void bigintError;
+    }
     return '';
   }
-  return value.trim();
+
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+
+  if (value && typeof value === 'object') {
+    try {
+      const primitive = value.valueOf();
+      if (primitive !== value) {
+        return fallbackSanitizeContactValue(primitive);
+      }
+
+      if (typeof value.toString === 'function') {
+        const stringified = value.toString();
+        if (typeof stringified === 'string' && stringified && stringified !== '[object Object]') {
+          return stringified.trim();
+        }
+      }
+    } catch (coercionError) {
+      void coercionError;
+    }
+  }
+
+  return '';
 }
 
 function fallbackGenerateContactId(moduleApi) {
