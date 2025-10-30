@@ -9904,7 +9904,50 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallbackFeatureSearchModuleApi.normalizeDetail(text);
     };
-    
+
+    const featureSearchOptionIdMap = new Map();
+    const featureSearchOptionIdRegistry = new Set();
+    let featureSearchOptionIdSequence = 0;
+
+    const sanitizeFeatureSearchOptionIdValue = value => {
+      if (value == null) return '';
+      let normalized = String(value).trim();
+      if (!normalized) return '';
+      if (typeof normalized.normalize === 'function') {
+        try {
+          normalized = normalized.normalize('NFKD');
+        } catch (featureSearchNormalizeError) {
+          void featureSearchNormalizeError;
+        }
+      }
+      normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+      normalized = normalized.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return normalized.replace(/^-+|-+$/g, '');
+    };
+
+    const getFeatureSearchOptionId = value => {
+      const key = value == null ? '' : String(value);
+      const existing = featureSearchOptionIdMap.get(key);
+      if (existing) {
+        return existing;
+      }
+      const sanitizedBase = sanitizeFeatureSearchOptionIdValue(key);
+      let baseId = sanitizedBase ? `featureSearchOption-${sanitizedBase}` : '';
+      if (!baseId) {
+        featureSearchOptionIdSequence += 1;
+        baseId = `featureSearchOption-generated-${featureSearchOptionIdSequence}`;
+      }
+      let candidate = baseId;
+      let suffix = 1;
+      while (featureSearchOptionIdRegistry.has(candidate)) {
+        candidate = `${baseId}-${suffix}`;
+        suffix += 1;
+      }
+      featureSearchOptionIdRegistry.add(candidate);
+      featureSearchOptionIdMap.set(key, candidate);
+      return candidate;
+    };
+
     const buildFeatureSearchOptionData = entry => {
       if (!entry) return null;
       const value = typeof entry === 'string' ? entry : entry.display;
@@ -9924,22 +9967,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (detail) {
         label = `${label} — ${detail}`;
       }
+      const id = getFeatureSearchOptionId(value);
       if (!label || label === value) {
-        return { value, label: label || value };
+        return { value, label: label || value, id };
       }
-      return { value, label };
+      return { value, label, id };
     };
-    
+
     const normalizeFeatureSearchOption = value => {
       if (!value) return null;
       if (typeof value === 'object') {
         const optionValue = value.value || value.display || '';
         if (!optionValue) return null;
         const optionLabel = value.label || value.optionLabel || optionValue;
-        return { value: optionValue, label: optionLabel };
+        const optionId = typeof value.id === 'string' && value.id.trim()
+          ? value.id.trim()
+          : getFeatureSearchOptionId(optionValue);
+        return { value: optionValue, label: optionLabel, id: optionId };
       }
       if (typeof value === 'string') {
-        return { value, label: value };
+        return { value, label: value, id: getFeatureSearchOptionId(value) };
       }
       return null;
     };
@@ -9982,11 +10029,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'feature-search-option';
+        const optionId = option.id || getFeatureSearchOptionId(option.value);
+        if (optionId) {
+          button.id = optionId;
+        }
         button.setAttribute('role', 'option');
         button.setAttribute('tabindex', index === 0 ? '0' : '-1');
         button.setAttribute('data-value', option.value);
         button.setAttribute('aria-label', option.label || option.value);
-    
+        button.setAttribute('aria-selected', 'false');
+
         const labelSpan = document.createElement('span');
         labelSpan.className = 'feature-search-option-label';
         const labelText = option.label || option.value;

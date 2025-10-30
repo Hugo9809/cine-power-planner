@@ -9099,6 +9099,10 @@ body.pink-mode #topBar #logo .logo-pink {
   outline: none;
 }
 
+.feature-search-option[aria-selected="true"] {
+  background: var(--control-hover-bg);
+}
+
 .feature-search-option:active {
   background: var(--control-active-bg);
 }

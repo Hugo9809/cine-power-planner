@@ -16692,19 +16692,46 @@ if (helpButton && helpDialog) {
 
     const getDropdownOptions = () => {
       if (!featureSearchDropdown) return [];
-      return Array.from(
-        featureSearchDropdown.querySelectorAll('[role="option"]') || []
-      );
+      return Array.from(featureSearchDropdown.querySelectorAll('[role="option"]') || []);
     };
 
-    const setActiveDropdownOption = index => {
+    const clearFeatureSearchActiveState = () => {
       const options = getDropdownOptions();
-      if (!options.length) return null;
+      options.forEach(option => {
+        option.setAttribute('tabindex', '-1');
+        option.setAttribute('aria-selected', 'false');
+      });
+      if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+        featureSearch.removeAttribute('aria-activedescendant');
+      }
+    };
+
+    const setActiveDropdownOption = (index, { focusOption = false } = {}) => {
+      const options = getDropdownOptions();
+      if (!options.length) {
+        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+          featureSearch.removeAttribute('aria-activedescendant');
+        }
+        return null;
+      }
       const bounded = Math.max(0, Math.min(index, options.length - 1));
       options.forEach((option, optIndex) => {
-        option.setAttribute('tabindex', optIndex === bounded ? '0' : '-1');
+        const isActive = optIndex === bounded;
+        option.setAttribute('tabindex', isActive ? '0' : '-1');
+        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) {
+          if (featureSearch) {
+            if (option.id) {
+              featureSearch.setAttribute('aria-activedescendant', option.id);
+            } else if (featureSearch.hasAttribute('aria-activedescendant')) {
+              featureSearch.removeAttribute('aria-activedescendant');
+            }
+          }
+          if (focusOption) {
+            option.focus();
+          }
+        }
       });
-      options[bounded].focus();
       if (featureSearchDropdown) {
         featureSearchDropdown.dataset.activeIndex = String(bounded);
       }
@@ -16713,10 +16740,14 @@ if (helpButton && helpDialog) {
 
     const closeFeatureSearchDropdown = () => {
       if (!featureSearchDropdown) return;
+      clearFeatureSearchActiveState();
       featureSearchDropdown.dataset.open = 'false';
       featureSearchDropdown.hidden = true;
       featureSearchDropdown.setAttribute('aria-expanded', 'false');
       featureSearchDropdown.dataset.activeIndex = '';
+      if (featureSearch) {
+        featureSearch.setAttribute('aria-expanded', 'false');
+      }
       const container = featureSearchDropdown.closest('.feature-search');
       if (container) container.classList.remove('feature-search-open');
     };
@@ -16730,8 +16761,28 @@ if (helpButton && helpDialog) {
       featureSearchDropdown.dataset.open = 'true';
       featureSearchDropdown.hidden = false;
       featureSearchDropdown.setAttribute('aria-expanded', 'true');
+      if (featureSearch) {
+        featureSearch.setAttribute('aria-expanded', 'true');
+      }
       const container = featureSearchDropdown.closest('.feature-search');
       if (container) container.classList.add('feature-search-open');
+      const options = getDropdownOptions();
+      if (!options.length) {
+        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+          featureSearch.removeAttribute('aria-activedescendant');
+        }
+        return;
+      }
+      const activeIndexAttr = featureSearchDropdown.dataset.activeIndex;
+      const parsedIndex = typeof activeIndexAttr === 'string' && activeIndexAttr !== ''
+        ? Number(activeIndexAttr)
+        : NaN;
+      const shouldFocusOption = document.activeElement && document.activeElement !== featureSearch;
+      if (Number.isNaN(parsedIndex)) {
+        setActiveDropdownOption(0, { focusOption: shouldFocusOption });
+      } else {
+        setActiveDropdownOption(parsedIndex, { focusOption: shouldFocusOption });
+      }
     };
 
     const applyFeatureSearchSuggestion = value => {
@@ -16791,7 +16842,7 @@ if (helpButton && helpDialog) {
         const options = getDropdownOptions();
         const activeIndex = featureSearchDropdown.dataset.activeIndex;
         const nextIndex = activeIndex ? Number(activeIndex) + 1 : 0;
-        setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex);
+        setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, { focusOption: false });
       } else if (e.key === 'ArrowUp') {
         if (!featureSearchDropdown || featureSearchDropdown.dataset.count === '0') {
           return;
@@ -16802,10 +16853,10 @@ if (helpButton && helpDialog) {
         if (!options.length) return;
         const activeIndex = featureSearchDropdown.dataset.activeIndex;
         if (!activeIndex) {
-          setActiveDropdownOption(options.length - 1);
+          setActiveDropdownOption(options.length - 1, { focusOption: false });
         } else {
           const prevIndex = Number(activeIndex) - 1;
-          setActiveDropdownOption(prevIndex >= 0 ? prevIndex : options.length - 1);
+          setActiveDropdownOption(prevIndex >= 0 ? prevIndex : options.length - 1, { focusOption: false });
         }
       }
     });
@@ -16832,17 +16883,17 @@ if (helpButton && helpDialog) {
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           const nextIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-          setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex);
+          setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, { focusOption: true });
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
           const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-          setActiveDropdownOption(prevIndex);
+          setActiveDropdownOption(prevIndex, { focusOption: true });
         } else if (e.key === 'Home') {
           e.preventDefault();
-          setActiveDropdownOption(0);
+          setActiveDropdownOption(0, { focusOption: true });
         } else if (e.key === 'End') {
           e.preventDefault();
-          setActiveDropdownOption(options.length - 1);
+          setActiveDropdownOption(options.length - 1, { focusOption: true });
         } else if (e.key === 'Enter') {
           e.preventDefault();
           if (currentIndex >= 0 && options[currentIndex]) {
