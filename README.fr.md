@@ -129,6 +129,17 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 - **Présentation cohérente.** Uicons locaux, ressources OpenMoji et polices intégrées garantissent la même apparence en studio ou sur un poste déconnecté.
 - **Sécuriser chaque modification.** Avant toute restauration, le planner crée une sauvegarde forcée et conserve les versions précédentes afin qu’aucun import ne remplace ton travail. Les journaux de vérification et les notes de checksum accompagnent chaque archive pour prouver l’intégrité même hors ligne.
 
+## Engagement de préservation des données
+
+Protéger les workflows des équipes et leurs données reste la priorité absolue. En préparant tes plans avec Cine Power Planner, tu profites des mêmes couches de protection que nous répétons avant chaque version :
+
+- **Des protections vérifiées uniquement.** Les flux de sauvegarde/partage/importation/backup/restauration sont livrés avec des répétitions consignées dans le [Documentation Verification Packet](docs/documentation-verification-packet.md), afin que les équipes terrain puissent confirmer chaque garde-fou avant de partir hors ligne.
+- **Aide et traductions synchronisées.** La [Documentation Update Checklist](docs/documentation-update-checklist.md) et le [Translation Guide](docs/translation-guide.md) garantissent que tout nouveau comportement se retrouve dans les sujets d’aide, les README localisés et les guides imprimés avant l’envoi des paquets.
+- **Des sauvegardes partout où il en faut.** Le [Backup Rotation Guide](docs/backup-rotation-guide.md) et la [Operations Checklist](docs/operations-checklist.md) détaillent comment échelonner archives redondantes, preuves de répétition et journaux de vérification pour qu’aucun projet ne reste sans voie de récupération.
+- **Des preuves auditables.** Nous capturons les exports console de `window.__cineRuntimeIntegrity`, des journaux de répétition signés et les empreintes des paquets pour que les équipes conformité et plateau puissent auditer la protection des données sans friction.
+
+Toute modification qui touche la sauvegarde, le partage, l’importation, les backups, la restauration ou la documentation reste bloquante tant que ces protections n’ont pas été exécutées et enregistrées. Cette rigueur maintient les données utilisateur en sécurité, même sur des machines isolées.
+
 ## Table des matières
 
 - [Fonctionnalités principales](#fonctionnalités-principales)
@@ -141,6 +152,7 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 - [Check-list publication & documentation](#check-list-publication--documentation)
 - [Vue d’ensemble](#vue-densemble)
 - [Principes fondamentaux](#principes-fondamentaux)
+- [Engagement de préservation des données](#engagement-de-préservation-des-données)
 - [Traductions](#traductions)
 - [Nouveautés](#nouveautés)
 - [Démarrage rapide](#démarrage-rapide)

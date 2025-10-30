@@ -129,6 +129,17 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 - **Presentación consistente.** Uicons locales, recursos OpenMoji y tipografías integradas aseguran la misma apariencia en un estudio o en un portátil desconectado.
 - **Proteger cada cambio.** Antes de cualquier restauración, el planner genera una copia de seguridad forzada y conserva las revisiones anteriores para que ninguna importación sobrescriba tu trabajo. Los registros de verificación y las notas de checksum acompañan a cada archivo para demostrar la integridad incluso sin conexión.
 
+## Promesa de preservación de datos
+
+Proteger los flujos de trabajo del equipo y sus datos es la máxima prioridad. Al planificar con Cine Power Planner obtienes las mismas capas de protección que ensayamos antes de cada versión:
+
+- **Salvaguardas verificadas.** Los flujos de guardado/compartido/importación/respaldo/restauración se publican con ensayos registrados en el [Documentation Verification Packet](docs/documentation-verification-packet.md) para que las cuadrillas puedan comprobar cada protección antes de viajar sin conexión.
+- **Ayuda y traducciones en sincronía.** La [Documentation Update Checklist](docs/documentation-update-checklist.md) y la [Translation Guide](docs/translation-guide.md) garantizan que cualquier comportamiento actualizado aparezca en los temas de ayuda, los README localizados y las guías impresas antes de distribuir paquetes.
+- **Respaldo en cada punto.** La [Backup Rotation Guide](docs/backup-rotation-guide.md) y la [Operations Checklist](docs/operations-checklist.md) detallan cómo escalonar archivos redundantes, evidencias de ensayo y registros de verificación para que ningún proyecto se quede sin ruta de recuperación.
+- **Evidencia auditable.** Capturamos exportaciones de consola de `window.__cineRuntimeIntegrity`, bitácoras firmadas de los ensayos y hashes de los paquetes para que los equipos de cumplimiento y las cuadrillas puedan auditar la protección de datos sin esfuerzo.
+
+Si un cambio toca guardados, compartidos, importaciones, respaldos, restauraciones o la documentación, queda bloqueado hasta que estas protecciones se ejerzan y queden registradas. Esa disciplina mantiene los datos seguros incluso en máquinas aisladas.
+
 ## Tabla de contenidos
 
 - [Funciones clave](#funciones-clave)
@@ -141,6 +152,7 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 - [Lista de verificación de lanzamientos y documentación](#lista-de-verificación-de-lanzamientos-y-documentación)
 - [Panorama general](#panorama-general)
 - [Principios clave](#principios-clave)
+- [Promesa de preservación de datos](#promesa-de-preservación-de-datos)
 - [Traducciones](#traducciones)
 - [Novedades](#novedades)
 - [Guía rápida](#guía-rápida)
