@@ -1,5 +1,5 @@
 (function exposeAppVersion(globalScope) {
-  var version = '1.0.29';
+  var version = '1.0.30';
 
   function safelyAssign(target, key, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
