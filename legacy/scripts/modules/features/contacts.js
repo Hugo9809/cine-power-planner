@@ -56,7 +56,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!entry || _typeof(entry) !== 'object') {
       return null;
     }
-    var id = sanitizeContactValue(entry.id) || generateContactId();
+    var rawId = entry.id;
+    var sanitizedId = sanitizeContactValue(rawId);
+    var id = (typeof rawId === 'boolean' ? '' : sanitizedId) || generateContactId();
     var name = sanitizeContactValue(entry.name);
     var role = sanitizeContactValue(entry.role);
     var phone = sanitizeContactValue(entry.phone);

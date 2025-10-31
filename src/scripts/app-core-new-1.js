@@ -14778,7 +14778,9 @@ function normalizeContactEntry(entry) {
     }
   }
   if (!entry || typeof entry !== 'object') return null;
-  const id = sanitizeContactValue(entry.id) || generateContactId();
+  const rawId = entry.id;
+  const sanitizedId = sanitizeContactValue(rawId);
+  const id = (typeof rawId === 'boolean' ? '' : sanitizedId) || generateContactId();
   const name = sanitizeContactValue(entry.name);
   const role = sanitizeContactValue(entry.role);
   const phone = sanitizeContactValue(entry.phone);
