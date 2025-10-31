@@ -16840,8 +16840,11 @@ if (helpButton && helpDialog) {
         e.preventDefault();
         openFeatureSearchDropdown();
         const options = getDropdownOptions();
-        const activeIndex = featureSearchDropdown.dataset.activeIndex;
-        const nextIndex = activeIndex ? Number(activeIndex) + 1 : 0;
+        const activeIndexAttr = featureSearchDropdown.dataset.activeIndex;
+        const activeIndex = typeof activeIndexAttr === 'string' && activeIndexAttr !== ''
+          ? Number(activeIndexAttr)
+          : -1;
+        const nextIndex = activeIndex + 1;
         setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, { focusOption: false });
       } else if (e.key === 'ArrowUp') {
         if (!featureSearchDropdown || featureSearchDropdown.dataset.count === '0') {
@@ -16851,11 +16854,14 @@ if (helpButton && helpDialog) {
         openFeatureSearchDropdown();
         const options = getDropdownOptions();
         if (!options.length) return;
-        const activeIndex = featureSearchDropdown.dataset.activeIndex;
-        if (!activeIndex) {
+        const activeIndexAttr = featureSearchDropdown.dataset.activeIndex;
+        const activeIndex = typeof activeIndexAttr === 'string' && activeIndexAttr !== ''
+          ? Number(activeIndexAttr)
+          : -1;
+        if (activeIndex === -1) {
           setActiveDropdownOption(options.length - 1, { focusOption: false });
         } else {
-          const prevIndex = Number(activeIndex) - 1;
+          const prevIndex = activeIndex - 1;
           setActiveDropdownOption(prevIndex >= 0 ? prevIndex : options.length - 1, { focusOption: false });
         }
       }
