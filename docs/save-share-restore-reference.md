@@ -7,7 +7,8 @@ workstations.
 
 ## Save & autosave
 
-- **Manual save trigger:** Press **Save**, **Enter** on focused inputs, or
+- **Manual save trigger:** Press **Save**, **Enter** on focused inputs once
+  composition is finalized (the IME guard blocks mid-composition commits), or
   `Ctrl+S` / `⌘S`. `app-session.js` dispatches a structured save event which
   `modules/persistence.js` clones and persists.
 - **Critical storage guard:** During application initialization,

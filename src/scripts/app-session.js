@@ -6130,7 +6130,8 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Enable Save button only when a setup name is entered and allow Enter to save
+// Enable Save button only when a setup name is entered. Enter saves only after
+// the input is finalized (no active composition), aligning with the IME guard.
 if (setupNameInput && saveSetupBtn) {
   const toggleSaveSetupBtn = () => {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
