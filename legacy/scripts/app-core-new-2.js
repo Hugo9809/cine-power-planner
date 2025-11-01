@@ -8901,6 +8901,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallbackFeatureSearchModuleApi.normalizeDetail(text);
     };
+    var featureSearchOptionIdMap = new Map();
+    var featureSearchOptionIdRegistry = new Set();
+    var featureSearchOptionIdSequence = 0;
+    var sanitizeFeatureSearchOptionIdValue = function sanitizeFeatureSearchOptionIdValue(value) {
+      if (value == null) return '';
+      var normalized = String(value).trim();
+      if (!normalized) return '';
+      if (typeof normalized.normalize === 'function') {
+        try {
+          normalized = normalized.normalize('NFKD');
+        } catch (featureSearchNormalizeError) {
+          void featureSearchNormalizeError;
+        }
+      }
+      normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+      normalized = normalized.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return normalized.replace(/^-+|-+$/g, '');
+    };
+    var getFeatureSearchOptionId = function getFeatureSearchOptionId(value) {
+      var key = value == null ? '' : String(value);
+      var existing = featureSearchOptionIdMap.get(key);
+      if (existing) {
+        return existing;
+      }
+      var sanitizedBase = sanitizeFeatureSearchOptionIdValue(key);
+      var baseId = sanitizedBase ? "featureSearchOption-".concat(sanitizedBase) : '';
+      if (!baseId) {
+        featureSearchOptionIdSequence += 1;
+        baseId = "featureSearchOption-generated-".concat(featureSearchOptionIdSequence);
+      }
+      var candidate = baseId;
+      var suffix = 1;
+      while (featureSearchOptionIdRegistry.has(candidate)) {
+        candidate = "".concat(baseId, "-").concat(suffix);
+        suffix += 1;
+      }
+      featureSearchOptionIdRegistry.add(candidate);
+      featureSearchOptionIdMap.set(key, candidate);
+      return candidate;
+    };
     var buildFeatureSearchOptionData = function buildFeatureSearchOptionData(entry) {
       if (!entry) return null;
       var value = typeof entry === 'string' ? entry : entry.display;
@@ -8914,15 +8954,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (detail) {
         label = "".concat(label, " \u2014 ").concat(detail);
       }
+      var id = getFeatureSearchOptionId(value);
       if (!label || label === value) {
         return {
           value: value,
-          label: label || value
+          label: label || value,
+          id: id
         };
       }
       return {
         value: value,
-        label: label
+        label: label,
+        id: id
       };
     };
     var normalizeFeatureSearchOption = function normalizeFeatureSearchOption(value) {
@@ -8931,15 +8974,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var optionValue = value.value || value.display || '';
         if (!optionValue) return null;
         var optionLabel = value.label || value.optionLabel || optionValue;
+        var optionId = typeof value.id === 'string' && value.id.trim() ? value.id.trim() : getFeatureSearchOptionId(optionValue);
         return {
           value: optionValue,
-          label: optionLabel
+          label: optionLabel,
+          id: optionId
         };
       }
       if (typeof value === 'string') {
         return {
           value: value,
-          label: value
+          label: value,
+          id: getFeatureSearchOptionId(value)
         };
       }
       return null;
@@ -8977,10 +9023,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var button = document.createElement('button');
         button.type = 'button';
         button.className = 'feature-search-option';
+        var optionId = option.id || getFeatureSearchOptionId(option.value);
+        if (optionId) {
+          button.id = optionId;
+        }
         button.setAttribute('role', 'option');
         button.setAttribute('tabindex', index === 0 ? '0' : '-1');
         button.setAttribute('data-value', option.value);
         button.setAttribute('aria-label', option.label || option.value);
+        button.setAttribute('aria-selected', 'false');
         var labelSpan = document.createElement('span');
         labelSpan.className = 'feature-search-option-label';
         var labelText = option.label || option.value;

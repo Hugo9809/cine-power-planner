@@ -196,6 +196,114 @@ function overviewResolveStructuredClone(scope) {
   }
   return null;
 }
+function convertGearListSelectorsToPlainText(root) {
+  if (!root || typeof root.querySelectorAll !== 'function') {
+    return;
+  }
+  var gearSection = root.querySelector('#gearListOutput');
+  if (!gearSection || typeof gearSection.querySelectorAll !== 'function') {
+    return;
+  }
+  var doc = gearSection.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    return;
+  }
+  var selects = gearSection.querySelectorAll('select');
+  if (!selects.length) {
+    return;
+  }
+  var datasetEntriesFromElement = function datasetEntriesFromElement(element) {
+    if (!element || typeof element.getAttributeNames !== 'function') {
+      return [];
+    }
+    return element.getAttributeNames().filter(function (name) {
+      return name && name.toLowerCase().indexOf('data-') === 0;
+    }).map(function (name) {
+      return {
+        name: name,
+        value: element.getAttribute(name)
+      };
+    });
+  };
+  selects.forEach(function (select) {
+    if (!select) {
+      return;
+    }
+    var options = select.options ? Array.from(select.options) : [];
+    var selectedLabels = [];
+    if (select.multiple) {
+      options.forEach(function (option) {
+        if (!option || !option.selected) {
+          return;
+        }
+        var label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
+        if (label) {
+          selectedLabels.push(label);
+        }
+      });
+    } else {
+      var preferred = options.find(function (option) {
+        return option && option.selected;
+      }) || options.find(function (option) {
+        return option && option.defaultSelected;
+      }) || null;
+      if (preferred) {
+        var label = typeof preferred.textContent === 'string' ? preferred.textContent.trim() : '';
+        if (label) {
+          selectedLabels.push(label);
+        }
+      }
+    }
+    var displayText = selectedLabels.join(', ');
+    var isEmpty = false;
+    if (!displayText) {
+      var fallbackAttributes = ['data-empty-label', 'data-placeholder', 'placeholder', 'data-label-off', 'data-default-label'];
+      for (var index = 0; index < fallbackAttributes.length; index += 1) {
+        var attr = fallbackAttributes[index];
+        var value = select.getAttribute ? select.getAttribute(attr) : null;
+        if (value && value.trim()) {
+          displayText = value.trim();
+          break;
+        }
+      }
+    }
+    if (!displayText && typeof select.value === 'string' && select.value.trim()) {
+      displayText = select.value.trim();
+    }
+    if (!displayText) {
+      displayText = '—';
+      isEmpty = true;
+    }
+    var replacement = doc.createElement('span');
+    replacement.className = 'gear-select-value';
+    if (select.className) {
+      replacement.setAttribute('data-gear-select-class', select.className);
+    }
+    if (select.id) {
+      replacement.setAttribute('data-gear-select-id', select.id);
+    }
+    if (select.name) {
+      replacement.setAttribute('data-gear-select-name', select.name);
+    }
+    replacement.setAttribute('data-gear-select-value', displayText);
+    if (isEmpty) {
+      replacement.setAttribute('data-gear-select-empty', 'true');
+    }
+    datasetEntriesFromElement(select).forEach(function (_ref) {
+      var name = _ref.name,
+        value = _ref.value;
+      if (!replacement.hasAttribute(name) && value !== null) {
+        replacement.setAttribute(name, value);
+      }
+    });
+    replacement.textContent = displayText;
+    if (typeof select.replaceWith === 'function') {
+      select.replaceWith(replacement);
+    } else if (select.parentNode) {
+      select.parentNode.replaceChild(replacement, select);
+    }
+  });
+}
 function createOverviewDeepClone(scope) {
   var structuredCloneImpl = overviewResolveStructuredClone(scope);
   if (!structuredCloneImpl) {
@@ -1562,6 +1670,7 @@ function generatePrintableOverview() {
         button.remove();
       }
     });
+    convertGearListSelectorsToPlainText(content);
   }
   var runConfiguredPrintWorkflow = function runConfiguredPrintWorkflow() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1787,11 +1896,9 @@ function generatePrintableOverview() {
   var printWorkflowLogger = createOverviewLoggerProxy(printWorkflowLoggerMeta);
   var openFallbackPrintView = function openFallbackPrintView() {
     if (!content || typeof document === 'undefined') return false;
-
     var hostWindow = typeof window !== 'undefined' ? window : null;
     var hostDocument = document;
     var hostBody = hostDocument.body;
-
     if (!hostBody) {
       logOverview('error', 'Unable to prepare the fallback print view because the document body is unavailable.', undefined, {
         action: 'print-workflow',
@@ -1800,7 +1907,6 @@ function generatePrintableOverview() {
       });
       return false;
     }
-
     var fallbackRoot = content.cloneNode(true);
     fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(function (btn) {
       if (btn && typeof btn.remove === 'function') {
@@ -1809,7 +1915,6 @@ function generatePrintableOverview() {
         btn.parentNode.removeChild(btn);
       }
     });
-
     var htmlElement = hostDocument.documentElement;
     var htmlClassName = htmlElement ? htmlElement.className : '';
     var htmlDir = htmlElement ? htmlElement.getAttribute('dir') || '' : '';
@@ -1819,28 +1924,24 @@ function generatePrintableOverview() {
     var bodyClassName = bodyElement ? bodyElement.className : '';
     var bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
     var escapedPrintDocumentTitle = escapeHtmlSafe(printDocumentTitle);
-
-    var htmlAttributes = ['lang="'.concat(escapeHtmlSafe(htmlLang || 'en'), '"')];
+    var htmlAttributes = ["lang=\"".concat(escapeHtmlSafe(htmlLang || 'en'), "\"")];
     if (htmlDir) {
-      htmlAttributes.push('dir="'.concat(escapeHtmlSafe(htmlDir), '"'));
+      htmlAttributes.push("dir=\"".concat(escapeHtmlSafe(htmlDir), "\""));
     }
     if (htmlClassName) {
-      htmlAttributes.push('class="'.concat(escapeHtmlSafe(htmlClassName), '"'));
+      htmlAttributes.push("class=\"".concat(escapeHtmlSafe(htmlClassName), "\""));
     }
     if (htmlInlineStyle) {
-      htmlAttributes.push('style="'.concat(escapeHtmlSafe(htmlInlineStyle), '"'));
+      htmlAttributes.push("style=\"".concat(escapeHtmlSafe(htmlInlineStyle), "\""));
     }
-
     var bodyAttributes = [];
     if (bodyClassName) {
-      bodyAttributes.push('class="'.concat(escapeHtmlSafe(bodyClassName), '"'));
+      bodyAttributes.push("class=\"".concat(escapeHtmlSafe(bodyClassName), "\""));
     }
     if (bodyInlineStyle) {
-      bodyAttributes.push('style="'.concat(escapeHtmlSafe(bodyInlineStyle), '"'));
+      bodyAttributes.push("style=\"".concat(escapeHtmlSafe(bodyInlineStyle), "\""));
     }
-
-    var fallbackDocumentHtml = ['<!DOCTYPE html>', '<html '.concat(htmlAttributes.join(' '), '>'), '<head>', '<meta charset="utf-8">', '<meta name="color-scheme" content="light dark">', '<title>'.concat(escapedPrintDocumentTitle, '</title>'), '<link rel="stylesheet" href="src/styles/style.css">', '<link rel="stylesheet" href="src/styles/overview.css">', '<link rel="stylesheet" href="src/styles/overview-print.css" media="print">', '<link rel="stylesheet" href="overview-print.css" media="screen">', '</head>', '<body'.concat(bodyAttributes.length ? ' '.concat(bodyAttributes.join(' ')) : '', '>'), fallbackRoot.outerHTML, '</body>', '</html>'].join('\n');
-
+    var fallbackDocumentHtml = "<!DOCTYPE html>\n<html ".concat(htmlAttributes.join(' '), ">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"color-scheme\" content=\"light dark\">\n<title>").concat(escapedPrintDocumentTitle, "</title>\n<link rel=\"stylesheet\" href=\"src/styles/style.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview-print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"overview-print.css\" media=\"screen\">\n</head>\n<body").concat(bodyAttributes.length ? " ".concat(bodyAttributes.join(' ')) : '', ">\n").concat(fallbackRoot.outerHTML, "\n</body>\n</html>");
     var existingFallback = hostDocument.querySelector('iframe[data-print-fallback="true"]');
     if (existingFallback) {
       if (typeof existingFallback.remove === 'function') {
@@ -1849,7 +1950,6 @@ function generatePrintableOverview() {
         existingFallback.parentNode.removeChild(existingFallback);
       }
     }
-
     var fallbackIframe = hostDocument.createElement('iframe');
     fallbackIframe.setAttribute('data-print-fallback', 'true');
     fallbackIframe.setAttribute('aria-hidden', 'true');
@@ -1865,47 +1965,42 @@ function generatePrintableOverview() {
     fallbackIframe.style.clipPath = 'inset(50%)';
     fallbackIframe.style.clip = 'rect(0 0 0 0)';
     fallbackIframe.style.overflow = 'hidden';
-
     var printWindowRef = null;
     var cleanupTimer = null;
     var cleanedUp = false;
     var printScheduled = false;
     var detachDocListeners = null;
-
-    function clearCleanupTimer() {
+    var clearCleanupTimer = function clearCleanupTimer() {
       if (cleanupTimer !== null && hostWindow && typeof hostWindow.clearTimeout === 'function') {
         hostWindow.clearTimeout(cleanupTimer);
         cleanupTimer = null;
       }
-    }
-
-    function cleanupIframe() {
+    };
+    var cleanupIframe = function cleanupIframe() {
       if (cleanedUp) {
         return;
       }
       cleanedUp = true;
       clearCleanupTimer();
-      fallbackIframe.removeEventListener('load', handleIframeLoad, true);
-      fallbackIframe.removeEventListener('error', handleIframeError, true);
+      fallbackIframe.removeEventListener('load', handleIframeLoad);
+      fallbackIframe.removeEventListener('error', handleIframeError);
       if (fallbackIframe.parentNode) {
         fallbackIframe.parentNode.removeChild(fallbackIframe);
       }
       if (printWindowRef) {
         printWindowRef.removeEventListener('afterprint', handleAfterPrint, true);
         printWindowRef.removeEventListener('pagehide', handleAfterPrint, true);
-        if (typeof detachDocListeners === 'function') {
+        if (detachDocListeners) {
           detachDocListeners();
         }
       }
       detachDocListeners = null;
       printWindowRef = null;
-    }
-
-    function handleAfterPrint() {
+    };
+    var handleAfterPrint = function handleAfterPrint() {
       cleanupIframe();
-    }
-
-    function triggerPrint() {
+    };
+    var triggerPrint = function triggerPrint() {
       if (!printWindowRef) {
         return;
       }
@@ -1919,7 +2014,6 @@ function generatePrintableOverview() {
           stage: 'fallback-view-focus'
         });
       }
-
       if (typeof printWindowRef.print !== 'function') {
         logOverview('error', 'Fallback print view is missing a print method.', undefined, {
           action: 'print-workflow',
@@ -1929,7 +2023,6 @@ function generatePrintableOverview() {
         cleanupIframe();
         return;
       }
-
       try {
         printWindowRef.print();
       } catch (error) {
@@ -1938,9 +2031,8 @@ function generatePrintableOverview() {
           stage: 'fallback-view-print'
         });
       }
-    }
-
-    function scheduleTriggerPrint() {
+    };
+    var scheduleTriggerPrint = function scheduleTriggerPrint() {
       if (printScheduled) {
         return;
       }
@@ -1950,10 +2042,8 @@ function generatePrintableOverview() {
       } else {
         triggerPrint();
       }
-    }
-
-    function handleIframeLoad() {
-      fallbackIframe.removeEventListener('load', handleIframeLoad, true);
+    };
+    var handleIframeLoad = function handleIframeLoad() {
       printWindowRef = fallbackIframe.contentWindow;
       if (!printWindowRef || !printWindowRef.document) {
         cleanupIframe();
@@ -1964,59 +2054,51 @@ function generatePrintableOverview() {
         });
         return;
       }
-
       var fallbackDoc = printWindowRef.document;
       try {
         fallbackDoc.title = printDocumentTitle;
       } catch (titleError) {
         void titleError;
       }
-
-      var onReadyStateChange = function onReadyStateChange() {
+      var _onReadyStateChange = function onReadyStateChange() {
         if (fallbackDoc.readyState === 'complete') {
-          fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
+          fallbackDoc.removeEventListener('readystatechange', _onReadyStateChange, true);
           scheduleTriggerPrint();
         }
       };
-
-      fallbackDoc.addEventListener('readystatechange', onReadyStateChange, true);
-
+      fallbackDoc.addEventListener('readystatechange', _onReadyStateChange, true);
       var onWindowLoad = function onWindowLoad() {
-        printWindowRef.removeEventListener('load', onWindowLoad, true);
         scheduleTriggerPrint();
       };
-
-      printWindowRef.addEventListener('load', onWindowLoad, true);
-
+      printWindowRef.addEventListener('load', onWindowLoad, {
+        once: true
+      });
       printWindowRef.addEventListener('afterprint', handleAfterPrint, true);
       printWindowRef.addEventListener('pagehide', handleAfterPrint, true);
-
       if (fallbackDoc.readyState === 'complete') {
         scheduleTriggerPrint();
       }
-
-      detachDocListeners = function detachDocListenersFn() {
-        fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
-        printWindowRef.removeEventListener('load', onWindowLoad, true);
+      detachDocListeners = function detachDocListeners() {
+        fallbackDoc.removeEventListener('readystatechange', _onReadyStateChange, true);
+        printWindowRef.removeEventListener('load', onWindowLoad);
       };
-    }
-
-    function handleIframeError(errorEvent) {
-      fallbackIframe.removeEventListener('error', handleIframeError, true);
+    };
+    var handleIframeError = function handleIframeError(errorEvent) {
       cleanupIframe();
       logOverview('error', 'Unable to load the fallback print view.', errorEvent, {
         action: 'print-workflow',
         stage: 'fallback-view-load',
         result: 'failed'
       });
-    }
-
-    fallbackIframe.addEventListener('load', handleIframeLoad, true);
-    fallbackIframe.addEventListener('error', handleIframeError, true);
-
+    };
+    fallbackIframe.addEventListener('load', handleIframeLoad, {
+      once: true
+    });
+    fallbackIframe.addEventListener('error', handleIframeError, {
+      once: true
+    });
     hostBody.appendChild(fallbackIframe);
-
-    function assignContentToIframe() {
+    var assignContentToIframe = function assignContentToIframe() {
       if ('srcdoc' in fallbackIframe) {
         fallbackIframe.srcdoc = fallbackDocumentHtml;
         return true;
@@ -2030,8 +2112,7 @@ function generatePrintableOverview() {
       candidateDoc.write(fallbackDocumentHtml);
       candidateDoc.close();
       return true;
-    }
-
+    };
     var contentAssigned = assignContentToIframe();
     if (!contentAssigned) {
       cleanupIframe();
@@ -2042,13 +2123,11 @@ function generatePrintableOverview() {
       });
       return false;
     }
-
     if (hostWindow && typeof hostWindow.setTimeout === 'function') {
       cleanupTimer = hostWindow.setTimeout(function () {
         cleanupIframe();
       }, 2 * 60 * 1000);
     }
-
     return true;
   };
   var fallbackTriggerPrintWorkflow = function fallbackTriggerPrintWorkflow(context) {

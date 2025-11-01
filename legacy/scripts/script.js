@@ -1,3 +1,4 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -89,7 +90,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return null;
   }
   function assignProperty(target, key, value, options) {
-    if (!target || typeof target !== 'object' && typeof target !== 'function') {
+    if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
       return false;
     }
     try {
@@ -105,7 +106,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
         configurable: true,
         enumerable: enumerableOption,
         writable: true,
-        value: value,
+        value: value
       });
       return true;
     } catch (defineError) {
@@ -120,7 +121,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return false;
   }
   function ensureNamespace(scope, key) {
-    if (!scope || typeof scope !== 'object' && typeof scope !== 'function') {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
       return null;
     }
     var existing = null;
@@ -130,15 +131,17 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
       void readError;
       existing = null;
     }
-    if (existing && (typeof existing === 'object' || typeof existing === 'function')) {
+    if (existing && (_typeof(existing) === 'object' || typeof existing === 'function')) {
       return existing;
     }
     var created = {};
-    var assigned = assignProperty(scope, key, created, { enumerable: false });
+    var assigned = assignProperty(scope, key, created, {
+      enumerable: false
+    });
     if (assigned) {
       try {
         var resolved = scope[key];
-        if (resolved && (typeof resolved === 'object' || typeof resolved === 'function')) {
+        if (resolved && (_typeof(resolved) === 'object' || typeof resolved === 'function')) {
           return resolved;
         }
       } catch (assignmentCheckError) {
@@ -153,16 +156,26 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
       return;
     }
     var scope = resolveGlobalScope();
-    if (!scope || typeof scope !== 'object' && typeof scope !== 'function') {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
       return;
     }
-    assignProperty(scope, 'APP_VERSION', version, { enumerable: true });
-    assignProperty(scope, 'CPP_APP_VERSION', version, { enumerable: true });
+    assignProperty(scope, 'APP_VERSION', version, {
+      enumerable: true
+    });
+    assignProperty(scope, 'CPP_APP_VERSION', version, {
+      enumerable: true
+    });
     var namespace = ensureNamespace(scope, 'cinePowerPlanner');
     if (namespace) {
-      assignProperty(namespace, 'APP_VERSION', version, { enumerable: true });
-      assignProperty(namespace, 'CPP_APP_VERSION', version, { enumerable: true });
-      assignProperty(namespace, 'version', version, { enumerable: true });
+      assignProperty(namespace, 'APP_VERSION', version, {
+        enumerable: true
+      });
+      assignProperty(namespace, 'CPP_APP_VERSION', version, {
+        enumerable: true
+      });
+      assignProperty(namespace, 'version', version, {
+        enumerable: true
+      });
     }
   }
   function resolveAppVersion() {

@@ -1,7 +1,11 @@
+function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
@@ -129,6 +133,95 @@ var setButtonLabelWithIconForEvents = function resolveSetButtonLabelWithIconForE
       void assignError;
     }
   };
+}();
+var BACKUP_FEATURE_FOR_EVENTS = function resolveBackupFeatureForEvents() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/features/backup.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+    } catch (requireError) {
+      void requireError;
+    }
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (scopeError) {
+    void scopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      var feature = scope.cineFeatureBackup;
+      if (feature && _typeof(feature) === 'object') {
+        return feature;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+  return {};
+}();
+var queueBackupPayloadForVaultForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.queueBackupPayloadForVault === 'function' ? BACKUP_FEATURE_FOR_EVENTS.queueBackupPayloadForVault : null;
+var getQueuedBackupPayloadsForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.getQueuedBackupPayloads === 'function' ? BACKUP_FEATURE_FOR_EVENTS.getQueuedBackupPayloads : null;
+var removeQueuedBackupRecordForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.removeBackupVaultRecord === 'function' ? BACKUP_FEATURE_FOR_EVENTS.removeBackupVaultRecord : null;
+var openQueuedBackupVaultWindowForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.openQueuedBackupVaultWindow === 'function' ? BACKUP_FEATURE_FOR_EVENTS.openQueuedBackupVaultWindow : null;
+var resolveQueuedBackupMessageForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.resolveQueuedBackupMessage === 'function' ? BACKUP_FEATURE_FOR_EVENTS.resolveQueuedBackupMessage : null;
+var downloadBackupPayloadForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload === 'function' ? BACKUP_FEATURE_FOR_EVENTS.downloadBackupPayload : null;
+var isBackupVaultFallbackActiveForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive === 'function' ? BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive : null;
+var buildSettingsBackupPackageForEvents = function resolveBuildSettingsBackupPackage() {
+  if (typeof buildSettingsBackupPackage === 'function') {
+    return buildSettingsBackupPackage;
+  }
+  var scopes = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      scopes.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (scopeError) {
+    void scopeError;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global) {
+    scopes.push(global);
+  }
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope) {
+      continue;
+    }
+    if (typeof scope.buildSettingsBackupPackage === 'function') {
+      return scope.buildSettingsBackupPackage;
+    }
+  }
+  return null;
 }();
 function collectLoggingResolverScopes() {
   var scopes = [];
@@ -2562,28 +2655,410 @@ function ensureAutoBackupBeforeDeletion(context) {
   }
   return null;
 }
-var autoBackupInterval = setInterval(function () {
-  autoBackup({
-    reason: 'interval'
+var QUEUED_BACKUP_GESTURE_EVENTS = ['pointerdown', 'keydown', 'touchstart'];
+var queuedBackupBanner = null;
+var queuedBackupBannerMessageEl = null;
+var queuedBackupBannerActionEl = null;
+var queuedBackupGestureBound = false;
+var queuedBackupFlushScheduled = false;
+var queuedBackupFlushInProgress = false;
+var autoBackupSchedulerTimer = null;
+var autoGearBackupSchedulerTimer = null;
+var hourlyBackupSchedulerTimer = null;
+function getQueuedBackupBannerTexts() {
+  var langTexts = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts && texts[currentLang] || {};
+  var fallbackTexts = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts && texts.en || {};
+  return {
+    singular: langTexts.queuedBackupBannerMessageOne || fallbackTexts.queuedBackupBannerMessageOne || '1 backup saved in the local vault.',
+    plural: langTexts.queuedBackupBannerMessageOther || fallbackTexts.queuedBackupBannerMessageOther || '{count} backups saved in the local vault.',
+    gesture: langTexts.queuedBackupBannerGesture || fallbackTexts.queuedBackupBannerGesture || 'Interact with the planner to export them safely.',
+    action: langTexts.queuedBackupBannerAction || fallbackTexts.queuedBackupBannerAction || 'Open local backup vault',
+    fallbackHint: langTexts.queuedBackupFallbackHint || fallbackTexts.queuedBackupFallbackHint || 'Emergency fallback storage active. Export queued backups immediately.'
+  };
+}
+function ensureQueuedBackupBannerElements() {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+  if (queuedBackupBanner && queuedBackupBannerMessageEl && queuedBackupBannerActionEl) {
+    return queuedBackupBanner;
+  }
+  var banner = document.createElement('section');
+  banner.id = 'cineQueuedBackupBanner';
+  banner.style.position = 'fixed';
+  banner.style.right = '1.5rem';
+  banner.style.left = '1.5rem';
+  banner.style.bottom = '1.5rem';
+  banner.style.maxWidth = '28rem';
+  banner.style.marginLeft = 'auto';
+  banner.style.padding = '1rem 1.25rem';
+  banner.style.borderRadius = '1.25rem';
+  banner.style.background = 'rgba(15, 22, 36, 0.92)';
+  banner.style.color = '#f5f7fb';
+  banner.style.boxShadow = '0 1.5rem 3.5rem rgba(5, 8, 17, 0.28)';
+  banner.style.zIndex = '9999';
+  banner.style.display = 'none';
+  banner.style.flexDirection = 'column';
+  banner.style.gap = '0.75rem';
+  banner.setAttribute('role', 'status');
+  banner.setAttribute('aria-live', 'assertive');
+  banner.setAttribute('aria-hidden', 'true');
+  var messageEl = document.createElement('p');
+  messageEl.style.margin = '0';
+  messageEl.style.lineHeight = '1.5';
+  messageEl.style.fontSize = '0.95rem';
+  var actionEl = document.createElement('button');
+  actionEl.type = 'button';
+  actionEl.style.alignSelf = 'flex-start';
+  actionEl.style.background = '#ffbf3c';
+  actionEl.style.color = '#11131a';
+  actionEl.style.border = 'none';
+  actionEl.style.borderRadius = '999px';
+  actionEl.style.padding = '0.55rem 1.5rem';
+  actionEl.style.fontWeight = '600';
+  actionEl.style.cursor = 'pointer';
+  actionEl.addEventListener('click', function (event) {
+    try {
+      event.preventDefault();
+    } catch (preventDefaultError) {
+      void preventDefaultError;
+    }
+    if (typeof openQueuedBackupVaultWindowForEvents === 'function') {
+      Promise.resolve().then(function () {
+        return openQueuedBackupVaultWindowForEvents();
+      }).catch(function (vaultError) {
+        console.warn('Failed to open queued backup vault window', vaultError);
+      });
+    }
   });
-}, AUTO_BACKUP_INTERVAL_MS);
-if (typeof autoBackupInterval.unref === 'function') {
-  autoBackupInterval.unref();
+  banner.appendChild(messageEl);
+  banner.appendChild(actionEl);
+  try {
+    (document.body || document.documentElement).appendChild(banner);
+  } catch (appendError) {
+    console.warn('Failed to attach queued backup banner to document', appendError);
+  }
+  queuedBackupBanner = banner;
+  queuedBackupBannerMessageEl = messageEl;
+  queuedBackupBannerActionEl = actionEl;
+  return banner;
 }
-var autoGearBackupInterval = setInterval(function () {
-  if (!autoGearRulesDirtySinceBackup) return;
-  createAutoGearBackup();
-}, AUTO_GEAR_BACKUP_INTERVAL_MS);
-if (typeof autoGearBackupInterval.unref === 'function') {
-  autoGearBackupInterval.unref();
+function showQueuedBackupBanner(count, fallbackActive) {
+  var banner = ensureQueuedBackupBannerElements();
+  if (!banner || !queuedBackupBannerMessageEl || !queuedBackupBannerActionEl) {
+    return;
+  }
+  var textsForBanner = getQueuedBackupBannerTexts();
+  var countValue = typeof count === 'number' && Number.isFinite(count) ? count : 1;
+  var baseMessageTemplate = countValue === 1 ? textsForBanner.singular : textsForBanner.plural;
+  var message = baseMessageTemplate.replace('{count}', String(countValue));
+  var gesture = textsForBanner.gesture.replace('{count}', String(countValue));
+  var parts = ["".concat(message, " ").concat(gesture).trim()];
+  if (fallbackActive) {
+    parts.push(textsForBanner.fallbackHint);
+  }
+  queuedBackupBannerMessageEl.textContent = parts.join(' ').trim();
+  queuedBackupBannerActionEl.textContent = textsForBanner.action;
+  banner.style.display = 'flex';
+  banner.setAttribute('aria-hidden', 'false');
+  attachQueuedBackupGestureListeners();
 }
-var hourlyBackupInterval = setInterval(function () {
-  var fileName = createSettingsBackup(false);
-  showNotification(fileName ? 'success' : 'error', fileName ? "Full app backup downloaded (".concat(fileName, ")") : 'Full app backup failed');
-}, 60 * 60 * 1000);
-if (typeof hourlyBackupInterval.unref === 'function') {
-  hourlyBackupInterval.unref();
+function hideQueuedBackupBanner() {
+  if (!queuedBackupBanner) {
+    return;
+  }
+  queuedBackupBanner.style.display = 'none';
+  queuedBackupBanner.setAttribute('aria-hidden', 'true');
 }
+function attachQueuedBackupGestureListeners() {
+  if (queuedBackupGestureBound || typeof document === 'undefined') {
+    return;
+  }
+  var handler = handleQueuedBackupGesture;
+  for (var index = 0; index < QUEUED_BACKUP_GESTURE_EVENTS.length; index += 1) {
+    var eventName = QUEUED_BACKUP_GESTURE_EVENTS[index];
+    try {
+      document.addEventListener(eventName, handler, {
+        passive: true
+      });
+    } catch (listenerError) {
+      document.addEventListener(eventName, handler);
+    }
+  }
+  queuedBackupGestureBound = true;
+}
+function detachQueuedBackupGestureListeners() {
+  if (!queuedBackupGestureBound || typeof document === 'undefined') {
+    return;
+  }
+  var handler = handleQueuedBackupGesture;
+  for (var index = 0; index < QUEUED_BACKUP_GESTURE_EVENTS.length; index += 1) {
+    var eventName = QUEUED_BACKUP_GESTURE_EVENTS[index];
+    try {
+      document.removeEventListener(eventName, handler, {
+        passive: true
+      });
+    } catch (listenerError) {
+      document.removeEventListener(eventName, handler);
+    }
+  }
+  queuedBackupGestureBound = false;
+}
+function handleQueuedBackupGesture() {
+  requestQueuedBackupFlush('gesture');
+}
+function requestQueuedBackupFlush(trigger) {
+  if (queuedBackupFlushScheduled) {
+    return;
+  }
+  if (typeof getQueuedBackupPayloadsForEvents !== 'function' || typeof downloadBackupPayloadForEvents !== 'function') {
+    return;
+  }
+  queuedBackupFlushScheduled = true;
+  Promise.resolve().then(function () {
+    queuedBackupFlushScheduled = false;
+    flushQueuedBackupVault(trigger);
+  });
+}
+function updateQueuedBackupBannerFromVault() {
+  if (typeof getQueuedBackupPayloadsForEvents !== 'function') {
+    hideQueuedBackupBanner();
+    detachQueuedBackupGestureListeners();
+    return Promise.resolve(0);
+  }
+  return Promise.resolve(getQueuedBackupPayloadsForEvents()).then(function (entries) {
+    var count = Array.isArray(entries) ? entries.length : 0;
+    var fallbackActive = typeof isBackupVaultFallbackActiveForEvents === 'function' ? Boolean(isBackupVaultFallbackActiveForEvents()) : false;
+    if (count > 0) {
+      showQueuedBackupBanner(count, fallbackActive);
+    } else {
+      hideQueuedBackupBanner();
+      detachQueuedBackupGestureListeners();
+    }
+    return count;
+  }).catch(function (error) {
+    console.warn('Failed to update queued backup banner from vault', error);
+    hideQueuedBackupBanner();
+    detachQueuedBackupGestureListeners();
+    return 0;
+  });
+}
+function flushQueuedBackupVault(_x) {
+  return _flushQueuedBackupVault.apply(this, arguments);
+}
+function _flushQueuedBackupVault() {
+  _flushQueuedBackupVault = _asyncToGenerator(_regenerator().m(function _callee(trigger) {
+    var entries, index, entry, result, message, _t;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          if (!queuedBackupFlushInProgress) {
+            _context.n = 1;
+            break;
+          }
+          return _context.a(2);
+        case 1:
+          if (!(typeof getQueuedBackupPayloadsForEvents !== 'function' || typeof downloadBackupPayloadForEvents !== 'function')) {
+            _context.n = 2;
+            break;
+          }
+          return _context.a(2);
+        case 2:
+          queuedBackupFlushInProgress = true;
+          _context.p = 3;
+          _context.n = 4;
+          return Promise.resolve(getQueuedBackupPayloadsForEvents()).then(function (value) {
+            return Array.isArray(value) ? value : [];
+          }).catch(function (error) {
+            console.warn('Failed to read queued backups for deferred download', error);
+            return [];
+          });
+        case 4:
+          entries = _context.v;
+          if (entries.length) {
+            _context.n = 5;
+            break;
+          }
+          hideQueuedBackupBanner();
+          detachQueuedBackupGestureListeners();
+          return _context.a(2);
+        case 5:
+          index = 0;
+        case 6:
+          if (!(index < entries.length)) {
+            _context.n = 13;
+            break;
+          }
+          entry = entries[index];
+          result = null;
+          try {
+            result = downloadBackupPayloadForEvents(entry.payload, entry.fileName, {
+              skipQueue: true,
+              source: entry && entry.metadata && entry.metadata.source ? entry.metadata.source : 'automatic',
+              reason: trigger || 'gesture-flush',
+              queueMetadata: entry && entry.metadata ? entry.metadata : {}
+            });
+          } catch (downloadError) {
+            console.warn('Deferred backup download attempt threw an error', downloadError);
+            result = null;
+          }
+          if (!(result && result.success)) {
+            _context.n = 11;
+            break;
+          }
+          if (!(typeof removeQueuedBackupRecordForEvents === 'function')) {
+            _context.n = 10;
+            break;
+          }
+          _context.p = 7;
+          _context.n = 8;
+          return removeQueuedBackupRecordForEvents(entry.id);
+        case 8:
+          _context.n = 10;
+          break;
+        case 9:
+          _context.p = 9;
+          _t = _context.v;
+          console.warn('Failed to remove queued backup after export', _t);
+        case 10:
+          _context.n = 12;
+          break;
+        case 11:
+          message = result && result.queueMessage ? result.queueMessage : resolveQueuedBackupMessageForEvents ? resolveQueuedBackupMessageForEvents(entry.fileName) : 'Automatic downloads are still blocked. Keep working offline and try again after interacting with the planner.';
+          if (typeof showNotification === 'function') {
+            try {
+              showNotification('warning', message);
+            } catch (notifyError) {
+              void notifyError;
+            }
+          }
+          return _context.a(3, 13);
+        case 12:
+          index += 1;
+          _context.n = 6;
+          break;
+        case 13:
+          _context.p = 13;
+          queuedBackupFlushInProgress = false;
+          updateQueuedBackupBannerFromVault();
+          return _context.f(13);
+        case 14:
+          return _context.a(2);
+      }
+    }, _callee, null, [[7, 9], [3,, 13, 14]]);
+  }));
+  return _flushQueuedBackupVault.apply(this, arguments);
+}
+function handleQueuedBackupVaultQueuedEvent() {
+  updateQueuedBackupBannerFromVault();
+  attachQueuedBackupGestureListeners();
+}
+function handleQueuedBackupFallbackChangedEvent() {
+  updateQueuedBackupBannerFromVault();
+}
+function scheduleAutoBackupTimer() {
+  if (autoBackupSchedulerTimer) {
+    try {
+      clearTimeout(autoBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  autoBackupSchedulerTimer = setTimeout(function () {
+    try {
+      autoBackup({
+        reason: 'interval'
+      });
+    } catch (autoBackupError) {
+      console.warn('Scheduled auto backup run failed', autoBackupError);
+    }
+    scheduleAutoBackupTimer();
+  }, AUTO_BACKUP_INTERVAL_MS);
+  if (autoBackupSchedulerTimer && typeof autoBackupSchedulerTimer.unref === 'function') {
+    autoBackupSchedulerTimer.unref();
+  }
+}
+function scheduleAutoGearBackupTimer() {
+  if (autoGearBackupSchedulerTimer) {
+    try {
+      clearTimeout(autoGearBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  autoGearBackupSchedulerTimer = setTimeout(function () {
+    try {
+      if (autoGearRulesDirtySinceBackup) {
+        createAutoGearBackup();
+      }
+    } catch (gearBackupError) {
+      console.warn('Scheduled auto gear backup failed', gearBackupError);
+    }
+    scheduleAutoGearBackupTimer();
+  }, AUTO_GEAR_BACKUP_INTERVAL_MS);
+  if (autoGearBackupSchedulerTimer && typeof autoGearBackupSchedulerTimer.unref === 'function') {
+    autoGearBackupSchedulerTimer.unref();
+  }
+}
+function queueScheduledFullBackup() {
+  if (typeof queueBackupPayloadForVaultForEvents !== 'function' || typeof buildSettingsBackupPackageForEvents !== 'function') {
+    return;
+  }
+  try {
+    var packageInfo = buildSettingsBackupPackageForEvents(new Date());
+    if (!packageInfo || typeof packageInfo.payload !== 'string') {
+      return;
+    }
+    queueBackupPayloadForVaultForEvents(packageInfo.fileName, packageInfo.payload, {
+      source: 'hourly-scheduler',
+      reason: 'hourly-auto',
+      createdAt: packageInfo.iso
+    });
+    if (resolveQueuedBackupMessageForEvents) {
+      try {
+        var queuedMessage = resolveQueuedBackupMessageForEvents(packageInfo.fileName);
+        if (queuedMessage && typeof showNotification === 'function') {
+          showNotification('info', queuedMessage);
+        }
+      } catch (messageError) {
+        void messageError;
+      }
+    }
+    updateQueuedBackupBannerFromVault();
+  } catch (queueError) {
+    console.warn('Failed to queue scheduled full backup payload', queueError);
+  }
+}
+function scheduleHourlyBackupTimer() {
+  if (hourlyBackupSchedulerTimer) {
+    try {
+      clearTimeout(hourlyBackupSchedulerTimer);
+    } catch (clearError) {
+      void clearError;
+    }
+  }
+  hourlyBackupSchedulerTimer = setTimeout(function () {
+    queueScheduledFullBackup();
+    scheduleHourlyBackupTimer();
+  }, 60 * 60 * 1000);
+  if (hourlyBackupSchedulerTimer && typeof hourlyBackupSchedulerTimer.unref === 'function') {
+    hourlyBackupSchedulerTimer.unref();
+  }
+}
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+  window.addEventListener('cineBackupVault:fallbackChanged', handleQueuedBackupFallbackChangedEvent);
+}
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  document.addEventListener('cineBackupVault:queued', handleQueuedBackupVaultQueuedEvent);
+  document.addEventListener('cineBackupVault:fallbackChanged', handleQueuedBackupFallbackChangedEvent);
+}
+if (typeof setTimeout === 'function') {
+  scheduleAutoBackupTimer();
+  scheduleAutoGearBackupTimer();
+  scheduleHourlyBackupTimer();
+}
+updateQueuedBackupBannerFromVault();
 function showDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
   if (!deviceManagerSection.classList.contains('hidden')) return;

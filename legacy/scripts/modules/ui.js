@@ -451,7 +451,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (isNodeProcessReference(value)) {
       return true;
     }
-    if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
+    if (typeof process !== 'undefined' && process && process.release && value === process.release) {
       return true;
     }
     try {
@@ -546,6 +546,68 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void freezeError;
       return value;
     }
+  }
+  function ensureFrozen(value) {
+    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      return value;
+    }
+    var target = value;
+    if (typeof Object.freeze === 'function') {
+      try {
+        target = Object.freeze(target);
+      } catch (freezeError) {
+        void freezeError;
+      }
+    }
+    var alreadyFrozen = false;
+    if (typeof Object.isFrozen === 'function') {
+      try {
+        alreadyFrozen = Object.isFrozen(target);
+      } catch (stateError) {
+        void stateError;
+        alreadyFrozen = false;
+      }
+    }
+    if (alreadyFrozen) {
+      return target;
+    }
+    try {
+      var keys = Object.getOwnPropertyNames(target);
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        var descriptor = Object.getOwnPropertyDescriptor(target, key);
+        if (!descriptor) {
+          continue;
+        }
+        if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+          if (descriptor.configurable || descriptor.writable) {
+            Object.defineProperty(target, key, {
+              configurable: false,
+              enumerable: descriptor.enumerable,
+              writable: false,
+              value: descriptor.value
+            });
+          }
+        } else if (descriptor.configurable) {
+          Object.defineProperty(target, key, {
+            configurable: false,
+            enumerable: descriptor.enumerable,
+            get: descriptor.get,
+            set: descriptor.set
+          });
+        }
+      }
+      if (typeof Object.preventExtensions === 'function') {
+        try {
+          Object.preventExtensions(target);
+        } catch (preventError) {
+          void preventError;
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+    return target;
   }
   var freezeDeep = function resolveFreezeDeep() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
@@ -702,7 +764,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var key = contextKeys[_contextIndex];
       contextObject[key] = contextValues[key];
     }
-    Object.freeze(contextObject);
+    ensureFrozen(contextObject);
     var controller = {};
     Object.defineProperty(controller, 'context', {
       configurable: false,
@@ -721,25 +783,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     for (var _index = 0; _index < actionNames.length; _index += 1) {
       _loop();
     }
-    return freezeDeep(controller);
+    return ensureFrozen(freezeDeep(controller));
   }
   function sanitizeInteraction(name, handler) {
     var fn = cloneFunction(handler);
     if (!fn) {
       throw new TypeError("cineUi interaction \"".concat(name, "\" must be a function."));
     }
-    return freezeDeep({
+    return ensureFrozen(freezeDeep({
       handler: fn
-    });
+    }));
   }
   function sanitizeInitializer(name, initializer) {
     var fn = cloneFunction(initializer);
     if (!fn) {
       throw new TypeError("cineUi initializer \"".concat(name, "\" must be a function."));
     }
-    return freezeDeep({
+    return ensureFrozen(freezeDeep({
       initializer: fn
-    });
+    }));
   }
   function warnDuplicate(name, type) {
     var key = "".concat(type, ":").concat(name);

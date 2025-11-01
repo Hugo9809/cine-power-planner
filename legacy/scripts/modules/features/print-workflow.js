@@ -143,7 +143,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       closeAfterPrint = safeContext.closeAfterPrint;
     var preferFallback = options && _typeof(options) === 'object' && options.preferFallback === true;
     var reason = options && _typeof(options) === 'object' && typeof options.reason === 'string' ? options.reason : 'print';
-    var logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
+    var isExportReason = reason === 'export' || reason === 'rental-export';
+    var logPrefix = isExportReason ? safeContext.exportLogPrefix : safeContext.logPrefix;
     var logger = safeContext.logger;
     var fallbackAttempts = 0;
     function attemptFallback(error) {
@@ -193,7 +194,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var success = false;
-    if (preferFallback) {
+    if (preferFallback && !isExportReason) {
       success = attemptFallback();
       if (!success) {
         success = attemptNativePrint();

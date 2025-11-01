@@ -784,7 +784,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return value;
     }
   }
-  var freezeDeep = function resolveFreezeDeep() {
+  var resolvedFreezeDeep;
+  function freezeDeep(value, seen) {
+    var deepFreeze = resolveCachedFreezeDeep();
+    return deepFreeze(value, seen);
+  }
+  function resolveCachedFreezeDeep() {
+    if (!resolvedFreezeDeep) {
+      resolvedFreezeDeep = resolveFreezeDeep();
+    }
+    return resolvedFreezeDeep;
+  }
+  function resolveFreezeDeep() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
       return MODULE_GLOBALS.freezeDeep;
     }
@@ -802,7 +813,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return MODULE_ENV.freezeDeep;
     }
     return fallbackFreezeDeep;
-  }();
+  }
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;

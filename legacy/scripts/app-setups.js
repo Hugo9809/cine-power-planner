@@ -301,6 +301,28 @@ function safeGetCurrentProjectName() {
 }
 var CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+var CAMERA_LINKED_SUPPORT_ITEM_BASE_NAMES = ['ARRI K2.0019797 HEX-3', 'ARRI K2.0023751 B-Mount Battery Adapter', 'ARRI K2.74000.0 VEB-3 Viewfinder Extension Bracket', 'ARRI KK.0037820 Handle Extension Set', 'SHAPE Telescopic Handle ARRI Rosette Kit 12"'];
+var cameraLinkedSupportItemKeysCache = null;
+function getCameraLinkedSupportItemKeys() {
+  if (cameraLinkedSupportItemKeysCache instanceof Set && cameraLinkedSupportItemKeysCache.size) {
+    return cameraLinkedSupportItemKeysCache;
+  }
+  if (typeof normalizeGearNameForComparison !== 'function') {
+    return new Set();
+  }
+  cameraLinkedSupportItemKeysCache = new Set(CAMERA_LINKED_SUPPORT_ITEM_BASE_NAMES.map(function (name) {
+    return normalizeGearNameForComparison(name);
+  }));
+  return cameraLinkedSupportItemKeysCache;
+}
+function resolveCameraLinkedSupportName(name) {
+  if (!name || typeof normalizeGearNameForComparison !== 'function') {
+    return '';
+  }
+  var resolvedName = addArriKNumber(name);
+  var normalized = normalizeGearNameForComparison(resolvedName);
+  return getCameraLinkedSupportItemKeys().has(normalized) ? resolvedName : '';
+}
 var PRODUCTION_COMPANY_FIELD_ORDER = ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'];
 var LEGACY_PROJECT_FIELD_LABELS = {
   productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
@@ -4254,16 +4276,16 @@ function generateConnectorSummary(device) {
     var rawPreference = scopePreference || (typeof focusScalePreference === 'string' ? focusScalePreference : null) || 'metric';
     if (typeof normalizeFocusScale === 'function') {
       try {
-        var normalized = normalizeFocusScale(rawPreference);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
+        var _normalized = normalizeFocusScale(rawPreference);
+        if (_normalized === 'imperial' || _normalized === 'metric') {
+          return _normalized;
         }
       } catch (normalizeError) {
         void normalizeError;
       }
     }
-    var normalizedPreference = normalizeFocusScaleValue(rawPreference);
-    return normalizedPreference || 'metric';
+    var normalized = normalizeFocusScaleValue(rawPreference);
+    return normalized || 'metric';
   };
   var focusScaleMode = resolveFocusScaleMode();
   var focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
@@ -4303,11 +4325,11 @@ function generateConnectorSummary(device) {
     if (useImperial) {
       var pounds = numeric / 453.59237;
       var digits = pounds >= 10 ? 1 : 2;
-      var formatted = formatNumber(pounds, {
+      var _formatted = formatNumber(pounds, {
         maximumFractionDigits: digits,
         minimumFractionDigits: 0
       });
-      return formatted ? "".concat(formatted, " lb") : '';
+      return _formatted ? "".concat(_formatted, " lb") : '';
     }
     var formatted = formatNumber(numeric, {
       maximumFractionDigits: 0,
@@ -4938,7 +4960,6 @@ function collectAccessories() {
   var miscUnique = _toConsumableArray(new Set(misc));
   var monitoringSupportList = monitoringSupport.slice();
   var riggingUnique = _toConsumableArray(new Set(rigging));
-  for (var i = 0; i < 4; i++) monitoringSupportList.push('BNC Connector');
   return {
     cameraSupport: _toConsumableArray(new Set(cameraSupport)),
     chargers: chargers,
@@ -10241,7 +10262,10 @@ function gearListGenerateHtmlImpl() {
     cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
     battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
   };
-  var normalizedCameraLinkLabel = typeof selectedNames.camera === 'string' ? selectedNames.camera.trim() : '';
+  var cameraLinkTexts = getGearItemEditTexts();
+  var defaultCameraLinkLabelTemplate = cameraLinkTexts.cameraLinkDefaultLabel || 'Camera %s';
+  var defaultCameraLinkLabel = defaultCameraLinkLabelTemplate.replace('%s', 'A');
+  var normalizedCameraLinkLabel = typeof selectedNames.camera === 'string' ? selectedNames.camera.trim() || defaultCameraLinkLabel : defaultCameraLinkLabel;
   var hasCameraForLinking = Boolean(normalizedCameraLinkLabel);
   var cameraLinkTargets = new Set();
   var registerCameraLinkTarget = function registerCameraLinkTarget(name) {
@@ -10250,6 +10274,16 @@ function gearListGenerateHtmlImpl() {
     var normalized = normalizeGearNameForComparison(name);
     if (normalized) {
       cameraLinkTargets.add(normalized);
+    }
+  };
+  var registerCameraLinkedItem = function registerCameraLinkedItem(name) {
+    if (!name || typeof name !== 'string') return;
+    var trimmed = name.trim();
+    if (!trimmed) return;
+    registerCameraLinkTarget(trimmed);
+    var withArriNumber = addArriKNumber(trimmed);
+    if (withArriNumber && withArriNumber !== trimmed) {
+      registerCameraLinkTarget(withArriNumber);
     }
   };
   var markEntryCameraLink = function markEntryCameraLink(entry) {
@@ -10942,7 +10976,15 @@ function gearListGenerateHtmlImpl() {
     categoryGroups.push("<tbody class=\"category-group\" data-gear-table-category=\"".concat(safeLabel, "\" data-gear-custom-key=\"").concat(escapeHtml(categoryKey), "\"><tr class=\"category-row\"><td data-gear-category-label=\"").concat(safeLabel, "\"><div class=\"gear-category-header\"><span class=\"gear-category-label\">").concat(safeLabel, "</span>").concat(addButtonHtml, "</div></td></tr><tr><td>").concat(rowContent, "</td></tr></tbody>"));
   };
   addRow('Camera', formatItems([selectedNames.camera]));
-  var cameraSupportText = formatItems(supportAccNoCages);
+  supportAccNoCages.forEach(function (item) {
+    var resolvedCameraLinkName = resolveCameraLinkedSupportName(item);
+    if (resolvedCameraLinkName) {
+      registerCameraLinkedItem(resolvedCameraLinkName);
+    }
+  });
+  var cameraSupportText = formatItems(supportAccNoCages, {
+    onItem: applyCameraLinkFromTargets
+  });
   var cageSelectHtml = '';
   if (compatibleCages.length) {
     var options = compatibleCages.map(function (c) {
@@ -11098,11 +11140,11 @@ function gearListGenerateHtmlImpl() {
     if (useImperial) {
       var pounds = numeric / 453.59237;
       var digits = pounds >= 10 ? 1 : 2;
-      var _formatted = formatLensNumber(pounds, {
+      var _formatted2 = formatLensNumber(pounds, {
         maximumFractionDigits: digits,
         minimumFractionDigits: 0
       });
-      return _formatted ? "".concat(_formatted, " lb") : '';
+      return _formatted2 ? "".concat(_formatted2, " lb") : '';
     }
     var formatted = formatLensNumber(numeric, {
       maximumFractionDigits: 0,
@@ -11120,11 +11162,11 @@ function gearListGenerateHtmlImpl() {
     if (useImperial) {
       var inches = numeric / 25.4;
       var digits = inches >= 10 ? 1 : 2;
-      var _formatted2 = formatLensNumber(inches, {
+      var _formatted3 = formatLensNumber(inches, {
         maximumFractionDigits: digits,
         minimumFractionDigits: 0
       });
-      return _formatted2 ? "".concat(_formatted2, " in") : '';
+      return _formatted3 ? "".concat(_formatted3, " in") : '';
     }
     var formatted = formatLensNumber(numeric, {
       maximumFractionDigits: 1,
@@ -11142,11 +11184,11 @@ function gearListGenerateHtmlImpl() {
     if (useImperial) {
       var feet = numeric * 3.280839895;
       var _digits = feet < 10 ? 2 : 1;
-      var _formatted3 = formatLensNumber(feet, {
+      var _formatted4 = formatLensNumber(feet, {
         maximumFractionDigits: _digits,
         minimumFractionDigits: _digits
       });
-      return _formatted3 ? "".concat(_formatted3, " ft") : '';
+      return _formatted4 ? "".concat(_formatted4, " ft") : '';
     }
     var digits = numeric < 1 ? 2 : 1;
     var formatted = formatLensNumber(numeric, {
@@ -11165,11 +11207,11 @@ function gearListGenerateHtmlImpl() {
     if (useImperial) {
       var inches = numeric / 2.54;
       var digits = inches >= 10 ? 1 : 2;
-      var _formatted4 = formatLensNumber(inches, {
+      var _formatted5 = formatLensNumber(inches, {
         maximumFractionDigits: digits,
         minimumFractionDigits: 0
       });
-      return _formatted4 ? "".concat(_formatted4, " in") : '';
+      return _formatted5 ? "".concat(_formatted5, " in") : '';
     }
     var formatted = formatLensNumber(numeric, {
       maximumFractionDigits: 1,
@@ -11292,10 +11334,10 @@ function gearListGenerateHtmlImpl() {
       motorItems.push(name);
     }
     if (primaryItem) {
-      registerCameraLinkTarget(primaryItem);
+      registerCameraLinkedItem(primaryItem);
     }
   });
-  selectedNames.controllers.forEach(registerCameraLinkTarget);
+  selectedNames.controllers.forEach(registerCameraLinkedItem);
   var distanceItems = [];
   var distanceName = selectedNames.distance;
   if (distanceName) {
@@ -11303,7 +11345,7 @@ function gearListGenerateHtmlImpl() {
     if (lowerName === 'udm-1 + lcube') {
       var udmEntry = 'Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set';
       distanceItems.push(udmEntry);
-      registerCameraLinkTarget(udmEntry);
+      registerCameraLinkedItem(udmEntry);
       var hasRiaController = selectedNames.controllers.some(function (ctrl) {
         return /ria-1/i.test(ctrl);
       });
@@ -11311,11 +11353,11 @@ function gearListGenerateHtmlImpl() {
       if (!hasRiaController && !isAlexa35) {
         var lcubeEntry = 'Arri KK.0009001 LCUBE CUB-1 Basic Set';
         distanceItems.push(lcubeEntry);
-        registerCameraLinkTarget(lcubeEntry);
+        registerCameraLinkedItem(lcubeEntry);
       }
     } else {
       distanceItems.push(distanceName);
-      registerCameraLinkTarget(distanceName);
+      registerCameraLinkedItem(distanceName);
     }
   }
   addRow('LDS (FIZ)', formatItems([].concat(motorItems, _toConsumableArray(selectedNames.controllers), distanceItems, _toConsumableArray(fizCableAcc)), {
@@ -11323,14 +11365,14 @@ function gearListGenerateHtmlImpl() {
   }));
   var batteryItems = '';
   if (selectedNames.battery) {
-    registerCameraLinkTarget(selectedNames.battery);
+    registerCameraLinkedItem(selectedNames.battery);
     var count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
     if (!count || isNaN(count)) count = 1;
     var batteryEntries = ["".concat(count, "x ").concat(selectedNames.battery)];
     var swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
     if (swapName) {
       batteryEntries.push("1x ".concat(swapName));
-      registerCameraLinkTarget(swapName);
+      registerCameraLinkedItem(swapName);
     }
     batteryItems = formatItems(batteryEntries, {
       onItem: applyCameraLinkFromTargets
@@ -11744,13 +11786,13 @@ function gearListGenerateHtmlImpl() {
     var wirelessSizeHtml = wirelessSize ? "".concat(wirelessSize, "&quot; - ") : '';
     var transmitterEntry = "Wireless Transmitter - ".concat(wirelessSizeHtml).concat(addArriKNumber(selectedNames.video));
     monitoringGear.push(transmitterEntry);
-    registerCameraLinkTarget(transmitterEntry);
+    registerCameraLinkedItem(transmitterEntry);
     var _rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[_rxName]) {
       receiverLabels.forEach(function (label) {
         var receiverEntry = "Wireless Receiver - ".concat(wirelessSizeHtml).concat(addArriKNumber(_rxName), " (").concat(label, ")");
         monitoringGear.push(receiverEntry);
-        registerCameraLinkTarget(receiverEntry);
+        registerCameraLinkedItem(receiverEntry);
       });
     }
   }
@@ -11948,24 +11990,31 @@ function gearListGenerateHtmlImpl() {
   };
   var headName = headMap[headBrand] && headMap[headBrand][bowlType];
   if (headName) {
-    gripItems.push("".concat(headName, " ").concat(bowlType));
+    var headEntry = "".concat(headName, " ").concat(bowlType);
+    gripItems.push(headEntry);
+    registerCameraLinkedItem(headEntry);
   }
   tripodTypes.forEach(function (t) {
     var typeLabel = t === 'Hi-Head' ? 'Hi-Head' : "".concat(t, " Tripod");
     var base = bowlType ? "".concat(bowlType, " ").concat(typeLabel) : typeLabel;
+    var entriesForType = [];
     if (t === 'Hi-Head') {
-      gripItems.push(base);
+      entriesForType.push(base);
     } else if (spreader) {
-      gripItems.push("".concat(base, " + ").concat(spreader));
+      entriesForType.push("".concat(base, " + ").concat(spreader));
     } else {
-      gripItems.push(base);
+      entriesForType.push(base);
     }
     if (t === 'Short') {
-      gripItems.push('Sand bag (Short Tripod)');
+      entriesForType.push('Sand bag (Short Tripod)');
     }
     if (t === 'Hi-Head') {
-      gripItems.push('Sand bag (Hi-Head)');
+      entriesForType.push('Sand bag (Hi-Head)');
     }
+    entriesForType.forEach(function (item) {
+      gripItems.push(item);
+      registerCameraLinkedItem(item);
+    });
   });
   if (needsStandardTripod && !gripItems.some(function (item) {
     return /Long Tripod/.test(item);
@@ -11988,13 +12037,16 @@ function gearListGenerateHtmlImpl() {
   ensureItems(gripItems, 'accessories.grip');
   var riggingItems = formatItems(riggingAcc);
   addRow('Rigging', riggingItems);
-  var powerItems = ['Power Cable Drum 25-50 m'].concat(_toConsumableArray(Array(2).fill('Power Cable 10 m')), _toConsumableArray(Array(2).fill('Power Cable 5 m')), _toConsumableArray(Array(3).fill('Power Strip')), _toConsumableArray(Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)')), _toConsumableArray(Array(3).fill('Power Three Way Splitter')));
+  var powerItems = [];
   if (isScenarioActive('Studio')) {
     powerItems.push('Camera Power Supply');
   }
   ensureItems(powerItems, 'accessories.power');
   addRow('Power', formatItems(powerItems));
-  addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
+  var gripItemsHtml = formatItems(gripItems, {
+    onItem: applyCameraLinkFromTargets
+  });
+  addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join('<br>'));
   addRow('Carts and Transportation', formatItems(cartsTransportationItems));
   var miscExcluded = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable', 'BNC SDI Cable', 'Ultraslim BNC Cable 0.5 m']);
   var miscItems = _toConsumableArray(miscAcc).filter(function (item) {
@@ -12349,31 +12401,8 @@ function getGearListSelectors() {
       selectors[sel.id] = sel.value;
     }
   };
-  var gearListRoot = null;
-  if (gearListOutput && typeof gearListOutput.querySelectorAll === 'function') {
-    gearListRoot = gearListOutput;
-  } else if (typeof document !== 'undefined') {
-    var resolvedRoot = null;
-    if (typeof gearListOutput === 'string' && typeof document.querySelector === 'function') {
-      resolvedRoot = document.querySelector(gearListOutput);
-    }
-    if (!resolvedRoot && typeof document.getElementById === 'function') {
-      resolvedRoot = document.getElementById('gearListOutput');
-    }
-    if (resolvedRoot && typeof resolvedRoot.querySelectorAll === 'function') {
-      gearListRoot = resolvedRoot;
-      try {
-        if (typeof gearListOutput === 'undefined' || gearListOutput !== resolvedRoot) {
-          gearListOutput = resolvedRoot;
-        }
-      } catch (err) {
-        /* istanbul ignore next */
-        console.warn('Unable to update gearListOutput reference', err);
-      }
-    }
-  }
-  if (gearListRoot) {
-    gearListRoot.querySelectorAll('select[id]').forEach(function (sel) {
+  if (gearListOutput) {
+    gearListOutput.querySelectorAll('select[id]').forEach(function (sel) {
       collectSelectValue(sel);
     });
   }
@@ -12388,9 +12417,9 @@ function getGearListSelectors() {
   if (customState && Object.keys(customState).length) {
     selectors.__customItems = customState;
   }
-  if (gearListRoot) {
+  if (gearListOutput) {
     var rentalState = {};
-    gearListRoot.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
+    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
       var name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
       if (span.getAttribute('data-rental-excluded') === 'true') {

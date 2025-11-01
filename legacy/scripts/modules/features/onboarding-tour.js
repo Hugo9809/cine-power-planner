@@ -1401,9 +1401,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function normalizeStateSnapshot(state) {
     var snapshot = state && _typeof(state) === 'object' ? _objectSpread({}, state) : {};
+    var skipRequested = snapshot.skipped === true;
     snapshot.version = STORAGE_VERSION;
     snapshot.completed = Boolean(snapshot.completed);
-    snapshot.skipped = Boolean(snapshot.skipped) && !snapshot.completed;
+    snapshot.skipped = skipRequested && !snapshot.completed;
     var allowedKeys = DEFAULT_STEP_KEYS;
     snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps, allowedKeys);
     snapshot.activeStep = typeof snapshot.activeStep === 'string' && snapshot.activeStep ? snapshot.activeStep : null;
@@ -1414,7 +1415,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (signature !== STEP_SIGNATURE) {
       snapshot.stepSignature = STEP_SIGNATURE;
       snapshot.completed = false;
-      snapshot.skipped = false;
+      snapshot.skipped = skipRequested;
       if (!snapshot.activeStep) {
         for (var index = 0; index < allowedKeys.length; index += 1) {
           var key = allowedKeys[index];
@@ -1430,6 +1431,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (snapshot.completedSteps.length < allowedKeys.length) {
       snapshot.completed = false;
     }
+    snapshot.skipped = (skipRequested || snapshot.skipped === true) && !snapshot.completed;
     if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
       snapshot.timestamp = getTimestamp();
     }
@@ -1676,7 +1678,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     updateStoredStateCache(sanitized, null, 'memory');
     return sanitized;
   }
-  var storedState = loadStoredState();
+  var storedState = null;
+  function refreshStoredState() {
+    var nextState = loadStoredState();
+    storedState = nextState;
+    return nextState;
+  }
+  refreshStoredState();
   function normalizeLanguageCandidate(rawValue, availableTexts) {
     if (!rawValue || typeof rawValue !== 'string' && typeof rawValue !== 'number') {
       return null;
@@ -5487,7 +5495,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
-    storedState = loadStoredState();
+    storedState = refreshStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
     attachGlobalListeners();
@@ -5885,7 +5893,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       event.preventDefault();
     }
     var startFromHelp = function startFromHelp() {
-      storedState = loadStoredState();
+      storedState = refreshStoredState();
       var hasProgress = Boolean(storedState && Array.isArray(storedState.completedSteps) && storedState.completedSteps.length > 0);
       var resume = hasProgress && Boolean(storedState && storedState.activeStep);
       startTutorial({
@@ -5972,6 +5980,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, 600);
   }
   function init() {
+    refreshStoredState();
     attachHelpButton();
     applyHelpButtonLabel();
     if (shouldAutoStart()) {
@@ -5989,7 +5998,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var persisted = saveState({
       version: STORAGE_VERSION
     });
-    storedState = persisted || loadStoredState();
+    storedState = persisted || refreshStoredState();
     applyHelpButtonLabel();
     if (!active && shouldAutoStart()) {
       scheduleAutoStart();
@@ -6032,11 +6041,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var persisted = saveState({
         version: STORAGE_VERSION
       });
-      storedState = persisted || loadStoredState();
+      storedState = persisted || refreshStoredState();
       applyHelpButtonLabel();
     },
     getStatus: function getStatus() {
-      var state = loadStoredState();
+      var state = refreshStoredState();
       return clone(state);
     },
     isActive: function isActive() {
