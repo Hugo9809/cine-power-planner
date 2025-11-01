@@ -8388,7 +8388,10 @@ body.dark-mode.pink-mode .onboarding-step-title {
 }
 
 @supports not (color-mix(in srgb, black 50%, white 50%)) {
-  .onboarding-step-title,
+  .onboarding-step-title {
+    color: var(--accent-color);
+  }
+
   body.dark-mode .onboarding-step-title,
   body.dark-mode.pink-mode .onboarding-step-title {
     color: var(--inverse-text-color);
