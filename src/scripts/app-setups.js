@@ -5409,7 +5409,6 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     const miscUnique = [...new Set(misc)];
     const monitoringSupportList = monitoringSupport.slice();
     const riggingUnique = [...new Set(rigging)];
-    for (let i = 0; i < 4; i++) monitoringSupportList.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
@@ -12709,14 +12708,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     ensureItems(gripItems, 'accessories.grip');
     const riggingItems = formatItems(riggingAcc);
     addRow('Rigging', riggingItems);
-    const powerItems = [
-        'Power Cable Drum 25-50 m',
-        ...Array(2).fill('Power Cable 10 m'),
-        ...Array(2).fill('Power Cable 5 m'),
-        ...Array(3).fill('Power Strip'),
-        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
-        ...Array(3).fill('Power Three Way Splitter')
-    ];
+    const powerItems = [];
     if (isScenarioActive('Studio')) {
         powerItems.push('Camera Power Supply');
     }
