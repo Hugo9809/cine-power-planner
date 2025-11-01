@@ -771,8 +771,24 @@ body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Moni
 #overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: 1fr;
 }
+#overviewDialogContent .lens-info-categories {
+  gap: 0.35rem;
+}
+
+#overviewDialogContent .lens-info-category {
+  gap: 0.2rem;
+}
+
 #overviewDialogContent .lens-info-grid {
-  grid-template-columns: 1fr;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.4rem;
+}
+
+#overviewDialogContent .lens-info-grid .info-box {
+  width: auto;
+  max-width: 100%;
+  flex: 0 1 auto;
 }
 
 .page-break {

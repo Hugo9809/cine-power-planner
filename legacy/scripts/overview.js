@@ -1143,9 +1143,42 @@ function generatePrintableOverview() {
     if (!lensInfo || _typeof(lensInfo) !== 'object') {
       return '';
     }
-    var infoBoxes = [];
+    var lensInfoCategories = [{
+      key: 'general',
+      labelKey: 'lensSpecCategoryGeneralLabel',
+      boxes: []
+    }, {
+      key: 'optics',
+      labelKey: 'lensSpecCategoryOpticsLabel',
+      boxes: []
+    }, {
+      key: 'physical',
+      labelKey: 'lensSpecCategoryPhysicalLabel',
+      boxes: []
+    }, {
+      key: 'support',
+      labelKey: 'lensSpecCategorySupportLabel',
+      boxes: []
+    }, {
+      key: 'notes',
+      labelKey: 'lensSpecCategoryNotesLabel',
+      boxes: []
+    }];
+    var categoryLookup = lensInfoCategories.reduce(function (acc, category) {
+      acc[category.key] = category;
+      return acc;
+    }, {});
+    var categoryFallbackLabels = {
+      lensSpecCategoryGeneralLabel: 'General',
+      lensSpecCategoryOpticsLabel: 'Optics',
+      lensSpecCategoryPhysicalLabel: 'Physical',
+      lensSpecCategorySupportLabel: 'Support',
+      lensSpecCategoryNotesLabel: 'Notes'
+    };
     var addLensBox = function addLensBox(labelKey, rawValue) {
       var formatter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+      var categoryKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'general';
+      var targetCategory = categoryLookup[categoryKey] || lensInfoCategories[0];
       var formattedValue = rawValue;
       if (formatter) {
         formattedValue = formatter(rawValue, lensInfo);
@@ -1163,31 +1196,40 @@ function generatePrintableOverview() {
         return;
       }
       var label = t[labelKey] || labelKey;
-      infoBoxes.push("<span class=\"info-box neutral-conn\"><span class=\"info-box-label\">".concat(escapeHtmlSafe(label), "</span><span class=\"info-box-values\">").concat(escapeHtmlSafe(valueText), "</span></span>"));
+      targetCategory.boxes.push("<span class=\"info-box neutral-conn\"><span class=\"info-box-label\">".concat(escapeHtmlSafe(label), "</span><span class=\"info-box-values\">").concat(escapeHtmlSafe(valueText), "</span></span>"));
     };
-    addLensBox('lensSpecBrandLabel', lensInfo.brand, _normalizeStringValue);
-    addLensBox('lensSpecTypeLabel', lensInfo.lensType, formatLensType);
-    addLensBox('lensSpecMountLabel', lensInfo.mount, formatMount);
-    addLensBox('lensSpecFrontDiameterLabel', lensInfo.frontDiameterMm, formatLengthMm);
-    addLensBox('lensSpecTStopLabel', lensInfo.tStop, formatTStop);
-    addLensBox('lensSpecImageCircleLabel', lensInfo.imageCircleMm, formatLengthMm);
-    addLensBox('lensSpecLengthLabel', lensInfo.lengthMm, formatLengthMm);
-    addLensBox('lensSpecMinFocusLabel', resolveMinFocusMeters(lensInfo), formatDistanceMeters);
-    addLensBox('lensSpecWeightLabel', lensInfo.weight_g, formatWeight);
-    addLensBox('lensSpecRodStandardLabel', lensInfo.rodStandard, formatRodStandard);
-    addLensBox('lensSpecRodLengthLabel', lensInfo.rodLengthCm, formatRodLength);
+    addLensBox('lensSpecBrandLabel', lensInfo.brand, _normalizeStringValue, 'general');
+    addLensBox('lensSpecTypeLabel', lensInfo.lensType, formatLensType, 'general');
+    addLensBox('lensSpecMountLabel', lensInfo.mount, formatMount, 'general');
+    addLensBox('lensSpecFocusScaleLabel', lensInfo, formatFocusScalePreference, 'general');
+    addLensBox('lensSpecTStopLabel', lensInfo.tStop, formatTStop, 'optics');
+    addLensBox('lensSpecImageCircleLabel', lensInfo.imageCircleMm, formatLengthMm, 'optics');
+    addLensBox('lensSpecMinFocusLabel', resolveMinFocusMeters(lensInfo), formatDistanceMeters, 'optics');
+    addLensBox('lensSpecFrontDiameterLabel', lensInfo.frontDiameterMm, formatLengthMm, 'physical');
+    addLensBox('lensSpecLengthLabel', lensInfo.lengthMm, formatLengthMm, 'physical');
+    addLensBox('lensSpecWeightLabel', lensInfo.weight_g, formatWeight, 'physical');
+    addLensBox('lensSpecRodStandardLabel', lensInfo.rodStandard, formatRodStandard, 'support');
+    addLensBox('lensSpecRodLengthLabel', lensInfo.rodLengthCm, formatRodLength, 'support');
     if (Object.prototype.hasOwnProperty.call(lensInfo, 'clampOn')) {
-      addLensBox('lensSpecClampOnLabel', lensInfo.clampOn, formatClampOn);
+      addLensBox('lensSpecClampOnLabel', lensInfo.clampOn, formatClampOn, 'support');
     }
     if (Object.prototype.hasOwnProperty.call(lensInfo, 'needsLensSupport')) {
-      addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
+      addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport, 'support');
     }
-    addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
-    addLensBox('lensSpecFocusScaleLabel', lensInfo, formatFocusScalePreference);
-    if (!infoBoxes.length) {
+    addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes, 'notes');
+    var categoriesWithContent = lensInfoCategories.filter(function (category) {
+      return category.boxes.length > 0;
+    });
+    if (!categoriesWithContent.length) {
       return '';
     }
-    return "<div class=\"info-box-list lens-info-grid\">".concat(infoBoxes.join(''), "</div>");
+    var categoriesHtml = categoriesWithContent.map(function (category) {
+      var labelKey = category.labelKey;
+      var categoryLabel = t[labelKey] || categoryFallbackLabels[labelKey] || labelKey;
+      var safeLabel = categoryLabel ? "<span class=\"lens-info-category__title\">".concat(escapeHtmlSafe(categoryLabel), "</span>") : '';
+      return "<div class=\"lens-info-category\">".concat(safeLabel, "<div class=\"info-box-list lens-info-grid\">").concat(category.boxes.join(''), "</div></div>");
+    }).join('');
+    return "<div class=\"lens-info-categories\">".concat(categoriesHtml, "</div>");
   };
   var processLensesForOverview = function processLensesForOverview(selectElement, headingKey) {
     if (!selectElement) {
