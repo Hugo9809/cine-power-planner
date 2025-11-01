@@ -23,6 +23,10 @@ workstations.
   Each run logs to the autosave ledger accessible from **Settings → Data & Storage → Latest activity**, where the **Latest activity** timeline lists timestamps for manual saves, autosaves and guardian events alongside the latest guard evidence.
 - **Redundant mirrors:** `storage.js` keeps timestamped mirrors so reverting to a
   previous autosave never touches live data directly.
+- **Latency retention for monitors/viewfinders:** The device editor now preserves
+  manually entered latency values even when crews toggle **Wireless TX** off.
+  Clearing the latency field is the explicit action that removes the stored
+  number, preventing accidental data loss during wireless configuration audits.
 
 ## Backup
 
