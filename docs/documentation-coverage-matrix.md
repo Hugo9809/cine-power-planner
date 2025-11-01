@@ -27,3 +27,5 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
    reconnecting to the internet.
 4. When adding new documentation surfaces, append rows here and brief the
    localisation team so translations stay in sync.
+5. Mirror each release in the in-app **Documentation update tracker** (Settings → General) so the runtime log and this matrix
+   share the same evidence trail.
