@@ -19945,13 +19945,26 @@ function resolveGlobalFocusScalePreference() {
   return normalized === 'imperial' ? 'imperial' : 'metric';
 }
 
+const monitorExcludedAttributes = [
+  "screenSizeInches",
+  "brightnessNits",
+  "power",
+  "powerDrawWatts",
+  "videoInputs",
+  "videoOutputs",
+  "wirelessTx",
+  "latencyMs",
+  "audioOutput"
+];
+
 var categoryExcludedAttrs = {
   batteries: ["capacity", "pinA", "dtapA"],
   batteryHotswaps: ["capacity", "pinA"],
   "accessories.batteries": ["capacity", "pinA"],
   cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
   lenses: ["mount", "mountOptions", "focusScale"],
-  monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
+  monitors: monitorExcludedAttributes,
+  directorMonitors: monitorExcludedAttributes,
   viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
   wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
