@@ -7509,14 +7509,14 @@ body.dark-mode .onboarding-hero-summary {
 }
 
 body.dark-mode.pink-mode .onboarding-hero-heading {
-  color: color-mix(in srgb, var(--accent-color) 92%, var(--inverse-text-color) 8%);
+  color: color-mix(in srgb, var(--inverse-text-color) 95%, rgba(255, 255, 255, 0.05));
 }
 
 body.dark-mode.pink-mode .onboarding-hero-subheading,
 body.dark-mode.pink-mode .onboarding-hero-highlight-title,
 body.dark-mode.pink-mode .onboarding-hero-highlight-badge-label,
 body.dark-mode.pink-mode .onboarding-hero-language-label {
-  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+  color: color-mix(in srgb, var(--inverse-text-color) 92%, rgba(255, 255, 255, 0.08));
 }
 
 .onboarding-hero-highlight--badge {
@@ -8380,18 +8380,18 @@ body.dark-mode
 }
 
 body.dark-mode .onboarding-step-title {
-  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+  color: color-mix(in srgb, var(--inverse-text-color) 92%, rgba(255, 255, 255, 0.08));
 }
 
 body.dark-mode.pink-mode .onboarding-step-title {
-  color: color-mix(in srgb, var(--accent-color) 90%, var(--inverse-text-color) 10%);
+  color: color-mix(in srgb, var(--inverse-text-color) 94%, rgba(255, 255, 255, 0.06));
 }
 
 @supports not (color-mix(in srgb, black 50%, white 50%)) {
   .onboarding-step-title,
   body.dark-mode .onboarding-step-title,
   body.dark-mode.pink-mode .onboarding-step-title {
-    color: var(--accent-color);
+    color: var(--inverse-text-color);
   }
 }
 
