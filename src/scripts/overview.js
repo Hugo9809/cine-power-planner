@@ -227,6 +227,131 @@ function overviewResolveStructuredClone(scope) {
     return null;
 }
 
+function convertGearListSelectorsToPlainText(root) {
+    if (!root || typeof root.querySelectorAll !== 'function') {
+        return;
+    }
+
+    const gearSection = root.querySelector('#gearListOutput');
+    if (!gearSection || typeof gearSection.querySelectorAll !== 'function') {
+        return;
+    }
+
+    const doc = gearSection.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (!doc) {
+        return;
+    }
+
+    const selects = gearSection.querySelectorAll('select');
+    if (!selects.length) {
+        return;
+    }
+
+    const datasetEntriesFromElement = (element) => {
+        if (!element || typeof element.getAttributeNames !== 'function') {
+            return [];
+        }
+        return element.getAttributeNames()
+            .filter((name) => name && name.toLowerCase().indexOf('data-') === 0)
+            .map((name) => ({ name, value: element.getAttribute(name) }));
+    };
+
+    selects.forEach((select) => {
+        if (!select) {
+            return;
+        }
+
+        const options = select.options ? Array.from(select.options) : [];
+        const selectedLabels = [];
+
+        if (select.multiple) {
+            options.forEach((option) => {
+                if (!option || !option.selected) {
+                    return;
+                }
+                const label = typeof option.textContent === 'string'
+                    ? option.textContent.trim()
+                    : '';
+                if (label) {
+                    selectedLabels.push(label);
+                }
+            });
+        } else {
+            const preferred = options.find((option) => option && option.selected)
+                || options.find((option) => option && option.defaultSelected)
+                || null;
+            if (preferred) {
+                const label = typeof preferred.textContent === 'string'
+                    ? preferred.textContent.trim()
+                    : '';
+                if (label) {
+                    selectedLabels.push(label);
+                }
+            }
+        }
+
+        let displayText = selectedLabels.join(', ');
+        let isEmpty = false;
+
+        if (!displayText) {
+            const fallbackAttributes = [
+                'data-empty-label',
+                'data-placeholder',
+                'placeholder',
+                'data-label-off',
+                'data-default-label',
+            ];
+            for (let index = 0; index < fallbackAttributes.length; index += 1) {
+                const attr = fallbackAttributes[index];
+                const value = select.getAttribute ? select.getAttribute(attr) : null;
+                if (value && value.trim()) {
+                    displayText = value.trim();
+                    break;
+                }
+            }
+        }
+
+        if (!displayText && typeof select.value === 'string' && select.value.trim()) {
+            displayText = select.value.trim();
+        }
+
+        if (!displayText) {
+            displayText = '—';
+            isEmpty = true;
+        }
+
+        const replacement = doc.createElement('span');
+        replacement.className = 'gear-select-value';
+        if (select.className) {
+            replacement.setAttribute('data-gear-select-class', select.className);
+        }
+        if (select.id) {
+            replacement.setAttribute('data-gear-select-id', select.id);
+        }
+        if (select.name) {
+            replacement.setAttribute('data-gear-select-name', select.name);
+        }
+        replacement.setAttribute('data-gear-select-value', displayText);
+        if (isEmpty) {
+            replacement.setAttribute('data-gear-select-empty', 'true');
+        }
+
+        datasetEntriesFromElement(select).forEach(({ name, value }) => {
+            if (!replacement.hasAttribute(name) && value !== null) {
+                replacement.setAttribute(name, value);
+            }
+        });
+
+        replacement.textContent = displayText;
+
+        if (typeof select.replaceWith === 'function') {
+            select.replaceWith(replacement);
+        } else if (select.parentNode) {
+            select.parentNode.replaceChild(replacement, select);
+        }
+    });
+}
+
 function createOverviewDeepClone(scope) {
     const structuredCloneImpl = overviewResolveStructuredClone(scope);
 
@@ -1684,6 +1809,8 @@ function generatePrintableOverview(config = {}) {
                 button.remove();
             }
         });
+
+        convertGearListSelectorsToPlainText(content);
     }
 
     const runConfiguredPrintWorkflow = (options = {}) => {
