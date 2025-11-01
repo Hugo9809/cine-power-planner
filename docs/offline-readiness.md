@@ -13,6 +13,8 @@ air-gapped workflows.
 - [ ] Open **Help → Start Here** and complete the offline readiness quick check
       to verify the Data & Storage dashboard timestamps, persistent storage
       status, redundant backups and rehearsal coverage before travelling.
+      When running in Safari, note the new warning that denied persistence is a
+      browser limitation; plan for additional manual exports on those systems.
 - [ ] Toggle the browser’s offline mode and confirm the top banner announces
       that force reload requires connectivity while the header reload control
       remains disabled. This ensures caches and service workers stay intact

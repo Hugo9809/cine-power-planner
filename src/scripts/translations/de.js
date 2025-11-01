@@ -1385,6 +1385,7 @@
     "storagePersistenceStatusRequesting": "Persistenter Speicher wird beim Browser angefragt…",
     "storagePersistenceStatusGranted": "Persistenter Speicher gewährt. Planner-Daten sind vor automatischen Bereinigungen geschützt.",
     "storagePersistenceStatusDenied": "Der Browser konnte keinen persistenten Speicher gewähren. Exportieren Sie weiterhin regelmäßig Sicherungen.",
+    "storagePersistenceStatusSafariIncompatible": "Safari blockiert derzeit Anfragen für persistenten Speicher. Dies ist eine Browser-Einschränkung.",
     "storagePersistenceStatusError": "Anfrage nach persistentem Speicher fehlgeschlagen. Versuchen Sie es nach Freigabe von Speicherplatz erneut oder prüfen Sie die Browser-Einstellungen.",
     "storagePersistenceStatusUnsupported": "Dieser Browser kann keinen persistenten Speicher automatisch gewähren. Bewahren Sie weiterhin externe Sicherungen auf.",
     "storagePersistenceUsage": "Ungefähre Nutzung: {used} von {quota}.",

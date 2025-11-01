@@ -11750,6 +11750,14 @@ function renderStoragePersistenceStatus() {
   }
 
   const parts = [message];
+  if (state === 'denied' && isSafariPersistenceIncompatibility()) {
+    const safariWarning = langTexts.storagePersistenceStatusSafariIncompatible
+      || fallbackTexts.storagePersistenceStatusSafariIncompatible
+      || '';
+    if (safariWarning) {
+      parts.push(safariWarning);
+    }
+  }
   if (typeof storagePersistenceState.usage === 'number') {
     const usedText = formatStoragePersistenceBytes(storagePersistenceState.usage, lang);
     if (usedText) {
@@ -11828,6 +11836,65 @@ function renderStoragePersistenceStatus() {
       console.warn('Unable to broadcast storage persistence status change', eventError);
     }
   }
+}
+
+function isSafariPersistenceIncompatibility() {
+  if (typeof navigator === 'undefined' || !navigator) {
+    return false;
+  }
+
+  const nav = navigator;
+  if (typeof nav !== 'object' || nav === null) {
+    return false;
+  }
+
+  if (typeof window !== 'undefined' && window && typeof window.safari === 'object' && window.safari) {
+    if (typeof window.safari.pushNotification === 'object') {
+      return true;
+    }
+  }
+
+  const vendor = typeof nav.vendor === 'string' ? nav.vendor : '';
+  const userAgent = typeof nav.userAgent === 'string' ? nav.userAgent : '';
+
+  if (!vendor && !userAgent) {
+    return false;
+  }
+
+  const normalisedVendor = vendor.toLowerCase().trim();
+  const normalisedUserAgent = userAgent.toLowerCase();
+
+  const exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
+  for (let index = 0; index < exclusionTokens.length; index += 1) {
+    if (normalisedUserAgent.includes(exclusionTokens[index])) {
+      return false;
+    }
+  }
+
+  const vendorIndicatesSafariFamily = normalisedVendor.includes('apple');
+  const userAgentHasSafariToken = normalisedUserAgent.includes('safari');
+  const userAgentHasAppleWebkitToken = normalisedUserAgent.includes('applewebkit');
+  const userAgentHasVersionToken = normalisedUserAgent.includes('version/');
+  const userAgentHasMobileToken = normalisedUserAgent.includes('mobile/');
+  const userAgentHasPlatformToken =
+    normalisedUserAgent.includes('macintosh')
+    || normalisedUserAgent.includes('iphone')
+    || normalisedUserAgent.includes('ipad')
+    || normalisedUserAgent.includes('ipod')
+    || normalisedUserAgent.includes('watch')
+    || normalisedUserAgent.includes('apple tv');
+
+  const vendorIsEffectivelyEmpty = normalisedVendor.length === 0;
+  const userAgentSignalsSafariFamily =
+    userAgentHasSafariToken
+    || (userAgentHasAppleWebkitToken && (userAgentHasVersionToken || userAgentHasMobileToken || userAgentHasPlatformToken));
+  const fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasAppleWebkitToken && userAgentSignalsSafariFamily;
+
+  if (!vendorIndicatesSafariFamily && !fallbackSafariMatch) {
+    return false;
+  }
+
+  return vendorIndicatesSafariFamily ? userAgentSignalsSafariFamily : fallbackSafariMatch;
 }
 
 async function refreshStoragePersistenceStatus(options = {}) {
