@@ -4774,6 +4774,94 @@ function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = ''
 function generateConnectorSummary(device) {
   if (!device || typeof device !== 'object') return '';
 
+  const normalizeFocusScaleValue = (value) => {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    const normalized = value.trim().toLowerCase();
+    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
+  };
+
+  const resolveFocusScaleMode = () => {
+    const scope =
+      (typeof globalThis !== 'undefined' && globalThis)
+      || (typeof window !== 'undefined' && window)
+      || (typeof self !== 'undefined' && self)
+      || (typeof global !== 'undefined' && global)
+      || null;
+    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+      ? scope.focusScalePreference
+      : null;
+    const rawPreference = scopePreference
+      || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
+      || 'metric';
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        const normalized = normalizeFocusScale(rawPreference);
+        if (normalized === 'imperial' || normalized === 'metric') {
+          return normalized;
+        }
+      } catch (normalizeError) {
+        void normalizeError;
+      }
+    }
+    const normalized = normalizeFocusScaleValue(rawPreference);
+    return normalized || 'metric';
+  };
+
+  const focusScaleMode = resolveFocusScaleMode();
+  const focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
+
+  const formatNumber = (value, options = {}) => {
+    const numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+
+    const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
+      ? options.maximumFractionDigits
+      : 0;
+    const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
+      ? options.minimumFractionDigits
+      : Math.min(0, maximumFractionDigits);
+
+    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+      try {
+        return new Intl.NumberFormat(focusScaleLang, {
+          maximumFractionDigits,
+          minimumFractionDigits,
+        }).format(numeric);
+      } catch (formatError) {
+        void formatError;
+      }
+    }
+
+    const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+    try {
+      return numeric.toFixed(digits);
+    } catch (toFixedError) {
+      void toFixedError;
+    }
+
+    return String(numeric);
+  };
+
+  const formatWeight = (grams, mode = focusScaleMode) => {
+    const numeric = typeof grams === 'string' ? Number(grams) : grams;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    const useImperial = mode === 'imperial';
+    if (useImperial) {
+      const pounds = numeric / 453.59237;
+      const digits = pounds >= 10 ? 1 : 2;
+      const formatted = formatNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+      return formatted ? `${formatted} lb` : '';
+    }
+    const formatted = formatNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+    return formatted ? `${formatted} g` : '';
+  };
+
   let portHtml = '';
   const connectors = [
     { items: device.power?.powerDistributionOutputs, icon: diagramConnectorIcons.powerOut, cls: 'power-conn', label: 'Power', dir: 'Out' },
@@ -4799,8 +4887,10 @@ function generateConnectorSummary(device) {
     specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}${renderInfoLabel('Voltage')}${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
   }
   if (typeof device.weight_g === 'number') {
-    const weightLabel = `${device.weight_g} g`;
-    specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}${renderInfoLabel('Weight')}${escapeHtml(weightLabel)}</span>`;
+    const weightLabel = formatWeight(device.weight_g);
+    if (weightLabel) {
+      specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}${renderInfoLabel('Weight')}${escapeHtml(weightLabel)}</span>`;
+    }
   }
   if (typeof device.capacity === 'number') {
         specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}${renderInfoLabel('Capacity')}${device.capacity} Wh</span>`;
