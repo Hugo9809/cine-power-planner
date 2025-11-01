@@ -4563,7 +4563,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     const screenSize = parseFloat(monitorScreenSizeInput.value);
     const brightness = parseFloat(monitorBrightnessInput.value);
-    targetCategory[name] = {
+    const monitorLatencyRaw =
+      typeof monitorLatencyInput.value === 'string'
+        ? monitorLatencyInput.value.trim()
+        : '';
+    const monitorLatencyValue = monitorLatencyRaw ? monitorLatencyRaw : undefined;
+    const monitorData = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
       powerDrawWatts: watt,
@@ -4579,9 +4584,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
         outputs: getMonitorVideoOutputs()
       },
       wirelessTx: monitorWirelessTxInput.checked,
-      latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
+    if (typeof monitorLatencyValue !== 'undefined') {
+      monitorData.latencyMs = monitorLatencyValue;
+    }
+    targetCategory[name] = monitorData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     const watt = parseFloat(viewfinderWattInput.value);
@@ -4591,7 +4599,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     const screenSize = parseFloat(viewfinderScreenSizeInput.value);
     const brightness = parseFloat(viewfinderBrightnessInput.value);
-    targetCategory[name] = {
+    const viewfinderLatencyRaw =
+      typeof viewfinderLatencyInput.value === 'string'
+        ? viewfinderLatencyInput.value.trim()
+        : '';
+    const viewfinderLatencyValue = viewfinderLatencyRaw ? viewfinderLatencyRaw : undefined;
+    const viewfinderData = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
       powerDrawWatts: watt,
@@ -4607,8 +4620,11 @@ addSafeEventListener(addDeviceBtn, "click", () => {
         outputs: getViewfinderVideoOutputs()
       },
       wirelessTx: viewfinderWirelessTxInput.checked,
-      latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
+    if (typeof viewfinderLatencyValue !== 'undefined') {
+      viewfinderData.latencyMs = viewfinderLatencyValue;
+    }
+    targetCategory[name] = viewfinderData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
@@ -4616,14 +4632,20 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    targetCategory[name] = {
+    const videoLatencyRaw =
+      typeof videoLatencyInput.value === 'string' ? videoLatencyInput.value.trim() : '';
+    const videoLatencyValue = videoLatencyRaw ? videoLatencyRaw : undefined;
+    const videoDeviceData = {
       powerDrawWatts: watt,
       power: { input: { type: videoPowerInput.value } },
       videoInputs: getVideoInputs(),
       videoOutputs: getVideoOutputsIO(),
-      frequency: videoFrequencyInput.value,
-      latencyMs: videoLatencyInput.value
+      frequency: videoFrequencyInput.value
     };
+    if (typeof videoLatencyValue !== 'undefined') {
+      videoDeviceData.latencyMs = videoLatencyValue;
+    }
+    targetCategory[name] = videoDeviceData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);

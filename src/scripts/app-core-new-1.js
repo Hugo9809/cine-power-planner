@@ -11179,7 +11179,26 @@ async function setLanguage(lang) {
   document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
   document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
   document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
-  document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
+  const monitorLatencyLabelElem = document.getElementById("monitorLatencyLabel");
+  if (monitorLatencyLabelElem) {
+    monitorLatencyLabelElem.textContent = texts[lang].monitorLatencyLabel;
+    const monitorLatencyHelpText = texts[lang].monitorLatencyHelp;
+    if (monitorLatencyHelpText) {
+      monitorLatencyLabelElem.setAttribute('data-help', monitorLatencyHelpText);
+      monitorLatencyLabelElem.setAttribute('title', monitorLatencyHelpText);
+      if (monitorLatencyInput) {
+        monitorLatencyInput.setAttribute('data-help', monitorLatencyHelpText);
+        monitorLatencyInput.setAttribute('title', monitorLatencyHelpText);
+      }
+    } else {
+      monitorLatencyLabelElem.removeAttribute('data-help');
+      monitorLatencyLabelElem.removeAttribute('title');
+      if (monitorLatencyInput) {
+        monitorLatencyInput.removeAttribute('data-help');
+        monitorLatencyInput.removeAttribute('title');
+      }
+    }
+  }
   document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
   document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
   document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
@@ -11192,7 +11211,26 @@ async function setLanguage(lang) {
   document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
   document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
   document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
-  document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
+  const viewfinderLatencyLabelElem = document.getElementById("viewfinderLatencyLabel");
+  if (viewfinderLatencyLabelElem) {
+    viewfinderLatencyLabelElem.textContent = texts[lang].viewfinderLatencyLabel;
+    const viewfinderLatencyHelpText = texts[lang].viewfinderLatencyHelp;
+    if (viewfinderLatencyHelpText) {
+      viewfinderLatencyLabelElem.setAttribute('data-help', viewfinderLatencyHelpText);
+      viewfinderLatencyLabelElem.setAttribute('title', viewfinderLatencyHelpText);
+      if (viewfinderLatencyInput) {
+        viewfinderLatencyInput.setAttribute('data-help', viewfinderLatencyHelpText);
+        viewfinderLatencyInput.setAttribute('title', viewfinderLatencyHelpText);
+      }
+    } else {
+      viewfinderLatencyLabelElem.removeAttribute('data-help');
+      viewfinderLatencyLabelElem.removeAttribute('title');
+      if (viewfinderLatencyInput) {
+        viewfinderLatencyInput.removeAttribute('data-help');
+        viewfinderLatencyInput.removeAttribute('title');
+      }
+    }
+  }
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
   document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
