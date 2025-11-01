@@ -342,7 +342,10 @@ same online or offline.
    Airplane Mode) and reopen `index.html`. The offline indicator in the header
    should flash briefly while cached files load. Confirm the interface mirrors
    the last session exactly, including any locally stored Uicons or helper
-   assets.
+   assets. If a banner appears stating **"1 backup saved in the local vault."**
+   or **"{count} backups saved in the local vault."** beside the **Open local
+   backup vault** button, open the vault, download every queued archive and make
+   sure the banner disappears before you remain offline.
 5. Open **Help → Quick start checklist** and launch the guided tutorial. It
    walks through creating projects, configuring devices, reviewing the Power
    Summary (with its quick summary checkpoint) and rehearsing the offline safety
