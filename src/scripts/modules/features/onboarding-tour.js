@@ -595,6 +595,15 @@
       return [];
     }
 
+    if (!ownGearDialogRef && typeof DOCUMENT.getElementById === 'function') {
+      try {
+        ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+      } catch (error) {
+        void error;
+        ownGearDialogRef = null;
+      }
+    }
+
     let sideMenu = null;
     try {
       sideMenu = DOCUMENT.getElementById('sideMenu');
@@ -627,23 +636,39 @@
         && sideMenu.classList.contains('open'),
     );
 
+    const selectors = [];
+    const addSelector = selector => {
+      if (typeof selector !== 'string' || !selector) {
+        return;
+      }
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
+    };
+
+    if (ownGearDialogRef && typeof isOwnGearDialogVisible === 'function') {
+      let dialogVisible = false;
+      try {
+        dialogVisible = isOwnGearDialogVisible();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not determine Own Gear dialog highlight state.', error);
+      }
+      if (dialogVisible) {
+        addSelector('#ownGearDialog');
+      }
+    }
+
     if (menuOpen && ownGearButton) {
-      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+      addSelector('#sideMenu [data-sidebar-action="open-own-gear"]');
+    } else if (!menuOpen && menuToggle) {
+      addSelector('#menuToggle');
+    } else if (ownGearButton) {
+      addSelector('#sideMenu [data-sidebar-action="open-own-gear"]');
+    } else if (menuToggle) {
+      addSelector('#menuToggle');
     }
 
-    if (!menuOpen && menuToggle) {
-      return ['#menuToggle'];
-    }
-
-    if (ownGearButton) {
-      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
-    }
-
-    if (menuToggle) {
-      return ['#menuToggle'];
-    }
-
-    return [];
+    return selectors;
   }
 
   const DEFAULT_STEP_TEXTS = {
