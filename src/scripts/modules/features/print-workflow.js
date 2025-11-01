@@ -203,6 +203,20 @@
     const logger = safeContext.logger;
     let fallbackAttempts = 0;
 
+    const restoreDocumentTitle = () => {
+      if (
+        documentRef
+        && safeContext.printDocumentTitle
+        && typeof documentRef.title === 'string'
+      ) {
+        try {
+          documentRef.title = safeContext.originalDocumentTitle;
+        } catch (restoreError) {
+          log(logger, 'warn', `${logPrefix}: unable to restore original document title after fallback attempt.`, restoreError);
+        }
+      }
+    };
+
     function attemptFallback(error) {
       fallbackAttempts += 1;
       if (error && error.name !== 'AbortError') {
@@ -216,6 +230,8 @@
         log(logger, 'error', `${logPrefix}: fallback print window failed to open.`, fallbackError);
         opened = false;
       }
+
+      restoreDocumentTitle();
 
       if (opened) {
         try {
@@ -242,14 +258,18 @@
         if (documentRef && safeContext.printDocumentTitle) {
           documentRef.title = safeContext.printDocumentTitle;
         }
-
         const result = windowRef.print();
         if (result && typeof result.then === 'function') {
-          result.catch(error => {
-            if (!fallbackAttempts) {
-              attemptFallback(error);
-            }
-          });
+          return result.then(
+            () => true,
+            (error) => {
+              if (!fallbackAttempts) {
+                return attemptFallback(error);
+              }
+              restoreDocumentTitle();
+              return false;
+            },
+          );
         }
         return true;
       } catch (error) {
@@ -257,35 +277,45 @@
       }
     }
 
-    let success = false;
+    const ensureFallbackAttempt = (initialResult) => {
+      if (initialResult && typeof initialResult.then === 'function') {
+        return initialResult.then((value) => {
+          if (!value && fallbackAttempts === 0) {
+            return attemptFallback();
+          }
+          return value;
+        });
+      }
+
+      if (!initialResult && fallbackAttempts === 0) {
+        return attemptFallback();
+      }
+
+      if (
+        !initialResult
+        && documentRef
+        && typeof documentRef.title === 'string'
+        && documentRef.title === safeContext.printDocumentTitle
+      ) {
+        restoreDocumentTitle();
+      }
+
+      return initialResult;
+    };
+
+    let result;
 
     if (preferFallback) {
-      success = attemptFallback();
-      if (!success) {
-        success = attemptNativePrint();
+      const fallbackResult = attemptFallback();
+      if (fallbackResult) {
+        return fallbackResult;
       }
+      result = attemptNativePrint();
     } else {
-      success = attemptNativePrint();
+      result = attemptNativePrint();
     }
 
-    if (!success && fallbackAttempts === 0) {
-      success = attemptFallback();
-    }
-
-    if (
-      !success
-      && documentRef
-      && typeof documentRef.title === 'string'
-      && documentRef.title === safeContext.printDocumentTitle
-    ) {
-      try {
-        documentRef.title = safeContext.originalDocumentTitle;
-      } catch (restoreError) {
-        log(logger, 'warn', `${logPrefix}: unable to restore original document title after failed print.`, restoreError);
-      }
-    }
-
-    return success;
+    return ensureFallbackAttempt(result);
   }
 
   function createOverviewPrintWorkflow(context) {
@@ -297,7 +327,38 @@
       },
     };
 
-    return freezeDeep(workflow);
+    const frozenWorkflow = freezeDeep(workflow) || workflow;
+
+    try {
+      Object.defineProperty(frozenWorkflow, 'trigger', {
+        value: frozenWorkflow.trigger,
+        enumerable: true,
+        configurable: false,
+        writable: false,
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+
+    try {
+      Object.preventExtensions(frozenWorkflow);
+    } catch (preventError) {
+      void preventError;
+    }
+
+    try {
+      Object.seal(frozenWorkflow);
+    } catch (sealError) {
+      void sealError;
+    }
+
+    try {
+      Object.freeze(frozenWorkflow);
+    } catch (freezeError) {
+      void freezeError;
+    }
+
+    return frozenWorkflow;
   }
 
   const printAPI = freezeDeep({

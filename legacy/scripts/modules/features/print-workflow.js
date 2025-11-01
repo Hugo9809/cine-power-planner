@@ -146,6 +146,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
     var logger = safeContext.logger;
     var fallbackAttempts = 0;
+    var restoreDocumentTitle = function restoreDocumentTitle() {
+      if (documentRef && safeContext.printDocumentTitle && typeof documentRef.title === 'string') {
+        try {
+          documentRef.title = safeContext.originalDocumentTitle;
+        } catch (restoreError) {
+          log(logger, 'warn', "".concat(logPrefix, ": unable to restore original document title after fallback attempt."), restoreError);
+        }
+      }
+    };
     function attemptFallback(error) {
       fallbackAttempts += 1;
       if (error && error.name !== 'AbortError') {
@@ -158,6 +167,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         log(logger, 'error', "".concat(logPrefix, ": fallback print window failed to open."), fallbackError);
         opened = false;
       }
+      restoreDocumentTitle();
       if (opened) {
         try {
           closeAfterPrint();
@@ -181,10 +191,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var result = windowRef.print();
         if (result && typeof result.then === 'function') {
-          result.catch(function (error) {
+          return result.then(function () {
+            return true;
+          }, function (error) {
             if (!fallbackAttempts) {
-              attemptFallback(error);
+              return attemptFallback(error);
             }
+            restoreDocumentTitle();
+            return false;
           });
         }
         return true;
@@ -192,26 +206,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return attemptFallback(error);
       }
     }
-    var success = false;
+    var ensureFallbackAttempt = function ensureFallbackAttempt(initialResult) {
+      if (initialResult && typeof initialResult.then === 'function') {
+        return initialResult.then(function (value) {
+          if (!value && fallbackAttempts === 0) {
+            return attemptFallback();
+          }
+          return value;
+        });
+      }
+      if (!initialResult && fallbackAttempts === 0) {
+        return attemptFallback();
+      }
+      if (!initialResult && documentRef && typeof documentRef.title === 'string' && documentRef.title === safeContext.printDocumentTitle) {
+        restoreDocumentTitle();
+      }
+      return initialResult;
+    };
+    var result;
     if (preferFallback) {
-      success = attemptFallback();
-      if (!success) {
-        success = attemptNativePrint();
+      var fallbackResult = attemptFallback();
+      if (fallbackResult) {
+        return fallbackResult;
       }
+      result = attemptNativePrint();
     } else {
-      success = attemptNativePrint();
+      result = attemptNativePrint();
     }
-    if (!success && fallbackAttempts === 0) {
-      success = attemptFallback();
-    }
-    if (!success && documentRef && typeof documentRef.title === 'string' && documentRef.title === safeContext.printDocumentTitle) {
-      try {
-        documentRef.title = safeContext.originalDocumentTitle;
-      } catch (restoreError) {
-        log(logger, 'warn', "".concat(logPrefix, ": unable to restore original document title after failed print."), restoreError);
-      }
-    }
-    return success;
+    return ensureFallbackAttempt(result);
   }
   function createOverviewPrintWorkflow(context) {
     var safeContext = sanitizeContext(context);
@@ -220,7 +242,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return triggerOverviewPrintWorkflow(safeContext, options);
       }
     };
-    return freezeDeep(workflow);
+    var frozenWorkflow = freezeDeep(workflow) || workflow;
+    try {
+      Object.defineProperty(frozenWorkflow, 'trigger', {
+        value: frozenWorkflow.trigger,
+        enumerable: true,
+        configurable: false,
+        writable: false
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+    try {
+      Object.preventExtensions(frozenWorkflow);
+    } catch (preventError) {
+      void preventError;
+    }
+    try {
+      Object.seal(frozenWorkflow);
+    } catch (sealError) {
+      void sealError;
+    }
+    try {
+      Object.freeze(frozenWorkflow);
+    } catch (freezeError) {
+      void freezeError;
+    }
+    return frozenWorkflow;
   }
   var printAPI = freezeDeep({
     createOverviewPrintWorkflow: createOverviewPrintWorkflow,
