@@ -110,6 +110,66 @@ describe('service worker connectivity probe handling', () => {
       CONNECTIVITY_PROBE_RESULT_FALLBACK,
     );
   });
+
+  test('forceReload navigation requests bypass cache but still refresh storage', async () => {
+    const { fetchHandler } = loadServiceWorker();
+
+    expect(typeof fetchHandler).toBe('function');
+
+    const cachePut = jest.fn().mockResolvedValue(undefined);
+    const cacheMatch = jest.fn();
+    global.caches.open.mockResolvedValue({ match: cacheMatch, put: cachePut });
+
+    const freshResponse = new Response('<html></html>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' },
+    });
+
+    global.fetch.mockResolvedValue(freshResponse);
+
+    const baseRequest = new Request('https://example.test/index.html?forceReload=token', {
+      headers: new Headers({ Accept: 'text/html' }),
+    });
+    const navigationRequest = new Proxy(baseRequest, {
+      get(target, prop, receiver) {
+        if (prop === 'mode') {
+          return 'navigate';
+        }
+        return Reflect.get(target, prop, receiver);
+      },
+    });
+
+    let responsePromise;
+    const respondWith = jest.fn(promise => {
+      responsePromise = promise;
+    });
+
+    let waitUntilPromise;
+    const waitUntil = jest.fn(promise => {
+      waitUntilPromise = promise;
+    });
+
+    fetchHandler({
+      request: navigationRequest,
+      respondWith,
+      waitUntil,
+      preloadResponse: null,
+    });
+
+    expect(respondWith).toHaveBeenCalledTimes(1);
+
+    const response = await responsePromise;
+
+    expect(global.fetch).toHaveBeenCalledWith(navigationRequest, { cache: 'no-store' });
+    expect(global.caches.match).not.toHaveBeenCalled();
+    expect(response).toBe(freshResponse);
+    expect(waitUntil).toHaveBeenCalledTimes(1);
+
+    await waitUntilPromise;
+
+    expect(global.caches.open).toHaveBeenCalledWith(CACHE_NAME);
+    expect(cachePut).toHaveBeenCalledWith(navigationRequest, expect.any(Response));
+  });
 });
 
 describe('service worker configuration', () => {
