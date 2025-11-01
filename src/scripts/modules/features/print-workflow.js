@@ -199,7 +199,8 @@
       ? options.reason
       : 'print';
 
-    const logPrefix = reason === 'export' ? safeContext.exportLogPrefix : safeContext.logPrefix;
+    const isExportReason = reason === 'export' || reason === 'rental-export';
+    const logPrefix = isExportReason ? safeContext.exportLogPrefix : safeContext.logPrefix;
     const logger = safeContext.logger;
     let fallbackAttempts = 0;
 
@@ -259,7 +260,7 @@
 
     let success = false;
 
-    if (preferFallback) {
+    if (preferFallback && !isExportReason) {
       success = attemptFallback();
       if (!success) {
         success = attemptNativePrint();
