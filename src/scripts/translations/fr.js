@@ -1764,7 +1764,7 @@
         },
         "ownGearAccess": {
           "title": "Ouvrez la fenêtre Matériel personnel",
-          "body": "Utilisez le bouton Matériel personnel dans la barre latérale pour ouvrir la fenêtre d’inventaire dès que vous devez vérifier ce que vous possédez déjà. L’ouvrir vous-même rend le geste naturel une fois le tutoriel terminé."
+          "body": "Cliquez sur le bouton Matériel personnel dans la barre latérale pour ouvrir la boîte de dialogue d’inventaire, puis passez en revue la bannière de résumé et la liste Ton matériel afin d’identifier où se trouvent les éléments enregistrés, les boutons d’édition et les compteurs. Terminez en explorant le formulaire Ajouter du matériel — recherche d’article, quantité, notes ainsi que les commandes Enregistrer et Réinitialiser — pour pouvoir saisir du matériel dès la fin de la visite."
         },
         "ownGearAddDevice": {
           "title": "Ajoutez votre premier matériel possédé",

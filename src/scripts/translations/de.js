@@ -1764,7 +1764,7 @@
         },
         "ownGearAccess": {
           "title": "Dialog Eigenes Equipment öffnen",
-          "body": "Nutze die Schaltfläche Eigenes Equipment in der Seitenleiste, um den Inventardialog zu öffnen, sobald du vorhandenes Material prüfen möchtest. Wenn du ihn selbst öffnest, bleibt der Ablauf nach dem Tutorial vertraut."
+          "body": "Drücke in der Seitenleiste auf die Schaltfläche Eigenes Equipment, um den Inventardialog zu starten, und sieh dir anschließend das Zusammenfassungsbanner sowie die Liste Dein Equipment an, damit du weißt, wo gespeicherte Einträge, Bearbeiten-Schaltflächen und Zähler liegen. Erkunde danach das Formular Equipment hinzufügen – Artikelsuche, Menge, Notizen sowie die Schaltflächen Speichern und Zurücksetzen –, damit du unmittelbar nach der Tour neues Material erfassen kannst."
         },
         "ownGearAddDevice": {
           "title": "Erstes eigenes Gerät hinzufügen",

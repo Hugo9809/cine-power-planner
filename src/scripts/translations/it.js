@@ -1764,7 +1764,7 @@
         },
         "ownGearAccess": {
           "title": "Apri la finestra Attrezzatura propria",
-          "body": "Usa il pulsante Attrezzatura propria nella barra laterale per aprire la finestra inventario ogni volta che vuoi controllare l’equipaggiamento che hai già. Aprirla tu stesso rende il flusso naturale anche dopo il tutorial."
+          "body": "Seleziona il pulsante Attrezzatura propria nella barra laterale per aprire la finestra dell’inventario, quindi controlla il banner riepilogativo e l’elenco La tua attrezzatura per sapere dove trovare gli elementi salvati, i pulsanti di modifica e i contatori. Infine esplora il modulo Aggiungi attrezzatura — ricerca articolo, quantità, note e i comandi Salva e Reimposta — così potrai registrare nuove dotazioni appena termina il tour."
         },
         "ownGearAddDevice": {
           "title": "Aggiungi il primo dispositivo di tua proprietà",

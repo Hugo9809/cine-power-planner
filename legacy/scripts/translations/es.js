@@ -1748,7 +1748,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "ownGearAccess": {
             "title": "Abre el cuadro de Equipo propio",
-            "body": "Usa el botón Equipo propio en la barra lateral para abrir el cuadro de inventario siempre que necesites revisar el equipo que ya controlas. Abrirlo tú mismo mantiene el flujo familiar cuando termine el tutorial."
+            "body": "Pulsa el botón Equipo propio de la barra lateral para abrir el cuadro de inventario, luego revisa la banda de resumen y la lista Tu equipo para reconocer dónde viven los elementos guardados, los botones de edición y los contadores. Termina repasando el formulario Añadir equipo —búsqueda de artículos, cantidad, notas y los controles Guardar y Restablecer— para poder registrar material en cuanto termine la guía."
           },
           "ownGearAddDevice": {
             "title": "Añade tu primer equipo propio",
