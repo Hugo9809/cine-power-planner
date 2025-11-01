@@ -12273,8 +12273,31 @@ function getGearListSelectors() {
       selectors[sel.id] = sel.value;
     }
   };
-  if (gearListOutput) {
-    gearListOutput.querySelectorAll('select[id]').forEach(function (sel) {
+  var gearListRoot = null;
+  if (gearListOutput && typeof gearListOutput.querySelectorAll === 'function') {
+    gearListRoot = gearListOutput;
+  } else if (typeof document !== 'undefined') {
+    var resolvedRoot = null;
+    if (typeof gearListOutput === 'string' && typeof document.querySelector === 'function') {
+      resolvedRoot = document.querySelector(gearListOutput);
+    }
+    if (!resolvedRoot && typeof document.getElementById === 'function') {
+      resolvedRoot = document.getElementById('gearListOutput');
+    }
+    if (resolvedRoot && typeof resolvedRoot.querySelectorAll === 'function') {
+      gearListRoot = resolvedRoot;
+      try {
+        if (typeof gearListOutput === 'undefined' || gearListOutput !== resolvedRoot) {
+          gearListOutput = resolvedRoot;
+        }
+      } catch (err) {
+        /* istanbul ignore next */
+        console.warn('Unable to update gearListOutput reference', err);
+      }
+    }
+  }
+  if (gearListRoot) {
+    gearListRoot.querySelectorAll('select[id]').forEach(function (sel) {
       collectSelectValue(sel);
     });
   }
@@ -12289,9 +12312,9 @@ function getGearListSelectors() {
   if (customState && Object.keys(customState).length) {
     selectors.__customItems = customState;
   }
-  if (gearListOutput) {
+  if (gearListRoot) {
     var rentalState = {};
-    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
+    gearListRoot.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
       var name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
       if (span.getAttribute('data-rental-excluded') === 'true') {
