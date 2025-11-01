@@ -1499,7 +1499,7 @@
     "queuedBackupDownloadDeferred": "Automatische Downloads wurden blockiert. Wir haben {fileName} im lokalen Tresor gespeichert, damit der nächste Tipp sie sicher exportieren kann.",
     "queuedBackupVaultEmpty": "Im lokalen Tresor warten keine gesicherten Sicherungen.",
     "queuedBackupVaultTitle": "Lokaler Sicherungstresor",
-    "queuedBackupVaultIntro": "Automatische Downloads wurden blockiert. Prüft die folgenden Sicherungen und ladet sie manuell herunter, solange der Browser offline bereitsteht.",
+    "queuedBackupVaultIntro": "Automatische Downloads wurden blockiert. Prüfe die folgenden Sicherungen und lade sie manuell herunter, solange der Browser offline bereitsteht.",
     "queuedBackupVaultPopupBlocked": "Aktiviert Pop-ups, um gespeicherte Sicherungen im lokalen Tresor anzuzeigen.",
     "queuedBackupBannerMessageOne": "1 Sicherung im lokalen Tresor gespeichert.",
     "queuedBackupBannerMessageOther": "{count} Sicherungen im lokalen Tresor gespeichert.",
