@@ -7432,6 +7432,12 @@ function initializeOwnGearManager() {
     ownGearDialog.addEventListener('close', () => {
       resetOwnGearForm();
     });
+    ownGearDialog.addEventListener('click', (event) => {
+      if (event && event.target === ownGearDialog) {
+        closeDialog(ownGearDialog);
+        resetOwnGearForm();
+      }
+    });
   }
 
   try {
