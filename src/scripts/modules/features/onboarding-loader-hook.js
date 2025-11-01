@@ -409,13 +409,82 @@
     return onboardingModulePromise;
   }
 
+  function coerceStoredBooleanFlag(value, options) {
+    const settings = options || {};
+    const trueValues = Array.isArray(settings.trueValues) ? settings.trueValues : [];
+    const falseValues = Array.isArray(settings.falseValues) ? settings.falseValues : [];
+
+    if (value === true) {
+      return true;
+    }
+
+    if (value === false) {
+      return false;
+    }
+
+    if (typeof value === 'number') {
+      if (Number.isFinite(value)) {
+        if (value === 1) {
+          return true;
+        }
+        if (value === 0) {
+          return false;
+        }
+      }
+      return value;
+    }
+
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return value;
+    }
+
+    if (trueValues.indexOf(normalized) !== -1) {
+      return true;
+    }
+
+    if (falseValues.indexOf(normalized) !== -1) {
+      return false;
+    }
+
+    return value;
+  }
+
+  function normalizeStoredStateSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') {
+      return null;
+    }
+
+    const normalized = { ...snapshot };
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'completed')) {
+      normalized.completed = coerceStoredBooleanFlag(normalized.completed, {
+        trueValues: ['true', '1', 'yes', 'completed', 'done', 'finished'],
+        falseValues: ['false', '0', 'no', 'pending', 'incomplete'],
+      });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'skipped')) {
+      normalized.skipped = coerceStoredBooleanFlag(normalized.skipped, {
+        trueValues: ['true', '1', 'yes', 'skipped', 'dismissed'],
+        falseValues: ['false', '0', 'no', 'pending', 'incomplete'],
+      });
+    }
+
+    return normalized;
+  }
+
   function parseStoredStateValue(rawValue) {
     if (!rawValue) {
       return null;
     }
 
     if (typeof rawValue === 'object') {
-      return rawValue;
+      return normalizeStoredStateSnapshot(rawValue) || rawValue;
     }
 
     if (typeof rawValue !== 'string') {
@@ -430,20 +499,20 @@
     try {
       const parsed = JSON.parse(trimmed);
       if (parsed && typeof parsed === 'object') {
-        return parsed;
+        return normalizeStoredStateSnapshot(parsed) || parsed;
       }
       if (parsed === true) {
-        return { completed: true };
+        return normalizeStoredStateSnapshot({ completed: true }) || { completed: true };
       }
       if (parsed === false) {
-        return { completed: false };
+        return normalizeStoredStateSnapshot({ completed: false }) || { completed: false };
       }
       if (typeof parsed === 'string') {
         if (parsed === 'completed') {
-          return { completed: true };
+          return normalizeStoredStateSnapshot({ completed: true }) || { completed: true };
         }
         if (parsed === 'skipped') {
-          return { skipped: true };
+          return normalizeStoredStateSnapshot({ skipped: true }) || { skipped: true };
         }
       }
     } catch (error) {
@@ -451,19 +520,19 @@
     }
 
     if (trimmed === 'completed') {
-      return { completed: true };
+      return normalizeStoredStateSnapshot({ completed: true }) || { completed: true };
     }
 
     if (trimmed === 'skipped') {
-      return { skipped: true };
+      return normalizeStoredStateSnapshot({ skipped: true }) || { skipped: true };
     }
 
     if (trimmed === 'true') {
-      return { completed: true };
+      return normalizeStoredStateSnapshot({ completed: true }) || { completed: true };
     }
 
     if (trimmed === 'false') {
-      return { completed: false };
+      return normalizeStoredStateSnapshot({ completed: false }) || { completed: false };
     }
 
     return null;
@@ -515,11 +584,12 @@
           const value = storage.getItem(key);
           const parsed = parseStoredStateValue(value);
           if (parsed) {
-            if (parsed.completed === true || parsed.skipped === true) {
-              return parsed;
+            const normalized = normalizeStoredStateSnapshot(parsed) || parsed;
+            if (normalized.completed === true || normalized.skipped === true) {
+              return normalized;
             }
             if (!fallbackState) {
-              fallbackState = parsed;
+              fallbackState = normalized;
             }
           }
         } catch (error) {
@@ -528,7 +598,7 @@
       }
     }
 
-    return fallbackState;
+    return fallbackState ? normalizeStoredStateSnapshot(fallbackState) || fallbackState : fallbackState;
   }
 
   function detectFirstRun(scope) {
@@ -536,7 +606,8 @@
       return;
     }
     const stored = readStoredState(scope);
-    if (stored && typeof stored === 'object' && (stored.completed === true || stored.skipped === true)) {
+    const normalized = normalizeStoredStateSnapshot(stored) || stored;
+    if (normalized && typeof normalized === 'object' && (normalized.completed === true || normalized.skipped === true)) {
       return;
     }
     schedule(() => {
