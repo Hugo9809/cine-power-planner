@@ -86,6 +86,7 @@
   "./legacy/scripts/autosave-overlay.js",
   "./legacy/scripts/commonjs-shim.js",
   "./legacy/scripts/console-helpers.js",
+  "./legacy/scripts/data/pink-mode-animated-icons.js",
   "./legacy/scripts/globals-bootstrap.js",
   "./legacy/scripts/globals-legacy-shim.js",
   "./legacy/scripts/globalthis-polyfill.js",
