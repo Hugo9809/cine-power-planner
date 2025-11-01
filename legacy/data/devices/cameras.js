@@ -1053,7 +1053,7 @@
       "recordingCodecs": ["XAVC-I", "XAVC-L"],
       "sensorModes": ["Full Frame (DCI 4K/UHD/HD)", "Super 35 crop (HD)"],
       "resolutions": ["4096×2160", "3840×2160", "1920×1080"],
-      "frameRates": ["UHD 4K: 23.98–120 fps", "Full HD: up to 240 fps"]
+      "frameRates": ["Full Frame DCI 4K/UHD/HD: 23.98–120 fps", "Super 35 crop HD: up to 240 fps"]
     },
     "Sony FX9": {
       "powerDrawWatts": 35.2,

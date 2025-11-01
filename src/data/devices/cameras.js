@@ -1580,8 +1580,8 @@ const cameraData = {
       "1920×1080"
     ],
     "frameRates": [
-      "UHD 4K: 23.98–120 fps",
-      "Full HD: up to 240 fps"
+      "Full Frame DCI 4K/UHD/HD: 23.98–120 fps",
+      "Super 35 crop HD: up to 240 fps"
     ]
   },
   "Sony FX9": {
