@@ -1385,6 +1385,7 @@
     "storagePersistenceStatusRequesting": "Demande de stockage persistant au navigateur…",
     "storagePersistenceStatusGranted": "Stockage persistant accordé. Les données du planner sont protégées contre les nettoyages automatiques.",
     "storagePersistenceStatusDenied": "Le navigateur n'a pas pu accorder le stockage persistant. Continuez à exporter des sauvegardes régulièrement.",
+    "storagePersistenceStatusSafariIncompatible": "Safari bloque actuellement les demandes de stockage persistant. Considérez cela comme une limitation du navigateur.",
     "storagePersistenceStatusError": "La demande de stockage persistant a échoué. Réessayez après avoir libéré de l'espace ou vérifiez les paramètres du navigateur.",
     "storagePersistenceStatusUnsupported": "Ce navigateur ne peut pas accorder automatiquement le stockage persistant. Continuez à conserver des sauvegardes externes.",
     "storagePersistenceUsage": "Utilisation approximative : {used} sur {quota}.",

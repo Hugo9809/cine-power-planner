@@ -759,6 +759,7 @@
     "storagePersistenceStatusRequesting": "Requesting persistent storage from the browser…",
     "storagePersistenceStatusGranted": "Persistent storage granted. Planner data is protected from automatic cleanup.",
     "storagePersistenceStatusDenied": "The browser could not grant persistent storage. Keep exporting backups regularly.",
+    "storagePersistenceStatusSafariIncompatible": "Safari currently blocks persistent storage requests. Treat this as a browser limitation.",
     "storagePersistenceStatusError": "Persistent storage request failed. Try again after freeing space or review browser settings.",
     "storagePersistenceStatusUnsupported": "This browser cannot grant persistent storage automatically. Continue keeping external backups.",
     "storagePersistenceUsage": "Approximate usage: {used} of {quota}.",

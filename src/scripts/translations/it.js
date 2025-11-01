@@ -1385,6 +1385,7 @@
     "storagePersistenceStatusRequesting": "Richiesta di archiviazione persistente al browser…",
     "storagePersistenceStatusGranted": "Archiviazione persistente concessa. I dati del planner sono protetti dalla pulizia automatica.",
     "storagePersistenceStatusDenied": "Il browser non ha concesso l'archiviazione persistente. Continua a esportare regolarmente i backup.",
+    "storagePersistenceStatusSafariIncompatible": "Safari al momento blocca le richieste di archiviazione persistente. Consideralo una limitazione del browser.",
     "storagePersistenceStatusError": "Richiesta di archiviazione persistente non riuscita. Riprova dopo aver liberato spazio o controlla le impostazioni del browser.",
     "storagePersistenceStatusUnsupported": "Questo browser non può concedere automaticamente l'archiviazione persistente. Continua a mantenere backup esterni.",
     "storagePersistenceUsage": "Utilizzo approssimativo: {used} su {quota}.",
