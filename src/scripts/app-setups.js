@@ -315,6 +315,38 @@ function safeGetCurrentProjectName(defaultValue = '') {
 const CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
 
+const CAMERA_LINKED_SUPPORT_ITEM_BASE_NAMES = [
+    'ARRI K2.0019797 HEX-3',
+    'ARRI K2.0023751 B-Mount Battery Adapter',
+    'ARRI K2.74000.0 VEB-3 Viewfinder Extension Bracket',
+    'ARRI KK.0037820 Handle Extension Set',
+    'SHAPE Telescopic Handle ARRI Rosette Kit 12"'
+];
+
+let cameraLinkedSupportItemKeysCache = null;
+
+function getCameraLinkedSupportItemKeys() {
+    if (cameraLinkedSupportItemKeysCache instanceof Set && cameraLinkedSupportItemKeysCache.size) {
+        return cameraLinkedSupportItemKeysCache;
+    }
+    if (typeof normalizeGearNameForComparison !== 'function') {
+        return new Set();
+    }
+    cameraLinkedSupportItemKeysCache = new Set(
+        CAMERA_LINKED_SUPPORT_ITEM_BASE_NAMES.map(name => normalizeGearNameForComparison(name))
+    );
+    return cameraLinkedSupportItemKeysCache;
+}
+
+function resolveCameraLinkedSupportName(name) {
+    if (!name || typeof normalizeGearNameForComparison !== 'function') {
+        return '';
+    }
+    const resolvedName = addArriKNumber(name);
+    const normalized = normalizeGearNameForComparison(resolvedName);
+    return getCameraLinkedSupportItemKeys().has(normalized) ? resolvedName : '';
+}
+
 const PRODUCTION_COMPANY_FIELD_ORDER = [
     'productionCompanyAddress',
     'productionCompanyStreet',
@@ -11504,7 +11536,13 @@ function gearListGenerateHtmlImpl(info = {}) {
         );
     };
     addRow('Camera', formatItems([selectedNames.camera]));
-    const cameraSupportText = formatItems(supportAccNoCages);
+    supportAccNoCages.forEach(item => {
+        const resolvedCameraLinkName = resolveCameraLinkedSupportName(item);
+        if (resolvedCameraLinkName) {
+            registerCameraLinkTarget(resolvedCameraLinkName);
+        }
+    });
+    const cameraSupportText = formatItems(supportAccNoCages, { onItem: applyCameraLinkFromTargets });
     let cageSelectHtml = '';
     if (compatibleCages.length) {
         const options = compatibleCages
