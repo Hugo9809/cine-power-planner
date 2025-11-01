@@ -408,6 +408,69 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var pinkModeAssetTextCache = new Map();
         var pinkModeAssetTextPromiseCache = new Map();
+        function getPinkModeEmbeddedAssetStore() {
+          var scope = GLOBAL_SCOPE || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || null;
+          if (!scope) {
+            return null;
+          }
+          try {
+            var store = scope.cinePinkModeAnimatedIconData;
+            if (store && _typeof(store) === 'object') {
+              return store;
+            }
+          } catch (error) {
+            void error;
+          }
+          return null;
+        }
+        function resolvePinkModeEmbeddedAsset(key) {
+          if (typeof key !== 'string' || !key) {
+            return null;
+          }
+          var store = getPinkModeEmbeddedAssetStore();
+          if (!store) {
+            return null;
+          }
+          var candidates = [];
+          var registerCandidate = function registerCandidate(candidate) {
+            if (typeof candidate !== 'string' || !candidate) {
+              return;
+            }
+            if (candidates.indexOf(candidate) === -1) {
+              candidates.push(candidate);
+            }
+          };
+          registerCandidate(key);
+          var trimmed = key.replace(/^\.\/+/, '');
+          if (trimmed && trimmed !== key) {
+            registerCandidate(trimmed);
+          }
+          var decoded = decodePinkModeUriCandidate(key);
+          if (decoded) {
+            registerCandidate(decoded);
+          }
+          var encoded = encodeURI(key);
+          if (encoded && encoded !== key) {
+            registerCandidate(encoded);
+          }
+          if (trimmed) {
+            var encodedTrimmed = encodeURI(trimmed);
+            if (encodedTrimmed && encodedTrimmed !== trimmed) {
+              registerCandidate(encodedTrimmed);
+            }
+          }
+          for (var index = 0; index < candidates.length; index += 1) {
+            var candidate = candidates[index];
+            if (!Object.prototype.hasOwnProperty.call(store, candidate)) {
+              continue;
+            }
+            var value = store[candidate];
+            if (typeof value === 'string' && value) {
+              return value;
+            }
+          }
+          return null;
+        }
         function decodePinkModeUriCandidate(value) {
           if (typeof value !== 'string' || !value) {
             return null;
@@ -569,6 +632,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           if (pinkModeAssetTextCache.has(normalized)) {
             return Promise.resolve(pinkModeAssetTextCache.get(normalized));
+          }
+          var embedded = resolvePinkModeEmbeddedAsset(normalized);
+          if (typeof embedded === 'string') {
+            pinkModeAssetTextCache.set(normalized, embedded);
+            return Promise.resolve(embedded);
           }
           if (pinkModeAssetTextPromiseCache.has(normalized)) {
             return pinkModeAssetTextPromiseCache.get(normalized);
@@ -941,6 +1009,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var pinkModeAnimatedIconInstances = new Set();
         var pinkModeAnimatedIconLastTemplateName = null;
         var pinkModeAnimatedIconPlacementHistory = [];
+        var pinkModeAnimatedIconTemplateOrder = [];
+        var pinkModeAnimatedIconTemplateCursor = 0;
         var pinkModeIconRainInstances = new Set();
         var pinkModeIconRainLastTriggeredAt = 0;
         var pinkModeBodyReadyQueue = [];
@@ -1188,6 +1258,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }));
           return _loadPinkModeIconsFromFiles.apply(this, arguments);
         }
+        function updatePinkModeAnimatedIconTemplateRotation(templates) {
+          if (!Array.isArray(templates) || !templates.length) {
+            pinkModeAnimatedIconTemplateOrder = [];
+            pinkModeAnimatedIconTemplateCursor = 0;
+            return;
+          }
+          pinkModeAnimatedIconTemplateOrder = templates.map(function (_, index) {
+            return index;
+          });
+          pinkModeAnimatedIconTemplateCursor = 0;
+        }
         function loadPinkModeAnimatedIconTemplates() {
           return _loadPinkModeAnimatedIconTemplates.apply(this, arguments);
         }
@@ -1224,6 +1305,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     return Object.freeze([]);
                   }).then(function (templates) {
                     pinkModeAnimatedIconTemplates = templates;
+                    updatePinkModeAnimatedIconTemplateRotation(templates);
                     return templates;
                   });
                   return _context8.a(2, pinkModeAnimatedIconTemplatesPromise);
@@ -1231,6 +1313,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }, _callee7);
           }));
           return _loadPinkModeAnimatedIconTemplates.apply(this, arguments);
+        }
+        function selectPinkModeAnimatedIconTemplate(availableTemplates) {
+          if (!Array.isArray(availableTemplates) || !availableTemplates.length) {
+            return null;
+          }
+          var sanitized = availableTemplates.filter(Boolean);
+          if (!sanitized.length) {
+            return null;
+          }
+          var templates = pinkModeAnimatedIconTemplates;
+          var order = pinkModeAnimatedIconTemplateOrder;
+          if (Array.isArray(templates) && templates.length && Array.isArray(order) && order.length) {
+            var availableSet = new Set(sanitized);
+            var uniqueAvailableNames = new Set();
+            sanitized.forEach(function (template) {
+              if (template && typeof template.name === 'string') {
+                uniqueAvailableNames.add(template.name);
+              }
+            });
+            var allowImmediateRepeat = uniqueAvailableNames.size <= 1;
+            var cursor = pinkModeAnimatedIconTemplateCursor;
+            for (var attempt = 0; attempt < order.length; attempt += 1) {
+              var orderIndex = order[cursor % order.length];
+              cursor += 1;
+              if (typeof orderIndex !== 'number' || orderIndex < 0 || orderIndex >= templates.length) {
+                continue;
+              }
+              var candidate = templates[orderIndex];
+              if (!availableSet.has(candidate)) {
+                continue;
+              }
+              if (!allowImmediateRepeat && candidate && candidate.name === pinkModeAnimatedIconLastTemplateName) {
+                continue;
+              }
+              pinkModeAnimatedIconTemplateCursor = cursor % order.length;
+              return candidate;
+            }
+            cursor = pinkModeAnimatedIconTemplateCursor;
+            for (var _attempt = 0; _attempt < order.length; _attempt += 1) {
+              var _orderIndex = order[cursor % order.length];
+              cursor += 1;
+              if (typeof _orderIndex !== 'number' || _orderIndex < 0 || _orderIndex >= templates.length) {
+                continue;
+              }
+              var _candidate = templates[_orderIndex];
+              if (!availableSet.has(_candidate)) {
+                continue;
+              }
+              pinkModeAnimatedIconTemplateCursor = cursor % order.length;
+              return _candidate;
+            }
+          }
+          return sanitized[Math.floor(Math.random() * sanitized.length)];
         }
         function ensurePinkModeAnimationLayer(options) {
           if (typeof document === 'undefined') {
@@ -1835,7 +1970,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (!availableTemplates.length) {
             availableTemplates = sanitizedTemplates;
           }
-          var template = availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+          var template = selectPinkModeAnimatedIconTemplate(availableTemplates);
           if (!template || !template.data) {
             return false;
           }
@@ -2448,6 +2583,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           pinkModeAnimatedIconLayer = null;
           pinkModeAnimatedIconLastTemplateName = null;
+          pinkModeAnimatedIconTemplateCursor = 0;
         }
         if (pinkModeReduceMotionQuery) {
           var handlePinkModeReduceMotionChange = function handlePinkModeReduceMotionChange() {

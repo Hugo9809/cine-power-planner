@@ -295,6 +295,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else if (hasAllGroups([['exposure'], ['value']])) {
       addAll(['ev', 'exposurevalue']);
     }
+    ensureSynonymGroup(['iso', 'asa', 'ei', 'exposureindex', 'cameraiso', 'sensitivity', 'gain'], ['iso', 'asa', 'ei', 'exposureindex', 'cameraiso', 'sensitivity', 'gain', 'exposureindexvalue', 'exposureindexsetting'], [['exposure', 'camera', 'sensor'], ['index', 'value', 'gain', 'sensitivity']]);
+    ensureSynonymGroup(['nd', 'neutraldensity', 'ndfilter', 'neutraldensityfilter', 'internalnd'], ['nd', 'neutraldensity', 'ndfilter', 'neutraldensityfilter', 'internalnd', 'internalneutraldensity'], [['neutral', 'internal'], ['density', 'densityfilter', 'filter']]);
+    ensureSynonymGroup(['whitebalance', 'wb', 'colortemperature', 'colourtemperature', 'kelvin'], ['whitebalance', 'wb', 'colortemperature', 'colourtemperature', 'kelvin'], [['white'], ['balance']]);
+    ensureSynonymGroup(['whitebalance', 'wb', 'colortemperature', 'colourtemperature', 'kelvin'], ['whitebalance', 'wb', 'colortemperature', 'colourtemperature', 'kelvin'], [['color', 'colour'], ['temperature', 'temp', 'kelvin']]);
+    ensureSynonymGroup(['slowmotion', 'slowmo', 'highspeed', 'overcrank', 'highframerate'], ['slowmotion', 'slowmo', 'highspeed', 'overcrank', 'highframerate'], [['slow', 'high'], ['motion', 'speed', 'frame', 'framerate', 'fps']]);
+    ensureSynonymGroup(['timelapse', 'hyperlapse', 'intervalrecording', 'intervalshooting'], ['timelapse', 'hyperlapse', 'intervalrecording', 'intervalshooting', 'intervalmode'], [['time', 'interval'], ['lapse', 'record', 'recording', 'shooting', 'capture']]);
     ensureSynonymGroup(['usbc', 'usbtypec', 'usbctype', 'typec'], ['usbc', 'usbtypec', 'usbctype', 'typec', 'usbpowerdelivery', 'powerdelivery', 'pd'], [['usb'], ['c', 'typec']]);
     ensureSynonymGroup(['usba', 'usbtypea', 'typea'], ['usba', 'usbtypea', 'typea'], [['usb'], ['a', 'typea']]);
     ensureSynonymGroup(['microusb', 'usbmicro', 'usbmicrob'], ['microusb', 'usbmicro', 'usbmicrob'], [['usb'], ['micro']]);

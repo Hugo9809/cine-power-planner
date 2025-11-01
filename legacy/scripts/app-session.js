@@ -5122,7 +5122,6 @@ if (setupNameInput && saveSetupBtn) {
     if (e.isComposing || e.keyCode === 229) {
       return;
     }
-
     if (e.key === "Enter" && !saveSetupBtn.disabled) {
       saveSetupBtn.click();
     }
@@ -9196,53 +9195,80 @@ function collectFullBackupData() {
     diagnostics: diagnostics
   };
 }
+function buildSettingsBackupPackage() {
+  var timestamp = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Date();
+  var _formatFullBackupFile2 = formatFullBackupFilename(timestamp),
+    iso = _formatFullBackupFile2.iso,
+    fileName = _formatFullBackupFile2.fileName;
+  var safeStorage = resolveSafeLocalStorage();
+  var settings = captureStorageSnapshot(safeStorage);
+  var sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+  var _collectFullBackupDat = collectFullBackupData(),
+    backupData = _collectFullBackupDat.data,
+    diagnostics = _collectFullBackupDat.diagnostics;
+  var backupVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+  var backup = {
+    version: backupVersion || undefined,
+    generatedAt: iso,
+    settings: settings,
+    sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
+    data: backupData
+  };
+  if (Array.isArray(diagnostics) && diagnostics.length) {
+    backup.diagnostics = diagnostics;
+  }
+  var payload = JSON.stringify(backup);
+  return {
+    fileName: fileName,
+    payload: payload,
+    iso: iso,
+    backup: backup,
+    diagnostics: diagnostics
+  };
+}
 function performSettingsBackup() {
   var notify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
   var timestamp = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   try {
+    var config = _typeof(options) === 'object' && options !== null ? options : {};
     var isEvent = notify && _typeof(notify) === 'object' && typeof notify.type === 'string';
-    var shouldNotify = isEvent ? true : Boolean(notify);
-    var _formatFullBackupFile2 = formatFullBackupFilename(timestamp),
-      iso = _formatFullBackupFile2.iso,
-      fileName = _formatFullBackupFile2.fileName;
-    var safeStorage = resolveSafeLocalStorage();
-    var settings = captureStorageSnapshot(safeStorage);
-    var sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
-    var _collectFullBackupDat = collectFullBackupData(),
-      backupData = _collectFullBackupDat.data,
-      diagnostics = _collectFullBackupDat.diagnostics;
-    var backupVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
-    var backup = {
-      version: backupVersion || undefined,
-      generatedAt: iso,
-      settings: settings,
-      sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-      data: backupData
-    };
-    if (Array.isArray(diagnostics) && diagnostics.length) {
-      backup.diagnostics = diagnostics;
+    var shouldNotify = config.deferDownload ? false : isEvent ? true : Boolean(notify);
+    var _buildSettingsBackupP = buildSettingsBackupPackage(timestamp),
+      fileName = _buildSettingsBackupP.fileName,
+      payload = _buildSettingsBackupP.payload,
+      iso = _buildSettingsBackupP.iso;
+    if (config.deferDownload) {
+      return {
+        fileName: fileName,
+        payload: payload,
+        createdAt: iso
+      };
     }
-    var payload = JSON.stringify(backup);
     var downloadResult = downloadBackupPayload(payload, fileName);
-    if (!downloadResult || !downloadResult.success) {
+    if (!downloadResult || !downloadResult.success && !downloadResult.queued) {
       throw new Error('No supported download method available');
     }
-    try {
-      recordFullBackupHistoryEntryFn({
-        createdAt: iso,
-        fileName: fileName
-      });
-    } catch (historyError) {
-      console.warn('Failed to record full backup history entry', historyError);
-    }
-    if (downloadResult.method === 'window-fallback') {
-      var manualMessage = getManualDownloadFallbackMessage();
-      showNotification('warning', manualMessage);
-      if (typeof alert === 'function') {
-        alert(manualMessage);
+    if (downloadResult.success) {
+      try {
+        recordFullBackupHistoryEntryFn({
+          createdAt: iso,
+          fileName: fileName
+        });
+      } catch (historyError) {
+        console.warn('Failed to record full backup history entry', historyError);
       }
-    } else if (shouldNotify) {
-      showNotification('success', 'Full app backup downloaded');
+      if (downloadResult.method === 'window-fallback') {
+        var manualMessage = getManualDownloadFallbackMessage();
+        showNotification('warning', manualMessage);
+        if (typeof alert === 'function') {
+          alert(manualMessage);
+        }
+      } else if (shouldNotify) {
+        showNotification('success', 'Full app backup downloaded');
+      }
+    } else if (downloadResult.queued && downloadResult.queueMessage) {
+      showNotification('warning', downloadResult.queueMessage);
     }
     return {
       fileName: fileName,
@@ -10303,8 +10329,8 @@ function refreshStoragePersistenceStatus() {
 function _refreshStoragePersistenceStatus() {
   _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee2() {
     var options,
-      _ref30,
-      _ref30$fromRequest,
+      _ref31,
+      _ref31$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -10326,7 +10352,7 @@ function _refreshStoragePersistenceStatus() {
           }
           return _context2.a(2);
         case 1:
-          _ref30 = options || {}, _ref30$fromRequest = _ref30.fromRequest, fromRequest = _ref30$fromRequest === void 0 ? false : _ref30$fromRequest;
+          _ref31 = options || {}, _ref31$fromRequest = _ref31.fromRequest, fromRequest = _ref31$fromRequest === void 0 ? false : _ref31$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -14762,14 +14788,45 @@ if (helpButton && helpDialog) {
       if (!featureSearchDropdown) return [];
       return Array.from(featureSearchDropdown.querySelectorAll('[role="option"]') || []);
     };
-    var setActiveDropdownOption = function setActiveDropdownOption(index) {
+    var clearFeatureSearchActiveState = function clearFeatureSearchActiveState() {
       var options = getDropdownOptions();
-      if (!options.length) return null;
+      options.forEach(function (option) {
+        option.setAttribute('tabindex', '-1');
+        option.setAttribute('aria-selected', 'false');
+      });
+      if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+        featureSearch.removeAttribute('aria-activedescendant');
+      }
+    };
+    var setActiveDropdownOption = function setActiveDropdownOption(index) {
+      var _ref23 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref23$focusOption = _ref23.focusOption,
+        focusOption = _ref23$focusOption === void 0 ? false : _ref23$focusOption;
+      var options = getDropdownOptions();
+      if (!options.length) {
+        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+          featureSearch.removeAttribute('aria-activedescendant');
+        }
+        return null;
+      }
       var bounded = Math.max(0, Math.min(index, options.length - 1));
       options.forEach(function (option, optIndex) {
-        option.setAttribute('tabindex', optIndex === bounded ? '0' : '-1');
+        var isActive = optIndex === bounded;
+        option.setAttribute('tabindex', isActive ? '0' : '-1');
+        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) {
+          if (featureSearch) {
+            if (option.id) {
+              featureSearch.setAttribute('aria-activedescendant', option.id);
+            } else if (featureSearch.hasAttribute('aria-activedescendant')) {
+              featureSearch.removeAttribute('aria-activedescendant');
+            }
+          }
+          if (focusOption) {
+            option.focus();
+          }
+        }
       });
-      options[bounded].focus();
       if (featureSearchDropdown) {
         featureSearchDropdown.dataset.activeIndex = String(bounded);
       }
@@ -14777,10 +14834,14 @@ if (helpButton && helpDialog) {
     };
     var closeFeatureSearchDropdown = function closeFeatureSearchDropdown() {
       if (!featureSearchDropdown) return;
+      clearFeatureSearchActiveState();
       featureSearchDropdown.dataset.open = 'false';
       featureSearchDropdown.hidden = true;
       featureSearchDropdown.setAttribute('aria-expanded', 'false');
       featureSearchDropdown.dataset.activeIndex = '';
+      if (featureSearch) {
+        featureSearch.setAttribute('aria-expanded', 'false');
+      }
       var container = featureSearchDropdown.closest('.feature-search');
       if (container) container.classList.remove('feature-search-open');
     };
@@ -14793,8 +14854,30 @@ if (helpButton && helpDialog) {
       featureSearchDropdown.dataset.open = 'true';
       featureSearchDropdown.hidden = false;
       featureSearchDropdown.setAttribute('aria-expanded', 'true');
+      if (featureSearch) {
+        featureSearch.setAttribute('aria-expanded', 'true');
+      }
       var container = featureSearchDropdown.closest('.feature-search');
       if (container) container.classList.add('feature-search-open');
+      var options = getDropdownOptions();
+      if (!options.length) {
+        if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
+          featureSearch.removeAttribute('aria-activedescendant');
+        }
+        return;
+      }
+      var activeIndexAttr = featureSearchDropdown.dataset.activeIndex;
+      var parsedIndex = typeof activeIndexAttr === 'string' && activeIndexAttr !== '' ? Number(activeIndexAttr) : NaN;
+      var shouldFocusOption = document.activeElement && document.activeElement !== featureSearch;
+      if (Number.isNaN(parsedIndex)) {
+        setActiveDropdownOption(0, {
+          focusOption: shouldFocusOption
+        });
+      } else {
+        setActiveDropdownOption(parsedIndex, {
+          focusOption: shouldFocusOption
+        });
+      }
     };
     var applyFeatureSearchSuggestion = function applyFeatureSearchSuggestion(value) {
       var _featureSearch$setSel, _featureSearch2;
@@ -14851,7 +14934,9 @@ if (helpButton && helpDialog) {
         var options = getDropdownOptions();
         var activeIndex = featureSearchDropdown.dataset.activeIndex;
         var nextIndex = activeIndex ? Number(activeIndex) + 1 : 0;
-        setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex);
+        setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, {
+          focusOption: false
+        });
       } else if (e.key === 'ArrowUp') {
         if (!featureSearchDropdown || featureSearchDropdown.dataset.count === '0') {
           return;
@@ -14862,10 +14947,14 @@ if (helpButton && helpDialog) {
         if (!_options.length) return;
         var _activeIndex = featureSearchDropdown.dataset.activeIndex;
         if (!_activeIndex) {
-          setActiveDropdownOption(_options.length - 1);
+          setActiveDropdownOption(_options.length - 1, {
+            focusOption: false
+          });
         } else {
           var prevIndex = Number(_activeIndex) - 1;
-          setActiveDropdownOption(prevIndex >= 0 ? prevIndex : _options.length - 1);
+          setActiveDropdownOption(prevIndex >= 0 ? prevIndex : _options.length - 1, {
+            focusOption: false
+          });
         }
       }
     });
@@ -14891,17 +14980,25 @@ if (helpButton && helpDialog) {
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           var nextIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-          setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex);
+          setActiveDropdownOption(nextIndex >= options.length ? 0 : nextIndex, {
+            focusOption: true
+          });
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
           var prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-          setActiveDropdownOption(prevIndex);
+          setActiveDropdownOption(prevIndex, {
+            focusOption: true
+          });
         } else if (e.key === 'Home') {
           e.preventDefault();
-          setActiveDropdownOption(0);
+          setActiveDropdownOption(0, {
+            focusOption: true
+          });
         } else if (e.key === 'End') {
           e.preventDefault();
-          setActiveDropdownOption(options.length - 1);
+          setActiveDropdownOption(options.length - 1, {
+            focusOption: true
+          });
         } else if (e.key === 'Enter') {
           e.preventDefault();
           if (currentIndex >= 0 && options[currentIndex]) {
@@ -15085,10 +15182,10 @@ function getRequiredScenarioOptionEntries() {
     }
     options.set(value, value);
   });
-  return Array.from(options.entries()).map(function (_ref23) {
-    var _ref24 = _slicedToArray(_ref23, 2),
-      value = _ref24[0],
-      label = _ref24[1];
+  return Array.from(options.entries()).map(function (_ref24) {
+    var _ref25 = _slicedToArray(_ref24, 2),
+      value = _ref25[0],
+      label = _ref25[1];
     return {
       value: value,
       label: label
@@ -15497,7 +15594,7 @@ function populateLensDropdown() {
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
   for (var _index18 = 0; _index18 < lensNames.length; _index18 += 1) {
-    var _ref25, _lens$minFocusMeters;
+    var _ref26, _lens$minFocusMeters;
     var name = lensNames[_index18];
     var opt = document.createElement('option');
     opt.value = name;
@@ -15514,7 +15611,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref25 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref25 !== void 0 ? _ref25 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref26 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref26 !== void 0 ? _ref26 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
@@ -15738,9 +15835,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     return a[0].localeCompare(b[0]);
   });
   return {
-    values: sortedEntries.map(function (_ref26) {
-      var _ref27 = _slicedToArray(_ref26, 1),
-        value = _ref27[0];
+    values: sortedEntries.map(function (_ref27) {
+      var _ref28 = _slicedToArray(_ref27, 1),
+        value = _ref28[0];
       return value;
     }),
     metadata: new Map(sortedEntries)
@@ -16184,11 +16281,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref28) {
-    var type = _ref28.type,
-      _ref28$size = _ref28.size,
-      size = _ref28$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref28$size,
-      values = _ref28.values;
+  filters.forEach(function (_ref29) {
+    var type = _ref29.type,
+      _ref29$size = _ref29.size,
+      size = _ref29$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref29$size,
+      values = _ref29.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -16808,8 +16905,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref29) {
-    var type = _ref29.type;
+  filters.forEach(function (_ref30) {
+    var type = _ref30.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -17048,6 +17145,7 @@ if (typeof module !== "undefined" && module.exports) {
     computeGearListCount: computeGearListCount,
     autoBackup: autoBackup,
     createSettingsBackup: createSettingsBackup,
+    buildSettingsBackupPackage: buildSettingsBackupPackage,
     captureStorageSnapshot: captureStorageSnapshot,
     sanitizeBackupPayload: sanitizeBackupPayload,
     extractBackupSections: extractBackupSections,
