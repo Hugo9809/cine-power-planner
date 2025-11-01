@@ -238,7 +238,7 @@
     "videoFieldsDiv",
     "videoFrequencyInput",
     "videoLatencyInput",
-    "videoPowerInput",
+    "videoPowerInputsContainer",
     "videoSelect",
     "viewfinderBrightnessInput",
     "viewfinderConnectorOptions",

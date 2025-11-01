@@ -5,6 +5,7 @@
           normalizeSetupName, createProjectInfoSnapshotForStorage,
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
+          setVideoPowerInputs, getVideoPowerInputs, clearVideoPowerInputs,
           callCoreFunctionIfAvailable, suspendProjectPersistence,
           createProjectDeletionBackup,
           resumeProjectPersistence, lensFieldsDiv,
@@ -66,6 +67,37 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   }
 
   return {};
+})();
+
+const mergePowerInputStateHelper = (function resolveMergePowerInputState() {
+  if (typeof require === 'function') {
+    try {
+      const module = require('./modules/power-input-helpers.js');
+      if (module && typeof module.mergePowerInputState === 'function') {
+        return module.mergePowerInputState;
+      }
+    } catch (powerHelperError) {
+      void powerHelperError;
+    }
+  }
+
+  return function mergePowerInputStateFallback(existingPower, collectedInputs) {
+    const base =
+      existingPower && typeof existingPower === 'object' && !Array.isArray(existingPower)
+        ? { ...existingPower }
+        : {};
+    const entries = Array.isArray(collectedInputs)
+      ? collectedInputs
+          .filter(entry => entry && typeof entry === 'object')
+          .map(entry => ({ ...entry }))
+      : [];
+    if (entries.length) {
+      base.input = entries;
+    } else {
+      delete base.input;
+    }
+    return Object.keys(base).length ? base : undefined;
+  };
 })();
 
 const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
@@ -4035,7 +4067,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "video") {
     showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = resolveFirstPowerInputType(deviceData);
+    const powerInputsSource =
+      deviceData?.power && Object.prototype.hasOwnProperty.call(deviceData.power, 'input')
+        ? deviceData.power.input
+        : deviceData?.powerInput;
+    setVideoPowerInputs(powerInputsSource || []);
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
     videoFrequencyInput.value = deviceData.frequency || '';
@@ -4317,7 +4353,7 @@ if (newCategorySelectElement) {
     clearFizConnectors();
     clearViewfinders();
     clearTimecodes();
-    videoPowerInput.value = "";
+    clearVideoPowerInputs();
     clearVideoInputs();
     clearVideoOutputsIO();
     videoFrequencyInput.value = "";
@@ -4616,14 +4652,36 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    targetCategory[name] = {
+    const base = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
+    delete base.powerDrawWatts;
+    delete base.videoInputs;
+    delete base.videoOutputs;
+    delete base.frequency;
+    delete base.latencyMs;
+    delete base.power;
+    delete base.powerInput;
+
+    const existingPower =
+      editingSamePath && originalDeviceData && originalDeviceData.power
+        ? originalDeviceData.power
+        : undefined;
+    const collectedPowerInputs = getVideoPowerInputs();
+    const mergedPower = mergePowerInputStateHelper(existingPower, collectedPowerInputs);
+
+    const deviceEntry = {
+      ...base,
       powerDrawWatts: watt,
-      power: { input: { type: videoPowerInput.value } },
       videoInputs: getVideoInputs(),
       videoOutputs: getVideoOutputsIO(),
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
+
+    if (mergedPower) {
+      deviceEntry.power = mergedPower;
+    }
+
+    targetCategory[name] = deviceEntry;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);

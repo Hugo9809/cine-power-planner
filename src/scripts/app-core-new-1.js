@@ -11193,6 +11193,36 @@ async function setLanguage(lang) {
   document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
   document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
   document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
+  const videoPowerInputsHeadingElem = document.getElementById("videoPowerInputsHeading");
+  if (videoPowerInputsHeadingElem) {
+    const headingText =
+      texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Connectors';
+    videoPowerInputsHeadingElem.textContent = headingText;
+  }
+  const videoPowerInputsLabelElem = document.getElementById("videoPowerInputsLabel");
+  if (videoPowerInputsLabelElem) {
+    const labelText =
+      texts[lang].videoPowerInputsLabel ||
+      texts[lang].videoPowerInputLabel ||
+      texts[lang].powerInputsHeading ||
+      'Connectors:';
+    videoPowerInputsLabelElem.textContent = labelText;
+    const helpText = texts[lang].videoPowerInputsHelp || texts[lang].videoPowerInputHelp || '';
+    if (helpText) {
+      try {
+        videoPowerInputsLabelElem.setAttribute('data-help', helpText);
+      } catch (assignHelpError) {
+        void assignHelpError;
+      }
+      if (videoPowerInputsContainer && typeof videoPowerInputsContainer.setAttribute === 'function') {
+        try {
+          videoPowerInputsContainer.setAttribute('data-help', helpText);
+        } catch (containerHelpError) {
+          void containerHelpError;
+        }
+      }
+    }
+  }
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
   document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
@@ -19150,7 +19180,7 @@ const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideo
 var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
 var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
 var videoFieldsDiv = document.getElementById("videoFields");
-var videoPowerInput = document.getElementById("videoPower");
+const videoPowerInputsContainer = document.getElementById("videoPowerInputsContainer");
 const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 var videoFrequencyInput = document.getElementById("videoFrequency");

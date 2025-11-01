@@ -311,6 +311,7 @@
   "./src/scripts/modules/logging.js",
   "./src/scripts/modules/offline.js",
   "./src/scripts/modules/persistence.js",
+  "./src/scripts/modules/power-input-helpers.js",
   "./src/scripts/modules/registry.js",
   "./src/scripts/modules/results.js",
   "./src/scripts/modules/runtime-environment-helpers.js",

@@ -14745,10 +14745,205 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearViewfinderVideoOutputs() {
       setViewfinderVideoOutputs([]);
     }
-    
+
     setViewfinderVideoInputs([]);
     setViewfinderVideoOutputs([]);
-    
+
+    function prepareVideoPowerInputEntry(entry) {
+      if (entry === undefined || entry === null) {
+        return { values: [], notes: '', original: null };
+      }
+      if (typeof entry === 'string') {
+        return { values: normalizePowerPortType(entry), notes: '', original: entry };
+      }
+      if (Array.isArray(entry)) {
+        const flattened = entry.flatMap(item => normalizePowerPortType(item));
+        return { values: flattened, notes: '', original: entry.slice() };
+      }
+      if (typeof entry === 'object') {
+        const { type, portType, notes } = entry;
+        let values = [];
+        if (Array.isArray(type)) {
+          values = type.map(item => (typeof item === 'string' ? item : String(item)));
+        } else if (type) {
+          values = normalizePowerPortType(type);
+        } else if (Array.isArray(portType)) {
+          values = portType.map(item => (typeof item === 'string' ? item : String(item)));
+        } else if (portType) {
+          values = normalizePowerPortType(portType);
+        }
+        return {
+          values,
+          notes: typeof notes === 'string' ? notes : '',
+          original: entry,
+        };
+      }
+      return { values: [], notes: '', original: entry };
+    }
+
+    function createVideoPowerInputRow(values = [], notes = '', original = null) {
+      const row = document.createElement('div');
+      row.className = 'form-row video-power-input-row';
+
+      if (original !== null && original !== undefined) {
+        try {
+          row.dataset.original = JSON.stringify(original);
+        } catch (serializeError) {
+          void serializeError;
+        }
+      }
+
+      const langTexts = (texts && texts[currentLang]) || (texts && texts.en) || {};
+      const fallbackTexts = (texts && texts.en) || {};
+      const typeLabel =
+        langTexts.videoPowerInputTypeFieldLabel ||
+        fallbackTexts.videoPowerInputTypeFieldLabel ||
+        'Connector(s)';
+      const typePlaceholder =
+        langTexts.videoPowerInputTypePlaceholder ||
+        fallbackTexts.videoPowerInputTypePlaceholder ||
+        'LEMO 2-pin';
+      const notesLabel =
+        langTexts.videoPowerInputNotesFieldLabel ||
+        fallbackTexts.videoPowerInputNotesFieldLabel ||
+        'Notes';
+      const notesPlaceholder =
+        langTexts.videoPowerInputNotesPlaceholder ||
+        fallbackTexts.videoPowerInputNotesPlaceholder ||
+        'Voltage range, adapters…';
+
+      const textarea = document.createElement('textarea');
+      textarea.className = 'video-power-input-type';
+      const lineCount = Array.isArray(values) ? values.length : 0;
+      textarea.rows = Math.min(5, Math.max(2, lineCount || 1));
+      textarea.placeholder = typePlaceholder;
+      textarea.value = Array.isArray(values) ? values.join('\n') : '';
+      textarea.setAttribute('aria-label', typeLabel);
+      row.appendChild(createFieldWithLabel(textarea, typeLabel));
+
+      const notesInput = document.createElement('input');
+      notesInput.type = 'text';
+      notesInput.className = 'video-power-input-notes';
+      notesInput.placeholder = notesPlaceholder;
+      notesInput.value = typeof notes === 'string' ? notes : '';
+      notesInput.setAttribute('aria-label', notesLabel);
+      row.appendChild(createFieldWithLabel(notesInput, notesLabel));
+
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
+        contextPaths: ['videoPowerInputsHeading', ['videoPowerInputsLabel']],
+        fallbackContext: typeLabel,
+        actionKey: 'addEntry'
+      });
+      addBtn.addEventListener('click', () => {
+        row.after(createVideoPowerInputRow());
+      });
+      row.appendChild(addBtn);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
+        contextPaths: ['videoPowerInputsHeading', ['videoPowerInputsLabel']],
+        fallbackContext: typeLabel,
+        actionKey: 'removeEntry'
+      });
+      removeBtn.addEventListener('click', () => {
+        if (videoPowerInputsContainer && videoPowerInputsContainer.children.length > 1) {
+          row.remove();
+        }
+      });
+      row.appendChild(removeBtn);
+
+      return row;
+    }
+
+    function setVideoPowerInputs(list) {
+      if (!videoPowerInputsContainer) return;
+      videoPowerInputsContainer.innerHTML = '';
+      const entries = [];
+      if (Array.isArray(list)) {
+        entries.push(...list);
+      } else if (list) {
+        entries.push(list);
+      }
+      if (entries.length) {
+        entries.forEach(entry => {
+          const prepared = prepareVideoPowerInputEntry(entry);
+          videoPowerInputsContainer.appendChild(
+            createVideoPowerInputRow(prepared.values, prepared.notes, prepared.original)
+          );
+        });
+      } else {
+        videoPowerInputsContainer.appendChild(createVideoPowerInputRow());
+      }
+    }
+
+    function getVideoPowerInputs() {
+      if (!videoPowerInputsContainer) return [];
+      return Array.from(videoPowerInputsContainer.querySelectorAll('.video-power-input-row'))
+        .map(row => {
+          const textarea = row.querySelector('textarea');
+          const notesInput = row.querySelector('input');
+          const rawValue = textarea ? textarea.value : '';
+          const connectorValues = rawValue
+            .split('\n')
+            .map(item => item.trim())
+            .filter(Boolean)
+            .flatMap(item => normalizePowerPortType(item));
+          const notesValue = notesInput ? notesInput.value.trim() : '';
+          let original;
+          if (row.dataset.original) {
+            try {
+              original = JSON.parse(row.dataset.original);
+            } catch (parseError) {
+              void parseError;
+              original = undefined;
+            }
+          }
+
+          if (!connectorValues.length && !notesValue) {
+            return null;
+          }
+
+          let entry;
+          if (original && typeof original === 'object' && !Array.isArray(original)) {
+            entry = { ...original };
+          } else {
+            entry = {};
+          }
+
+          if (connectorValues.length) {
+            entry.type = connectorValues;
+            if (Object.prototype.hasOwnProperty.call(entry, 'portType')) {
+              delete entry.portType;
+            }
+          } else {
+            delete entry.type;
+            delete entry.portType;
+          }
+
+          if (notesValue) {
+            entry.notes = notesValue;
+          } else if (Object.prototype.hasOwnProperty.call(entry, 'notes')) {
+            delete entry.notes;
+          }
+
+          if (!Object.keys(entry).length) {
+            return null;
+          }
+
+          return entry;
+        })
+        .filter(Boolean);
+    }
+
+    function clearVideoPowerInputs() {
+      setVideoPowerInputs([]);
+    }
+
+    setVideoPowerInputs([]);
+
     function createVideoInputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -17483,6 +17678,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['setVideoInputs', () => setVideoInputs],
       ['getVideoInputs', () => getVideoInputs],
       ['clearVideoInputs', () => clearVideoInputs],
+      ['setVideoPowerInputs', () => setVideoPowerInputs],
+      ['getVideoPowerInputs', () => getVideoPowerInputs],
+      ['clearVideoPowerInputs', () => clearVideoPowerInputs],
       ['setVideoOutputs', () => setVideoOutputs],
       ['getVideoOutputs', () => getVideoOutputs],
       ['setVideoOutputsIO', () => setVideoOutputsIO],
