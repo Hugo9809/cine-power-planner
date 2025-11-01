@@ -1,4 +1,4 @@
-/* global CORE_GLOBAL_SCOPE, CORE_PART2_RUNTIME_HELPERS */
+/* global CORE_GLOBAL_SCOPE, CORE_PART2_RUNTIME_HELPERS, setSelectValue */
 
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -16278,9 +16278,59 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         adjustGearListSelectWidth(selectElem);
       }
     
+      function applySelectValueAfterPopulate(selectElem, value, includeNone) {
+        if (!selectElem) return;
+        if (typeof setSelectValue === 'function') {
+          setSelectValue(selectElem, value);
+          return;
+        }
+
+        const normalized = value === undefined || value === null ? '' : value;
+        selectElem.value = normalized;
+        if (selectElem.value !== normalized) {
+          if (normalized === 'None' && includeNone) {
+            selectElem.value = 'None';
+            if (selectElem.value !== 'None') {
+              selectElem.selectedIndex = -1;
+            }
+          } else if (normalized === '') {
+            selectElem.selectedIndex = -1;
+          } else {
+            selectElem.selectedIndex = -1;
+          }
+        }
+      }
+
+      function restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone) {
+        if (!selectElem) return;
+        const options = Array.from(selectElem.options || []);
+
+        if (hadSelection) {
+          const optionExists = options.some(option => option && option.value === previousValue);
+          if (optionExists) {
+            applySelectValueAfterPopulate(selectElem, previousValue, includeNone);
+            return;
+          }
+          if (includeNone && options.some(option => option && option.value === 'None')) {
+            applySelectValueAfterPopulate(selectElem, 'None', includeNone);
+            return;
+          }
+        } else {
+          selectElem.selectedIndex = -1;
+          return;
+        }
+
+        if (!options.length) {
+          selectElem.selectedIndex = -1;
+        }
+      }
+
       // Populate dropdowns with device options
       function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
         if (!selectElem) return;
+        const previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
+        const hadSelection = selectElem.selectedIndex !== -1;
+
         // Ensure we always work with an object so Object.keys does not throw if
         // `optionsObj` is passed as `null`.
         const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
@@ -16302,6 +16352,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             selectElem.appendChild(opt);
           });
         initFavoritableSelect(selectElem);
+        restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone);
       }
     
     function populateMonitorSelect() {

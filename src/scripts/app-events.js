@@ -4170,6 +4170,9 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       } else {
         delete devices[categoryKey][name];
       }
+      if (typeof updateGlobalDevicesReference === 'function') {
+        updateGlobalDevicesReference(devices);
+      }
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
@@ -4700,6 +4703,9 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   // After adding/updating, reset form and refresh lists
   resetDeviceForm();
 
+  if (typeof updateGlobalDevicesReference === 'function') {
+    updateGlobalDevicesReference(devices);
+  }
   storeDevices(devices);
   viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
   viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
