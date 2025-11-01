@@ -5,7 +5,7 @@
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions, getCameraLetterColors,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
-          focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
+          focusScalePreference, normalizeFocusScale, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
           resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
           OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM, generateSafeConnectorSummary,
@@ -11012,9 +11012,12 @@ function gearListGenerateHtmlImpl(info = {}) {
         cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
+    const cameraLinkTexts = getGearItemEditTexts();
+    const defaultCameraLinkLabelTemplate = cameraLinkTexts.cameraLinkDefaultLabel || 'Camera %s';
+    const defaultCameraLinkLabel = defaultCameraLinkLabelTemplate.replace('%s', 'A');
     const normalizedCameraLinkLabel = typeof selectedNames.camera === 'string'
-        ? selectedNames.camera.trim()
-        : '';
+        ? (selectedNames.camera.trim() || defaultCameraLinkLabel)
+        : defaultCameraLinkLabel;
     const hasCameraForLinking = Boolean(normalizedCameraLinkLabel);
     const cameraLinkTargets = new Set();
     const registerCameraLinkTarget = name => {
@@ -11023,6 +11026,16 @@ function gearListGenerateHtmlImpl(info = {}) {
         const normalized = normalizeGearNameForComparison(name);
         if (normalized) {
             cameraLinkTargets.add(normalized);
+        }
+    };
+    const registerCameraLinkedItem = name => {
+        if (!name || typeof name !== 'string') return;
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        registerCameraLinkTarget(trimmed);
+        const withArriNumber = addArriKNumber(trimmed);
+        if (withArriNumber && withArriNumber !== trimmed) {
+            registerCameraLinkTarget(withArriNumber);
         }
     };
     const markEntryCameraLink = entry => {
@@ -11629,7 +11642,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     supportAccNoCages.forEach(item => {
         const resolvedCameraLinkName = resolveCameraLinkedSupportName(item);
         if (resolvedCameraLinkName) {
-            registerCameraLinkTarget(resolvedCameraLinkName);
+            registerCameraLinkedItem(resolvedCameraLinkName);
         }
     });
     const cameraSupportText = formatItems(supportAccNoCages, { onItem: applyCameraLinkFromTargets });
@@ -11986,10 +11999,10 @@ function gearListGenerateHtmlImpl(info = {}) {
             motorItems.push(name);
         }
         if (primaryItem) {
-            registerCameraLinkTarget(primaryItem);
+            registerCameraLinkedItem(primaryItem);
         }
     });
-    selectedNames.controllers.forEach(registerCameraLinkTarget);
+    selectedNames.controllers.forEach(registerCameraLinkedItem);
     const distanceItems = [];
     const distanceName = selectedNames.distance;
     if (distanceName) {
@@ -11997,18 +12010,18 @@ function gearListGenerateHtmlImpl(info = {}) {
         if (lowerName === 'udm-1 + lcube') {
             const udmEntry = 'Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set';
             distanceItems.push(udmEntry);
-            registerCameraLinkTarget(udmEntry);
+            registerCameraLinkedItem(udmEntry);
             const hasRiaController = selectedNames.controllers
                 .some(ctrl => /ria-1/i.test(ctrl));
             const isAlexa35 = /alexa 35/i.test(selectedNames.camera || '');
             if (!hasRiaController && !isAlexa35) {
                 const lcubeEntry = 'Arri KK.0009001 LCUBE CUB-1 Basic Set';
                 distanceItems.push(lcubeEntry);
-                registerCameraLinkTarget(lcubeEntry);
+                registerCameraLinkedItem(lcubeEntry);
             }
         } else {
             distanceItems.push(distanceName);
-            registerCameraLinkTarget(distanceName);
+            registerCameraLinkedItem(distanceName);
         }
     }
     addRow('LDS (FIZ)', formatItems([
@@ -12019,14 +12032,14 @@ function gearListGenerateHtmlImpl(info = {}) {
     ], { onItem: applyCameraLinkFromTargets }));
     let batteryItems = '';
     if (selectedNames.battery) {
-        registerCameraLinkTarget(selectedNames.battery);
+        registerCameraLinkedItem(selectedNames.battery);
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
         if (!count || isNaN(count)) count = 1;
         const batteryEntries = [`${count}x ${selectedNames.battery}`];
         const swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
         if (swapName) {
             batteryEntries.push(`1x ${swapName}`);
-            registerCameraLinkTarget(swapName);
+            registerCameraLinkedItem(swapName);
         }
         batteryItems = formatItems(batteryEntries, { onItem: applyCameraLinkFromTargets });
     }
@@ -12457,13 +12470,13 @@ function gearListGenerateHtmlImpl(info = {}) {
         const wirelessSizeHtml = wirelessSize ? `${wirelessSize}&quot; - ` : '';
         const transmitterEntry = `Wireless Transmitter - ${wirelessSizeHtml}${addArriKNumber(selectedNames.video)}`;
         monitoringGear.push(transmitterEntry);
-        registerCameraLinkTarget(transmitterEntry);
+        registerCameraLinkedItem(transmitterEntry);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
                 const receiverEntry = `Wireless Receiver - ${wirelessSizeHtml}${addArriKNumber(rxName)} (${label})`;
                 monitoringGear.push(receiverEntry);
-                registerCameraLinkTarget(receiverEntry);
+                registerCameraLinkedItem(receiverEntry);
             });
         }
     }
@@ -12655,24 +12668,31 @@ function gearListGenerateHtmlImpl(info = {}) {
     };
     const headName = headMap[headBrand] && headMap[headBrand][bowlType];
     if (headName) {
-        gripItems.push(`${headName} ${bowlType}`);
+        const headEntry = `${headName} ${bowlType}`;
+        gripItems.push(headEntry);
+        registerCameraLinkedItem(headEntry);
     }
     tripodTypes.forEach(t => {
         const typeLabel = t === 'Hi-Head' ? 'Hi-Head' : `${t} Tripod`;
         const base = bowlType ? `${bowlType} ${typeLabel}` : typeLabel;
+        const entriesForType = [];
         if (t === 'Hi-Head') {
-            gripItems.push(base);
+            entriesForType.push(base);
         } else if (spreader) {
-            gripItems.push(`${base} + ${spreader}`);
+            entriesForType.push(`${base} + ${spreader}`);
         } else {
-            gripItems.push(base);
+            entriesForType.push(base);
         }
         if (t === 'Short') {
-            gripItems.push('Sand bag (Short Tripod)');
+            entriesForType.push('Sand bag (Short Tripod)');
         }
         if (t === 'Hi-Head') {
-            gripItems.push('Sand bag (Hi-Head)');
+            entriesForType.push('Sand bag (Hi-Head)');
         }
+        entriesForType.forEach(item => {
+            gripItems.push(item);
+            registerCameraLinkedItem(item);
+        });
     });
     if (needsStandardTripod && !gripItems.some(item => /Long Tripod/.test(item))) {
         gripItems.push('Long Tripod');
@@ -12702,7 +12722,8 @@ function gearListGenerateHtmlImpl(info = {}) {
     }
     ensureItems(powerItems, 'accessories.power');
     addRow('Power', formatItems(powerItems));
-    addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
+    const gripItemsHtml = formatItems(gripItems, { onItem: applyCameraLinkFromTargets });
+    addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join('<br>'));
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
     const miscExcluded = new Set([
         'D-Tap to LEMO 2-pin',
