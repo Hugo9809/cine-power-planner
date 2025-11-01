@@ -15,6 +15,10 @@ instructions.
 ## During edits
 
 - [ ] Update the relevant markdown files in `docs/`.
+- [ ] In **Settings → General → Documentation update tracker**, create or
+      update the release entry and mark locale/help/print tasks as they
+      progress so the tracker UI and checklist updates share the same
+      in-app audit log trail.
 - [ ] Sync README translations and note pending language reviews.
 - [ ] Confirm UI button screenshots/text reference the Project Overview save/delete style.
 - [ ] Capture new screenshots or diagrams using local assets only.
@@ -58,3 +62,6 @@ instructions.
 - [ ] Export a fresh verification packet and attach all updated evidence.
 - [ ] Store new backups/bundles with checksum logs on two physical media.
 - [ ] Mark follow-up work in `review-tasks-2025-02-07.md`.
+- [ ] Review the documentation tracker entry with localisation so translated
+      checklists stay aligned and reference the updated **Settings → General →
+      Documentation update tracker** flow.
