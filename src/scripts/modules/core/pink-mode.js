@@ -1101,6 +1101,8 @@
       const pinkModeAnimatedIconInstances = new Set();
       let pinkModeAnimatedIconLastTemplateName = null;
       const pinkModeAnimatedIconPlacementHistory = [];
+      let pinkModeAnimatedIconTemplateOrder = [];
+      let pinkModeAnimatedIconTemplateCursor = 0;
       const pinkModeIconRainInstances = new Set();
       let pinkModeIconRainLastTriggeredAt = 0;
       const pinkModeBodyReadyQueue = [];
@@ -1386,6 +1388,17 @@
         }
       }
 
+      function updatePinkModeAnimatedIconTemplateRotation(templates) {
+        if (!Array.isArray(templates) || !templates.length) {
+          pinkModeAnimatedIconTemplateOrder = [];
+          pinkModeAnimatedIconTemplateCursor = 0;
+          return;
+        }
+
+        pinkModeAnimatedIconTemplateOrder = templates.map((_, index) => index);
+        pinkModeAnimatedIconTemplateCursor = 0;
+      }
+
       async function loadPinkModeAnimatedIconTemplates() {
         if (pinkModeAnimatedIconTemplates) {
           return pinkModeAnimatedIconTemplates;
@@ -1418,9 +1431,78 @@
           })
           .then(templates => {
             pinkModeAnimatedIconTemplates = templates;
+            updatePinkModeAnimatedIconTemplateRotation(templates);
             return templates;
           });
         return pinkModeAnimatedIconTemplatesPromise;
+      }
+
+      function selectPinkModeAnimatedIconTemplate(availableTemplates) {
+        if (!Array.isArray(availableTemplates) || !availableTemplates.length) {
+          return null;
+        }
+
+        const sanitized = availableTemplates.filter(Boolean);
+        if (!sanitized.length) {
+          return null;
+        }
+
+        const templates = pinkModeAnimatedIconTemplates;
+        const order = pinkModeAnimatedIconTemplateOrder;
+
+        if (Array.isArray(templates) && templates.length && Array.isArray(order) && order.length) {
+          const availableSet = new Set(sanitized);
+          const uniqueAvailableNames = new Set();
+
+          sanitized.forEach(template => {
+            if (template && typeof template.name === 'string') {
+              uniqueAvailableNames.add(template.name);
+            }
+          });
+
+          const allowImmediateRepeat = uniqueAvailableNames.size <= 1;
+          let cursor = pinkModeAnimatedIconTemplateCursor;
+
+          for (let attempt = 0; attempt < order.length; attempt += 1) {
+            const orderIndex = order[cursor % order.length];
+            cursor += 1;
+            if (typeof orderIndex !== 'number' || orderIndex < 0 || orderIndex >= templates.length) {
+              continue;
+            }
+
+            const candidate = templates[orderIndex];
+            if (!availableSet.has(candidate)) {
+              continue;
+            }
+
+            if (!allowImmediateRepeat && candidate && candidate.name === pinkModeAnimatedIconLastTemplateName) {
+              continue;
+            }
+
+            pinkModeAnimatedIconTemplateCursor = cursor % order.length;
+            return candidate;
+          }
+
+          cursor = pinkModeAnimatedIconTemplateCursor;
+
+          for (let attempt = 0; attempt < order.length; attempt += 1) {
+            const orderIndex = order[cursor % order.length];
+            cursor += 1;
+            if (typeof orderIndex !== 'number' || orderIndex < 0 || orderIndex >= templates.length) {
+              continue;
+            }
+
+            const candidate = templates[orderIndex];
+            if (!availableSet.has(candidate)) {
+              continue;
+            }
+
+            pinkModeAnimatedIconTemplateCursor = cursor % order.length;
+            return candidate;
+          }
+        }
+
+        return sanitized[Math.floor(Math.random() * sanitized.length)];
       }
 
       function ensurePinkModeAnimationLayer(options) {
@@ -2066,8 +2148,7 @@
           availableTemplates = sanitizedTemplates;
         }
 
-        const template =
-          availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+        const template = selectPinkModeAnimatedIconTemplate(availableTemplates);
         if (!template || !template.data) {
           return false;
         }
@@ -2927,6 +3008,7 @@
         }
         pinkModeAnimatedIconLayer = null;
         pinkModeAnimatedIconLastTemplateName = null;
+        pinkModeAnimatedIconTemplateCursor = 0;
       }
 
       if (pinkModeReduceMotionQuery) {
