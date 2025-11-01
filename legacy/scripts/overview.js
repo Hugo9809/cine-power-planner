@@ -1820,9 +1820,11 @@ function generatePrintableOverview() {
   };
   var fallbackTriggerPrintWorkflow = function fallbackTriggerPrintWorkflow(context) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref = options || {},
-      _ref$preferFallback = _ref.preferFallback,
-      preferFallback = _ref$preferFallback === void 0 ? false : _ref$preferFallback;
+    var optionsObject = options && _typeof(options) === 'object' ? options : {};
+    var preferFallback = optionsObject.preferFallback === true;
+    var reason = typeof optionsObject.reason === 'string' ? optionsObject.reason : '';
+    var isExportReason = reason === 'export' || reason === 'rental-export';
+    var preferFallbackFirst = preferFallback && !isExportReason;
     var windowRef = context && context.windowRef ? context.windowRef : typeof window !== 'undefined' ? window : null;
     var documentRef = context && context.documentRef ? context.documentRef : typeof document !== 'undefined' ? document : null;
     var openFallback = context && typeof context.openFallbackPrintView === 'function' ? context.openFallbackPrintView : function () {
@@ -1846,15 +1848,21 @@ function generatePrintableOverview() {
         return false;
       }
     };
+    var openFallbackAndCleanup = function openFallbackAndCleanup() {
+      var opened = openFallback();
+      if (opened) {
+        cleanup();
+      }
+      return opened;
+    };
     var success = false;
-    if (!preferFallback) {
+    if (preferFallbackFirst) {
+      success = openFallbackAndCleanup();
+    } else {
       success = attemptNative();
     }
     if (!success) {
-      success = openFallback();
-      if (success) {
-        cleanup();
-      }
+      success = preferFallbackFirst ? attemptNative() : openFallbackAndCleanup();
     }
     if (!success && documentRef && printTitle && documentRef.title === printTitle) {
       try {

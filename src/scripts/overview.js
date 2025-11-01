@@ -2135,7 +2135,11 @@ function generatePrintableOverview(config = {}) {
     };
 
     const fallbackTriggerPrintWorkflow = (context, options = {}) => {
-        const { preferFallback = false } = options || {};
+        const optionsObject = options && typeof options === 'object' ? options : {};
+        const preferFallback = optionsObject.preferFallback === true;
+        const reason = typeof optionsObject.reason === 'string' ? optionsObject.reason : '';
+        const isExportReason = reason === 'export' || reason === 'rental-export';
+        const preferFallbackFirst = preferFallback && !isExportReason;
         const windowRef = context && context.windowRef ? context.windowRef : (typeof window !== 'undefined' ? window : null);
         const documentRef = context && context.documentRef ? context.documentRef : (typeof document !== 'undefined' ? document : null);
         const openFallback = context && typeof context.openFallbackPrintView === 'function'
@@ -2167,16 +2171,23 @@ function generatePrintableOverview(config = {}) {
             }
         };
 
+        const openFallbackAndCleanup = () => {
+            const opened = openFallback();
+            if (opened) {
+                cleanup();
+            }
+            return opened;
+        };
+
         let success = false;
-        if (!preferFallback) {
+        if (preferFallbackFirst) {
+            success = openFallbackAndCleanup();
+        } else {
             success = attemptNative();
         }
 
         if (!success) {
-            success = openFallback();
-            if (success) {
-                cleanup();
-            }
+            success = preferFallbackFirst ? attemptNative() : openFallbackAndCleanup();
         }
 
         if (!success && documentRef && printTitle && documentRef.title === printTitle) {
