@@ -494,6 +494,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!DOCUMENT) {
       return [];
     }
+    if (!ownGearDialogRef && typeof DOCUMENT.getElementById === 'function') {
+      try {
+        ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+      } catch (error) {
+        void error;
+        ownGearDialogRef = null;
+      }
+    }
     var sideMenu = null;
     try {
       sideMenu = DOCUMENT.getElementById('sideMenu');
@@ -516,19 +524,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       menuToggle = null;
     }
     var menuOpen = Boolean(sideMenu && _typeof(sideMenu.classList) === 'object' && typeof sideMenu.classList.contains === 'function' && sideMenu.classList.contains('open'));
+    var selectors = [];
+    var addSelector = function addSelector(selector) {
+      if (typeof selector !== 'string' || !selector) {
+        return;
+      }
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
+    };
+    if (ownGearDialogRef) {
+      var dialogVisible = false;
+      try {
+        dialogVisible = evaluateOwnGearOpenState();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not determine Own Gear dialog highlight state.', error);
+      }
+      if (dialogVisible) {
+        addSelector('#ownGearDialog');
+      }
+    }
     if (menuOpen && ownGearButton) {
-      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+      addSelector('#sideMenu [data-sidebar-action="open-own-gear"]');
+    } else if (!menuOpen && menuToggle) {
+      addSelector('#menuToggle');
+    } else if (ownGearButton) {
+      addSelector('#sideMenu [data-sidebar-action="open-own-gear"]');
+    } else if (menuToggle) {
+      addSelector('#menuToggle');
     }
-    if (!menuOpen && menuToggle) {
-      return ['#menuToggle'];
-    }
-    if (ownGearButton) {
-      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
-    }
-    if (menuToggle) {
-      return ['#menuToggle'];
-    }
-    return [];
+    return selectors;
   }
   var DEFAULT_STEP_TEXTS = {
     intro: {
