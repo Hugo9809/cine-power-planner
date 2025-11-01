@@ -5110,6 +5110,8 @@ if (typeof window !== 'undefined') {
     window.addEventListener(eventName, flushProjectAutoSaveOnExit);
   });
 }
+// Enable Save button only when a setup name is entered. Enter saves only after
+// the input is finalized (no active composition), aligning with the IME guard.
 if (setupNameInput && saveSetupBtn) {
   var toggleSaveSetupBtn = function toggleSaveSetupBtn() {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
