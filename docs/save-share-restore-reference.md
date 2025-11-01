@@ -10,6 +10,8 @@ workstations.
 - **Manual save trigger:** Press **Save**, **Enter** on focused inputs, or
   `Ctrl+S` / `⌘S`. `app-session.js` dispatches a structured save event which
   `modules/persistence.js` clones and persists.
+  - IME safeguard: the Enter shortcut waits for text composition to finish so
+    partially composed characters are never stored.
 - **Critical storage guard:** During application initialization,
   `ensureCriticalStorageBackups()` mirrors critical keys (projects, gear rules,
   rehearsal preferences and guardian state) to a safeguarded namespace before

@@ -5110,6 +5110,9 @@ if (typeof window !== 'undefined') {
     window.addEventListener(eventName, flushProjectAutoSaveOnExit);
   });
 }
+// Enable Save button only when a setup name is entered and let Enter save only
+// once text input is finalized (no active IME composition to avoid partial
+// saves)
 if (setupNameInput && saveSetupBtn) {
   var toggleSaveSetupBtn = function toggleSaveSetupBtn() {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
@@ -5117,6 +5120,9 @@ if (setupNameInput && saveSetupBtn) {
   toggleSaveSetupBtn();
   setupNameInput.addEventListener("input", toggleSaveSetupBtn);
   setupNameInput.addEventListener("keydown", function (e) {
+    if (e.isComposing || e.keyCode === 229) {
+      return;
+    }
     if (e.key === "Enter" && !saveSetupBtn.disabled) {
       saveSetupBtn.click();
     }
