@@ -97,6 +97,29 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   padding-inline: 0;
 }
 
+#overviewDialogContent .gear-table .gear-select-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  background-color: var(--panel-bg);
+  color: inherit;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: 0.2em 0.55em;
+  line-height: 1.2;
+  font-weight: var(--font-weight-medium);
+  min-height: 1.8em;
+}
+
+#overviewDialogContent .gear-table .gear-select-value[data-gear-select-empty='true'] {
+  opacity: 0.75;
+}
+
+#overviewDialogContent.dark-mode .gear-table .gear-select-value {
+  background-color: var(--panel-bg, var(--surface-2));
+  border-color: var(--panel-border, var(--surface-border));
+}
+
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
