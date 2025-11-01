@@ -5,11 +5,11 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 
 | Surface | Owner | Last reviewed | Scope | Evidence stored |
 | --- | --- | --- | --- | --- |
-| README (all locales) | Documentation | _(fill date)_ | Quick start, offline rehearsal drill, safety overview. | Screenshots of updated sections, **Compare versions** diff log export, translation approvals. |
+| README (all locales) | Documentation | 2025-11-01 | Quick start, offline rehearsal drill, safety overview. | Screenshots of queued-backup banner guidance, **Compare versions** diff log export, translation approvals. |
 | In-app help overlay | Product | _(fill date)_ | Contextual workflow tips, safeguard explanations. | Exported `help-topics.json`, console capture of topic list. |
-| Docs/operations-checklist.md | QA | _(fill date)_ | End-to-end save/share/import/backup/restore rehearsal. | Verification log with timestamps and screenshots. |
+| Docs/operations-checklist.md | QA | 2025-11-01 | End-to-end save/share/import/backup/restore rehearsal. | Verification log with queued-backup vault rehearsal notes, timestamps and screenshots. |
 | Docs/save-share-restore-reference.md | QA | _(fill date)_ | Detailed workflow breakdown, failure recovery steps. | Restored bundle proof, checksum log. |
-| Docs/offline-readiness.md | Production | _(fill date)_ | Travel prep, cache priming, redundancy planning. | Photos of field kit, signed readiness checklist. |
+| Docs/offline-readiness.md | Production | 2025-11-01 | Travel prep, cache priming, redundancy planning. | Photos of field kit, signed readiness checklist noting vault check. |
 | Docs/offline-cache-verification-drill.md | Engineering | _(fill date)_ | Service worker cache validation and rehearse resets. | Console log of cache entries, service worker diagnostic screenshot. |
 | Docs/data-protection-playbook.md | Security | _(fill date)_ | Safeguard principles, incident response. | Meeting notes, signed approval. |
 | Docs/translation-guide.md | Localization | _(fill date)_ | Translation workflow, locale-specific rules. | Translator confirmation emails stored offline. |
