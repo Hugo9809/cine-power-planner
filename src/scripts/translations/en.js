@@ -1760,7 +1760,7 @@
         },
         "ownGearAccess": {
           "title": "Open the Own Gear dialog",
-          "body": "Use the Own Gear button in the sidebar to open the inventory dialog whenever you need to review equipment you already control. Opening it yourself keeps the workflow familiar when the tutorial is finished."
+          "body": "Press the Own Gear button in the sidebar to launch your inventory dialog, then review the summary banner and the Your gear list so you know where saved items, edit buttons and counts live. Finish by exploring the Add gear form—item search, quantity, notes, plus the Save and Reset controls—so you can add equipment instantly once the tour ends."
         },
         "ownGearAddDevice": {
           "title": "Add your first owned device",
