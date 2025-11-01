@@ -6138,6 +6138,10 @@ if (setupNameInput && saveSetupBtn) {
   toggleSaveSetupBtn();
   setupNameInput.addEventListener("input", toggleSaveSetupBtn);
   setupNameInput.addEventListener("keydown", (e) => {
+    if (e.isComposing || e.keyCode === 229) {
+      return;
+    }
+
     if (e.key === "Enter" && !saveSetupBtn.disabled) {
       saveSetupBtn.click();
     }
