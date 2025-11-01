@@ -1786,78 +1786,269 @@ function generatePrintableOverview() {
   }
   var printWorkflowLogger = createOverviewLoggerProxy(printWorkflowLoggerMeta);
   var openFallbackPrintView = function openFallbackPrintView() {
-    if (!content || typeof window === 'undefined') return false;
-    var fallbackRoot = content.cloneNode(true);
-    fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(function (btn) {
-      return btn.remove();
-    });
-    var printWindow = window.open('', '_blank', 'noopener,noreferrer');
-    if (!printWindow) {
-      logOverview('error', 'Unable to open a fallback print window. Please allow pop-ups and try again.', undefined, {
+    if (!content || typeof document === 'undefined') return false;
+
+    var hostWindow = typeof window !== 'undefined' ? window : null;
+    var hostDocument = document;
+    var hostBody = hostDocument.body;
+
+    if (!hostBody) {
+      logOverview('error', 'Unable to prepare the fallback print view because the document body is unavailable.', undefined, {
         action: 'print-workflow',
-        stage: 'fallback-window-open',
-        result: 'blocked'
+        stage: 'fallback-view-host',
+        result: 'unavailable'
       });
       return false;
     }
-    var doc = printWindow.document;
-    var htmlElement = typeof document !== 'undefined' ? document.documentElement : null;
+
+    var fallbackRoot = content.cloneNode(true);
+    fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(function (btn) {
+      if (btn && typeof btn.remove === 'function') {
+        btn.remove();
+      } else if (btn && btn.parentNode) {
+        btn.parentNode.removeChild(btn);
+      }
+    });
+
+    var htmlElement = hostDocument.documentElement;
     var htmlClassName = htmlElement ? htmlElement.className : '';
     var htmlDir = htmlElement ? htmlElement.getAttribute('dir') || '' : '';
     var htmlLang = htmlElement ? htmlElement.getAttribute('lang') || 'en' : 'en';
     var htmlInlineStyle = htmlElement ? htmlElement.getAttribute('style') || '' : '';
-    var bodyElement = typeof document !== 'undefined' ? document.body : null;
+    var bodyElement = hostBody;
     var bodyClassName = bodyElement ? bodyElement.className : '';
     var bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
     var escapedPrintDocumentTitle = escapeHtmlSafe(printDocumentTitle);
-    doc.open();
-    doc.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"color-scheme\" content=\"light dark\">\n<title>".concat(escapedPrintDocumentTitle, "</title>\n<link rel=\"stylesheet\" href=\"src/styles/style.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview-print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"overview-print.css\" media=\"screen\">\n</head>\n<body></body>\n</html>"));
-    doc.close();
-    doc.title = printDocumentTitle;
-    var fallbackHtml = doc.documentElement;
-    if (fallbackHtml) {
-      fallbackHtml.setAttribute('lang', htmlLang || 'en');
-      if (htmlDir) {
-        fallbackHtml.setAttribute('dir', htmlDir);
-      }
-      if (htmlClassName) {
-        fallbackHtml.className = htmlClassName;
-      }
-      if (htmlInlineStyle) {
-        fallbackHtml.setAttribute('style', htmlInlineStyle);
+
+    var htmlAttributes = ['lang="'.concat(escapeHtmlSafe(htmlLang || 'en'), '"')];
+    if (htmlDir) {
+      htmlAttributes.push('dir="'.concat(escapeHtmlSafe(htmlDir), '"'));
+    }
+    if (htmlClassName) {
+      htmlAttributes.push('class="'.concat(escapeHtmlSafe(htmlClassName), '"'));
+    }
+    if (htmlInlineStyle) {
+      htmlAttributes.push('style="'.concat(escapeHtmlSafe(htmlInlineStyle), '"'));
+    }
+
+    var bodyAttributes = [];
+    if (bodyClassName) {
+      bodyAttributes.push('class="'.concat(escapeHtmlSafe(bodyClassName), '"'));
+    }
+    if (bodyInlineStyle) {
+      bodyAttributes.push('style="'.concat(escapeHtmlSafe(bodyInlineStyle), '"'));
+    }
+
+    var fallbackDocumentHtml = ['<!DOCTYPE html>', '<html '.concat(htmlAttributes.join(' '), '>'), '<head>', '<meta charset="utf-8">', '<meta name="color-scheme" content="light dark">', '<title>'.concat(escapedPrintDocumentTitle, '</title>'), '<link rel="stylesheet" href="src/styles/style.css">', '<link rel="stylesheet" href="src/styles/overview.css">', '<link rel="stylesheet" href="src/styles/overview-print.css" media="print">', '<link rel="stylesheet" href="overview-print.css" media="screen">', '</head>', '<body'.concat(bodyAttributes.length ? ' '.concat(bodyAttributes.join(' ')) : '', '>'), fallbackRoot.outerHTML, '</body>', '</html>'].join('\n');
+
+    var existingFallback = hostDocument.querySelector('iframe[data-print-fallback="true"]');
+    if (existingFallback) {
+      if (typeof existingFallback.remove === 'function') {
+        existingFallback.remove();
+      } else if (existingFallback.parentNode) {
+        existingFallback.parentNode.removeChild(existingFallback);
       }
     }
-    var fallbackBody = doc.body;
-    if (fallbackBody) {
-      if (bodyClassName) {
-        fallbackBody.className = bodyClassName;
+
+    var fallbackIframe = hostDocument.createElement('iframe');
+    fallbackIframe.setAttribute('data-print-fallback', 'true');
+    fallbackIframe.setAttribute('aria-hidden', 'true');
+    fallbackIframe.setAttribute('tabindex', '-1');
+    fallbackIframe.style.position = 'fixed';
+    fallbackIframe.style.width = '0';
+    fallbackIframe.style.height = '0';
+    fallbackIframe.style.border = '0';
+    fallbackIframe.style.margin = '0';
+    fallbackIframe.style.padding = '0';
+    fallbackIframe.style.opacity = '0';
+    fallbackIframe.style.pointerEvents = 'none';
+    fallbackIframe.style.clipPath = 'inset(50%)';
+    fallbackIframe.style.clip = 'rect(0 0 0 0)';
+    fallbackIframe.style.overflow = 'hidden';
+
+    var printWindowRef = null;
+    var cleanupTimer = null;
+    var cleanedUp = false;
+    var printScheduled = false;
+    var detachDocListeners = null;
+
+    function clearCleanupTimer() {
+      if (cleanupTimer !== null && hostWindow && typeof hostWindow.clearTimeout === 'function') {
+        hostWindow.clearTimeout(cleanupTimer);
+        cleanupTimer = null;
       }
-      if (bodyInlineStyle) {
-        fallbackBody.setAttribute('style', bodyInlineStyle);
-      }
-      fallbackBody.innerHTML = fallbackRoot.outerHTML;
     }
-    var triggerPrint = function triggerPrint() {
-      printWindow.focus();
+
+    function cleanupIframe() {
+      if (cleanedUp) {
+        return;
+      }
+      cleanedUp = true;
+      clearCleanupTimer();
+      fallbackIframe.removeEventListener('load', handleIframeLoad, true);
+      fallbackIframe.removeEventListener('error', handleIframeError, true);
+      if (fallbackIframe.parentNode) {
+        fallbackIframe.parentNode.removeChild(fallbackIframe);
+      }
+      if (printWindowRef) {
+        printWindowRef.removeEventListener('afterprint', handleAfterPrint, true);
+        printWindowRef.removeEventListener('pagehide', handleAfterPrint, true);
+        if (typeof detachDocListeners === 'function') {
+          detachDocListeners();
+        }
+      }
+      detachDocListeners = null;
+      printWindowRef = null;
+    }
+
+    function handleAfterPrint() {
+      cleanupIframe();
+    }
+
+    function triggerPrint() {
+      if (!printWindowRef) {
+        return;
+      }
       try {
-        printWindow.print();
-      } catch (error) {
-        logOverview('error', 'Failed to trigger print in fallback window.', error, {
+        if (typeof printWindowRef.focus === 'function') {
+          printWindowRef.focus();
+        }
+      } catch (focusError) {
+        logOverview('warn', 'Unable to focus the fallback print view before printing.', focusError, {
           action: 'print-workflow',
-          stage: 'fallback-window-print'
+          stage: 'fallback-view-focus'
         });
       }
-    };
-    if (printWindow.document.readyState === 'complete') {
-      triggerPrint();
-    } else {
-      printWindow.addEventListener('load', triggerPrint, {
-        once: true
+
+      if (typeof printWindowRef.print !== 'function') {
+        logOverview('error', 'Fallback print view is missing a print method.', undefined, {
+          action: 'print-workflow',
+          stage: 'fallback-view-print',
+          result: 'unavailable'
+        });
+        cleanupIframe();
+        return;
+      }
+
+      try {
+        printWindowRef.print();
+      } catch (error) {
+        logOverview('error', 'Failed to trigger print in fallback view.', error, {
+          action: 'print-workflow',
+          stage: 'fallback-view-print'
+        });
+      }
+    }
+
+    function scheduleTriggerPrint() {
+      if (printScheduled) {
+        return;
+      }
+      printScheduled = true;
+      if (hostWindow && typeof hostWindow.setTimeout === 'function') {
+        hostWindow.setTimeout(triggerPrint, 0);
+      } else {
+        triggerPrint();
+      }
+    }
+
+    function handleIframeLoad() {
+      fallbackIframe.removeEventListener('load', handleIframeLoad, true);
+      printWindowRef = fallbackIframe.contentWindow;
+      if (!printWindowRef || !printWindowRef.document) {
+        cleanupIframe();
+        logOverview('error', 'Unable to prepare the fallback print view.', undefined, {
+          action: 'print-workflow',
+          stage: 'fallback-view-window',
+          result: 'unavailable'
+        });
+        return;
+      }
+
+      var fallbackDoc = printWindowRef.document;
+      try {
+        fallbackDoc.title = printDocumentTitle;
+      } catch (titleError) {
+        void titleError;
+      }
+
+      var onReadyStateChange = function onReadyStateChange() {
+        if (fallbackDoc.readyState === 'complete') {
+          fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
+          scheduleTriggerPrint();
+        }
+      };
+
+      fallbackDoc.addEventListener('readystatechange', onReadyStateChange, true);
+
+      var onWindowLoad = function onWindowLoad() {
+        printWindowRef.removeEventListener('load', onWindowLoad, true);
+        scheduleTriggerPrint();
+      };
+
+      printWindowRef.addEventListener('load', onWindowLoad, true);
+
+      printWindowRef.addEventListener('afterprint', handleAfterPrint, true);
+      printWindowRef.addEventListener('pagehide', handleAfterPrint, true);
+
+      if (fallbackDoc.readyState === 'complete') {
+        scheduleTriggerPrint();
+      }
+
+      detachDocListeners = function detachDocListenersFn() {
+        fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
+        printWindowRef.removeEventListener('load', onWindowLoad, true);
+      };
+    }
+
+    function handleIframeError(errorEvent) {
+      fallbackIframe.removeEventListener('error', handleIframeError, true);
+      cleanupIframe();
+      logOverview('error', 'Unable to load the fallback print view.', errorEvent, {
+        action: 'print-workflow',
+        stage: 'fallback-view-load',
+        result: 'failed'
       });
     }
-    printWindow.addEventListener('afterprint', function () {
-      printWindow.close();
-    });
+
+    fallbackIframe.addEventListener('load', handleIframeLoad, true);
+    fallbackIframe.addEventListener('error', handleIframeError, true);
+
+    hostBody.appendChild(fallbackIframe);
+
+    function assignContentToIframe() {
+      if ('srcdoc' in fallbackIframe) {
+        fallbackIframe.srcdoc = fallbackDocumentHtml;
+        return true;
+      }
+      var candidateWindow = fallbackIframe.contentWindow;
+      if (!candidateWindow || !candidateWindow.document) {
+        return false;
+      }
+      var candidateDoc = candidateWindow.document;
+      candidateDoc.open();
+      candidateDoc.write(fallbackDocumentHtml);
+      candidateDoc.close();
+      return true;
+    }
+
+    var contentAssigned = assignContentToIframe();
+    if (!contentAssigned) {
+      cleanupIframe();
+      logOverview('error', 'Unable to prepare the fallback print view.', undefined, {
+        action: 'print-workflow',
+        stage: 'fallback-view-content',
+        result: 'unavailable'
+      });
+      return false;
+    }
+
+    if (hostWindow && typeof hostWindow.setTimeout === 'function') {
+      cleanupTimer = hostWindow.setTimeout(function () {
+        cleanupIframe();
+      }, 2 * 60 * 1000);
+    }
+
     return true;
   };
   var fallbackTriggerPrintWorkflow = function fallbackTriggerPrintWorkflow(context) {

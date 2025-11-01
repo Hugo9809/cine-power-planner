@@ -2069,32 +2069,63 @@ function generatePrintableOverview(config = {}) {
     const printWorkflowLogger = createOverviewLoggerProxy(printWorkflowLoggerMeta);
 
     const openFallbackPrintView = () => {
-        if (!content || typeof window === 'undefined') return false;
-        const fallbackRoot = content.cloneNode(true);
-        fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(btn => btn.remove());
-        const printWindow = window.open('', '_blank', 'noopener,noreferrer');
-        if (!printWindow) {
-            logOverview('error', 'Unable to open a fallback print window. Please allow pop-ups and try again.', undefined, {
+        if (!content || typeof document === 'undefined') return false;
+
+        const hostWindow = typeof window !== 'undefined' ? window : null;
+        const hostDocument = document;
+        const hostBody = hostDocument.body;
+
+        if (!hostBody) {
+            logOverview('error', 'Unable to prepare the fallback print view because the document body is unavailable.', undefined, {
                 action: 'print-workflow',
-                stage: 'fallback-window-open',
-                result: 'blocked',
+                stage: 'fallback-view-host',
+                result: 'unavailable',
             });
             return false;
         }
 
-        const doc = printWindow.document;
-        const htmlElement = typeof document !== 'undefined' ? document.documentElement : null;
+        const fallbackRoot = content.cloneNode(true);
+        fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(btn => {
+            if (btn && typeof btn.remove === 'function') {
+                btn.remove();
+            } else if (btn && btn.parentNode) {
+                btn.parentNode.removeChild(btn);
+            }
+        });
+
+        const htmlElement = hostDocument.documentElement;
         const htmlClassName = htmlElement ? htmlElement.className : '';
         const htmlDir = htmlElement ? htmlElement.getAttribute('dir') || '' : '';
         const htmlLang = htmlElement ? htmlElement.getAttribute('lang') || 'en' : 'en';
         const htmlInlineStyle = htmlElement ? htmlElement.getAttribute('style') || '' : '';
-        const bodyElement = typeof document !== 'undefined' ? document.body : null;
+        const bodyElement = hostBody;
         const bodyClassName = bodyElement ? bodyElement.className : '';
         const bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
         const escapedPrintDocumentTitle = escapeHtmlSafe(printDocumentTitle);
-        doc.open();
-        doc.write(`<!DOCTYPE html>
-<html>
+
+        const htmlAttributes = [
+            `lang="${escapeHtmlSafe(htmlLang || 'en')}"`,
+        ];
+        if (htmlDir) {
+            htmlAttributes.push(`dir="${escapeHtmlSafe(htmlDir)}"`);
+        }
+        if (htmlClassName) {
+            htmlAttributes.push(`class="${escapeHtmlSafe(htmlClassName)}"`);
+        }
+        if (htmlInlineStyle) {
+            htmlAttributes.push(`style="${escapeHtmlSafe(htmlInlineStyle)}"`);
+        }
+
+        const bodyAttributes = [];
+        if (bodyClassName) {
+            bodyAttributes.push(`class="${escapeHtmlSafe(bodyClassName)}"`);
+        }
+        if (bodyInlineStyle) {
+            bodyAttributes.push(`style="${escapeHtmlSafe(bodyInlineStyle)}"`);
+        }
+
+        const fallbackDocumentHtml = `<!DOCTYPE html>
+<html ${htmlAttributes.join(' ')}>
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
@@ -2104,57 +2135,216 @@ function generatePrintableOverview(config = {}) {
 <link rel="stylesheet" href="src/styles/overview-print.css" media="print">
 <link rel="stylesheet" href="overview-print.css" media="screen">
 </head>
-<body></body>
-</html>`);
-        doc.close();
+<body${bodyAttributes.length ? ` ${bodyAttributes.join(' ')}` : ''}>
+${fallbackRoot.outerHTML}
+</body>
+</html>`;
 
-        doc.title = printDocumentTitle;
-
-        const fallbackHtml = doc.documentElement;
-        if (fallbackHtml) {
-            fallbackHtml.setAttribute('lang', htmlLang || 'en');
-            if (htmlDir) {
-                fallbackHtml.setAttribute('dir', htmlDir);
-            }
-            if (htmlClassName) {
-                fallbackHtml.className = htmlClassName;
-            }
-            if (htmlInlineStyle) {
-                fallbackHtml.setAttribute('style', htmlInlineStyle);
+        const existingFallback = hostDocument.querySelector('iframe[data-print-fallback="true"]');
+        if (existingFallback) {
+            if (typeof existingFallback.remove === 'function') {
+                existingFallback.remove();
+            } else if (existingFallback.parentNode) {
+                existingFallback.parentNode.removeChild(existingFallback);
             }
         }
 
-        const fallbackBody = doc.body;
-        if (fallbackBody) {
-            if (bodyClassName) {
-                fallbackBody.className = bodyClassName;
+        const fallbackIframe = hostDocument.createElement('iframe');
+        fallbackIframe.setAttribute('data-print-fallback', 'true');
+        fallbackIframe.setAttribute('aria-hidden', 'true');
+        fallbackIframe.setAttribute('tabindex', '-1');
+        fallbackIframe.style.position = 'fixed';
+        fallbackIframe.style.width = '0';
+        fallbackIframe.style.height = '0';
+        fallbackIframe.style.border = '0';
+        fallbackIframe.style.margin = '0';
+        fallbackIframe.style.padding = '0';
+        fallbackIframe.style.opacity = '0';
+        fallbackIframe.style.pointerEvents = 'none';
+        fallbackIframe.style.clipPath = 'inset(50%)';
+        fallbackIframe.style.clip = 'rect(0 0 0 0)';
+        fallbackIframe.style.overflow = 'hidden';
+
+        let printWindowRef = null;
+        let cleanupTimer = null;
+        let cleanedUp = false;
+        let printScheduled = false;
+        let detachDocListeners = null;
+
+        const clearCleanupTimer = () => {
+            if (cleanupTimer !== null && hostWindow && typeof hostWindow.clearTimeout === 'function') {
+                hostWindow.clearTimeout(cleanupTimer);
+                cleanupTimer = null;
             }
-            if (bodyInlineStyle) {
-                fallbackBody.setAttribute('style', bodyInlineStyle);
+        };
+
+        const cleanupIframe = () => {
+            if (cleanedUp) {
+                return;
             }
-            fallbackBody.innerHTML = fallbackRoot.outerHTML;
-        }
+            cleanedUp = true;
+            clearCleanupTimer();
+            fallbackIframe.removeEventListener('load', handleIframeLoad);
+            fallbackIframe.removeEventListener('error', handleIframeError);
+            if (fallbackIframe.parentNode) {
+                fallbackIframe.parentNode.removeChild(fallbackIframe);
+            }
+            if (printWindowRef) {
+                printWindowRef.removeEventListener('afterprint', handleAfterPrint, true);
+                printWindowRef.removeEventListener('pagehide', handleAfterPrint, true);
+                if (detachDocListeners) {
+                    detachDocListeners();
+                }
+            }
+            detachDocListeners = null;
+            printWindowRef = null;
+        };
+
+        const handleAfterPrint = () => {
+            cleanupIframe();
+        };
 
         const triggerPrint = () => {
-            printWindow.focus();
+            if (!printWindowRef) {
+                return;
+            }
             try {
-                printWindow.print();
-            } catch (error) {
-                logOverview('error', 'Failed to trigger print in fallback window.', error, {
+                if (typeof printWindowRef.focus === 'function') {
+                    printWindowRef.focus();
+                }
+            } catch (focusError) {
+                logOverview('warn', 'Unable to focus the fallback print view before printing.', focusError, {
                     action: 'print-workflow',
-                    stage: 'fallback-window-print',
+                    stage: 'fallback-view-focus',
+                });
+            }
+
+            if (typeof printWindowRef.print !== 'function') {
+                logOverview('error', 'Fallback print view is missing a print method.', undefined, {
+                    action: 'print-workflow',
+                    stage: 'fallback-view-print',
+                    result: 'unavailable',
+                });
+                cleanupIframe();
+                return;
+            }
+
+            try {
+                printWindowRef.print();
+            } catch (error) {
+                logOverview('error', 'Failed to trigger print in fallback view.', error, {
+                    action: 'print-workflow',
+                    stage: 'fallback-view-print',
                 });
             }
         };
 
-        if (printWindow.document.readyState === 'complete') {
-            triggerPrint();
-        } else {
-            printWindow.addEventListener('load', triggerPrint, { once: true });
+        const scheduleTriggerPrint = () => {
+            if (printScheduled) {
+                return;
+            }
+            printScheduled = true;
+            if (hostWindow && typeof hostWindow.setTimeout === 'function') {
+                hostWindow.setTimeout(triggerPrint, 0);
+            } else {
+                triggerPrint();
+            }
+        };
+
+        const handleIframeLoad = () => {
+            printWindowRef = fallbackIframe.contentWindow;
+            if (!printWindowRef || !printWindowRef.document) {
+                cleanupIframe();
+                logOverview('error', 'Unable to prepare the fallback print view.', undefined, {
+                    action: 'print-workflow',
+                    stage: 'fallback-view-window',
+                    result: 'unavailable',
+                });
+                return;
+            }
+
+            const fallbackDoc = printWindowRef.document;
+            try {
+                fallbackDoc.title = printDocumentTitle;
+            } catch (titleError) {
+                void titleError;
+            }
+
+            const onReadyStateChange = () => {
+                if (fallbackDoc.readyState === 'complete') {
+                    fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
+                    scheduleTriggerPrint();
+                }
+            };
+
+            fallbackDoc.addEventListener('readystatechange', onReadyStateChange, true);
+
+            const onWindowLoad = () => {
+                scheduleTriggerPrint();
+            };
+
+            printWindowRef.addEventListener('load', onWindowLoad, { once: true });
+
+            printWindowRef.addEventListener('afterprint', handleAfterPrint, true);
+            printWindowRef.addEventListener('pagehide', handleAfterPrint, true);
+
+            if (fallbackDoc.readyState === 'complete') {
+                scheduleTriggerPrint();
+            }
+
+            detachDocListeners = () => {
+                fallbackDoc.removeEventListener('readystatechange', onReadyStateChange, true);
+                printWindowRef.removeEventListener('load', onWindowLoad);
+            };
+        };
+
+        const handleIframeError = (errorEvent) => {
+            cleanupIframe();
+            logOverview('error', 'Unable to load the fallback print view.', errorEvent, {
+                action: 'print-workflow',
+                stage: 'fallback-view-load',
+                result: 'failed',
+            });
+        };
+
+        fallbackIframe.addEventListener('load', handleIframeLoad, { once: true });
+        fallbackIframe.addEventListener('error', handleIframeError, { once: true });
+
+        hostBody.appendChild(fallbackIframe);
+
+        const assignContentToIframe = () => {
+            if ('srcdoc' in fallbackIframe) {
+                fallbackIframe.srcdoc = fallbackDocumentHtml;
+                return true;
+            }
+
+            const candidateWindow = fallbackIframe.contentWindow;
+            if (!candidateWindow || !candidateWindow.document) {
+                return false;
+            }
+            const candidateDoc = candidateWindow.document;
+            candidateDoc.open();
+            candidateDoc.write(fallbackDocumentHtml);
+            candidateDoc.close();
+            return true;
+        };
+
+        const contentAssigned = assignContentToIframe();
+        if (!contentAssigned) {
+            cleanupIframe();
+            logOverview('error', 'Unable to prepare the fallback print view.', undefined, {
+                action: 'print-workflow',
+                stage: 'fallback-view-content',
+                result: 'unavailable',
+            });
+            return false;
         }
-        printWindow.addEventListener('afterprint', () => {
-            printWindow.close();
-        });
+
+        if (hostWindow && typeof hostWindow.setTimeout === 'function') {
+            cleanupTimer = hostWindow.setTimeout(() => {
+                cleanupIframe();
+            }, 2 * 60 * 1000);
+        }
 
         return true;
     };
