@@ -379,6 +379,39 @@
       wrapper.innerHTML = entry.content || '';
       detailDialogContent.appendChild(wrapper);
 
+      const closeButton = wrapper.querySelector('[data-diagram-popup-close]');
+      if (closeButton) {
+        closeButton.addEventListener('click', event => {
+          if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          closeDetailDialog();
+        });
+      }
+
+      if (!wrapper.hasAttribute('tabindex')) {
+        wrapper.tabIndex = -1;
+      }
+      if (typeof wrapper.addEventListener === 'function') {
+        wrapper.addEventListener('keydown', event => {
+          if (!event) return;
+          const key = event.key || event.code;
+          if (key === 'Escape' || key === 'Esc') {
+            event.preventDefault();
+            closeDetailDialog();
+          }
+        });
+      }
+      if (typeof wrapper.focus === 'function') {
+        try {
+          wrapper.focus({ preventScroll: true });
+        } catch (focusError) {
+          wrapper.focus();
+          void focusError;
+        }
+      }
+
       const isCamera = Boolean(entry.className && entry.className.includes('diagram-popup--camera'));
       detailDialog.classList.toggle('diagram-detail-dialog--camera', isCamera);
 

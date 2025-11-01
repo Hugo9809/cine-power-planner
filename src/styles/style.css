@@ -9682,23 +9682,14 @@ body.light-mode #topBar select:focus-visible {
 .diagram-detail-dialog__content .diagram-popup {
   position: static;
   display: block;
-  width: 100%;
-  max-width: none;
-  max-height: none;
-  padding: 0;
-  border: none;
-  box-shadow: none;
+  margin: 0 auto;
+  width: min(var(--diagram-popup-dynamic-width, 440px), 100%);
+  max-width: min(var(--diagram-popup-dynamic-width, 440px), 100%);
 }
 
 .diagram-detail-dialog__content .diagram-popup--camera {
-  width: 100%;
-}
-
-.diagram-detail-dialog__content .diagram-popup__header {
-  display: none;
-  border-bottom: none;
-  padding-bottom: 0;
-  margin-bottom: 0;
+  width: min(var(--diagram-popup-dynamic-width, 560px), 100%);
+  max-width: min(var(--diagram-popup-dynamic-width, 560px), 100%);
 }
 
 .diagram-detail-dialog__content .diagram-popup__layout {
