@@ -2099,21 +2099,23 @@ function generatePrintableOverview(config = {}) {
             bodyAttributes.push(`style="${escapeHtmlSafe(bodyInlineStyle)}"`);
         }
 
-        const fallbackDocumentHtml = `<!DOCTYPE html>
-<html ${htmlAttributes.join(' ')}>
-<head>
-<meta charset="utf-8">
-<meta name="color-scheme" content="light dark">
-<title>${escapedPrintDocumentTitle}</title>
-<link rel="stylesheet" href="src/styles/style.css">
-<link rel="stylesheet" href="src/styles/overview.css">
-<link rel="stylesheet" href="src/styles/overview-print.css" media="print">
-<link rel="stylesheet" href="overview-print.css" media="screen">
-</head>
-<body${bodyAttributes.length ? ` ${bodyAttributes.join(' ')}` : ''}>
-${fallbackRoot.outerHTML}
-</body>
-</html>`;
+        const fallbackDocumentHtml = [
+            '<!DOCTYPE html>',
+            `<html ${htmlAttributes.join(' ')}>`,
+            '<head>',
+            '<meta charset="utf-8">',
+            '<meta name="color-scheme" content="light dark">',
+            `<title>${escapedPrintDocumentTitle}</title>`,
+            '<link rel="stylesheet" href="src/styles/style.css">',
+            '<link rel="stylesheet" href="src/styles/overview.css">',
+            '<link rel="stylesheet" href="src/styles/overview-print.css" media="print">',
+            '<link rel="stylesheet" href="overview-print.css" media="screen">',
+            '</head>',
+            `<body${bodyAttributes.length ? ` ${bodyAttributes.join(' ')}` : ''}>`,
+            fallbackRoot.outerHTML,
+            '</body>',
+            '</html>',
+        ].join('\n');
 
         const existingFallback = hostDocument.querySelector('iframe[data-print-fallback="true"]');
         if (existingFallback) {
