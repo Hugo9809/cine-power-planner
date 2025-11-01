@@ -7224,6 +7224,13 @@ if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
           ? normalizeFocusScale(settingsFocusScale.value)
           : settingsFocusScale.value;
     }
+    try {
+      populateLensDropdown();
+    } catch (focusScalePopulateError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to refresh lens dropdown after focus scale change', focusScalePopulateError);
+      }
+    }
   });
 }
 

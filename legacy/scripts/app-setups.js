@@ -4241,6 +4241,80 @@ function connectorBlocks(items, icon) {
 function generateConnectorSummary(device) {
   var _device$power, _device$video, _device$video2, _device$audioInput, _device$audioOutput, _device$audioIo, _device$power2, _device$power3;
   if (!device || _typeof(device) !== 'object') return '';
+  var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var normalized = value.trim().toLowerCase();
+    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
+  };
+  var resolveFocusScaleMode = function resolveFocusScaleMode() {
+    var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+    var scopePreference = scope && typeof scope.focusScalePreference === 'string' ? scope.focusScalePreference : null;
+    var rawPreference = scopePreference || (typeof focusScalePreference === 'string' ? focusScalePreference : null) || 'metric';
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        var normalized = normalizeFocusScale(rawPreference);
+        if (normalized === 'imperial' || normalized === 'metric') {
+          return normalized;
+        }
+      } catch (normalizeError) {
+        void normalizeError;
+      }
+    }
+    var normalizedPreference = normalizeFocusScaleValue(rawPreference);
+    return normalizedPreference || 'metric';
+  };
+  var focusScaleMode = resolveFocusScaleMode();
+  var focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
+  var formatNumber = function formatNumber(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    var maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
+    var minimumFractionDigits = typeof options.minimumFractionDigits === 'number' ? options.minimumFractionDigits : Math.min(0, maximumFractionDigits);
+    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+      try {
+        return new Intl.NumberFormat(focusScaleLang, {
+          maximumFractionDigits: maximumFractionDigits,
+          minimumFractionDigits: minimumFractionDigits
+        }).format(numeric);
+      } catch (formatError) {
+        void formatError;
+      }
+    }
+    var digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+    try {
+      return numeric.toFixed(digits);
+    } catch (toFixedError) {
+      void toFixedError;
+    }
+    return String(numeric);
+  };
+  var formatWeight = function formatWeight(grams) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
+    var numeric = typeof grams === 'string' ? Number(grams) : grams;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
+      var pounds = numeric / 453.59237;
+      var digits = pounds >= 10 ? 1 : 2;
+      var formatted = formatNumber(pounds, {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: 0
+      });
+      return formatted ? "".concat(formatted, " lb") : '';
+    }
+    var formatted = formatNumber(numeric, {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " g") : '';
+  };
   var portHtml = '';
   var connectors = [{
     items: (_device$power = device.power) === null || _device$power === void 0 ? void 0 : _device$power.powerDistributionOutputs,
@@ -4322,8 +4396,10 @@ function generateConnectorSummary(device) {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryBolt)).concat(renderInfoLabel('Voltage')).concat(escapeHtml(String(device.power.input.voltageRange)), "V</span>");
   }
   if (typeof device.weight_g === 'number') {
-    var weightLabel = "".concat(device.weight_g, " g");
-    specHtml += "<span class=\"info-box neutral-conn\">".concat(iconMarkup(ICON_GLYPHS.gears)).concat(renderInfoLabel('Weight')).concat(escapeHtml(weightLabel), "</span>");
+    var weightLabel = formatWeight(device.weight_g);
+    if (weightLabel) {
+      specHtml += "<span class=\"info-box neutral-conn\">".concat(iconMarkup(ICON_GLYPHS.gears)).concat(renderInfoLabel('Weight')).concat(escapeHtml(weightLabel), "</span>");
+    }
   }
   if (typeof device.capacity === 'number') {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryFull)).concat(renderInfoLabel('Capacity')).concat(device.capacity, " Wh</span>");
