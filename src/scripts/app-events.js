@@ -1171,6 +1171,20 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
 
 const CORE_FUNCTION_MISSING_SENTINEL = Object.freeze({ missing: true });
 
+const VIDEO_POWER_INPUT_HELPERS = (function resolveVideoPowerInputHelpers() {
+  if (typeof require === 'function') {
+    try {
+      const helpers = require('./modules/video-power-inputs.js');
+      if (helpers && typeof helpers === 'object') {
+        return helpers;
+      }
+    } catch (helperError) {
+      void helperError;
+    }
+  }
+  return {};
+})();
+
 function invokeCoreFunctionStrict(functionName, args = []) {
   const result = callEventsCoreFunction(functionName, args, { defaultValue: CORE_FUNCTION_MISSING_SENTINEL });
   if (result === CORE_FUNCTION_MISSING_SENTINEL) {
@@ -4035,7 +4049,9 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "video") {
     showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = resolveFirstPowerInputType(deviceData);
+    callEventsCoreFunction('setVideoPowerInputs', [
+      deviceData.power?.input || deviceData.powerInput || null,
+    ]);
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
     videoFrequencyInput.value = deviceData.frequency || '';
@@ -4317,7 +4333,7 @@ if (newCategorySelectElement) {
     clearFizConnectors();
     clearViewfinders();
     clearTimecodes();
-    videoPowerInput.value = "";
+    callEventsCoreFunction('clearVideoPowerInputs');
     clearVideoInputs();
     clearVideoOutputsIO();
     videoFrequencyInput.value = "";
@@ -4635,13 +4651,47 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     const videoLatencyRaw =
       typeof videoLatencyInput.value === 'string' ? videoLatencyInput.value.trim() : '';
     const videoLatencyValue = videoLatencyRaw ? videoLatencyRaw : undefined;
+    let videoPowerInputs;
+    try {
+      videoPowerInputs = invokeCoreFunctionStrict('getVideoPowerInputs', []);
+    } catch (powerInputError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        try {
+          eventsLogger.error('Failed to collect video power inputs', powerInputError, {
+            namespace: 'device-editor',
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to collect video power inputs', powerInputError);
+      }
+      videoPowerInputs = undefined;
+    }
     const videoDeviceData = {
       powerDrawWatts: watt,
-      power: { input: { type: videoPowerInput.value } },
       videoInputs: getVideoInputs(),
       videoOutputs: getVideoOutputsIO(),
       frequency: videoFrequencyInput.value
     };
+    if (typeof videoPowerInputs !== 'undefined') {
+      const mergePowerInput =
+        typeof VIDEO_POWER_INPUT_HELPERS.mergePowerInput === 'function'
+          ? VIDEO_POWER_INPUT_HELPERS.mergePowerInput
+          : (power, input) => {
+              const base = power && typeof power === 'object' ? { ...power } : {};
+              base.input = input;
+              return base;
+            };
+      const mergedPower = mergePowerInput(
+        editingSamePath && originalDeviceData ? originalDeviceData.power : undefined,
+        videoPowerInputs,
+      );
+      if (mergedPower && Object.keys(mergedPower).length) {
+        videoDeviceData.power = mergedPower;
+      }
+    }
     if (typeof videoLatencyValue !== 'undefined') {
       videoDeviceData.latencyMs = videoLatencyValue;
     }

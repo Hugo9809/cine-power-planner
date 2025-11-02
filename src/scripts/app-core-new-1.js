@@ -11237,6 +11237,23 @@ async function setLanguage(lang) {
       }
     }
   }
+  const videoPowerHeadingElem = document.getElementById("videoPowerInputsHeading");
+  if (videoPowerHeadingElem) {
+    videoPowerHeadingElem.textContent =
+      texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs';
+  }
+  const videoPowerLabelElem = document.getElementById("videoPowerInputLabel");
+  if (videoPowerLabelElem) {
+    videoPowerLabelElem.textContent = texts[lang].videoPowerInputLabel || texts[lang].powerInputsHeading;
+    const powerHelp = texts[lang].videoPowerInputHelp || '';
+    if (powerHelp) {
+      videoPowerLabelElem.setAttribute('data-help', powerHelp);
+      videoPowerLabelElem.setAttribute('title', powerHelp);
+    } else {
+      videoPowerLabelElem.removeAttribute('data-help');
+      videoPowerLabelElem.removeAttribute('title');
+    }
+  }
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
   document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
@@ -19194,7 +19211,7 @@ const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideo
 var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
 var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
 var videoFieldsDiv = document.getElementById("videoFields");
-var videoPowerInput = document.getElementById("videoPower");
+var videoPowerInputsContainer = document.getElementById("videoPowerInputsContainer");
 const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 var videoFrequencyInput = document.getElementById("videoFrequency");

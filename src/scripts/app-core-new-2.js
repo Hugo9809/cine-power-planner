@@ -14748,6 +14748,248 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     setViewfinderVideoInputs([]);
     setViewfinderVideoOutputs([]);
+
+    const videoPowerInputHelpers = (function resolveVideoPowerInputHelpers() {
+      if (typeof require === 'function') {
+        try {
+          const helpers = require('./modules/video-power-inputs.js');
+          if (helpers && typeof helpers.normalizePowerInputList === 'function') {
+            return helpers;
+          }
+        } catch (helperError) {
+          void helperError;
+        }
+      }
+      return {};
+    })();
+
+    function resolveVideoPowerText(key, fallback) {
+      const localeTexts = typeof getLanguageTexts === 'function'
+        ? getLanguageTexts(currentLang)
+        : texts?.[currentLang];
+      const englishTexts = typeof getLanguageTexts === 'function'
+        ? getLanguageTexts('en')
+        : texts?.en;
+      return (localeTexts && localeTexts[key])
+        || (englishTexts && englishTexts[key])
+        || fallback;
+    }
+
+    function fallbackNormalizePowerInputList(raw) {
+      if (!raw) {
+        return [];
+      }
+      const list = [];
+      const appendEntry = value => {
+        if (!value) {
+          return;
+        }
+        const typeSource = Array.isArray(value.type) ? value.type : [value.type || value.portType || value.connectorType];
+        const typeValues = (typeSource || [])
+          .filter(item => typeof item === 'string' && item.trim())
+          .map(item => item.trim());
+        const voltageRange = typeof value.voltageRange === 'string' ? value.voltageRange : '';
+        const notes = typeof value.notes === 'string' ? value.notes : '';
+        if (!typeValues.length && !voltageRange && !notes) {
+          return;
+        }
+        const entry = { type: typeValues };
+        if (voltageRange) {
+          entry.voltageRange = voltageRange;
+        }
+        if (notes) {
+          entry.notes = notes;
+        }
+        list.push(entry);
+      };
+      if (Array.isArray(raw)) {
+        raw.forEach(appendEntry);
+      } else if (typeof raw === 'string' && raw.trim()) {
+        appendEntry({ type: raw.trim() });
+      } else if (typeof raw === 'object') {
+        appendEntry(raw);
+      }
+      return list;
+    }
+
+    const normalizePowerInputList =
+      typeof videoPowerInputHelpers.normalizePowerInputList === 'function'
+        ? videoPowerInputHelpers.normalizePowerInputList
+        : fallbackNormalizePowerInputList;
+
+    function createVideoPowerInputRow(initialEntry = {}) {
+      const storedTypeValues = Array.isArray(initialEntry.type)
+        ? initialEntry.type.filter(Boolean)
+        : [];
+      const primaryType = storedTypeValues.length ? storedTypeValues[0] : '';
+      const voltageValue = typeof initialEntry.voltageRange === 'string' ? initialEntry.voltageRange : '';
+      const notesValue = typeof initialEntry.notes === 'string' ? initialEntry.notes : '';
+
+      const row = document.createElement('div');
+      row.className = 'form-row video-power-row';
+
+      const typeSelect = document.createElement('select');
+      typeSelect.className = 'video-power-type-select';
+      typeSelect.name = 'videoPowerType';
+      addEmptyOption(typeSelect);
+      powerPortOptions.forEach(optVal => {
+        const opt = document.createElement('option');
+        opt.value = optVal;
+        opt.textContent = optVal;
+        typeSelect.appendChild(opt);
+      });
+      if (primaryType && !powerPortOptions.includes(primaryType)) {
+        const opt = document.createElement('option');
+        opt.value = primaryType;
+        opt.textContent = primaryType;
+        typeSelect.appendChild(opt);
+      }
+      typeSelect.value = primaryType;
+      typeSelect.dataset.originalValue = primaryType;
+      if (storedTypeValues.length) {
+        try {
+          row.dataset.originalTypeValues = JSON.stringify(storedTypeValues);
+        } catch (serializeError) {
+          void serializeError;
+        }
+      }
+      typeSelect.addEventListener('change', () => {
+        if (!row) return;
+        if (typeSelect.value === typeSelect.dataset.originalValue && storedTypeValues.length) {
+          try {
+            row.dataset.originalTypeValues = JSON.stringify(storedTypeValues);
+          } catch (serializeError) {
+            delete row.dataset.originalTypeValues;
+          }
+        } else {
+          delete row.dataset.originalTypeValues;
+        }
+      });
+      row.appendChild(createFieldWithLabel(typeSelect, resolveVideoPowerText('videoPowerTypeLabel', 'Connector')));
+
+      const voltageInput = document.createElement('input');
+      voltageInput.type = 'text';
+      voltageInput.className = 'video-power-voltage-input';
+      voltageInput.value = voltageValue;
+      voltageInput.placeholder = resolveVideoPowerText('videoPowerVoltagePlaceholder', 'Voltage range (e.g. 6-28V)');
+      row.appendChild(createFieldWithLabel(voltageInput, resolveVideoPowerText('videoPowerVoltageLabel', 'Voltage range')));
+
+      const notesInput = document.createElement('input');
+      notesInput.type = 'text';
+      notesInput.className = 'video-power-notes-input';
+      notesInput.value = notesValue;
+      notesInput.placeholder = resolveVideoPowerText('videoPowerNotesPlaceholder', 'Notes (mount, adapter, etc.)');
+      row.appendChild(createFieldWithLabel(notesInput, resolveVideoPowerText('videoPowerNotesLabel', 'Notes')));
+
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
+        contextPaths: ['videoPowerInputsHeading', ['videoPowerInputLabel']],
+        fallbackContext: 'Power Inputs',
+        actionKey: 'addEntry'
+      });
+      addBtn.addEventListener('click', () => {
+        row.after(createVideoPowerInputRow());
+      });
+      row.appendChild(addBtn);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
+        contextPaths: ['videoPowerInputsHeading', ['videoPowerInputLabel']],
+        fallbackContext: 'Power Inputs',
+        actionKey: 'removeEntry'
+      });
+      removeBtn.addEventListener('click', () => {
+        if (videoPowerInputsContainer && videoPowerInputsContainer.children.length > 1) {
+          row.remove();
+        }
+      });
+      row.appendChild(removeBtn);
+
+      return row;
+    }
+
+    function setVideoPowerInputs(raw) {
+      if (!videoPowerInputsContainer) {
+        return;
+      }
+      videoPowerInputsContainer.innerHTML = '';
+      const entries = normalizePowerInputList(raw);
+      if (entries.length) {
+        entries.forEach(entry => {
+          videoPowerInputsContainer.appendChild(createVideoPowerInputRow(entry));
+        });
+      } else {
+        videoPowerInputsContainer.appendChild(createVideoPowerInputRow());
+      }
+    }
+
+    function getVideoPowerInputs() {
+      if (!videoPowerInputsContainer) {
+        return undefined;
+      }
+      const rows = Array.from(videoPowerInputsContainer.querySelectorAll('.video-power-row'));
+      const entries = rows.map(row => {
+        const select = row.querySelector('.video-power-type-select');
+        if (!select) {
+          return null;
+        }
+        const stored = row.dataset.originalTypeValues;
+        let typeValues;
+        if (stored && select.value === (select.dataset.originalValue || '')) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length) {
+              typeValues = parsed.filter(value => typeof value === 'string' && value.trim());
+            }
+          } catch (parseError) {
+            void parseError;
+            typeValues = undefined;
+          }
+        }
+        if (!typeValues || !typeValues.length) {
+          if (typeof select.value === 'string' && select.value && select.value !== 'None') {
+            typeValues = [select.value];
+          } else {
+            typeValues = [];
+          }
+        }
+        if (!typeValues.length) {
+          return null;
+        }
+        const voltageInput = row.querySelector('.video-power-voltage-input');
+        const notesInput = row.querySelector('.video-power-notes-input');
+        const voltageValue = voltageInput && typeof voltageInput.value === 'string'
+          ? voltageInput.value.trim()
+          : '';
+        const notesValue = notesInput && typeof notesInput.value === 'string'
+          ? notesInput.value.trim()
+          : '';
+        const entry = { type: typeValues.slice() };
+        if (voltageValue) {
+          entry.voltageRange = voltageValue;
+        }
+        if (notesValue) {
+          entry.notes = notesValue;
+        }
+        return entry;
+      }).filter(Boolean);
+
+      if (!entries.length) {
+        return undefined;
+      }
+      if (entries.length === 1) {
+        return entries[0];
+      }
+      return entries;
+    }
+
+    function clearVideoPowerInputs() {
+      setVideoPowerInputs([]);
+    }
+
+    setVideoPowerInputs([]);
     
     function createVideoInputRow(value = '') {
       const row = document.createElement('div');
@@ -15182,6 +15424,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           monitorPortTypeInput.appendChild(opt);
         });
         if (powerPortOptions.includes(curMon)) monitorPortTypeInput.value = curMon;
+      }
+
+      if (typeof document !== 'undefined') {
+        document.querySelectorAll('.video-power-type-select').forEach(sel => {
+          const currentValue = sel.value;
+          sel.innerHTML = '';
+          addEmptyOption(sel);
+          powerPortOptions.forEach(optVal => {
+            const opt = document.createElement('option');
+            opt.value = optVal;
+            opt.textContent = optVal;
+            sel.appendChild(opt);
+          });
+          if (currentValue && !powerPortOptions.includes(currentValue)) {
+            const opt = document.createElement('option');
+            opt.value = currentValue;
+            opt.textContent = currentValue;
+            sel.appendChild(opt);
+          }
+          sel.value = currentValue;
+        });
       }
     }
     
@@ -17480,6 +17743,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['setMonitorVideoOutputs', () => setMonitorVideoOutputs],
       ['getMonitorVideoOutputs', () => getMonitorVideoOutputs],
       ['clearMonitorVideoOutputs', () => clearMonitorVideoOutputs],
+      ['setVideoPowerInputs', () => setVideoPowerInputs],
+      ['getVideoPowerInputs', () => getVideoPowerInputs],
+      ['clearVideoPowerInputs', () => clearVideoPowerInputs],
       ['setVideoInputs', () => setVideoInputs],
       ['getVideoInputs', () => getVideoInputs],
       ['clearVideoInputs', () => clearVideoInputs],
