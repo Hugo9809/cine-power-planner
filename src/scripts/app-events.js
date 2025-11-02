@@ -4669,12 +4669,47 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       }
       videoPowerInputs = undefined;
     }
-    const videoDeviceData = {
-      powerDrawWatts: watt,
-      videoInputs: getVideoInputs(),
-      videoOutputs: getVideoOutputsIO(),
-      frequency: videoFrequencyInput.value
-    };
+    const existingVideoDevice =
+      isEditing && originalDeviceData && typeof originalDeviceData === 'object'
+        ? (() => {
+            try {
+              return JSON.parse(JSON.stringify(originalDeviceData));
+            } catch (cloneError) {
+              void cloneError;
+              return { ...originalDeviceData };
+            }
+          })()
+        : {};
+    const videoDeviceData =
+      existingVideoDevice && typeof existingVideoDevice === 'object'
+        ? existingVideoDevice
+        : {};
+    videoDeviceData.powerDrawWatts = watt;
+
+    const normalizedInputs = getVideoInputs();
+    if (Array.isArray(normalizedInputs) && normalizedInputs.length) {
+      videoDeviceData.videoInputs = normalizedInputs;
+    } else {
+      delete videoDeviceData.videoInputs;
+    }
+
+    const normalizedOutputs = getVideoOutputsIO();
+    if (Array.isArray(normalizedOutputs) && normalizedOutputs.length) {
+      videoDeviceData.videoOutputs = normalizedOutputs;
+    } else {
+      delete videoDeviceData.videoOutputs;
+    }
+
+    const rawFrequency =
+      typeof videoFrequencyInput.value === 'string'
+        ? videoFrequencyInput.value.trim()
+        : '';
+    if (rawFrequency) {
+      videoDeviceData.frequency = rawFrequency;
+    } else {
+      delete videoDeviceData.frequency;
+    }
+
     if (typeof videoPowerInputs !== 'undefined') {
       const mergePowerInput =
         typeof VIDEO_POWER_INPUT_HELPERS.mergePowerInput === 'function'
@@ -4684,16 +4719,19 @@ addSafeEventListener(addDeviceBtn, "click", () => {
               base.input = input;
               return base;
             };
-      const mergedPower = mergePowerInput(
-        editingSamePath && originalDeviceData ? originalDeviceData.power : undefined,
-        videoPowerInputs,
-      );
+      const mergedPower = mergePowerInput(videoDeviceData.power, videoPowerInputs);
       if (mergedPower && Object.keys(mergedPower).length) {
         videoDeviceData.power = mergedPower;
+      } else {
+        delete videoDeviceData.power;
       }
+    } else {
+      delete videoDeviceData.power;
     }
     if (typeof videoLatencyValue !== 'undefined') {
       videoDeviceData.latencyMs = videoLatencyValue;
+    } else {
+      delete videoDeviceData.latencyMs;
     }
     targetCategory[name] = videoDeviceData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
