@@ -1226,6 +1226,100 @@ function resolveFirstPowerInputType(device) {
   return '';
 }
 
+function cloneDeviceDataForEditing(deviceData) {
+  if (!deviceData || typeof deviceData !== 'object') {
+    return {};
+  }
+
+  if (typeof structuredClone === 'function') {
+    try {
+      return structuredClone(deviceData);
+    } catch (cloneError) {
+      void cloneError;
+    }
+  }
+
+  try {
+    return JSON.parse(JSON.stringify(deviceData));
+  } catch (jsonCloneError) {
+    void jsonCloneError;
+  }
+
+  return { ...deviceData };
+}
+
+function parseVideoPowerInputValue(rawValue) {
+  if (typeof rawValue !== 'string') {
+    return undefined;
+  }
+
+  const trimmedValue = rawValue.trim();
+  if (!trimmedValue) {
+    return undefined;
+  }
+
+  const segments = trimmedValue
+    .split(';')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (!segments.length) {
+    return undefined;
+  }
+
+  const parsedSegments = segments
+    .map((segment) => {
+      const parts = segment
+        .split('|')
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+      const connectorPart = parts.shift() || '';
+      const notes = parts.length ? parts.join(' | ') : '';
+      const connectorTypes = connectorPart
+        .split(',')
+        .map((type) => type.trim())
+        .filter(Boolean);
+
+      if (!connectorTypes.length && !notes) {
+        return null;
+      }
+
+      const entry = {};
+      if (connectorTypes.length) {
+        entry.type = connectorTypes;
+      }
+      if (notes) {
+        entry.notes = notes;
+      }
+
+      return entry;
+    })
+    .filter(Boolean);
+
+  if (!parsedSegments.length) {
+    return undefined;
+  }
+
+  if (parsedSegments.length === 1) {
+    const [single] = parsedSegments;
+    if (single && typeof single === 'object') {
+      if (Array.isArray(single.type) && single.type.length) {
+        if (typeof single.notes === 'string' && single.notes) {
+          return single;
+        }
+        return { type: single.type };
+      }
+
+      if (typeof single.notes === 'string' && single.notes) {
+        return { notes: single.notes };
+      }
+    }
+  }
+
+  return parsedSegments;
+}
+
 function resolveCoreOptionsArray(functionName, existingValues = []) {
   const fallback = Array.isArray(existingValues) ? existingValues.slice() : [];
 
@@ -4632,19 +4726,66 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
+
     const videoLatencyRaw =
       typeof videoLatencyInput.value === 'string' ? videoLatencyInput.value.trim() : '';
     const videoLatencyValue = videoLatencyRaw ? videoLatencyRaw : undefined;
-    const videoDeviceData = {
-      powerDrawWatts: watt,
-      power: { input: { type: videoPowerInput.value } },
-      videoInputs: getVideoInputs(),
-      videoOutputs: getVideoOutputsIO(),
-      frequency: videoFrequencyInput.value
-    };
+    const frequencyRaw =
+      typeof videoFrequencyInput.value === 'string' ? videoFrequencyInput.value.trim() : '';
+    const powerInputRaw =
+      typeof videoPowerInput.value === 'string' ? videoPowerInput.value.trim() : '';
+    const originalPrimaryPowerType =
+      isEditing && originalDeviceData ? resolveFirstPowerInputType(originalDeviceData) : '';
+
+    const videoDeviceData =
+      editingSamePath && originalDeviceData && typeof originalDeviceData === 'object'
+        ? cloneDeviceDataForEditing(originalDeviceData)
+        : {};
+
+    videoDeviceData.powerDrawWatts = watt;
+    videoDeviceData.videoInputs = getVideoInputs();
+    videoDeviceData.videoOutputs = getVideoOutputsIO();
+
+    if (frequencyRaw) {
+      videoDeviceData.frequency = frequencyRaw;
+    } else {
+      delete videoDeviceData.frequency;
+    }
+
     if (typeof videoLatencyValue !== 'undefined') {
       videoDeviceData.latencyMs = videoLatencyValue;
+    } else {
+      delete videoDeviceData.latencyMs;
     }
+
+    let powerContainer =
+      videoDeviceData && typeof videoDeviceData.power === 'object' && !Array.isArray(videoDeviceData.power)
+        ? videoDeviceData.power
+        : undefined;
+
+    if (!powerInputRaw) {
+      if (powerContainer) {
+        delete powerContainer.input;
+        if (!Object.keys(powerContainer).length) {
+          delete videoDeviceData.power;
+        }
+      }
+    } else if (!isEditing || powerInputRaw !== originalPrimaryPowerType) {
+      const parsedPowerInput = parseVideoPowerInputValue(powerInputRaw);
+      if (typeof parsedPowerInput !== 'undefined') {
+        if (!powerContainer) {
+          powerContainer = {};
+        }
+        powerContainer.input = parsedPowerInput;
+        videoDeviceData.power = powerContainer;
+      } else if (powerContainer) {
+        delete powerContainer.input;
+        if (!Object.keys(powerContainer).length) {
+          delete videoDeviceData.power;
+        }
+      }
+    }
+
     targetCategory[name] = videoDeviceData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
