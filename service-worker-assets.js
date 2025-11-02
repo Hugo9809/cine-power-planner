@@ -319,6 +319,7 @@
   "./src/scripts/modules/settings-and-appearance.js",
   "./src/scripts/modules/system.js",
   "./src/scripts/modules/ui.js",
+  "./src/scripts/modules/video-power-inputs.js",
   "./src/scripts/overview.js",
   "./src/scripts/restore-verification.js",
   "./src/scripts/script.js",
