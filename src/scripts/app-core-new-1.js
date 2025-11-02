@@ -20053,6 +20053,16 @@ const schemaFieldConfigs = {
     wirelessRX: { type: 'boolean' },
     wirelessTx: { type: 'boolean' }
   },
+  directorMonitors: {
+    audioInput: { type: 'text', placeholder: '3.5mm stereo' },
+    audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
+    audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
+    bluetooth: { type: 'boolean' },
+    latencyMs: { type: 'text', placeholder: '< 1ms' },
+    wireless: { type: 'text', placeholder: 'Bolt 6' },
+    wirelessRX: { type: 'boolean' },
+    wirelessTx: { type: 'boolean' }
+  },
   video: {
     frequency: { type: 'text', placeholder: '5 GHz' },
     latencyMs: { type: 'text', placeholder: '1 ms' }
