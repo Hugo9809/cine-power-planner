@@ -11,7 +11,8 @@
           setLensDeviceMountOptions, getLensDeviceMountOptions,
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
-          normalizeFocusScale, buildSettingsBackupPackage */
+          normalizeFocusScale, buildSettingsBackupPackage,
+          deviceEditorForm, deviceFormStatus */
 
 const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   if (typeof require === 'function') {
@@ -450,6 +451,332 @@ function resolveNewCategorySelect() {
   return element;
 }
 
+const DEVICE_FORM_STATUS_CLASSNAMES = {
+  info: 'device-form-status--info',
+  success: 'device-form-status--success',
+  error: 'device-form-status--error',
+};
+
+let cachedDeviceEditorForm = null;
+let cachedDeviceFormStatus = null;
+let suppressDeviceFormStatusClearOnNextChange = false;
+
+function resolveDeviceEditorFormElement() {
+  if (cachedDeviceEditorForm && typeof cachedDeviceEditorForm === 'object') {
+    if (typeof cachedDeviceEditorForm.isConnected === 'boolean') {
+      if (cachedDeviceEditorForm.isConnected) {
+        return cachedDeviceEditorForm;
+      }
+    } else if (cachedDeviceEditorForm.ownerDocument) {
+      return cachedDeviceEditorForm;
+    }
+  }
+
+  let element = null;
+  if (typeof deviceEditorForm !== 'undefined' && deviceEditorForm) {
+    element = deviceEditorForm;
+  } else if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    element = document.getElementById('deviceEditorForm');
+  }
+
+  if (element && typeof element === 'object') {
+    cachedDeviceEditorForm = element;
+  }
+
+  return element;
+}
+
+function resolveDeviceFormStatusElement() {
+  if (cachedDeviceFormStatus && typeof cachedDeviceFormStatus === 'object') {
+    if (typeof cachedDeviceFormStatus.isConnected === 'boolean') {
+      if (cachedDeviceFormStatus.isConnected) {
+        return cachedDeviceFormStatus;
+      }
+    } else if (cachedDeviceFormStatus.ownerDocument) {
+      return cachedDeviceFormStatus;
+    }
+  }
+
+  let element = null;
+  if (typeof deviceFormStatus !== 'undefined' && deviceFormStatus) {
+    element = deviceFormStatus;
+  } else if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    element = document.getElementById('deviceFormStatus');
+  }
+
+  if (element && typeof element === 'object') {
+    cachedDeviceFormStatus = element;
+  }
+
+  return element;
+}
+
+function setDeviceFormStatus(message, type) {
+  const statusElement = resolveDeviceFormStatusElement();
+  if (!statusElement) {
+    return;
+  }
+
+  const normalizedMessage = typeof message === 'string' ? message : '';
+  const normalizedType = typeof type === 'string' && DEVICE_FORM_STATUS_CLASSNAMES[type]
+    ? type
+    : 'info';
+
+  if (statusElement.classList && typeof statusElement.classList.remove === 'function') {
+    statusElement.classList.remove(
+      'is-visible',
+      DEVICE_FORM_STATUS_CLASSNAMES.info,
+      DEVICE_FORM_STATUS_CLASSNAMES.success,
+      DEVICE_FORM_STATUS_CLASSNAMES.error,
+    );
+    if (normalizedMessage) {
+      statusElement.classList.add('is-visible', DEVICE_FORM_STATUS_CLASSNAMES[normalizedType]);
+    }
+  }
+
+  if (typeof statusElement.setAttribute === 'function') {
+    if (normalizedMessage) {
+      statusElement.setAttribute('data-status-type', normalizedType);
+    } else {
+      statusElement.removeAttribute('data-status-type');
+    }
+  }
+
+  statusElement.textContent = normalizedMessage;
+}
+
+function clearDeviceFormStatus() {
+  setDeviceFormStatus('', 'info');
+}
+
+function resolveDeviceFormField(reference) {
+  if (!reference) {
+    return null;
+  }
+  if (typeof reference === 'string') {
+    if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+      return document.getElementById(reference);
+    }
+    return null;
+  }
+  if (typeof reference === 'object') {
+    return reference;
+  }
+  return null;
+}
+
+function markDeviceFormFieldsInvalid(references) {
+  if (!Array.isArray(references)) {
+    return [];
+  }
+
+  const fields = [];
+  for (let index = 0; index < references.length; index += 1) {
+    const field = resolveDeviceFormField(references[index]);
+    if (!field) {
+      continue;
+    }
+    fields.push(field);
+    if (field.classList && typeof field.classList.add === 'function') {
+      field.classList.add('is-invalid');
+    } else if (typeof field.className === 'string' && field.className.indexOf('is-invalid') === -1) {
+      field.className += ` is-invalid`;
+    }
+    if (typeof field.setAttribute === 'function') {
+      field.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  return fields;
+}
+
+function clearDeviceFormInvalidState() {
+  const form = resolveDeviceEditorFormElement();
+  if (!form || typeof form.querySelectorAll !== 'function') {
+    return;
+  }
+
+  const invalidFields = form.querySelectorAll('.is-invalid');
+  invalidFields.forEach((field) => {
+    if (field.classList && typeof field.classList.remove === 'function') {
+      field.classList.remove('is-invalid');
+    } else if (typeof field.className === 'string' && field.className.indexOf('is-invalid') !== -1) {
+      field.className = field.className.replace(/\bis-invalid\b/, '').trim();
+    }
+    if (typeof field.removeAttribute === 'function') {
+      field.removeAttribute('aria-invalid');
+    }
+  });
+}
+
+function focusDeviceFormField(field) {
+  if (!field || typeof field.focus !== 'function') {
+    return;
+  }
+  try {
+    field.focus({ preventScroll: false });
+  } catch (focusError) {
+    try {
+      field.focus();
+    } catch (fallbackFocusError) {
+      void fallbackFocusError;
+    }
+  }
+}
+
+function scheduleFocusDeviceField(field) {
+  if (!field) {
+    return;
+  }
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => {
+      focusDeviceFormField(field);
+    });
+  } else if (typeof setTimeout === 'function') {
+    setTimeout(() => {
+      focusDeviceFormField(field);
+    }, 0);
+  } else {
+    focusDeviceFormField(field);
+  }
+}
+
+function reportDeviceFormError(message, fieldRefs) {
+  const text = typeof message === 'string' ? message : '';
+  const fields = markDeviceFormFieldsInvalid(Array.isArray(fieldRefs) ? fieldRefs : []);
+  setDeviceFormStatus(text, 'error');
+  if (fields.length) {
+    scheduleFocusDeviceField(fields[0]);
+  }
+  return false;
+}
+
+function formatDeviceLibraryMessage(template, replacements) {
+  if (typeof template !== 'string' || !template) {
+    return '';
+  }
+
+  const values = replacements && typeof replacements === 'object' ? replacements : {};
+  return template.replace(/\{([^}]+)\}/g, (match, key) => {
+    if (Object.prototype.hasOwnProperty.call(values, key)) {
+      const replacement = values[key];
+      if (replacement === null || typeof replacement === 'undefined') {
+        return '';
+      }
+      try {
+        return typeof replacement === 'string' ? replacement : String(replacement);
+      } catch (stringifyError) {
+        void stringifyError;
+        return '';
+      }
+    }
+    return match;
+  });
+}
+
+function getLocalizedDeviceCategoryLabel(categoryKey, subcategoryKey, langTexts, fallbackTexts) {
+  const normalizedCategory = typeof categoryKey === 'string' ? categoryKey : '';
+  if (!normalizedCategory) {
+    return '';
+  }
+
+  const language = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  let localeNames = null;
+
+  if (typeof categoryNames === 'object' && categoryNames) {
+    const languageNames = categoryNames[language];
+    if (languageNames && typeof languageNames === 'object') {
+      localeNames = languageNames;
+    } else if (categoryNames.en && typeof categoryNames.en === 'object') {
+      localeNames = categoryNames.en;
+    }
+  }
+
+  if (!localeNames) {
+    if (langTexts && typeof langTexts.categoryNames === 'object') {
+      localeNames = langTexts.categoryNames;
+    } else if (fallbackTexts && typeof fallbackTexts.categoryNames === 'object') {
+      localeNames = fallbackTexts.categoryNames;
+    }
+  }
+
+  if (normalizedCategory === 'accessories.cables' && subcategoryKey) {
+    const compositeKey = `${normalizedCategory}.${subcategoryKey}`;
+    if (localeNames && typeof localeNames[compositeKey] === 'string') {
+      return localeNames[compositeKey];
+    }
+    if (localeNames && typeof localeNames[subcategoryKey] === 'string') {
+      return localeNames[subcategoryKey];
+    }
+  }
+
+  if (localeNames && typeof localeNames[normalizedCategory] === 'string') {
+    return localeNames[normalizedCategory];
+  }
+
+  return normalizedCategory;
+}
+
+function runDeviceLibraryAutoBackup(context, localeTexts) {
+  if (typeof autoBackup !== 'function') {
+    return;
+  }
+
+  const langTexts = localeTexts && typeof localeTexts === 'object' ? localeTexts.langTexts : null;
+  const fallbackTexts = localeTexts && typeof localeTexts === 'object' ? localeTexts.fallbackTexts : null;
+  const notificationMessage =
+    (langTexts && langTexts.autoBackupInProgressNotice)
+    || (fallbackTexts && fallbackTexts.autoBackupInProgressNotice)
+    || resolveAutoBackupIndicatorMessage();
+
+  try {
+    autoBackup({
+      reason: 'device-library',
+      suppressSuccess: true,
+      suppressError: true,
+      force: true,
+      triggerAutoSaveNotification: true,
+      autoSaveNotificationMessage: notificationMessage,
+    });
+  } catch (error) {
+    console.warn('Failed to auto backup before device library change', error, context || {});
+  }
+}
+
+function handleDeviceFormFieldInteraction(event) {
+  const target = event && event.target ? event.target : null;
+  if (!target || typeof target !== 'object') {
+    return;
+  }
+
+  if (target.classList && typeof target.classList.remove === 'function' && target.classList.contains('is-invalid')) {
+    target.classList.remove('is-invalid');
+  } else if (typeof target.className === 'string' && target.className.indexOf('is-invalid') !== -1) {
+    target.className = target.className.replace(/\bis-invalid\b/, '').trim();
+  }
+
+  if (typeof target.removeAttribute === 'function') {
+    target.removeAttribute('aria-invalid');
+  }
+
+  const statusElement = resolveDeviceFormStatusElement();
+  if (statusElement && typeof statusElement.getAttribute === 'function') {
+    const statusType = statusElement.getAttribute('data-status-type');
+    if (statusType === 'error' || statusType === 'success') {
+      clearDeviceFormStatus();
+    }
+  }
+}
+
+const deviceEditorFormElement = resolveDeviceEditorFormElement();
+if (deviceEditorFormElement) {
+  addSafeEventListener(deviceEditorFormElement, 'input', handleDeviceFormFieldInteraction);
+  addSafeEventListener(deviceEditorFormElement, 'change', handleDeviceFormFieldInteraction);
+  addSafeEventListener(deviceEditorFormElement, 'submit', handleDeviceFormSubmit);
+} else if (addDeviceBtn) {
+  addSafeEventListener(addDeviceBtn, 'click', handleDeviceFormSubmit);
+}
+
 // Autosaves are intentionally conservative: we track how many field level
 // mutations happen between runs and enforce a time based cadence. This keeps
 // user data safe even if the browser throttles timers or the tab goes idle.
@@ -465,6 +792,7 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'export-revert',
   'before-reload',
   'change-threshold',
+  'device-library',
 ];
 const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
 const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
@@ -473,6 +801,7 @@ const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
   'export-revert',
   'before-reload',
   'project-switch',
+  'device-library',
 ]);
 
 const AUTO_BACKUP_LOG_META = { feature: 'auto-backup' };
@@ -4232,6 +4561,12 @@ addSafeEventListener(deviceManagerSection, 'keydown', (event) => {
 const newCategorySelectElement = resolveNewCategorySelect();
 if (newCategorySelectElement) {
   addSafeEventListener(newCategorySelectElement, "change", () => {
+    if (suppressDeviceFormStatusClearOnNextChange) {
+      suppressDeviceFormStatusClearOnNextChange = false;
+    } else {
+      clearDeviceFormStatus();
+    }
+    clearDeviceFormInvalidState();
     const wasEditing = addDeviceBtn?.dataset.mode === "edit";
     const previousName = newNameInput ? newNameInput.value : "";
     const val = newCategorySelectElement.value;
@@ -4388,13 +4723,22 @@ if (newCategorySelectElement) {
 }
 
 addSafeEventListener(newSubcategorySelect, 'change', () => {
+  clearDeviceFormInvalidState();
+  clearDeviceFormStatus();
   const categorySelect = resolveNewCategorySelect();
   if (categorySelect && categorySelect.value === 'accessories.cables') {
     buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
   }
 });
 
-function resetDeviceForm() {
+function resetDeviceForm(options = {}) {
+  const preserveStatus = options && typeof options === 'object' && options.preserveStatus === true;
+  if (preserveStatus) {
+    suppressDeviceFormStatusClearOnNextChange = true;
+  } else {
+    clearDeviceFormStatus();
+  }
+  clearDeviceFormInvalidState();
   if (addDeviceBtn) {
     addDeviceBtn.dataset.mode = "add";
     delete addDeviceBtn.dataset.originalName;
@@ -4415,6 +4759,11 @@ function resetDeviceForm() {
     } catch (err) {
       console.warn('resetDeviceForm dispatch failed', err);
     }
+    if (preserveStatus) {
+      suppressDeviceFormStatusClearOnNextChange = false;
+    }
+  } else if (preserveStatus) {
+    suppressDeviceFormStatusClearOnNextChange = false;
   }
 }
 
@@ -4434,7 +4783,19 @@ function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttribu
   }
 }
 
-addSafeEventListener(addDeviceBtn, "click", () => {
+function handleDeviceFormSubmit(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+  const englishTexts =
+    typeof texts === 'object' && texts && typeof texts.en === 'object'
+      ? texts.en
+      : {};
+
+  clearDeviceFormInvalidState();
+  clearDeviceFormStatus();
   const name = newNameInput.value.trim();
   const categorySelect = resolveNewCategorySelect();
   const category = categorySelect ? categorySelect.value : '';
@@ -4444,19 +4805,29 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   const subcategory = category === "accessories.cables" ? newSubcategorySelect.value : null;
   const originalSubcategory = addDeviceBtn.dataset.originalSubcategory;
 
+  const nameMessage =
+    (langTexts && langTexts.alertDeviceName)
+      || (fallbackTexts && fallbackTexts.alertDeviceName)
+      || englishTexts.alertDeviceName
+      || "Device name cannot be empty.";
   if (!name) {
-    alert(texts[currentLang].alertDeviceName);
+    reportDeviceFormError(nameMessage, [newNameInput]);
     return;
   }
 
+  const fieldsMessage =
+    (langTexts && langTexts.alertDeviceFields)
+      || (fallbackTexts && fallbackTexts.alertDeviceFields)
+      || englishTexts.alertDeviceFields
+      || "Please provide valid values for required fields.";
   if (category === "accessories.cables" && !subcategory) {
-    alert(texts[currentLang].alertDeviceFields);
+    reportDeviceFormError(fieldsMessage, [newSubcategorySelect]);
     return;
   }
 
   const targetCategory = getCategoryContainer(category, subcategory, { create: true });
   if (!targetCategory) {
-    alert(texts[currentLang].alertDeviceFields);
+    reportDeviceFormError(fieldsMessage, categorySelect ? [categorySelect] : []);
     return;
   }
 
@@ -4476,11 +4847,42 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   );
 
   // Check for duplicate name if adding, or if name changed during edit
+  const existsMessage =
+    (langTexts && langTexts.alertDeviceExists)
+      || (fallbackTexts && fallbackTexts.alertDeviceExists)
+      || englishTexts.alertDeviceExists
+      || "A device with this name already exists in this category.";
   if ((!isEditing && targetCategory[name] !== undefined) ||
       (isEditing && (name !== originalName || (category === "accessories.cables" && subcategory !== originalSubcategory)) && targetCategory[name] !== undefined)) {
-    alert(texts[currentLang].alertDeviceExists);
+    reportDeviceFormError(existsMessage, [newNameInput]);
     return;
   }
+
+  runDeviceLibraryAutoBackup(
+    {
+      action: isEditing ? "update" : "add",
+      name,
+      category,
+      subcategory,
+      original: isEditing
+        ? {
+            name: originalName || "",
+            category: storedOriginalCategory || "",
+            subcategory:
+              storedOriginalCategory === "accessories.cables"
+                ? storedOriginalSubcategory || null
+                : null,
+          }
+        : null,
+    },
+    { langTexts, fallbackTexts }
+  );
+
+  const wattMessage =
+    (langTexts && langTexts.alertDeviceWatt)
+      || (fallbackTexts && fallbackTexts.alertDeviceWatt)
+      || englishTexts.alertDeviceWatt
+      || "Please enter a valid watt value.";
 
   if (category === "batteries" || category === "accessories.batteries" || category === "batteryHotswaps") {
     const capacity = parseFloat(newCapacityInput.value);
@@ -4493,7 +4895,11 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       pinA < 0 ||
       (category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0))
     ) {
-      alert(texts[currentLang].alertDeviceFields);
+      const fieldRefs = [newCapacityInput, newPinAInput];
+      if (category !== 'batteryHotswaps' && newDtapAInput) {
+        fieldRefs.push(newDtapAInput);
+      }
+      reportDeviceFormError(fieldsMessage, fieldRefs);
       return;
     }
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
@@ -4515,7 +4921,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "cameras") {
     const watt = parseFloat(cameraWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [cameraWattInput]);
       return;
     }
     let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
@@ -4528,7 +4934,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       plateSupport = invokeCoreFunctionStrict('getBatteryPlates');
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
-      alert(texts[currentLang].alertInvalidCameraJSON);
+      const invalidCameraMessage =
+        (langTexts && langTexts.alertInvalidCameraJSON)
+          || (fallbackTexts && fallbackTexts.alertInvalidCameraJSON)
+          || englishTexts.alertInvalidCameraJSON
+          || fieldsMessage;
+      reportDeviceFormError(invalidCameraMessage, []);
       return;
     }
     targetCategory[name] = {
@@ -4574,7 +4985,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [monitorWattInput]);
       return;
     }
     const screenSize = parseFloat(monitorScreenSizeInput.value);
@@ -4610,7 +5021,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "viewfinders") {
     const watt = parseFloat(viewfinderWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [viewfinderWattInput]);
       return;
     }
     const screenSize = parseFloat(viewfinderScreenSizeInput.value);
@@ -4645,7 +5056,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [newWattInput]);
       return;
     }
     const videoLatencyRaw =
@@ -4738,7 +5149,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [newWattInput]);
       return;
     }
     targetCategory[name] = {
@@ -4753,7 +5164,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "fiz.controllers") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [newWattInput]);
       return;
     }
     targetCategory[name] = {
@@ -4768,7 +5179,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else if (category === "fiz.distance") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [newWattInput]);
       return;
     }
     targetCategory[name] = {
@@ -4784,7 +5195,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
-      alert(texts[currentLang].alertDeviceWatt);
+      reportDeviceFormError(wattMessage, [newWattInput]);
       return;
     }
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
@@ -4811,7 +5222,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   }
 
   // After adding/updating, reset form and refresh lists
-  resetDeviceForm();
+  resetDeviceForm({ preserveStatus: true });
 
   if (typeof updateGlobalDevicesReference === 'function') {
     updateGlobalDevicesReference(devices);
@@ -4867,14 +5278,24 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
   }
 
-  let categoryKey = category.replace(".", "_");
-  let categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;
-  if (isEditing) {
-      alert(texts[currentLang].alertDeviceUpdated.replace("{name}", name).replace("{category}", categoryDisplay));
-  } else {
-      alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
-  }
-});
+  const categoryDisplay =
+    getLocalizedDeviceCategoryLabel(category, subcategory, langTexts, fallbackTexts)
+    || category;
+  const successTemplate = isEditing
+    ? (langTexts && langTexts.alertDeviceUpdated)
+        || (fallbackTexts && fallbackTexts.alertDeviceUpdated)
+        || englishTexts.alertDeviceUpdated
+        || "Device \"{name}\" updated in category \"{category}\"."
+    : (langTexts && langTexts.alertDeviceAdded)
+        || (fallbackTexts && fallbackTexts.alertDeviceAdded)
+        || englishTexts.alertDeviceAdded
+        || "Device \"{name}\" added to category \"{category}\".";
+  const successMessage = formatDeviceLibraryMessage(successTemplate, {
+    name,
+    category: categoryDisplay,
+  });
+  setDeviceFormStatus(successMessage, "success");
+}
 
 // Cancel editing and revert form to add mode
 addSafeEventListener(cancelEditBtn, "click", () => {

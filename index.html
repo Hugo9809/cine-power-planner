@@ -576,29 +576,36 @@
 
   <section id="device-manager" class="hidden">
     <h2 id="deviceManagerHeading">Device Library</h2>
-    <div class="button-group"> <!-- Changed from form-row to a generic div for button grouping -->
-<h3 id="addDeviceHeading">Add New Device</h3>
-    <div class="form-row">
-      <label for="newCategory" id="categoryLabel">Category:</label>
-      <select id="newCategory"></select>
-    </div>
-    <div class="form-row" id="subcategoryField" hidden>
-      <label for="newSubcategory" id="subcategoryLabel">Subcategory:</label>
-      <select id="newSubcategory"></select>
-    </div>
-    <div class="form-row">
-      <label for="newName" id="deviceNameLabel">Name:</label>
-      <input type="text" id="newName" placeholder="Device name" aria-labelledby="deviceNameLabel" />
-    </div>
-    <div class="form-row" id="wattField">
-      <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
-      <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" aria-labelledby="consumptionLabel" />
-    </div>
-    <div id="dynamicFields" hidden></div>
-    <div id="cameraFields" class="hidden">
-      <div class="camera-subsection">
-        <h4 id="powerInputsHeading">Power Inputs</h4>
-        <div class="form-row">
+    <form id="deviceEditorForm" class="device-editor-form" novalidate autocomplete="off">
+      <div
+        id="deviceFormStatus"
+        class="device-form-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+      <h3 id="addDeviceHeading">Add New Device</h3>
+      <div class="form-row">
+        <label for="newCategory" id="categoryLabel">Category:</label>
+        <select id="newCategory"></select>
+      </div>
+      <div class="form-row" id="subcategoryField" hidden>
+        <label for="newSubcategory" id="subcategoryLabel">Subcategory:</label>
+        <select id="newSubcategory"></select>
+      </div>
+      <div class="form-row">
+        <label for="newName" id="deviceNameLabel">Name:</label>
+        <input type="text" id="newName" placeholder="Device name" aria-labelledby="deviceNameLabel" />
+      </div>
+      <div class="form-row" id="wattField">
+        <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
+        <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" aria-labelledby="consumptionLabel" />
+      </div>
+      <div id="dynamicFields" hidden></div>
+      <div id="cameraFields" class="hidden">
+        <div class="camera-subsection">
+          <h4 id="powerInputsHeading">Power Inputs</h4>
+          <div class="form-row">
           <label for="cameraWatt" id="cameraWattLabel">Power Draw (W):</label>
           <input type="number" id="cameraWatt" step="0.1" aria-labelledby="cameraWattLabel" />
         </div>
@@ -963,7 +970,7 @@
         <input type="text" id="distanceNotes" aria-labelledby="distanceNotesLabel" />
       </div>
     </div>
-    <div id="batteryFields" class="hidden">
+      <div id="batteryFields" class="hidden">
       <div class="form-row">
         <label for="newCapacity" id="capacityLabel">Capacity (Wh):</label>
         <input type="number" id="newCapacity" step="0.1" placeholder="e.g. 98" aria-labelledby="capacityLabel" />
@@ -976,13 +983,23 @@
         <label for="newDtapA" id="dtapLabel">Max D-Tap A:</label>
         <input type="number" id="newDtapA" step="0.1" placeholder="e.g. 5" aria-labelledby="dtapLabel" />
       </div>
-    </div>
-    <button id="addDeviceBtn">Add</button>
-    <button id="cancelEditBtn" class="hidden"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
-      <button id="exportDataBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>Export Database</button>
-      <button id="importDataBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>Import Database</button>
+      </div>
+      <div class="button-row device-editor-actions">
+        <button type="submit" id="addDeviceBtn">Add</button>
+        <button type="button" id="cancelEditBtn" class="hidden">
+          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel
+        </button>
+      </div>
+    </form>
+    <div class="button-row device-library-utilities">
+      <button type="button" id="exportDataBtn">
+        <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>Export Database
+      </button>
+      <button type="button" id="importDataBtn">
+        <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>Import Database
+      </button>
       <input type="file" id="importFileInput" accept=".json" class="hidden" />
-      <button id="exportAndRevertBtn">Export and Revert to default Database</button>
+      <button type="button" id="exportAndRevertBtn">Export and Revert to default Database</button>
     </div>
     <textarea id="exportOutput" class="hidden" readonly></textarea>
 

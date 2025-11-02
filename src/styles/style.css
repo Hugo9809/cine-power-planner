@@ -790,6 +790,63 @@ textarea:focus-visible {
   align-items: center;
 }
 
+.device-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-row-margin-block);
+  margin-bottom: var(--spacing-xl);
+}
+
+.device-editor-actions {
+  justify-content: flex-start;
+  margin-top: var(--spacing-lg);
+}
+
+.device-library-utilities {
+  margin-bottom: var(--spacing-xl);
+}
+
+.device-form-status {
+  display: none;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: var(--line-height-supporting);
+}
+
+.device-form-status.is-visible {
+  display: block;
+}
+
+.device-form-status--info {
+  background: var(--surface-2);
+  color: var(--text-color);
+  border-color: var(--control-border);
+}
+
+.device-form-status--success {
+  background: var(--status-success-bg);
+  color: var(--status-success-text-color);
+  border-color: color-mix(in srgb, var(--success-color) 55%, transparent);
+}
+
+.device-form-status--error {
+  background: var(--status-error-bg);
+  color: var(--status-error-text-color);
+  border-color: color-mix(in srgb, var(--danger-color) 55%, transparent);
+}
+
+.device-editor-form .is-invalid {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--danger-color) 45%, transparent);
+}
+
+.device-editor-form .is-invalid:focus-visible {
+  outline-color: var(--danger-color);
+}
+
 .flex-1 {
   flex: 1;
 }

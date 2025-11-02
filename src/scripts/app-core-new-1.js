@@ -19933,6 +19933,8 @@ var exportBtn       = document.getElementById("exportDataBtn");
 var exportOutput    = document.getElementById("exportOutput");
 var importFileInput = document.getElementById("importFileInput");
 var importDataBtn   = document.getElementById("importDataBtn");
+var deviceEditorForm = document.getElementById("deviceEditorForm");
+var deviceFormStatus = document.getElementById("deviceFormStatus");
 var skipLink       = document.getElementById("skipLink");
 
 function resolveGlobalFocusScalePreference() {
