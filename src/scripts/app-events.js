@@ -4475,9 +4475,19 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     category !== "accessories.cables" || storedOriginalSubcategory === subcategory
   );
 
-  // Check for duplicate name if adding, or if name changed during edit
-  if ((!isEditing && targetCategory[name] !== undefined) ||
-      (isEditing && (name !== originalName || (category === "accessories.cables" && subcategory !== originalSubcategory)) && targetCategory[name] !== undefined)) {
+  const categoryChanged = isEditing && storedOriginalCategory !== category;
+  const cablePathChanged =
+    isEditing && (
+      (category === "accessories.cables" && subcategory !== storedOriginalSubcategory) ||
+      (storedOriginalCategory === "accessories.cables" && storedOriginalSubcategory !== subcategory)
+    );
+  const nameChanged = isEditing && name !== originalName;
+
+  // Check for duplicate name if adding, or if the destination path differs during edit
+  if (
+    (!isEditing && targetCategory[name] !== undefined) ||
+    (isEditing && targetCategory[name] !== undefined && (nameChanged || categoryChanged || cablePathChanged))
+  ) {
     alert(texts[currentLang].alertDeviceExists);
     return;
   }
