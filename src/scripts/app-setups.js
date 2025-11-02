@@ -13425,6 +13425,44 @@ function collectProjectInfoFromRequirementsGrid() {
     return Object.keys(info).length ? info : null;
 }
 
+function resolveProjectStorageNameCollision(baseName) {
+    const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
+    if (!trimmed) {
+        return { name: trimmed, changed: false };
+    }
+    if (typeof loadProject !== 'function') {
+        return { name: trimmed, changed: false };
+    }
+    let existingProjects;
+    try {
+        existingProjects = loadProject();
+    } catch (projectReadError) {
+        console.warn('Unable to inspect existing projects while resolving name collision', projectReadError);
+        existingProjects = null;
+    }
+    if (!existingProjects || typeof existingProjects !== 'object') {
+        return { name: trimmed, changed: false };
+    }
+    const normalizedExisting = new Set(
+        Object.keys(existingProjects)
+            .map((key) => (typeof key === 'string' ? key.trim().toLowerCase() : ''))
+            .filter((key) => key),
+    );
+    const normalizedCandidate = trimmed.toLowerCase();
+    if (!normalizedExisting.has(normalizedCandidate)) {
+        return { name: trimmed, changed: false };
+    }
+    let suffix = 2;
+    let candidate = `${trimmed} (${suffix})`;
+    let normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+    while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+        suffix += 1;
+        candidate = `${trimmed} (${suffix})`;
+        normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+    }
+    return { name: candidate, changed: true };
+}
+
 function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
@@ -13480,21 +13518,38 @@ function saveCurrentGearList() {
         if (typeof value !== 'string') return '';
         return value.trim();
     };
-    const selectedStorageKey = nameState
+    let selectedStorageKey = nameState
         ? nameState.selectedName
         : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
-    const typedStorageKey = nameState
+    let typedStorageKey = nameState
         ? nameState.typedName
         : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
-    const projectStorageKey = nameState
+    let projectStorageKey = nameState
         ? nameState.storageKey
         : (selectedStorageKey || typedStorageKey);
     const renameInProgress = nameState
         ? nameState.renameInProgress
         : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
-    const effectiveStorageKey = renameInProgress
+    let effectiveStorageKey = renameInProgress
         ? (selectedStorageKey || projectStorageKey)
         : projectStorageKey;
+
+    if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
+        const resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
+        if (resolved.changed && resolved.name) {
+            effectiveStorageKey = resolved.name;
+            projectStorageKey = resolved.name;
+            typedStorageKey = resolved.name;
+            if (setupNameInput && setupNameInput.value !== resolved.name) {
+                setupNameInput.value = resolved.name;
+                try {
+                    setupNameInput.dispatchEvent(new Event('input'));
+                } catch (dispatchError) {
+                    void dispatchError;
+                }
+            }
+        }
+    }
     if (!pendingProjectInfo && requirementsVisible) {
         if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
             pendingProjectInfo = previousProjectInfo;
