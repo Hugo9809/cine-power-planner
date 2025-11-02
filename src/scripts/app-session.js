@@ -5491,6 +5491,44 @@ function mergeSharedContactsIntoCache(sharedContacts) {
   return { added, updated };
 }
 
+function resolveProjectNameCollisionForImport(baseName) {
+  const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
+  if (!trimmed) {
+    return { name: trimmed, changed: false };
+  }
+  if (typeof loadProject !== 'function') {
+    return { name: trimmed, changed: false };
+  }
+  let existingProjects;
+  try {
+    existingProjects = loadProject();
+  } catch (projectReadError) {
+    console.warn('Unable to inspect existing projects during shared import', projectReadError);
+    existingProjects = null;
+  }
+  if (!existingProjects || typeof existingProjects !== 'object') {
+    return { name: trimmed, changed: false };
+  }
+  const normalizedExisting = new Set(
+    Object.keys(existingProjects)
+      .map((key) => (typeof key === 'string' ? key.trim().toLowerCase() : ''))
+      .filter((key) => key),
+  );
+  const normalizedCandidate = trimmed.toLowerCase();
+  if (!normalizedExisting.has(normalizedCandidate)) {
+    return { name: trimmed, changed: false };
+  }
+  let suffix = 2;
+  let candidate = `${trimmed} (${suffix})`;
+  let normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+    suffix += 1;
+    candidate = `${trimmed} (${suffix})`;
+    normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  }
+  return { name: candidate, changed: true };
+}
+
 function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
@@ -5674,10 +5712,25 @@ function applySharedSetup(shared, options = {}) {
       const selectedName = setupSelect && typeof setupSelect.value === 'string'
         ? setupSelect.value.trim()
         : '';
-      const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+      let typedName = setupNameInput && typeof setupNameInput.value === 'string'
         ? setupNameInput.value.trim()
         : '';
-      const storageKey = selectedName || typedName;
+      let storageKey = selectedName || typedName;
+      if (!selectedName && storageKey) {
+        const resolved = resolveProjectNameCollisionForImport(storageKey);
+        if (resolved.changed && resolved.name) {
+          storageKey = resolved.name;
+          typedName = resolved.name;
+          if (setupNameInput && setupNameInput.value !== resolved.name) {
+            setupNameInput.value = resolved.name;
+            try {
+              setupNameInput.dispatchEvent(new Event('input'));
+            } catch (dispatchError) {
+              void dispatchError;
+            }
+          }
+        }
+      }
       const hasSelectors = Object.prototype.hasOwnProperty.call(payload, 'gearSelectors');
       const hasAutoRules = payload.autoGearRules && payload.autoGearRules.length;
       if (
