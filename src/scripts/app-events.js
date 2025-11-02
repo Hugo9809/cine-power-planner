@@ -3970,10 +3970,10 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   if (type === "batteries") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(batteryFieldsDiv);
-    newCapacityInput.value = deviceData.capacity || '';
-    newPinAInput.value = deviceData.pinA || '';
+    newCapacityInput.value = deviceData.capacity ?? '';
+    newPinAInput.value = deviceData.pinA ?? '';
     if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
-    newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA || '');
+    newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA ?? '');
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
@@ -4489,8 +4489,8 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     if (
       isNaN(capacity) ||
       isNaN(pinA) ||
-      capacity <= 0 ||
-      pinA <= 0 ||
+      capacity < 0 ||
+      pinA < 0 ||
       (category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0))
     ) {
       alert(texts[currentLang].alertDeviceFields);
