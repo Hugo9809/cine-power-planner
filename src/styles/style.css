@@ -1765,6 +1765,10 @@ main.legal-content {
   width: 100%;
 }
 
+.schema-control-inline > .schema-list-control {
+  flex: 1 1 100%;
+}
+
 .schema-control--checkbox .schema-control-inline {
   align-items: center;
 }
@@ -1806,6 +1810,46 @@ main.legal-content {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
   color: var(--muted-text-color);
   line-height: var(--line-height-supporting);
+}
+
+.schema-list-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.schema-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.schema-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.schema-list-row-input {
+  flex: 1 1 auto;
+}
+
+.schema-list-row-input .schema-input {
+  width: 100%;
+}
+
+.schema-list-row-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.schema-list-row-actions button {
+  flex: 0 0 auto;
+  margin: 0;
 }
 
 /* Keep controls aligned within Project Overview and Configure Devices */
