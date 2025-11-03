@@ -16579,8 +16579,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     delete container[originalName];
-    if (originalCategory === 'accessories.cables' && (_devices$accessories = devices.accessories) !== null && _devices$accessories !== void 0 && _devices$accessories.cables && container && originalSubcategory && !Object.keys(container).length) {
-      delete devices.accessories.cables[originalSubcategory];
+    if (originalCategory === 'accessories.cables' && (_devices$accessories = devices.accessories) !== null && _devices$accessories !== void 0 && _devices$accessories.cables && originalSubcategory) {
+      var existing = devices.accessories.cables[originalSubcategory];
+      if (!existing || typeof existing !== 'object') {
+        devices.accessories.cables[originalSubcategory] = {};
+      }
     }
   }
   var monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");

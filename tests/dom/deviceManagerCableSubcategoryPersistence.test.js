@@ -1,18 +1,12 @@
 const { getHtmlBody } = require('../helpers/domUtils');
 const { createDeviceSkeleton } = require('../helpers/scriptEnvironment');
 
-describe('device manager duplicate protections', () => {
-  const duplicateBatteryName = 'Test Battery Move';
-  const renameBatteryName = 'Test Battery Rename';
-  const renamedBatteryName = 'Test Battery Rename Updated';
-
+describe('device manager cable subcategory persistence', () => {
   let addDeviceBtn;
   let newCategorySelect;
-  let newNameInput;
-  let newCapacityInput;
-  let newPinAInput;
-  let newDtapAInput;
-
+  let newSubcategorySelect;
+  let toggleDeviceBtn;
+  let deviceManagerSection;
   let originalFreeze;
   let originalIsFrozen;
   let originalGetOwnPropertyNames;
@@ -71,8 +65,8 @@ describe('device manager duplicate protections', () => {
     ['distanceAccuracyInput', 'distanceAccuracy'],
     ['distanceOutputInput', 'distanceOutput'],
     ['distanceNotesInput', 'distanceNotes'],
+    ['subcategoryFieldDiv', 'subcategoryField'],
     ['wattFieldDiv', 'wattField'],
-    ['dynamicFieldsDiv', 'dynamicFields'],
     ['cameraFieldsDiv', 'cameraFields'],
     ['monitorFieldsDiv', 'monitorFields'],
     ['viewfinderFieldsDiv', 'viewfinderFields'],
@@ -127,6 +121,10 @@ describe('device manager duplicate protections', () => {
       }
     };
 
+    if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.scrollIntoView) {
+      HTMLElement.prototype.scrollIntoView = () => {};
+    }
+
     document.body.innerHTML = getHtmlBody();
     ELEMENT_BINDINGS.forEach(([key, id]) => {
       const element = document.getElementById(id);
@@ -136,16 +134,20 @@ describe('device manager duplicate protections', () => {
     });
 
     const skeleton = createDeviceSkeleton();
-    skeleton.batteries[duplicateBatteryName] = { capacity: 98, pinA: 10, dtapA: 6 };
-    skeleton.batteries[renameBatteryName] = { capacity: 120, pinA: 14, dtapA: 8 };
-    skeleton.accessories.batteries[duplicateBatteryName] = { capacity: 102, pinA: 9, dtapA: 5 };
+    skeleton.accessories.cables.power = {
+      'Cable Alpha': { lengthM: 2, connectors: ['d-tap'] },
+    };
     global.devices = skeleton;
 
     global.texts = {
       en: {
-        alertDeviceExists: 'A device with this name already exists in this category.',
-        alertDeviceUpdated: 'Device "{name}" updated in category "{category}".',
-        alertDeviceAdded: 'Device "{name}" added to category "{category}".',
+        confirmDeleteDevice: 'Delete "{name}"?',
+        alertDeviceExists: 'duplicate',
+        alertDeviceUpdated: 'updated {name} in {category}',
+        alertDeviceAdded: 'added {name} in {category}',
+        alertDeviceFields: 'fields',
+        alertDeviceName: 'name required',
+        alertDeviceWatt: 'watt required',
         addDeviceBtn: 'Add',
         addDeviceBtnHelp: 'Add device to the library.',
         updateDeviceBtn: 'Update',
@@ -153,25 +155,18 @@ describe('device manager duplicate protections', () => {
         cancelEditBtn: 'Cancel',
         cancelEditBtnHelp: 'Cancel editing the device.',
         toggleDeviceManager: 'Toggle device manager',
+        toggleDeviceManagerHelp: 'Show device manager',
         hideDeviceManager: 'Hide device manager',
-        category_batteries: 'Batteries',
-        category_accessories_batteries: 'Accessory Batteries',
+        category_accessories_cables: 'Cables',
       },
     };
     global.categoryNames = {
       en: {
-        batteries: 'Batteries',
-        'accessories.batteries': 'Accessory Batteries',
+        'accessories.cables': 'Cables',
       },
     };
     global.currentLang = 'en';
-    global.ICON_GLYPHS = {
-      add: '+',
-      save: '✓',
-      circleX: '×',
-      minus: '-',
-      gears: '⚙',
-    };
+    global.ICON_GLYPHS = { add: '+', save: '✓', circleX: '×', gears: '⚙' };
 
     const noop = () => {};
     global.updateCageSelectOptions = noop;
@@ -243,11 +238,9 @@ describe('device manager duplicate protections', () => {
     global.showFormSection = noop;
     global.clearDynamicFields = noop;
     global.placeWattField = noop;
-    global.subcategoryFieldDiv = document.createElement('div');
     global.dtapRow = document.createElement('div');
     global.batteryFieldsDiv = document.createElement('div');
     global.lensFocusScaleSelect = document.createElement('select');
-
     global.callEventsCoreFunction = jest.fn();
     global.storeDevices = jest.fn();
     global.refreshDeviceLists = jest.fn();
@@ -279,7 +272,6 @@ describe('device manager duplicate protections', () => {
     global.buildDynamicFields = noop;
     global.applyFilters = jest.fn();
     global.updateCalculations = jest.fn();
-
     global.alert = jest.fn();
     global.motorSelects = [];
     global.controllerSelects = [];
@@ -287,10 +279,6 @@ describe('device manager duplicate protections', () => {
     global.distanceSelect = document.createElement('select');
     global.batterySelect = document.createElement('select');
     global.cameraSelect = document.createElement('select');
-    global.texts.en.addDeviceBtnHelp = 'Add device to the library.';
-    global.texts.en.updateDeviceBtnHelp = 'Update device in the library.';
-    global.texts.en.cancelEditBtnHelp = 'Cancel editing the device.';
-
     global.categoryExcludedAttrs = {};
     global.eventsLogger = { warn: noop, error: noop };
 
@@ -329,38 +317,44 @@ describe('device manager duplicate protections', () => {
       require('../../src/scripts/app-events.js');
     });
 
+    deviceManagerSection = document.getElementById('device-manager');
     addDeviceBtn = document.getElementById('addDeviceBtn');
     newCategorySelect = document.getElementById('newCategory');
-    newNameInput = document.getElementById('newName');
-    newCapacityInput = document.getElementById('newCapacity');
-    newPinAInput = document.getElementById('newPinA');
-    newDtapAInput = document.getElementById('newDtapA');
+    newSubcategorySelect = document.getElementById('newSubcategory');
+    toggleDeviceBtn = document.getElementById('toggleDeviceManager');
 
-    const batteriesOption = document.createElement('option');
-    batteriesOption.value = 'batteries';
-    newCategorySelect.appendChild(batteriesOption);
-    const accessoriesOption = document.createElement('option');
-    accessoriesOption.value = 'accessories.batteries';
-    newCategorySelect.appendChild(accessoriesOption);
+    const cablesOption = document.createElement('option');
+    cablesOption.value = 'accessories.cables';
+    newCategorySelect.appendChild(cablesOption);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     document.body.innerHTML = '';
     delete global.devices;
-    ELEMENT_BINDINGS.forEach(([key]) => {
-      delete global[key];
-    });
-    delete global.removeOriginalDeviceEntry;
+    ELEMENT_BINDINGS.forEach(([key]) => delete global[key]);
     delete global.autoBackup;
     delete global.hideFormSection;
     delete global.showFormSection;
     delete global.clearDynamicFields;
     delete global.placeWattField;
-    delete global.subcategoryFieldDiv;
     delete global.dtapRow;
     delete global.batteryFieldsDiv;
     delete global.lensFocusScaleSelect;
+    delete global.callEventsCoreFunction;
+    delete global.storeDevices;
+    delete global.refreshDeviceLists;
+    delete global.populateSelect;
+    delete global.populateMonitorSelect;
+    delete global.updateFizConnectorOptions;
+    delete global.updateMotorConnectorOptions;
+    delete global.updateControllerConnectorOptions;
+    delete global.updateControllerPowerOptions;
+    delete global.updateControllerBatteryOptions;
+    delete global.updateControllerConnectivityOptions;
+    delete global.updatePowerDistTypeOptions;
+    delete global.updatePowerDistVoltageOptions;
+    delete global.updatePowerDistCurrentOptions;
+    delete global.updateTimecodeTypeOptions;
     delete global.clearMonitorVideoInputs;
     delete global.clearMonitorVideoOutputs;
     delete global.clearViewfinderVideoInputs;
@@ -375,53 +369,89 @@ describe('device manager duplicate protections', () => {
     delete global.clearTimecodes;
     delete global.clearVideoOutputsIO;
     delete global.buildDynamicFields;
+    delete global.categoryExcludedAttrs;
+    delete global.eventsLogger;
+    delete global.getCategoryContainer;
+    delete global.alert;
+    delete global.applyFilters;
+    delete global.updateCalculations;
+    delete global.removeOriginalDeviceEntry;
+    delete global.texts;
+    delete global.categoryNames;
+    delete global.currentLang;
+    delete global.ICON_GLYPHS;
+    delete global.updateCageSelectOptions;
+    delete global.updateGlobalDevicesReference;
+    delete global.scheduleProjectAutoSave;
+    delete global.ensureAutoBackupsFromProjects;
+    delete global.getDiagramManualPositions;
+    delete global.setManualDiagramPositions;
+    delete global.normalizeDiagramPositionsInput;
+    delete global.normalizeSetupName;
+    delete global.createProjectInfoSnapshotForStorage;
+    delete global.applyDynamicFieldValues;
+    delete global.applyBatteryPlateSelectionFromBattery;
+    delete global.getPowerSelectionSnapshot;
+    delete global.applyStoredPowerSelection;
+    delete global.callCoreFunctionIfAvailable;
+    delete global.suspendProjectPersistence;
+    delete global.createProjectDeletionBackup;
+    delete global.resumeProjectPersistence;
+    delete global.setLensDeviceMountOptions;
+    delete global.getLensDeviceMountOptions;
+    delete global.clearLensDeviceMountOptions;
+    delete global.updateMountTypeOptions;
+    delete global.updateLensFocusScaleSelectOptions;
+    delete global.normalizeFocusScale;
+    delete global.buildSettingsBackupPackage;
+    delete global.checkSetupChanged;
+    delete global.AUTO_GEAR_BACKUP_INTERVAL_MS;
+    delete global.batterySelect;
+    delete global.cameraSelect;
+    delete global.distanceSelect;
+    delete global.motorSelects;
+    delete global.controllerSelects;
+    delete global.monitorSelects;
+    delete global.batteryFieldsDiv;
+    delete global.dtapRow;
+    delete global.lensFocusScaleSelect;
     Object.freeze = originalFreeze;
     Object.isFrozen = originalIsFrozen;
     Object.getOwnPropertyNames = originalGetOwnPropertyNames;
     Object.getOwnPropertyDescriptor = originalGetOwnPropertyDescriptor;
   });
 
-  test('rejects moving a device into a category with a duplicate name', () => {
-    addDeviceBtn.dataset.mode = 'edit';
-    addDeviceBtn.dataset.originalName = duplicateBatteryName;
-    addDeviceBtn.dataset.originalCategory = 'batteries';
-    delete addDeviceBtn.dataset.originalSubcategory;
+  test('power subcategory remains available after removing last device', () => {
+    expect(toggleDeviceBtn).not.toBeNull();
+    toggleDeviceBtn.click();
 
-    newNameInput.value = duplicateBatteryName;
-    newCategorySelect.value = 'accessories.batteries';
-    newCapacityInput.value = '130';
-    newPinAInput.value = '15';
-    newDtapAInput.value = '9';
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-btn';
+    editButton.dataset.name = 'Cable Alpha';
+    editButton.dataset.category = 'accessories.cables';
+    editButton.dataset.subcategory = 'power';
+    deviceManagerSection.appendChild(editButton);
+    editButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    addDeviceBtn.click();
+    expect(newCategorySelect.value).toBe('accessories.cables');
+    expect(newSubcategorySelect.value).toBe('power');
 
-    expect(global.alert).toHaveBeenLastCalledWith(
-      global.texts.en.alertDeviceExists
-    );
-    expect(global.devices.batteries[duplicateBatteryName]).toBeDefined();
-    expect(global.devices.accessories.batteries[duplicateBatteryName]).toBeDefined();
-  });
-
-  test('allows renaming a device within the same category', () => {
-    addDeviceBtn.dataset.mode = 'edit';
-    addDeviceBtn.dataset.originalName = renameBatteryName;
-    addDeviceBtn.dataset.originalCategory = 'batteries';
-    delete addDeviceBtn.dataset.originalSubcategory;
-
-    newNameInput.value = renamedBatteryName;
-    newCategorySelect.value = 'batteries';
-    newCapacityInput.value = '120';
-    newPinAInput.value = '14';
-    newDtapAInput.value = '8';
+    newSubcategorySelect.value = 'fiz';
+    newSubcategorySelect.dispatchEvent(new Event('change'));
 
     addDeviceBtn.click();
 
-    const expectedMessage = global.texts.en.alertDeviceUpdated
-      .replace('{name}', renamedBatteryName)
-      .replace('{category}', global.texts.en.category_batteries);
+    expect(global.devices.accessories.cables.fiz['Cable Alpha']).toBeDefined();
+    expect(global.devices.accessories.cables.power).toBeDefined();
+    expect(Object.keys(global.devices.accessories.cables.power)).toHaveLength(0);
 
-    expect(global.alert).toHaveBeenLastCalledWith(expectedMessage);
-    expect(global.devices.batteries[renamedBatteryName]).toBeDefined();
-    expect(global.devices.batteries[renameBatteryName]).toBeUndefined();
+    delete global.devices.accessories.cables.power;
+
+    newCategorySelect.value = 'accessories.cables';
+    newCategorySelect.dispatchEvent(new Event('change'));
+
+    const values = Array.from(newSubcategorySelect.options).map(option => option.value);
+    expect(values).toContain('power');
+    expect(values).toContain('fiz');
   });
 });

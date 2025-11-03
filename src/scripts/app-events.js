@@ -70,6 +70,83 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
 
 const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
 
+const CABLE_SUBCATEGORY_FALLBACK_KEYS = Object.freeze(['power', 'video', 'fiz', 'cables']);
+
+function getCableSubcategoryKeysForUi(preferredKeys) {
+  const values = [];
+  const seen = new Set();
+
+  const pushKey = (key) => {
+    if (typeof key !== 'string') {
+      return;
+    }
+    const trimmed = key.trim();
+    if (!trimmed || seen.has(trimmed)) {
+      return;
+    }
+    seen.add(trimmed);
+    values.push(trimmed);
+  };
+
+  let schemaSubcategories = null;
+  try {
+    const schema = typeof deviceSchema !== 'undefined' ? deviceSchema : null;
+    schemaSubcategories =
+      schema && schema.accessories && schema.accessories.cables
+        ? schema.accessories.cables
+        : null;
+  } catch (schemaLookupError) {
+    void schemaLookupError;
+    schemaSubcategories = null;
+  }
+
+  if (schemaSubcategories && typeof schemaSubcategories === 'object') {
+    try {
+      for (const key of Object.keys(schemaSubcategories)) {
+        pushKey(key);
+      }
+    } catch (schemaIterationError) {
+      void schemaIterationError;
+    }
+  }
+
+  for (let index = 0; index < CABLE_SUBCATEGORY_FALLBACK_KEYS.length; index += 1) {
+    pushKey(CABLE_SUBCATEGORY_FALLBACK_KEYS[index]);
+  }
+
+  let existingSubcategories = null;
+  try {
+    const devicesRoot = typeof devices !== 'undefined' ? devices : null;
+    existingSubcategories =
+      devicesRoot && devicesRoot.accessories && devicesRoot.accessories.cables
+        ? devicesRoot.accessories.cables
+        : null;
+  } catch (devicesLookupError) {
+    void devicesLookupError;
+    existingSubcategories = null;
+  }
+
+  if (existingSubcategories && typeof existingSubcategories === 'object') {
+    try {
+      for (const key of Object.keys(existingSubcategories)) {
+        pushKey(key);
+      }
+    } catch (existingIterationError) {
+      void existingIterationError;
+    }
+  }
+
+  if (Array.isArray(preferredKeys)) {
+    for (let index = 0; index < preferredKeys.length; index += 1) {
+      pushKey(preferredKeys[index]);
+    }
+  } else {
+    pushKey(preferredKeys);
+  }
+
+  return values;
+}
+
 function getDeviceStorageKeyVariantsForEvents() {
   if (typeof require === 'function') {
     try {
@@ -4090,21 +4167,36 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     distanceNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "accessories.cables") {
-    wattFieldDiv.style.display = "none";
-    subcategoryFieldDiv.hidden = false;
-    const subcats = Object.keys(devices.accessories?.cables || {});
+    if (wattFieldDiv) {
+      wattFieldDiv.style.display = "none";
+    }
+    if (subcategoryFieldDiv) {
+      subcategoryFieldDiv.hidden = false;
+    }
+    const subcategoryKeys = getCableSubcategoryKeysForUi(subcategory ? [subcategory] : []);
     newSubcategorySelect.innerHTML = '';
-    for (const sc of subcats) {
+    for (let index = 0; index < subcategoryKeys.length; index += 1) {
+      const sc = subcategoryKeys[index];
       const opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
       newSubcategorySelect.appendChild(opt);
     }
-    newSubcategorySelect.value = subcategory || '';
+    const effectiveSubcategory =
+      subcategory && subcategoryKeys.includes(subcategory)
+        ? subcategory
+        : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
+    newSubcategorySelect.value = effectiveSubcategory || '';
     // Allow selecting a different subcategory while editing so devices can
     // be reorganised without re-creating them from scratch.
     newSubcategorySelect.disabled = false;
-    buildDynamicFields(`accessories.cables.${subcategory}`, deviceData, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
+    if (effectiveSubcategory) {
+      buildDynamicFields(
+        `accessories.cables.${effectiveSubcategory}`,
+        deviceData,
+        categoryExcludedAttrs[`accessories.cables.${effectiveSubcategory}`] || []
+      );
+    }
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
@@ -4238,6 +4330,7 @@ if (newCategorySelectElement) {
     placeWattField(val);
     clearDynamicFields();
     subcategoryFieldDiv.hidden = true;
+    const previousSubcategoryValue = newSubcategorySelect ? newSubcategorySelect.value : '';
     newSubcategorySelect.innerHTML = "";
     newSubcategorySelect.disabled = false;
     if (dtapRow) dtapRow.style.display = "";
@@ -4281,16 +4374,28 @@ if (newCategorySelectElement) {
       showFormSection(distanceFieldsDiv);
     } else if (val === "accessories.cables") {
       if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      subcategoryFieldDiv.hidden = false;
-      const subcats = Object.keys(devices.accessories?.cables || {});
-      for (const sc of subcats) {
+      if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
+      const subcategoryKeys = getCableSubcategoryKeysForUi(
+        previousSubcategoryValue ? [previousSubcategoryValue] : []
+      );
+      for (let index = 0; index < subcategoryKeys.length; index += 1) {
+        const sc = subcategoryKeys[index];
         const opt = document.createElement('option');
         opt.value = sc;
         opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
         newSubcategorySelect.appendChild(opt);
       }
-      if (newSubcategorySelect.value) {
-        buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
+      const effectiveSubcategory =
+        previousSubcategoryValue && subcategoryKeys.includes(previousSubcategoryValue)
+          ? previousSubcategoryValue
+          : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
+      newSubcategorySelect.value = effectiveSubcategory || '';
+      if (effectiveSubcategory) {
+        buildDynamicFields(
+          `accessories.cables.${effectiveSubcategory}`,
+          {},
+          categoryExcludedAttrs[`accessories.cables.${effectiveSubcategory}`] || []
+        );
       }
     } else {
       buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
