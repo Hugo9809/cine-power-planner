@@ -11,7 +11,7 @@
           setLensDeviceMountOptions, getLensDeviceMountOptions,
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
-          normalizeFocusScale, buildSettingsBackupPackage */
+          normalizeFocusScale, buildSettingsBackupPackage, deviceSchema */
 
 const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   if (typeof require === 'function') {
@@ -4104,7 +4104,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
     monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
-    monitorLatencyInput.value = deviceData.latencyMs || '';
+    monitorLatencyInput.value = deviceData.latencyMs ?? '';
     monitorAudioOutputInput.value =
       deviceData.audioOutput?.portType ||
       deviceData.audioOutput?.type ||
@@ -4121,7 +4121,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setViewfinderVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
     viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
-    viewfinderLatencyInput.value = deviceData.latencyMs || '';
+    viewfinderLatencyInput.value = deviceData.latencyMs ?? '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "video") {
     showFormSection(videoFieldsDiv);
@@ -4132,7 +4132,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
     videoFrequencyInput.value = deviceData.frequency || '';
-    videoLatencyInput.value = deviceData.latencyMs || '';
+    videoLatencyInput.value = deviceData.latencyMs ?? '';
     motorConnectorInput.value = '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
@@ -4698,7 +4698,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       typeof monitorLatencyInput.value === 'string'
         ? monitorLatencyInput.value.trim()
         : '';
-    const monitorLatencyValue = monitorLatencyRaw ? monitorLatencyRaw : undefined;
+    const monitorLatencyValue = monitorLatencyRaw !== '' ? monitorLatencyRaw : undefined;
     const monitorData = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
@@ -4734,7 +4734,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       typeof viewfinderLatencyInput.value === 'string'
         ? viewfinderLatencyInput.value.trim()
         : '';
-    const viewfinderLatencyValue = viewfinderLatencyRaw ? viewfinderLatencyRaw : undefined;
+    const viewfinderLatencyValue = viewfinderLatencyRaw !== '' ? viewfinderLatencyRaw : undefined;
     const viewfinderData = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
@@ -4765,7 +4765,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     const videoLatencyRaw =
       typeof videoLatencyInput.value === 'string' ? videoLatencyInput.value.trim() : '';
-    const videoLatencyValue = videoLatencyRaw ? videoLatencyRaw : undefined;
+    const videoLatencyValue = videoLatencyRaw !== '' ? videoLatencyRaw : undefined;
     let videoPowerInputs;
     try {
       videoPowerInputs = invokeCoreFunctionStrict('getVideoPowerInputs', []);
