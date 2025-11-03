@@ -19897,7 +19897,11 @@ function placeWattField(category, data) {
     category === "video" ||
     category === "wirelessReceivers" ||
     category === "iosVideo" ||
-    (data && (data.videoInputs || data.videoOutputs || data.frequency));
+    (data &&
+      (data.videoInputs ||
+        data.videoOutputs ||
+        data.frequency ||
+        (data.video && (data.video.inputs || data.video.outputs))));
   if (isVideoLike) {
     videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
   } else {
