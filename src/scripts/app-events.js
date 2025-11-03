@@ -4094,6 +4094,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
@@ -4111,6 +4112,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       deviceData.audioOutput || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(viewfinderFieldsDiv);
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
