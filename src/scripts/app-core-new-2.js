@@ -14763,6 +14763,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return {};
     })();
 
+    let powerPortOptions = [];
+
+    function ensurePowerPortOptionsInitialized() {
+      if (!powerPortOptions || powerPortOptions.length === 0) {
+        try {
+          powerPortOptions = getAllPowerPortTypes();
+        } catch (resolveError) {
+          void resolveError;
+          powerPortOptions = [];
+        }
+      }
+      return powerPortOptions;
+    }
+
     function resolveVideoPowerText(key, fallback) {
       const localeTexts = typeof getLanguageTexts === 'function'
         ? getLanguageTexts(currentLang)
@@ -14818,6 +14832,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : fallbackNormalizePowerInputList;
 
     function createVideoPowerInputRow(initialEntry = {}) {
+      const currentPowerPortOptions = ensurePowerPortOptionsInitialized();
       const storedTypeValues = Array.isArray(initialEntry.type)
         ? initialEntry.type.filter(Boolean)
         : [];
@@ -14832,13 +14847,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       typeSelect.className = 'video-power-type-select';
       typeSelect.name = 'videoPowerType';
       addEmptyOption(typeSelect);
-      powerPortOptions.forEach(optVal => {
+      currentPowerPortOptions.forEach(optVal => {
         const opt = document.createElement('option');
         opt.value = optVal;
         opt.textContent = optVal;
         typeSelect.appendChild(opt);
       });
-      if (primaryType && !powerPortOptions.includes(primaryType)) {
+      if (primaryType && !currentPowerPortOptions.includes(primaryType)) {
         const opt = document.createElement('option');
         opt.value = primaryType;
         opt.textContent = primaryType;
@@ -15398,7 +15413,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return Array.from(types).sort(localeSort);
     }
     
-    let powerPortOptions = getAllPowerPortTypes();
+    powerPortOptions = getAllPowerPortTypes();
     
     function updatePowerPortOptions() {
       powerPortOptions = getAllPowerPortTypes();
