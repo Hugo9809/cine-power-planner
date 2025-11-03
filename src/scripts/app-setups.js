@@ -13425,7 +13425,7 @@ function collectProjectInfoFromRequirementsGrid() {
     return Object.keys(info).length ? info : null;
 }
 
-function resolveProjectStorageNameCollision(baseName) {
+function resolveProjectStorageNameCollision(baseName, options = {}) {
     const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
     if (!trimmed) {
         return { name: trimmed, changed: false };
@@ -13433,6 +13433,10 @@ function resolveProjectStorageNameCollision(baseName) {
     if (typeof loadProject !== 'function') {
         return { name: trimmed, changed: false };
     }
+    const skipKey = typeof options.skipKey === 'string' ? options.skipKey.trim().toLowerCase() : '';
+    const skipProjectSignature = typeof options.skipProjectSignature === 'string'
+        ? options.skipProjectSignature
+        : '';
     let existingProjects;
     try {
         existingProjects = loadProject();
@@ -13443,11 +13447,27 @@ function resolveProjectStorageNameCollision(baseName) {
     if (!existingProjects || typeof existingProjects !== 'object') {
         return { name: trimmed, changed: false };
     }
-    const normalizedExisting = new Set(
-        Object.keys(existingProjects)
-            .map((key) => (typeof key === 'string' ? key.trim().toLowerCase() : ''))
-            .filter((key) => key),
-    );
+    const normalizedExisting = new Set();
+    Object.entries(existingProjects).forEach(([key, value]) => {
+        const normalizedKey = typeof key === 'string' ? key.trim().toLowerCase() : '';
+        if (!normalizedKey) {
+            return;
+        }
+        if (skipKey && normalizedKey === skipKey) {
+            if (skipProjectSignature) {
+                const existingInfo = value && typeof value === 'object' && value.projectInfo
+                    ? value.projectInfo
+                    : null;
+                const existingInfoSignature = existingInfo ? stableStringify(existingInfo) : '';
+                if (existingInfoSignature === skipProjectSignature) {
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+        normalizedExisting.add(normalizedKey);
+    });
     const normalizedCandidate = trimmed.toLowerCase();
     if (!normalizedExisting.has(normalizedCandidate)) {
         return { name: trimmed, changed: false };
@@ -13475,6 +13495,9 @@ function saveCurrentGearList() {
     const previousProjectInfo = (currentProjectInfo && typeof currentProjectInfo === 'object')
         ? currentProjectInfo
         : null;
+    const previousProjectInfoSignature = previousProjectInfo
+        ? stableStringify(previousProjectInfo)
+        : '';
     const requirementsVisible = Boolean(
         projectRequirementsOutput
         && projectRequirementsOutput.querySelector('.requirement-box')
@@ -13535,7 +13558,10 @@ function saveCurrentGearList() {
         : projectStorageKey;
 
     if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
-        const resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
+        const resolved = resolveProjectStorageNameCollision(effectiveStorageKey, {
+            skipKey: typeof projectStorageKey === 'string' ? projectStorageKey : '',
+            skipProjectSignature: previousProjectInfoSignature,
+        });
         if (resolved.changed && resolved.name) {
             effectiveStorageKey = resolved.name;
             projectStorageKey = resolved.name;
