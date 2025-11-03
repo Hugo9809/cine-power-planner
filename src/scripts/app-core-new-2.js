@@ -13953,6 +13953,49 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       || (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.cineFeaturesConnectionDiagram)
       || null;
 
+    function powerInputTypes(dev) {
+      const out = [];
+      if (!dev) return out;
+      const add = t => {
+        normalizePowerPortType(t).forEach(pt => out.push(pt));
+      };
+      if (dev.powerInput) {
+        String(dev.powerInput)
+          .split('/')
+          .forEach(t => {
+            if (t.trim()) add(t.trim());
+          });
+      }
+      const inp = dev.power?.input;
+      if (Array.isArray(inp)) {
+        inp.forEach(i => {
+          const typeVal = i && (i.type || i.portType);
+          if (typeVal) add(typeVal);
+        });
+      } else if (inp) {
+        const typeVal = inp.type || inp.portType;
+        if (typeVal) add(typeVal);
+      }
+      return out;
+    }
+
+    function firstPowerInputType(dev) {
+      const list = powerInputTypes(dev);
+      return list.length ? list[0] : '';
+    }
+
+    function getAllPowerPortTypes() {
+      const types = new Set();
+      Object.values(devices.cameras).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
+      Object.values(devices.viewfinders || {}).forEach(vf => powerInputTypes(vf).forEach(t => types.add(t)));
+      Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
+      Object.values(devices.video || {}).forEach(vd => powerInputTypes(vd).forEach(t => types.add(t)));
+      Object.values(devices.fiz?.motors || {}).forEach(m => powerInputTypes(m).forEach(t => types.add(t)));
+      Object.values(devices.fiz?.controllers || {}).forEach(c => powerInputTypes(c).forEach(t => types.add(t)));
+      Object.values(devices.fiz?.distance || {}).forEach(d => powerInputTypes(d).forEach(t => types.add(t)));
+      return Array.from(types).sort(localeSort);
+    }
+
     if (connectionDiagramModule && typeof connectionDiagramModule.createConnectionDiagram === 'function') {
       try {
         const scheduleProjectAutoSaveFn =
@@ -15003,8 +15046,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearVideoPowerInputs() {
       setVideoPowerInputs([]);
     }
-
-    setVideoPowerInputs([]);
     
     function createVideoInputRow(value = '') {
       const row = document.createElement('div');
@@ -15370,50 +15411,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setRecordingMediaLocal([]);
     }
     
-    function powerInputTypes(dev) {
-      const out = [];
-      if (!dev) return out;
-      const add = t => {
-        normalizePowerPortType(t).forEach(pt => out.push(pt));
-      };
-      if (dev.powerInput) {
-        String(dev.powerInput)
-          .split('/')
-          .forEach(t => {
-            if (t.trim()) add(t.trim());
-          });
-      }
-      const inp = dev.power?.input;
-      if (Array.isArray(inp)) {
-        inp.forEach(i => {
-          const typeVal = i && (i.type || i.portType);
-          if (typeVal) add(typeVal);
-        });
-      } else if (inp) {
-        const typeVal = inp.type || inp.portType;
-        if (typeVal) add(typeVal);
-      }
-      return out;
-    }
-    
-    function firstPowerInputType(dev) {
-      const list = powerInputTypes(dev);
-      return list.length ? list[0] : '';
-    }
-    
-    function getAllPowerPortTypes() {
-      const types = new Set();
-      Object.values(devices.cameras).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
-      Object.values(devices.viewfinders || {}).forEach(vf => powerInputTypes(vf).forEach(t => types.add(t)));
-      Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
-      Object.values(devices.video || {}).forEach(vd => powerInputTypes(vd).forEach(t => types.add(t)));
-      Object.values(devices.fiz?.motors || {}).forEach(m => powerInputTypes(m).forEach(t => types.add(t)));
-      Object.values(devices.fiz?.controllers || {}).forEach(c => powerInputTypes(c).forEach(t => types.add(t)));
-      Object.values(devices.fiz?.distance || {}).forEach(d => powerInputTypes(d).forEach(t => types.add(t)));
-      return Array.from(types).sort(localeSort);
-    }
-    
     powerPortOptions = getAllPowerPortTypes();
+
+    setVideoPowerInputs([]);
     
     function updatePowerPortOptions() {
       powerPortOptions = getAllPowerPortTypes();
