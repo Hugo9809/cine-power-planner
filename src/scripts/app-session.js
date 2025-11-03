@@ -17851,14 +17851,91 @@ function formatFrameRateValue(value) {
 
 function tokenizeFrameRateContext(value) {
   if (typeof value !== 'string' || !value) return [];
-  return value
-    .toLowerCase()
+
+  const normalizedValue = value.toLowerCase();
+  const baseTokens = normalizedValue
     .replace(/[\u2013\u2014]/g, '-')
     .replace(/[()]/g, ' ')
     .replace(/[[\]]/g, ' ')
     .split(/[\s,/]+/)
     .map(token => token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, ''))
     .filter(token => token && token !== 'fps');
+
+  const tokens = new Set(baseTokens);
+  const addAliasToken = alias => {
+    if (!alias) return;
+    const normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
+    if (normalizedAlias) {
+      tokens.add(normalizedAlias);
+    }
+  };
+
+  const resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
+  const compactValue = resolutionValue.replace(/\s+/g, '');
+  const includes = text => resolutionValue.includes(text);
+  const compactIncludes = text => compactValue.includes(text);
+
+  if (
+    includes('uhd') ||
+    includes('ultra hd') ||
+    compactIncludes('ultrahd') ||
+    /3840\s*x\s*2160/.test(resolutionValue)
+  ) {
+    addAliasToken('uhd');
+    addAliasToken('4k');
+  }
+
+  if (
+    includes('dci') ||
+    /4096\s*x\s*2160/.test(resolutionValue)
+  ) {
+    addAliasToken('dci');
+    addAliasToken('4k');
+  }
+
+  if (
+    compactIncludes('2048x1080') ||
+    /2048\s*x\s*1080/.test(resolutionValue) ||
+    /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)
+  ) {
+    addAliasToken('2k');
+    addAliasToken('dci');
+  }
+
+  if (
+    compactIncludes('fullhd') ||
+    includes('full hd') ||
+    includes('full-hd') ||
+    includes('fhd') ||
+    includes('1080p') ||
+    /1920\s*x\s*1080/.test(resolutionValue)
+  ) {
+    addAliasToken('hd');
+    addAliasToken('fhd');
+    addAliasToken('1080p');
+  }
+
+  if (
+    includes('720p') ||
+    /1280\s*x\s*720/.test(resolutionValue)
+  ) {
+    addAliasToken('hd');
+    addAliasToken('720p');
+  }
+
+  if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('6k');
+  }
+
+  if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('8k');
+  }
+
+  if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
+    addAliasToken('4k');
+  }
+
+  return Array.from(tokens);
 }
 
 function normalizeMatchTarget(value) {
@@ -18141,6 +18218,11 @@ function populateFrameRateDropdown(selected = '') {
     sensorTokens,
     sensorModeDropdown && sensorModeDropdown.value
   );
+  const resolutionMaxFrameRate = findMaxFrameRateForSensor(
+    Array.isArray(frameRateEntries) ? frameRateEntries : [],
+    resolutionTokens,
+    recordingResolutionDropdown && recordingResolutionDropdown.value
+  );
 
   const { values: suggestions } = buildFrameRateSuggestions(
     Array.isArray(frameRateEntries) ? frameRateEntries : [],
@@ -18154,8 +18236,15 @@ function populateFrameRateDropdown(selected = '') {
   const uniqueValues = new Set();
   const filteredSuggestions = [];
   const numericCandidates = [];
-  const allowedMaxFrameRate = Number.isFinite(sensorModeMaxFrameRate)
-    ? sensorModeMaxFrameRate
+  const allowedMaxCandidates = [];
+  if (Number.isFinite(sensorModeMaxFrameRate)) {
+    allowedMaxCandidates.push(sensorModeMaxFrameRate);
+  }
+  if (Number.isFinite(resolutionMaxFrameRate)) {
+    allowedMaxCandidates.push(resolutionMaxFrameRate);
+  }
+  const allowedMaxFrameRate = allowedMaxCandidates.length
+    ? Math.min(...allowedMaxCandidates)
     : null;
 
   suggestions.forEach(originalValue => {
