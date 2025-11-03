@@ -18777,12 +18777,23 @@ function collectDeviceManagerCategories() {
   };
 
   const traverseSchema = (node, path = []) => {
-    if (!node || typeof node !== 'object') return;
+    if (!node || typeof node !== 'object') {
+      return;
+    }
     if (Array.isArray(node.attributes)) {
-      addCategory(path.join('.'));
+      const depth = path.length;
+      const topLevelKey = path[0];
+      if (
+        depth === 1 ||
+        (depth > 1 && (topLevelKey === 'accessories' || topLevelKey === 'fiz'))
+      ) {
+        addCategory(path.join('.'));
+      }
     }
     Object.entries(node).forEach(([childKey, value]) => {
-      if (childKey === 'attributes') return;
+      if (childKey === 'attributes') {
+        return;
+      }
       if (value && typeof value === 'object') {
         traverseSchema(value, path.concat(childKey));
       }
