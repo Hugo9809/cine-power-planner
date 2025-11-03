@@ -14817,6 +14817,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? videoPowerInputHelpers.normalizePowerInputList
         : fallbackNormalizePowerInputList;
 
+    let powerPortOptions;
+
+    function getInitializedPowerPortOptions() {
+      if (!Array.isArray(powerPortOptions) || !powerPortOptions.length) {
+        powerPortOptions = getAllPowerPortTypes();
+      }
+      return powerPortOptions;
+    }
+
     function createVideoPowerInputRow(initialEntry = {}) {
       const storedTypeValues = Array.isArray(initialEntry.type)
         ? initialEntry.type.filter(Boolean)
@@ -14832,13 +14841,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       typeSelect.className = 'video-power-type-select';
       typeSelect.name = 'videoPowerType';
       addEmptyOption(typeSelect);
-      powerPortOptions.forEach(optVal => {
+      const availablePowerPortOptions = getInitializedPowerPortOptions();
+      availablePowerPortOptions.forEach(optVal => {
         const opt = document.createElement('option');
         opt.value = optVal;
         opt.textContent = optVal;
         typeSelect.appendChild(opt);
       });
-      if (primaryType && !powerPortOptions.includes(primaryType)) {
+      if (primaryType && !availablePowerPortOptions.includes(primaryType)) {
         const opt = document.createElement('option');
         opt.value = primaryType;
         opt.textContent = primaryType;
@@ -14930,6 +14940,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return undefined;
       }
       const rows = Array.from(videoPowerInputsContainer.querySelectorAll('.video-power-row'));
+      const availablePowerPortOptions = getInitializedPowerPortOptions();
       const entries = rows.map(row => {
         const select = row.querySelector('.video-power-type-select');
         if (!select) {
@@ -14949,7 +14960,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
         if (!typeValues || !typeValues.length) {
-          if (typeof select.value === 'string' && select.value && select.value !== 'None') {
+          if (
+            typeof select.value === 'string' &&
+            select.value &&
+            select.value !== 'None' &&
+            (availablePowerPortOptions.includes(select.value) || select.value === select.dataset.originalValue)
+          ) {
             typeValues = [select.value];
           } else {
             typeValues = [];
@@ -15398,7 +15414,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return Array.from(types).sort(localeSort);
     }
     
-    let powerPortOptions = getAllPowerPortTypes();
+    powerPortOptions = getAllPowerPortTypes();
     
     function updatePowerPortOptions() {
       powerPortOptions = getAllPowerPortTypes();
