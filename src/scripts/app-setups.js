@@ -5,6 +5,7 @@
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions, getCameraLetterColors,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
+          populateSlowMotionRecordingResolutionDropdown, populateSlowMotionSensorModeDropdown, populateSlowMotionFrameRateDropdown,
           focusScalePreference, normalizeFocusScale, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
           resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
@@ -5831,8 +5832,12 @@ function populateProjectForm(info = {}) {
     if (typeof populateFrameRateDropdown === 'function') {
         populateFrameRateDropdown(info.recordingFrameRate);
     }
-    populateSlowMotionRecordingResolutionDropdown(info.slowMotionRecordingResolution);
-    populateSlowMotionSensorModeDropdown(info.slowMotionSensorMode);
+    if (typeof populateSlowMotionRecordingResolutionDropdown === 'function') {
+        populateSlowMotionRecordingResolutionDropdown(info.slowMotionRecordingResolution);
+    }
+    if (typeof populateSlowMotionSensorModeDropdown === 'function') {
+        populateSlowMotionSensorModeDropdown(info.slowMotionSensorMode);
+    }
     if (typeof populateSlowMotionFrameRateDropdown === 'function') {
         populateSlowMotionFrameRateDropdown(info.slowMotionRecordingFrameRate);
     }
