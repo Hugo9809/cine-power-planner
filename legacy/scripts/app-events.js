@@ -63,6 +63,67 @@ var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
   return {};
 }();
 var DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+var CABLE_SUBCATEGORY_FALLBACK_KEYS = Object.freeze(['power', 'video', 'fiz', 'cables']);
+function getCableSubcategoryKeysForUi(preferredKeys) {
+  var values = [];
+  var seen = new Set();
+  var pushKey = function pushKey(key) {
+    if (typeof key !== 'string') {
+      return;
+    }
+    var trimmed = key.trim();
+    if (!trimmed || seen.has(trimmed)) {
+      return;
+    }
+    seen.add(trimmed);
+    values.push(trimmed);
+  };
+  var schemaSubcategories = null;
+  try {
+    var schema = typeof deviceSchema !== 'undefined' ? deviceSchema : null;
+    schemaSubcategories = schema && schema.accessories && schema.accessories.cables ? schema.accessories.cables : null;
+  } catch (schemaLookupError) {
+    void schemaLookupError;
+    schemaSubcategories = null;
+  }
+  if (schemaSubcategories && _typeof(schemaSubcategories) === 'object') {
+    try {
+      Object.keys(schemaSubcategories).forEach(function (key) {
+        pushKey(key);
+      });
+    } catch (schemaIterationError) {
+      void schemaIterationError;
+    }
+  }
+  for (var index = 0; index < CABLE_SUBCATEGORY_FALLBACK_KEYS.length; index += 1) {
+    pushKey(CABLE_SUBCATEGORY_FALLBACK_KEYS[index]);
+  }
+  var existingSubcategories = null;
+  try {
+    var devicesRoot = typeof devices !== 'undefined' ? devices : null;
+    existingSubcategories = devicesRoot && devicesRoot.accessories && devicesRoot.accessories.cables ? devicesRoot.accessories.cables : null;
+  } catch (devicesLookupError) {
+    void devicesLookupError;
+    existingSubcategories = null;
+  }
+  if (existingSubcategories && _typeof(existingSubcategories) === 'object') {
+    try {
+      Object.keys(existingSubcategories).forEach(function (key) {
+        pushKey(key);
+      });
+    } catch (existingIterationError) {
+      void existingIterationError;
+    }
+  }
+  if (Array.isArray(preferredKeys)) {
+    for (var _index = 0; _index < preferredKeys.length; _index += 1) {
+      pushKey(preferredKeys[_index]);
+    }
+  } else {
+    pushKey(preferredKeys);
+  }
+  return values;
+}
 function getDeviceStorageKeyVariantsForEvents() {
   if (typeof require === 'function') {
     try {
@@ -3519,21 +3580,27 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     distanceNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "accessories.cables") {
-    var _devices$accessories;
-    wattFieldDiv.style.display = "none";
-    subcategoryFieldDiv.hidden = false;
-    var subcats = Object.keys(((_devices$accessories = devices.accessories) === null || _devices$accessories === void 0 ? void 0 : _devices$accessories.cables) || {});
+    if (wattFieldDiv) {
+      wattFieldDiv.style.display = "none";
+    }
+    if (subcategoryFieldDiv) {
+      subcategoryFieldDiv.hidden = false;
+    }
+    var subcategoryKeys = getCableSubcategoryKeysForUi(subcategory ? [subcategory] : []);
     newSubcategorySelect.innerHTML = '';
-    for (var _i = 0, _subcats = subcats; _i < _subcats.length; _i++) {
-      var sc = _subcats[_i];
+    for (var _index2 = 0; _index2 < subcategoryKeys.length; _index2 += 1) {
+      var sc = subcategoryKeys[_index2];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
       newSubcategorySelect.appendChild(opt);
     }
-    newSubcategorySelect.value = subcategory || '';
+    var effectiveSubcategory = subcategory && subcategoryKeys.indexOf(subcategory) !== -1 ? subcategory : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
+    newSubcategorySelect.value = effectiveSubcategory || '';
     newSubcategorySelect.disabled = false;
-    buildDynamicFields("accessories.cables.".concat(subcategory), deviceData, categoryExcludedAttrs["accessories.cables.".concat(subcategory)] || []);
+    if (effectiveSubcategory) {
+      buildDynamicFields("accessories.cables.".concat(effectiveSubcategory), deviceData, categoryExcludedAttrs["accessories.cables.".concat(effectiveSubcategory)] || []);
+    }
   } else {
     var watt = _typeof(deviceData) === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
@@ -3667,6 +3734,7 @@ if (newCategorySelectElement) {
     placeWattField(val);
     clearDynamicFields();
     subcategoryFieldDiv.hidden = true;
+    var previousSubcategoryValue = newSubcategorySelect ? newSubcategorySelect.value : '';
     newSubcategorySelect.innerHTML = "";
     newSubcategorySelect.disabled = false;
     if (dtapRow) dtapRow.style.display = "";
@@ -3709,19 +3777,20 @@ if (newCategorySelectElement) {
     } else if (val === "fiz.distance") {
       showFormSection(distanceFieldsDiv);
     } else if (val === "accessories.cables") {
-      var _devices$accessories2;
       if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      subcategoryFieldDiv.hidden = false;
-      var subcats = Object.keys(((_devices$accessories2 = devices.accessories) === null || _devices$accessories2 === void 0 ? void 0 : _devices$accessories2.cables) || {});
-      for (var _i2 = 0, _subcats2 = subcats; _i2 < _subcats2.length; _i2++) {
-        var sc = _subcats2[_i2];
+      if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
+      var subcategoryKeys = getCableSubcategoryKeysForUi(previousSubcategoryValue ? [previousSubcategoryValue] : []);
+      for (var _i2 = 0; _i2 < subcategoryKeys.length; _i2++) {
+        var sc = subcategoryKeys[_i2];
         var opt = document.createElement('option');
         opt.value = sc;
         opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
         newSubcategorySelect.appendChild(opt);
       }
-      if (newSubcategorySelect.value) {
-        buildDynamicFields("accessories.cables.".concat(newSubcategorySelect.value), {}, categoryExcludedAttrs["accessories.cables.".concat(newSubcategorySelect.value)] || []);
+      var effectiveSubcategory = previousSubcategoryValue && subcategoryKeys.indexOf(previousSubcategoryValue) !== -1 ? previousSubcategoryValue : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
+      newSubcategorySelect.value = effectiveSubcategory || '';
+      if (effectiveSubcategory) {
+        buildDynamicFields("accessories.cables.".concat(effectiveSubcategory), {}, categoryExcludedAttrs["accessories.cables.".concat(effectiveSubcategory)] || []);
       }
     } else {
       buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);

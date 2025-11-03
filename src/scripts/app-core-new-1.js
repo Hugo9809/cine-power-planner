@@ -19188,12 +19188,13 @@ function removeOriginalDeviceEntry(originalCategory, originalSubcategory, origin
   delete container[originalName];
   if (
     originalCategory === 'accessories.cables' &&
-    devices.accessories?.cables &&
-    container &&
     originalSubcategory &&
-    !Object.keys(container).length
+    devices.accessories?.cables
   ) {
-    delete devices.accessories.cables[originalSubcategory];
+    const existing = devices.accessories.cables[originalSubcategory];
+    if (!existing || typeof existing !== 'object') {
+      devices.accessories.cables[originalSubcategory] = {};
+    }
   }
 }
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
