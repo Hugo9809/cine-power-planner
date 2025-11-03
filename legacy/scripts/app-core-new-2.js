@@ -12231,10 +12231,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else if (field === 'monitoringConfiguration') {
         if (val) parts.push('Adds default monitors and cable sets for each role.');
       } else if (field === 'videoDistribution') {
-        if (val) parts.push('Includes distribution hardware for the selected method.');
-      }
-      return parts.join(' ');
+      if (val) parts.push('Includes distribution hardware for the selected method.');
     }
+    return parts.join(' ');
+  }
+
+  function handleRequirementBoxKeydown(event) {
+    var key = event && event.key;
+    if (!key) return;
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].indexOf(key) === -1) {
+      return;
+    }
+    if (!projectRequirementsOutput) return;
+    var boxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+    if (!boxes.length) return;
+    var target = event.currentTarget;
+    var currentIndex = boxes.indexOf(target);
+    if (currentIndex === -1) return;
+    event.preventDefault();
+    var nextIndex = currentIndex;
+    if (key === 'ArrowLeft' || key === 'ArrowUp') {
+      nextIndex = (currentIndex - 1 + boxes.length) % boxes.length;
+    } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+      nextIndex = (currentIndex + 1) % boxes.length;
+    } else if (key === 'Home') {
+      nextIndex = 0;
+    } else if (key === 'End') {
+      nextIndex = boxes.length - 1;
+    }
+    var nextBox = boxes[nextIndex];
+    if (!nextBox || typeof nextBox.focus !== 'function') return;
+    try {
+      nextBox.focus({ preventScroll: true });
+    } catch (focusError) {
+      void focusError;
+      nextBox.focus();
+    }
+  }
     var GEAR_TABLE_CATEGORY_META = Object.freeze({
       Camera: {
         summary: 'Primary camera body chosen for the current setup.',
@@ -12431,30 +12464,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         gearHtml = _splitGearListHtml.gearHtml;
       var safeProjectHtml = sanitizeSharedHtml(projectHtml);
       var safeGearHtml = sanitizeSharedHtml(gearHtml);
-      if (projectRequirementsOutput) {
-        if (safeProjectHtml) {
-          projectRequirementsOutput.innerHTML = safeProjectHtml;
-          projectRequirementsOutput.classList.remove('hidden');
-          projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(function (box) {
-            var _box$querySelector, _box$querySelector2;
-            var label = ((_box$querySelector = box.querySelector('.req-label')) === null || _box$querySelector === void 0 ? void 0 : _box$querySelector.textContent) || '';
-            var value = ((_box$querySelector2 = box.querySelector('.req-value')) === null || _box$querySelector2 === void 0 ? void 0 : _box$querySelector2.textContent) || '';
-            var field = box.getAttribute('data-field') || '';
-            var baseDesc = value ? "".concat(label, ": ").concat(value) : label;
-            var logic = describeRequirement(field, value);
-            var desc = logic ? "".concat(baseDesc, " \u2013 ").concat(logic) : baseDesc;
-            box.setAttribute('title', desc);
-            box.setAttribute('data-help', desc);
-            box.querySelectorAll('.req-label, .req-value').forEach(function (el) {
-              el.setAttribute('title', desc);
-              el.setAttribute('data-help', desc);
+        if (projectRequirementsOutput) {
+          if (safeProjectHtml) {
+            projectRequirementsOutput.innerHTML = safeProjectHtml;
+            projectRequirementsOutput.classList.remove('hidden');
+            var requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+            requirementBoxes.forEach(function (box) {
+              var _box$querySelector, _box$querySelector2;
+              var label = ((_box$querySelector = box.querySelector('.req-label')) === null || _box$querySelector === void 0 ? void 0 : _box$querySelector.textContent) || '';
+              var value = ((_box$querySelector2 = box.querySelector('.req-value')) === null || _box$querySelector2 === void 0 ? void 0 : _box$querySelector2.textContent) || '';
+              var field = box.getAttribute('data-field') || '';
+              var baseDesc = value ? "".concat(label, ": ").concat(value) : label;
+              var logic = describeRequirement(field, value);
+              var desc = logic ? "".concat(baseDesc, " \u2013 ").concat(logic) : baseDesc;
+              box.setAttribute('title', desc);
+              box.setAttribute('data-help', desc);
+              if (!box.hasAttribute('tabindex')) {
+                box.setAttribute('tabindex', '0');
+              }
+              if (!box.hasAttribute('role')) {
+                box.setAttribute('role', 'group');
+              }
+              if (desc) {
+                box.setAttribute('aria-label', desc);
+              } else if (baseDesc) {
+                box.setAttribute('aria-label', baseDesc);
+              }
+              box.addEventListener('keydown', handleRequirementBoxKeydown);
+              box.querySelectorAll('.req-label, .req-value').forEach(function (el) {
+                el.setAttribute('title', desc);
+                el.setAttribute('data-help', desc);
+              });
             });
-          });
-          adjustGearListSelectWidths(projectRequirementsOutput);
-        } else {
-          projectRequirementsOutput.innerHTML = '';
-          projectRequirementsOutput.classList.add('hidden');
-        }
+            adjustGearListSelectWidths(projectRequirementsOutput);
+          } else {
+            projectRequirementsOutput.innerHTML = '';
+            projectRequirementsOutput.classList.add('hidden');
+          }
       }
       if (gearListOutput) {
         if (safeGearHtml) {

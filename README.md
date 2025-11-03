@@ -1181,6 +1181,9 @@ data.
   country. Populate whichever fields you have—everything stays optional—and the
   planner will preserve structured values in saves, backups, imports and
   printable reports.
+- Arrow keys (including Home and End) move focus between the saved Project
+  Requirements cards so crews can review every note without leaving the
+  keyboard.
 - Gear lists save with the project, appear in printable overviews, live inside
   shareable project files and can be removed with **Delete Gear List** if you
   want a fresh start.
