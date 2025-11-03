@@ -20144,6 +20144,160 @@ function autoRows(text, min = 3, max = 10) {
   return Math.max(min, Math.min(max, lines));
 }
 
+function normalizeSchemaListValues(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map(item => (item === null || item === undefined ? '' : String(item).trim()))
+      .filter(Boolean);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function createSchemaListControl(options) {
+  const {
+    attrId,
+    labelText,
+    values = [],
+    placeholder = ''
+  } = options || {};
+
+  const ensureId = typeof ensureElementId === 'function'
+    ? ensureElementId
+    : (element, baseText) => {
+        if (!element) return '';
+        if (element.id) return element.id;
+        const base = (baseText || 'field').toString().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field';
+        let counter = 0;
+        let candidate = '';
+        do {
+          counter += 1;
+          candidate = `${base}-${counter}`;
+        } while (typeof document !== 'undefined' && document.getElementById(candidate));
+        try {
+          element.id = candidate;
+        } catch (assignError) {
+          void assignError;
+        }
+        return element.id || candidate;
+      };
+
+  const createLabel = typeof createHiddenLabel === 'function'
+    ? createHiddenLabel
+    : (forId, text) => {
+        const label = document.createElement('label');
+        label.className = 'visually-hidden';
+        if (forId) label.setAttribute('for', forId);
+        label.textContent = typeof text === 'string' ? text : '';
+        return label;
+      };
+
+  const container = document.createElement('div');
+  container.className = 'schema-list-control';
+  container.id = attrId;
+  container.dataset.attrType = 'list';
+
+  const listBody = document.createElement('div');
+  listBody.className = 'schema-list-body';
+
+  const normalizedValues = normalizeSchemaListValues(values);
+  const normalizedPlaceholder = typeof placeholder === 'string' ? placeholder : '';
+  const fallbackContext = typeof labelText === 'string' && labelText ? labelText : attrId || '';
+
+  const createRow = (initialValue = '') => {
+    const row = document.createElement('div');
+    row.className = 'schema-list-row';
+
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'schema-list-row-input';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'schema-input schema-list-input';
+    input.dataset.listItem = 'true';
+    if (normalizedPlaceholder) {
+      input.placeholder = normalizedPlaceholder;
+    }
+    input.value = initialValue === null || initialValue === undefined ? '' : String(initialValue);
+
+    const inputId = ensureId(input, `${attrId || 'list'}-item`);
+    inputWrapper.appendChild(createLabel(inputId, labelText));
+    inputWrapper.appendChild(input);
+
+    const actions = document.createElement('div');
+    actions.className = 'schema-list-row-actions';
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+        fallbackContext,
+        actionKey: 'addEntry',
+      });
+    } else {
+      addBtn.textContent = '+';
+      addBtn.setAttribute('aria-label', 'Add');
+    }
+
+    addBtn.addEventListener('click', () => {
+      const newRow = createRow('');
+      row.after(newRow);
+      const nextInput = newRow.querySelector('[data-list-item="true"]');
+      if (nextInput && typeof nextInput.focus === 'function') {
+        nextInput.focus();
+      }
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+        fallbackContext,
+        actionKey: 'removeEntry',
+      });
+    } else {
+      removeBtn.textContent = '−';
+      removeBtn.setAttribute('aria-label', 'Remove');
+    }
+
+    removeBtn.addEventListener('click', () => {
+      const rows = Array.from(listBody.querySelectorAll('.schema-list-row'));
+      if (rows.length > 1) {
+        row.remove();
+        return;
+      }
+      input.value = '';
+      if (typeof input.focus === 'function') {
+        input.focus();
+      }
+    });
+
+    actions.appendChild(addBtn);
+    actions.appendChild(removeBtn);
+
+    row.appendChild(inputWrapper);
+    row.appendChild(actions);
+    return row;
+  };
+
+  if (normalizedValues.length) {
+    normalizedValues.forEach(val => {
+      listBody.appendChild(createRow(val));
+    });
+  } else {
+    listBody.appendChild(createRow(''));
+  }
+
+  container.appendChild(listBody);
+
+  return container;
+}
+
 function createSchemaField(category, attr, value) {
   const config = resolveSchemaFieldConfig(category, attr) || {};
   const attrId = `attr-${attr}`;
@@ -20206,7 +20360,14 @@ function createSchemaField(category, attr, value) {
   row.appendChild(label);
 
   let control;
-  if (inputType === 'list' || inputType === 'json' || inputType === 'textarea') {
+  if (inputType === 'list') {
+    control = createSchemaListControl({
+      attrId,
+      labelText,
+      values: value,
+      placeholder: config.placeholder
+    });
+  } else if (inputType === 'json' || inputType === 'textarea') {
     control = document.createElement('textarea');
     control.className = 'schema-input schema-input--textarea';
     control.id = attrId;
@@ -20232,7 +20393,9 @@ function createSchemaField(category, attr, value) {
     }
   }
 
-  control.dataset.attrType = inputType;
+  if (control && control.dataset) {
+    control.dataset.attrType = inputType;
+  }
   if (config.placeholder && !control.value) {
     control.placeholder = config.placeholder;
   }
@@ -20407,10 +20570,18 @@ function collectDynamicFieldValues(category, exclude = []) {
       continue;
     }
     if (type === 'list') {
-      const list = el.value
-        .split('\n')
-        .map(item => item.trim())
-        .filter(Boolean);
+      const listInputs = Array.from(el.querySelectorAll('[data-list-item="true"]'));
+      let list = [];
+      if (listInputs.length) {
+        list = listInputs
+          .map(input => (typeof input.value === 'string' ? input.value.trim() : ''))
+          .filter(Boolean);
+      } else if (typeof el.value === 'string') {
+        list = el.value
+          .split('\n')
+          .map(item => item.trim())
+          .filter(Boolean);
+      }
       if (list.length) {
         result[attr] = list;
       }
