@@ -13922,6 +13922,39 @@ async function setLanguage(lang) {
         recordingFrameRateHintElem.hidden = true;
       }
     }
+    if (slowMotionLegendElem) {
+      const legendText = projectFormTexts.slowMotionHeading || fallbackProjectForm.slowMotionHeading;
+      if (legendText) slowMotionLegendElem.textContent = legendText;
+    }
+    setLabelText(slowMotionRecordingResolutionLabel, 'slowMotionRecordingResolution');
+    setLabelText(slowMotionSensorModeLabel, 'slowMotionSensorMode');
+    setLabelText(slowMotionAspectRatioLabel, 'slowMotionAspectRatio');
+    setLabelText(slowMotionBaseFrameRateLabel, 'slowMotionBaseFrameRate');
+    setLabelText(slowMotionRecordingFrameRateLabel, 'slowMotionRecordingFrameRate');
+    if (slowMotionRecordingFrameRateHintElem) {
+      const slowRangeTemplate =
+        projectFormTexts.slowMotionRecordingFrameRateRangeHint ||
+        fallbackProjectForm.slowMotionRecordingFrameRateRangeHint ||
+        '';
+      const slowDefaultHint =
+        projectFormTexts.slowMotionRecordingFrameRateDefaultHint ||
+        fallbackProjectForm.slowMotionRecordingFrameRateDefaultHint ||
+        '';
+      if (slowRangeTemplate) {
+        slowMotionRecordingFrameRateHintElem.setAttribute('data-range-template', slowRangeTemplate);
+      } else {
+        slowMotionRecordingFrameRateHintElem.removeAttribute('data-range-template');
+      }
+      if (slowDefaultHint) {
+        slowMotionRecordingFrameRateHintElem.setAttribute('data-default-message', slowDefaultHint);
+        slowMotionRecordingFrameRateHintElem.textContent = slowDefaultHint;
+        slowMotionRecordingFrameRateHintElem.hidden = false;
+      } else {
+        slowMotionRecordingFrameRateHintElem.removeAttribute('data-default-message');
+        slowMotionRecordingFrameRateHintElem.textContent = '';
+        slowMotionRecordingFrameRateHintElem.hidden = true;
+      }
+    }
     setLabelText(lensesHeadingElem, 'lensesHeading');
     setLabelText(lensManufacturerLabel, 'lensManufacturerStep');
     setLabelText(lensSeriesLabel, 'lensSeriesStep');
@@ -14311,6 +14344,13 @@ const deliveryResolutionSelect = document.getElementById("deliveryResolution");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
 const recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
 const recordingFrameRateHintElem = document.getElementById("recordingFrameRateHint");
+const slowMotionLegendElem = document.getElementById("slowMotionFrameRateLegend");
+const slowMotionRecordingResolutionLabel = document.getElementById("slowMotionRecordingResolutionLabel");
+const slowMotionSensorModeLabel = document.getElementById("slowMotionSensorModeLabel");
+const slowMotionAspectRatioLabel = document.getElementById("slowMotionAspectRatioLabel");
+const slowMotionBaseFrameRateLabel = document.getElementById("slowMotionBaseFrameRateLabel");
+const slowMotionRecordingFrameRateLabel = document.getElementById("slowMotionRecordingFrameRateLabel");
+const slowMotionRecordingFrameRateHintElem = document.getElementById("slowMotionRecordingFrameRateHint");
 const sensorModeLabel = document.getElementById("sensorModeLabel");
 const aspectRatioLabel = document.getElementById("aspectRatioLabel");
 const codecLabel = document.getElementById("codecLabel");
@@ -14584,10 +14624,15 @@ var projectFieldIcons = {
   deliveryResolution: iconGlyph('\uEF69', ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
   recordingFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
+  slowMotionRecordingResolution: ICON_GLYPHS.camera,
+  slowMotionRecordingFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
   aspectRatio: ASPECT_RATIO_ICON,
   codec: ICON_GLYPHS.codec,
   baseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
+  slowMotionBaseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
   sensorMode: ICON_GLYPHS.sensor,
+  slowMotionSensorMode: ICON_GLYPHS.sensor,
+  slowMotionAspectRatio: ASPECT_RATIO_ICON,
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph('\uE0A3', ICON_FONT_KEYS.UICONS),
   cameraHandle: iconGlyph('\uF2DC', ICON_FONT_KEYS.UICONS),

@@ -7446,6 +7446,78 @@
                 aria-live="polite"
               ></p>
             </div>
+            <fieldset class="project-slow-motion" id="slowMotionFrameRateGroup">
+              <legend id="slowMotionFrameRateLegend">Slow Motion Frame Rate</legend>
+              <div class="form-row">
+                <label for="slowMotionRecordingResolution" id="slowMotionRecordingResolutionLabel">Slow Motion Recording Resolution:</label>
+                <select id="slowMotionRecordingResolution" name="slowMotionRecordingResolution"></select>
+              </div>
+              <div class="form-row">
+                <label for="slowMotionSensorMode" id="slowMotionSensorModeLabel">Slow Motion Sensor Mode:</label>
+                <select id="slowMotionSensorMode" name="slowMotionSensorMode"></select>
+              </div>
+              <div class="form-row">
+                <label for="slowMotionAspectRatio" id="slowMotionAspectRatioLabel">Slow Motion Aspect Ratio:</label>
+                <select id="slowMotionAspectRatio" name="slowMotionAspectRatio">
+                  <option value=""></option>
+                  <option value="16:9">16:9</option>
+                  <option value="17:9">17:9</option>
+                  <option value="4:3">4:3</option>
+                  <option value="1.85:1">1.85:1</option>
+                  <option value="2.39:1">2.39:1</option>
+                  <option value="1:1">1:1</option>
+                  <option value="3:2">3:2</option>
+                  <option value="2:1">2:1</option>
+                  <option value="9:16">9:16</option>
+                  <option value="21:9">21:9</option>
+                  <option value="1.37:1">1.37:1</option>
+                  <option value="1.66:1">1.66:1</option>
+                  <option value="1.90:1">1.90:1</option>
+                  <option value="2.20:1">2.20:1</option>
+                  <option value="2.35:1">2.35:1</option>
+                  <option value="2.40:1">2.40:1</option>
+                  <option value="2.76:1">2.76:1</option>
+                  <option value="4:5">4:5</option>
+                  <option value="5:4">5:4</option>
+                  <option value="16:10">16:10</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="slowMotionBaseFrameRate" id="slowMotionBaseFrameRateLabel">Slow Motion Base Frame Rate:</label>
+                <select id="slowMotionBaseFrameRate" name="slowMotionBaseFrameRate">
+                  <option value=""></option>
+                  <option value="23.976">23.976</option>
+                  <option value="24">24</option>
+                  <option value="25">25</option>
+                  <option value="29.97">29.97</option>
+                  <option value="30">30</option>
+                  <option value="50">50</option>
+                  <option value="59.94">59.94</option>
+                  <option value="60">60</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="slowMotionRecordingFrameRate" id="slowMotionRecordingFrameRateLabel">Slow Motion Recording Frame Rate:</label>
+                <div class="input-with-datalist">
+                  <input
+                    id="slowMotionRecordingFrameRate"
+                    name="slowMotionRecordingFrameRate"
+                    type="number"
+                    inputmode="decimal"
+                    min="1"
+                    step="0.001"
+                    list="slowMotionRecordingFrameRateOptions"
+                    aria-describedby="slowMotionRecordingFrameRateHint"
+                  />
+                  <datalist id="slowMotionRecordingFrameRateOptions"></datalist>
+                </div>
+                <p
+                  id="slowMotionRecordingFrameRateHint"
+                  class="project-field-hint"
+                  aria-live="polite"
+                ></p>
+              </div>
+            </fieldset>
           </div>
         </section>
         <section class="project-dialog-section" aria-labelledby="lensesHeading">

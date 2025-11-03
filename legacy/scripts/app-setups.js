@@ -5202,11 +5202,16 @@ function collectProjectFormData() {
     returnDays: returnDays,
     deliveryResolution: getValue('deliveryResolution'),
     recordingResolution: getValue('recordingResolution'),
+    slowMotionRecordingResolution: getValue('slowMotionRecordingResolution'),
     aspectRatio: getMultiValue('aspectRatio'),
     codec: getValue('codec'),
     baseFrameRate: getValue('baseFrameRate'),
     recordingFrameRate: getValue('recordingFrameRate'),
+    slowMotionBaseFrameRate: getValue('slowMotionBaseFrameRate'),
+    slowMotionRecordingFrameRate: getValue('slowMotionRecordingFrameRate'),
     sensorMode: getValue('sensorMode'),
+    slowMotionSensorMode: getValue('slowMotionSensorMode'),
+    slowMotionAspectRatio: getValue('slowMotionAspectRatio'),
     lenses: lensNames,
     requiredScenarios: getMultiValue('requiredScenarios'),
     cameraHandle: getMultiValue('cameraHandle'),
@@ -5310,7 +5315,7 @@ function populateProjectForm() {
     var field = projectForm.querySelector("[name=\"".concat(name, "\"]"));
     if (!field) return;
     var resolvedValue = value;
-    if (name === 'recordingFrameRate') {
+    if (name === 'recordingFrameRate' || name === 'slowMotionRecordingFrameRate') {
       if (typeof value === 'number' && Number.isFinite(value)) {
         resolvedValue = value % 1 ? value.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1') : String(value);
       } else if (typeof value === 'string') {
@@ -5345,6 +5350,11 @@ function populateProjectForm() {
   populateCodecDropdown(info.codec);
   if (typeof populateFrameRateDropdown === 'function') {
     populateFrameRateDropdown(info.recordingFrameRate);
+  }
+  populateSlowMotionRecordingResolutionDropdown(info.slowMotionRecordingResolution);
+  populateSlowMotionSensorModeDropdown(info.slowMotionSensorMode);
+  if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+    populateSlowMotionFrameRateDropdown(info.slowMotionRecordingFrameRate);
   }
   setVal('productionCompany', info.productionCompany);
   var normalizedAddressFields = function () {
@@ -5509,6 +5519,11 @@ function populateProjectForm() {
   setVal('baseFrameRate', info.baseFrameRate);
   setVal('recordingFrameRate', info.recordingFrameRate);
   setVal('sensorMode', info.sensorMode);
+  setVal('slowMotionRecordingResolution', info.slowMotionRecordingResolution);
+  setVal('slowMotionSensorMode', info.slowMotionSensorMode);
+  setVal('slowMotionAspectRatio', info.slowMotionAspectRatio);
+  setVal('slowMotionBaseFrameRate', info.slowMotionBaseFrameRate);
+  setVal('slowMotionRecordingFrameRate', info.slowMotionRecordingFrameRate);
   if (lensSelectionManager && typeof lensSelectionManager.applyInfo === 'function') {
     lensSelectionManager.applyInfo(info || {});
   }

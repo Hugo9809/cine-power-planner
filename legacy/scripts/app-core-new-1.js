@@ -11583,6 +11583,34 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                   recordingFrameRateHintElem.hidden = true;
                 }
               }
+              var legendText;
+              if (slowMotionLegendElem) {
+                legendText = projectFormTexts.slowMotionHeading || fallbackProjectForm.slowMotionHeading;
+                if (legendText) slowMotionLegendElem.textContent = legendText;
+              }
+              setLabelText(slowMotionRecordingResolutionLabel, 'slowMotionRecordingResolution');
+              setLabelText(slowMotionSensorModeLabel, 'slowMotionSensorMode');
+              setLabelText(slowMotionAspectRatioLabel, 'slowMotionAspectRatio');
+              setLabelText(slowMotionBaseFrameRateLabel, 'slowMotionBaseFrameRate');
+              setLabelText(slowMotionRecordingFrameRateLabel, 'slowMotionRecordingFrameRate');
+              if (slowMotionRecordingFrameRateHintElem) {
+                var slowRangeTemplate = projectFormTexts.slowMotionRecordingFrameRateRangeHint || fallbackProjectForm.slowMotionRecordingFrameRateRangeHint || '';
+                var slowDefaultHint = projectFormTexts.slowMotionRecordingFrameRateDefaultHint || fallbackProjectForm.slowMotionRecordingFrameRateDefaultHint || '';
+                if (slowRangeTemplate) {
+                  slowMotionRecordingFrameRateHintElem.setAttribute('data-range-template', slowRangeTemplate);
+                } else {
+                  slowMotionRecordingFrameRateHintElem.removeAttribute('data-range-template');
+                }
+                if (slowDefaultHint) {
+                  slowMotionRecordingFrameRateHintElem.setAttribute('data-default-message', slowDefaultHint);
+                  slowMotionRecordingFrameRateHintElem.textContent = slowDefaultHint;
+                  slowMotionRecordingFrameRateHintElem.hidden = false;
+                } else {
+                  slowMotionRecordingFrameRateHintElem.removeAttribute('data-default-message');
+                  slowMotionRecordingFrameRateHintElem.textContent = '';
+                  slowMotionRecordingFrameRateHintElem.hidden = true;
+                }
+              }
               setLabelText(lensesHeadingElem, 'lensesHeading');
               setLabelText(lensManufacturerLabel, 'lensManufacturerStep');
               setLabelText(lensSeriesLabel, 'lensSeriesStep');
@@ -11958,6 +11986,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
   var recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
   var recordingFrameRateHintElem = document.getElementById("recordingFrameRateHint");
+  var slowMotionLegendElem = document.getElementById("slowMotionFrameRateLegend");
+  var slowMotionRecordingResolutionLabel = document.getElementById("slowMotionRecordingResolutionLabel");
+  var slowMotionSensorModeLabel = document.getElementById("slowMotionSensorModeLabel");
+  var slowMotionAspectRatioLabel = document.getElementById("slowMotionAspectRatioLabel");
+  var slowMotionBaseFrameRateLabel = document.getElementById("slowMotionBaseFrameRateLabel");
+  var slowMotionRecordingFrameRateLabel = document.getElementById("slowMotionRecordingFrameRateLabel");
+  var slowMotionRecordingFrameRateHintElem = document.getElementById("slowMotionRecordingFrameRateHint");
   var sensorModeLabel = document.getElementById("sensorModeLabel");
   var aspectRatioLabel = document.getElementById("aspectRatioLabel");
   var codecLabel = document.getElementById("codecLabel");
@@ -12183,10 +12218,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     deliveryResolution: iconGlyph("\uEF69", ICON_FONT_KEYS.UICONS),
     recordingResolution: ICON_GLYPHS.camera,
     recordingFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
+    slowMotionRecordingResolution: ICON_GLYPHS.camera,
+    slowMotionRecordingFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
     aspectRatio: ASPECT_RATIO_ICON,
     codec: ICON_GLYPHS.codec,
     baseFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
+    slowMotionBaseFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
     sensorMode: ICON_GLYPHS.sensor,
+    slowMotionSensorMode: ICON_GLYPHS.sensor,
+    slowMotionAspectRatio: ASPECT_RATIO_ICON,
     requiredScenarios: REQUIRED_SCENARIOS_ICON,
     lenses: iconGlyph("\uE0A3", ICON_FONT_KEYS.UICONS),
     cameraHandle: iconGlyph("\uF2DC", ICON_FONT_KEYS.UICONS),

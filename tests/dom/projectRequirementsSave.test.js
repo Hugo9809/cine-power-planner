@@ -135,12 +135,28 @@ describe('project requirements persistence to project storage', () => {
     const aspectSelect = projectForm.querySelector('#aspectRatio');
     setMultiSelectValues(aspectSelect, ['16:9', '2.39:1']);
 
+    const slowMotionResolutionSelect = projectForm.querySelector('#slowMotionRecordingResolution');
+    setSelectValue(slowMotionResolutionSelect, '4K');
+
+    const slowMotionSensorSelect = projectForm.querySelector('#slowMotionSensorMode');
+    setSelectValue(slowMotionSensorSelect, 'LF Open Gate');
+
+    const slowMotionAspectSelect = projectForm.querySelector('#slowMotionAspectRatio');
+    setSelectValue(slowMotionAspectSelect, '2.39:1');
+
+    const slowMotionBaseSelect = projectForm.querySelector('#slowMotionBaseFrameRate');
+    setSelectValue(slowMotionBaseSelect, '24');
+
     const baseFrameRateSelect = projectForm.querySelector('#baseFrameRate');
     setSelectValue(baseFrameRateSelect, '24');
 
     const recordingFrameRateInput = projectForm.querySelector('#recordingFrameRate');
     recordingFrameRateInput.value = '120';
     recordingFrameRateInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const slowMotionRecordingFrameRateInput = projectForm.querySelector('#slowMotionRecordingFrameRate');
+    slowMotionRecordingFrameRateInput.value = '200';
+    slowMotionRecordingFrameRateInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     const requiredScenariosSelect = projectForm.querySelector('#requiredScenarios');
     setMultiSelectValues(requiredScenariosSelect, ['Outdoor', 'Slider']);
@@ -215,8 +231,13 @@ describe('project requirements persistence to project storage', () => {
       projectName: 'Requirements Capture',
       deliveryResolution: '4K',
       aspectRatio: '16:9, 2.39:1',
+      slowMotionRecordingResolution: '4K',
+      slowMotionSensorMode: 'LF Open Gate',
+      slowMotionAspectRatio: '2.39:1',
       baseFrameRate: '24',
       recordingFrameRate: '120',
+      slowMotionBaseFrameRate: '24',
+      slowMotionRecordingFrameRate: '200',
       requiredScenarios: 'Outdoor, Slider',
       cameraHandle: 'Hand Grips',
       viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket',

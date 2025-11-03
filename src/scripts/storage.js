@@ -9336,6 +9336,13 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Resolución de grabación',
     'Risoluzione di registrazione',
   ],
+  slowMotionRecordingResolution: [
+    'Slow Motion Recording Resolution',
+    'Zeitlupen-Aufnahmeauflösung',
+    'Résolution d’enregistrement au ralenti',
+    'Resolución de grabación en cámara lenta',
+    'Risoluzione di registrazione slow motion',
+  ],
   aspectRatio: [
     'Aspect Ratio',
     'Seitenverhältnis',
@@ -9351,6 +9358,13 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Velocidad base',
     'Frame rate base',
   ],
+  slowMotionBaseFrameRate: [
+    'Slow Motion Base Frame Rate',
+    'Zeitlupen-Basis-Framerate',
+    'Cadence de base au ralenti',
+    'Velocidad base en cámara lenta',
+    'Frame rate base slow motion',
+  ],
   recordingFrameRate: [
     'Recording Frame Rate',
     'Aufnahmebildrate',
@@ -9358,12 +9372,33 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Velocidad de grabación',
     'Frame rate di registrazione',
   ],
+  slowMotionRecordingFrameRate: [
+    'Slow Motion Recording Frame Rate',
+    'Zeitlupen-Aufnahmebildrate',
+    'Cadence d’enregistrement au ralenti',
+    'Velocidad de grabación en cámara lenta',
+    'Frame rate di registrazione slow motion',
+  ],
   sensorMode: [
     'Sensor Mode',
     'Sensormodus',
     'Mode capteur',
     'Modo de sensor',
     'Modalità sensore',
+  ],
+  slowMotionSensorMode: [
+    'Slow Motion Sensor Mode',
+    'Zeitlupen-Sensormodus',
+    'Mode capteur au ralenti',
+    'Modo de sensor en cámara lenta',
+    'Modalità sensore slow motion',
+  ],
+  slowMotionAspectRatio: [
+    'Slow Motion Aspect Ratio',
+    'Zeitlupen-Seitenverhältnis',
+    "Format d’image au ralenti",
+    'Relación de aspecto en cámara lenta',
+    'Formato slow motion',
   ],
   lenses: ['Lenses', 'Objektive', 'Optiques', 'Ópticas', 'Obiettivi'],
   requiredScenarios: [

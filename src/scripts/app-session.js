@@ -390,6 +390,12 @@ function sessionCreateResilientDeepClone(scope) {
 
 let sensorModeDropdown;
 let recordingResolutionDropdown;
+let slowMotionSensorModeDropdown;
+let slowMotionRecordingResolutionDropdown;
+let slowMotionAspectRatioSelect;
+let slowMotionRecordingFrameRateInput;
+let slowMotionRecordingFrameRateHint;
+let slowMotionRecordingFrameRateOptionsList;
 
 const SESSION_DEEP_CLONE =
   CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
@@ -6026,10 +6032,16 @@ if (cameraSelect) {
       updateCageSelectOptions();
     }
     const desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
+    const desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+    populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
+    populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
     if (typeof populateFrameRateDropdown === 'function') {
       populateFrameRateDropdown(desiredFrameRate);
+    }
+    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+      populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
     }
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
@@ -6056,6 +6068,30 @@ if (recordingResolutionDropdown) {
   recordingResolutionDropdown.addEventListener('change', () => {
     if (typeof populateFrameRateDropdown === 'function') {
       populateFrameRateDropdown(getCurrentFrameRateInputValue());
+    }
+  });
+}
+
+if (slowMotionSensorModeDropdown) {
+  slowMotionSensorModeDropdown.addEventListener('change', () => {
+    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+    }
+  });
+}
+
+if (slowMotionRecordingResolutionDropdown) {
+  slowMotionRecordingResolutionDropdown.addEventListener('change', () => {
+    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+    }
+  });
+}
+
+if (slowMotionAspectRatioSelect) {
+  slowMotionAspectRatioSelect.addEventListener('change', () => {
+    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
     }
   });
 }
@@ -17759,14 +17795,44 @@ const recordingFrameRateOptionsList =
     ? document.getElementById('recordingFrameRateOptions')
     : null;
 
+slowMotionRecordingFrameRateInput =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRate')
+    : null;
+
+slowMotionRecordingFrameRateHint =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRateHint')
+    : null;
+
+slowMotionRecordingFrameRateOptionsList =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingFrameRateOptions')
+    : null;
+
 sensorModeDropdown =
   typeof document !== 'undefined'
     ? document.getElementById('sensorMode')
     : null;
 
+slowMotionSensorModeDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionSensorMode')
+    : null;
+
 recordingResolutionDropdown =
   typeof document !== 'undefined'
     ? document.getElementById('recordingResolution')
+    : null;
+
+slowMotionRecordingResolutionDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionRecordingResolution')
+    : null;
+
+slowMotionAspectRatioSelect =
+  typeof document !== 'undefined'
+    ? document.getElementById('slowMotionAspectRatio')
     : null;
 
 const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
@@ -18189,34 +18255,66 @@ function findMaxFrameRateForSensor(entries, sensorTokens, sensorLabel = '') {
   return bestMaxValue;
 }
 
-function getCurrentFrameRateInputValue() {
-  if (!recordingFrameRateInput) return '';
-  const raw = recordingFrameRateInput.value;
+function getFrameRateInputValue(input) {
+  if (!input) return '';
+  const raw = input.value;
   return typeof raw === 'string' ? raw.trim() : '';
 }
 
-function populateFrameRateDropdown(selected = '') {
-  if (!recordingFrameRateInput || !recordingFrameRateOptionsList) {
+function getCurrentFrameRateInputValue() {
+  return getFrameRateInputValue(recordingFrameRateInput);
+}
+
+function collectFrameRateContextTokens(select) {
+  if (!select) {
+    return [];
+  }
+  if (select.multiple) {
+    return Array.from(select.selectedOptions || [])
+      .map(option => tokenizeFrameRateContext(option && option.value))
+      .reduce((acc, tokens) => (tokens && tokens.length ? acc.concat(tokens) : acc), []);
+  }
+  const value = typeof select.value === 'string' ? select.value : '';
+  return tokenizeFrameRateContext(value);
+}
+
+function populateFrameRateDropdownFor(config = {}) {
+  const {
+    selected = '',
+    recordingInput,
+    optionsList,
+    sensorSelect,
+    resolutionSelect,
+    aspectSelect,
+    hintElement,
+  } = config;
+
+  if (!recordingInput || !optionsList) {
     return;
   }
 
   const normalizedSelected = normalizeRecordingFrameRateValue(selected);
-  let currentValue = normalizedSelected || getCurrentFrameRateInputValue();
+  let currentValue = normalizedSelected || getFrameRateInputValue(recordingInput);
   const camKey = cameraSelect && cameraSelect.value;
   const frameRateEntries =
     camKey && devices && devices.cameras && devices.cameras[camKey]
       ? devices.cameras[camKey].frameRates
       : null;
 
-  const sensorTokens = tokenizeFrameRateContext(sensorModeDropdown && sensorModeDropdown.value);
-  const resolutionTokens = tokenizeFrameRateContext(
-    recordingResolutionDropdown && recordingResolutionDropdown.value
-  );
+  const sensorValue = sensorSelect && typeof sensorSelect.value === 'string'
+    ? sensorSelect.value
+    : '';
+  const sensorTokens = tokenizeFrameRateContext(sensorValue);
+  const resolutionValue = resolutionSelect && typeof resolutionSelect.value === 'string'
+    ? resolutionSelect.value
+    : '';
+  const resolutionTokens = tokenizeFrameRateContext(resolutionValue);
+  const aspectTokens = collectFrameRateContextTokens(aspectSelect);
 
   const sensorModeMaxFrameRate = findMaxFrameRateForSensor(
     Array.isArray(frameRateEntries) ? frameRateEntries : [],
     sensorTokens,
-    sensorModeDropdown && sensorModeDropdown.value
+    sensorValue
   );
   const resolutionMaxFrameRate = findMaxFrameRateForSensor(
     Array.isArray(frameRateEntries) ? frameRateEntries : [],
@@ -18229,10 +18327,11 @@ function populateFrameRateDropdown(selected = '') {
     [
       sensorTokens,
       resolutionTokens,
+      aspectTokens,
     ]
   );
 
-  recordingFrameRateOptionsList.innerHTML = '';
+  optionsList.innerHTML = '';
   const uniqueValues = new Set();
   const filteredSuggestions = [];
   const numericCandidates = [];
@@ -18272,7 +18371,7 @@ function populateFrameRateDropdown(selected = '') {
     filteredSuggestions.push(value);
     const opt = document.createElement('option');
     opt.value = value;
-    recordingFrameRateOptionsList.appendChild(opt);
+    optionsList.appendChild(opt);
   });
 
   if (currentValue && !uniqueValues.has(currentValue)) {
@@ -18283,7 +18382,7 @@ function populateFrameRateDropdown(selected = '') {
     ) {
       const opt = document.createElement('option');
       opt.value = currentValue;
-      recordingFrameRateOptionsList.appendChild(opt);
+      optionsList.appendChild(opt);
     }
   }
 
@@ -18331,45 +18430,74 @@ function populateFrameRateDropdown(selected = '') {
   }
 
   if (valueChanged) {
-    recordingFrameRateInput.value = adjustedValue;
+    recordingInput.value = adjustedValue;
     currentValue = adjustedValue;
-    recordingFrameRateInput.dispatchEvent(new Event('input', { bubbles: true }));
+    recordingInput.dispatchEvent(new Event('input', { bubbles: true }));
   } else {
-    recordingFrameRateInput.value = currentValue;
+    recordingInput.value = currentValue;
   }
 
   const placeholderCandidate = filteredSuggestions[0];
   if (!currentValue && placeholderCandidate) {
-    recordingFrameRateInput.placeholder = placeholderCandidate;
-  } else if (recordingFrameRateInput.placeholder) {
-    recordingFrameRateInput.placeholder = '';
+    recordingInput.placeholder = placeholderCandidate;
+  } else if (recordingInput.placeholder) {
+    recordingInput.placeholder = '';
   }
 
   if (minValue) {
-    recordingFrameRateInput.min = minValue;
+    recordingInput.min = minValue;
   }
 
   if (formattedMaxFrameRate) {
-    recordingFrameRateInput.setAttribute('max', formattedMaxFrameRate);
+    recordingInput.setAttribute('max', formattedMaxFrameRate);
   } else {
-    recordingFrameRateInput.removeAttribute('max');
+    recordingInput.removeAttribute('max');
   }
 
-  if (recordingFrameRateHint) {
+  if (hintElement) {
     let hintMessage = '';
     if (formattedMaxFrameRate) {
-      const template = recordingFrameRateHint.getAttribute('data-range-template');
+      const template = hintElement.getAttribute('data-range-template');
       hintMessage = template
         ? template.replace('{max}', formattedMaxFrameRate)
         : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
     } else {
-      hintMessage =
-        recordingFrameRateHint.getAttribute('data-default-message') ||
-        '';
+      hintMessage = hintElement.getAttribute('data-default-message') || '';
     }
-    recordingFrameRateHint.textContent = hintMessage;
-    recordingFrameRateHint.hidden = !hintMessage;
+    hintElement.textContent = hintMessage;
+    hintElement.hidden = !hintMessage;
   }
+}
+
+function populateFrameRateDropdown(selected = '') {
+  populateFrameRateDropdownFor({
+    selected,
+    recordingInput: recordingFrameRateInput,
+    optionsList: recordingFrameRateOptionsList,
+    sensorSelect: sensorModeDropdown,
+    resolutionSelect: recordingResolutionDropdown,
+    hintElement: recordingFrameRateHint,
+  });
+}
+
+function populateSlowMotionFrameRateDropdown(selected = '') {
+  populateFrameRateDropdownFor({
+    selected,
+    recordingInput: slowMotionRecordingFrameRateInput,
+    optionsList: slowMotionRecordingFrameRateOptionsList,
+    sensorSelect: slowMotionSensorModeDropdown,
+    resolutionSelect: slowMotionRecordingResolutionDropdown,
+    aspectSelect: slowMotionAspectRatioSelect,
+    hintElement: slowMotionRecordingFrameRateHint,
+  });
+}
+
+function populateSlowMotionRecordingResolutionDropdown(selected = '') {
+  populateCameraPropertyDropdown('slowMotionRecordingResolution', 'resolutions', selected);
+}
+
+function populateSlowMotionSensorModeDropdown(selected = '') {
+  populateCameraPropertyDropdown('slowMotionSensorMode', 'sensorModes', selected);
 }
 
 function populateSensorModeDropdown(selected = '') {
@@ -19382,8 +19510,11 @@ if (typeof module !== "undefined" && module.exports) {
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,
+    populateSlowMotionRecordingResolutionDropdown,
     populateFrameRateDropdown,
+    populateSlowMotionFrameRateDropdown,
     populateSensorModeDropdown,
+    populateSlowMotionSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
     getRequiredScenarioOptionEntries,
