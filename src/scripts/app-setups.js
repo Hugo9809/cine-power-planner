@@ -9,7 +9,9 @@
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
           resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
           OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM, generateSafeConnectorSummary,
-          showDeviceManagerSection, toggleDeviceManagerSection, refreshDeviceLists */
+          showDeviceManagerSection, toggleDeviceManagerSection, refreshDeviceLists,
+          populateSlowMotionRecordingResolutionDropdown, populateSlowMotionSensorModeDropdown,
+          populateSlowMotionFrameRateDropdown */
 
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
@@ -815,6 +817,110 @@ const PROJECT_FORM_FREEZE =
 let projectFormDataCache = null;
 let projectFormDataCacheDirty = true;
 
+function lensEscapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function lensStripPrefix(text, prefix) {
+    if (!text || !prefix) return text;
+    const pattern = new RegExp(`^${lensEscapeRegExp(prefix)}\\s+`, 'i');
+    return text.replace(pattern, '').trim();
+}
+
+function lensIsSpecToken(token) {
+    if (!token) return false;
+    const value = token.trim();
+    if (!value) return false;
+    if (/^T\d+/i.test(value)) return true;
+    if (/^f\//i.test(value)) return true;
+    if (/\d/.test(value)) {
+        if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
+        if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
+        if (/^\d+-\d+/.test(value)) return true;
+    }
+    return false;
+}
+
+function resolveLensManufacturer(lensData, lensName) {
+    if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
+        return lensData.brand.trim();
+    }
+    const firstToken = typeof lensName === 'string'
+        ? lensName.trim().split(/\s+/)[0]
+        : '';
+    return firstToken || 'Other';
+}
+
+function resolveLensSeries(lensName, manufacturer) {
+    if (typeof lensName !== 'string' || !lensName.trim()) {
+        return 'General';
+    }
+    let remainder = lensName.trim();
+    if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+        remainder = remainder.slice(manufacturer.length).trim();
+    }
+    if (!remainder) return 'General';
+    const tokens = remainder.split(/\s+/);
+    const seriesTokens = [];
+    for (let index = 0; index < tokens.length; index += 1) {
+        const token = tokens[index];
+        if (lensIsSpecToken(token)) {
+            break;
+        }
+        seriesTokens.push(token);
+    }
+    const series = seriesTokens.join(' ').trim();
+    return series || 'General';
+}
+
+function resolveLensFocalLabel(lensName, manufacturer, series) {
+    const withoutManufacturer = lensStripPrefix(lensName || '', manufacturer || '');
+    const withoutSeries = lensStripPrefix(withoutManufacturer, series || '');
+    return withoutSeries.trim();
+}
+
+function computeLensFocalSortKeyFromTexts(...sources) {
+    for (let i = 0; i < sources.length; i += 1) {
+        const source = sources[i];
+        if (typeof source !== 'string') continue;
+        const lower = source.toLowerCase();
+        const mmIndex = lower.indexOf('mm');
+        const beforeMm = mmIndex === -1 ? source : source.slice(0, mmIndex);
+        const matches = beforeMm.match(/\d+(?:\.\d+)?/g);
+        if (matches && matches.length) {
+            const values = matches
+                .map(part => Number(part))
+                .filter(Number.isFinite);
+            if (values.length) {
+                return Math.min(...values);
+            }
+        }
+    }
+    return Number.POSITIVE_INFINITY;
+}
+
+function buildLensSortMeta(lensName, lensData) {
+    const manufacturer = resolveLensManufacturer(lensData, lensName);
+    const series = resolveLensSeries(lensName, manufacturer);
+    const focalLabel = resolveLensFocalLabel(lensName, manufacturer, series);
+    const focalSortKey = computeLensFocalSortKeyFromTexts(focalLabel, lensName);
+    return {
+        manufacturer,
+        series,
+        focalLabel,
+        focalSortKey
+    };
+}
+
+function compareStringsCaseInsensitive(a, b) {
+    const stringA = typeof a === 'string' ? a : '';
+    const stringB = typeof b === 'string' ? b : '';
+    if (typeof localeSort === 'function') {
+        return localeSort(stringA, stringB);
+    }
+    return stringA.localeCompare(stringB, undefined, { sensitivity: 'base' });
+}
+
 const lensSelectionManager = (() => {
     const doc = typeof document !== 'undefined' ? document : null;
 
@@ -919,60 +1025,6 @@ const lensSelectionManager = (() => {
         }
     };
 
-    const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-    const stripPrefix = (text, prefix) => {
-        if (!text || !prefix) return text;
-        const pattern = new RegExp(`^${escapeRegExp(prefix)}\\s+`, 'i');
-        return text.replace(pattern, '').trim();
-    };
-
-    const isSpecToken = (token) => {
-        if (!token) return false;
-        const value = token.trim();
-        if (!value) return false;
-        if (/^T\d+/i.test(value)) return true;
-        if (/^f\//i.test(value)) return true;
-        if (/\d/.test(value)) {
-            if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
-            if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
-            if (/^\d+-\d+/.test(value)) return true;
-        }
-        return false;
-    };
-
-    const deriveManufacturer = (lensData, lensName) => {
-        if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
-            return lensData.brand.trim();
-        }
-        const firstToken = typeof lensName === 'string'
-            ? lensName.trim().split(/\s+/)[0]
-            : '';
-        return firstToken || 'Other';
-    };
-
-    const deriveSeriesName = (lensName, manufacturer) => {
-        if (typeof lensName !== 'string' || !lensName.trim()) {
-            return 'General';
-        }
-        let remainder = lensName.trim();
-        if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
-            remainder = remainder.slice(manufacturer.length).trim();
-        }
-        if (!remainder) return 'General';
-        const tokens = remainder.split(/\s+/);
-        const seriesTokens = [];
-        for (let index = 0; index < tokens.length; index += 1) {
-            const token = tokens[index];
-            if (isSpecToken(token)) {
-                break;
-            }
-            seriesTokens.push(token);
-        }
-        const series = seriesTokens.join(' ').trim();
-        return series || 'General';
-    };
-
     const extractMountLabels = (rawValue) => {
         const labels = [];
         const seen = new Set();
@@ -1037,9 +1089,8 @@ const lensSelectionManager = (() => {
 
         lensNames.forEach(name => {
             const lensData = lensDb[name] || {};
-            const manufacturer = deriveManufacturer(lensData, name);
-            const series = deriveSeriesName(name, manufacturer);
-            const focalLabel = stripPrefix(stripPrefix(name, manufacturer), series);
+            const sortMeta = buildLensSortMeta(name, lensData);
+            const { manufacturer, series, focalLabel, focalSortKey } = sortMeta;
             const mountLabels = extractMountLabels(lensData.mount);
             mountLabels.forEach(label => mountSet.add(label));
 
@@ -1050,6 +1101,7 @@ const lensSelectionManager = (() => {
                 series,
                 displayName: name,
                 focalLabel,
+                focalSortKey,
                 mountLabels,
                 optionMeta: mountLabels[0] ? `Mount: ${mountLabels[0]}` : ''
             };
@@ -1067,11 +1119,23 @@ const lensSelectionManager = (() => {
 
         manufacturerMap.forEach(seriesMap => {
             seriesMap.forEach(list => {
-                if (list.length && sortComparator) {
-                    list.sort((a, b) => sortComparator(a.displayName, b.displayName));
-                } else {
-                    list.sort((a, b) => a.displayName.localeCompare(b.displayName));
+                if (!Array.isArray(list) || !list.length) {
+                    return;
                 }
+                list.sort((a, b) => {
+                    const hasA = Number.isFinite(a.focalSortKey);
+                    const hasB = Number.isFinite(b.focalSortKey);
+                    if (hasA && hasB && a.focalSortKey !== b.focalSortKey) {
+                        return a.focalSortKey - b.focalSortKey;
+                    }
+                    if (hasA !== hasB) {
+                        return hasA ? -1 : 1;
+                    }
+                    if (a.focalLabel && b.focalLabel && a.focalLabel !== b.focalLabel) {
+                        return compareStringsCaseInsensitive(a.focalLabel, b.focalLabel);
+                    }
+                    return compareStringsCaseInsensitive(a.displayName, b.displayName);
+                });
             });
         });
 
@@ -11511,8 +11575,21 @@ function gearListGenerateHtmlImpl(info = {}) {
         const noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim()
             ? ` data-rental-note="${escapeHtml(rentalTexts.noteLabel)}"`
             : '';
-        return Object.entries(entries)
-            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+        const entryList = Object.entries(entries);
+        const baseSorter = typeof options.sorter === 'function'
+            ? options.sorter
+            : (left, right) => compareStringsCaseInsensitive(left[0], right[0]);
+        entryList.sort((left, right) => {
+            try {
+                return baseSorter(left, right);
+            } catch (sortError) {
+                if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+                    console.warn('formatItems sorter failed, falling back to default', sortError);
+                }
+                return compareStringsCaseInsensitive(left[0], right[0]);
+            }
+        });
+        return entryList
             .map(([base, entry]) => {
                 const total = entry.total;
                 const ctxCounts = entry.ctxCounts;
@@ -11523,7 +11600,7 @@ function gearListGenerateHtmlImpl(info = {}) {
                     if (base === 'sand bag') {
                         const realEntries = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() !== 'spare')
-                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                            .sort(([a], [b]) => compareStringsCaseInsensitive(a, b));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = total - usedCount;
                         ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
@@ -11542,15 +11619,15 @@ function gearListGenerateHtmlImpl(info = {}) {
                                 }
                                 return [c, count];
                             })
-                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                            .sort(([a], [b]) => compareStringsCaseInsensitive(a, b));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = total - usedCount;
                         ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     } else {
-                        const realEntries = Object.entries(ctxCounts)
-                            .filter(([c]) => c && c.toLowerCase() !== 'spare')
-                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                    const realEntries = Object.entries(ctxCounts)
+                        .filter(([c]) => c && c.toLowerCase() !== 'spare')
+                        .sort(([a], [b]) => compareStringsCaseInsensitive(a, b));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() === 'spare')
@@ -11902,9 +11979,17 @@ function gearListGenerateHtmlImpl(info = {}) {
         return formatted ? `${formatted} cm` : '';
     };
 
+    const lensSortMetaLookup = new Map();
     const lensDisplayNames = selectedLensNames.map(name => {
         const lens = devices.lenses && devices.lenses[name];
         const base = addArriKNumber(name);
+        const sortMeta = buildLensSortMeta(name, lens);
+        lensSortMetaLookup.set(base, {
+            manufacturer: sortMeta.manufacturer,
+            series: sortMeta.series,
+            focalLabel: sortMeta.focalLabel,
+            focalSortKey: sortMeta.focalSortKey
+        });
         if (!lens) return base;
         const lensFocusScaleMode = resolveLensFocusScaleMode(lens);
         const attrs = [];
@@ -11935,7 +12020,32 @@ function gearListGenerateHtmlImpl(info = {}) {
         }
         return attrs.length ? `${base} (${attrs.join(', ')})` : base;
     });
-    addRow('Lens', formatItems(lensDisplayNames));
+    const lensSorter = ([baseA], [baseB]) => {
+        const metaA = lensSortMetaLookup.get(baseA);
+        const metaB = lensSortMetaLookup.get(baseB);
+        if (metaA && metaB) {
+            const manufacturerCompare = compareStringsCaseInsensitive(metaA.manufacturer, metaB.manufacturer);
+            if (manufacturerCompare !== 0) return manufacturerCompare;
+            const seriesCompare = compareStringsCaseInsensitive(metaA.series, metaB.series);
+            if (seriesCompare !== 0) return seriesCompare;
+            const hasA = Number.isFinite(metaA.focalSortKey);
+            const hasB = Number.isFinite(metaB.focalSortKey);
+            if (hasA && hasB && metaA.focalSortKey !== metaB.focalSortKey) {
+                return metaA.focalSortKey - metaB.focalSortKey;
+            }
+            if (hasA !== hasB) {
+                return hasA ? -1 : 1;
+            }
+            const focalLabelCompare = compareStringsCaseInsensitive(metaA.focalLabel, metaB.focalLabel);
+            if (focalLabelCompare !== 0) return focalLabelCompare;
+        } else if (metaA && !metaB) {
+            return -1;
+        } else if (!metaA && metaB) {
+            return 1;
+        }
+        return compareStringsCaseInsensitive(baseA, baseB);
+    };
+    addRow('Lens', formatItems(lensDisplayNames, { sorter: lensSorter }));
     const parseRodTypes = raw => {
         if (!raw && raw !== 0) return [];
         const values = Array.isArray(raw) ? raw : [raw];
