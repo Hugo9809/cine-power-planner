@@ -9,7 +9,9 @@
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
           resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
           OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM, generateSafeConnectorSummary,
-          showDeviceManagerSection, toggleDeviceManagerSection, refreshDeviceLists */
+          showDeviceManagerSection, toggleDeviceManagerSection, refreshDeviceLists,
+          populateSlowMotionRecordingResolutionDropdown, populateSlowMotionSensorModeDropdown,
+          populateSlowMotionFrameRateDropdown */
 
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so

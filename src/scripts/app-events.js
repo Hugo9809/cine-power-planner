@@ -11,7 +11,8 @@
           setLensDeviceMountOptions, getLensDeviceMountOptions,
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
-          normalizeFocusScale, buildSettingsBackupPackage, deviceSchema */
+          normalizeFocusScale, buildSettingsBackupPackage, deviceSchema,
+          SAFE_LOCAL_STORAGE */
 
 const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
   if (typeof require === 'function') {
@@ -69,6 +70,243 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
 })();
 
 const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+
+const STORAGE_HELPERS_FOR_EVENTS = (function resolveStorageHelpersForEvents() {
+  const resolved = {};
+
+  const assignHelper = (source, key) => {
+    if (!source || typeof resolved[key] === 'function') {
+      return;
+    }
+    const value = source[key];
+    if (typeof value === 'function') {
+      resolved[key] = value;
+    }
+  };
+
+  if (typeof require === 'function') {
+    try {
+      const storageModule = require('./storage.js');
+      if (storageModule && typeof storageModule === 'object') {
+        assignHelper(storageModule, 'getSafeLocalStorage');
+        assignHelper(storageModule, 'saveDeviceData');
+        assignHelper(storageModule, 'clearUiCacheStorageEntries');
+      }
+    } catch (storageRequireError) {
+      void storageRequireError;
+    }
+  }
+
+  const scopeCandidates = [];
+  try {
+    if (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE) {
+      scopeCandidates.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  if (typeof globalThis === 'object' && globalThis) {
+    scopeCandidates.push(globalThis);
+  }
+
+  if (typeof window === 'object' && window) {
+    scopeCandidates.push(window);
+  }
+
+  if (typeof self === 'object' && self) {
+    scopeCandidates.push(self);
+  }
+
+  if (typeof global === 'object' && global) {
+    scopeCandidates.push(global);
+  }
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    assignHelper(scope, 'getSafeLocalStorage');
+    assignHelper(scope, 'saveDeviceData');
+    assignHelper(scope, 'clearUiCacheStorageEntries');
+
+    if (
+      typeof resolved.getSafeLocalStorage === 'function'
+      && typeof resolved.saveDeviceData === 'function'
+      && typeof resolved.clearUiCacheStorageEntries === 'function'
+    ) {
+      break;
+    }
+  }
+
+  return resolved;
+})();
+
+const STORAGE_BACKUP_SUFFIX_FOR_EVENTS = '__backup';
+const STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS = '__legacyMigrationBackup';
+
+function clearDeviceStorageVariantForEvents(keyVariant, options) {
+  if (typeof keyVariant !== 'string' || !keyVariant) {
+    return false;
+  }
+
+  const settings = options && typeof options === 'object' ? options : {};
+  const removalKeys = new Set();
+  removalKeys.add(keyVariant);
+
+  if (typeof STORAGE_BACKUP_SUFFIX_FOR_EVENTS === 'string' && STORAGE_BACKUP_SUFFIX_FOR_EVENTS) {
+    removalKeys.add(`${keyVariant}${STORAGE_BACKUP_SUFFIX_FOR_EVENTS}`);
+  }
+
+  if (
+    typeof STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS === 'string'
+    && STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS
+  ) {
+    removalKeys.add(`${keyVariant}${STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS}`);
+  }
+
+  let removed = false;
+  const logPrefix = settings.logPrefix || 'Failed to clear device storage variant';
+
+  const storageCandidates = new Set();
+
+  if (typeof STORAGE_HELPERS_FOR_EVENTS.getSafeLocalStorage === 'function') {
+    try {
+      const safeStorage = STORAGE_HELPERS_FOR_EVENTS.getSafeLocalStorage();
+      if (safeStorage) {
+        storageCandidates.add(safeStorage);
+      }
+    } catch (safeStorageError) {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(`${logPrefix}: safe storage lookup failed`, safeStorageError);
+        }
+      } catch (logError) {
+        void logError;
+      }
+    }
+  }
+
+  try {
+    if (typeof SAFE_LOCAL_STORAGE !== 'undefined' && SAFE_LOCAL_STORAGE) {
+      storageCandidates.add(SAFE_LOCAL_STORAGE);
+    }
+  } catch (safeLocalStorageLookupError) {
+    void safeLocalStorageLookupError;
+  }
+
+  try {
+    if (typeof globalThis === 'object' && globalThis && globalThis.localStorage) {
+      storageCandidates.add(globalThis.localStorage);
+    }
+  } catch (globalThisLookupError) {
+    void globalThisLookupError;
+  }
+
+  try {
+    if (typeof window === 'object' && window && window.localStorage) {
+      storageCandidates.add(window.localStorage);
+    }
+  } catch (windowLookupError) {
+    void windowLookupError;
+  }
+
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      storageCandidates.add(localStorage);
+    }
+  } catch (localStorageLookupError) {
+    void localStorageLookupError;
+  }
+
+  const removalTargets = Array.from(removalKeys);
+
+  storageCandidates.forEach((storage) => {
+    if (!storage || typeof storage.removeItem !== 'function') {
+      return;
+    }
+
+    for (let index = 0; index < removalTargets.length; index += 1) {
+      const removalKey = removalTargets[index];
+      if (typeof removalKey !== 'string' || !removalKey) {
+        continue;
+      }
+
+      try {
+        storage.removeItem(removalKey);
+        removed = true;
+      } catch (removeError) {
+        try {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn(`${logPrefix} "${removalKey}"`, removeError);
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+  });
+
+  if (typeof STORAGE_HELPERS_FOR_EVENTS.clearUiCacheStorageEntries === 'function') {
+    try {
+      STORAGE_HELPERS_FOR_EVENTS.clearUiCacheStorageEntries(removalTargets);
+    } catch (cacheClearError) {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to clear UI cache entries for device storage reset', cacheClearError);
+        }
+      } catch (logError) {
+        void logError;
+      }
+    }
+  }
+
+  return removed;
+}
+
+function clearAllDeviceStorageVariantsForEvents() {
+  const variants = getDeviceStorageKeyVariantsForEvents();
+  if (!variants || typeof variants.forEach !== 'function') {
+    return false;
+  }
+
+  let clearedAny = false;
+  variants.forEach((keyVariant) => {
+    if (typeof keyVariant !== 'string' || !keyVariant) {
+      return;
+    }
+
+    if (
+      typeof DEVICE_STORAGE_KEY_FOR_EVENTS === 'string'
+      && keyVariant === DEVICE_STORAGE_KEY_FOR_EVENTS
+      && typeof STORAGE_HELPERS_FOR_EVENTS.saveDeviceData === 'function'
+    ) {
+      try {
+        STORAGE_HELPERS_FOR_EVENTS.saveDeviceData(null);
+        clearedAny = true;
+      } catch (storeError) {
+        try {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Failed to clear primary device storage via saveDeviceData', storeError);
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+
+    const removedVariant = clearDeviceStorageVariantForEvents(keyVariant, {
+      logPrefix: 'Failed to clear device storage variant',
+    });
+    if (removedVariant) {
+      clearedAny = true;
+    }
+  });
+
+  return clearedAny;
+}
 
 const CABLE_SUBCATEGORY_FALLBACK_KEYS = Object.freeze(['power', 'video', 'fiz', 'cables']);
 
@@ -5058,33 +5296,15 @@ if (exportAndRevertBtn) {
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
         // Step 2: Remove saved database and reload page so device files are re-read
-        const variants = getDeviceStorageKeyVariantsForEvents();
-
-        if (variants && typeof variants.forEach === 'function') {
-          variants.forEach((keyVariant) => {
-            if (typeof keyVariant !== 'string' || !keyVariant) {
-              return;
+        const clearedVariants = clearAllDeviceStorageVariantsForEvents();
+        if (!clearedVariants) {
+          try {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Unable to confirm device storage reset during export & revert');
             }
-
-            try {
-              const canRemoveDeviceStorage =
-                typeof localStorage !== 'undefined'
-                && localStorage
-                && typeof localStorage.removeItem === 'function';
-
-              if (canRemoveDeviceStorage) {
-                localStorage.removeItem(keyVariant);
-              }
-            } catch (removeError) {
-              try {
-                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                  console.warn(`Failed to remove device storage key variant "${keyVariant}"`, removeError);
-                }
-              } catch (logError) {
-                void logError;
-              }
-            }
-          });
+          } catch (logError) {
+            void logError;
+          }
         }
 
         alert(texts[currentLang].alertExportAndRevertSuccess);
