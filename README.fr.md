@@ -451,6 +451,7 @@ Ces routines garantissent que projets, backups et ressources hors ligne restent 
 - Les annotations de couverture du tableau des règles apparaissent dans les vues imprimables, les exports et les bundles partagés afin que les revues hors ligne reflètent le même résumé.
 - Les lignes d’objectifs incluent diamètre frontal, poids, mise au point minimale, besoin de rods et composants matte box. Le résumé imprimable reflète ces sélections avec marque, monture, diamètre, focus, poids, support de rods et notes pour que les dossiers restent complets hors-ligne. Les lignes batteries tiennent compte du nombre et du matériel de bascule à chaud.
 - Détails de l’équipe, configurations de monitoring, distribution vidéo et notes personnalisées apparaissent dans les exports.
+- Les touches fléchées (Origine et Fin incluses) déplacent le focus entre les cartes d’exigences du projet sans quitter le clavier.
 - Les listes sont sauvegardées avec le projet, visibles dans les aperçus imprimables et incluses dans les bundles ; utilisez **Supprimer la liste** pour repartir de zéro.
 
 ## Règles automatiques

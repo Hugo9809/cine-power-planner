@@ -11129,6 +11129,15 @@ body.high-contrast .project-field-hint {
   --requirement-accent-color: var(--text-color);
   min-width: 0;
 }
+.requirement-box:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-color) 70%, transparent);
+  outline-offset: 3px;
+  box-shadow: var(--panel-shadow-hover);
+}
+.dark-mode .requirement-box:focus-visible,
+#overviewDialogContent.dark-mode .requirement-box:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--inverse-text-color) 60%, transparent);
+}
 .requirement-box .req-icon {
   --req-icon-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
   --icon-size: var(--req-icon-size);

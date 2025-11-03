@@ -13169,7 +13169,40 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return parts.join(' ');
     }
-    
+
+    function handleRequirementBoxKeydown(event) {
+      const key = event?.key;
+      if (!key) return;
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(key)) {
+        return;
+      }
+      if (!projectRequirementsOutput) return;
+      const boxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+      if (!boxes.length) return;
+      const target = event.currentTarget;
+      const currentIndex = boxes.indexOf(target);
+      if (currentIndex === -1) return;
+      event.preventDefault();
+      let nextIndex = currentIndex;
+      if (key === 'ArrowLeft' || key === 'ArrowUp') {
+        nextIndex = (currentIndex - 1 + boxes.length) % boxes.length;
+      } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+        nextIndex = (currentIndex + 1) % boxes.length;
+      } else if (key === 'Home') {
+        nextIndex = 0;
+      } else if (key === 'End') {
+        nextIndex = boxes.length - 1;
+      }
+      const nextBox = boxes[nextIndex];
+      if (!nextBox || typeof nextBox.focus !== 'function') return;
+      try {
+        nextBox.focus({ preventScroll: true });
+      } catch (focusError) {
+        void focusError;
+        nextBox.focus();
+      }
+    }
+
     const GEAR_TABLE_CATEGORY_META = Object.freeze({
       Camera: {
         summary: 'Primary camera body chosen for the current setup.',
@@ -13410,7 +13443,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (safeProjectHtml) {
           projectRequirementsOutput.innerHTML = safeProjectHtml;
           projectRequirementsOutput.classList.remove('hidden');
-          projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(box => {
+          const requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+          requirementBoxes.forEach(box => {
             const label = box.querySelector('.req-label')?.textContent || '';
             const value = box.querySelector('.req-value')?.textContent || '';
             const field = box.getAttribute('data-field') || '';
@@ -13419,6 +13453,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             const desc = logic ? `${baseDesc} – ${logic}` : baseDesc;
             box.setAttribute('title', desc);
             box.setAttribute('data-help', desc);
+            if (!box.hasAttribute('tabindex')) {
+              box.setAttribute('tabindex', '0');
+            }
+            if (!box.hasAttribute('role')) {
+              box.setAttribute('role', 'group');
+            }
+            if (desc) {
+              box.setAttribute('aria-label', desc);
+            } else if (baseDesc) {
+              box.setAttribute('aria-label', baseDesc);
+            }
+            box.addEventListener('keydown', handleRequirementBoxKeydown);
             box.querySelectorAll('.req-label, .req-value').forEach(el => {
               el.setAttribute('title', desc);
               el.setAttribute('data-help', desc);

@@ -450,6 +450,7 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 - Abdeckungsnotizen aus dem Regel-Dashboard erscheinen in Druckansichten, Exporten und Bundles, damit Offline-Reviews identisch zum In-App-Status bleiben.
 - Objektivreihen enthalten Frontdurchmesser, Gewicht, Naheinstellgrenze, Rod-Anforderungen und Mattebox-Komponenten. Die druckbare Overview spiegelt diese Auswahl mit Marke, Mount, Durchmesser, Fokus, Gewicht, Rod-Support und Notizen, sodass Ausleihpakete offline dieselben Specs tragen. Akkureihen berücksichtigen Rechnercounts und Hot-Swap-Hardware.
 - Crewdetails, Monitoring, Verteilung und Notizen erscheinen in Exporten.
+- Mit den Pfeiltasten (inklusive Pos1 und Ende) wechseln Crews zwischen den gespeicherten Projektanforderungs-Karten, ohne die Tastatur zu verlassen.
 - Listen werden mit dem Projekt gespeichert, erscheinen in Overviews, Bundles und lassen sich mit **Geräteliste löschen** zurücksetzen.
 
 ## Automatische Gear-Regeln

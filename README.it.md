@@ -449,6 +449,7 @@ Queste routine mantengono progetti, backup e risorse offline sincronizzati su og
 - Le annotazioni di copertura del pannello regole compaiono nelle stampe, negli export e nei bundle condivisi così le revisioni offline vedono lo stesso riepilogo.
 - Le righe obiettivi includono diametro frontale, peso, minima di fuoco, necessità di aste e componenti della matte box. La panoramica stampabile replica queste scelte con marca, attacco, diametro, fuoco, peso, supporto aste e note così i dossier restano completi anche offline. Le righe batterie considerano quantità e hardware per l’hot swap.
 - Dettagli troupe, configurazioni di monitoraggio, distribuzione video e note personalizzate appaiono negli export.
+- I tasti freccia (compresi Home e Fine) spostano il focus tra le schede dei Requisiti di progetto salvate senza lasciare la tastiera.
 - Le liste vengono salvate con il progetto, compaiono nelle overview stampabili e nei bundle; puoi azzerarle con **Elimina lista attrezzatura**.
 
 ## Regole automatiche

@@ -448,6 +448,7 @@ Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincron
 - Las anotaciones de cobertura del panel de reglas aparecen en vistas impresas, exportaciones y paquetes compartidos para que las revisiones offline reflejen el mismo resumen.
 - Las filas de lentes incluyen diámetro frontal, peso, mínimo enfoque, necesidad de varillas y componentes de matte box. La vista general imprimible refleja estas selecciones con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que los paquetes de entrega mantengan las mismas especificaciones sin conexión. Las filas de baterías consideran cantidades y hardware para hot-swap.
 - Detalles del equipo, configuraciones de monitoreo, preferencias de distribución de vídeo y notas personalizadas aparecen en las exportaciones.
+- Las teclas de flecha (incluidas Inicio y Fin) desplazan el foco entre las tarjetas guardadas de Requisitos del proyecto sin dejar el teclado.
 - Las listas se guardan con el proyecto, aparecen en las vistas imprimibles y en los paquetes; puedes reiniciarlas con **Eliminar lista de equipo**.
 
 ## Reglas automáticas
