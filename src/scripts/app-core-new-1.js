@@ -14243,15 +14243,6 @@ async function setLanguage(lang) {
       addReturnBtn.setAttribute('aria-label', label);
       addReturnBtn.setAttribute('data-help', label);
     }
-    if (addStorageNeedBtn) {
-      const storageLabelText = stripTrailingPunctuation(
-        projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs'
-      );
-      const label = `${addEntryLabel} ${storageLabelText}`.trim();
-      setButtonLabelWithIconBinding(addStorageNeedBtn, label, ICON_GLYPHS.add);
-      addStorageNeedBtn.setAttribute('aria-label', label);
-      addStorageNeedBtn.setAttribute('data-help', label);
-    }
   }
   if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
   if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
@@ -14399,7 +14390,6 @@ const addShootBtn = document.getElementById("addShootBtn");
 var returnContainer = document.getElementById("returnContainer");
 const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
-const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
 var contactsDialog = null;
 var contactsForm = null;
 var contactsDialogHeading = null;
@@ -17377,11 +17367,18 @@ function getStorageVariantOptions(type) {
     if (model && (!info.brand || model.toLowerCase() !== info.brand.toLowerCase())) {
       parts.push(model);
     }
-    const capacityLabel = info?.capacityTb != null
-      ? formatCapacity(info.capacityTb, 'TB')
-      : info?.capacityGb != null
-        ? formatCapacity(info.capacityGb, 'GB')
-        : '';
+    const capacityGb = Number(info?.capacityGb);
+    const capacityTb = Number(info?.capacityTb);
+    let capacityLabel = '';
+    if (Number.isFinite(capacityGb) && capacityGb > 0) {
+      if (capacityGb >= 1000 && Number.isFinite(capacityTb) && capacityTb > 0) {
+        capacityLabel = formatCapacity(capacityTb, 'TB');
+      } else {
+        capacityLabel = formatCapacity(capacityGb, 'GB');
+      }
+    } else if (Number.isFinite(capacityTb) && capacityTb > 0) {
+      capacityLabel = formatCapacity(capacityTb, 'TB');
+    }
     if (capacityLabel) parts.push(capacityLabel);
     addVariant(name, parts.length ? parts.join(' • ') : name);
   });
@@ -17685,13 +17682,6 @@ if (addShootBtn) {
 if (addReturnBtn) {
   addReturnBtn.addEventListener('click', () => createReturnRow());
 }
-if (addStorageNeedBtn) {
-  addStorageNeedBtn.addEventListener('click', () => {
-    createStorageRequirementRow();
-    scheduleProjectAutoSave(true);
-  });
-}
-
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
   const bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
