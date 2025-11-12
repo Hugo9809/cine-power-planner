@@ -1013,8 +1013,76 @@ const lensSelectionManager = (() => {
         lensIndex: new Map()
     };
 
-    let mountOptions = [];
     const optionInputs = new Map();
+
+    const getLensMountEntries = (lensName) => {
+        const lensRecord = catalog.lensIndex.get(lensName);
+        if (!lensRecord || typeof lensRecord !== 'object') {
+            return [];
+        }
+
+        const entryMap = new Map();
+        const entryOrder = [];
+
+        const pushEntry = (type, status = 'native') => {
+            const normalizedType = typeof type === 'string' ? type.trim() : '';
+            if (!normalizedType) {
+                return;
+            }
+            const normalizedStatus = typeof status === 'string' && status.trim().toLowerCase() === 'adapted'
+                ? 'adapted'
+                : 'native';
+            if (entryMap.has(normalizedType)) {
+                const existing = entryMap.get(normalizedType);
+                if (existing && existing.status !== 'native' && normalizedStatus === 'native') {
+                    existing.status = 'native';
+                }
+                return;
+            }
+            const entry = { type: normalizedType, status: normalizedStatus };
+            entryMap.set(normalizedType, entry);
+            entryOrder.push(normalizedType);
+        };
+
+        const addFromRawValue = (rawValue, status = 'native') => {
+            if (!rawValue) {
+                return;
+            }
+            const labels = extractMountLabels(rawValue);
+            if (Array.isArray(labels) && labels.length) {
+                labels.forEach(label => pushEntry(label, status));
+                return;
+            }
+            pushEntry(rawValue, status);
+        };
+
+        const rawMountOptions = lensRecord?.data?.mountOptions;
+        if (Array.isArray(rawMountOptions) && rawMountOptions.length) {
+            rawMountOptions.forEach(option => {
+                if (!option) {
+                    return;
+                }
+                const optionStatus = typeof option.mount === 'string' && option.mount.trim().toLowerCase() === 'adapted'
+                    ? 'adapted'
+                    : 'native';
+                addFromRawValue(option.type, optionStatus);
+            });
+        }
+
+        if (!entryOrder.length && Array.isArray(lensRecord.mountLabels) && lensRecord.mountLabels.length) {
+            lensRecord.mountLabels.forEach(label => pushEntry(label, 'native'));
+        }
+
+        if (!entryOrder.length) {
+            addFromRawValue(lensRecord?.data?.mount, 'native');
+        }
+
+        return entryOrder
+            .map(key => entryMap.get(key))
+            .filter(entry => entry && entry.type);
+    };
+
+    const getLensMountLabels = (lensName) => getLensMountEntries(lensName).map(entry => entry.type);
 
     const placeholderToggle = (select, isEmpty) => {
         if (!select) return;
@@ -1079,7 +1147,6 @@ const lensSelectionManager = (() => {
         const lensDb = resolveLensDataset();
         const manufacturerMap = new Map();
         const lensIndex = new Map();
-        const mountSet = new Set();
         const lensNames = Object.keys(lensDb || {});
         if (lensNames.length && sortComparator) {
             lensNames.sort(sortComparator);
@@ -1092,7 +1159,6 @@ const lensSelectionManager = (() => {
             const sortMeta = buildLensSortMeta(name, lensData);
             const { manufacturer, series, focalLabel, focalSortKey } = sortMeta;
             const mountLabels = extractMountLabels(lensData.mount);
-            mountLabels.forEach(label => mountSet.add(label));
 
             const record = {
                 name,
@@ -1139,27 +1205,6 @@ const lensSelectionManager = (() => {
             });
         });
 
-        const ensuredMounts = new Set(mountSet);
-        ['PL', 'EF', 'LPL', 'E-mount'].forEach(label => ensuredMounts.add(label));
-        const sortedMounts = Array.from(ensuredMounts);
-        const mountPriority = new Map([
-            ['PL', 0],
-            ['EF', 1],
-            ['LPL', 2],
-            ['E-mount', 3]
-        ]);
-        sortedMounts.sort((a, b) => {
-            const rankA = mountPriority.has(a) ? mountPriority.get(a) : 100;
-            const rankB = mountPriority.has(b) ? mountPriority.get(b) : 100;
-            if (rankA !== rankB) return rankA - rankB;
-            if (sortComparator) {
-                return sortComparator(a, b);
-            }
-            return a.localeCompare(b);
-        });
-
-        mountOptions = sortedMounts;
-
         return {
             manufacturers: manufacturerMap,
             lensIndex
@@ -1172,30 +1217,57 @@ const lensSelectionManager = (() => {
         return labels[0] || '';
     };
 
-    const getCameraNativeMount = () => {
+    const getCameraLensMountEntries = () => {
         const cameraElement = doc.getElementById('cameraSelect');
         const cameraName = cameraElement && typeof cameraElement.value === 'string'
             ? cameraElement.value
             : '';
         if (!cameraName || typeof devices !== 'object' || !devices || !devices.cameras) {
-            return '';
+            return [];
         }
         const camera = devices.cameras[cameraName];
-        if (!camera || !Array.isArray(camera.lensMount)) return '';
-        for (let index = 0; index < camera.lensMount.length; index += 1) {
-            const entry = camera.lensMount[index];
-            if (!entry) continue;
-            const normalizedType = getMountLabelFromCameraEntry(entry);
-            if (normalizedType && String(entry.mount || '').toLowerCase() === 'native') {
-                return normalizedType;
+        if (!camera || !Array.isArray(camera.lensMount)) return [];
+
+        const entryMap = new Map();
+        const entryOrder = [];
+        camera.lensMount.forEach(rawEntry => {
+            if (!rawEntry) {
+                return;
             }
+            const normalizedType = getMountLabelFromCameraEntry(rawEntry);
+            if (!normalizedType) {
+                return;
+            }
+            const status = typeof rawEntry.mount === 'string' && rawEntry.mount.trim().toLowerCase() === 'adapted'
+                ? 'adapted'
+                : 'native';
+            if (entryMap.has(normalizedType)) {
+                const existing = entryMap.get(normalizedType);
+                if (existing && existing.status !== 'native' && status === 'native') {
+                    existing.status = 'native';
+                }
+                return;
+            }
+            const entry = { type: normalizedType, status };
+            entryMap.set(normalizedType, entry);
+            entryOrder.push(normalizedType);
+        });
+
+        return entryOrder
+            .map(key => entryMap.get(key))
+            .filter(entry => entry && entry.type);
+    };
+
+    const getCameraNativeMount = () => {
+        const entries = getCameraLensMountEntries();
+        if (!entries.length) {
+            return '';
         }
-        for (let index = 0; index < camera.lensMount.length; index += 1) {
-            const entry = camera.lensMount[index];
-            const normalizedType = getMountLabelFromCameraEntry(entry);
-            if (normalizedType) return normalizedType;
+        const nativeEntry = entries.find(entry => entry.status === 'native');
+        if (nativeEntry) {
+            return nativeEntry.type;
         }
-        return '';
+        return entries[0]?.type || '';
     };
 
     const buildMountOptionsForSelection = (currentMount, lensName) => {
@@ -1208,12 +1280,8 @@ const lensSelectionManager = (() => {
             seen.add(normalized);
             options.push(normalized);
         };
-        const lensRecord = catalog.lensIndex.get(lensName);
-        if (lensRecord && Array.isArray(lensRecord.mountLabels) && lensRecord.mountLabels.length) {
-            lensRecord.mountLabels.forEach(addOption);
-        } else {
-            mountOptions.forEach(addOption);
-        }
+        const lensMountLabels = getLensMountLabels(lensName);
+        lensMountLabels.forEach(addOption);
         const normalizedCurrent = typeof currentMount === 'string' ? currentMount.trim() : '';
         const hasCurrent = normalizedCurrent && seen.has(normalizedCurrent);
         return {
@@ -1222,19 +1290,54 @@ const lensSelectionManager = (() => {
         };
     };
 
-    const resolveDefaultMount = (lensName) => {
-        const cameraMount = getCameraNativeMount();
-        if (cameraMount) {
-            return cameraMount;
+    const determineLensMountSelection = (lensName, preferredMount = '') => {
+        const lensEntries = getLensMountEntries(lensName);
+        const lensTypes = lensEntries.map(entry => entry.type);
+        const cameraEntries = getCameraLensMountEntries();
+
+        const resolveStatusForType = (type) => {
+            if (!type) {
+                return '';
+            }
+            const cameraMatch = cameraEntries.find(entry => entry.type === type && entry.status === 'native')
+                || cameraEntries.find(entry => entry.type === type);
+            if (cameraMatch) {
+                return cameraMatch.status;
+            }
+            const lensMatch = lensEntries.find(entry => entry.type === type);
+            return lensMatch ? lensMatch.status : '';
+        };
+
+        const normalizedPreferred = typeof preferredMount === 'string' ? preferredMount.trim() : '';
+        if (normalizedPreferred && lensTypes.includes(normalizedPreferred)) {
+            return { mount: normalizedPreferred, status: resolveStatusForType(normalizedPreferred) };
         }
-        const lensRecord = catalog.lensIndex.get(lensName);
-        if (lensRecord && lensRecord.mountLabels && lensRecord.mountLabels.length) {
-            return lensRecord.mountLabels[0];
+
+        const nativeMatch = cameraEntries.find(entry => entry.status === 'native' && lensTypes.includes(entry.type));
+        if (nativeMatch) {
+            return { mount: nativeMatch.type, status: resolveStatusForType(nativeMatch.type) };
         }
-        if (mountOptions.includes('PL')) return 'PL';
-        if (mountOptions.includes('EF')) return 'EF';
-        if (mountOptions.includes('LPL')) return 'LPL';
-        return mountOptions[0] || '';
+
+        const adaptedMatch = cameraEntries.find(entry => entry.status === 'adapted' && lensTypes.includes(entry.type));
+        if (adaptedMatch) {
+            return { mount: adaptedMatch.type, status: resolveStatusForType(adaptedMatch.type) };
+        }
+
+        if (lensEntries.length) {
+            const fallbackType = lensEntries[0].type;
+            const fallbackStatus = resolveStatusForType(fallbackType);
+            const hasCameraEntries = cameraEntries.length > 0;
+            const cameraMatchesFallback = cameraEntries.some(entry => entry.type === fallbackType);
+            let inferredStatus = fallbackStatus;
+            if (!cameraMatchesFallback && hasCameraEntries) {
+                inferredStatus = 'adapted';
+            } else if (!inferredStatus && hasCameraEntries) {
+                inferredStatus = 'adapted';
+            }
+            return { mount: fallbackType, status: inferredStatus };
+        }
+
+        return { mount: '', status: '' };
     };
 
     const normalizeSelectionName = (value) => {
@@ -1273,10 +1376,16 @@ const lensSelectionManager = (() => {
     const updateHiddenInputs = ({ skipEvent = false, skipDirty = false } = {}) => {
         const names = state.selections.map(selection => selection.name);
         const legacyValue = names.join(', ');
-        const detailedValue = JSON.stringify(state.selections.map(selection => ({
-            name: selection.name,
-            mount: selection.mount || ''
-        })));
+        const detailedValue = JSON.stringify(state.selections.map(selection => {
+            const record = {
+                name: selection.name,
+                mount: selection.mount || ''
+            };
+            if (selection.mountState) {
+                record.mountState = selection.mountState;
+            }
+            return record;
+        }));
         const legacyChanged = hiddenLegacyValue.value !== legacyValue;
         const detailedChanged = hiddenDetailedValue.value !== detailedValue;
         if (legacyChanged) hiddenLegacyValue.value = legacyValue;
@@ -1344,15 +1453,26 @@ const lensSelectionManager = (() => {
             mountSelect.id = mountId;
             mountSelect.dataset.lensName = selection.name;
             const storedMount = typeof selection.mount === 'string' ? selection.mount.trim() : '';
-            if (selection.mount !== storedMount) {
-                selection.mount = storedMount;
+            const mountResolution = determineLensMountSelection(selection.name, storedMount);
+            if (selection.mount !== mountResolution.mount) {
+                selection.mount = mountResolution.mount;
+            }
+            if (mountResolution.status) {
+                selection.mountState = mountResolution.status;
+            } else if (selection.mountState) {
+                delete selection.mountState;
             }
             const { options: mountOptionsForSelect, hiddenValue } = buildMountOptionsForSelection(storedMount, selection.name);
             mountOptionsForSelect.forEach(label => {
                 const option = doc.createElement('option');
                 option.value = label;
-                option.textContent = label;
-                if (storedMount === label) {
+                const optionResolution = determineLensMountSelection(selection.name, label);
+                const optionStatus = optionResolution.status;
+                option.textContent = optionStatus === 'adapted' ? `${label} (adapted)` : label;
+                if (optionStatus) {
+                    option.dataset.mountState = optionStatus;
+                }
+                if (selection.mount === label) {
                     option.selected = true;
                 }
                 mountSelect.appendChild(option);
@@ -1365,22 +1485,44 @@ const lensSelectionManager = (() => {
                 storedOption.disabled = true;
                 mountSelect.appendChild(storedOption);
             }
-            if (storedMount) {
-                mountSelect.value = storedMount;
+            if (selection.mount) {
+                mountSelect.value = selection.mount;
             }
-            if (!storedMount && mountOptionsForSelect.length) {
+            if (!selection.mount && mountOptionsForSelect.length) {
                 mountSelect.value = mountOptionsForSelect[0];
                 selection.mount = mountSelect.value;
+                const fallbackResolution = determineLensMountSelection(selection.name, selection.mount);
+                if (fallbackResolution.status) {
+                    selection.mountState = fallbackResolution.status;
+                } else if (selection.mountState) {
+                    delete selection.mountState;
+                }
             }
             mountSelect.setAttribute('aria-label', `${mountLabel}: ${displayName}`);
             mountSelect.addEventListener('change', (event) => {
                 const lensName = event.target.dataset.lensName;
                 const newMount = typeof event.target.value === 'string' ? event.target.value : '';
                 const record = state.selections.find(sel => sel.name === lensName);
-                if (!record || record.mount === newMount) {
+                if (!record) {
                     return;
                 }
-                record.mount = newMount;
+                const resolution = determineLensMountSelection(lensName, newMount);
+                const resolvedMount = resolution.mount;
+                const resolvedStatus = resolution.status;
+                const previousStatus = record.mountState || '';
+                const statusChanged = (resolvedStatus || '') !== previousStatus;
+                if (record.mount === resolvedMount && !statusChanged) {
+                    return;
+                }
+                record.mount = resolvedMount;
+                if (resolvedStatus) {
+                    record.mountState = resolvedStatus;
+                } else if (record.mountState) {
+                    delete record.mountState;
+                }
+                if (event.target.value !== resolvedMount) {
+                    event.target.value = resolvedMount || '';
+                }
                 updateHiddenInputs();
             });
             mountWrapper.appendChild(mountSelect);
@@ -1541,10 +1683,14 @@ const lensSelectionManager = (() => {
             if (state.selections.some(sel => sel.name === lensName)) {
                 return;
             }
+            const defaultMount = determineLensMountSelection(lensName);
             const selection = {
                 name: lensName,
-                mount: resolveDefaultMount(lensName)
+                mount: defaultMount.mount
             };
+            if (defaultMount.status) {
+                selection.mountState = defaultMount.status;
+            }
             state.selections.push(selection);
             renderSelectionChips();
         } else {
@@ -1599,7 +1745,8 @@ const lensSelectionManager = (() => {
                 const name = normalizeSelectionName(entry.name);
                 if (!name || seen.has(name) || !validNames.has(name)) return;
                 const mount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
-                prepared.push({ name, mount });
+                const mountState = typeof entry.mountState === 'string' ? entry.mountState.trim() : '';
+                prepared.push({ name, mount, mountState });
                 seen.add(name);
             });
         }
@@ -1611,10 +1758,19 @@ const lensSelectionManager = (() => {
                 seen.add(normalized);
             });
         }
-        state.selections = prepared.map(entry => ({
-            name: entry.name,
-            mount: entry.mount || resolveDefaultMount(entry.name)
-        }));
+        state.selections = prepared.map(entry => {
+            const preferredMount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+            const resolution = determineLensMountSelection(entry.name, preferredMount);
+            const selection = {
+                name: entry.name,
+                mount: resolution.mount
+            };
+            const resolvedState = resolution.status || (typeof entry.mountState === 'string' ? entry.mountState.trim() : '');
+            if (resolvedState) {
+                selection.mountState = resolvedState;
+            }
+            return selection;
+        });
         if (state.selections.length) {
             const firstRecord = catalog.lensIndex.get(state.selections[0].name);
             state.manufacturer = firstRecord ? firstRecord.manufacturer : '';
@@ -1633,7 +1789,8 @@ const lensSelectionManager = (() => {
         names: state.selections.map(selection => selection.name),
         lensSelections: state.selections.map(selection => ({
             name: selection.name,
-            mount: selection.mount || ''
+            mount: selection.mount || '',
+            ...(selection.mountState ? { mountState: selection.mountState } : {})
         })),
         legacyValue: state.selections.map(selection => selection.name).join(', ')
     });
@@ -5706,7 +5863,8 @@ function collectProjectFormData() {
         ? lensSnapshot.lensSelections
             .map(entry => ({
                 name: typeof entry?.name === 'string' ? entry.name.trim() : '',
-                mount: typeof entry?.mount === 'string' ? entry.mount.trim() : ''
+                mount: typeof entry?.mount === 'string' ? entry.mount.trim() : '',
+                mountState: typeof entry?.mountState === 'string' ? entry.mountState.trim() : ''
             }))
             .filter(entry => entry.name)
         : [];

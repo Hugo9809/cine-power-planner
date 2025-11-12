@@ -11120,6 +11120,19 @@ function normalizeProjectLensSelectionsFromSources(sources, fallbackNames = []) 
       entryChanged = true;
     }
 
+    if (Object.prototype.hasOwnProperty.call(clone, 'mountState')) {
+      const rawMountState = typeof clone.mountState === 'string' ? clone.mountState : '';
+      const mountState = rawMountState.trim();
+      if (clone.mountState !== mountState) {
+        clone.mountState = mountState;
+        entryChanged = true;
+      }
+      if (!mountState) {
+        delete clone.mountState;
+        entryChanged = true;
+      }
+    }
+
     if (entryChanged) {
       changed = true;
     }
