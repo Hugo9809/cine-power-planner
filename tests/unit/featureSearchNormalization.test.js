@@ -78,4 +78,16 @@ describe('feature search normalization', () => {
     expect(normalize('0\t\t\t staging')).toBe('0 staging');
     expect(normalize("12\t\t' lens")).toBe('12 ft lens');
   });
+
+  test('filters filler tokens from normalized phrases', () => {
+    loadModule();
+    expect(moduleApi).toBeDefined();
+    const normalize = moduleApi.normalizeSearchValue;
+    const filterTokens = moduleApi.filterFeatureSearchQueryTokens;
+    expect(typeof filterTokens).toBe('function');
+
+    const normalized = normalize('How do I back up footage?');
+    const tokens = normalized.split(' ');
+    expect(filterTokens(tokens)).toEqual(['back', 'up', 'footage']);
+  });
 });

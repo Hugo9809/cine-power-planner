@@ -134,6 +134,105 @@
     return normalized;
   }
 
+  const FEATURE_SEARCH_STOP_WORD_MIN_LENGTH = 3;
+  const FEATURE_SEARCH_STOP_WORDS = new Set([
+    'how',
+    'do',
+    'does',
+    'did',
+    'done',
+    'doing',
+    'can',
+    'cant',
+    'cannot',
+    'should',
+    'could',
+    'would',
+    'please',
+    'need',
+    'needs',
+    'needing',
+    'want',
+    'wants',
+    'wanting',
+    'i',
+    'im',
+    'ive',
+    'ill',
+    'id',
+    'we',
+    'were',
+    'weve',
+    'well',
+    'you',
+    'youre',
+    'youve',
+    'youll',
+    'they',
+    'theyre',
+    'theyve',
+    'them',
+    'us',
+    'me',
+    'my',
+    'mine',
+    'our',
+    'ours',
+    'your',
+    'yours',
+    'their',
+    'theirs',
+    'the',
+    'and',
+    'for',
+    'with',
+    'about',
+    'what',
+    'where',
+    'when',
+    'why',
+    'which',
+    'who',
+    'whom',
+    'whose',
+    'this',
+    'that',
+    'these',
+    'those',
+    'also',
+    'still',
+    'really',
+    'very',
+    'just',
+    'maybe',
+    'perhaps',
+    'again',
+  ]);
+
+  function filterFeatureSearchQueryTokens(tokens) {
+    if (!Array.isArray(tokens) || tokens.length === 0) {
+      return [];
+    }
+
+    const filtered = tokens.filter(token => {
+      if (!token) {
+        return false;
+      }
+
+      if (FEATURE_SEARCH_STOP_WORDS.has(token)) {
+        return false;
+      }
+
+      if (token.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
+        return true;
+      }
+
+      return true;
+    });
+
+    return filtered.length > 0 ? filtered : tokens.filter(Boolean);
+  }
+
   const LIGATURE_ENTRIES = [
     ['ß', 'ss'],
     ['æ', 'ae'],
@@ -445,6 +544,7 @@
     collectHighlightRanges,
     applyHighlight,
     normalizeDetail,
+    filterFeatureSearchQueryTokens,
   });
 
   MODULE_BASE.registerOrQueueModule(
