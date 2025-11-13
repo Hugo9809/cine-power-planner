@@ -736,10 +736,36 @@
     return copy;
   }
 
+  function normalizeModuleName(name) {
+    return typeof name === 'string' ? name : '';
+  }
+
+  function removePendingQueueEntries(queue, moduleName) {
+    if (!Array.isArray(queue) || !moduleName) {
+      return;
+    }
+
+    let writeIndex = 0;
+    for (let index = 0; index < queue.length; index += 1) {
+      const entry = queue[index];
+      const entryName = entry && typeof entry.name === 'string' ? entry.name : '';
+      if (entryName !== moduleName) {
+        queue[writeIndex] = entry;
+        writeIndex += 1;
+      }
+    }
+
+    if (writeIndex < queue.length) {
+      queue.length = writeIndex;
+    }
+  }
+
   function queueModuleRegistration(name, api, options) {
+    const moduleName = normalizeModuleName(name);
+
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.queueModuleRegistration === 'function') {
       try {
-        if (MODULE_SYSTEM.queueModuleRegistration(name, api, options, GLOBAL_SCOPE)) {
+        if (MODULE_SYSTEM.queueModuleRegistration(moduleName || name, api, options, GLOBAL_SCOPE)) {
           return true;
         }
       } catch (error) {
@@ -749,7 +775,7 @@
 
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.queueModuleRegistration === 'function') {
       try {
-        if (MODULE_GLOBALS.queueModuleRegistration(name, api, options, GLOBAL_SCOPE)) {
+        if (MODULE_GLOBALS.queueModuleRegistration(moduleName || name, api, options, GLOBAL_SCOPE)) {
           return true;
         }
       } catch (error) {
@@ -759,7 +785,7 @@
 
     if (ENV_BRIDGE && typeof ENV_BRIDGE.queueModuleRegistration === 'function') {
       try {
-        const bridged = ENV_BRIDGE.queueModuleRegistration(name, api, options);
+        const bridged = ENV_BRIDGE.queueModuleRegistration(moduleName || name, api, options);
         if (bridged) {
           return true;
         }
@@ -769,15 +795,19 @@
     }
 
     if (MODULE_ENV && typeof MODULE_ENV.queueModuleRegistration === 'function') {
-      return MODULE_ENV.queueModuleRegistration(name, api, options, GLOBAL_SCOPE);
+      return MODULE_ENV.queueModuleRegistration(moduleName || name, api, options, GLOBAL_SCOPE);
     }
 
     if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
       return false;
     }
 
+    if (!moduleName) {
+      return false;
+    }
+
     const payload = Object.freeze({
-      name,
+      name: moduleName,
       api,
       options: Object.freeze(cloneOptions(options)),
     });
@@ -805,6 +835,8 @@
         }
       }
     }
+
+    removePendingQueueEntries(queue, moduleName);
 
     try {
       queue.push(payload);
@@ -1467,6 +1499,11 @@
   function requeuePendingEntry(queue, entry) {
     if (!Array.isArray(queue)) {
       return;
+    }
+
+    const moduleName = entry && typeof entry.name === 'string' ? entry.name : '';
+    if (moduleName) {
+      removePendingQueueEntries(queue, moduleName);
     }
 
     try {
