@@ -1,5 +1,9 @@
 const path = require('path');
 
+const loadFeatureSearchStopWordHelpers = require('../helpers/featureSearchStopWordsHelper');
+
+const { filterFeatureSearchQueryTokens } = loadFeatureSearchStopWordHelpers();
+
 describe('feature search normalization', () => {
   let moduleApi;
   let originalConsoleWarn;
@@ -77,5 +81,16 @@ describe('feature search normalization', () => {
     expect(normalize('1/2" adapter')).toBe('1/2 inch adapter');
     expect(normalize('0\t\t\t staging')).toBe('0 staging');
     expect(normalize("12\t\t' lens")).toBe('12 ft lens');
+  });
+
+  test('removes conversational filler tokens from normalized queries', () => {
+    loadModule();
+    expect(moduleApi).toBeDefined();
+    const normalize = moduleApi.normalizeSearchValue;
+    const normalized = normalize('How do I back up?');
+    const tokens = normalized.split(' ').filter(Boolean);
+    const filteredTokens = filterFeatureSearchQueryTokens(tokens);
+
+    expect(filteredTokens).toEqual(['back', 'up']);
   });
 });
