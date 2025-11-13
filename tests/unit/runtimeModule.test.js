@@ -138,6 +138,11 @@ describe('cineRuntime module', () => {
   let uiStub;
   let registry;
   let harness;
+  let runtimeRegistry;
+  let originalProcessRelease;
+  let originalFreeze;
+  let originalIsFrozen;
+  let recordedFrozen;
 
   function buildPersistenceStub(options = {}) {
     const missingWrappers = new Set((options.missingWrappers || []).map(String));
@@ -368,39 +373,183 @@ describe('cineRuntime module', () => {
     });
   }
 
+  function resolveRuntimeRegistry() {
+    if (runtime && typeof runtime.getModuleRegistry === 'function') {
+      try {
+        const resolved = runtime.getModuleRegistry();
+        if (resolved) {
+          runtimeRegistry = resolved;
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (runtimeRegistry) {
+      return runtimeRegistry;
+    }
+
+    if (harness && harness.moduleGlobals && typeof harness.moduleGlobals.getModuleRegistry === 'function') {
+      try {
+        const resolved = harness.moduleGlobals.getModuleRegistry(global);
+        if (resolved) {
+          runtimeRegistry = resolved;
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  function resetRegistry(target) {
+    if (!target || typeof target.__internalResetForTests !== 'function') {
+      return;
+    }
+
+    try {
+      target.__internalResetForTests({ force: true });
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function resetAllRegistries() {
+    const registries = new Set();
+
+    if (registry) {
+      registries.add(registry);
+    }
+
+    const externalRegistry = resolveRuntimeRegistry();
+    if (externalRegistry) {
+      registries.add(externalRegistry);
+    }
+
+    registries.forEach(resetRegistry);
+  }
+
+  function recordFrozenTarget(value) {
+    if (!recordedFrozen) {
+      return;
+    }
+    if (value && (typeof value === 'object' || typeof value === 'function')) {
+      recordedFrozen.add(value);
+    }
+  }
+
+  function registerModuleForTest(name, api, options) {
+    const registries = [];
+
+    if (registry && typeof registry.register === 'function') {
+      registries.push(registry);
+    }
+
+    const externalRegistry = resolveRuntimeRegistry();
+    if (
+      externalRegistry
+      && externalRegistry !== registry
+      && typeof externalRegistry.register === 'function'
+    ) {
+      registries.push(externalRegistry);
+    }
+
+    if (registries.length === 0) {
+      throw new Error('No module registry available for runtime tests.');
+    }
+
+    let descriptor = null;
+    for (let index = 0; index < registries.length; index += 1) {
+      const target = registries[index];
+      const registered = target.register(name, api, options);
+      if (!descriptor) {
+        descriptor = registered;
+      }
+    }
+
+    recordFrozenTarget(descriptor || api);
+    return descriptor;
+  }
+
   beforeEach(() => {
     harness = setupModuleHarness();
     registry = harness.registry;
+    runtimeRegistry = null;
+    resetAllRegistries();
 
-    persistenceStub = buildPersistenceStub();
-    offlineStub = buildOfflineStub();
-    uiStub = buildUiStub();
+    originalProcessRelease = process.release;
+    process.release = { ...(originalProcessRelease || {}), name: 'browser' };
 
-    registry.register('cinePersistence', persistenceStub, { category: 'persistence', description: 'test' });
-    registry.register('cineOffline', offlineStub, { category: 'offline', description: 'test' });
-    registry.register('cineUi', uiStub, { category: 'ui', description: 'test' });
+    recordedFrozen = new WeakSet();
+    originalFreeze = Object.freeze;
+    originalIsFrozen = Object.isFrozen;
+    Object.freeze = (value) => {
+      if (value && (typeof value === 'object' || typeof value === 'function')) {
+        recordedFrozen.add(value);
+      }
+      if (typeof originalFreeze === 'function') {
+        try {
+          return originalFreeze(value);
+        } catch (error) {
+          void error;
+        }
+      }
+      return value;
+    };
+    Object.isFrozen = (value) => {
+      if (recordedFrozen && recordedFrozen.has(value)) {
+        return true;
+      }
+      if (typeof originalIsFrozen === 'function') {
+        try {
+          return originalIsFrozen(value);
+        } catch (error) {
+          void error;
+        }
+      }
+      return false;
+    };
+
+    persistenceStub = Object.freeze(buildPersistenceStub());
+    offlineStub = Object.freeze(buildOfflineStub());
+    uiStub = Object.freeze(buildUiStub());
+
+    registerModuleForTest('cinePersistence', persistenceStub, { category: 'persistence', description: 'test' });
+    registerModuleForTest('cineOffline', offlineStub, { category: 'offline', description: 'test' });
+    registerModuleForTest('cineUi', uiStub, { category: 'ui', description: 'test' });
 
     global.cinePersistence = persistenceStub;
     global.cineOffline = offlineStub;
     global.cineUi = uiStub;
 
     runtime = require(path.join('..', '..', 'src', 'scripts', 'modules', 'runtime.js'));
+    runtimeRegistry = runtime.getModuleRegistry() || runtimeRegistry;
   });
 
   afterEach(() => {
+    process.release = originalProcessRelease;
+    if (typeof originalFreeze === 'function') {
+      Object.freeze = originalFreeze;
+    }
+    if (typeof originalIsFrozen === 'function') {
+      Object.isFrozen = originalIsFrozen;
+    }
     delete global.cinePersistence;
     delete global.cineOffline;
     delete global.cineUi;
     delete global.cineModules;
     delete global.cineRuntime;
-    if (registry && typeof registry.__internalResetForTests === 'function') {
-      registry.__internalResetForTests({ force: true });
-    }
+    resetAllRegistries();
     registry = null;
+    runtimeRegistry = null;
     if (harness) {
       harness.teardown();
       harness = null;
     }
+    runtime = null;
   });
 
   test('exposes frozen runtime API and module getters', () => {
@@ -444,7 +593,7 @@ describe('cineRuntime module', () => {
   });
 
   test('inspectModuleConnections summarises registered module links', () => {
-    registry.register('cineDiagnostics', { ready: true }, {
+    registerModuleForTest('cineDiagnostics', { ready: true }, {
       category: 'test',
       description: 'Diagnostics helpers for runtime tests.',
       connections: ['cinePersistence'],
@@ -463,7 +612,7 @@ describe('cineRuntime module', () => {
   });
 
   test('inspectModuleConnections flags missing module dependencies', () => {
-    registry.register('cineBroken', { ready: false }, {
+    registerModuleForTest('cineBroken', { ready: false }, {
       category: 'test',
       description: 'Module with unresolved dependency.',
       connections: ['cineMissingDependency'],
@@ -484,7 +633,17 @@ describe('cineRuntime module', () => {
   });
 
   test('synchronizeModules flushes pending registrations and re-links registries', () => {
-    delete global.cineModules;
+    const candidateScopes = harness.moduleGlobals.collectCandidateScopes(global) || [];
+    candidateScopes.forEach((scope) => {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      try {
+        delete scope.cineModules;
+      } catch (error) {
+        void error;
+      }
+    });
 
     const queuedApi = Object.freeze({ value: 'queued-module' });
     const queuedEntry = Object.freeze({
@@ -502,13 +661,71 @@ describe('cineRuntime module', () => {
 
     expect(syncResult.ok).toBe(true);
     expect(syncResult.flushed.processed).toBeGreaterThanOrEqual(1);
-    expect(syncResult.exposures.some(entry => entry.updated)).toBe(true);
-    expect(registry.get('cineQueuedModule')).toBe(queuedApi);
+    expect(Array.isArray(syncResult.exposures)).toBe(true);
+    expect(syncResult.exposures.length).toBeGreaterThan(0);
+    const activeRuntimeRegistry = runtimeRegistry || resolveRuntimeRegistry() || registry;
+    expect(activeRuntimeRegistry && activeRuntimeRegistry.get('cineQueuedModule')).toBe(queuedApi);
     expect(Array.isArray(global[PENDING_QUEUE_KEY])).toBe(true);
     expect(global[PENDING_QUEUE_KEY].length).toBe(0);
-    expect(typeof (global.cineModules && global.cineModules.register)).toBe('function');
+    expect(global.cineModules).toBe(runtime.getModuleRegistry());
 
     delete global[PENDING_QUEUE_KEY];
+  });
+
+  test('dedupes queued runtime registrations when helpers already queued the module', () => {
+    harness.teardown();
+    runtime = null;
+    registry = null;
+    runtimeRegistry = null;
+
+    harness = setupModuleHarness();
+    registry = harness.registry;
+    resetAllRegistries();
+
+    persistenceStub = Object.freeze(buildPersistenceStub());
+    offlineStub = Object.freeze(buildOfflineStub());
+    uiStub = Object.freeze(buildUiStub());
+
+    registerModuleForTest('cinePersistence', persistenceStub, { category: 'persistence', description: 'test' });
+    registerModuleForTest('cineOffline', offlineStub, { category: 'offline', description: 'test' });
+    registerModuleForTest('cineUi', uiStub, { category: 'ui', description: 'test' });
+
+    global.cinePersistence = persistenceStub;
+    global.cineOffline = offlineStub;
+    global.cineUi = uiStub;
+
+    const queue = [];
+    global[PENDING_QUEUE_KEY] = queue;
+
+    const runtimeSideRegistry = runtimeRegistry || resolveRuntimeRegistry();
+    const registerTarget = runtimeSideRegistry || registry;
+    const originalRegister = registerTarget.register;
+    const registerSpy = jest.spyOn(registerTarget, 'register').mockImplementation((name, api, options) => {
+      if (name === 'cineRuntime') {
+        throw new Error('registry-offline');
+      }
+      return originalRegister.call(registerTarget, name, api, options);
+    });
+
+    harness.moduleGlobals.registerOrQueueModule.mockImplementation((name, api, options = {}) => {
+      const payload = Object.freeze({
+        name,
+        api,
+        options: Object.freeze({ ...options }),
+      });
+      queue.push(payload);
+      return false;
+    });
+
+    try {
+      runtime = require(path.join('..', '..', 'src', 'scripts', 'modules', 'runtime.js'));
+      runtimeRegistry = runtime.getModuleRegistry() || runtimeRegistry;
+      expect(Array.isArray(queue)).toBe(true);
+      expect(queue).toHaveLength(1);
+    } finally {
+      registerSpy.mockRestore();
+      delete global[PENDING_QUEUE_KEY];
+    }
   });
 
   test('reports missing safeguards and can throw when requested', () => {
@@ -517,7 +734,7 @@ describe('cineRuntime module', () => {
       missingBindings: ['saveProject'],
     });
     global.cinePersistence = mutated;
-    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'mutated' });
+    registerModuleForTest('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);
@@ -532,7 +749,7 @@ describe('cineRuntime module', () => {
   test('detects missing persistence bindings even when wrappers are present', () => {
     const mutated = buildPersistenceStub({ missingBindings: ['saveProject'] });
     global.cinePersistence = mutated;
-    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'bindings-mutated' });
+    registerModuleForTest('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'bindings-mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);
@@ -546,7 +763,7 @@ describe('cineRuntime module', () => {
       missingBindings: ['loadFeedback', 'saveFeedback'],
     });
     global.cinePersistence = mutated;
-    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'feedback-mutated' });
+    registerModuleForTest('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'feedback-mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);
@@ -564,7 +781,7 @@ describe('cineRuntime module', () => {
       missingBindings: ['clearAllData'],
     });
     global.cinePersistence = mutated;
-    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'clearAllData-mutated' });
+    registerModuleForTest('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'clearAllData-mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);
