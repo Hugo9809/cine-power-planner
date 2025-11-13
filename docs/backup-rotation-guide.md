@@ -7,6 +7,13 @@ an offline bundle.
 
 ## Daily rotation cadence
 
+Before checking off any entry in the cadence table, crews must pause to verify the
+backup queue: look for the yellow queued-backup banner in the planner header,
+open **Settings → Data & Storage → Open local backup vault**, download each
+listed `.json` payload, clear it from the queue, and document any "Emergency
+fallback storage active" warning inside the verification packet. Record the
+exact timestamp and initials in the packet before resuming the rotation.
+
 | Time | Action | Evidence to capture |
 | --- | --- | --- |
 | Start of day | Load the rehearsal project, run **Settings → Backup & Restore → Backup**, and store the resulting `planner-backup.json` on two physical media. | Screenshot of the confirmation toast, console log of `cinePersistence.backup`. |
@@ -44,7 +51,12 @@ an offline bundle.
 3. Delete the active project, then restore it from the bundle inside the sandbox.
 4. Promote the sandbox project back to live data and confirm autosave history
    reflects the restore.
-5. Log every step in `docs/verification-log-template.md`, attach console output
+5. Before finalizing the drill, confirm whether the queued-backup banner is
+   present, open **Settings → Data & Storage → Open local backup vault**, and
+   download plus clear each queued `.json` payload. Include any "Emergency
+   fallback storage active" warnings and the action timestamp in the verification
+   packet.
+6. Log every step in `docs/verification-log-template.md`, attach console output
    and store the evidence with the backups.
 
 ## Maintenance checklist
