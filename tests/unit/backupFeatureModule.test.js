@@ -457,6 +457,45 @@ describe('cineFeatureBackup module', () => {
     expect(entries[0]).toMatchObject({ fileName, payload });
   });
 
+  test('queued backup vault escapes inline script payloads before rendering', async () => {
+    const fallbackStorage = createStorageMock();
+    const writes = [];
+    const docStub = {
+      open: jest.fn(),
+      write: jest.fn((chunk) => {
+        writes.push(chunk);
+      }),
+      close: jest.fn(),
+    };
+    const vaultWindow = { document: docStub, close: jest.fn() };
+    const windowOpenMock = jest.fn(() => vaultWindow);
+
+    const { backupModule } = evaluateBackupModule({
+      overrides: {
+        navigator: {},
+        document: {},
+        window: { open: windowOpenMock },
+        alert: jest.fn(),
+        getSafeLocalStorage: () => fallbackStorage,
+        sessionStorage: fallbackStorage,
+      },
+    });
+
+    const payload = '{"danger":"</script><img src=\\"x\\" onerror=\\"alert(1)\\">"}';
+    backupModule.queueBackupPayloadForVault('dangerous.json', payload);
+
+    await backupModule.openQueuedBackupVaultWindow();
+
+    expect(windowOpenMock).toHaveBeenCalled();
+    expect(docStub.write).toHaveBeenCalled();
+    const html = writes.join('');
+    expect(html).toContain('type="application/json"');
+    expect(html).toContain('id="queued-backups"');
+    expect(html).toContain('data:text/javascript;charset=utf-8,');
+    expect(html).toContain('\\u003c/script');
+    expect(html).not.toContain('const records = ');
+  });
+
   test('fallback vault persists queued payloads across reload without IndexedDB', async () => {
     const fallbackStorage = createStorageMock();
     const overrides = {
