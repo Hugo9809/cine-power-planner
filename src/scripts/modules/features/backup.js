@@ -925,6 +925,68 @@
         metadata: record.metadata,
         payload: record.payload,
       })));
+      const escapedSerializedRecords = serializedRecords.replace(/</g, '\\u003c');
+
+      const emptyMessage = resolveBackupVaultEmptyMessage();
+      const bootstrapScript = `(() => {\n` +
+        `  'use strict';\n` +
+        `  try {\n` +
+        `    var source = document.getElementById('queued-backups');\n` +
+        `    var records = [];\n` +
+        `    if (source) {\n` +
+        `      var text = source.textContent || '';\n` +
+        `      var parsed = JSON.parse(text);\n` +
+        `      if (Array.isArray(parsed)) {\n` +
+        `        records = parsed;\n` +
+        `      }\n` +
+        `    }\n` +
+        `    var container = document.getElementById('vault');\n` +
+        `    if (!container) {\n` +
+        `      return;\n` +
+        `    }\n` +
+        `    if (!records.length) {\n` +
+        `      var empty = document.createElement('p');\n` +
+        `      empty.className = 'empty';\n` +
+        `      empty.textContent = ${JSON.stringify(emptyMessage)};\n` +
+        `      container.appendChild(empty);\n` +
+        `      return;\n` +
+        `    }\n` +
+        `    records.forEach(function (record) {\n` +
+        `      var entry = document.createElement('section');\n` +
+        `      entry.className = 'backup-entry';\n` +
+        `      var header = document.createElement('header');\n` +
+        `      var heading = document.createElement('h2');\n` +
+        `      heading.textContent = String(record.fileName || 'cine-power-planner-backup.json') + ' — ' + String(record.createdAt || '');\n` +
+        `      header.appendChild(heading);\n` +
+        `      var downloadButton = document.createElement('button');\n` +
+        `      downloadButton.type = 'button';\n` +
+        `      downloadButton.textContent = 'Download JSON';\n` +
+        `      downloadButton.addEventListener('click', function () {\n` +
+        `        try {\n` +
+        `          var blob = new Blob([record.payload], { type: 'application/json' });\n` +
+        `          var url = URL.createObjectURL(blob);\n` +
+        `          var link = document.createElement('a');\n` +
+        `          link.href = url;\n` +
+        `          link.download = record.fileName || 'cine-power-planner-backup.json';\n` +
+        `          link.click();\n` +
+        `          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n` +
+        `        } catch (error) {\n` +
+        `          alert('Download blocked — copy the JSON below instead.');\n` +
+        `        }\n` +
+        `      });\n` +
+        `      header.appendChild(downloadButton);\n` +
+        `      entry.appendChild(header);\n` +
+        `      var textArea = document.createElement('textarea');\n` +
+        `      textArea.readOnly = true;\n` +
+        `      textArea.value = record.payload;\n` +
+        `      entry.appendChild(textArea);\n` +
+        `      container.appendChild(entry);\n` +
+        `    });\n` +
+        `  } catch (error) {\n` +
+        `    console.error('Failed to bootstrap queued backup vault', error);\n` +
+        `  }\n` +
+        `})();`;
+      const bootstrapScriptSrc = `data:text/javascript;charset=utf-8,${encodeURIComponent(bootstrapScript)}`;
 
       const popupBlockedMessage = resolveBackupTexts().fallbackTexts
         && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked
@@ -954,47 +1016,8 @@
           `</head><body>\n` +
           `<div class="banner"><strong>${title}</strong><p>${intro}</p></div>\n` +
           `<main id="vault"></main>\n` +
-          `<script>\n` +
-          `const records = ${serializedRecords};\n` +
-          `const container = document.getElementById('vault');\n` +
-          `if (!records.length) {\n` +
-          `  const empty = document.createElement('p');\n` +
-          `  empty.className = 'empty';\n` +
-          `  empty.textContent = ${JSON.stringify(resolveBackupVaultEmptyMessage())};\n` +
-          `  container.appendChild(empty);\n` +
-          `}\n` +
-          `records.forEach((record, index) => {\n` +
-          `  const entry = document.createElement('section');\n` +
-          `  entry.className = 'backup-entry';\n` +
-          `  const header = document.createElement('header');\n` +
-          `  const heading = document.createElement('h2');\n` +
-          `  heading.textContent = record.fileName + ' — ' + (record.createdAt || '');\n` +
-          `  header.appendChild(heading);\n` +
-          `  const downloadButton = document.createElement('button');\n` +
-          `  downloadButton.type = 'button';\n` +
-          `  downloadButton.textContent = 'Download JSON';\n` +
-          `  downloadButton.addEventListener('click', () => {\n` +
-          `    try {\n` +
-          `      const blob = new Blob([record.payload], { type: 'application/json' });\n` +
-          `      const url = URL.createObjectURL(blob);\n` +
-          `      const link = document.createElement('a');\n` +
-          `      link.href = url;\n` +
-          `      link.download = record.fileName || 'cine-power-planner-backup.json';\n` +
-          `      link.click();\n` +
-          `      setTimeout(() => URL.revokeObjectURL(url), 0);\n` +
-          `    } catch (error) {\n` +
-          `      alert('Download blocked — copy the JSON below instead.');\n` +
-          `    }\n` +
-          `  });\n` +
-          `  header.appendChild(downloadButton);\n` +
-          `  entry.appendChild(header);\n` +
-          `  const textArea = document.createElement('textarea');\n` +
-          `  textArea.readOnly = true;\n` +
-          `  textArea.value = record.payload;\n` +
-          `  entry.appendChild(textArea);\n` +
-          `  container.appendChild(entry);\n` +
-          `});\n` +
-          `</script>\n` +
+          `<script type="application/json" id="queued-backups">${escapedSerializedRecords}</script>\n` +
+          `<script src="${bootstrapScriptSrc}"></script>\n` +
           `</body></html>`);
         doc.close();
       } catch (renderError) {
