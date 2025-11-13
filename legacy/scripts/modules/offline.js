@@ -1086,15 +1086,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var targetOrigin = resolveHrefOrigin(nextHref, referenceHref);
       return !!targetOrigin && targetOrigin === expectedOrigin;
     }();
-    var requestMode = 'same-origin';
+    var requestMode = 'cors';
     var warmupCredentials = function () {
       if (!includeCredentials) {
         return 'omit';
       }
-      if (preferXmlHttpWarmup) {
-        return 'same-origin';
-      }
-      return 'include';
+
+      // Fetch already includes same-origin credentials by default. Explicitly
+      // requesting the "same-origin" mode avoids Safari's access control
+      // console noise without downgrading coverage for other browsers.
+      return 'same-origin';
     }();
     var warmupRequestHref = function () {
       var referenceHref = readLocationHrefSafe(locationLike);
@@ -1273,11 +1274,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   void openError;
                   return null;
                 }
-                try {
-                  xhrInstance.withCredentials = includeCredentials;
-                } catch (withCredentialsError) {
-                  void withCredentialsError;
-                }
+        // Same-origin requests already carry credentials implicitly. Safari
+        // can emit noisy access-control warnings when withCredentials is
+        // toggled manually, so leave the default untouched.
                 try {
                   xhrInstance.responseType = 'text';
                 } catch (responseTypeError) {

@@ -42,6 +42,21 @@ describe('cineOffline module', () => {
     };
   }
 
+  function createWindowWithLocation(href = 'https://example.test/app/index.html', extras = {}) {
+    const url = new URL(href);
+
+    return {
+      location: {
+        href: url.toString(),
+        origin: url.origin,
+        pathname: url.pathname,
+        search: url.search,
+        hash: url.hash,
+      },
+      ...extras,
+    };
+  }
+
   test('exposes a frozen API with registerServiceWorker and reloadApp', () => {
     expect(offline).toBe(global.cineOffline);
     expect(Object.isFrozen(offline)).toBe(true);
@@ -562,7 +577,7 @@ describe('cineOffline module', () => {
         fetch: fetchMock,
         nextHref: 'https://example.test/app?foo=bar',
         navigator: { onLine: true },
-        window: {},
+        window: createWindowWithLocation('https://example.test/app?foo=bar'),
         serviceWorkerPromise: Promise.resolve(true),
         cachePromise: Promise.resolve(true),
         allowCache: true,
@@ -573,10 +588,10 @@ describe('cineOffline module', () => {
 
       jest.runOnlyPendingTimers();
 
-      expect(fetchMock).toHaveBeenCalledTimes(4);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
 
       const cacheModes = fetchMock.mock.calls.map(call => call[1]?.cache);
-      expect(cacheModes).toEqual(['reload', 'no-cache', 'no-store', 'default']);
+      expect(cacheModes).toEqual(['reload', 'no-cache']);
       expect(fetchMock.mock.calls[0][1]).toEqual(
         expect.objectContaining({
           cache: 'reload',
@@ -644,7 +659,7 @@ describe('cineOffline module', () => {
         fetch: fetchMock,
         nextHref: 'https://example.test/app?foo=bar',
         navigator: { onLine: true },
-        window: {},
+        window: createWindowWithLocation('https://example.test/app?foo=bar'),
         serviceWorkerPromise: Promise.resolve(true),
         cachePromise: Promise.resolve(true),
         allowCache: true,
@@ -655,7 +670,7 @@ describe('cineOffline module', () => {
 
       jest.runOnlyPendingTimers();
 
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenCalledTimes(4);
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
       expect(warmupWarnings).toHaveLength(0);

@@ -1370,23 +1370,17 @@
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
 
-    const requestMode = 'same-origin';
+    const requestMode = 'cors';
 
     const warmupCredentials = (() => {
       if (!includeCredentials) {
         return 'omit';
       }
 
-      if (preferXmlHttpWarmup) {
-        // Safari enforces additional access control checks when credentials are
-        // forced to "include" on fetch requests—even for same-origin reloads.
-        // Falling back to the default "same-origin" mode keeps cookies
-        // available without triggering Safari's console errors while retaining
-        // the existing XHR-based warmup path for redundant coverage.
-        return 'same-origin';
-      }
-
-      return 'include';
+      // Fetch already includes same-origin credentials by default. Explicitly
+      // requesting the "same-origin" mode avoids Safari's access control
+      // console noise without downgrading coverage for other browsers.
+      return 'same-origin';
     })();
 
     const warmupRequestHref = (() => {
@@ -1579,11 +1573,9 @@
           return null;
         }
 
-        try {
-          xhrInstance.withCredentials = includeCredentials;
-        } catch (withCredentialsError) {
-          void withCredentialsError;
-        }
+        // Same-origin requests already carry credentials implicitly. Safari
+        // can emit noisy access-control warnings when withCredentials is
+        // toggled manually, so leave the default untouched.
 
         try {
           xhrInstance.responseType = 'text';
