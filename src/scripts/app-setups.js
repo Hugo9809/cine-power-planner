@@ -1002,6 +1002,10 @@ const lensSelectionManager = (() => {
 
     const sortComparator = typeof localeSort === 'function' ? localeSort : undefined;
 
+    const GLOBAL_MOUNT_LABELS = Array.from(new Set(
+        Array.from(MOUNT_TOKEN_MAP.values()).filter(Boolean)
+    )).sort((a, b) => (sortComparator ? sortComparator(a, b) : a.localeCompare(b)));
+
     const state = {
         manufacturer: '',
         series: '',
@@ -1282,6 +1286,17 @@ const lensSelectionManager = (() => {
         };
         const lensMountLabels = getLensMountLabels(lensName);
         lensMountLabels.forEach(addOption);
+        if (!options.length) {
+            const cameraEntries = getCameraLensMountEntries();
+            if (cameraEntries.length) {
+                cameraEntries
+                    .map(entry => (entry && typeof entry.type === 'string' ? entry.type : ''))
+                    .forEach(addOption);
+            }
+        }
+        if (!options.length) {
+            GLOBAL_MOUNT_LABELS.forEach(addOption);
+        }
         const normalizedCurrent = typeof currentMount === 'string' ? currentMount.trim() : '';
         const hasCurrent = normalizedCurrent && seen.has(normalizedCurrent);
         return {
