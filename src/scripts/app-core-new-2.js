@@ -10264,10 +10264,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!token) {
           return false;
         }
-        if (token.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
-          return true;
+
+        const normalizedToken = typeof token === 'string'
+          ? token.trim().toLowerCase()
+          : String(token).trim().toLowerCase();
+
+        if (!normalizedToken) {
+          return false;
         }
-        return !FEATURE_SEARCH_STOP_WORDS.has(token);
+
+        const isStopWord = FEATURE_SEARCH_STOP_WORDS.has(normalizedToken);
+
+        if (normalizedToken.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
+          return !isStopWord;
+        }
+
+        return !isStopWord;
       });
 
       return filtered.length > 0 ? filtered : tokens.filter(Boolean);
