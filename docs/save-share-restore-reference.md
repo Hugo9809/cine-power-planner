@@ -28,6 +28,48 @@ workstations.
   Clearing the latency field is the explicit action that removes the stored
   number, preventing accidental data loss during wireless configuration audits.
 
+### Backup guardian row
+
+- **Status vocabulary:** The **Settings → Data & Storage → Storage summary →
+  Backup guardian** row renders every guard result so crews can cite the exact
+  runtime evidence during audits. `app-core-new-2.js` loads
+  `readCriticalStorageGuardResult()` and swaps the row’s value to match the
+  guard output, so you will see the precise strings emitted by the runtime:
+  - `Mirrored {count} key(s) this session` confirms how many critical keys were
+    redundantly stored during the most recent run.
+  - `Waiting for first save` appears when the guard has not yet seen a manual
+    save to mirror, signalling that you must capture a first save before
+    disconnecting.
+  - `{count} issue(s) — check console` surfaces when the guard logged read or
+    write errors; halt work, open the diagnostics log and console, and capture
+    the error stack traces.
+  - `Active` (or the translated fallback) displays when no mirrored keys or
+    errors were reported during the current session but the guard remains ready
+    to run again.
+  Each string maps directly to the guard result branches inside
+  `src/scripts/app-core-new-2.js`, ensuring the doc mirrors the UI text exactly
+  for traceability.【F:src/scripts/app-core-new-2.js†L9233-L9313】
+- **Triggering another guard run:** When the Backup guardian row shows any
+  warning or stale timestamp, use the row’s inline **Run guardian again** action
+  to execute `ensureCriticalStorageBackups()` from the same panel. Once the
+  guard completes, the storage summary refreshes, re-reading the guard result so
+  the updated status and mirrored-key count are available without leaving the
+  dashboard.【F:src/scripts/app-core-new-2.js†L9233-L9313】
+- **Verification steps (matches the in-app help overlay):**
+  1. Open **Settings → Data & Storage** before going offline so you can inspect
+     every cached dataset while the dashboard continues to operate without a
+     network connection.
+  2. Review the **Storage summary** rows—especially **Backup guardian**—and
+     investigate any warning strings immediately so redundant copies stay intact.
+  3. Check **Latest activity** for the corresponding guard timestamp and follow
+     any reminder banner instructing you to capture fresh saves, autosaves or
+     backups.
+  4. Archive the evidence: capture the refreshed guardian status, autosave
+     ledger entry and any guard rerun output before closing the panel. These
+     steps align exactly with the contextual help instructions surfaced inside
+     `index.html`, keeping the reference synced with the UI cues crews rely on
+     during rehearsals.【F:index.html†L4554-L4609】
+
 ## Backup
 
 - **Planner backup:** **Settings → Backup & Restore → Backup** exports
