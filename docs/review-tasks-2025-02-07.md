@@ -7,6 +7,7 @@ entries as work progresses and link to supporting evidence stored offline.
 | --- | --- | --- | --- | --- | --- |
 | TASK-001 | Update `docs/save-share-restore-reference.md` with the new redundant autosave/backups guard notes introduced during the runtime helper split. | Medium | TBD | Open | `docs/save-share-restore-reference.md` L18-L47 |
 | TASK-002 | Sync `docs/documentation-update-checklist.md` with the current backup rotation rehearsal steps so operators rehearse redundant exports before hand-off. | Medium | TBD | Open | `docs/documentation-update-checklist.md` L9-L42; `docs/backup-rotation-guide.md` L12-L48 |
+| TASK-008 | Update the service worker asset manifest so every `docs/` page is cached for offline crews following the README trail. | High | Automated QA | Closed | commit `3df4feb` (2025-10-21) + `npm run check-consistency` verification on 2025-10-26 |
 
 ## Workflow
 

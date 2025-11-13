@@ -8,8 +8,13 @@ teams can trace historical issues offline.
 | --- | --- | --- | --- | --- | --- |
 | _(YYYY-MM-DD)_ | _(Name)_ | _(e.g. Backup restore)_ | _(Description)_ | _(High/Medium/Low)_ | _(Link to review-tasks entry / commit)_ |
 | 2025-10-13 | Automated QA | Offline cache manifest | `service-worker-assets.js` excluded schema and runtime helpers so offline loads miss critical modules. | High | TASK-001 |
-| 2025-10-14 | Automated QA | Offline documentation caching | Service worker asset manifest skips the `docs/` tree, so help and drill links return 404 errors when crews browse the app offline and the docs aren't cached, even though the README directs them to those files. | Medium | TASK-008 |
 | 2025-10-14 | Automated QA | Test plan clarity & coverage | `npm test` entry in `docs/testing-plan.md` only mentions the unit suite, leaving out the data/dom projects and masking missing assertions in storage alert coverage. | Medium | TASK-009 & TASK-010 |
+
+## Resolved findings
+
+| Date | Reviewer | Area | Finding | Impact | Resolution details |
+| --- | --- | --- | --- | --- | --- |
+| 2025-10-14 | Automated QA | Offline documentation caching | Service worker asset manifest skipped the `docs/` tree, so help and drill links returned 404 errors when crews browsed the app offline and the docs weren't cached even though the README directs them to those files. | Medium | Closed on 2025-10-26 after commit `3df4feb` (2025-10-21) expanded `service-worker-assets.js` to include every `docs/` entry; verified via `npm run check-consistency` the same day. |
 
 ## Usage guidelines
 
