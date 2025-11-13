@@ -10249,8 +10249,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'just',
       'maybe',
       'perhaps',
-      'again',
-      'back'
+      'again'
     ]);
 
     const FEATURE_SEARCH_STOP_WORD_MIN_LENGTH = 3;
