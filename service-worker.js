@@ -21,6 +21,8 @@ let logBroadcastChannel = null;
 let logBroadcastChannelFailed = false;
 let cachedCacheName = null;
 let cachedCacheVersion = null;
+let navigationPreloadUnavailable = false;
+let navigationPreloadUnavailableLogged = false;
 
 if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
   try {
@@ -463,6 +465,18 @@ function scheduleDeferredActivationTask(task) {
   } catch (error) {
     serviceWorkerLog.warn('Unable to schedule deferred activation task.', error);
   }
+}
+
+function markNavigationPreloadUnavailable(detail) {
+  navigationPreloadUnavailable = true;
+  if (navigationPreloadUnavailableLogged) {
+    return;
+  }
+  navigationPreloadUnavailableLogged = true;
+  serviceWorkerLog.info(
+    'Navigation preload unavailable because storage access is blocked. Operating without navigation preload to keep offline caching reliable.',
+    detail
+  );
 }
 
 function resolveCacheVersion() {
@@ -921,6 +935,7 @@ if (typeof self !== 'undefined') {
 
       try {
         if (
+          !navigationPreloadUnavailable &&
           self.registration &&
           self.registration.navigationPreload &&
           typeof self.registration.navigationPreload.enable === 'function'
@@ -929,10 +944,13 @@ if (typeof self !== 'undefined') {
           serviceWorkerLog.info('Navigation preload enabled for faster reloads.');
         }
       } catch (error) {
-        if (isInvalidStateError(error)) {
+        if (isStorageAccessFailure(error)) {
+          markNavigationPreloadUnavailable(error);
+        } else if (isInvalidStateError(error)) {
           serviceWorkerLog.info('Navigation preload enable deferred until activation completes.');
           scheduleDeferredActivationTask(() => {
             if (
+              navigationPreloadUnavailable ||
               typeof self === 'undefined' ||
               !self ||
               !self.registration ||
@@ -948,7 +966,12 @@ if (typeof self !== 'undefined') {
                   serviceWorkerLog.info('Navigation preload enabled after activation.');
                 })
                 .catch(deferredError => {
+                  if (isStorageAccessFailure(deferredError)) {
+                    markNavigationPreloadUnavailable(deferredError);
+                    return null;
+                  }
                   serviceWorkerLog.warn('Deferred navigation preload enable failed.', deferredError);
+                  return null;
                 });
             }
             return null;
@@ -1144,3 +1167,26 @@ if (typeof module !== 'undefined' && module.exports) {
     },
   };
 }
+function isStorageAccessFailure(error) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const errorName = typeof error.name === 'string' ? error.name : '';
+  const errorMessage = typeof error.message === 'string' ? error.message : '';
+
+  if (errorName && errorName.toLowerCase().includes('security')) {
+    return true;
+  }
+
+  if (errorName === 'UnknownError') {
+    return true;
+  }
+
+  if (errorMessage && errorMessage.toLowerCase().includes('failed to access storage')) {
+    return true;
+  }
+
+  return false;
+}
+
