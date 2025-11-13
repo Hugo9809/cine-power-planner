@@ -18,6 +18,7 @@ describe('service worker connectivity probe handling', () => {
   const CONNECTIVITY_PROBE_HEADER = 'x-cine-connectivity-probe';
   const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
   const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+  const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
 
   let originalCaches;
   let originalSelf;
@@ -108,6 +109,59 @@ describe('service worker connectivity probe handling', () => {
     expect(global.caches.match).toHaveBeenCalledWith(request, { ignoreSearch: true });
     expect(response.headers.get(CONNECTIVITY_PROBE_RESULT_HEADER)).toBe(
       CONNECTIVITY_PROBE_RESULT_FALLBACK,
+    );
+  });
+
+  test('successful connectivity probe fetches annotate network result when bypassing cache', async () => {
+    const { fetchHandler } = loadServiceWorker();
+
+    expect(typeof fetchHandler).toBe('function');
+
+    const networkResponse = new Response('<html></html>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' },
+    });
+
+    global.fetch.mockResolvedValue(networkResponse);
+
+    const connectivityRequest = new Request(
+      'https://example.test/index.html?forceReload=token&__cineReloadProbe__=1',
+      {
+        headers: new Headers({
+          [CONNECTIVITY_PROBE_HEADER]: 'probe-token',
+          Accept: 'text/html',
+        }),
+      },
+    );
+
+    const navigationConnectivityRequest = new Proxy(connectivityRequest, {
+      get(target, prop, receiver) {
+        if (prop === 'mode') {
+          return 'navigate';
+        }
+        return Reflect.get(target, prop, receiver);
+      },
+    });
+
+    let respondPromise;
+    const respondWith = jest.fn(promise => {
+      respondPromise = promise;
+    });
+
+    fetchHandler({
+      request: navigationConnectivityRequest,
+      respondWith,
+      preloadResponse: null,
+    });
+
+    expect(respondWith).toHaveBeenCalledTimes(1);
+
+    const annotatedResponse = await respondPromise;
+
+    expect(global.fetch).toHaveBeenCalledWith(navigationConnectivityRequest, { cache: 'no-store' });
+    expect(global.caches.match).not.toHaveBeenCalled();
+    expect(annotatedResponse.headers.get(CONNECTIVITY_PROBE_RESULT_HEADER)).toBe(
+      CONNECTIVITY_PROBE_RESULT_NETWORK,
     );
   });
 
