@@ -29,7 +29,7 @@
   }
 
   // Ensure that a dedicated status paragraph exists inside the dialog. The
-  // overlay is re-used to avoid creating duplicate DOM nodes on repeated
+  // overlay is reused to avoid creating duplicate DOM nodes on repeated
   // openings of the settings window.
   function ensureOverlay(targetDialog) {
     if (!targetDialog) {
