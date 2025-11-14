@@ -1748,7 +1748,7 @@
         },
         "resultsChangeover": {
           "title": "Power Summary: Changeovers",
-          "body": "Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan."
+          "body": "Use the changeover card to review the category-by-category draw chart, see exactly which devices contribute the most load, and confirm every swap sequence keeps enough headroom. The breakdown ties each accessory to its watt draw so the next charged pack is staged for the hungriest circuit and the saved snapshot captures the latest handoff plan."
         },
         "resultsWarnings": {
           "title": "Power Summary: Warnings and backups",
