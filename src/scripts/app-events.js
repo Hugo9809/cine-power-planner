@@ -12,6 +12,7 @@
           clearLensDeviceMountOptions, updateMountTypeOptions,
           lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
           normalizeFocusScale, buildSettingsBackupPackage, deviceSchema,
+          applyPendingProjectNameCollisionResolution,
           SAFE_LOCAL_STORAGE */
 
 const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
@@ -1920,6 +1921,13 @@ addSafeEventListener(skipLink, "click", () => {
 
 // Setup management
 function handleSaveSetupClick() {
+  if (typeof applyPendingProjectNameCollisionResolution === 'function') {
+    try {
+      applyPendingProjectNameCollisionResolution();
+    } catch (pendingError) {
+      console.warn('Failed to finalize pending project name collision before saving setup', pendingError);
+    }
+  }
   const typedName = setupNameInput.value.trim();
   if (!typedName) {
     alert(texts[currentLang].alertSetupName);
