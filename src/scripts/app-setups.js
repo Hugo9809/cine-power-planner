@@ -1328,6 +1328,17 @@ const lensSelectionManager = (() => {
             return { mount: normalizedPreferred, status: resolveStatusForType(normalizedPreferred) };
         }
 
+        if (normalizedPreferred) {
+            const cameraMatch = cameraEntries.find(entry => entry.type === normalizedPreferred);
+            if (cameraMatch) {
+                return { mount: normalizedPreferred, status: cameraMatch.status || 'native' };
+            }
+
+            if (GLOBAL_MOUNT_LABELS.includes(normalizedPreferred)) {
+                return { mount: normalizedPreferred, status: cameraEntries.length ? 'adapted' : '' };
+            }
+        }
+
         const nativeMatch = cameraEntries.find(entry => entry.status === 'native' && lensTypes.includes(entry.type));
         if (nativeMatch) {
             return { mount: nativeMatch.type, status: resolveStatusForType(nativeMatch.type) };
