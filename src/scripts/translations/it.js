@@ -126,7 +126,7 @@
       "description": "Salva una volta i membri della troupe, conservali offline e riutilizzali in ogni progetto.",
       "addContactButton": "Aggiungi contatto",
       "importButton": "Importa vCard",
-      "importHint": "Importa file .vcf per aggiungere contatti all'istante.",
+      "importHint": "Importa file .vcf per aggiungere contatti all'istante. I dettagli già salvati vengono mantenuti automaticamente.",
       "emptyState": "Nessun contatto salvato. Aggiungi la tua troupe per riutilizzarla più avanti.",
       "close": "Chiudi",
       "selectLabel": "Contatti salvati",

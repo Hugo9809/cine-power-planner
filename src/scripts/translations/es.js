@@ -126,7 +126,7 @@
       "description": "Guarda a los miembros del equipo de rodaje una vez, consérvalos sin conexión y reutilízalos en cada proyecto.",
       "addContactButton": "Agregar contacto",
       "importButton": "Importar vCard",
-      "importHint": "Importa archivos .vcf para añadir contactos al instante.",
+      "importHint": "Importa archivos .vcf para añadir contactos al instante. Los datos guardados se conservan automáticamente.",
       "emptyState": "Todavía no hay contactos guardados. Añade a tu equipo de rodaje ahora para reutilizarlo más tarde.",
       "close": "Cerrar",
       "selectLabel": "Contactos guardados",

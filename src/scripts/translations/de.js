@@ -126,7 +126,7 @@
       "description": "Speichere Crew-Mitglieder einmal, bewahre sie offline auf und nutze sie in jedem Projekt erneut.",
       "addContactButton": "Kontakt hinzufügen",
       "importButton": "vCard importieren",
-      "importHint": "Importiere .vcf-Dateien, um Kontakte sofort zu übernehmen.",
+      "importHint": "Importiere .vcf-Dateien, um Kontakte sofort zu übernehmen. Bereits gespeicherte Details bleiben automatisch erhalten.",
       "emptyState": "Noch keine Kontakte gespeichert. Füge deine Crew hinzu, um sie später erneut zu nutzen.",
       "close": "Schließen",
       "selectLabel": "Gespeicherte Kontakte",

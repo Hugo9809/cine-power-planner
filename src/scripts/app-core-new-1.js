@@ -2589,7 +2589,31 @@ const applyDeviceSchema =
       };
 
 try {
-  const bundledSchema = require('../data/schema.json');
+const bundledSchema = require('../data/schema.json');
+const contactsProfileModule = require('./contacts/profile.js');
+const contactsListModule = require('./contacts/list.js');
+
+const {
+  CONTACT_AVATAR_MAX_BYTES,
+  CONTACT_AVATAR_MAX_SOURCE_BYTES,
+  CONTACT_AVATAR_MAX_DIMENSION,
+  CONTACT_AVATAR_JPEG_QUALITY,
+  CONTACT_AVATAR_JPEG_MIN_QUALITY,
+  createProfileController,
+  estimateDataUrlSize,
+  optimiseAvatarDataUrl,
+  readAvatarFile,
+  isSafeImageUrl
+} = contactsProfileModule;
+
+const {
+  sanitizeContactValue: sanitizeContactValueHelper,
+  normalizeContactEntry: normalizeContactEntryHelper,
+  sortContacts: sortContactsHelper,
+  parseVCard: parseVCardEntries,
+  mergeImportedContacts: mergeImportedContactEntries,
+  createCrewRowSync
+} = contactsListModule;
   const appliedSchema = applyDeviceSchema(bundledSchema);
   if (appliedSchema) {
     deviceSchema = appliedSchema;
@@ -11573,8 +11597,11 @@ async function setLanguage(lang) {
       userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
     }
     if (userProfileRoleInput) {
+      const profileSnapshot = profileController?.getUserProfileSnapshot
+        ? profileController.getUserProfileSnapshot()
+        : { role: '' };
       populateUserProfileRoleSelect({
-        selected: typeof userProfileState?.role === 'string' ? userProfileState.role : ''
+        selected: profileSnapshot.role || ''
       });
     }
     if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
@@ -12037,7 +12064,9 @@ function populateUserProfileRoleSelect(options = {}) {
   const selectedValue =
     options && typeof options.selected === 'string'
       ? options.selected
-      : (typeof userProfileState?.role === 'string' ? userProfileState.role : '');
+      : profileController?.getUserProfileSnapshot
+        ? profileController.getUserProfileSnapshot().role
+        : '';
 
   const previousScrollTop = userProfileRoleInput.scrollTop;
   userProfileRoleInput.textContent = '';
@@ -12294,17 +12323,31 @@ function resolveContactsStorageKey() {
   }
   return CONTACTS_STORAGE_KEY_DEFAULT;
 }
-const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
-const CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
-const CONTACT_AVATAR_MAX_DIMENSION = 256;
-const CONTACT_AVATAR_JPEG_QUALITY = 0.85;
-const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
-var userProfileDirty = false;
-var userProfilePendingAnnouncement = false;
+const profileController = createProfileController({
+  loadProfile: () => {
+    try {
+      return typeof loadUserProfile === 'function' ? loadUserProfile() : null;
+    } catch (loadError) {
+      console.warn('Failed to resolve stored user profile', loadError);
+      return null;
+    }
+  },
+  saveProfile: profile => {
+    if (typeof saveUserProfile === 'function') {
+      try {
+        saveUserProfile(profile);
+      } catch (saveError) {
+        console.warn('Failed to persist user profile', saveError);
+      }
+    }
+  },
+  announce: message => announceContactsMessage(message),
+  getText: getContactsText,
+  dispatchChange: () => dispatchGearProviderDataChanged('user-profile')
+});
 
 function getContactsText(key, defaultValue = '') {
   const fallbackContacts = texts?.en?.contacts || {};
@@ -12332,70 +12375,15 @@ function generateContactId() {
 }
 
 function sanitizeContactValue(value) {
-  const moduleApi = resolveContactsModule();
-  if (moduleApi && typeof moduleApi.sanitizeContactValue === 'function') {
-    try {
-      return moduleApi.sanitizeContactValue(value);
-    } catch (error) {
-      console.warn('Unable to sanitize contact value via module.', error);
-    }
-  }
-  if (typeof value !== 'string') return '';
-  return value.trim();
+  return sanitizeContactValueHelper(value);
 }
 
 function normalizeContactEntry(entry) {
-  const moduleApi = resolveContactsModule();
-  if (moduleApi && typeof moduleApi.normalizeContactEntry === 'function') {
-    try {
-      return moduleApi.normalizeContactEntry(entry);
-    } catch (error) {
-      console.warn('Unable to normalize contact via module.', error);
-    }
-  }
-  if (!entry || typeof entry !== 'object') return null;
-  const id = sanitizeContactValue(entry.id) || generateContactId();
-  const name = sanitizeContactValue(entry.name);
-  const role = sanitizeContactValue(entry.role);
-  const phone = sanitizeContactValue(entry.phone);
-  const email = sanitizeContactValue(entry.email);
-  const website = sanitizeContactValue(entry.website);
-  const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
-    ? entry.avatar
-    : '';
-  const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
-  const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
-  const normalized = { id, name, role, phone, email, website, createdAt, updatedAt };
-  if (avatar) normalized.avatar = avatar;
-  return normalized;
+  return normalizeContactEntryHelper(entry);
 }
 
 function sortContacts(list) {
-  const moduleApi = resolveContactsModule();
-  if (moduleApi && typeof moduleApi.sortContacts === 'function') {
-    try {
-      return moduleApi.sortContacts(list);
-    } catch (error) {
-      console.warn('Unable to sort contacts via module.', error);
-    }
-  }
-  return (Array.isArray(list) ? list.filter(Boolean) : [])
-    .map(normalizeContactEntry)
-    .filter(Boolean)
-    .sort((a, b) => {
-      const nameA = (a?.name || '').toLowerCase();
-      const nameB = (b?.name || '').toLowerCase();
-      if (nameA && nameB && nameA !== nameB) {
-        try {
-          return nameA.localeCompare(nameB);
-        } catch (error) {
-          void error;
-        }
-      }
-      if (nameA && !nameB) return -1;
-      if (!nameA && nameB) return 1;
-      return (a?.createdAt || 0) - (b?.createdAt || 0);
-    });
+  return sortContactsHelper(list);
 }
 
 function loadStoredContacts() {
@@ -12582,33 +12570,6 @@ function getAvatarInitial(value) {
   }
   return '•';
 }
-
-function isSafeImageUrl(url) {
-  if (typeof url !== 'string') return false;
-  // Only allow image data URLs (PNG, JPEG, GIF, WEBP, NO SVG) or simple relative URLs (not starting with /), NEVER remote URLs
-  // Acceptable: data:image/png, data:image/jpeg, data:image/gif, data:image/webp, or e.g. "avatar-foo.png"
-  // Reject: javascript:, data:image/svg+xml, all http(s) URLs, leading slash-relative URLs, protocol-relative and remote URLs!
-  if (url.startsWith('data:')) {
-    // allow only certain image mime types
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
-    try {
-      const mimeTypeEnd = url.indexOf(';', 5); // after 'data:'
-      const type = mimeTypeEnd >= 0 ? url.substring(5, mimeTypeEnd) : '';
-      if (allowedTypes.includes(type)) return true;
-    } catch (e) { /* ignore */ }
-    return false;
-  }
-  // Reject javascript: and all remote URLs
-  if (/^\s*(javascript:|https?:|\/\/)/i.test(url)) {
-    return false;
-  }
-  // Allow only plain relative paths (no starting / or \), to prevent absolute/site-root references and protocol-relative URLs
-  if (/^[a-zA-Z0-9._-]+$/.test(url)) {
-    return true;
-  }
-  return false;
-}
-
 
 function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
   if (!container) return;
@@ -13129,23 +13090,15 @@ function getContactsSnapshot() {
 }
 
 function assignUserProfileState(updates = {}) {
-  const nextState = {
-    name: typeof updates.name === 'string' ? updates.name : (userProfileState.name || ''),
-    role: typeof updates.role === 'string' ? updates.role : (userProfileState.role || ''),
-    avatar: typeof updates.avatar === 'string' ? updates.avatar : (userProfileState.avatar || ''),
-    phone: typeof updates.phone === 'string' ? updates.phone : (userProfileState.phone || ''),
-    email: typeof updates.email === 'string' ? updates.email : (userProfileState.email || '')
-  };
-  userProfileState = nextState;
+  if (!profileController || typeof profileController.assignUserProfileState !== 'function') return;
+  profileController.assignUserProfileState(updates);
 }
 
 function getUserProfileSnapshot() {
-  const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
-  const role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
-  const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-  const phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
-  const email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
-  return { name, role, avatar, phone, email };
+  if (!profileController || typeof profileController.getUserProfileSnapshot !== 'function') {
+    return { name: '', role: '', avatar: '', phone: '', email: '' };
+  }
+  return profileController.getUserProfileSnapshot();
 }
 
 function applyUserProfileToDom(options = {}) {
@@ -13213,42 +13166,18 @@ function applyUserProfileToDom(options = {}) {
 }
 
 function loadUserProfileState() {
-  try {
-    if (typeof loadUserProfile === 'function') {
-      const loaded = loadUserProfile();
-      if (loaded && typeof loaded === 'object') {
-        userProfileState = {
-          name: typeof loaded.name === 'string' ? loaded.name : '',
-          role: typeof loaded.role === 'string' ? loaded.role : '',
-          avatar: typeof loaded.avatar === 'string' ? loaded.avatar : '',
-          phone: typeof loaded.phone === 'string' ? loaded.phone : '',
-          email: typeof loaded.email === 'string' ? loaded.email : ''
-        };
-      } else {
-        userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
+  if (!profileController || typeof profileController.load !== 'function') {
+    applyUserProfileToDom();
+    return;
   }
-  userProfileDirty = false;
-  userProfilePendingAnnouncement = false;
+  profileController.load();
   applyUserProfileToDom();
-  dispatchGearProviderDataChanged('user-profile');
 }
 
 function persistUserProfileState(options = {}) {
-  const profile = getUserProfileSnapshot();
-  userProfileState = profile;
-  if (typeof saveUserProfile === 'function') {
-    try {
-      saveUserProfile(profile);
-    } catch (error) {
-      console.warn('Failed to save user profile', error);
-    }
+  if (!profileController || typeof profileController.schedulePersist !== 'function') {
+    return;
   }
-  userProfileDirty = false;
   const activeElement = typeof document !== 'undefined' ? document.activeElement : null;
   const preserveTarget =
     activeElement === userProfileNameInput
@@ -13257,23 +13186,22 @@ function persistUserProfileState(options = {}) {
       || activeElement === userProfileEmailInput
       ? activeElement
       : null;
+  profileController.schedulePersist({ announce: Boolean(options && options.announce) });
   applyUserProfileToDom({ preserveSelectionTarget: preserveTarget });
-  if (options && options.announce) {
-    announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
-    userProfilePendingAnnouncement = false;
-  }
-  dispatchGearProviderDataChanged('user-profile');
 }
 
 function handleUserProfileNameInput() {
   if (!userProfileNameInput) return;
   const rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
-  if (rawValue.trim() === userProfileState.name.trim()) {
+  const profile = getUserProfileSnapshot();
+  if (rawValue.trim() === profile.name.trim()) {
     return;
   }
-  assignUserProfileState({ name: rawValue });
-  userProfileDirty = true;
-  userProfilePendingAnnouncement = true;
+  if (profileController && typeof profileController.handleFieldInput === 'function') {
+    profileController.handleFieldInput('name', rawValue);
+  } else {
+    assignUserProfileState({ name: rawValue });
+  }
   persistUserProfileState();
 }
 
@@ -13281,53 +13209,58 @@ function handleUserProfileRoleInput() {
   if (!userProfileRoleInput) return;
   const rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
   const normalizedValue = rawValue.trim();
-  if (normalizedValue === userProfileState.role.trim()) {
+  const profile = getUserProfileSnapshot();
+  if (normalizedValue === profile.role.trim()) {
     return;
   }
   ensureUserProfileRoleOption(normalizedValue);
-  assignUserProfileState({ role: normalizedValue });
-  userProfileDirty = true;
-  userProfilePendingAnnouncement = true;
+  if (profileController && typeof profileController.handleFieldInput === 'function') {
+    profileController.handleFieldInput('role', normalizedValue);
+  } else {
+    assignUserProfileState({ role: normalizedValue });
+  }
   persistUserProfileState();
 }
 
 function handleUserProfilePhoneInput() {
   if (!userProfilePhoneInput) return;
   const rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
-  if (rawValue.trim() === userProfileState.phone.trim()) {
+  const profile = getUserProfileSnapshot();
+  if (rawValue.trim() === profile.phone.trim()) {
     return;
   }
-  assignUserProfileState({ phone: rawValue });
-  userProfileDirty = true;
-  userProfilePendingAnnouncement = true;
+  if (profileController && typeof profileController.handleFieldInput === 'function') {
+    profileController.handleFieldInput('phone', rawValue);
+  } else {
+    assignUserProfileState({ phone: rawValue });
+  }
   persistUserProfileState();
 }
 
 function handleUserProfileEmailInput() {
   if (!userProfileEmailInput) return;
   const rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
-  if (rawValue.trim() === userProfileState.email.trim()) {
+  const profile = getUserProfileSnapshot();
+  if (rawValue.trim() === profile.email.trim()) {
     return;
   }
-  assignUserProfileState({ email: rawValue });
-  userProfileDirty = true;
-  userProfilePendingAnnouncement = true;
+  if (profileController && typeof profileController.handleFieldInput === 'function') {
+    profileController.handleFieldInput('email', rawValue);
+  } else {
+    assignUserProfileState({ email: rawValue });
+  }
   persistUserProfileState();
 }
 
 function handleUserProfileFieldBlur() {
-  if (!userProfileDirty && !userProfilePendingAnnouncement) {
-    return;
-  }
-  userProfileDirty = false;
-  if (userProfilePendingAnnouncement) {
-    userProfilePendingAnnouncement = false;
-    announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
+  if (profileController && typeof profileController.handleFieldBlur === 'function') {
+    profileController.handleFieldBlur();
   }
 }
 
 function handleUserProfileAvatarCleared() {
-  if (!userProfileState.avatar) {
+  const profile = getUserProfileSnapshot();
+  if (!profile.avatar) {
     return;
   }
   assignUserProfileState({ avatar: '' });
@@ -13339,7 +13272,8 @@ function handleUserProfileAvatarCleared() {
 }
 
 function handleUserProfileAvatarButtonClick() {
-  const hasAvatar = Boolean(userProfileState && userProfileState.avatar);
+  const profile = getUserProfileSnapshot();
+  const hasAvatar = Boolean(profile && profile.avatar);
   if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
     try {
       userProfileAvatarInput.click();
@@ -13349,8 +13283,8 @@ function handleUserProfileAvatarButtonClick() {
     }
   }
   openAvatarOptionsDialog({
-    getAvatar: () => userProfileState.avatar || '',
-    getName: () => userProfileState.name || userProfileNameInput?.value || '',
+    getAvatar: () => getUserProfileSnapshot().avatar || '',
+    getName: () => getUserProfileSnapshot().name || userProfileNameInput?.value || '',
     onDelete: () => {
       handleUserProfileAvatarCleared();
     },
@@ -13366,7 +13300,7 @@ function handleUserProfileAvatarButtonClick() {
     onEditSave: dataUrl => {
       if (!dataUrl) return;
       assignUserProfileState({
-        name: userProfileState.name || userProfileNameInput?.value || '',
+        name: getUserProfileSnapshot().name || userProfileNameInput?.value || '',
         avatar: dataUrl
       });
       persistUserProfileState();
@@ -13383,8 +13317,9 @@ function handleUserProfileAvatarInputChange() {
     return;
   }
   readAvatarFile(file, dataUrl => {
+    const profile = getUserProfileSnapshot();
     assignUserProfileState({
-      name: userProfileState.name || '',
+      name: profile.name || '',
       avatar: dataUrl
     });
     persistUserProfileState();
@@ -13462,139 +13397,8 @@ function handleCrewRowManualChange(row) {
   scheduleProjectAutoSave(true);
 }
 
-function estimateDataUrlSize(dataUrl) {
-  if (typeof dataUrl !== 'string' || !dataUrl) return 0;
-  const marker = 'base64,';
-  const base64Index = dataUrl.indexOf(marker);
-  if (base64Index === -1) return dataUrl.length;
-  const base64 = dataUrl.slice(base64Index + marker.length).trim();
-  if (!base64) return 0;
-  const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
-  return Math.max(0, Math.floor(base64.length / 4) * 3 - padding);
-}
 
-function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
-  if (!dataUrl || typeof document === 'undefined') {
-    if (typeof onError === 'function') onError();
-    return;
-  }
-  try {
-    const image = new Image();
-    const handleFailure = () => {
-      image.onload = null;
-      image.onerror = null;
-      if (typeof onError === 'function') onError();
-    };
-    image.onload = () => {
-      image.onload = null;
-      image.onerror = null;
-      try {
-        const width = image.naturalWidth || image.width || 0;
-        const height = image.naturalHeight || image.height || 0;
-        if (!width || !height) {
-          handleFailure();
-          return;
-        }
-        const scale = Math.min(1, CONTACT_AVATAR_MAX_DIMENSION / Math.max(width, height));
-        const targetWidth = Math.max(1, Math.round(width * scale));
-        const targetHeight = Math.max(1, Math.round(height * scale));
-        const canvas = document.createElement('canvas');
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          handleFailure();
-          return;
-        }
-        ctx.clearRect(0, 0, targetWidth, targetHeight);
-        ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
-        const preferPng = typeof mimeType === 'string' && /image\/(png|gif|webp)/i.test(mimeType);
-        const exportOrder = preferPng ? ['image/png', 'image/jpeg'] : ['image/jpeg', 'image/png'];
-        const tryCandidate = candidate => {
-          const size = estimateDataUrlSize(candidate);
-          if (size && size <= CONTACT_AVATAR_MAX_BYTES) {
-            if (typeof onSuccess === 'function') onSuccess(candidate);
-            return true;
-          }
-          return false;
-        };
-        for (let index = 0; index < exportOrder.length; index += 1) {
-          const type = exportOrder[index];
-          if (type === 'image/jpeg') {
-            let quality = CONTACT_AVATAR_JPEG_QUALITY;
-            while (quality + 0.0001 >= CONTACT_AVATAR_JPEG_MIN_QUALITY) {
-              const bounded = Math.max(CONTACT_AVATAR_JPEG_MIN_QUALITY, Math.min(0.95, Number(quality.toFixed(2))));
-              const candidate = canvas.toDataURL('image/jpeg', bounded);
-              if (tryCandidate(candidate)) return;
-              if (bounded === CONTACT_AVATAR_JPEG_MIN_QUALITY) break;
-              quality -= 0.1;
-            }
-          } else {
-            const candidate = canvas.toDataURL(type);
-            if (tryCandidate(candidate)) return;
-          }
-        }
-        handleFailure();
-      } catch (canvasError) {
-        void canvasError;
-        handleFailure();
-      }
-    };
-    image.onerror = handleFailure;
-    image.decoding = 'async';
-    image.src = dataUrl;
-  } catch (error) {
-    void error;
-    if (typeof onError === 'function') onError();
-  }
-}
 
-function readAvatarFile(file, onSuccess, onError) {
-  if (!file) return;
-  if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
-    if (typeof onError === 'function') onError('tooLarge');
-    return;
-  }
-  const reader = new FileReader();
-  const handleError = reason => {
-    if (typeof onError === 'function') onError(reason);
-  };
-  reader.addEventListener('error', () => handleError('readError'));
-  reader.addEventListener('load', () => {
-    const result = typeof reader.result === 'string' ? reader.result : '';
-    if (!result) {
-      handleError('readError');
-      return;
-    }
-    const initialSize = estimateDataUrlSize(result);
-    if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-      if (typeof onSuccess === 'function') onSuccess(result);
-      return;
-    }
-    optimiseAvatarDataUrl(result, typeof file.type === 'string' ? file.type : '', optimised => {
-      if (optimised && estimateDataUrlSize(optimised) <= CONTACT_AVATAR_MAX_BYTES) {
-        if (typeof onSuccess === 'function') onSuccess(optimised);
-        return;
-      }
-      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-        if (typeof onSuccess === 'function') onSuccess(result);
-        return;
-      }
-      handleError('tooLarge');
-    }, () => {
-      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-        if (typeof onSuccess === 'function') onSuccess(result);
-        return;
-      }
-      handleError('readError');
-    });
-  });
-  try {
-    reader.readAsDataURL(file);
-  } catch (error) {
-    handleError('readError');
-  }
-}
 
 function handleAvatarFileSelection(row, file) {
   readAvatarFile(
@@ -13632,34 +13436,46 @@ function announceContactsMessage(message) {
 function applyContactToCrewRow(row, contact, options = {}) {
   if (!row || !contact) return;
   const { skipDirty = false, skipAnnouncement = false } = options || {};
+  const snapshot = getCrewRowSnapshot(row) || {};
+  const merged = typeof createCrewRowSync === 'function'
+    ? createCrewRowSync(snapshot, contact)
+    : {
+        role: contact.role || '',
+        name: contact.name || '',
+        phone: contact.phone || '',
+        email: contact.email || '',
+        website: contact.website || '',
+        avatar: contact.avatar || '',
+        contactId: contact.id || ''
+      };
   row.dataset.syncingContact = '1';
   try {
     const roleSel = row.querySelector('select[name="crewRole"]');
     if (roleSel) {
-      if (contact.role && !Array.from(roleSel.options).some(opt => opt.value === contact.role)) {
+      if (merged.role && !Array.from(roleSel.options).some(opt => opt.value === merged.role)) {
         const opt = document.createElement('option');
-        opt.value = contact.role;
+        opt.value = merged.role;
         const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
-        opt.textContent = roleLabels[contact.role] || contact.role;
+        opt.textContent = roleLabels[merged.role] || merged.role;
         roleSel.appendChild(opt);
       }
-      if (contact.role) {
-        roleSel.value = contact.role;
+      if (merged.role) {
+        roleSel.value = merged.role;
       }
     }
     const nameInput = row.querySelector('.person-name');
-    if (nameInput) nameInput.value = contact.name || '';
+    if (nameInput) nameInput.value = merged.name || '';
     const phoneInput = row.querySelector('.person-phone');
-    if (phoneInput) phoneInput.value = contact.phone || '';
+    if (phoneInput) phoneInput.value = merged.phone || '';
     const emailInput = row.querySelector('.person-email');
-    if (emailInput) emailInput.value = contact.email || '';
+    if (emailInput) emailInput.value = merged.email || '';
     const websiteInput = row.querySelector('.person-website');
-    if (websiteInput) websiteInput.value = contact.website || '';
-    setRowAvatar(row, contact.avatar || '', { name: contact.name });
-    row.dataset.contactId = contact.id;
+    if (websiteInput) websiteInput.value = merged.website || '';
+    setRowAvatar(row, merged.avatar || '', { name: merged.name });
+    row.dataset.contactId = merged.contactId || contact.id;
     const contactSelect = row.querySelector('.person-contact-select');
     if (contactSelect) {
-      setContactSelectOptions(contactSelect, contact.id);
+      setContactSelectOptions(contactSelect, merged.contactId || contact.id);
     }
   } finally {
     delete row.dataset.syncingContact;
@@ -13778,107 +13594,7 @@ function saveCrewRowAsContact(row) {
 }
 
 function parseVCard(text) {
-  if (typeof text !== 'string') return [];
-  const normalized = text.replace(/\r\n?/g, '\n');
-  const folded = [];
-  normalized.split('\n').forEach(line => {
-    if (/^[ \t]/.test(line) && folded.length) {
-      folded[folded.length - 1] += line.replace(/^[ \t]/, '');
-    } else {
-      folded.push(line);
-    }
-  });
-  const contacts = [];
-  let current = null;
-  folded.forEach(line => {
-    if (/^BEGIN:VCARD/i.test(line)) {
-      current = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
-      return;
-    }
-    if (/^END:VCARD/i.test(line)) {
-      if (current && (current.name || current.email || current.phone || current.website)) {
-        contacts.push({ ...current });
-      }
-      current = null;
-      return;
-    }
-    if (!current) return;
-    const [rawKey, ...rawValueParts] = line.split(':');
-    if (!rawValueParts.length) return;
-    const keySegments = rawKey.split(';');
-    const baseKey = keySegments[0]?.toUpperCase();
-    const value = rawValueParts.join(':').trim();
-    if (!baseKey) return;
-    if (baseKey === 'FN') {
-      current.name = sanitizeContactValue(value);
-      return;
-    }
-    if (baseKey === 'N' && !current.name) {
-      current.name = value
-        .split(';')
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-      return;
-    }
-    if (baseKey === 'TEL') {
-      if (!current.phone) current.phone = sanitizeContactValue(value);
-      return;
-    }
-    if (baseKey === 'EMAIL') {
-      if (!current.email) current.email = sanitizeContactValue(value);
-      return;
-    }
-    if (baseKey === 'URL' || /\.URL$/.test(baseKey)) {
-      if (!current.website) current.website = sanitizeContactValue(value);
-      return;
-    }
-    if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
-      current.role = sanitizeContactValue(value);
-      return;
-    }
-    if (baseKey === 'ORG' && !current.role) {
-      current.role = sanitizeContactValue(value);
-      return;
-    }
-    if (baseKey === 'PHOTO') {
-      let dataValue = value;
-      if (!dataValue) return;
-      if (/^data:/i.test(dataValue)) {
-        current.avatar = dataValue;
-        return;
-      }
-      const params = keySegments.slice(1);
-      let mime = 'image/jpeg';
-      params.forEach(param => {
-        const [paramKey, paramValue] = param.split('=');
-        if (!paramValue) return;
-        const normalizedKey = paramKey.trim().toUpperCase();
-        const normalizedValue = paramValue.trim();
-        if (normalizedKey === 'MEDIATYPE') {
-          mime = normalizedValue;
-        } else if (normalizedKey === 'TYPE') {
-          const lowered = normalizedValue.toLowerCase();
-          if (lowered.includes('/')) {
-            mime = lowered;
-          } else {
-            mime = `image/${lowered}`;
-          }
-        }
-      });
-      current.avatar = `data:${mime};base64,${dataValue}`;
-    }
-  });
-  return contacts
-    .map(entry => ({
-      name: sanitizeContactValue(entry.name),
-      role: sanitizeContactValue(entry.role),
-      phone: sanitizeContactValue(entry.phone),
-      email: sanitizeContactValue(entry.email),
-      website: sanitizeContactValue(entry.website),
-      avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
-    }))
-    .filter(entry => entry.name || entry.email || entry.phone || entry.website);
+  return parseVCardEntries(text, { sanitize: sanitizeContactValue });
 }
 
 function mergeImportedContacts(imported) {
@@ -13886,58 +13602,20 @@ function mergeImportedContacts(imported) {
     announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
     return { added: 0, updated: 0 };
   }
-  let added = 0;
-  let updated = 0;
-  imported.forEach(entry => {
-    const candidate = {
-      name: sanitizeContactValue(entry.name || ''),
-      role: sanitizeContactValue(entry.role || ''),
-      phone: sanitizeContactValue(entry.phone || ''),
-      email: sanitizeContactValue(entry.email || ''),
-      website: sanitizeContactValue(entry.website || entry.url || ''),
-      avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
-    };
-    const existing = contactsCache.find(contact => {
-      if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
-      if (candidate.phone && contact.phone) {
-        const normalizedCandidate = candidate.phone.replace(/\D+/g, '');
-        const normalizedExisting = contact.phone.replace(/\D+/g, '');
-        if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
-      }
-      if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
-      if (candidate.website && contact.website && candidate.website.toLowerCase() === contact.website.toLowerCase()) return true;
-      return false;
-    });
-    if (existing) {
-      if (candidate.name) existing.name = candidate.name;
-      if (candidate.role) existing.role = candidate.role;
-      if (candidate.phone) existing.phone = candidate.phone;
-      if (candidate.email) existing.email = candidate.email;
-      if (candidate.website) existing.website = candidate.website;
-      if (candidate.avatar) existing.avatar = candidate.avatar;
-      existing.updatedAt = Date.now();
-      updated += 1;
-      updateCrewRowsForContact(existing);
-    } else {
-      const contact = normalizeContactEntry({
-        id: generateContactId(),
-        name: candidate.name,
-        role: candidate.role,
-        phone: candidate.phone,
-        email: candidate.email,
-        website: candidate.website,
-        avatar: candidate.avatar,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      });
-      contactsCache.push(contact);
-      added += 1;
-    }
+  const result = mergeImportedContactEntries({
+    existing: contactsCache,
+    imported,
+    now: () => Date.now(),
+    generateContactId
   });
-  contactsCache = sortContacts(contactsCache);
+  const { contacts, added = 0, updated = 0 } = result;
+  contactsCache = Array.isArray(contacts) ? contacts : contactsCache;
   saveContactsToStorage(contactsCache);
   renderContactsList();
   updateContactPickers();
+  if (Array.isArray(contacts)) {
+    contacts.forEach(contact => updateCrewRowsForContact(contact));
+  }
   if (added || updated) {
     const template = getContactsText('importSummary', '{added} added, {updated} updated.');
     announceContactsMessage(template.replace('{added}', added).replace('{updated}', updated));
