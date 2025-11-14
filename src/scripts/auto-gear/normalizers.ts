@@ -21,28 +21,47 @@ const AUTO_GEAR_NORMALIZER_SCOPE =
   || (typeof global !== 'undefined' && global)
   || {};
 
+function resolveAutoGearDefaultLanguageSource() {
+  const candidateScopes = [
+    AUTO_GEAR_NORMALIZER_SCOPE,
+    AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) continue;
+
+    if (typeof scope.DEFAULT_LANGUAGE_SAFE === 'string' && scope.DEFAULT_LANGUAGE_SAFE) {
+      return scope.DEFAULT_LANGUAGE_SAFE;
+    }
+
+    if (
+      typeof scope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' &&
+      scope.CPP_DEFAULT_LANGUAGE_SAFE
+    ) {
+      return scope.CPP_DEFAULT_LANGUAGE_SAFE;
+    }
+
+    if (
+      scope.cineCoreShared &&
+      typeof scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE === 'string' &&
+      scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE
+    ) {
+      return scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE;
+    }
+  }
+
+  return null;
+}
+
 function getAutoGearFallbackLanguage() {
-  if (typeof DEFAULT_LANGUAGE_SAFE === 'string' && DEFAULT_LANGUAGE_SAFE) {
-    return DEFAULT_LANGUAGE_SAFE;
-  }
-
-  const scope = AUTO_GEAR_NORMALIZER_SCOPE || {};
-
-  if (scope && typeof scope.DEFAULT_LANGUAGE_SAFE === 'string' && scope.DEFAULT_LANGUAGE_SAFE) {
-    return scope.DEFAULT_LANGUAGE_SAFE;
-  }
-
-  if (scope && typeof scope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' && scope.CPP_DEFAULT_LANGUAGE_SAFE) {
-    return scope.CPP_DEFAULT_LANGUAGE_SAFE;
-  }
-
-  if (
-    scope &&
-    scope.cineCoreShared &&
-    typeof scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE === 'string' &&
-    scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE
-  ) {
-    return scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE;
+  const resolved = resolveAutoGearDefaultLanguageSource();
+  if (resolved) {
+    return resolved;
   }
 
   if (
@@ -378,11 +397,7 @@ function updateGlobalDevicesReference(nextDevices) {
     }
   }
 
-  const globalCoreShared =
-    (typeof CORE_SHARED !== 'undefined' && CORE_SHARED)
-    || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.CORE_SHARED)
-    || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.cineCoreShared)
-    || null;
+  const globalCoreShared = resolveAutoGearCoreShared();
 
   if (globalCoreShared && typeof globalCoreShared === 'object') {
     try {
@@ -409,6 +424,32 @@ function updateGlobalDevicesReference(nextDevices) {
   }
 
   return normalizedDevices;
+}
+
+function resolveAutoGearCoreShared() {
+  const candidateScopes = [
+    AUTO_GEAR_NORMALIZER_SCOPE,
+    AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) continue;
+
+    if (scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object') {
+      return scope.CORE_SHARED;
+    }
+
+    if (scope.cineCoreShared && typeof scope.cineCoreShared === 'object') {
+      return scope.cineCoreShared;
+    }
+  }
+
+  return null;
 }
 
 function resolveTripodPreferenceSelect(type) {
