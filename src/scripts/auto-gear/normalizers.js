@@ -58,18 +58,66 @@ function getAutoGearFallbackLanguage() {
     }
     return 'en';
 }
-function getAutoGearFallbackTexts() {
-    var fallbackLang = getAutoGearFallbackLanguage();
+function resolveAutoGearLanguageLoader() {
+    if (typeof getLanguageTexts === 'function') {
+        return getLanguageTexts;
+    }
+    var candidateScopes = [
+        AUTO_GEAR_NORMALIZER_SCOPE,
+        AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+    ];
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (typeof scope.getLanguageTexts === 'function') {
+            return scope.getLanguageTexts;
+        }
+    }
+    return null;
+}
+var AUTO_GEAR_LANGUAGE_LOADER = resolveAutoGearLanguageLoader();
+function getAutoGearLanguageTexts(lang) {
+    if (!AUTO_GEAR_LANGUAGE_LOADER) {
+        AUTO_GEAR_LANGUAGE_LOADER = resolveAutoGearLanguageLoader();
+    }
+    var languageLoader = AUTO_GEAR_LANGUAGE_LOADER;
+    if (typeof languageLoader !== 'function') {
+        return {};
+    }
+    var resolvedLang = typeof lang === 'string' && lang ? lang : getAutoGearFallbackLanguage();
     try {
-        var fallbackTexts = getLanguageTexts(fallbackLang);
-        if (fallbackTexts && typeof fallbackTexts === 'object') {
-            return fallbackTexts;
+        var result = languageLoader(resolvedLang);
+        if (result && typeof result === 'object') {
+            return result;
         }
     }
     catch (error) {
+        AUTO_GEAR_LANGUAGE_LOADER = null;
         void error;
     }
     return {};
+}
+function getAutoGearActiveLanguage() {
+    if (typeof currentLang === 'string' && currentLang) {
+        return currentLang;
+    }
+    var resolved = resolveAutoGearDefaultLanguageSource();
+    if (resolved) {
+        return resolved;
+    }
+    return getAutoGearFallbackLanguage();
+}
+function getAutoGearFallbackTexts() {
+    var fallbackLang = getAutoGearFallbackLanguage();
+    return getAutoGearLanguageTexts(fallbackLang);
+}
+function getAutoGearActiveTexts() {
+    return getAutoGearLanguageTexts(getAutoGearActiveLanguage());
 }
 var AUTO_GEAR_DEFAULT_SELECTOR_TYPES = Object.freeze([
     'none',
@@ -268,7 +316,10 @@ function normalizeAutoGearMonitorDefaults(value) {
     return result;
 }
 function resolveDevicesSnapshot() {
-    if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
+    if (typeof DEVICE_GLOBAL_SCOPE !== 'undefined'
+        && DEVICE_GLOBAL_SCOPE
+        && DEVICE_GLOBAL_SCOPE.devices
+        && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
         return DEVICE_GLOBAL_SCOPE.devices;
     }
     try {
@@ -520,7 +571,7 @@ function getAutoGearSelectorOptions(type, itemOrContext) {
 }
 function getAutoGearSelectorLabel(type) {
     var normalizedType = normalizeAutoGearSelectorType(type);
-    var langTexts = getLanguageTexts(currentLang);
+    var langTexts = getAutoGearActiveTexts();
     var fallbackTexts = getAutoGearFallbackTexts();
     if (normalizedType === 'monitor') {
         return langTexts.autoGearSelectorMonitorOption
@@ -562,21 +613,21 @@ function getAutoGearSelectorLabel(type) {
         || 'No selector';
 }
 function getAutoGearSelectorScrollHint() {
-    var langTexts = getLanguageTexts(currentLang);
+    var langTexts = getAutoGearActiveTexts();
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorScrollHint
         || fallbackTexts.autoGearSelectorScrollHint
         || 'Scroll to see more devices.';
 }
 function getAutoGearSelectorDefaultPlaceholder() {
-    var langTexts = getLanguageTexts(currentLang);
+    var langTexts = getAutoGearActiveTexts();
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorDefaultPlaceholder
         || fallbackTexts.autoGearSelectorDefaultPlaceholder
         || 'Choose a default device';
 }
 function getAutoGearMonitorDefaultPlaceholder() {
-    var langTexts = getLanguageTexts(currentLang);
+    var langTexts = getAutoGearActiveTexts();
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearMonitorDefaultPlaceholder
         || fallbackTexts.autoGearMonitorDefaultPlaceholder
