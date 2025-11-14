@@ -212,6 +212,7 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 - **Akzent- & Typografie-Regler** – Passe Akzentfarbe, Schriftgröße und Schriftart an; Dark-, Pink- und High-Contrast-Themes bleiben zwischen Besuchen erhalten.
 - **Global-Search-Kürzel** – `/` oder `Strg+K` (`⌘K` auf macOS) fokussiert sofort die Funktionssuche – auch bei eingeklapptem Menü.
 - **Neu laden erzwingen** – Aktualisiere Service-Worker-Assets ohne gespeicherte Projekte oder Geräte zu löschen. Eine robuste Verbindungsprüfung pingt den Server jetzt vor der Bereinigung an, damit Caches bei fehlendem Netzwerk unangetastet bleiben.
+  Gib dem Vorgang bis zu fünf Sekunden Zeit, bevor der manuelle Cache-Lösch-Fallback greift, damit langsamere Rechner den Service Worker sauber abmelden können und Autosaves nicht doppelt ausgelöst werden.
 - **Favoriten anpinnen** – Markiere Einträge mit Sternen, damit Lieblingskameras, Akkus und Zubehör oben bleiben und im Backup landen.
 - **Werkseinstellungen mit Sicherung** – Automatisches Backup vor jedem Zurücksetzen, damit keine Daten verloren gehen.
 

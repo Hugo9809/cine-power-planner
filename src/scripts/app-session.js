@@ -14174,7 +14174,10 @@ function createReloadFallback(win, delayMs = 4500) {
   };
 }
 
-const OFFLINE_RELOAD_TIMEOUT_MS = 1200;
+// Slower machines routinely need ~4s to finish the offline module's reload gate.
+// Give it extra headroom so we do not fall back to the manual cache purge unless
+// the service worker truly stalled.
+const OFFLINE_RELOAD_TIMEOUT_MS = 5000;
 const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 
 function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {

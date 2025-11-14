@@ -313,7 +313,10 @@ localization steps.
   in-flight edits are lost. A resilient connectivity probe now pings the server
   before any cleanup so caches stay intact whenever the network is unreachable,
   and cached fallbacks ignore probe query tokens so degraded reload attempts
-  still surface the `fallback` marker instead of failing outright.
+  still surface the `fallback` marker instead of failing outright. Allow up to
+  five seconds for the offline module to finish unregistering the worker before
+  the manual cache purge fallback appears—this keeps slower laptops from
+  double-reloading and protects in-flight autosaves.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping
