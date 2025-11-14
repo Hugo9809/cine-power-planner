@@ -35,6 +35,11 @@ air-gapped workflows.
       translation guide) for offline reference.
 - [ ] Verify icons, fonts and Uicons load locally by inspecting the network
       panel while offline (should show no remote requests).
+- [ ] Toggle **Snap to Grid** in multiple tabs while offline to confirm the
+      shared `runtime/bootstrap.js` grid-snap synchroniser keeps preferences in
+      sync even when storage APIs throw (private browsing simulates failures).
+      Log the result in the localisation/offline checklist so translations and
+      help text stay accurate.
 
 ## Field kit inventory
 
