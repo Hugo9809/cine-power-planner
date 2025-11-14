@@ -2592,22 +2592,28 @@ let bundledSchema = null;
 let contactsProfileModule = null;
 let contactsListModule = null;
 
-try {
-  bundledSchema = require('../data/schema.json');
-} catch (schemaRequireError) {
-  void schemaRequireError;
-}
+const canRequireModule = typeof require === 'function';
 
-try {
-  contactsProfileModule = require('./contacts/profile.js');
-} catch (profileModuleError) {
-  console.warn('Failed to load contacts profile module', profileModuleError);
-}
+if (canRequireModule) {
+  try {
+    bundledSchema = require('../data/schema.json');
+  } catch (schemaRequireError) {
+    void schemaRequireError;
+  }
 
-try {
-  contactsListModule = require('./contacts/list.js');
-} catch (contactsListModuleError) {
-  console.warn('Failed to load contacts list module', contactsListModuleError);
+  try {
+    contactsProfileModule = require('./contacts/profile.js');
+  } catch (profileModuleError) {
+    console.warn('Failed to load contacts profile module', profileModuleError);
+  }
+
+  try {
+    contactsListModule = require('./contacts/list.js');
+  } catch (contactsListModuleError) {
+    console.warn('Failed to load contacts list module', contactsListModuleError);
+  }
+} else {
+  console.warn('Module loader is not available in this environment. Contacts features limited.');
 }
 
 const fallbackSanitizeContactValue = value => (typeof value === 'string' ? value.trim() : '');
