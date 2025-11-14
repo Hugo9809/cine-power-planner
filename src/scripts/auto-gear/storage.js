@@ -16,6 +16,73 @@
   saveAutoGearBackups, autoGearBackupRetention, callCoreFunctionIfAvailable,
   autoGearBackupRetentionInput, autoGearBackups, AUTO_GEAR_RULES_KEY, normalizeAutoGearRule,
   loadAutoGearRules */
+function resolveAutoGearNormalizerHelpers() {
+    var helperNames = [
+        'normalizeAutoGearBackupEntry',
+        'normalizeAutoGearPreset',
+        'normalizeAutoGearMonitorDefaults',
+        'normalizeAutoGearRule',
+    ];
+    var resolved = {};
+    var assignIfFunction = function (name, candidate) {
+        if (typeof resolved[name] === 'function')
+            return;
+        if (typeof candidate === 'function') {
+            resolved[name] = candidate;
+        }
+    };
+    var globalScope = (function resolveGlobalScope() {
+        if (typeof globalThis !== 'undefined')
+            return globalThis;
+        if (typeof self !== 'undefined')
+            return self;
+        if (typeof window !== 'undefined')
+            return window;
+        if (typeof global !== 'undefined')
+            return global;
+        return null;
+    })();
+    if (globalScope) {
+        helperNames.forEach(function (name) { return assignIfFunction(name, globalScope[name]); });
+        if (globalScope.AUTO_GEAR_NORMALIZER_EXPORTS && typeof globalScope.AUTO_GEAR_NORMALIZER_EXPORTS === 'object') {
+            helperNames.forEach(function (name) { return assignIfFunction(name, globalScope.AUTO_GEAR_NORMALIZER_EXPORTS[name]); });
+        }
+    }
+    var needsRequire = helperNames.some(function (name) { return typeof resolved[name] !== 'function'; });
+    if (needsRequire && typeof require === 'function') {
+        var modulePaths = ['./normalizers', './normalizers.js'];
+        var _loop_1 = function (index) {
+            if (helperNames.every(function (name) { return typeof resolved[name] === 'function'; })) {
+                return "break";
+            }
+            var modulePath = modulePaths[index];
+            try {
+                var normalizersModule_1 = require(modulePath);
+                helperNames.forEach(function (name) { return assignIfFunction(name, normalizersModule_1 && normalizersModule_1[name]); });
+            }
+            catch (error) {
+                if (error && error.code === 'MODULE_NOT_FOUND') {
+                    return "continue";
+                }
+                console.warn("Failed to load Auto Gear normalizers from ".concat(modulePath), error);
+            }
+        };
+        for (var index = 0; index < modulePaths.length; index += 1) {
+            var state_1 = _loop_1(index);
+            if (state_1 === "break")
+                break;
+        }
+    }
+    helperNames.forEach(function (name) {
+        if (typeof resolved[name] !== 'function') {
+            resolved[name] = function missingNormalizerDependency() {
+                throw new Error("Auto Gear storage requires the \"".concat(name, "\" normalizer helper to be available"));
+            };
+        }
+    });
+    return resolved;
+}
+var _a = resolveAutoGearNormalizerHelpers(), normalizeAutoGearBackupEntry = _a.normalizeAutoGearBackupEntry, normalizeAutoGearPreset = _a.normalizeAutoGearPreset, normalizeAutoGearMonitorDefaults = _a.normalizeAutoGearMonitorDefaults, normalizeAutoGearRule = _a.normalizeAutoGearRule;
 function readAutoGearBackupsFromStorage(retentionLimit) {
     if (retentionLimit === void 0) { retentionLimit = AUTO_GEAR_BACKUP_RETENTION_DEFAULT; }
     var stored = [];

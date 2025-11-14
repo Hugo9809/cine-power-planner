@@ -17,6 +17,73 @@
   autoGearBackupRetentionInput, autoGearBackups, AUTO_GEAR_RULES_KEY, normalizeAutoGearRule,
   loadAutoGearRules */
 
+function resolveAutoGearNormalizerHelpers() {
+  const helperNames = [
+    'normalizeAutoGearBackupEntry',
+    'normalizeAutoGearPreset',
+    'normalizeAutoGearMonitorDefaults',
+    'normalizeAutoGearRule',
+  ];
+  const resolved = {};
+  const assignIfFunction = (name, candidate) => {
+    if (typeof resolved[name] === 'function') return;
+    if (typeof candidate === 'function') {
+      resolved[name] = candidate;
+    }
+  };
+  const globalScope = (function resolveGlobalScope() {
+    if (typeof globalThis !== 'undefined') return globalThis;
+    if (typeof self !== 'undefined') return self;
+    if (typeof window !== 'undefined') return window;
+    if (typeof global !== 'undefined') return global;
+    return null;
+  })();
+
+  if (globalScope) {
+    helperNames.forEach(name => assignIfFunction(name, globalScope[name]));
+    if (globalScope.AUTO_GEAR_NORMALIZER_EXPORTS && typeof globalScope.AUTO_GEAR_NORMALIZER_EXPORTS === 'object') {
+      helperNames.forEach(name => assignIfFunction(name, globalScope.AUTO_GEAR_NORMALIZER_EXPORTS[name]));
+    }
+  }
+
+  const needsRequire = helperNames.some(name => typeof resolved[name] !== 'function');
+  if (needsRequire && typeof require === 'function') {
+    const modulePaths = ['./normalizers', './normalizers.js'];
+    for (let index = 0; index < modulePaths.length; index += 1) {
+      if (helperNames.every(name => typeof resolved[name] === 'function')) {
+        break;
+      }
+      const modulePath = modulePaths[index];
+      try {
+        const normalizersModule = require(modulePath);
+        helperNames.forEach(name => assignIfFunction(name, normalizersModule && normalizersModule[name]));
+      } catch (error) {
+        if (error && error.code === 'MODULE_NOT_FOUND') {
+          continue;
+        }
+        console.warn(`Failed to load Auto Gear normalizers from ${modulePath}`, error);
+      }
+    }
+  }
+
+  helperNames.forEach(name => {
+    if (typeof resolved[name] !== 'function') {
+      resolved[name] = function missingNormalizerDependency() {
+        throw new Error(`Auto Gear storage requires the "${name}" normalizer helper to be available`);
+      };
+    }
+  });
+
+  return resolved;
+}
+
+const {
+  normalizeAutoGearBackupEntry,
+  normalizeAutoGearPreset,
+  normalizeAutoGearMonitorDefaults,
+  normalizeAutoGearRule,
+} = resolveAutoGearNormalizerHelpers();
+
 function readAutoGearBackupsFromStorage(retentionLimit = AUTO_GEAR_BACKUP_RETENTION_DEFAULT) {
   let stored = [];
   if (typeof loadAutoGearBackups === 'function') {
