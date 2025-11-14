@@ -13824,6 +13824,29 @@ function resolveProjectStorageNameCollision(baseName) {
     return { name: candidate, changed: true };
 }
 
+function doesProjectNameExist(name) {
+    if (typeof loadProject !== 'function') {
+        return false;
+    }
+    const normalizedTarget = normalizeProjectStorageNameForCollision(name);
+    if (!normalizedTarget) {
+        return false;
+    }
+    let existingProjects = null;
+    try {
+        existingProjects = loadProject();
+    } catch (error) {
+        console.warn('Unable to inspect project names while deferring collision resolution', error);
+        return false;
+    }
+    if (!existingProjects || typeof existingProjects !== 'object') {
+        return false;
+    }
+    return Object.keys(existingProjects).some((key) => (
+        normalizeProjectStorageNameForCollision(key) === normalizedTarget
+    ));
+}
+
 function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
@@ -13872,6 +13895,12 @@ function saveCurrentGearList() {
                 selectedName: overrideSelected,
                 storageKey: overrideStorage,
                 renameInProgress: renameOverride,
+                typedNameHasTrailingWhitespace: Boolean(
+                    overrideTyped
+                    && rawOverride
+                    && typeof rawOverride.typedNameHasTrailingWhitespace === 'boolean'
+                    && rawOverride.typedNameHasTrailingWhitespace,
+                ),
             };
         }
     }
@@ -13879,6 +13908,14 @@ function saveCurrentGearList() {
         if (typeof value !== 'string') return '';
         return value.trim();
     };
+    const fallbackRawTypedName = setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value
+        : '';
+    const fallbackTypedTrailingWhitespace = Boolean(
+        fallbackRawTypedName
+        && fallbackRawTypedName.trim()
+        && /\s$/.test(fallbackRawTypedName),
+    );
     let selectedStorageKey = nameState
         ? nameState.selectedName
         : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
@@ -13891,9 +13928,26 @@ function saveCurrentGearList() {
     const renameInProgress = nameState
         ? nameState.renameInProgress
         : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+    const typedNameHasTrailingWhitespace = nameState && typeof nameState === 'object'
+        ? Boolean(nameState.typedNameHasTrailingWhitespace && nameState.typedName)
+        : fallbackTypedTrailingWhitespace;
     let effectiveStorageKey = renameInProgress
         ? (selectedStorageKey || projectStorageKey)
         : projectStorageKey;
+
+    const shouldDelayCollisionResolution = Boolean(
+        typedNameHasTrailingWhitespace
+        && !renameInProgress
+        && !selectedStorageKey
+        && typeof effectiveStorageKey === 'string'
+        && effectiveStorageKey
+        && doesProjectNameExist(effectiveStorageKey),
+    );
+
+    if (shouldDelayCollisionResolution) {
+        clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+        return;
+    }
 
     if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
         const pendingResolved = getPendingProjectNameCollisionResolution(effectiveStorageKey);

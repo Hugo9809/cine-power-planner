@@ -115,4 +115,30 @@ describe('saveCurrentGearList project info handling', () => {
     const infoAfterMutation = utils.getCurrentProjectInfo();
     expect(infoAfterMutation.projectName).toBe('Snapshot Project');
   });
+
+  test('defers auto-save collision handling while name ends with whitespace', () => {
+    env = setupScriptEnvironment({
+      globals: {
+        saveProject: jest.fn(),
+        saveSetups: jest.fn(),
+        loadSetups: jest.fn(() => ({})),
+        saveSessionState: jest.fn(),
+        loadSessionState: jest.fn(() => ({})),
+        loadProject: jest.fn(() => ({ 'Existing Project': { projectInfo: { projectName: 'Existing Project' } } })),
+      },
+    });
+
+    const { utils, globals } = env;
+    const setupNameInput = document.getElementById('setupName');
+    expect(setupNameInput).not.toBeNull();
+
+    setupNameInput.value = 'Existing Project ';
+    setupNameInput.dispatchEvent(new Event('input'));
+
+    globals.saveProject.mockClear();
+
+    utils.saveCurrentGearList();
+
+    expect(globals.saveProject).not.toHaveBeenCalled();
+  });
 });

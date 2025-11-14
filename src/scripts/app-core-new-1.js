@@ -16383,6 +16383,11 @@ function getSetupNameState() {
       : '';
   const typedName = normalizeSetupName(rawTyped);
   const selectedName = normalizeSetupName(rawSelected);
+  const typedNameHasTrailingWhitespace = Boolean(
+    typedName
+    && typeof rawTyped === 'string'
+    && /\s$/.test(rawTyped),
+  );
   const renameInProgress = Boolean(
     selectedName
     && typedName
@@ -16394,6 +16399,7 @@ function getSetupNameState() {
     selectedName,
     renameInProgress,
     storageKey,
+    typedNameHasTrailingWhitespace,
   };
 }
 
