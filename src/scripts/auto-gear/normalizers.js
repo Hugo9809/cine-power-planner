@@ -18,25 +18,42 @@ var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThi
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || {};
+function resolveAutoGearDefaultLanguageSource() {
+    var candidateScopes = [
+        AUTO_GEAR_NORMALIZER_SCOPE,
+        AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+    ];
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (typeof scope.DEFAULT_LANGUAGE_SAFE === 'string' && scope.DEFAULT_LANGUAGE_SAFE) {
+            return scope.DEFAULT_LANGUAGE_SAFE;
+        }
+        if (typeof scope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' &&
+            scope.CPP_DEFAULT_LANGUAGE_SAFE) {
+            return scope.CPP_DEFAULT_LANGUAGE_SAFE;
+        }
+        if (scope.cineCoreShared &&
+            typeof scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE === 'string' &&
+            scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE) {
+            return scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE;
+        }
+    }
+    return null;
+}
 function getAutoGearFallbackLanguage() {
-    if (typeof DEFAULT_LANGUAGE_SAFE === 'string' && DEFAULT_LANGUAGE_SAFE) {
-        return DEFAULT_LANGUAGE_SAFE;
+    var resolved = resolveAutoGearDefaultLanguageSource();
+    if (resolved) {
+        return resolved;
     }
-    var scope = AUTO_GEAR_NORMALIZER_SCOPE || {};
-    if (scope && typeof scope.DEFAULT_LANGUAGE_SAFE === 'string' && scope.DEFAULT_LANGUAGE_SAFE) {
-        return scope.DEFAULT_LANGUAGE_SAFE;
-    }
-    if (scope && typeof scope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' && scope.CPP_DEFAULT_LANGUAGE_SAFE) {
-        return scope.CPP_DEFAULT_LANGUAGE_SAFE;
-    }
-    if (scope && scope.cineCoreShared
-        && typeof scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE === 'string'
-        && scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE) {
-        return scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE;
-    }
-    if (typeof navigator !== 'undefined'
-        && typeof navigator.language === 'string'
-        && navigator.language) {
+    if (typeof navigator !== 'undefined' &&
+        typeof navigator.language === 'string' &&
+        navigator.language) {
         return navigator.language.slice(0, 2).toLowerCase();
     }
     return 'en';
@@ -44,9 +61,9 @@ function getAutoGearFallbackLanguage() {
 function getAutoGearFallbackTexts() {
     var fallbackLang = getAutoGearFallbackLanguage();
     try {
-        var texts_1 = getLanguageTexts(fallbackLang);
-        if (texts_1 && typeof texts_1 === 'object') {
-            return texts_1;
+        var fallbackTexts = getLanguageTexts(fallbackLang);
+        if (fallbackTexts && typeof fallbackTexts === 'object') {
+            return fallbackTexts;
         }
     }
     catch (error) {
@@ -347,10 +364,7 @@ function updateGlobalDevicesReference(nextDevices) {
             }
         }
     }
-    var globalCoreShared = (typeof CORE_SHARED !== 'undefined' && CORE_SHARED)
-        || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.CORE_SHARED)
-        || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.cineCoreShared)
-        || null;
+    var globalCoreShared = resolveAutoGearCoreShared();
     if (globalCoreShared && typeof globalCoreShared === 'object') {
         try {
             globalCoreShared.devices = normalizedDevices;
@@ -374,6 +388,28 @@ function updateGlobalDevicesReference(nextDevices) {
         }
     }
     return normalizedDevices;
+}
+function resolveAutoGearCoreShared() {
+    var candidateScopes = [
+        AUTO_GEAR_NORMALIZER_SCOPE,
+        AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+    ];
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+        var scope = candidateScopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+            continue;
+        if (scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object') {
+            return scope.CORE_SHARED;
+        }
+        if (scope.cineCoreShared && typeof scope.cineCoreShared === 'object') {
+            return scope.cineCoreShared;
+        }
+    }
+    return null;
 }
 function resolveTripodPreferenceSelect(type) {
     if (typeof document === 'undefined')
