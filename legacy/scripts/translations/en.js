@@ -1619,6 +1619,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionSkipHint": "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
         "userProfileAvatarAction": "Add profile photo",
         "userProfileAvatarEditAction": "Edit photo",
+        "projectRequirementsMiniIntro": "Fill these proxy fields while the Project Requirements dialog stays open.",
+        "projectRequirementsMiniOfflineHint": "Every edit saves offline instantly—use Back/Next here without risking data loss.",
         "unitsPreferencesLanguageLabel": "Language",
         "unitsPreferencesThemeLabel": "Theme",
         "unitsPreferencesThemeLight": "Light",
@@ -1792,10 +1794,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "autoGearRulesCreate": {
             "title": "Add a new automatic gear rule",
             "body": "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups."
-          },
-          "projectRequirements": {
-            "title": "Refine project requirements boxes",
-            "body": "Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
           },
           "gearList": {
             "title": "Audit the generated gear list",

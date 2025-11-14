@@ -1619,6 +1619,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionSkipHint": "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
         "userProfileAvatarAction": "Aggiungi foto profilo",
         "userProfileAvatarEditAction": "Modifica foto",
+        "projectRequirementsMiniIntro": "Compila questi campi proxy mentre la finestra Requisiti di progetto resta aperta.",
+        "projectRequirementsMiniOfflineHint": "Ogni modifica viene salvata subito in locale: usa Indietro/Avanti qui senza rischiare di perdere dati.",
         "unitsPreferencesLanguageLabel": "Lingua",
         "unitsPreferencesThemeLabel": "Tema",
         "unitsPreferencesThemeLight": "Chiaro",
@@ -1783,10 +1785,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Aggiungi una nuova regola automatica",
             "body": "Premi Aggiungi regola per creare un'automazione personalizzata. Dai un nome, aggiungi condizioni e l'attrezzatura richiesta, quindi salva. Il planner applica la nuova regola offline ogni volta che rigeneri il kit e la include in esportazioni, condivisioni e backup."
           },
-          "projectRequirements": {
-            "title": "Raffina i riquadri dei requisiti di progetto",
-            "body": "Modifica l'output Requisiti del progetto per registrare note troupe, deliverable e promemoria di sicurezza. Ogni riquadro viene salvato con il progetto, stampato nei riepiloghi e incluso nelle esportazioni. Segui tre sottopassi rapidi per non dimenticare nulla: 15A compila il briefing di progetto—casa di produzione, preferenze del rental, calendario e specifiche di consegna; 15B collega le righe della troupe ai contatti salvati segnando copertura di preparazione/riprese/resa e note di emergenza; 15C raccoglie logistica come supporti di archiviazione, preferenze di monitoraggio e richiami di sicurezza, quindi rigenera il riepilogo per confermare le nuove informazioni."
-          },
+        "projectRequirementsBrief": {
+          "title": "Raccogliere il brief del progetto",
+          "body": "Apri Genera elenco attrezzatura e Requisiti del progetto e annota casa di produzione, indirizzo completo, preferenze del rental, deliverable e note di calendario. Queste voci compilano automaticamente i PDF per il noleggio, restano memorizzate offline e preparano le sezioni successive."
+        },
+        "projectRequirementsCrew": {
+          "title": "Mappare copertura crew e contatti",
+          "body": "Compila le sezioni Crew, Prep, Riprese e Rientro con nomi, ruoli e note. Collega i contatti salvati, aggiungi dettagli di emergenza e duplica le righe quando più giorni condividono lo stesso piano così che gli export mostrino chi è sul set e quando."
+        },
+        "projectRequirementsLogistics": {
+          "title": "Registrare ottiche, rigging e monitoraggio",
+          "body": "Prosegui con le altre sezioni: specifiche camera, workflow lenti, scenari di rigging, quantità di storage/media, preferenze per matte box e monitoraggio. Ogni campo alimenta le regole automatiche, il calcolo delle scorte e la checklist generata."
+        },
           "gearList": {
             "title": "Verifica l'elenco attrezzatura generato",
             "body": "Controlla l'elenco attrezzatura categorizzato per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF."
