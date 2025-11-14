@@ -106,8 +106,12 @@ workstations.
 - **Contacts modules:** `src/scripts/contacts/profile.js` and
   `src/scripts/contacts/list.js` now feed the export, import and backup flows so
   user profile data, avatar crops and vCard merges stay lossless even when teams
-  work completely offline. Touch both modules whenever the share, backup or
-  import workflows evolve to keep the offline contract intact.【F:src/scripts/contacts/profile.js†L1-L229】【F:src/scripts/contacts/list.js†L1-L123】
+  work completely offline. The loader now preloads both modules before
+  `app-core-new-1.js` initialises and the service worker keeps caching the files
+  for offline restores, ensuring contacts tooling never falls back to the limited
+  controller.【F:src/scripts/loader.js†L3810-L3854】【F:service-worker-assets.js†L250-L270】
+  Touch both modules whenever the share, backup or import workflows
+  evolve to keep the offline contract intact.【F:src/scripts/contacts/profile.js†L1-L229】【F:src/scripts/contacts/list.js†L1-L123】
 - **Share workflow:** Copy the bundle to the receiving workstation via physical
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to

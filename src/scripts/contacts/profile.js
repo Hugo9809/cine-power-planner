@@ -356,7 +356,7 @@ function isSafeImageUrl(url) {
   return false;
 }
 
-module.exports = {
+const PROFILE_MODULE_EXPORT = {
   CONTACT_AVATAR_MAX_BYTES,
   CONTACT_AVATAR_MAX_SOURCE_BYTES,
   CONTACT_AVATAR_MAX_DIMENSION,
@@ -369,3 +369,37 @@ module.exports = {
   readAvatarFile,
   isSafeImageUrl
 };
+
+assignProfileModuleExports(PROFILE_MODULE_EXPORT);
+
+function assignProfileModuleExports(exportsObject) {
+  if (!exportsObject || typeof exportsObject !== 'object') {
+    return;
+  }
+
+  if (typeof module === 'object' && module && typeof module.exports !== 'undefined') {
+    module.exports = exportsObject;
+    return;
+  }
+
+  const scope = resolveProfileGlobalScope();
+  if (scope) {
+    scope.CINE_CONTACTS_PROFILE_MODULE = exportsObject;
+  }
+}
+
+function resolveProfileGlobalScope() {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return null;
+}
