@@ -13708,6 +13708,84 @@ function collectProjectInfoFromRequirementsGrid() {
     return Object.keys(info).length ? info : null;
 }
 
+function normalizeProjectStorageNameForCollision(name) {
+    if (typeof name !== 'string') {
+        return '';
+    }
+    return name.trim().toLowerCase();
+}
+
+let pendingProjectNameCollisionResolution = null;
+
+function clearPendingProjectNameCollisionResolution(baseName) {
+    if (!pendingProjectNameCollisionResolution) {
+        return;
+    }
+    if (!baseName) {
+        pendingProjectNameCollisionResolution = null;
+        return;
+    }
+    const normalized = normalizeProjectStorageNameForCollision(baseName);
+    if (!normalized || pendingProjectNameCollisionResolution.base === normalized) {
+        pendingProjectNameCollisionResolution = null;
+    }
+}
+
+function getPendingProjectNameCollisionResolution(baseName) {
+    if (!pendingProjectNameCollisionResolution) {
+        return null;
+    }
+    const normalized = normalizeProjectStorageNameForCollision(baseName);
+    if (!normalized) {
+        return null;
+    }
+    if (pendingProjectNameCollisionResolution.base === normalized) {
+        return pendingProjectNameCollisionResolution.resolved;
+    }
+    return null;
+}
+
+function rememberPendingProjectNameCollisionResolution(baseName, resolvedName) {
+    const normalizedBase = normalizeProjectStorageNameForCollision(baseName);
+    const normalizedResolved = normalizeProjectStorageNameForCollision(resolvedName);
+    if (!normalizedBase || !normalizedResolved) {
+        pendingProjectNameCollisionResolution = null;
+        return;
+    }
+    pendingProjectNameCollisionResolution = {
+        base: normalizedBase,
+        resolved: resolvedName,
+        resolvedNormalized: normalizedResolved,
+    };
+}
+
+function applyPendingProjectNameCollisionResolution(options = {}) {
+    if (!pendingProjectNameCollisionResolution) {
+        return false;
+    }
+    const { syncInput = true } = options || {};
+    const currentValue = setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value
+        : '';
+    const normalizedInput = normalizeProjectStorageNameForCollision(currentValue);
+    if (normalizedInput !== pendingProjectNameCollisionResolution.base) {
+        if (!options || options.preservePending !== true) {
+            pendingProjectNameCollisionResolution = null;
+        }
+        return false;
+    }
+    if (syncInput && setupNameInput) {
+        setupNameInput.value = pendingProjectNameCollisionResolution.resolved;
+        try {
+            setupNameInput.dispatchEvent(new Event('input'));
+        } catch (dispatchError) {
+            void dispatchError;
+        }
+    }
+    pendingProjectNameCollisionResolution = null;
+    return true;
+}
+
 function resolveProjectStorageNameCollision(baseName) {
     const trimmed = typeof baseName === 'string' ? baseName.trim() : '';
     if (!trimmed) {
@@ -13818,20 +13896,20 @@ function saveCurrentGearList() {
         : projectStorageKey;
 
     if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
-        const resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
-        if (resolved.changed && resolved.name) {
-            effectiveStorageKey = resolved.name;
-            projectStorageKey = resolved.name;
-            typedStorageKey = resolved.name;
-            if (setupNameInput && setupNameInput.value !== resolved.name) {
-                setupNameInput.value = resolved.name;
-                try {
-                    setupNameInput.dispatchEvent(new Event('input'));
-                } catch (dispatchError) {
-                    void dispatchError;
-                }
+        const pendingResolved = getPendingProjectNameCollisionResolution(effectiveStorageKey);
+        if (pendingResolved && pendingResolved !== effectiveStorageKey) {
+            effectiveStorageKey = pendingResolved;
+        } else if (!pendingResolved) {
+            const resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
+            if (resolved.changed && resolved.name && resolved.name !== effectiveStorageKey) {
+                rememberPendingProjectNameCollisionResolution(effectiveStorageKey, resolved.name);
+                effectiveStorageKey = resolved.name;
+            } else if (!resolved.changed) {
+                clearPendingProjectNameCollisionResolution(effectiveStorageKey);
             }
         }
+    } else {
+        clearPendingProjectNameCollisionResolution();
     }
     if (!pendingProjectInfo && requirementsVisible) {
         if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
