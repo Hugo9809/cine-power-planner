@@ -149,12 +149,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var getDiagramDetailContent = fallbackGetter(context.getDiagramDetailContent, function () {
       return fallbackValue(context.diagramDetailContent, document ? document.getElementById('diagramDetailDialogContent') : null);
     });
-    var getDiagramDetailHeading = fallbackGetter(context.getDiagramDetailHeading, function () {
-      return fallbackValue(context.diagramDetailHeading, document ? document.getElementById('diagramDetailDialogHeading') : null);
-    });
-    var getDiagramDetailBackButton = fallbackGetter(context.getDiagramDetailBackButton, function () {
-      return fallbackValue(context.diagramDetailBackButton, document ? document.getElementById('diagramDetailDialogBack') : null);
-    });
     var getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, function () {
       return false;
     });
@@ -254,8 +248,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var lastPointerPosition = null;
     var detailDialog = null;
     var detailDialogContent = null;
-    var detailDialogHeading = null;
-    var detailDialogBackButton = null;
     var detailDialogSetupComplete = false;
     var detailDialogDefaultHeading = 'Diagram details';
     var detailDialogBackLabel = 'Back';
@@ -373,13 +365,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function ensureDetailDialogElements() {
       var dialogEl = getDiagramDetailDialog();
       var contentEl = getDiagramDetailContent();
-      var headingEl = getDiagramDetailHeading();
-      var backButtonEl = getDiagramDetailBackButton();
       var dialogChanged = dialogEl !== detailDialog;
       detailDialog = dialogEl || null;
       detailDialogContent = contentEl || null;
-      detailDialogHeading = headingEl || null;
-      detailDialogBackButton = backButtonEl || null;
       if (detailDialog && (dialogChanged || !detailDialogSetupComplete)) {
         var handleBackdropClick = function handleBackdropClick(event) {
           if (event && event.target === detailDialog) {
@@ -395,20 +383,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (detailDialogContent) {
             detailDialogContent.innerHTML = '';
           }
-          if (detailDialogHeading) {
-            detailDialogHeading.textContent = detailDialogDefaultHeading;
-          }
+          detailDialog.removeAttribute('aria-labelledby');
+          detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
           detailDialog.classList.remove('diagram-detail-dialog--camera');
         });
+        detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialogSetupComplete = true;
-      }
-      if (detailDialogBackButton) {
-        detailDialogBackButton.onclick = closeDetailDialog;
-        detailDialogBackButton.textContent = detailDialogBackLabel;
-        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
-      }
-      if (detailDialogHeading && (!detailDialog || !detailDialog.open)) {
-        detailDialogHeading.textContent = detailDialogDefaultHeading;
       }
     }
     function closeDetailDialog() {
@@ -423,9 +403,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (detailDialogContent) {
           detailDialogContent.innerHTML = '';
         }
-        if (detailDialogHeading) {
-          detailDialogHeading.textContent = detailDialogDefaultHeading;
-        }
+        detailDialog.removeAttribute('aria-labelledby');
+        detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialog.classList.remove('diagram-detail-dialog--camera');
       }
     }
@@ -439,15 +418,48 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       wrapper.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
       wrapper.innerHTML = entry.content || '';
       detailDialogContent.appendChild(wrapper);
+      var closeButton = wrapper.querySelector('[data-diagram-popup-close]');
+      if (closeButton) {
+        closeButton.addEventListener('click', function (event) {
+          if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          closeDetailDialog();
+        });
+      }
+      if (!wrapper.hasAttribute('tabindex')) {
+        wrapper.tabIndex = -1;
+      }
+      if (typeof wrapper.addEventListener === 'function') {
+        wrapper.addEventListener('keydown', function (event) {
+          if (!event) return;
+          var key = event.key || event.code;
+          if (key === 'Escape' || key === 'Esc') {
+            event.preventDefault();
+            closeDetailDialog();
+          }
+        });
+      }
+      if (typeof wrapper.focus === 'function') {
+        try {
+          wrapper.focus({
+            preventScroll: true
+          });
+        } catch (focusError) {
+          wrapper.focus();
+          void focusError;
+        }
+      }
       var isCamera = Boolean(entry.className && entry.className.includes('diagram-popup--camera'));
       detailDialog.classList.toggle('diagram-detail-dialog--camera', isCamera);
       var headingText = entry.label || detailDialogDefaultHeading;
-      if (detailDialogHeading) {
-        detailDialogHeading.textContent = headingText;
-      }
-      if (detailDialogBackButton) {
-        detailDialogBackButton.textContent = detailDialogBackLabel;
-        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      if (entry.headingId) {
+        detailDialog.setAttribute('aria-labelledby', entry.headingId);
+        detailDialog.removeAttribute('aria-label');
+      } else {
+        detailDialog.removeAttribute('aria-labelledby');
+        detailDialog.setAttribute('aria-label', headingText);
       }
       if (typeof detailDialog.showModal === 'function') {
         if (!detailDialog.open) {
@@ -455,16 +467,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       } else {
         detailDialog.setAttribute('open', '');
-      }
-      if (detailDialogBackButton && typeof detailDialogBackButton.focus === 'function') {
-        try {
-          detailDialogBackButton.focus({
-            preventScroll: true
-          });
-        } catch (focusError) {
-          detailDialogBackButton.focus();
-          void focusError;
-        }
       }
     }
     function normalizeDiagramPositionsInput(positions) {
