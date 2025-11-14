@@ -2592,6 +2592,9 @@ let bundledSchema = null;
 let contactsProfileModule = null;
 let contactsListModule = null;
 
+const CONTACTS_PROFILE_GLOBAL_KEY = 'CINE_CONTACTS_PROFILE_MODULE';
+const CONTACTS_LIST_GLOBAL_KEY = 'CINE_CONTACTS_LIST_MODULE';
+
 const canRequireModule = typeof require === 'function';
 
 if (canRequireModule) {
@@ -2612,7 +2615,37 @@ if (canRequireModule) {
   } catch (contactsListModuleError) {
     console.warn('Failed to load contacts list module', contactsListModuleError);
   }
-} else {
+}
+
+const contactsModuleGlobalScope =
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  (typeof self !== 'undefined' && self) ||
+  (typeof window !== 'undefined' && window) ||
+  (typeof global !== 'undefined' && global) ||
+  null;
+
+const readContactsModuleFromGlobal = key => {
+  if (!contactsModuleGlobalScope || !key) {
+    return null;
+  }
+  try {
+    const candidate = contactsModuleGlobalScope[key];
+    return candidate || null;
+  } catch (contactsModuleError) {
+    console.warn('Failed to read contacts module from global scope', contactsModuleError);
+    return null;
+  }
+};
+
+if (!contactsProfileModule) {
+  contactsProfileModule = readContactsModuleFromGlobal(CONTACTS_PROFILE_GLOBAL_KEY);
+}
+
+if (!contactsListModule) {
+  contactsListModule = readContactsModuleFromGlobal(CONTACTS_LIST_GLOBAL_KEY);
+}
+
+if (!contactsProfileModule || !contactsListModule) {
   console.warn('Module loader is not available in this environment. Contacts features limited.');
 }
 

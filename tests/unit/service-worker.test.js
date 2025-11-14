@@ -280,8 +280,14 @@ describe('service worker configuration', () => {
     );
   });
 
-  test('caches the device schema for offline editing', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./src/data/schema.json']));
+  test('caches the device schema and contacts modules for offline editing', () => {
+    expect(ASSETS).toEqual(
+      expect.arrayContaining([
+        './src/data/schema.json',
+        './src/scripts/contacts/profile.js',
+        './src/scripts/contacts/list.js',
+      ]),
+    );
   });
 
   test('caches the shared theme helper for legal pages', () => {

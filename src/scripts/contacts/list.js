@@ -213,7 +213,7 @@ function createCrewRowSync(rowState = {}, contact = {}) {
   return next;
 }
 
-module.exports = {
+const CONTACT_LIST_MODULE_EXPORT = {
   sanitizeContactValue,
   normalizeContactEntry,
   sortContacts,
@@ -221,3 +221,37 @@ module.exports = {
   mergeImportedContacts,
   createCrewRowSync
 };
+
+assignContactsListExports(CONTACT_LIST_MODULE_EXPORT);
+
+function assignContactsListExports(exportsObject) {
+  if (!exportsObject || typeof exportsObject !== 'object') {
+    return;
+  }
+
+  if (typeof module === 'object' && module && typeof module.exports !== 'undefined') {
+    module.exports = exportsObject;
+    return;
+  }
+
+  const scope = resolveContactsGlobalScope();
+  if (scope) {
+    scope.CINE_CONTACTS_LIST_MODULE = exportsObject;
+  }
+}
+
+function resolveContactsGlobalScope() {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return null;
+}

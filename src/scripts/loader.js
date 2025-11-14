@@ -3849,6 +3849,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/auto-gear/ui.js',
       'src/scripts/own-gear/store.js',
       'src/scripts/own-gear/view.js',
+      'src/scripts/contacts/list.js',
+      'src/scripts/contacts/profile.js',
       'src/scripts/app-core-new-1.js',
       'src/scripts/app-core-localization-accessors.js',
       'src/scripts/app-core-new-2.js',
