@@ -575,6 +575,9 @@
     'editDeviceDataEdit',
     'ownGearAccess',
     'ownGearAddDevice',
+    'projectRequirementsBrief',
+    'projectRequirementsCrew',
+    'projectRequirementsLogistics',
     'generateGearAndRequirements',
     'autoGearRulesAccess',
     'autoGearRulesEdit',
@@ -811,10 +814,25 @@
       body:
         'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.',
     },
-    generateGearAndRequirements: {
-      title: 'Generate requirements and gear list',
+    projectRequirementsBrief: {
+      title: 'Capture the project brief',
       body:
-        'Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.',
+        'Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and seed the next sections.',
+    },
+    projectRequirementsCrew: {
+      title: 'Map crew coverage and contacts',
+      body:
+        'Populate Crew, Prep, Shooting and Return rows with names, roles and coverage notes. Link saved Contacts, flag emergency details and duplicate rows when multiple days share the same assignments. Everything syncs to the saved project so exports list who is on set and when.',
+    },
+    projectRequirementsLogistics: {
+      title: 'Log lenses, rigging and monitoring plans',
+      body:
+        'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.',
+    },
+    generateGearAndRequirements: {
+      title: 'Save and rebuild the outputs',
+      body:
+        'Press OK inside the Project Requirements dialog to save every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current.',
     },
     autoGearRulesAccess: {
       title: 'Open Automatic Gear Rules',
@@ -834,7 +852,7 @@
     projectRequirements: {
       title: 'Refine project requirements boxes',
       body:
-        'Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear.',
+        'Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then re-run exports or backups so downstream teams receive the updated context with every share.',
     },
     gearList: {
       title: 'Audit the generated gear list',
@@ -1197,6 +1215,40 @@
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
             }
+          }
+        };
+      },
+    };
+  }
+
+  function createProjectDialogSubmitRequirement() {
+    const selector = '#projectForm';
+    return {
+      check() {
+        return false;
+      },
+      attach(context) {
+        const form = getElement(selector);
+        if (!form) {
+          if (typeof context.complete === 'function') {
+            context.complete();
+          }
+          return null;
+        }
+        if (typeof context.incomplete === 'function') {
+          context.incomplete();
+        }
+        const handler = () => {
+          if (typeof context.complete === 'function') {
+            context.complete();
+          }
+        };
+        form.addEventListener('submit', handler);
+        return () => {
+          try {
+            form.removeEventListener('submit', handler);
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not detach project dialog submit requirement.', error);
           }
         };
       },
@@ -1593,7 +1645,7 @@
     editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
-    generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
+    generateGearAndRequirements: createProjectDialogSubmitRequirement(),
     exportImport: createClickCompletionRequirement(
       ['#shareSetupBtn', '#applySharedLinkBtn'],
     ),
@@ -2234,8 +2286,32 @@
         focus: '#ownGearName',
       },
       {
+        key: 'projectRequirementsBrief',
+        highlight: '#projectRequirementsBriefSection',
+        ensureProjectDialog: true,
+      },
+      {
+        key: 'projectRequirementsCrew',
+        highlight: '#projectRequirementsCrewSection',
+        ensureProjectDialog: true,
+      },
+      {
+        key: 'projectRequirementsLogistics',
+        highlight: [
+          '#projectRequirementsCameraSection',
+          '#lensesHeading',
+          '#riggingHeading',
+          '#storageHeading',
+          '#matteboxFilterHeading',
+          '#monitoringHeading',
+        ],
+        ensureProjectDialog: true,
+      },
+      {
         key: 'generateGearAndRequirements',
-        highlight: '#generateGearListBtn',
+        highlight: '#projectSubmit',
+        focus: '#projectSubmit',
+        ensureProjectDialog: true,
       },
       {
         key: 'autoGearRulesAccess',
@@ -2373,6 +2449,9 @@
   let contactsDialogRef = null;
   let autoOpenedOwnGear = false;
   let ownGearDialogRef = null;
+  let autoOpenedProjectDialog = false;
+  let projectDialogRef = null;
+  let projectDialogTriggerRef = null;
   let autoOpenedDeviceManager = false;
   let deviceManagerSectionRef = null;
   let deviceManagerToggleRef = null;
@@ -3938,6 +4017,114 @@
     }
     ownGearDialogRef.setAttribute('hidden', '');
     autoOpenedOwnGear = false;
+  }
+
+  function isProjectDialogVisible() {
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+    if (!projectDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(projectDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate project dialog state.', error);
+      }
+    }
+    const propOpen = typeof projectDialogRef.open === 'boolean' ? projectDialogRef.open : null;
+    const attrOpen = typeof projectDialogRef.hasAttribute === 'function'
+      ? projectDialogRef.hasAttribute('open')
+      : false;
+    return propOpen === null ? attrOpen : (propOpen || attrOpen);
+  }
+
+  function ensureProjectDialogForStep(step) {
+    if (!step || !step.ensureProjectDialog) {
+      return;
+    }
+
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+
+    if (!projectDialogRef) {
+      return;
+    }
+
+    if (isProjectDialogVisible()) {
+      autoOpenedProjectDialog = false;
+      return;
+    }
+
+    autoOpenedProjectDialog = true;
+
+    if (!projectDialogTriggerRef) {
+      projectDialogTriggerRef = DOCUMENT.getElementById('generateGearListBtn');
+    }
+
+    if (projectDialogTriggerRef && typeof projectDialogTriggerRef.click === 'function') {
+      try {
+        projectDialogTriggerRef.click();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger project dialog button.', error);
+      }
+    }
+
+    if (typeof GLOBAL_SCOPE.openProjectDialogWithInfo === 'function') {
+      try {
+        GLOBAL_SCOPE.openProjectDialogWithInfo();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open project dialog via helper.', error);
+      }
+    }
+
+    projectDialogRef.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(projectDialogRef);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open project dialog.', error);
+      }
+    }
+    if (typeof projectDialogRef.showModal === 'function') {
+      try {
+        projectDialogRef.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show project dialog.', error);
+      }
+    }
+    projectDialogRef.setAttribute('open', '');
+  }
+
+  function closeProjectDialogIfNeeded() {
+    if (!projectDialogRef || !autoOpenedProjectDialog) {
+      autoOpenedProjectDialog = false;
+      return;
+    }
+
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(projectDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close project dialog via closeDialog.', error);
+      }
+    } else if (typeof projectDialogRef.close === 'function') {
+      try {
+        projectDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close project dialog.', error);
+      }
+    } else {
+      projectDialogRef.removeAttribute('open');
+    }
+
+    autoOpenedProjectDialog = false;
   }
 
   function isDeviceManagerVisible() {
@@ -6039,6 +6226,9 @@
     if (previousStep && previousStep.ensureDeviceManager && !step.ensureDeviceManager) {
       closeDeviceManagerIfNeeded();
     }
+    if (previousStep && previousStep.ensureProjectDialog && !step.ensureProjectDialog) {
+      closeProjectDialogIfNeeded();
+    }
 
     currentStep = step;
     currentIndex = index;
@@ -6069,6 +6259,13 @@
       closeDeviceManagerIfNeeded();
     } else {
       autoOpenedDeviceManager = false;
+    }
+    if (step.ensureProjectDialog) {
+      ensureProjectDialogForStep(step);
+    } else if (previousStep && previousStep.ensureProjectDialog) {
+      closeProjectDialogIfNeeded();
+    } else {
+      autoOpenedProjectDialog = false;
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));

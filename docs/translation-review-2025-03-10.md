@@ -2,6 +2,15 @@
 
 This audit captures UI copy that still appears in English or uses inconsistent terminology across locales. Update the translations in the locale modules under `src/scripts/translations/<locale>.js` and rerun localisation tests after each fix.
 
+## All locales
+
+- [ ] Localise the new onboarding tour instructions that walk through the Project Requirements dialog:
+  - `onboardingTour.steps.projectRequirementsBrief`
+  - `onboardingTour.steps.projectRequirementsCrew`
+  - `onboardingTour.steps.projectRequirementsLogistics`
+  - Updated copy for `onboardingTour.steps.generateGearAndRequirements` and `onboardingTour.steps.projectRequirements`.
+  Translate each string in `src/scripts/translations/<locale>.js` to keep the guided tutorial consistent across languages. 【F:src/scripts/translations/en.js†L1758-L1809】
+
 ## Italian (`it`)
 
 - [x] Localise the monitor button labels that remain in English:
