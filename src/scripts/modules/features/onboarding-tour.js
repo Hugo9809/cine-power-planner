@@ -2511,7 +2511,6 @@
         key: 'editDeviceDataAdd',
         highlight: ['#toggleDeviceManager', '#addDeviceHeading', '#addDeviceBtn'],
         focus: '#newName',
-        ensureDeviceManager: true,
       },
       {
         key: 'editDeviceDataReview',
