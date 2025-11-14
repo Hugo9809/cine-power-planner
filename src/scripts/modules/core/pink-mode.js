@@ -2497,7 +2497,7 @@
         });
 
         if (!availableTemplates.length) {
-          return false;
+          availableTemplates = sanitizedTemplates;
         }
 
         if (availableTemplates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
@@ -2509,8 +2509,7 @@
           }
         }
 
-        const template =
-          availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+        const template = selectPinkModeAnimatedIconTemplate(availableTemplates);
         if (!template || !template.data) {
           return false;
         }
