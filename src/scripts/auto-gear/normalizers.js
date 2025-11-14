@@ -18,6 +18,42 @@ var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThi
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || {};
+function getAutoGearFallbackLanguage() {
+    if (typeof DEFAULT_LANGUAGE_SAFE === 'string' && DEFAULT_LANGUAGE_SAFE) {
+        return DEFAULT_LANGUAGE_SAFE;
+    }
+    var scope = AUTO_GEAR_NORMALIZER_SCOPE || {};
+    if (scope && typeof scope.DEFAULT_LANGUAGE_SAFE === 'string' && scope.DEFAULT_LANGUAGE_SAFE) {
+        return scope.DEFAULT_LANGUAGE_SAFE;
+    }
+    if (scope && typeof scope.CPP_DEFAULT_LANGUAGE_SAFE === 'string' && scope.CPP_DEFAULT_LANGUAGE_SAFE) {
+        return scope.CPP_DEFAULT_LANGUAGE_SAFE;
+    }
+    if (scope && scope.cineCoreShared
+        && typeof scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE === 'string'
+        && scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE) {
+        return scope.cineCoreShared.DEFAULT_LANGUAGE_SAFE;
+    }
+    if (typeof navigator !== 'undefined'
+        && typeof navigator.language === 'string'
+        && navigator.language) {
+        return navigator.language.slice(0, 2).toLowerCase();
+    }
+    return 'en';
+}
+function getAutoGearFallbackTexts() {
+    var fallbackLang = getAutoGearFallbackLanguage();
+    try {
+        var texts_1 = getLanguageTexts(fallbackLang);
+        if (texts_1 && typeof texts_1 === 'object') {
+            return texts_1;
+        }
+    }
+    catch (error) {
+        void error;
+    }
+    return {};
+}
 var AUTO_GEAR_DEFAULT_SELECTOR_TYPES = Object.freeze([
     'none',
     'monitor',
@@ -311,11 +347,15 @@ function updateGlobalDevicesReference(nextDevices) {
             }
         }
     }
-    if (CORE_SHARED && typeof CORE_SHARED === 'object') {
+    var globalCoreShared = (typeof CORE_SHARED !== 'undefined' && CORE_SHARED)
+        || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.CORE_SHARED)
+        || (AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.cineCoreShared)
+        || null;
+    if (globalCoreShared && typeof globalCoreShared === 'object') {
         try {
-            CORE_SHARED.devices = normalizedDevices;
-            if (typeof CORE_SHARED.updateDevices === 'function') {
-                CORE_SHARED.updateDevices(normalizedDevices);
+            globalCoreShared.devices = normalizedDevices;
+            if (typeof globalCoreShared.updateDevices === 'function') {
+                globalCoreShared.updateDevices(normalizedDevices);
             }
         }
         catch (sharedAssignError) {
@@ -445,7 +485,7 @@ function getAutoGearSelectorOptions(type, itemOrContext) {
 function getAutoGearSelectorLabel(type) {
     var normalizedType = normalizeAutoGearSelectorType(type);
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
+    var fallbackTexts = getAutoGearFallbackTexts();
     if (normalizedType === 'monitor') {
         return langTexts.autoGearSelectorMonitorOption
             || fallbackTexts.autoGearSelectorMonitorOption
@@ -487,21 +527,21 @@ function getAutoGearSelectorLabel(type) {
 }
 function getAutoGearSelectorScrollHint() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
+    var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorScrollHint
         || fallbackTexts.autoGearSelectorScrollHint
         || 'Scroll to see more devices.';
 }
 function getAutoGearSelectorDefaultPlaceholder() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
+    var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorDefaultPlaceholder
         || fallbackTexts.autoGearSelectorDefaultPlaceholder
         || 'Choose a default device';
 }
 function getAutoGearMonitorDefaultPlaceholder() {
     var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
+    var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearMonitorDefaultPlaceholder
         || fallbackTexts.autoGearMonitorDefaultPlaceholder
         || 'Use recommended automatically';
