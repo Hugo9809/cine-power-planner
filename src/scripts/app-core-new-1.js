@@ -15754,7 +15754,7 @@ const deviceManagerLists = (() => {
   return created;
 })();
 
-const filterHelperScope = (() => {
+var filterHelperScope = (() => {
   if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) return CORE_GLOBAL_SCOPE;
   if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
   if (typeof window !== 'undefined' && window) return window;

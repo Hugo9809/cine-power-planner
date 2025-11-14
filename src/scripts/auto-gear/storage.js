@@ -16,8 +16,84 @@
   saveAutoGearBackups, autoGearBackupRetention, callCoreFunctionIfAvailable,
   autoGearBackupRetentionInput, autoGearBackups, AUTO_GEAR_RULES_KEY, normalizeAutoGearRule,
   loadAutoGearRules */
+var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
+var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_DEFAULT = 36;
+var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN = 1;
+var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MAX = 120;
+var AUTO_GEAR_BACKUP_GLOBAL_SCOPE = typeof globalThis !== 'undefined' && globalThis
+    || typeof window !== 'undefined' && window
+    || typeof self !== 'undefined' && self
+    || typeof global !== 'undefined' && global
+    || null;
+function readScopedNumericAutoGearValue(name) {
+    if (!AUTO_GEAR_BACKUP_GLOBAL_SCOPE) {
+        return null;
+    }
+    var value = AUTO_GEAR_BACKUP_GLOBAL_SCOPE[name];
+    return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+function normalizeRetentionCandidate(value, minValue, maxValue) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+        return null;
+    }
+    var rounded = Math.round(value);
+    if (!Number.isFinite(rounded)) {
+        return null;
+    }
+    if (rounded < minValue) {
+        return minValue;
+    }
+    if (rounded > maxValue) {
+        return maxValue;
+    }
+    return rounded;
+}
+function resolveAutoGearBackupRetentionMinValue() {
+    var scopedMinValue = readScopedNumericAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE');
+    if (scopedMinValue !== null) {
+        return Math.max(AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN, Math.round(scopedMinValue));
+    }
+    var scopedMin = readScopedNumericAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
+    if (scopedMin !== null) {
+        return Math.max(AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN, Math.round(scopedMin));
+    }
+    return AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN;
+}
+function resolveAutoGearBackupRetentionMaxValue() {
+    var scopedMax = readScopedNumericAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MAX');
+    if (scopedMax !== null) {
+        return Math.max(resolveAutoGearBackupRetentionMinValue(), Math.round(scopedMax));
+    }
+    return Math.max(resolveAutoGearBackupRetentionMinValue(), AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MAX);
+}
+function resolveAutoGearBackupRetentionDefaultValue() {
+    var minValue = resolveAutoGearBackupRetentionMinValue();
+    var maxValue = resolveAutoGearBackupRetentionMaxValue();
+    var candidates = [
+        readScopedNumericAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT'),
+        readScopedNumericAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE'),
+        AUTO_GEAR_BACKUP_RETENTION_FALLBACK_DEFAULT,
+    ];
+    for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        var normalized = normalizeRetentionCandidate(candidate, minValue, maxValue);
+        if (typeof normalized === 'number') {
+            return normalized;
+        }
+    }
+    return minValue;
+}
+function resolveAutoGearBackupRetentionKey() {
+    if (AUTO_GEAR_BACKUP_GLOBAL_SCOPE && typeof AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY === 'string') {
+        var scopedKey = AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY.trim();
+        if (scopedKey) {
+            return scopedKey;
+        }
+    }
+    return AUTO_GEAR_BACKUP_RETENTION_FALLBACK_KEY;
+}
 function readAutoGearBackupsFromStorage(retentionLimit) {
-    if (retentionLimit === void 0) { retentionLimit = AUTO_GEAR_BACKUP_RETENTION_DEFAULT; }
+    if (retentionLimit === void 0) { retentionLimit = resolveAutoGearBackupRetentionDefaultValue(); }
     var stored = [];
     if (typeof loadAutoGearBackups === 'function') {
         try {
@@ -290,17 +366,19 @@ function persistAutoGearBackupVisibility(flag) {
 function clampAutoGearBackupRetentionLimit(value) {
     var numeric = Number(value);
     if (!Number.isFinite(numeric)) {
-        return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+        return resolveAutoGearBackupRetentionDefaultValue();
     }
     var rounded = Math.round(numeric);
     if (!Number.isFinite(rounded)) {
-        return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+        return resolveAutoGearBackupRetentionDefaultValue();
     }
-    if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE) {
-        return AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE;
+    var minValue = resolveAutoGearBackupRetentionMinValue();
+    var maxValue = resolveAutoGearBackupRetentionMaxValue();
+    if (rounded < minValue) {
+        return minValue;
     }
-    if (rounded > AUTO_GEAR_BACKUP_RETENTION_MAX) {
-        return AUTO_GEAR_BACKUP_RETENTION_MAX;
+    if (rounded > maxValue) {
+        return maxValue;
     }
     return rounded;
 }
@@ -314,12 +392,12 @@ function readAutoGearBackupRetentionFromStorage() {
         }
     }
     if (typeof localStorage === 'undefined') {
-        return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+        return resolveAutoGearBackupRetentionDefaultValue();
     }
     try {
-        var raw = localStorage.getItem(AUTO_GEAR_BACKUP_RETENTION_KEY);
+        var raw = localStorage.getItem(resolveAutoGearBackupRetentionKey());
         if (raw === null || raw === undefined) {
-            return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+            return resolveAutoGearBackupRetentionDefaultValue();
         }
         try {
             var parsed = JSON.parse(raw);
@@ -335,7 +413,7 @@ function readAutoGearBackupRetentionFromStorage() {
     }
     catch (error) {
         console.warn('Failed to read automatic gear backup retention from storage', error);
-        return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+        return resolveAutoGearBackupRetentionDefaultValue();
     }
 }
 function persistAutoGearBackupRetention(retention) {
@@ -353,7 +431,7 @@ function persistAutoGearBackupRetention(retention) {
         return false;
     }
     try {
-        localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(normalized));
+        localStorage.setItem(resolveAutoGearBackupRetentionKey(), JSON.stringify(normalized));
         return true;
     }
     catch (error) {
