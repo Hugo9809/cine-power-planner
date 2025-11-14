@@ -12274,8 +12274,13 @@ function tryForceReload(win) {
   }
   return executeForceReloadContext(context);
 }
+// Slower machines routinely need ~4s to finish the offline module's reload gate.
+// Give it extra headroom so we do not fall back to the manual cache purge unless
+// the service worker truly stalled.
+var OFFLINE_RELOAD_TIMEOUT_MS = 5000;
+var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 function createReloadFallback(win) {
-  var delayMs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4500;
+  var delayMs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : OFFLINE_RELOAD_TIMEOUT_MS;
   if (!win) {
     return null;
   }
@@ -12354,11 +12359,6 @@ function createReloadFallback(win) {
     }
   };
 }
-// Slower machines routinely need ~4s to finish the offline module's reload gate.
-// Give it extra headroom so we do not fall back to the manual cache purge unless
-// the service worker truly stalled.
-var OFFLINE_RELOAD_TIMEOUT_MS = 5000;
-var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
   if (!promise || typeof promise.then !== 'function') {
     return Promise.resolve({
