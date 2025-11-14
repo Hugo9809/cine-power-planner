@@ -103,6 +103,11 @@ workstations.
   avatars), referenced custom devices, runtime estimates and (if selected)
   automatic gear rules. Favorites and other global data remain local—ship a full
   planner backup alongside the bundle when those must travel.
+- **Contacts modules:** `src/scripts/contacts/profile.js` and
+  `src/scripts/contacts/list.js` now feed the export, import and backup flows so
+  user profile data, avatar crops and vCard merges stay lossless even when teams
+  work completely offline. Touch both modules whenever the share, backup or
+  import workflows evolve to keep the offline contract intact.【F:src/scripts/contacts/profile.js†L1-L229】【F:src/scripts/contacts/list.js†L1-L123】
 - **Share workflow:** Copy the bundle to the receiving workstation via physical
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to

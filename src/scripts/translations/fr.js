@@ -126,7 +126,7 @@
       "description": "Enregistrez les membres de l’équipe une fois, conservez-les hors ligne et réutilisez-les dans chaque projet.",
       "addContactButton": "Ajouter un contact",
       "importButton": "Importer une vCard",
-      "importHint": "Importez des fichiers .vcf pour ajouter des contacts instantanément.",
+      "importHint": "Importez des fichiers .vcf pour ajouter des contacts instantanément. Les détails déjà enregistrés sont conservés automatiquement.",
       "emptyState": "Aucun contact enregistré pour le moment. Ajoutez votre équipe pour la réutiliser plus tard.",
       "close": "Fermer",
       "selectLabel": "Contacts enregistrés",
