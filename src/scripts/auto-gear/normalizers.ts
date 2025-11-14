@@ -14,6 +14,65 @@
   computeAutoGearMultiSelectSize, AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS, autoGearAddOwnGearSelect,
   autoGearRemoveOwnGearSelect, normalizeAutoGearCameraWeightCondition, stableStringify */
 
+const AUTO_GEAR_NORMALIZER_SCOPE =
+  (typeof globalThis !== 'undefined' && globalThis)
+  || (typeof window !== 'undefined' && window)
+  || (typeof self !== 'undefined' && self)
+  || (typeof global !== 'undefined' && global)
+  || {};
+
+const AUTO_GEAR_DEFAULT_SELECTOR_TYPES = Object.freeze([
+  'none',
+  'monitor',
+  'directorMonitor',
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
+  'fizHandUnit',
+]);
+
+function ensureAutoGearSelectorTypeGlobals(scope) {
+  const existingMap =
+    scope && scope.AUTO_GEAR_SELECTOR_TYPE_MAP && typeof scope.AUTO_GEAR_SELECTOR_TYPE_MAP === 'object'
+      ? scope.AUTO_GEAR_SELECTOR_TYPE_MAP
+      : null;
+
+  const resolvedMap = existingMap && Object.keys(existingMap).length
+    ? existingMap
+    : AUTO_GEAR_DEFAULT_SELECTOR_TYPES.reduce((acc, type) => {
+        acc[type.toLowerCase()] = type;
+        return acc;
+      }, Object.create(null));
+
+  const existingSet =
+    scope && scope.AUTO_GEAR_SELECTOR_TYPE_SET instanceof Set
+      ? scope.AUTO_GEAR_SELECTOR_TYPE_SET
+      : null;
+
+  const resolvedSet = existingSet && existingSet.size
+    ? existingSet
+    : new Set(Object.keys(resolvedMap));
+
+  if (scope && typeof scope === 'object') {
+    if (!scope.AUTO_GEAR_SELECTOR_TYPE_MAP) {
+      scope.AUTO_GEAR_SELECTOR_TYPE_MAP = resolvedMap;
+    }
+    if (!scope.AUTO_GEAR_SELECTOR_TYPE_SET) {
+      scope.AUTO_GEAR_SELECTOR_TYPE_SET = resolvedSet;
+    }
+  }
+
+  return {
+    map: resolvedMap,
+    set: resolvedSet,
+  };
+}
+
+const AUTO_GEAR_SELECTOR_TYPE_GLOBALS = ensureAutoGearSelectorTypeGlobals(AUTO_GEAR_NORMALIZER_SCOPE);
+const AUTO_GEAR_SELECTOR_TYPE_MAP_FALLBACK = AUTO_GEAR_SELECTOR_TYPE_GLOBALS.map;
+const AUTO_GEAR_SELECTOR_TYPE_SET_FALLBACK = AUTO_GEAR_SELECTOR_TYPE_GLOBALS.set;
+
 /**
  * Produce a deterministic-looking id for Auto Gear rules/presets.
  *
@@ -111,10 +170,16 @@ function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
  * @returns {'none'|'monitor'|'directorMonitor'|'tripodHeadBrand'|'tripodBowl'|'tripodTypes'|'tripodSpreader'|'fizHandUnit'}
  */
 function normalizeAutoGearSelectorType(value) {
-  const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
-  if (!candidate) return 'none';
-  if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate)) return 'none';
-  return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
+    const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
+    if (!candidate) return 'none';
+    const selectorSet =
+        (typeof AUTO_GEAR_SELECTOR_TYPE_SET !== 'undefined' && AUTO_GEAR_SELECTOR_TYPE_SET)
+            || AUTO_GEAR_SELECTOR_TYPE_SET_FALLBACK;
+    const selectorMap =
+        (typeof AUTO_GEAR_SELECTOR_TYPE_MAP !== 'undefined' && AUTO_GEAR_SELECTOR_TYPE_MAP)
+            || AUTO_GEAR_SELECTOR_TYPE_MAP_FALLBACK;
+    if (!selectorSet || !selectorSet.has(candidate)) return 'none';
+    return (selectorMap && selectorMap[candidate]) || 'none';
 }
 
 /**

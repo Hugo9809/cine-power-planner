@@ -13,6 +13,53 @@
   getAutoGearOwnGearItems, autoGearEditorDraft, formatOwnGearQuantityText, findAutoGearOwnGearById,
   computeAutoGearMultiSelectSize, AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS, autoGearAddOwnGearSelect,
   autoGearRemoveOwnGearSelect, normalizeAutoGearCameraWeightCondition, stableStringify */
+var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || {};
+var AUTO_GEAR_DEFAULT_SELECTOR_TYPES = Object.freeze([
+    'none',
+    'monitor',
+    'directorMonitor',
+    'tripodHeadBrand',
+    'tripodBowl',
+    'tripodTypes',
+    'tripodSpreader',
+    'fizHandUnit',
+]);
+function ensureAutoGearSelectorTypeGlobals(scope) {
+    var existingMap = scope && scope.AUTO_GEAR_SELECTOR_TYPE_MAP && typeof scope.AUTO_GEAR_SELECTOR_TYPE_MAP === 'object'
+        ? scope.AUTO_GEAR_SELECTOR_TYPE_MAP
+        : null;
+    var resolvedMap = existingMap && Object.keys(existingMap).length
+        ? existingMap
+        : AUTO_GEAR_DEFAULT_SELECTOR_TYPES.reduce(function (acc, type) {
+            acc[type.toLowerCase()] = type;
+            return acc;
+        }, Object.create(null));
+    var existingSet = scope && scope.AUTO_GEAR_SELECTOR_TYPE_SET instanceof Set
+        ? scope.AUTO_GEAR_SELECTOR_TYPE_SET
+        : null;
+    var resolvedSet = existingSet && existingSet.size
+        ? existingSet
+        : new Set(Object.keys(resolvedMap));
+    if (scope && typeof scope === 'object') {
+        if (!scope.AUTO_GEAR_SELECTOR_TYPE_MAP) {
+            scope.AUTO_GEAR_SELECTOR_TYPE_MAP = resolvedMap;
+        }
+        if (!scope.AUTO_GEAR_SELECTOR_TYPE_SET) {
+            scope.AUTO_GEAR_SELECTOR_TYPE_SET = resolvedSet;
+        }
+    }
+    return {
+        map: resolvedMap,
+        set: resolvedSet,
+    };
+}
+var AUTO_GEAR_SELECTOR_TYPE_GLOBALS = ensureAutoGearSelectorTypeGlobals(AUTO_GEAR_NORMALIZER_SCOPE);
+var AUTO_GEAR_SELECTOR_TYPE_MAP_FALLBACK = AUTO_GEAR_SELECTOR_TYPE_GLOBALS.map;
+var AUTO_GEAR_SELECTOR_TYPE_SET_FALLBACK = AUTO_GEAR_SELECTOR_TYPE_GLOBALS.set;
 /**
  * Produce a deterministic-looking id for Auto Gear rules/presets.
  *
@@ -117,9 +164,13 @@ function normalizeAutoGearSelectorType(value) {
     var candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
     if (!candidate)
         return 'none';
-    if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate))
+    var selectorSet = (typeof AUTO_GEAR_SELECTOR_TYPE_SET !== 'undefined' && AUTO_GEAR_SELECTOR_TYPE_SET)
+        || AUTO_GEAR_SELECTOR_TYPE_SET_FALLBACK;
+    var selectorMap = (typeof AUTO_GEAR_SELECTOR_TYPE_MAP !== 'undefined' && AUTO_GEAR_SELECTOR_TYPE_MAP)
+        || AUTO_GEAR_SELECTOR_TYPE_MAP_FALLBACK;
+    if (!selectorSet || !selectorSet.has(candidate))
         return 'none';
-    return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
+    return (selectorMap && selectorMap[candidate]) || 'none';
 }
 /**
  * Make sure the default value for selector inputs is both human readable and
