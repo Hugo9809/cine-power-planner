@@ -5283,7 +5283,7 @@
       languageGroup.appendChild(hintEl);
     }
 
-    hero.appendChild(languageGroup);
+    hero.insertBefore(languageGroup, hero.firstChild || null);
 
     if (offlineSummary) {
       const offlineEl = DOCUMENT.createElement('p');
