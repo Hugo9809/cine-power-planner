@@ -1191,6 +1191,7 @@
       }
 
       let pinkModeAnimatedIconPressListenerCleanup = null;
+      let pinkModeAnimatedIconPressListenerAttached = false;
       let pinkModeAnimatedIconLastTouchTime = 0;
 
       const pinkModeReduceMotionQuery =
@@ -1844,20 +1845,24 @@
       }
 
       function teardownPinkModeAnimatedIconPressListener() {
-        if (!pinkModeAnimatedIconPressListenerCleanup) {
+        if (!pinkModeAnimatedIconPressListenerAttached) {
           return;
         }
+        const cleanup = pinkModeAnimatedIconPressListenerCleanup;
         try {
-          pinkModeAnimatedIconPressListenerCleanup();
+          if (typeof cleanup === 'function') {
+            cleanup();
+          }
         } catch (cleanupError) {
           console.warn('Could not detach pink mode animation press listener', cleanupError);
         }
         pinkModeAnimatedIconPressListenerCleanup = null;
         pinkModeAnimatedIconLastTouchTime = 0;
+        pinkModeAnimatedIconPressListenerAttached = false;
       }
 
       function ensurePinkModeAnimatedIconPressListener() {
-        if (pinkModeAnimatedIconPressListenerCleanup || typeof document === 'undefined') {
+        if (pinkModeAnimatedIconPressListenerAttached || typeof document === 'undefined') {
           return;
         }
         const target = document;
@@ -1870,6 +1875,7 @@
             target.removeEventListener('pointerdown', handlePinkModeAnimatedIconPointerEvent, true);
             pinkModeAnimatedIconLastTouchTime = 0;
           };
+          pinkModeAnimatedIconPressListenerAttached = true;
           return;
         }
         target.addEventListener('mousedown', handlePinkModeAnimatedIconMouseEvent, true);
@@ -1879,6 +1885,7 @@
           target.removeEventListener('touchstart', handlePinkModeAnimatedIconTouchEvent, true);
           pinkModeAnimatedIconLastTouchTime = 0;
         };
+        pinkModeAnimatedIconPressListenerAttached = true;
       }
 
       function isPinkModeAnimationSpotClear(
@@ -2062,9 +2069,6 @@
             immediate: true,
             staggerMs: Math.round(PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS * 0.75)
           });
-        }
-        if (!pinkModeAnimatedIconInstances.size) {
-          teardownPinkModeAnimatedIconPressListener();
         }
       }
 
@@ -2957,6 +2961,8 @@
         if (!document.body.classList.contains('pink-mode')) {
           return;
         }
+
+        ensurePinkModeAnimatedIconPressListener();
 
         const runtime = resolvePinkModeLottieRuntime();
         if (runtime && typeof runtime.loadAnimation === 'function') {
