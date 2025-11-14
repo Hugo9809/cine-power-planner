@@ -370,7 +370,33 @@ function applyLegacyGridSnapValue(value) {
   return gridSnapState;
 }
 syncGridSnapStateToScopes(gridSnapState);
-module.exports = {
+
+function publishRuntimeBootstrapExports(exportsMap) {
+  if (!exportsMap || _typeof(exportsMap) !== 'object') {
+    return;
+  }
+
+  var scope = getPrimaryGlobalScope();
+  if (!scope || _typeof(scope) !== 'object') {
+    return;
+  }
+
+  var existingNamespace = scope.cineRuntimeBootstrapExports;
+  if (existingNamespace && _typeof(existingNamespace) === 'object') {
+    Object.keys(exportsMap).forEach(function (key) {
+      existingNamespace[key] = exportsMap[key];
+    });
+    return;
+  }
+
+  try {
+    scope.cineRuntimeBootstrapExports = exportsMap;
+  } catch (assignError) {
+    void assignError;
+  }
+}
+
+var runtimeBootstrapExports = {
   fallbackResolveRuntimeModuleLoader: fallbackResolveRuntimeModuleLoader,
   fallbackRequireCoreRuntimeModule: fallbackRequireCoreRuntimeModule,
   exposeCoreRuntimeConstant: exposeCoreRuntimeConstant,
@@ -387,3 +413,7 @@ module.exports = {
   setGridSnapState: setGridSnapState,
   applyLegacyGridSnapValue: applyLegacyGridSnapValue
 };
+
+module.exports = runtimeBootstrapExports;
+
+publishRuntimeBootstrapExports(runtimeBootstrapExports);
