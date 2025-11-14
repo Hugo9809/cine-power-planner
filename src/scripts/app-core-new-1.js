@@ -2588,32 +2588,176 @@ const applyDeviceSchema =
         return deviceSchema;
       };
 
+let bundledSchema = null;
+let contactsProfileModule = null;
+let contactsListModule = null;
+
 try {
-const bundledSchema = require('../data/schema.json');
-const contactsProfileModule = require('./contacts/profile.js');
-const contactsListModule = require('./contacts/list.js');
+  bundledSchema = require('../data/schema.json');
+} catch (schemaRequireError) {
+  void schemaRequireError;
+}
+
+try {
+  contactsProfileModule = require('./contacts/profile.js');
+} catch (profileModuleError) {
+  console.warn('Failed to load contacts profile module', profileModuleError);
+}
+
+try {
+  contactsListModule = require('./contacts/list.js');
+} catch (contactsListModuleError) {
+  console.warn('Failed to load contacts list module', contactsListModuleError);
+}
+
+const fallbackSanitizeContactValue = value => (typeof value === 'string' ? value.trim() : '');
+const fallbackNormalizeContactEntry = entry => ({
+  id: fallbackSanitizeContactValue(entry && entry.id) || `contact-${Date.now().toString(36)}`,
+  name: fallbackSanitizeContactValue(entry && entry.name),
+  role: fallbackSanitizeContactValue(entry && entry.role),
+  phone: fallbackSanitizeContactValue(entry && entry.phone),
+  email: fallbackSanitizeContactValue(entry && entry.email),
+  website: fallbackSanitizeContactValue(entry && entry.website),
+  avatar: typeof entry?.avatar === 'string' ? entry.avatar : '',
+  createdAt: Number.isFinite(entry?.createdAt) ? entry.createdAt : Date.now(),
+  updatedAt: Number.isFinite(entry?.updatedAt) ? entry.updatedAt : Date.now()
+});
+
+function createFallbackProfileController() {
+  const state = { name: '', role: '', avatar: '', phone: '', email: '' };
+  const listeners = new Set();
+  const snapshot = () => ({ ...state });
+  const emit = () => {
+    const current = snapshot();
+    listeners.forEach(listener => {
+      try {
+        listener(current);
+      } catch (listenerError) {
+        console.warn('Profile listener failed in fallback controller', listenerError);
+      }
+    });
+    return current;
+  };
+  return {
+    assignUserProfileState(updates = {}) {
+      Object.assign(state, updates);
+      return emit();
+    },
+    getUserProfileSnapshot: snapshot,
+    handleFieldInput(field, rawValue) {
+      if (!field) return false;
+      state[field] = typeof rawValue === 'string' ? rawValue : '';
+      emit();
+      return true;
+    },
+    handleFieldBlur() {
+      return undefined;
+    },
+    load(newState) {
+      if (newState && typeof newState === 'object') {
+        Object.assign(state, newState);
+      }
+      return emit();
+    },
+    setAvatar(value) {
+      state.avatar = typeof value === 'string' ? value : '';
+      emit();
+    },
+    clearAvatar() {
+      if (!state.avatar) return false;
+      state.avatar = '';
+      emit();
+      return true;
+    },
+    onChange(listener) {
+      if (typeof listener !== 'function') return () => undefined;
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    schedulePersist() {
+      return undefined;
+    },
+    markDirty() {
+      return undefined;
+    },
+    setPendingAnnouncement() {
+      return undefined;
+    }
+  };
+}
 
 const {
-  CONTACT_AVATAR_MAX_BYTES,
-  CONTACT_AVATAR_MAX_SOURCE_BYTES,
-  CONTACT_AVATAR_MAX_DIMENSION,
-  CONTACT_AVATAR_JPEG_QUALITY,
-  CONTACT_AVATAR_JPEG_MIN_QUALITY,
-  createProfileController,
-  estimateDataUrlSize,
-  optimiseAvatarDataUrl,
-  readAvatarFile,
-  isSafeImageUrl
-} = contactsProfileModule;
+  CONTACT_AVATAR_MAX_BYTES: resolvedContactAvatarMaxBytes = 300 * 1024,
+  CONTACT_AVATAR_MAX_SOURCE_BYTES: resolvedContactAvatarMaxSourceBytes = 6 * 1024 * 1024,
+  CONTACT_AVATAR_MAX_DIMENSION: resolvedContactAvatarMaxDimension = 256,
+  CONTACT_AVATAR_JPEG_QUALITY: resolvedContactAvatarJpegQuality = 0.85,
+  CONTACT_AVATAR_JPEG_MIN_QUALITY: resolvedContactAvatarJpegMinQuality = 0.55,
+  createProfileController: resolvedCreateProfileController,
+  estimateDataUrlSize: resolvedEstimateDataUrlSize,
+  optimiseAvatarDataUrl: resolvedOptimiseAvatarDataUrl,
+  readAvatarFile: resolvedReadAvatarFile,
+  isSafeImageUrl: resolvedIsSafeImageUrl
+} = contactsProfileModule || {};
 
 const {
-  sanitizeContactValue: sanitizeContactValueHelper,
-  normalizeContactEntry: normalizeContactEntryHelper,
-  sortContacts: sortContactsHelper,
-  parseVCard: parseVCardEntries,
-  mergeImportedContacts: mergeImportedContactEntries,
-  createCrewRowSync
-} = contactsListModule;
+  sanitizeContactValue: resolvedSanitizeContactValue,
+  normalizeContactEntry: resolvedNormalizeContactEntry,
+  sortContacts: resolvedSortContacts,
+  parseVCard: resolvedParseVCardEntries,
+  mergeImportedContacts: resolvedMergeImportedContacts,
+  createCrewRowSync: resolvedCreateCrewRowSync
+} = contactsListModule || {};
+
+const CONTACT_AVATAR_MAX_BYTES = resolvedContactAvatarMaxBytes;
+const CONTACT_AVATAR_MAX_SOURCE_BYTES = resolvedContactAvatarMaxSourceBytes;
+const CONTACT_AVATAR_MAX_DIMENSION = resolvedContactAvatarMaxDimension;
+const CONTACT_AVATAR_JPEG_QUALITY = resolvedContactAvatarJpegQuality;
+const CONTACT_AVATAR_JPEG_MIN_QUALITY = resolvedContactAvatarJpegMinQuality;
+const createProfileController = typeof resolvedCreateProfileController === 'function'
+  ? resolvedCreateProfileController
+  : createFallbackProfileController;
+const estimateDataUrlSize = typeof resolvedEstimateDataUrlSize === 'function'
+  ? resolvedEstimateDataUrlSize
+  : dataUrl => (typeof dataUrl === 'string' ? dataUrl.length : 0);
+const optimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'function'
+  ? resolvedOptimiseAvatarDataUrl
+  : (dataUrl, _mime, onSuccess) => {
+      if (typeof onSuccess === 'function') {
+        onSuccess(typeof dataUrl === 'string' ? dataUrl : '');
+      }
+      return Promise.resolve(typeof dataUrl === 'string' ? dataUrl : '');
+    };
+const readAvatarFile = typeof resolvedReadAvatarFile === 'function'
+  ? resolvedReadAvatarFile
+  : () => Promise.reject(new Error('Avatar file reader unavailable'));
+const isSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function'
+  ? resolvedIsSafeImageUrl
+  : () => false;
+
+const sanitizeContactValueHelper = typeof resolvedSanitizeContactValue === 'function'
+  ? resolvedSanitizeContactValue
+  : fallbackSanitizeContactValue;
+const normalizeContactEntryHelper = typeof resolvedNormalizeContactEntry === 'function'
+  ? resolvedNormalizeContactEntry
+  : fallbackNormalizeContactEntry;
+const sortContactsHelper = typeof resolvedSortContacts === 'function'
+  ? resolvedSortContacts
+  : list => (Array.isArray(list) ? list.slice() : []);
+const parseVCardEntries = typeof resolvedParseVCardEntries === 'function'
+  ? resolvedParseVCardEntries
+  : () => [];
+const mergeImportedContactEntries = typeof resolvedMergeImportedContacts === 'function'
+  ? resolvedMergeImportedContacts
+  : options => ({
+      contacts: sortContactsHelper([...(options?.existing || []), ...(options?.imported || [])]),
+      added: Array.isArray(options?.imported) ? options.imported.length : 0,
+      updated: 0
+    });
+const createCrewRowSync = typeof resolvedCreateCrewRowSync === 'function'
+  ? resolvedCreateCrewRowSync
+  : (rowState = {}, contact = {}) => ({ ...rowState, ...contact });
+
+try {
   const appliedSchema = applyDeviceSchema(bundledSchema);
   if (appliedSchema) {
     deviceSchema = appliedSchema;
@@ -5880,6 +6024,9 @@ function getBatteryMountType(batteryName) {
   const mount = info && typeof info.mount_type === 'string' ? info.mount_type : '';
   return mount || '';
 }
+
+let batteryPlateRow;
+let batteryPlateSelect;
 
 function normalizeBatteryPlateValue(plateValue, batteryName) {
   const normalizedPlate = typeof plateValue === 'string' ? plateValue.trim() : '';
@@ -17146,8 +17293,6 @@ const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 var viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 var batteryFieldsDiv = document.getElementById("batteryFields");
-let batteryPlateRow;
-let batteryPlateSelect;
 var newCapacityInput = document.getElementById("newCapacity");
 var newPinAInput    = document.getElementById("newPinA");
 var newDtapAInput   = document.getElementById("newDtapA");
