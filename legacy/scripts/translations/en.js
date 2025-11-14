@@ -1729,7 +1729,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsWarnings": {
             "title": "Power Summary: Warnings and backups",
-            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Record which connector triggered the warning, rebalance or down-rate gear until both boxes return to green, verify every primary feed has a charged backup with runtime that matches the session, confirm the autosave banner timestamp matches the Share/Export preview before distributing a new copy, and run Power Summary again so the cleared warning syncs across offline caches."
+            "body": "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the feed is near its limit, and red means the rig is pulling more than that line can supply. Change out batteries and devices to get both boxes to appear green again. Be assured to not break batteries with higher loads a battery can handle."
           },
           "batteryComparison": {
             "title": "Battery Comparison",
