@@ -80,81 +80,23 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
+const {
+  fallbackResolveRuntimeModuleLoader,
+  fallbackRequireCoreRuntimeModule,
+  exposeCoreRuntimeConstant,
+  exposeCoreRuntimeConstants,
+  CORE_BOOT_QUEUE_KEY,
+  CORE_BOOT_QUEUE,
+  enqueueCoreBootTask,
+  getGridSnapState,
+  setGridSnapState,
+  applyLegacyGridSnapValue,
+} = require('./runtime/bootstrap.js');
+
 // The planner shares a handful of helper modules across legacy and modern
 // bundles. Rather than assuming a module loader exists we defensively look for
 // pre-attached namespaces first and then fall back to CommonJS style requires.
 // This defensive dance keeps offline builds and automated backups aligned.
-
-function fallbackResolveRuntimeModuleLoader() {
-  if (typeof require === 'function') {
-    try {
-      const requiredLoader = require('./modules/core/runtime-module-loader.js');
-      if (requiredLoader && typeof requiredLoader === 'object') {
-        return requiredLoader;
-      }
-    } catch (runtimeLoaderError) {
-      void runtimeLoaderError;
-    }
-  }
-
-  if (
-    typeof cineCoreRuntimeModuleLoader !== 'undefined' &&
-    cineCoreRuntimeModuleLoader &&
-    typeof cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return cineCoreRuntimeModuleLoader;
-  }
-
-  if (
-    typeof globalThis !== 'undefined' &&
-    globalThis &&
-    typeof globalThis.cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return globalThis.cineCoreRuntimeModuleLoader;
-  }
-
-  if (
-    typeof window !== 'undefined' &&
-    window &&
-    typeof window.cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return window.cineCoreRuntimeModuleLoader;
-  }
-
-  if (
-    typeof self !== 'undefined' &&
-    self &&
-    typeof self.cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return self.cineCoreRuntimeModuleLoader;
-  }
-
-  if (
-    typeof global !== 'undefined' &&
-    global &&
-    typeof global.cineCoreRuntimeModuleLoader === 'object'
-  ) {
-    return global.cineCoreRuntimeModuleLoader;
-  }
-
-  return null;
-}
-
-function fallbackRequireCoreRuntimeModule(moduleId, options) {
-  const loader = fallbackResolveRuntimeModuleLoader();
-  if (
-    loader &&
-    typeof loader.resolveCoreRuntimeModule === 'function'
-  ) {
-    try {
-      return loader.resolveCoreRuntimeModule(moduleId, options);
-    } catch (moduleResolutionError) {
-      void moduleResolutionError;
-    }
-  }
-
-  return null;
-}
 
 const CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE = (function resolveRuntimeSupportExportNamespace() {
   const namespaces = [];
@@ -672,8 +614,6 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   }
 }
 
-var gridSnap = ensureCoreGlobalValue('gridSnap', () => false);
-
 function dispatchTemperatureNoteRender(hours) {
   const scope = getCoreGlobalObject();
   let renderer = null;
@@ -745,70 +685,6 @@ function dispatchTemperatureNoteRender(hours) {
     pending.updatedAt = 0;
   }
   scope[CORE_TEMPERATURE_QUEUE_KEY] = pending;
-}
-
-function exposeCoreRuntimeConstant(name, value) {
-  if (typeof name !== 'string' || !name) {
-    return;
-  }
-
-  const scope =
-    (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
-      ? CORE_GLOBAL_SCOPE
-      : typeof globalThis !== 'undefined'
-        ? globalThis
-        : typeof window !== 'undefined'
-          ? window
-          : typeof self !== 'undefined'
-            ? self
-            : typeof global !== 'undefined'
-              ? global
-              : null;
-
-  if (!scope || typeof scope !== 'object') {
-    return;
-  }
-
-  let descriptor = null;
-  try {
-    descriptor = Object.getOwnPropertyDescriptor(scope, name);
-  } catch (descriptorError) {
-    descriptor = null;
-    void descriptorError;
-  }
-
-  if (descriptor && descriptor.configurable === false && descriptor.writable === false) {
-    return;
-  }
-
-  try {
-    scope[name] = value;
-    return;
-  } catch (assignError) {
-    void assignError;
-  }
-
-  try {
-    Object.defineProperty(scope, name, {
-      configurable: true,
-      writable: true,
-      value,
-    });
-  } catch (defineError) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn(`Unable to expose ${name} globally`, defineError);
-    }
-  }
-}
-
-function exposeCoreRuntimeConstants(constants) {
-  if (!constants || typeof constants !== 'object') {
-    return;
-  }
-
-  Object.keys(constants).forEach(key => {
-    exposeCoreRuntimeConstant(key, constants[key]);
-  });
 }
 
 function exposeCoreRuntimeBindings(bindings) {
@@ -1281,96 +1157,6 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
   }
 }
 
-const CORE_BOOT_QUEUE_KEY = (function resolveCoreBootQueueKey(scope) {
-  const fallbackKey = '__coreRuntimeBootQueue';
-
-  if (scope && typeof scope === 'object') {
-    const existingHidden = scope.__cineCoreBootQueueKey;
-    const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
-
-    if (typeof existingPublic === 'string' && existingPublic) {
-      try {
-        scope.__cineCoreBootQueueKey = existingPublic;
-      } catch (syncError) {
-        void syncError;
-        scope.__cineCoreBootQueueKey = existingPublic;
-      }
-      return existingPublic;
-    }
-
-    if (typeof existingHidden === 'string' && existingHidden) {
-      if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
-        try {
-          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
-        } catch (shadowError) {
-          void shadowError;
-          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
-        }
-      }
-      return existingHidden;
-    }
-  }
-
-  const resolvedKey = fallbackKey;
-
-  if (scope && typeof scope === 'object') {
-    try {
-      scope.__cineCoreBootQueueKey = resolvedKey;
-    } catch (hiddenAssignError) {
-      void hiddenAssignError;
-      scope.__cineCoreBootQueueKey = resolvedKey;
-    }
-
-    if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
-      try {
-        scope.CORE_BOOT_QUEUE_KEY = resolvedKey;
-      } catch (publicAssignError) {
-        void publicAssignError;
-        scope.CORE_BOOT_QUEUE_KEY = resolvedKey;
-      }
-    }
-  }
-
-  return resolvedKey;
-})(CORE_GLOBAL_SCOPE);
-
-const CORE_BOOT_QUEUE = (function bootstrapCoreBootQueue(existingQueue) {
-  if (Array.isArray(existingQueue)) {
-    return existingQueue;
-  }
-
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-    const shared = CORE_GLOBAL_SCOPE.cineCoreShared;
-    if (shared && typeof shared === 'object') {
-      const sharedQueue = shared[CORE_BOOT_QUEUE_KEY];
-      if (Array.isArray(sharedQueue)) {
-        return sharedQueue;
-      }
-      if (Object.isExtensible(shared)) {
-        shared[CORE_BOOT_QUEUE_KEY] = [];
-        return shared[CORE_BOOT_QUEUE_KEY];
-      }
-    }
-
-    if (!Array.isArray(CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE)) {
-      CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = [];
-    }
-    return CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE;
-  }
-
-  return [];
-})(CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE);
-
-if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE) {
-  CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE;
-}
-
-function enqueueCoreBootTask(task) {
-  if (typeof task === 'function') {
-    CORE_BOOT_QUEUE.push(task);
-  }
-}
-
 function isAutoGearGlobalReferenceError(error) {
   if (!CORE_RUNTIME_STATE || !CORE_RUNTIME_STATE.autoGearGuards) {
     return false;
@@ -1482,174 +1268,7 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
     : undefined;
 }
 
-const GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';
-
-function getGridSnapStateScopes() {
-  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getScopes === 'function') {
-    try {
-      return CORE_RUNTIME_STATE.getScopes();
-    } catch (scopeReadError) {
-      void scopeReadError;
-    }
-  }
-
-  const fallbackScopes = [];
-  const candidates = [
-    CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
-    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
-    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
-    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
-    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
-  ];
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const candidate = candidates[index];
-    if (candidate && fallbackScopes.indexOf(candidate) === -1) {
-      fallbackScopes.push(candidate);
-    }
-  }
-
-  return fallbackScopes;
-}
-
-function normaliseGridSnapPreference(value, fallback = false) {
-  if (value === true || value === false) {
-    return value === true;
-  }
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase();
-    if (!normalized) {
-      return fallback;
-    }
-    if (['true', '1', 'yes', 'on', 'enabled', 'enable'].includes(normalized)) {
-      return true;
-    }
-    if (['false', '0', 'no', 'off', 'disabled', 'disable'].includes(normalized)) {
-      return false;
-    }
-    return fallback;
-  }
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) {
-      return fallback;
-    }
-    return value > 0;
-  }
-  if (value && typeof value === 'object') {
-    if (Object.prototype.hasOwnProperty.call(value, 'enabled')) {
-      return normaliseGridSnapPreference(value.enabled, fallback);
-    }
-    if (Object.prototype.hasOwnProperty.call(value, 'value')) {
-      return normaliseGridSnapPreference(value.value, fallback);
-    }
-  }
-  return fallback;
-}
-
-function readInitialGridSnapPreference() {
-  const scopes = getGridSnapStateScopes();
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-
-    try {
-      if (Object.prototype.hasOwnProperty.call(scope, GRID_SNAP_STATE_STORAGE_KEY)) {
-        const stored = scope[GRID_SNAP_STATE_STORAGE_KEY];
-        const normalized = normaliseGridSnapPreference(stored, undefined);
-        if (typeof normalized === 'boolean') {
-          return normalized;
-        }
-      }
-    } catch (storageReadError) {
-      void storageReadError;
-    }
-
-    try {
-      if (Object.prototype.hasOwnProperty.call(scope, 'gridSnap')) {
-        const legacy = scope.gridSnap;
-        const normalizedLegacy = normaliseGridSnapPreference(legacy, undefined);
-        if (typeof normalizedLegacy === 'boolean') {
-          return normalizedLegacy;
-        }
-      }
-    } catch (legacyReadError) {
-      void legacyReadError;
-    }
-  }
-
-  return undefined;
-}
-
-let gridSnapState = normaliseGridSnapPreference(readInitialGridSnapPreference(), false);
-gridSnap = gridSnapState;
-function syncGridSnapStateToScopes(value, originScope = null) {
-  const scopes = getGridSnapStateScopes();
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-
-    try {
-      scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
-    } catch (assignStorageError) {
-      try {
-        Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
-          configurable: true,
-          writable: true,
-          value,
-        });
-      } catch (defineStorageError) {
-        void defineStorageError;
-      }
-    }
-
-    if (originScope === scope) {
-      continue;
-    }
-
-    try {
-      scope.gridSnap = value;
-    } catch (assignLegacyError) {
-      try {
-        Object.defineProperty(scope, 'gridSnap', {
-          configurable: true,
-          writable: true,
-          value,
-        });
-      } catch (defineLegacyError) {
-        void defineLegacyError;
-      }
-    }
-  }
-
-  gridSnap = value;
-  return value;
-}
-
-function getGridSnapState() {
-  return gridSnapState;
-}
-
-function setGridSnapState(value) {
-  const normalized = normaliseGridSnapPreference(value, gridSnapState);
-  gridSnapState = normalized;
-  syncGridSnapStateToScopes(normalized);
-  return gridSnapState;
-}
-
-function applyLegacyGridSnapValue(value) {
-  const normalized = normaliseGridSnapPreference(value, gridSnapState);
-  gridSnapState = normalized;
-  gridSnap = normalized;
-  return gridSnapState;
-}
-
 exposeCoreRuntimeConstant('applyLegacyGridSnapValue', applyLegacyGridSnapValue);
-
-syncGridSnapStateToScopes(gridSnapState);
 
 function safeFormatAutoGearItemSummary(item, options = {}) {
   if (typeof formatAutoGearItemSummary === 'function') {

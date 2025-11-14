@@ -22,6 +22,7 @@ This document captures a phased plan to break the oversized `app-core-foundation
 | Orchestration | `collaboration` | Share links, import/export, restore flows, verification overlays. | Persistence module, environment module, localisation, networking adapter. | Share/import must validate backups before replacing local data. |
 | Shared | `localisation` | Language packs, fallback chain, dynamic runtime strings. | Storage (for offline pack cache), environment detection. | Ensure offline language selection persists between sessions. |
 | Shared | `storage` | IndexedDB/localStorage abstraction, encryption, schema evolution, backup rotation. | Environment detection (for capability), telemetry. | Must run schema migrations atomically and keep redundant backups. |
+| Shared | `runtime/bootstrap` | Module-loader fallbacks, global constant exposure, boot queue orchestration, grid-snap state sync. | Global scope resolvers, localisation helpers, persistence surfaces. | Must keep Part 1/Part 2 bundles aligned even when storage APIs fail offline, so autosave/share/backups stay deterministic. |
 
 ## 3. Shared infrastructure guarantees
 
@@ -29,6 +30,7 @@ This document captures a phased plan to break the oversized `app-core-foundation
 * **Localisation service** – centralise message lookup with locale negotiation, offline pack caching, and dynamic help content linking. All modules must use the same resolver to ensure consistent fallbacks when offline.
 * **Error and telemetry handling** – standard error envelope containing severity, localisation key, remediation hint, and optional offline queue payload. Telemetry events should buffer locally until connectivity resumes.
 * **Data safety safeguards** – before any destructive change (import, restore, reset) capture a timestamped backup; autosave must debounce writes yet guarantee latest state is flushed before unload; share/export flows validate payload integrity and prompt the user in their selected language.
+* **Runtime bootstrap anchor** – `src/scripts/runtime/bootstrap.js` (mirrored under `legacy/scripts`) owns the deterministic module-loader fallbacks, boot queue wiring, and grid snap preference normalisation so that localisation hooks, autosave, and offline persistence never diverge between bundle halves.
 
 ## 4. Migration steps per module
 
