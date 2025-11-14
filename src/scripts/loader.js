@@ -3847,6 +3847,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/auto-gear/normalizers.js',
       'src/scripts/auto-gear/storage.js',
       'src/scripts/auto-gear/ui.js',
+      'src/scripts/own-gear/store.js',
+      'src/scripts/own-gear/view.js',
       'src/scripts/app-core-new-1.js',
       'src/scripts/app-core-localization-accessors.js',
       'src/scripts/app-core-new-2.js',

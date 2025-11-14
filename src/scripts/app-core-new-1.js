@@ -4150,46 +4150,177 @@ function setupResponsiveControls() {
   relocate();
 }
 
-let ownGearItems = [];
-let ownGearEditingId = null;
-let ownGearDialog = null;
-let ownGearForm = null;
-let ownGearListElem = null;
-let ownGearEmptyState = null;
-let ownGearListSummary = null;
-let ownGearNameInput = null;
-let ownGearQuantityInput = null;
-let ownGearNotesInput = null;
-let ownGearSaveButton = null;
-let ownGearResetButton = null;
-let ownGearCloseButton = null;
-let ownGearSuggestionsList = null;
-let ownGearAddHelp = null;
-
 const OWN_GEAR_SOURCE_CATALOG = 'catalog';
 const OWN_GEAR_SOURCE_CUSTOM = 'custom';
 
-let ownGearSuggestionCache = {
-  lang: null,
-  list: [],
-  lookup: new Set(),
-};
-
-let autoGearOwnGearCache = {
+let ownGearStoreModuleCache = null;
+let ownGearStoreInstance = null;
+let ownGearViewModuleCache = null;
+let ownGearViewInstance = null;
+let fallbackAutoGearCache = {
   items: [],
   map: new Map(),
 };
 
+function detectOwnGearGlobalScope() {
+  if (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE) {
+    return CORE_GLOBAL_SCOPE;
+  }
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return null;
+}
+
+function resolveOwnGearStoreModule() {
+  if (ownGearStoreModuleCache) {
+    return ownGearStoreModuleCache;
+  }
+  if (typeof require === 'function') {
+    try {
+      const required = require('./own-gear/store.js');
+      if (required && typeof required.createOwnGearStore === 'function') {
+        ownGearStoreModuleCache = required;
+        return ownGearStoreModuleCache;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  const scope = detectOwnGearGlobalScope();
+  if (scope && typeof scope.cineOwnGearStore === 'object' && scope.cineOwnGearStore) {
+    ownGearStoreModuleCache = scope.cineOwnGearStore;
+    return ownGearStoreModuleCache;
+  }
+  if (typeof cineOwnGearStore === 'object' && cineOwnGearStore) {
+    ownGearStoreModuleCache = cineOwnGearStore;
+    return ownGearStoreModuleCache;
+  }
+  return null;
+}
+
+function getOwnGearStore() {
+  if (ownGearStoreInstance) {
+    return ownGearStoreInstance;
+  }
+  const storeModule = resolveOwnGearStoreModule();
+  if (storeModule && typeof storeModule.createOwnGearStore === 'function') {
+    try {
+      ownGearStoreInstance = storeModule.createOwnGearStore();
+      return ownGearStoreInstance;
+    } catch (error) {
+      void error;
+    }
+  }
+  return null;
+}
+
+function resolveOwnGearViewModule() {
+  if (ownGearViewModuleCache) {
+    return ownGearViewModuleCache;
+  }
+  if (typeof require === 'function') {
+    try {
+      const required = require('./own-gear/view.js');
+      if (required && typeof required.createOwnGearView === 'function') {
+        ownGearViewModuleCache = required;
+        return ownGearViewModuleCache;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  const scope = detectOwnGearGlobalScope();
+  if (scope && typeof scope.cineOwnGearView === 'object' && scope.cineOwnGearView) {
+    ownGearViewModuleCache = scope.cineOwnGearView;
+    return ownGearViewModuleCache;
+  }
+  if (typeof cineOwnGearView === 'object' && cineOwnGearView) {
+    ownGearViewModuleCache = cineOwnGearView;
+    return ownGearViewModuleCache;
+  }
+  return null;
+}
+
+function resolveOwnGearViewOptions() {
+  const scope = detectOwnGearGlobalScope() || {};
+  return {
+    scope,
+    document: typeof document !== 'undefined' ? document : null,
+    getLanguageTexts,
+    defaultLanguage: DEFAULT_LANGUAGE_SAFE,
+    getCurrentLanguage: () => currentLang,
+    formatWithPlaceholders: formatWithPlaceholdersSafe,
+    setButtonLabelWithIconBinding,
+    iconMarkup,
+    iconGlyphs: ICON_GLYPHS,
+    openDialog,
+    closeDialog,
+    formatQuantityText: formatOwnGearQuantityText,
+    devices,
+    gearItemTranslations,
+    looksLikeGearName,
+  };
+}
+
+function getOwnGearView() {
+  if (ownGearViewInstance) {
+    return ownGearViewInstance;
+  }
+  const viewModule = resolveOwnGearViewModule();
+  const store = getOwnGearStore();
+  if (!viewModule || typeof viewModule.createOwnGearView !== 'function' || !store) {
+    return null;
+  }
+  try {
+    ownGearViewInstance = viewModule.createOwnGearView(store, resolveOwnGearViewOptions());
+    return ownGearViewInstance;
+  } catch (error) {
+    void error;
+  }
+  return null;
+}
+
 function invalidateAutoGearOwnGearCache() {
-  autoGearOwnGearCache = {
+  const store = getOwnGearStore();
+  if (store && typeof store.invalidateCache === 'function') {
+    try {
+      store.invalidateCache();
+      return;
+    } catch (error) {
+      void error;
+    }
+  }
+  fallbackAutoGearCache = {
     items: [],
     map: new Map(),
   };
 }
 
 function refreshAutoGearOwnGearCache() {
-  let items = [];
+  const store = getOwnGearStore();
+  if (store && typeof store.refreshCache === 'function') {
+    try {
+      const snapshot = store.refreshCache();
+      return {
+        items: Array.isArray(snapshot.items) ? snapshot.items.slice() : [],
+        map: snapshot.map instanceof Map ? snapshot.map : new Map(),
+      };
+    } catch (error) {
+      void error;
+    }
+  }
   const moduleApi = resolveOwnGearModule();
+  let items = [];
   if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
     try {
       items = moduleApi.loadStoredOwnGearItems();
@@ -4198,11 +4329,7 @@ function refreshAutoGearOwnGearCache() {
     }
   }
   if (!Array.isArray(items) || !items.length) {
-    if (Array.isArray(ownGearItems) && ownGearItems.length) {
-      items = ownGearItems.slice();
-    } else {
-      items = loadStoredOwnGearItems();
-    }
+    items = loadStoredOwnGearItems();
   }
   const normalized = Array.isArray(items)
     ? items
@@ -4214,16 +4341,28 @@ function refreshAutoGearOwnGearCache() {
     if (!item || !item.id) return;
     map.set(item.id, item);
   });
-  autoGearOwnGearCache = {
+  fallbackAutoGearCache = {
     items: normalized,
     map,
   };
-  return autoGearOwnGearCache;
+  return fallbackAutoGearCache;
 }
 
 function getAutoGearOwnGearCache() {
-  if (autoGearOwnGearCache && Array.isArray(autoGearOwnGearCache.items) && autoGearOwnGearCache.items.length) {
-    return autoGearOwnGearCache;
+  const store = getOwnGearStore();
+  if (store && typeof store.getCacheSnapshot === 'function') {
+    try {
+      const snapshot = store.getCacheSnapshot();
+      return {
+        items: Array.isArray(snapshot.items) ? snapshot.items.slice() : [],
+        map: snapshot.map instanceof Map ? snapshot.map : new Map(),
+      };
+    } catch (error) {
+      void error;
+    }
+  }
+  if (fallbackAutoGearCache && Array.isArray(fallbackAutoGearCache.items) && fallbackAutoGearCache.items.length) {
+    return fallbackAutoGearCache;
   }
   return refreshAutoGearOwnGearCache();
 }
@@ -4234,11 +4373,27 @@ function getAutoGearOwnGearItems() {
 
 function findAutoGearOwnGearById(id) {
   if (!id) return null;
+  const store = getOwnGearStore();
+  if (store && typeof store.findCachedById === 'function') {
+    try {
+      return store.findCachedById(id);
+    } catch (error) {
+      void error;
+    }
+  }
   const cache = getAutoGearOwnGearCache();
   return cache.map.get(id) || null;
 }
 
 function generateOwnGearId() {
+  const store = getOwnGearStore();
+  if (store && typeof store.generateOwnGearId === 'function') {
+    try {
+      return store.generateOwnGearId();
+    } catch (error) {
+      void error;
+    }
+  }
   const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.generateOwnGearId === 'function') {
     try {
@@ -4264,6 +4419,14 @@ function generateOwnGearId() {
 }
 
 function normalizeOwnGearRecord(entry) {
+  const store = getOwnGearStore();
+  if (store && typeof store.normalizeOwnGearRecord === 'function') {
+    try {
+      return store.normalizeOwnGearRecord(entry);
+    } catch (error) {
+      void error;
+    }
+  }
   const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.normalizeOwnGearRecord === 'function') {
     try {
@@ -4298,6 +4461,14 @@ function normalizeOwnGearRecord(entry) {
 }
 
 function loadStoredOwnGearItems() {
+  const store = getOwnGearStore();
+  if (store && typeof store.loadStoredOwnGearItems === 'function') {
+    try {
+      return store.loadStoredOwnGearItems();
+    } catch (error) {
+      void error;
+    }
+  }
   const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
     try {
@@ -4331,173 +4502,53 @@ function loadStoredOwnGearItems() {
   }
 }
 
-function persistOwnGearItems() {
+function persistOwnGearItems(items = []) {
+  const store = getOwnGearStore();
+  if (store && typeof store.persistOwnGearItems === 'function') {
+    try {
+      return store.persistOwnGearItems(items);
+    } catch (error) {
+      void error;
+    }
+  }
   const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.persistOwnGearItems === 'function') {
     try {
-      moduleApi.persistOwnGearItems(ownGearItems);
-      return;
+      moduleApi.persistOwnGearItems(items);
+      return true;
     } catch (error) {
       console.warn('Unable to persist own gear items via module.', error);
     }
   }
   if (typeof saveOwnGear !== 'function') {
-    return;
+    return false;
   }
-  try {
-    const payload = ownGearItems.map((item) => {
-      const entry = {
-        id: item.id,
-        name: item.name,
-      };
-      if (item.quantity) {
-        entry.quantity = item.quantity;
-      }
-      if (item.notes) {
-        entry.notes = item.notes;
-      }
-      if (item.source) {
-        entry.source = item.source;
-      }
-      return entry;
-    });
-    saveOwnGear(payload);
-    if (typeof document !== 'undefined') {
-      try {
-        document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
-      } catch (error) {
-        void error;
-      }
+  const payload = items.map((item) => {
+    const entry = {
+      id: item.id,
+      name: item.name,
+    };
+    if (item.quantity) {
+      entry.quantity = item.quantity;
     }
+    if (item.notes) {
+      entry.notes = item.notes;
+    }
+    if (item.source) {
+      entry.source = item.source;
+    }
+    return entry;
+  });
+  try {
+    saveOwnGear(payload);
+    if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+      document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+    }
+    return true;
   } catch (error) {
     console.warn('Failed to save own gear items', error);
   }
-}
-
-function invalidateOwnGearSuggestionCache() {
-  ownGearSuggestionCache = {
-    lang: null,
-    list: [],
-    lookup: new Set(),
-  };
-}
-
-function collectOwnGearSuggestionInfo() {
-  const lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE_SAFE;
-  if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
-    return ownGearSuggestionCache;
-  }
-
-  const uniqueNames = new Map();
-  const addName = (name) => {
-    if (typeof name !== 'string') {
-      return;
-    }
-    const trimmed = name.trim();
-    if (!trimmed) {
-      return;
-    }
-    const key = trimmed.toLowerCase();
-    if (uniqueNames.has(key)) {
-      return;
-    }
-    uniqueNames.set(key, trimmed);
-  };
-
-  const traverseDevices = (value, seen) => {
-    if (!value || typeof value !== 'object') {
-      return;
-    }
-    if (seen.has(value)) {
-      return;
-    }
-    seen.add(value);
-    if (typeof value.name === 'string') {
-      addName(value.name);
-    }
-    if (typeof value.label === 'string') {
-      addName(value.label);
-    }
-    if (typeof value.brand === 'string' && typeof value.model === 'string') {
-      addName(`${value.brand} ${value.model}`);
-    }
-    if (Array.isArray(value)) {
-      value.forEach((entry) => traverseDevices(entry, seen));
-      return;
-    }
-    Object.keys(value).forEach((key) => {
-      if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
-        return;
-      }
-      if (key.includes(' ') && looksLikeGearName(key)) {
-        addName(key);
-      }
-      traverseDevices(value[key], seen);
-    });
-  };
-
-  try {
-    if (typeof devices === 'object' && devices) {
-      traverseDevices(devices, new WeakSet());
-    }
-  } catch (error) {
-    console.warn('Unable to collect device catalog names for own gear suggestions', error);
-  }
-
-  try {
-    const langItems = gearItemTranslations && typeof gearItemTranslations === 'object'
-      ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE_SAFE] || null
-      : null;
-    if (langItems && typeof langItems === 'object') {
-      Object.keys(langItems).forEach((key) => {
-        addName(key);
-        const translated = langItems[key];
-        if (typeof translated === 'string') {
-          addName(translated);
-        }
-      });
-    }
-  } catch (error) {
-    console.warn('Unable to include custom gear translations in suggestions', error);
-  }
-
-  ownGearItems.forEach((item) => {
-    if (item && typeof item.name === 'string') {
-      addName(item.name);
-    }
-  });
-
-  const collator = (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function')
-    ? new Intl.Collator(lang || DEFAULT_LANGUAGE_SAFE, { sensitivity: 'base' })
-    : null;
-  const list = Array.from(uniqueNames.values()).sort((a, b) => {
-    if (collator) {
-      try {
-        return collator.compare(a, b);
-      } catch (error) {
-        void error;
-      }
-    }
-    return a.localeCompare(b);
-  });
-  const lookup = new Set(uniqueNames.keys());
-  ownGearSuggestionCache = { lang, list, lookup };
-  return ownGearSuggestionCache;
-}
-
-function refreshOwnGearSuggestions() {
-  if (!ownGearSuggestionsList) {
-    return;
-  }
-  const { list } = collectOwnGearSuggestionInfo();
-  ownGearSuggestionsList.innerHTML = '';
-  const fragment = document.createDocumentFragment();
-  list.forEach((name) => {
-    const option = document.createElement('option');
-    option.value = name;
-    fragment.appendChild(option);
-  });
-  ownGearSuggestionsList.appendChild(fragment);
+  return false;
 }
 
 function formatOwnGearQuantityText(quantity) {
@@ -4516,807 +4567,51 @@ function formatOwnGearQuantityText(quantity) {
   return trimmed;
 }
 
-function formatOwnGearCountText(count, langTexts, fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE)) {
-  const templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
-  const template = (langTexts && langTexts[templateKey])
-    || (fallbackTexts && fallbackTexts[templateKey])
-    || '';
-  if (!template) {
-    return count > 0 ? String(count) : '';
-  }
-  if (template.includes('%s')) {
-    return formatWithPlaceholdersSafe(template, String(count));
-  }
-  return `${template} ${count}`.trim();
-}
-
-function updateOwnGearSummary() {
-  if (!ownGearListSummary) {
-    return;
-  }
-  const langTexts = getLanguageTexts(currentLang);
-  const summary = formatOwnGearCountText(ownGearItems.length, langTexts);
-  if (summary) {
-    ownGearListSummary.textContent = summary;
-    ownGearListSummary.removeAttribute('hidden');
-  } else {
-    ownGearListSummary.textContent = '';
-    ownGearListSummary.setAttribute('hidden', '');
-  }
-}
-
-function createOwnGearActionButton(label, icon, onClick, options = {}) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = options.className || 'own-gear-item-action';
-  const iconHtml = typeof iconMarkup === 'function' && icon ? iconMarkup(icon, 'btn-icon') : '';
-  button.innerHTML = `${iconHtml}${escapeHtml(label)}`;
-  button.setAttribute('aria-label', options.ariaLabel || label);
-  button.addEventListener('click', onClick);
-  return button;
-}
-
-var ICON_FONT_KEYS = Object.freeze({
-  ESSENTIAL: 'essential',
-  FILM: 'film',
-  GADGET: 'gadget',
-  UICONS: 'uicons',
-  TEXT: 'text'
-});
-
-const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
-
-function toCodePointChar(value, radix) {
-  const codePoint = parseInt(value, radix);
-  if (!Number.isFinite(codePoint) || codePoint < 0) {
-    return null;
-  }
-  try {
-    if (typeof String.fromCodePoint === 'function') {
-      return String.fromCodePoint(codePoint);
-    }
-  } catch (rangeError) {
-    void rangeError;
-  }
-  if (codePoint <= 0xffff) {
-    return String.fromCharCode(codePoint);
-  }
-  return null;
-}
-
-function normalizeGlyphChar(char) {
-  if (typeof char !== 'string') {
-    return '';
-  }
-  const trimmed = char.trim();
-  if (!trimmed) {
-    return '';
-  }
-
-  const unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
-  if (unicodeMatch) {
-    const decoded = toCodePointChar(unicodeMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-
-  const unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
-  if (unicodeBraceMatch) {
-    const decoded = toCodePointChar(unicodeBraceMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-
-  const hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
-  if (hexEntityMatch) {
-    const decoded = toCodePointChar(hexEntityMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-
-  const decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
-  if (decimalEntityMatch) {
-    const decoded = toCodePointChar(decimalEntityMatch[1], 10);
-    if (decoded) {
-      return decoded;
-    }
-  }
-
-  return trimmed;
-}
-
-function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
-  const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-  const normalizedChar = normalizeGlyphChar(char);
-  return Object.freeze({ char: normalizedChar, font: normalizedFont });
-}
-
-function resolveIconGlyph(glyph) {
-  if (!glyph) {
-    return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
-  }
-  if (glyph.markup) {
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    return {
-      markup: glyph.markup,
-      className: glyph.className || '',
-      font: ICON_FONT_KEYS.UICONS,
-      size
-    };
-  }
-  if (typeof glyph === 'string') {
-    return {
-      char: normalizeGlyphChar(glyph),
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  if (typeof glyph === 'object') {
-    const char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
-    const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
-      ? glyph.font
-      : ICON_FONT_KEYS.UICONS;
-    const className = typeof glyph.className === 'string' ? glyph.className : '';
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    if (glyph.markup) {
-      return {
-        markup: glyph.markup,
-        className,
-        font: fontKey,
-        size
-      };
-    }
-    return { char, font: fontKey, className, size };
-  }
-  return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
-}
-
-function applyIconGlyph(element, glyph) {
-  if (!element) return;
-  const resolved = resolveIconGlyph(glyph);
-  if (resolved.markup) {
-    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-    element.setAttribute('aria-hidden', 'true');
-    if (resolved.className) {
-      resolved.className
-        .split(/\s+/)
-        .filter(Boolean)
-        .forEach(cls => element.classList.add(cls));
-    }
-    element.removeAttribute('data-icon-font');
-    return;
-  }
-  const char = resolved.char || '';
-  element.textContent = char;
-  if (char) {
-    element.setAttribute('data-icon-font', resolved.font);
-  } else {
-    element.removeAttribute('data-icon-font');
-  }
-}
-
-function formatSvgCoordinate(value) {
-  if (!Number.isFinite(value)) return '0';
-  const rounded = Math.round(value * 100) / 100;
-  if (Number.isInteger(rounded)) return String(rounded);
-  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-}
-
-function positionSvgMarkup(markup, centerX, centerY, size = 24) {
-  if (typeof markup !== 'string') {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const trimmed = markup.trim();
-  if (!trimmed) {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const half = size / 2;
-  const x = formatSvgCoordinate(centerX);
-  const y = formatSvgCoordinate(centerY);
-  const width = formatSvgCoordinate(size);
-  const height = formatSvgCoordinate(size);
-  const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
-    let attrText = attrs
-      .replace(/\s+x\s*=\s*"[^"]*"/gi, '')
-      .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
-      .trim();
-    const additions = [];
-    const hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
-    const hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
-    if (!hasWidth) additions.push(`width="${width}"`);
-    if (!hasHeight) additions.push(`height="${height}"`);
-    additions.push(`x="-${formatSvgCoordinate(half)}"`);
-    additions.push(`y="-${formatSvgCoordinate(half)}"`);
-    attrText = [attrText, ...additions].filter(Boolean).join(' ').trim();
-    return attrText ? `<svg ${attrText}>` : '<svg>';
-  });
-  return { markup: cleaned, x, y };
-}
-
-function glyphText(glyph) {
-  const resolved = resolveIconGlyph(glyph);
-  return resolved.char || '';
-}
-
-const PRODUCTION_COMPANY_ICON = iconGlyph('\\uE2D5', ICON_FONT_KEYS.UICONS);
-const RENTAL_HOUSE_ICON = iconGlyph('\\uEA09', ICON_FONT_KEYS.UICONS);
-const ASPECT_RATIO_ICON = iconGlyph('\\uE86E', ICON_FONT_KEYS.UICONS);
-const REQUIRED_SCENARIOS_ICON = iconGlyph('\\uF4D4', ICON_FONT_KEYS.UICONS);
-const MONITORING_SUPPORT_ICON = iconGlyph('\\uEFFC', ICON_FONT_KEYS.UICONS);
-
-const STAR_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z"
-      fill="currentColor"
-      stroke="currentColor"
-      stroke-width="0"
-    />
-  </svg>
-`.trim();
-
-var ICON_GLYPHS = Object.freeze({
-  batteryBolt: iconGlyph('\\uE1A6', ICON_FONT_KEYS.UICONS),
-  batteryFull: iconGlyph('\\uE1A9', ICON_FONT_KEYS.UICONS),
-  bolt: iconGlyph('\\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
-  plug: iconGlyph('\\uEE75', ICON_FONT_KEYS.UICONS),
-  sliders: iconGlyph('\\uF143', ICON_FONT_KEYS.ESSENTIAL),
-  screen: iconGlyph('\\uF11D', ICON_FONT_KEYS.GADGET),
-  brightness: iconGlyph('\\uE2B3', ICON_FONT_KEYS.UICONS),
-  wifi: iconGlyph('\\uF4AC', ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph('\\uE8AF', ICON_FONT_KEYS.UICONS),
-  controller: iconGlyph('\\uF117', ICON_FONT_KEYS.GADGET),
-  distance: iconGlyph('\\uEFB9', ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph('\\uEC2B', ICON_FONT_KEYS.UICONS),
-  viewfinder: iconGlyph('\\uF114', ICON_FONT_KEYS.FILM),
-  camera: iconGlyph('\\uE333', ICON_FONT_KEYS.UICONS),
-  trash: iconGlyph('\\uF254', ICON_FONT_KEYS.ESSENTIAL),
-  reload: iconGlyph('\\uF202', ICON_FONT_KEYS.ESSENTIAL),
-  load: iconGlyph('\\uE0E0', ICON_FONT_KEYS.UICONS),
-  installApp: iconGlyph('\\uE9D4', ICON_FONT_KEYS.UICONS),
-  add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  arrowLeft: Object.freeze({ char: '←', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  check: iconGlyph('\\uE3D8', ICON_FONT_KEYS.UICONS),
-  fileExport: iconGlyph('\\uE7AB', ICON_FONT_KEYS.UICONS),
-  fileImport: iconGlyph('\\uE7C7', ICON_FONT_KEYS.UICONS),
-  save: iconGlyph('\\uF207', ICON_FONT_KEYS.ESSENTIAL),
-  share: iconGlyph('\\uF219', ICON_FONT_KEYS.ESSENTIAL),
-  paperPlane: iconGlyph('\\uED67', ICON_FONT_KEYS.UICONS),
-  magnet: iconGlyph('\\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
-  codec: iconGlyph('\\uE4CD', ICON_FONT_KEYS.UICONS),
-  timecode: iconGlyph('\\uF10E', ICON_FONT_KEYS.FILM),
-  audioIn: iconGlyph('\\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
-  audioOut: iconGlyph('\\uF22F', ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph('\\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph('\\uF1F5', ICON_FONT_KEYS.UICONS),
-  gearList: iconGlyph('\\uE467', ICON_FONT_KEYS.UICONS),
-  contacts: iconGlyph('\\uF404', ICON_FONT_KEYS.UICONS),
-  feedback: iconGlyph('\\uE791', ICON_FONT_KEYS.UICONS),
-  resetView: iconGlyph('\\uEB6D', ICON_FONT_KEYS.UICONS),
-  pin: iconGlyph('\\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph('\\uF1FE', ICON_FONT_KEYS.UICONS),
-  moon: iconGlyph('\\uEC7E', ICON_FONT_KEYS.UICONS),
-  circleX: iconGlyph('\\uF131', ICON_FONT_KEYS.ESSENTIAL),
-  settingsGeneral: iconGlyph('\\uE5A3', ICON_FONT_KEYS.UICONS),
-  settingsAutoGear: iconGlyph('\\uE8AF', ICON_FONT_KEYS.UICONS),
-  settingsAccessibility: iconGlyph('\\uF392', ICON_FONT_KEYS.UICONS),
-  settingsBackup: iconGlyph('\\uE5BD', ICON_FONT_KEYS.UICONS),
-  settingsData: iconGlyph('\\uE5C7', ICON_FONT_KEYS.UICONS),
-  settingsAbout: iconGlyph('\\uEA4F', ICON_FONT_KEYS.UICONS),
-  star: Object.freeze({
-    markup: STAR_ICON_SVG,
-    className: 'icon-svg favorite-star-icon'
-  }),
-  warning: iconGlyph('\\uF26F', ICON_FONT_KEYS.ESSENTIAL)
-});
-
-function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
-  if (!glyph) return '';
-  let opts = {};
-  let resolvedClassName = 'info-icon';
-  if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
-    resolvedClassName = classNameOrOptions || '';
-    if (options && typeof options === 'object') {
-      opts = options;
-    }
-  } else if (classNameOrOptions && typeof classNameOrOptions === 'object') {
-    opts = classNameOrOptions;
-    resolvedClassName = classNameOrOptions.className || 'info-icon';
-  }
-  if (typeof opts.className === 'string') {
-    resolvedClassName = opts.className;
-  }
-  const styleParts = [];
-  if (typeof opts.size === 'string' && opts.size.trim()) {
-    styleParts.push(`--icon-size: ${opts.size.trim()}`);
-  }
-  if (typeof opts.scale === 'string' && opts.scale.trim()) {
-    styleParts.push(`--icon-scale: ${opts.scale.trim()}`);
-  }
-  if (typeof opts.style === 'string' && opts.style.trim()) {
-    styleParts.push(opts.style.trim());
-  }
-  const styleAttr = styleParts.length ? ` style="${styleParts.join(';')}"` : '';
-  const resolved = resolveIconGlyph(glyph);
-  const classes = ['icon-glyph'];
-  if (resolvedClassName) classes.unshift(resolvedClassName);
-  if (resolved.markup) {
-    if (resolved.className) classes.push(resolved.className);
-    const markup = ensureSvgHasAriaHidden(resolved.markup);
-    return `<span class="${classes.join(' ')}"${styleAttr} aria-hidden="true">${markup}</span>`;
-  }
-  const char = resolved.char || '';
-  if (!char) return '';
-  return `<span class="${classes.join(' ')}"${styleAttr} data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
-}
-
-function renderOwnGearList() {
-  if (!ownGearListElem) {
-    return;
-  }
-  ownGearListElem.innerHTML = '';
-  const langTexts = getLanguageTexts(currentLang);
-  if (!ownGearItems.length) {
-    if (ownGearEmptyState) {
-      ownGearEmptyState.removeAttribute('hidden');
-    }
-    updateOwnGearSummary();
-    return;
-  }
-  if (ownGearEmptyState) {
-    ownGearEmptyState.setAttribute('hidden', '');
-  }
-  const fragment = document.createDocumentFragment();
-  ownGearItems.forEach((item) => {
-    if (!item || typeof item.id !== 'string') {
-      return;
-    }
-    const listItem = document.createElement('li');
-    listItem.className = 'own-gear-item';
-    listItem.dataset.ownGearId = item.id;
-
-    const body = document.createElement('div');
-    body.className = 'own-gear-item-body';
-
-    const title = document.createElement('p');
-    title.className = 'own-gear-item-title';
-    const quantityText = formatOwnGearQuantityText(item.quantity || '');
-    title.textContent = quantityText ? `${quantityText} × ${item.name}` : item.name;
-    body.appendChild(title);
-
-    if (item.notes) {
-      const note = document.createElement('p');
-      note.className = 'own-gear-item-note';
-      note.textContent = item.notes;
-      body.appendChild(note);
-    }
-
-    listItem.appendChild(body);
-
-    const actions = document.createElement('div');
-    actions.className = 'own-gear-item-actions';
-
-    const editLabel = langTexts.ownGearEditButton || 'Edit';
-    const editAria = langTexts.ownGearEditButtonAria
-      ? formatWithPlaceholdersSafe(langTexts.ownGearEditButtonAria, item.name)
-      : editLabel;
-    const editButton = createOwnGearActionButton(
-      editLabel,
-      ICON_GLYPHS.sliders,
-      () => {
-        startEditingOwnGearItem(item.id);
-      },
-      { ariaLabel: editAria }
-    );
-    actions.appendChild(editButton);
-
-    const deleteLabel = langTexts.ownGearDeleteButton || 'Remove';
-    const deleteAria = langTexts.ownGearDeleteButtonAria
-      ? formatWithPlaceholdersSafe(langTexts.ownGearDeleteButtonAria, item.name)
-      : deleteLabel;
-    const deleteButton = createOwnGearActionButton(
-      deleteLabel,
-      ICON_GLYPHS.trash,
-      () => {
-        removeOwnGearItem(item.id);
-      },
-      { ariaLabel: deleteAria, className: 'own-gear-item-action own-gear-item-action-danger' }
-    );
-    actions.appendChild(deleteButton);
-
-    listItem.appendChild(actions);
-    fragment.appendChild(listItem);
-  });
-  ownGearListElem.appendChild(fragment);
-  updateOwnGearSummary();
-}
-
-function resetOwnGearForm(options = {}) {
-  if (ownGearNameInput) {
-    ownGearNameInput.value = '';
-    ownGearNameInput.setCustomValidity('');
-  }
-  if (ownGearQuantityInput) {
-    ownGearQuantityInput.value = '';
-    ownGearQuantityInput.setCustomValidity('');
-  }
-  if (ownGearNotesInput) {
-    ownGearNotesInput.value = '';
-  }
-  ownGearEditingId = null;
-  updateOwnGearSaveButtonState();
-  if (options.focusName && ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
-    ownGearNameInput.focus();
-  }
-}
-
-function updateOwnGearSaveButtonState() {
-  if (!ownGearSaveButton) {
-    return;
-  }
-  const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-  if (ownGearEditingId) {
-    const label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
-    setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.save);
-  } else {
-    const label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
-    setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.add);
-  }
-}
-
-function normalizeOwnGearQuantityInput(raw) {
-  if (typeof raw !== 'string') {
-    return { value: '', valid: true };
-  }
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return { value: '', valid: true };
-  }
-  const normalized = trimmed.replace(',', '.');
-  const parsed = Number(normalized);
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    return { value: '', valid: false };
-  }
-  const formatted = formatOwnGearQuantityText(String(parsed));
-  return { value: formatted, valid: true };
-}
-
-function handleOwnGearSubmit(event) {
-  if (event && typeof event.preventDefault === 'function') {
-    event.preventDefault();
-  }
-  if (!ownGearNameInput) {
-    return;
-  }
-  const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-  const rawName = ownGearNameInput.value || '';
-  const trimmedName = rawName.trim();
-  if (!trimmedName) {
-    const message = langTexts.ownGearNameRequired
-      || fallbackTexts.ownGearNameRequired
-      || 'Enter an item name to continue.';
-    ownGearNameInput.setCustomValidity(message);
-    ownGearNameInput.reportValidity();
-    return;
-  }
-  ownGearNameInput.setCustomValidity('');
-
-  const quantityResult = normalizeOwnGearQuantityInput(ownGearQuantityInput ? ownGearQuantityInput.value : '');
-  if (!quantityResult.valid) {
-    if (ownGearQuantityInput) {
-      const message = langTexts.ownGearQuantityInvalid
-        || fallbackTexts.ownGearQuantityInvalid
-        || 'Enter a non-negative quantity.';
-      ownGearQuantityInput.setCustomValidity(message);
-      ownGearQuantityInput.reportValidity();
-    }
-    return;
-  }
-  if (ownGearQuantityInput) {
-    ownGearQuantityInput.setCustomValidity('');
-    ownGearQuantityInput.value = quantityResult.value;
-  }
-  const notes = ownGearNotesInput ? ownGearNotesInput.value.trim() : '';
-
-  const { lookup } = collectOwnGearSuggestionInfo();
-  const fromCatalog = lookup.has(trimmedName.toLowerCase());
-  const source = fromCatalog ? OWN_GEAR_SOURCE_CATALOG : OWN_GEAR_SOURCE_CUSTOM;
-
-  if (ownGearEditingId) {
-    const index = ownGearItems.findIndex((item) => item && item.id === ownGearEditingId);
-    if (index !== -1) {
-      const updated = {
-        ...ownGearItems[index],
-        name: trimmedName,
-        source,
-      };
-      if (quantityResult.value) {
-        updated.quantity = quantityResult.value;
-      } else {
-        delete updated.quantity;
-      }
-      if (notes) {
-        updated.notes = notes;
-      } else {
-        delete updated.notes;
-      }
-      ownGearItems[index] = updated;
-    }
-  } else {
-    const entry = {
-      id: generateOwnGearId(),
-      name: trimmedName,
-      source,
-    };
-    if (quantityResult.value) {
-      entry.quantity = quantityResult.value;
-    }
-    if (notes) {
-      entry.notes = notes;
-    }
-    ownGearItems.push(entry);
-  }
-
-  persistOwnGearItems();
-  invalidateOwnGearSuggestionCache();
-  renderOwnGearList();
-  refreshOwnGearSuggestions();
-  resetOwnGearForm({ focusName: true });
-}
-
-function startEditingOwnGearItem(id) {
-  const item = ownGearItems.find((entry) => entry && entry.id === id);
-  if (!item) {
-    return;
-  }
-  ownGearEditingId = id;
-  if (ownGearNameInput) {
-    ownGearNameInput.value = item.name;
-    ownGearNameInput.setCustomValidity('');
-  }
-  if (ownGearQuantityInput) {
-    ownGearQuantityInput.value = item.quantity || '';
-    ownGearQuantityInput.setCustomValidity('');
-  }
-  if (ownGearNotesInput) {
-    ownGearNotesInput.value = item.notes || '';
-  }
-  updateOwnGearSaveButtonState();
-  if (ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
-    ownGearNameInput.focus();
-  }
-}
-
-function removeOwnGearItem(id) {
-  const index = ownGearItems.findIndex((entry) => entry && entry.id === id);
-  if (index === -1) {
-    return;
-  }
-  const item = ownGearItems[index];
-  const langTexts = getLanguageTexts(currentLang);
-  const confirmTemplate = langTexts.ownGearDeleteConfirm || 'Remove “%s” from your gear list?';
-  let confirmMessage = confirmTemplate;
-  if (confirmTemplate.includes('%s')) {
-    confirmMessage = formatWithPlaceholdersSafe(confirmTemplate, item.name);
-  }
-  let confirmed = true;
-  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-    confirmed = window.confirm(confirmMessage);
-  }
-  if (!confirmed) {
-    return;
-  }
-  ownGearItems.splice(index, 1);
-  if (ownGearEditingId === id) {
-    resetOwnGearForm();
-  }
-  persistOwnGearItems();
-  invalidateOwnGearSuggestionCache();
-  renderOwnGearList();
-  refreshOwnGearSuggestions();
-}
-
 function openOwnGearDialog() {
-  if (!ownGearDialog) {
-    return;
-  }
-  resetOwnGearForm();
-  refreshOwnGearSuggestions();
-  openDialog(ownGearDialog);
-  if (ownGearNameInput && typeof requestAnimationFrame === 'function') {
-    requestAnimationFrame(() => {
-      if (typeof ownGearNameInput.focus === 'function') {
-        ownGearNameInput.focus();
-      }
-    });
+  const view = getOwnGearView();
+  if (view && typeof view.openDialog === 'function') {
+    try {
+      view.openDialog();
+    } catch (error) {
+      void error;
+    }
   }
 }
 
 function applyOwnGearLocalization(lang) {
-  const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-  if (ownGearDialog) {
-    const title = document.getElementById('ownGearDialogHeading');
-    if (title) {
-      title.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
-    }
-    const description = document.getElementById('ownGearDialogDescription');
-    if (description) {
-      const text = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
-      description.textContent = text;
-      if (text) {
-        description.setAttribute('data-help', text);
-      } else {
-        description.removeAttribute('data-help');
-      }
+  const view = getOwnGearView();
+  if (view && typeof view.applyLocalization === 'function') {
+    try {
+      view.applyLocalization(lang);
+    } catch (error) {
+      void error;
     }
   }
-  const addHeading = document.getElementById('ownGearAddHeading');
-  if (addHeading) {
-    addHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
-  }
-  if (ownGearAddHelp) {
-    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHelp', '');
-    ownGearAddHelp.textContent = helpText;
-    if (helpText) {
-      ownGearAddHelp.removeAttribute('hidden');
-      ownGearAddHelp.setAttribute('data-help', helpText);
-    } else {
-      ownGearAddHelp.setAttribute('hidden', '');
-      ownGearAddHelp.removeAttribute('data-help');
-    }
-  }
-  const nameLabel = document.getElementById('ownGearNameLabel');
-  if (nameLabel) {
-    nameLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
-  }
-  if (ownGearNameInput) {
-    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
-    if (placeholder) {
-      ownGearNameInput.setAttribute('placeholder', placeholder);
-    } else {
-      ownGearNameInput.removeAttribute('placeholder');
-    }
-    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameHelp', '');
-    if (helpText) {
-      ownGearNameInput.setAttribute('data-help', helpText);
-    } else {
-      ownGearNameInput.removeAttribute('data-help');
-    }
-  }
-  const quantityLabel = document.getElementById('ownGearQuantityLabel');
-  if (quantityLabel) {
-    quantityLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
-  }
-  if (ownGearQuantityInput) {
-    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
-    if (placeholder) {
-      ownGearQuantityInput.setAttribute('placeholder', placeholder);
-    } else {
-      ownGearQuantityInput.removeAttribute('placeholder');
-    }
-    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
-    if (helpText) {
-      ownGearQuantityInput.setAttribute('data-help', helpText);
-    } else {
-      ownGearQuantityInput.removeAttribute('data-help');
-    }
-  }
-  const notesLabel = document.getElementById('ownGearNotesLabel');
-  if (notesLabel) {
-    notesLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
-  }
-  if (ownGearNotesInput) {
-    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
-    if (placeholder) {
-      ownGearNotesInput.setAttribute('placeholder', placeholder);
-    } else {
-      ownGearNotesInput.removeAttribute('placeholder');
-    }
-    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
-    if (helpText) {
-      ownGearNotesInput.setAttribute('data-help', helpText);
-    } else {
-      ownGearNotesInput.removeAttribute('data-help');
-    }
-  }
-  if (ownGearResetButton) {
-    const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
-    setButtonLabelWithIconBinding(ownGearResetButton, label, ICON_GLYPHS.reload);
-  }
-  if (ownGearCloseButton) {
-    const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
-    setButtonLabelWithIconBinding(ownGearCloseButton, label, ICON_GLYPHS.circleX);
-  }
-  const listHeading = document.getElementById('ownGearListHeading');
-  if (listHeading) {
-    listHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
-  }
-  if (ownGearEmptyState) {
-    ownGearEmptyState.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
-  }
-  updateOwnGearSaveButtonState();
-  renderOwnGearList();
-  refreshOwnGearSuggestions();
+}
+function initializeLayoutControls() {
+  setupSideMenu();
+  setupResponsiveControls();
 }
 
 function initializeOwnGearManager() {
-  if (typeof document === 'undefined') {
+  const view = getOwnGearView();
+  if (!view) {
     return;
   }
-  ownGearDialog = document.getElementById('ownGearDialog');
-  if (!ownGearDialog) {
-    return;
+  try {
+    view.initialize();
+  } catch (error) {
+    void error;
   }
-  ownGearForm = document.getElementById('ownGearForm');
-  ownGearListElem = document.getElementById('ownGearList');
-  ownGearEmptyState = document.getElementById('ownGearEmptyState');
-  ownGearListSummary = document.getElementById('ownGearListSummary');
-  ownGearNameInput = document.getElementById('ownGearName');
-  ownGearQuantityInput = document.getElementById('ownGearQuantity');
-  ownGearNotesInput = document.getElementById('ownGearNotes');
-  ownGearSaveButton = document.getElementById('ownGearSaveButton');
-  ownGearResetButton = document.getElementById('ownGearResetButton');
-  ownGearCloseButton = document.getElementById('ownGearCloseButton');
-  ownGearSuggestionsList = document.getElementById('ownGearSuggestions');
-  ownGearAddHelp = document.getElementById('ownGearAddHelp');
-
-  ownGearItems = loadStoredOwnGearItems();
-  applyOwnGearLocalization(currentLang);
-
-  if (ownGearForm) {
-    ownGearForm.addEventListener('submit', handleOwnGearSubmit);
-  }
-  if (ownGearResetButton) {
-    ownGearResetButton.addEventListener('click', () => {
-      resetOwnGearForm({ focusName: true });
-    });
-  }
-  if (ownGearCloseButton) {
-    ownGearCloseButton.addEventListener('click', () => {
-      closeDialog(ownGearDialog);
-      resetOwnGearForm();
-    });
-  }
-  if (ownGearDialog && typeof ownGearDialog.addEventListener === 'function') {
-    ownGearDialog.addEventListener('cancel', (event) => {
-      if (event && typeof event.preventDefault === 'function') {
-        event.preventDefault();
-      }
-      closeDialog(ownGearDialog);
-      resetOwnGearForm();
-    });
-    ownGearDialog.addEventListener('close', () => {
-      resetOwnGearForm();
-    });
-    ownGearDialog.addEventListener('click', (event) => {
-      if (event && event.target === ownGearDialog) {
-        closeDialog(ownGearDialog);
-        resetOwnGearForm();
-      }
-    });
-  }
-
   try {
     exposeCoreRuntimeConstant('openOwnGearDialog', openOwnGearDialog);
   } catch (error) {
     void error;
-    if (typeof globalThis !== 'undefined') {
-      globalThis.openOwnGearDialog = openOwnGearDialog;
+    const scope = detectOwnGearGlobalScope();
+    if (scope) {
+      scope.openOwnGearDialog = openOwnGearDialog;
     }
   }
-}
-
-function initializeLayoutControls() {
-  setupSideMenu();
-  setupResponsiveControls();
 }
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
