@@ -15899,7 +15899,7 @@ function applyFilters() {
     }
   });
 }
-const deviceManagerPreferredOrder = [
+const DEVICE_MANAGER_DEFAULT_ORDER = Object.freeze([
   "cameras",
   "viewfinders",
   "monitors",
@@ -15931,8 +15931,22 @@ const deviceManagerPreferredOrder = [
   "accessories.sliders",
   "accessories.tripodHeads",
   "accessories.tripods",
-  "accessories.carts"
-];
+  "accessories.carts",
+]);
+
+function getDeviceManagerPreferredOrder() {
+  const scopeCandidate = filterHelperScope;
+  const scopedOrder =
+    scopeCandidate && Array.isArray(scopeCandidate.deviceManagerPreferredOrder)
+      ? scopeCandidate.deviceManagerPreferredOrder
+      : null;
+
+  if (scopedOrder && scopedOrder.every(entry => typeof entry === 'string' && entry)) {
+    return scopedOrder;
+  }
+
+  return DEVICE_MANAGER_DEFAULT_ORDER;
+}
 
 function normalizeCategoryKey(key) {
   if (!key) return null;
@@ -16026,10 +16040,11 @@ function collectDeviceManagerCategories() {
   addFromData(devices);
 
   const sorted = Array.from(categories);
-  const orderMap = new Map(deviceManagerPreferredOrder.map((key, index) => [key, index]));
+  const preferredOrder = getDeviceManagerPreferredOrder();
+  const orderMap = new Map(preferredOrder.map((key, index) => [key, index]));
   sorted.sort((a, b) => {
-    const idxA = orderMap.has(a) ? orderMap.get(a) : deviceManagerPreferredOrder.length;
-    const idxB = orderMap.has(b) ? orderMap.get(b) : deviceManagerPreferredOrder.length;
+    const idxA = orderMap.has(a) ? orderMap.get(a) : preferredOrder.length;
+    const idxB = orderMap.has(b) ? orderMap.get(b) : preferredOrder.length;
     if (idxA !== idxB) return idxA - idxB;
     return a.localeCompare(b);
   });

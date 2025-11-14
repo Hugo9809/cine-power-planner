@@ -1464,6 +1464,242 @@ ensureGlobalFallback('iconGlyph', function () {
   };
 });
 
+ensureGlobalFallback('resolveIconGlyph', function () {
+  const iconFontKeys = ensureGlobalFallback('ICON_FONT_KEYS', function () {
+    return createFallbackIconFontKeys();
+  });
+  const validFonts = new Set(
+    Object.values(iconFontKeys || {}).filter(value => typeof value === 'string' && value),
+  );
+
+  const fallbackFont = iconFontKeys && iconFontKeys.UICONS ? iconFontKeys.UICONS : 'uicons';
+
+  function toCodePointChar(value, radix) {
+    const codePoint = parseInt(value, radix);
+    if (!Number.isFinite(codePoint) || codePoint < 0) {
+      return null;
+    }
+
+    try {
+      if (typeof String.fromCodePoint === 'function') {
+        return String.fromCodePoint(codePoint);
+      }
+    } catch (rangeError) {
+      void rangeError;
+    }
+
+    if (codePoint <= 0xffff) {
+      return String.fromCharCode(codePoint);
+    }
+
+    return null;
+  }
+
+  function normalizeGlyphChar(char) {
+    if (typeof char !== 'string') {
+      return '';
+    }
+
+    const trimmed = char.trim();
+    if (!trimmed) {
+      return '';
+    }
+
+    const unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
+    if (unicodeMatch) {
+      const decoded = toCodePointChar(unicodeMatch[1], 16);
+      if (decoded) {
+        return decoded;
+      }
+    }
+
+    const unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
+    if (unicodeBraceMatch) {
+      const decoded = toCodePointChar(unicodeBraceMatch[1], 16);
+      if (decoded) {
+        return decoded;
+      }
+    }
+
+    const hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
+    if (hexEntityMatch) {
+      const decoded = toCodePointChar(hexEntityMatch[1], 16);
+      if (decoded) {
+        return decoded;
+      }
+    }
+
+    const decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
+    if (decimalEntityMatch) {
+      const decoded = toCodePointChar(decimalEntityMatch[1], 10);
+      if (decoded) {
+        return decoded;
+      }
+    }
+
+    return trimmed;
+  }
+
+  return function resolveIconGlyph(glyph) {
+    if (!glyph) {
+      return {
+        char: '',
+        font: fallbackFont,
+        className: '',
+      };
+    }
+
+    if (glyph.markup) {
+      const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      return {
+        markup: glyph.markup,
+        className: glyph.className || '',
+        font: fallbackFont,
+        size,
+      };
+    }
+
+    if (typeof glyph === 'string') {
+      return {
+        char: normalizeGlyphChar(glyph),
+        font: fallbackFont,
+        className: '',
+      };
+    }
+
+    if (typeof glyph === 'object') {
+      const char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
+      const fontKey = glyph.font && validFonts.has(glyph.font) ? glyph.font : fallbackFont;
+      const className = typeof glyph.className === 'string' ? glyph.className : '';
+      const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+
+      if (glyph.markup) {
+        return {
+          markup: glyph.markup,
+          className,
+          font: fontKey,
+          size,
+        };
+      }
+
+      return {
+        char,
+        font: fontKey,
+        className,
+        size,
+      };
+    }
+
+    return {
+      char: '',
+      font: fallbackFont,
+      className: '',
+    };
+  };
+});
+
+ensureGlobalFallback('formatSvgCoordinate', function () {
+  return function formatSvgCoordinate(value) {
+    if (!Number.isFinite(value)) return '0';
+    const rounded = Math.round(value * 100) / 100;
+    if (Number.isInteger(rounded)) return String(rounded);
+    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  };
+});
+
+ensureGlobalFallback('positionSvgMarkup', function () {
+  const formatSvgCoordinate = ensureGlobalFallback('formatSvgCoordinate', function () {
+    return function fallbackFormat(value) {
+      if (!Number.isFinite(value)) return '0';
+      const rounded = Math.round(value * 100) / 100;
+      if (Number.isInteger(rounded)) return String(rounded);
+      return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+    };
+  });
+
+  return function positionSvgMarkup(markup, centerX, centerY, size = 24) {
+    if (typeof markup !== 'string') {
+      return {
+        markup: '',
+        x: '0',
+        y: '0',
+      };
+    }
+
+    const trimmed = markup.trim();
+    if (!trimmed) {
+      return {
+        markup: '',
+        x: '0',
+        y: '0',
+      };
+    }
+
+    const half = size / 2;
+    const x = formatSvgCoordinate(centerX);
+    const y = formatSvgCoordinate(centerY);
+    const width = formatSvgCoordinate(size);
+    const height = formatSvgCoordinate(size);
+
+    const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
+      let attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
+      const additions = [];
+      const hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+      const hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+      if (!hasWidth) additions.push(`width="${width}"`);
+      if (!hasHeight) additions.push(`height="${height}"`);
+      additions.push(`x="-${formatSvgCoordinate(half)}"`);
+      additions.push(`y="-${formatSvgCoordinate(half)}"`);
+      attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
+      return attrText ? `<svg ${attrText}>` : '<svg>';
+    });
+
+    return {
+      markup: cleaned,
+      x,
+      y,
+    };
+  };
+});
+
+ensureGlobalFallback('applyIconGlyph', function () {
+  const resolveIconGlyph = ensureGlobalFallback('resolveIconGlyph', function () {
+    return function passthrough(glyph) {
+      if (glyph && typeof glyph === 'object') {
+        return glyph;
+      }
+      return { char: typeof glyph === 'string' ? glyph : '', font: 'uicons' };
+    };
+  });
+  const ensureSvgHasAriaHidden = ensureGlobalFallback('ensureSvgHasAriaHidden', function () {
+    return function passthrough(markup) {
+      return markup;
+    };
+  });
+
+  return function applyIconGlyph(element, glyph) {
+    if (!element) return;
+    const resolved = resolveIconGlyph(glyph);
+    if (resolved && resolved.markup) {
+      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+      element.setAttribute('aria-hidden', 'true');
+      if (resolved.className && element.classList) {
+        resolved.className.split(/\s+/).filter(Boolean).forEach(cls => element.classList.add(cls));
+      }
+      element.removeAttribute('data-icon-font');
+      return;
+    }
+
+    const char = (resolved && resolved.char) || '';
+    element.textContent = char;
+    if (char) {
+      element.setAttribute('data-icon-font', resolved.font || 'uicons');
+    } else {
+      element.removeAttribute('data-icon-font');
+    }
+  };
+});
+
 var autoGearAutoPresetId;
 if (typeof autoGearAutoPresetId === 'undefined') {
   // Ensure a concrete global binding exists for browsers that throw when a
