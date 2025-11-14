@@ -519,6 +519,7 @@
         try {
           confirmed = confirmRef(confirmMessage);
         } catch (error) {
+          void error;
           confirmed = true;
         }
       }

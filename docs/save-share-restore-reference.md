@@ -107,6 +107,13 @@ workstations.
   media. No network transfer is required.
 - **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to
   load bundles into the sandbox before promoting.
+- **Contact import parity:** The dedicated `src/scripts/contacts/profile.js` and
+  `src/scripts/contacts/list.js` helpers now back the import pipeline. Every
+  .vcf merge and backup export runs through the same sanitized normalisers the
+  UI uses, so user notes, avatars and role mappings survive restores even when
+  crews stay offline for days. The helpers throttle persistence to avoid
+  mid-import overwrites and guarantee that autosave, share and backup routines
+  all serialise identical payloads.
 - **Diff review:** The restore sandbox displays differences; capture screenshots
   and attach them to the verification log.
 - **Device database imports:** Every import attempt now emits telemetry through

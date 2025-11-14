@@ -82,7 +82,6 @@ describe('own gear view', () => {
       },
       setButtonLabelWithIconBinding: (button, label) => {
         // Simplified binding for tests
-        // eslint-disable-next-line no-param-reassign
         button.textContent = label;
       },
       formatWithPlaceholders: (template, value) => template.replace('%s', value),

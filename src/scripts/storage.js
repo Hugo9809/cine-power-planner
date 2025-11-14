@@ -21,6 +21,21 @@
             ? self
             : null;
 
+  let CONTACTS_PROFILE_HELPERS = null;
+  let CONTACTS_LIST_HELPERS = null;
+  if (typeof require === 'function') {
+    try {
+      CONTACTS_PROFILE_HELPERS = require('./contacts/profile.js');
+    } catch (profileModuleError) {
+      void profileModuleError;
+    }
+    try {
+      CONTACTS_LIST_HELPERS = require('./contacts/list.js');
+    } catch (listModuleError) {
+      void listModuleError;
+    }
+  }
+
   // Test suites and certain recovery tools need a way to force the storage
   // module to rebuild itself. This flag lets those callers opt-in without
   // impacting normal user sessions.
@@ -12926,6 +12941,16 @@ function resolveContactsModuleApi() {
 }
 
 function fallbackSanitizeContactValue(value) {
+  if (
+    CONTACTS_LIST_HELPERS &&
+    typeof CONTACTS_LIST_HELPERS.sanitizeContactValue === 'function'
+  ) {
+    try {
+      return CONTACTS_LIST_HELPERS.sanitizeContactValue(value);
+    } catch (listSanitizeError) {
+      void listSanitizeError;
+    }
+  }
   if (typeof value === 'string') {
     return value.trim();
   }
@@ -12986,6 +13011,20 @@ function fallbackGenerateContactId(moduleApi) {
 }
 
 function fallbackNormalizeContactEntry(entry, moduleApi) {
+  if (
+    CONTACTS_LIST_HELPERS &&
+    typeof CONTACTS_LIST_HELPERS.normalizeContact === 'function'
+  ) {
+    try {
+      const normalized = CONTACTS_LIST_HELPERS.normalizeContact(entry);
+      if (normalized) {
+        return normalized;
+      }
+    } catch (listNormalizeError) {
+      void listNormalizeError;
+    }
+  }
+
   if (!entry || typeof entry !== 'object') {
     return null;
   }
@@ -13012,6 +13051,19 @@ function fallbackNormalizeContactEntry(entry, moduleApi) {
 }
 
 function fallbackSortContacts(list) {
+  if (
+    CONTACTS_LIST_HELPERS &&
+    typeof CONTACTS_LIST_HELPERS.sortContacts === 'function'
+  ) {
+    try {
+      const sorted = CONTACTS_LIST_HELPERS.sortContacts(list);
+      if (Array.isArray(sorted)) {
+        return sorted;
+      }
+    } catch (listSortError) {
+      void listSortError;
+    }
+  }
   if (!Array.isArray(list)) {
     return [];
   }
@@ -13246,6 +13298,20 @@ function normalizeUserProfileField(value) {
 }
 
 function normalizeUserProfile(entry) {
+  if (
+    CONTACTS_PROFILE_HELPERS &&
+    typeof CONTACTS_PROFILE_HELPERS.normalizeProfileEntry === 'function'
+  ) {
+    try {
+      const normalized = CONTACTS_PROFILE_HELPERS.normalizeProfileEntry(entry);
+      if (normalized && typeof normalized === 'object') {
+        return normalized;
+      }
+    } catch (profileNormalizeError) {
+      void profileNormalizeError;
+    }
+  }
+
   if (!entry || typeof entry !== 'object') {
     return null;
   }

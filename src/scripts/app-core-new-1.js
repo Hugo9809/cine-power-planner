@@ -148,6 +148,21 @@ const {
 
 const CORE_BOOT_QUEUE = resolvedCoreBootQueue;
 
+let CONTACTS_PROFILE_HELPERS = null;
+let CONTACTS_LIST_HELPERS = null;
+if (typeof require === 'function') {
+  try {
+    CONTACTS_PROFILE_HELPERS = require('./contacts/profile.js');
+  } catch (profileModuleError) {
+    void profileModuleError;
+  }
+  try {
+    CONTACTS_LIST_HELPERS = require('./contacts/list.js');
+  } catch (listModuleError) {
+    void listModuleError;
+  }
+}
+
 const enqueueCoreBootTask =
   typeof resolvedEnqueueCoreBootTask === 'function'
     ? resolvedEnqueueCoreBootTask
@@ -2040,6 +2055,10 @@ function resolveLegacyContactsOwnGearModule() {
 }
 
 function resolveContactsModule() {
+  if (CONTACTS_LIST_HELPERS && typeof CONTACTS_LIST_HELPERS === 'object') {
+    return CONTACTS_LIST_HELPERS;
+  }
+
   const globalScope = getCoreGlobalObject();
 
   if (!globalScope || (typeof globalScope !== 'object' && typeof globalScope !== 'function')) {
@@ -11973,11 +11992,21 @@ function resolveContactsStorageKey() {
   }
   return CONTACTS_STORAGE_KEY_DEFAULT;
 }
-const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
-const CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
-const CONTACT_AVATAR_MAX_DIMENSION = 256;
-const CONTACT_AVATAR_JPEG_QUALITY = 0.85;
-const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
+const CONTACT_AVATAR_MAX_BYTES =
+  (CONTACTS_PROFILE_HELPERS && CONTACTS_PROFILE_HELPERS.CONTACT_AVATAR_MAX_BYTES)
+  || 300 * 1024;
+const CONTACT_AVATAR_MAX_SOURCE_BYTES =
+  (CONTACTS_PROFILE_HELPERS && CONTACTS_PROFILE_HELPERS.CONTACT_AVATAR_MAX_SOURCE_BYTES)
+  || 6 * 1024 * 1024;
+const CONTACT_AVATAR_MAX_DIMENSION =
+  (CONTACTS_PROFILE_HELPERS && CONTACTS_PROFILE_HELPERS.CONTACT_AVATAR_MAX_DIMENSION)
+  || 256;
+const CONTACT_AVATAR_JPEG_QUALITY =
+  (CONTACTS_PROFILE_HELPERS && CONTACTS_PROFILE_HELPERS.CONTACT_AVATAR_JPEG_QUALITY)
+  || 0.85;
+const CONTACT_AVATAR_JPEG_MIN_QUALITY =
+  (CONTACTS_PROFILE_HELPERS && CONTACTS_PROFILE_HELPERS.CONTACT_AVATAR_JPEG_MIN_QUALITY)
+  || 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
@@ -12025,9 +12054,11 @@ function sanitizeContactValue(value) {
 
 function normalizeContactEntry(entry) {
   const moduleApi = resolveContactsModule();
-  if (moduleApi && typeof moduleApi.normalizeContactEntry === 'function') {
+  const normalizer = moduleApi
+    && (moduleApi.normalizeContactEntry || moduleApi.normalizeContact);
+  if (typeof normalizer === 'function') {
     try {
-      return moduleApi.normalizeContactEntry(entry);
+      return normalizer(entry);
     } catch (error) {
       console.warn('Unable to normalize contact via module.', error);
     }
@@ -12808,6 +12839,17 @@ function getContactsSnapshot() {
 }
 
 function assignUserProfileState(updates = {}) {
+  if (CONTACTS_PROFILE_HELPERS && typeof CONTACTS_PROFILE_HELPERS.assignUserProfileState === 'function') {
+    try {
+      const next = CONTACTS_PROFILE_HELPERS.assignUserProfileState(userProfileState, updates);
+      if (next) {
+        userProfileState = next;
+        return;
+      }
+    } catch (profileAssignError) {
+      console.warn('Unable to assign user profile via contacts/profile module.', profileAssignError);
+    }
+  }
   const nextState = {
     name: typeof updates.name === 'string' ? updates.name : (userProfileState.name || ''),
     role: typeof updates.role === 'string' ? updates.role : (userProfileState.role || ''),
@@ -13142,6 +13184,13 @@ function handleCrewRowManualChange(row) {
 }
 
 function estimateDataUrlSize(dataUrl) {
+  if (CONTACTS_PROFILE_HELPERS && typeof CONTACTS_PROFILE_HELPERS.estimateDataUrlSize === 'function') {
+    try {
+      return CONTACTS_PROFILE_HELPERS.estimateDataUrlSize(dataUrl);
+    } catch (estimateError) {
+      console.warn('Unable to estimate avatar size via contacts/profile module.', estimateError);
+    }
+  }
   if (typeof dataUrl !== 'string' || !dataUrl) return 0;
   const marker = 'base64,';
   const base64Index = dataUrl.indexOf(marker);
@@ -13153,6 +13202,20 @@ function estimateDataUrlSize(dataUrl) {
 }
 
 function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
+  if (CONTACTS_PROFILE_HELPERS && typeof CONTACTS_PROFILE_HELPERS.optimiseAvatarDataUrl === 'function') {
+    try {
+      CONTACTS_PROFILE_HELPERS.optimiseAvatarDataUrl(
+        dataUrl,
+        mimeType,
+        onSuccess,
+        onError,
+        typeof document !== 'undefined' ? document : null,
+      );
+      return;
+    } catch (optimizeError) {
+      console.warn('Unable to optimise avatar via contacts/profile module.', optimizeError);
+    }
+  }
   if (!dataUrl || typeof document === 'undefined') {
     if (typeof onError === 'function') onError();
     return;
@@ -13229,6 +13292,19 @@ function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
 }
 
 function readAvatarFile(file, onSuccess, onError) {
+  if (CONTACTS_PROFILE_HELPERS && typeof CONTACTS_PROFILE_HELPERS.readAvatarFile === 'function') {
+    try {
+      CONTACTS_PROFILE_HELPERS.readAvatarFile(
+        file,
+        onSuccess,
+        onError,
+        typeof document !== 'undefined' ? document : null,
+      );
+      return;
+    } catch (avatarReadError) {
+      console.warn('Unable to read avatar via contacts/profile module.', avatarReadError);
+    }
+  }
   if (!file) return;
   if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
     if (typeof onError === 'function') onError('tooLarge');
@@ -13457,6 +13533,14 @@ function saveCrewRowAsContact(row) {
 }
 
 function parseVCard(text) {
+  const moduleApi = resolveContactsModule();
+  if (moduleApi && typeof moduleApi.parseVCard === 'function') {
+    try {
+      return moduleApi.parseVCard(text);
+    } catch (error) {
+      console.warn('Unable to parse vCard via contacts/list module.', error);
+    }
+  }
   if (typeof text !== 'string') return [];
   const normalized = text.replace(/\r\n?/g, '\n');
   const folded = [];
@@ -13564,6 +13648,43 @@ function mergeImportedContacts(imported) {
   if (!Array.isArray(imported) || !imported.length) {
     announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
     return { added: 0, updated: 0 };
+  }
+  const moduleApi = resolveContactsModule();
+  const previousContacts = new Map(contactsCache.map(contact => [contact.id, contact]));
+  if (moduleApi && typeof moduleApi.mergeVCardContacts === 'function') {
+    try {
+      const result = moduleApi.mergeVCardContacts(contactsCache, imported, { now: () => Date.now() }) || {};
+      if (Array.isArray(result.contacts)) {
+        contactsCache = result.contacts;
+        saveContactsToStorage(contactsCache);
+        renderContactsList();
+        updateContactPickers();
+        const fields = Array.isArray(moduleApi.CONTACT_FIELDS)
+          ? moduleApi.CONTACT_FIELDS
+          : ['name', 'role', 'phone', 'email', 'website', 'notes', 'avatar'];
+        contactsCache.forEach(contact => {
+          const previous = previousContacts.get(contact.id);
+          if (!previous) {
+            return;
+          }
+          const changed = fields.some(field => (previous[field] || '') !== (contact[field] || ''));
+          if (changed) {
+            updateCrewRowsForContact(contact);
+          }
+        });
+        const addedCount = Number(result.added) || 0;
+        const updatedCount = Number(result.updated) || 0;
+        if (addedCount || updatedCount) {
+          const template = getContactsText('importSummary', '{added} added, {updated} updated.');
+          announceContactsMessage(template.replace('{added}', addedCount).replace('{updated}', updatedCount));
+        } else {
+          announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
+        }
+        return { added: addedCount, updated: updatedCount };
+      }
+    } catch (mergeError) {
+      console.warn('Unable to merge contacts via contacts/list module.', mergeError);
+    }
   }
   let added = 0;
   let updated = 0;

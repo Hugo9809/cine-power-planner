@@ -125,7 +125,7 @@
       "description": "Save crew members once, keep them stored offline and reuse them for every project.",
       "addContactButton": "Add contact",
       "importButton": "Import vCard",
-      "importHint": "Import .vcf files to add contacts instantly.",
+      "importHint": "Import .vcf files to add contacts instantly. Existing details stay safe.",
       "emptyState": "No contacts saved yet. Add your crew to reuse them later.",
       "close": "Close",
       "selectLabel": "Saved contacts",
