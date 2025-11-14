@@ -457,7 +457,32 @@ function applyLegacyGridSnapValue(value) {
 
 syncGridSnapStateToScopes(gridSnapState);
 
-module.exports = {
+function publishRuntimeBootstrapExports(exportsMap) {
+  if (!exportsMap || typeof exportsMap !== 'object') {
+    return;
+  }
+
+  const scope = getPrimaryGlobalScope();
+  if (!scope || typeof scope !== 'object') {
+    return;
+  }
+
+  const existingNamespace = scope.cineRuntimeBootstrapExports;
+  if (existingNamespace && typeof existingNamespace === 'object') {
+    Object.keys(exportsMap).forEach((key) => {
+      existingNamespace[key] = exportsMap[key];
+    });
+    return;
+  }
+
+  try {
+    scope.cineRuntimeBootstrapExports = exportsMap;
+  } catch (assignError) {
+    void assignError;
+  }
+}
+
+const runtimeBootstrapExports = {
   fallbackResolveRuntimeModuleLoader,
   fallbackRequireCoreRuntimeModule,
   exposeCoreRuntimeConstant,
@@ -474,3 +499,7 @@ module.exports = {
   setGridSnapState,
   applyLegacyGridSnapValue,
 };
+
+module.exports = runtimeBootstrapExports;
+
+publishRuntimeBootstrapExports(runtimeBootstrapExports);

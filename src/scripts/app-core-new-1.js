@@ -80,18 +80,106 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
+const runtimeBootstrapExports = (function resolveRuntimeBootstrapExports() {
+  if (typeof require === 'function') {
+    try {
+      const requiredBootstrap = require('./runtime/bootstrap.js');
+      if (requiredBootstrap && typeof requiredBootstrap === 'object') {
+        return requiredBootstrap;
+      }
+    } catch (runtimeBootstrapError) {
+      void runtimeBootstrapError;
+    }
+  }
+
+  const scopes = [];
+
+  function pushScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+
+  pushScope(typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null);
+  if (typeof globalThis !== 'undefined') pushScope(globalThis);
+  if (typeof window !== 'undefined') pushScope(window);
+  if (typeof self !== 'undefined') pushScope(self);
+  if (typeof global !== 'undefined') pushScope(global);
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    try {
+      const namespace = scope && scope.cineRuntimeBootstrapExports;
+      if (namespace && typeof namespace === 'object') {
+        return namespace;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+
+  return null;
+})();
+
+const defaultCoreBootQueue = [];
+
 const {
-  fallbackResolveRuntimeModuleLoader,
-  fallbackRequireCoreRuntimeModule,
-  exposeCoreRuntimeConstant,
-  exposeCoreRuntimeConstants,
-  CORE_BOOT_QUEUE_KEY,
-  CORE_BOOT_QUEUE,
-  enqueueCoreBootTask,
-  getGridSnapState,
-  setGridSnapState,
-  applyLegacyGridSnapValue,
-} = require('./runtime/bootstrap.js');
+  fallbackResolveRuntimeModuleLoader = function fallbackResolveRuntimeModuleLoaderMissing() {
+    return null;
+  },
+  fallbackRequireCoreRuntimeModule = function fallbackRequireCoreRuntimeModuleMissing() {
+    return null;
+  },
+  exposeCoreRuntimeConstant = function noopExposeCoreRuntimeConstant() {},
+  exposeCoreRuntimeConstants = function noopExposeCoreRuntimeConstants() {},
+  CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue',
+  CORE_BOOT_QUEUE: resolvedCoreBootQueue = defaultCoreBootQueue,
+  enqueueCoreBootTask: resolvedEnqueueCoreBootTask,
+  getGridSnapState = function fallbackGetGridSnapState() {
+    return 'normal';
+  },
+  setGridSnapState: resolvedSetGridSnapState,
+  applyLegacyGridSnapValue: resolvedApplyLegacyGridSnapValue,
+} = runtimeBootstrapExports || {};
+
+const CORE_BOOT_QUEUE = resolvedCoreBootQueue;
+
+const enqueueCoreBootTask =
+  typeof resolvedEnqueueCoreBootTask === 'function'
+    ? resolvedEnqueueCoreBootTask
+    : function fallbackEnqueueCoreBootTask(task) {
+        if (typeof task === 'function') {
+          try {
+            CORE_BOOT_QUEUE.push(task);
+          } catch (queueError) {
+            void queueError;
+            try {
+              task();
+            } catch (taskError) {
+              void taskError;
+            }
+          }
+        }
+        return CORE_BOOT_QUEUE.length;
+      };
+
+const setGridSnapState =
+  typeof resolvedSetGridSnapState === 'function'
+    ? resolvedSetGridSnapState
+    : function fallbackSetGridSnapState(value) {
+        return typeof value === 'undefined' ? getGridSnapState() : value;
+      };
+
+const applyLegacyGridSnapValue =
+  typeof resolvedApplyLegacyGridSnapValue === 'function'
+    ? resolvedApplyLegacyGridSnapValue
+    : function fallbackApplyLegacyGridSnapValue(value) {
+        return typeof value === 'undefined' ? getGridSnapState() : value;
+      };
 
 // The planner shares a handful of helper modules across legacy and modern
 // bundles. Rather than assuming a module loader exists we defensively look for
