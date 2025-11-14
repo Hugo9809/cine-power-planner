@@ -1,6 +1,6 @@
 # Cine Power Planner
 
-<img src="src/icons/logo-default.svg" alt="Cine Power Planner icon" width="200">
+<img src="src/icons/app-icon.png" alt="Cine Power Planner icon" width="200">
 
 Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Teilen professioneller Kamera-Strompläne, die dein Gerät niemals verlassen. Plane V‑Mount-, B‑Mount- oder Gold-Mount-Rigs, bewerte Laufzeiten, erfasse Projektanforderungen und exportiere teilbare Pakete – komplett im Browser, sogar offline. Alle Abhängigkeiten liegen in diesem Repository, damit dieselbe Erfahrung auf der Bühne, im Feld oder im Archivlaufwerk funktioniert, ohne nach Hause zu telefonieren.
 
