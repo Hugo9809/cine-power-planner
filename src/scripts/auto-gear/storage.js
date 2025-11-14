@@ -20,10 +20,10 @@ var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_KEY = 'cameraPowerPlanner_autoGearBackup
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_DEFAULT = 36;
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MIN = 1;
 var AUTO_GEAR_BACKUP_RETENTION_FALLBACK_MAX = 120;
-var AUTO_GEAR_BACKUP_GLOBAL_SCOPE = typeof globalThis !== 'undefined' && globalThis
-    || typeof window !== 'undefined' && window
-    || typeof self !== 'undefined' && self
-    || typeof global !== 'undefined' && global
+var AUTO_GEAR_BACKUP_GLOBAL_SCOPE = (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
     || null;
 function readScopedNumericAutoGearValue(name) {
     if (!AUTO_GEAR_BACKUP_GLOBAL_SCOPE) {
@@ -84,7 +84,8 @@ function resolveAutoGearBackupRetentionDefaultValue() {
     return minValue;
 }
 function resolveAutoGearBackupRetentionKey() {
-    if (AUTO_GEAR_BACKUP_GLOBAL_SCOPE && typeof AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY === 'string') {
+    if (AUTO_GEAR_BACKUP_GLOBAL_SCOPE &&
+        typeof AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY === 'string') {
         var scopedKey = AUTO_GEAR_BACKUP_GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_KEY.trim();
         if (scopedKey) {
             return scopedKey;

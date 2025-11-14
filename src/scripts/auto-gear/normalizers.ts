@@ -75,6 +75,57 @@ function getAutoGearFallbackLanguage() {
   return 'en';
 }
 
+function assignAutoGearLanguageFallback(scope, fallbackLanguage) {
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) return;
+
+  const assignIfMissing = (key: 'DEFAULT_LANGUAGE_SAFE' | 'CPP_DEFAULT_LANGUAGE_SAFE') => {
+    if (typeof scope[key] !== 'string' || !scope[key]) {
+      try {
+        scope[key] = fallbackLanguage;
+      } catch (assignError) {
+        void assignError;
+        try {
+          Object.defineProperty(scope, key, {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: fallbackLanguage,
+          });
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+    }
+  };
+
+  assignIfMissing('DEFAULT_LANGUAGE_SAFE');
+  assignIfMissing('CPP_DEFAULT_LANGUAGE_SAFE');
+}
+
+function ensureAutoGearDefaultLanguageGlobals() {
+  const fallbackLanguage = getAutoGearFallbackLanguage();
+  const candidateScopes = [
+    AUTO_GEAR_NORMALIZER_SCOPE,
+    AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  candidateScopes.forEach(scope => {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) return;
+
+    assignAutoGearLanguageFallback(scope, fallbackLanguage);
+
+    if (scope.cineCoreShared && typeof scope.cineCoreShared === 'object') {
+      assignAutoGearLanguageFallback(scope.cineCoreShared, fallbackLanguage);
+    }
+  });
+}
+
+ensureAutoGearDefaultLanguageGlobals();
+
 function getAutoGearFallbackTexts() {
   const fallbackLang = getAutoGearFallbackLanguage();
   try {
