@@ -17802,6 +17802,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['diagramConnectorIcons', () => diagramConnectorIcons],
       ['DIAGRAM_MONITOR_ICON', () => DIAGRAM_MONITOR_ICON],
       ['exportDiagramSvg', () => exportDiagramSvg],
+      ['ensureDefaultProjectInfoSnapshot', () => ensureDefaultProjectInfoSnapshot],
+      ['attachSelectSearch', () => attachSelectSearch],
       ['fixPowerInput', () => fixPowerInput],
       ['powerInputTypes', () => powerInputTypes],
       ['ensureList', () => ensureList],
