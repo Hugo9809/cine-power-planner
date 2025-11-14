@@ -24,7 +24,6 @@ describe('auto gear storage helpers', () => {
       autoGearSelectorNoneOption: 'No selector',
     });
     global.currentLang = 'en';
-    global.DEFAULT_LANGUAGE_SAFE = 'en';
     global.document = { getElementById: () => null };
     // Ensure normalizers are loaded so shared helpers exist.
     require(path.join(__dirname, '../../src/scripts/auto-gear/normalizers.js'));
@@ -51,7 +50,6 @@ describe('auto gear storage helpers', () => {
     delete global.devices;
     delete global.getLanguageTexts;
     delete global.currentLang;
-    delete global.DEFAULT_LANGUAGE_SAFE;
     delete global.document;
   });
 

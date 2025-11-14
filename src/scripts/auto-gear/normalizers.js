@@ -58,10 +58,35 @@ function getAutoGearFallbackLanguage() {
     }
     return 'en';
 }
-function resolveAutoGearLanguageLoader() {
-    if (typeof getLanguageTexts === 'function') {
-        return getLanguageTexts;
-    }
+function assignAutoGearLanguageFallback(scope, fallbackLanguage) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
+        return;
+    var assignIfMissing = function (key) {
+        if (typeof scope[key] !== 'string' || !scope[key]) {
+            try {
+                scope[key] = fallbackLanguage;
+            }
+            catch (assignError) {
+                void assignError;
+                try {
+                    Object.defineProperty(scope, key, {
+                        configurable: true,
+                        enumerable: false,
+                        writable: true,
+                        value: fallbackLanguage,
+                    });
+                }
+                catch (defineError) {
+                    void defineError;
+                }
+            }
+        }
+    };
+    assignIfMissing('DEFAULT_LANGUAGE_SAFE');
+    assignIfMissing('CPP_DEFAULT_LANGUAGE_SAFE');
+}
+function ensureAutoGearDefaultLanguageGlobals() {
+    var fallbackLanguage = getAutoGearFallbackLanguage();
     var candidateScopes = [
         AUTO_GEAR_NORMALIZER_SCOPE,
         AUTO_GEAR_NORMALIZER_SCOPE && AUTO_GEAR_NORMALIZER_SCOPE.global,
@@ -70,54 +95,28 @@ function resolveAutoGearLanguageLoader() {
         typeof self !== 'undefined' ? self : null,
         typeof global !== 'undefined' ? global : null,
     ];
-    for (var index = 0; index < candidateScopes.length; index += 1) {
-        var scope = candidateScopes[index];
+    candidateScopes.forEach(function (scope) {
         if (!scope || (typeof scope !== 'object' && typeof scope !== 'function'))
-            continue;
-        if (typeof scope.getLanguageTexts === 'function') {
-            return scope.getLanguageTexts;
+            return;
+        assignAutoGearLanguageFallback(scope, fallbackLanguage);
+        if (scope.cineCoreShared && typeof scope.cineCoreShared === 'object') {
+            assignAutoGearLanguageFallback(scope.cineCoreShared, fallbackLanguage);
         }
-    }
-    return null;
+    });
 }
-var AUTO_GEAR_LANGUAGE_LOADER = resolveAutoGearLanguageLoader();
-function getAutoGearLanguageTexts(lang) {
-    if (!AUTO_GEAR_LANGUAGE_LOADER) {
-        AUTO_GEAR_LANGUAGE_LOADER = resolveAutoGearLanguageLoader();
-    }
-    var languageLoader = AUTO_GEAR_LANGUAGE_LOADER;
-    if (typeof languageLoader !== 'function') {
-        return {};
-    }
-    var resolvedLang = typeof lang === 'string' && lang ? lang : getAutoGearFallbackLanguage();
+ensureAutoGearDefaultLanguageGlobals();
+function getAutoGearFallbackTexts() {
+    var fallbackLang = getAutoGearFallbackLanguage();
     try {
-        var result = languageLoader(resolvedLang);
-        if (result && typeof result === 'object') {
-            return result;
+        var fallbackTexts = getLanguageTexts(fallbackLang);
+        if (fallbackTexts && typeof fallbackTexts === 'object') {
+            return fallbackTexts;
         }
     }
     catch (error) {
-        AUTO_GEAR_LANGUAGE_LOADER = null;
         void error;
     }
     return {};
-}
-function getAutoGearActiveLanguage() {
-    if (typeof currentLang === 'string' && currentLang) {
-        return currentLang;
-    }
-    var resolved = resolveAutoGearDefaultLanguageSource();
-    if (resolved) {
-        return resolved;
-    }
-    return getAutoGearFallbackLanguage();
-}
-function getAutoGearFallbackTexts() {
-    var fallbackLang = getAutoGearFallbackLanguage();
-    return getAutoGearLanguageTexts(fallbackLang);
-}
-function getAutoGearActiveTexts() {
-    return getAutoGearLanguageTexts(getAutoGearActiveLanguage());
 }
 var AUTO_GEAR_DEFAULT_SELECTOR_TYPES = Object.freeze([
     'none',
@@ -316,10 +315,7 @@ function normalizeAutoGearMonitorDefaults(value) {
     return result;
 }
 function resolveDevicesSnapshot() {
-    if (typeof DEVICE_GLOBAL_SCOPE !== 'undefined'
-        && DEVICE_GLOBAL_SCOPE
-        && DEVICE_GLOBAL_SCOPE.devices
-        && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
+    if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
         return DEVICE_GLOBAL_SCOPE.devices;
     }
     try {
@@ -571,7 +567,7 @@ function getAutoGearSelectorOptions(type, itemOrContext) {
 }
 function getAutoGearSelectorLabel(type) {
     var normalizedType = normalizeAutoGearSelectorType(type);
-    var langTexts = getAutoGearActiveTexts();
+    var langTexts = getLanguageTexts(currentLang);
     var fallbackTexts = getAutoGearFallbackTexts();
     if (normalizedType === 'monitor') {
         return langTexts.autoGearSelectorMonitorOption
@@ -613,21 +609,21 @@ function getAutoGearSelectorLabel(type) {
         || 'No selector';
 }
 function getAutoGearSelectorScrollHint() {
-    var langTexts = getAutoGearActiveTexts();
+    var langTexts = getLanguageTexts(currentLang);
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorScrollHint
         || fallbackTexts.autoGearSelectorScrollHint
         || 'Scroll to see more devices.';
 }
 function getAutoGearSelectorDefaultPlaceholder() {
-    var langTexts = getAutoGearActiveTexts();
+    var langTexts = getLanguageTexts(currentLang);
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearSelectorDefaultPlaceholder
         || fallbackTexts.autoGearSelectorDefaultPlaceholder
         || 'Choose a default device';
 }
 function getAutoGearMonitorDefaultPlaceholder() {
-    var langTexts = getAutoGearActiveTexts();
+    var langTexts = getLanguageTexts(currentLang);
     var fallbackTexts = getAutoGearFallbackTexts();
     return langTexts.autoGearMonitorDefaultPlaceholder
         || fallbackTexts.autoGearMonitorDefaultPlaceholder

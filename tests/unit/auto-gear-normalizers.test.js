@@ -1,10 +1,14 @@
 const path = require('path');
 
+const normalizersPath = path.join(__dirname, '../../src/scripts/auto-gear/normalizers.js');
+
 describe('auto gear normalizers', () => {
   let normalizers;
 
-  beforeEach(() => {
+  const bootstrapNormalizers = extraSetup => {
     jest.resetModules();
+    delete global.DEFAULT_LANGUAGE_SAFE;
+    delete global.CPP_DEFAULT_LANGUAGE_SAFE;
     global.localeSort = (a, b) => a.localeCompare(b);
     global.AUTO_GEAR_TRIPOD_SELECTOR_TYPES = new Set(['monitor', 'tripodTypes']);
     global.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = Object.create(null);
@@ -29,8 +33,14 @@ describe('auto gear normalizers', () => {
       autoGearSelectorNoneOption: 'No selector',
     });
     global.currentLang = 'en';
-    global.DEFAULT_LANGUAGE_SAFE = 'en';
-    normalizers = require(path.join(__dirname, '../../src/scripts/auto-gear/normalizers.js'));
+    if (typeof extraSetup === 'function') {
+      extraSetup();
+    }
+    return require(normalizersPath);
+  };
+
+  beforeEach(() => {
+    normalizers = bootstrapNormalizers();
   });
 
   afterEach(() => {
@@ -49,7 +59,22 @@ describe('auto gear normalizers', () => {
     delete global.getLanguageTexts;
     delete global.currentLang;
     delete global.DEFAULT_LANGUAGE_SAFE;
+    delete global.CPP_DEFAULT_LANGUAGE_SAFE;
+    delete global.cineCoreShared;
     jest.resetModules();
+  });
+
+  test('seeds default language fallback when globals are missing', () => {
+    expect(global.DEFAULT_LANGUAGE_SAFE).toBe('en');
+    expect(global.CPP_DEFAULT_LANGUAGE_SAFE).toBe('en');
+  });
+
+  test('fills cineCoreShared defaults when the shared scope exists', () => {
+    normalizers = bootstrapNormalizers(() => {
+      global.cineCoreShared = {};
+    });
+    expect(global.cineCoreShared.DEFAULT_LANGUAGE_SAFE).toBe('en');
+    expect(global.cineCoreShared.CPP_DEFAULT_LANGUAGE_SAFE).toBe('en');
   });
 
   test('normalizeAutoGearRule sorts values and preserves metadata', () => {
