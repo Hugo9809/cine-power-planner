@@ -11,7 +11,7 @@
 (function initRuntimeBootstrapNamespace() {
 'use strict';
 
-/* global CORE_GLOBAL_SCOPE, CORE_RUNTIME_STATE */
+/* global CORE_GLOBAL_SCOPE, CORE_RUNTIME_STATE, cineCoreRuntimeModuleLoader */
 
 function getGlobalScopeCandidates() {
   const candidates = [];
@@ -361,6 +361,7 @@ function assignGridSnapToScope(scope, value) {
   try {
     scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
   } catch (assignStorageError) {
+    void assignStorageError;
     try {
       Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
         configurable: true,
@@ -375,6 +376,7 @@ function assignGridSnapToScope(scope, value) {
   try {
     scope.gridSnap = value;
   } catch (assignLegacyError) {
+    void assignLegacyError;
     try {
       Object.defineProperty(scope, 'gridSnap', {
         configurable: true,
@@ -401,6 +403,7 @@ function syncGridSnapStateToScopes(value, originScope = null, options = {}) {
       try {
         scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
       } catch (assignStorageError) {
+        void assignStorageError;
         try {
           Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
             configurable: true,
@@ -420,6 +423,7 @@ function syncGridSnapStateToScopes(value, originScope = null, options = {}) {
     try {
       scope.gridSnap = value;
     } catch (assignLegacyError) {
+      void assignLegacyError;
       try {
         Object.defineProperty(scope, 'gridSnap', {
           configurable: true,

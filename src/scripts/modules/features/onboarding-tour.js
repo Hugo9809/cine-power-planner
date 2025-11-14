@@ -6564,6 +6564,7 @@
         try {
           proxyControl.type = inputType;
         } catch (error) {
+          void error;
           proxyControl.type = 'text';
         }
       }
@@ -6732,6 +6733,7 @@
         try {
           focusField.focus({ preventScroll: true });
         } catch (error) {
+          void error;
           try {
             focusField.focus();
           } catch (focusError) {

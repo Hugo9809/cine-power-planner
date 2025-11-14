@@ -330,6 +330,7 @@ function readAvatarFile(file, onSuccess, onError) {
   try {
     reader.readAsDataURL(file);
   } catch (error) {
+    void error;
     handleError('readError');
   }
 }
