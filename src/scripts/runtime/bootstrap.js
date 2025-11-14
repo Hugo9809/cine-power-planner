@@ -8,6 +8,9 @@
  * and recovery contexts where globals might be partially initialised.
  */
 
+(function initRuntimeBootstrapNamespace() {
+'use strict';
+
 /* global CORE_GLOBAL_SCOPE, CORE_RUNTIME_STATE */
 
 function getGlobalScopeCandidates() {
@@ -500,6 +503,19 @@ const runtimeBootstrapExports = {
   applyLegacyGridSnapValue,
 };
 
-module.exports = runtimeBootstrapExports;
+if (typeof module !== 'undefined' && module) {
+  try {
+    module.exports = runtimeBootstrapExports;
+  } catch (moduleExportError) {
+    void moduleExportError;
+  }
+} else if (typeof exports !== 'undefined' && exports) {
+  try {
+    exports.runtimeBootstrapExports = runtimeBootstrapExports;
+  } catch (exportsAssignError) {
+    void exportsAssignError;
+  }
+}
 
 publishRuntimeBootstrapExports(runtimeBootstrapExports);
+})();
