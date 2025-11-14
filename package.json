@@ -12,7 +12,8 @@
     "generate-schema": "node tools/generateSchema.js",
     "generate:sw-assets": "node tools/generateServiceWorkerAssets.js",
     "build:legacy": "node tools/buildLegacy.js",
-    "test": "npm run lint && npm run check-consistency && npm run test:jest",
+    "build:auto-gear": "tsc -p tsconfig.auto-gear.json",
+    "test": "npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest",
     "test:jest": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand",
     "test:unit": "node tools/runUnitTests.js",
     "test:data": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects data",
@@ -35,7 +36,8 @@
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
     "jest-localstorage-mock": "^2.4.26",
-    "regenerator-runtime": "^0.14.1"
+    "regenerator-runtime": "^0.14.1",
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "lottie-web": "^5.13.0",
