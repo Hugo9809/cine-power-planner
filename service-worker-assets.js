@@ -303,6 +303,8 @@
   "./src/scripts/modules/features/onboarding-loader-hook.js",
   "./src/scripts/modules/features/onboarding-tour.js",
   "./src/scripts/modules/features/own-gear.js",
+  "./src/scripts/own-gear/store.js",
+  "./src/scripts/own-gear/view.js",
   "./src/scripts/modules/features/print-workflow.js",
   "./src/scripts/modules/gear-list.js",
   "./src/scripts/modules/globals.js",
