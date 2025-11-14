@@ -13,6 +13,36 @@ const AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = {
   director15: 'autoGearDefaultDirectorMonitorLabel',
 };
 
+function resolveAutoGearConditionKeys() {
+  if (typeof AUTO_GEAR_CONDITION_KEYS !== 'undefined' && Array.isArray(AUTO_GEAR_CONDITION_KEYS)) {
+    return AUTO_GEAR_CONDITION_KEYS;
+  }
+
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+  const helpers =
+    scope
+    && typeof scope.AUTO_GEAR_UI_HELPERS === 'object'
+    && scope.AUTO_GEAR_UI_HELPERS
+      ? scope.AUTO_GEAR_UI_HELPERS
+      : null;
+
+  if (helpers) {
+    if (Array.isArray(helpers.AUTO_GEAR_CONDITION_KEYS)) {
+      return helpers.AUTO_GEAR_CONDITION_KEYS;
+    }
+    if (helpers.autoGearConditionSelects && typeof helpers.autoGearConditionSelects === 'object') {
+      return Object.keys(helpers.autoGearConditionSelects);
+    }
+  }
+
+  return [];
+}
+
 const createDeferredAutoGearRefresher = functionName => selected =>
   callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
 
@@ -34,7 +64,9 @@ function configureAutoGearConditionButtons() {
   const removeLabel = texts[currentLang]?.autoGearConditionRemove
     || texts.en?.autoGearConditionRemove
     || 'Remove this condition';
-  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+  const conditionKeys = resolveAutoGearConditionKeys();
+  if (!conditionKeys.length) return;
+  conditionKeys.forEach(key => {
     const config = getAutoGearConditionConfig(key);
     if (!config) return;
     if (config.addShortcut) {

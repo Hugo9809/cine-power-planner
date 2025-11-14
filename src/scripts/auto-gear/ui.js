@@ -11,6 +11,30 @@ var AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = {
     combo15: 'autoGearDefaultComboMonitorLabel',
     director15: 'autoGearDefaultDirectorMonitorLabel',
 };
+function resolveAutoGearConditionKeys() {
+    if (typeof AUTO_GEAR_CONDITION_KEYS !== 'undefined' && Array.isArray(AUTO_GEAR_CONDITION_KEYS)) {
+        return AUTO_GEAR_CONDITION_KEYS;
+    }
+    var scope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+    var helpers = scope
+        && typeof scope.AUTO_GEAR_UI_HELPERS === 'object'
+        && scope.AUTO_GEAR_UI_HELPERS
+        ? scope.AUTO_GEAR_UI_HELPERS
+        : null;
+    if (helpers) {
+        if (Array.isArray(helpers.AUTO_GEAR_CONDITION_KEYS)) {
+            return helpers.AUTO_GEAR_CONDITION_KEYS;
+        }
+        if (helpers.autoGearConditionSelects && typeof helpers.autoGearConditionSelects === 'object') {
+            return Object.keys(helpers.autoGearConditionSelects);
+        }
+    }
+    return [];
+}
 var createDeferredAutoGearRefresher = function (functionName) { return function (selected) {
     return callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
 }; };
@@ -33,7 +57,10 @@ function configureAutoGearConditionButtons() {
     var removeLabel = ((_c = texts[currentLang]) === null || _c === void 0 ? void 0 : _c.autoGearConditionRemove)
         || ((_d = texts.en) === null || _d === void 0 ? void 0 : _d.autoGearConditionRemove)
         || 'Remove this condition';
-    AUTO_GEAR_CONDITION_KEYS.forEach(function (key) {
+    var conditionKeys = resolveAutoGearConditionKeys();
+    if (!conditionKeys.length)
+        return;
+    conditionKeys.forEach(function (key) {
         var config = getAutoGearConditionConfig(key);
         if (!config)
             return;
