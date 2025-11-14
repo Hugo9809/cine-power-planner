@@ -489,7 +489,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'projectRequirementsBrief', 'projectRequirementsCrew', 'projectRequirementsLogistics', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   function resolveOwnGearAccessHighlightSelectors() {
     if (!DOCUMENT) {
       return [];
@@ -664,9 +664,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       title: 'Add your first owned device',
       body: 'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.'
     },
+    projectRequirementsBrief: {
+      title: 'Capture the project brief',
+      body: 'Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections.'
+    },
+    projectRequirementsCrew: {
+      title: 'Map crew coverage and contacts',
+      body: 'Populate Crew, Prep, Shooting and Return rows with names, roles and coverage notes. Link saved Contacts, add emergency details and duplicate rows when multiple days share assignments so exports show who is on set and when.'
+    },
+    projectRequirementsLogistics: {
+      title: 'Log lenses, rigging and monitoring plans',
+      body: 'Work through camera specs, the lens workflow, rigging scenarios, storage/media counts, matte box preferences and monitoring layouts. These entries feed automatic gear rules and storage math so the generated checklist reflects the full shoot plan.'
+    },
     generateGearAndRequirements: {
-      title: 'Generate requirements and gear list',
-      body: 'Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.'
+      title: 'Save and rebuild the outputs',
+      body: 'Press OK inside the Project Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current.'
     },
     autoGearRulesAccess: {
       title: 'Open Automatic Gear Rules',
@@ -682,7 +694,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     projectRequirements: {
       title: 'Refine project requirements boxes',
-      body: 'Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear.'
+      body: 'Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share.'
     },
     gearList: {
       title: 'Audit the generated gear list',
@@ -1028,6 +1040,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
             }
+          }
+        };
+      }
+    };
+  }
+
+  function createProjectDialogSubmitRequirement() {
+    var selector = '#projectForm';
+    return {
+      check: function check() {
+        return false;
+      },
+      attach: function attach(context) {
+        var form = getElement(selector);
+        if (!form) {
+          if (context && typeof context.complete === 'function') {
+            context.complete();
+          }
+          return null;
+        }
+        if (context && typeof context.incomplete === 'function') {
+          context.incomplete();
+        }
+        var handler = function handler() {
+          if (context && typeof context.complete === 'function') {
+            context.complete();
+          }
+        };
+        form.addEventListener('submit', handler);
+        return function detachSubmitRequirement() {
+          try {
+            form.removeEventListener('submit', handler);
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not detach project dialog submit requirement.', error);
           }
         };
       }
@@ -1389,7 +1435,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
-    generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
+    generateGearAndRequirements: createProjectDialogSubmitRequirement(),
     exportImport: createClickCompletionRequirement(['#shareSetupBtn', '#applySharedLinkBtn']),
     overviewAndPrint: createClickCompletionRequirement('#generateOverviewBtn')
   };
@@ -1921,8 +1967,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       ensureOwnGear: true,
       focus: '#ownGearName'
     }, {
+      key: 'projectRequirementsBrief',
+      highlight: '#projectRequirementsBriefSection',
+      ensureProjectDialog: true
+    }, {
+      key: 'projectRequirementsCrew',
+      highlight: '#projectRequirementsCrewSection',
+      ensureProjectDialog: true
+    }, {
+      key: 'projectRequirementsLogistics',
+      highlight: ['#projectRequirementsCameraSection', '#lensesHeading', '#riggingHeading', '#storageHeading', '#matteboxFilterHeading', '#monitoringHeading'],
+      ensureProjectDialog: true
+    }, {
       key: 'generateGearAndRequirements',
-      highlight: '#generateGearListBtn'
+      highlight: '#projectSubmit',
+      focus: '#projectSubmit',
+      ensureProjectDialog: true
     }, {
       key: 'autoGearRulesAccess',
       highlight: '#settingsPanel-autoGear',
@@ -2042,6 +2102,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var contactsDialogRef = null;
   var autoOpenedOwnGear = false;
   var ownGearDialogRef = null;
+  var autoOpenedProjectDialog = false;
+  var projectDialogRef = null;
+  var projectDialogTriggerRef = null;
   var autoOpenedDeviceManager = false;
   var deviceManagerSectionRef = null;
   var deviceManagerToggleRef = null;
@@ -3386,6 +3449,99 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     ownGearDialogRef.setAttribute('hidden', '');
     autoOpenedOwnGear = false;
+  }
+  function isProjectDialogVisible() {
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+    if (!projectDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(projectDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate project dialog state.', error);
+      }
+    }
+    var propOpen = typeof projectDialogRef.open === 'boolean' ? projectDialogRef.open : null;
+    var attrOpen = typeof projectDialogRef.hasAttribute === 'function' ? projectDialogRef.hasAttribute('open') : false;
+    return propOpen === null ? attrOpen : propOpen || attrOpen;
+  }
+  function ensureProjectDialogForStep(step) {
+    if (!step || !step.ensureProjectDialog) {
+      return;
+    }
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+    if (!projectDialogRef) {
+      return;
+    }
+    if (isProjectDialogVisible()) {
+      autoOpenedProjectDialog = false;
+      return;
+    }
+    autoOpenedProjectDialog = true;
+    if (!projectDialogTriggerRef) {
+      projectDialogTriggerRef = DOCUMENT.getElementById('generateGearListBtn');
+    }
+    if (projectDialogTriggerRef && typeof projectDialogTriggerRef.click === 'function') {
+      try {
+        projectDialogTriggerRef.click();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger project dialog button.', error);
+      }
+    }
+    if (typeof GLOBAL_SCOPE.openProjectDialogWithInfo === 'function') {
+      try {
+        GLOBAL_SCOPE.openProjectDialogWithInfo();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open project dialog via helper.', error);
+      }
+    }
+    projectDialogRef.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(projectDialogRef);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open project dialog.', error);
+      }
+    }
+    if (typeof projectDialogRef.showModal === 'function') {
+      try {
+        projectDialogRef.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show project dialog.', error);
+      }
+    }
+    projectDialogRef.setAttribute('open', '');
+  }
+  function closeProjectDialogIfNeeded() {
+    if (!projectDialogRef || !autoOpenedProjectDialog) {
+      autoOpenedProjectDialog = false;
+      return;
+    }
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(projectDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close project dialog via closeDialog.', error);
+      }
+    } else if (typeof projectDialogRef.close === 'function') {
+      try {
+        projectDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close project dialog.', error);
+      }
+    } else {
+      projectDialogRef.removeAttribute('open');
+    }
+    autoOpenedProjectDialog = false;
   }
   function isDeviceManagerVisible() {
     if (!deviceManagerSectionRef) {
@@ -5204,6 +5360,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (previousStep && previousStep.ensureDeviceManager && !step.ensureDeviceManager) {
       closeDeviceManagerIfNeeded();
     }
+    if (previousStep && previousStep.ensureProjectDialog && !step.ensureProjectDialog) {
+      closeProjectDialogIfNeeded();
+    }
     currentStep = step;
     currentIndex = index;
     autoOpenedSettings = false;
@@ -5232,6 +5391,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       closeDeviceManagerIfNeeded();
     } else {
       autoOpenedDeviceManager = false;
+    }
+    if (step.ensureProjectDialog) {
+      ensureProjectDialogForStep(step);
+    } else if (previousStep && previousStep.ensureProjectDialog) {
+      closeProjectDialogIfNeeded();
+    } else {
+      autoOpenedProjectDialog = false;
     }
     var focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
     var focusTarget = focusCandidates.length > 0 ? focusCandidates[0] : null;

@@ -1788,9 +1788,21 @@
           "title": "Add your first owned device",
           "body": "Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests."
         },
+        "projectRequirementsBrief": {
+          "title": "Capture the project brief",
+          "body": "Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections."
+        },
+        "projectRequirementsCrew": {
+          "title": "Map crew coverage and contacts",
+          "body": "Populate Crew, Prep, Shooting and Return rows with names, roles and coverage notes. Link saved Contacts, add emergency details and duplicate rows when multiple days share assignments so exports show who is on set and when."
+        },
+        "projectRequirementsLogistics": {
+          "title": "Log lenses, rigging and monitoring plans",
+          "body": "Work through camera specs, the lens workflow, rigging scenarios, storage/media counts, matte box preferences and monitoring layouts. These entries feed automatic gear rules and storage math so the generated checklist reflects the full shoot plan."
+        },
         "generateGearAndRequirements": {
-          "title": "Generate requirements and gear list",
-          "body": "Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections."
+          "title": "Save and rebuild the outputs",
+          "body": "Press OK inside the Project Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current."
         },
         "autoGearRulesAccess": {
           "title": "Open Automatic Gear Rules",
@@ -1806,7 +1818,7 @@
         },
         "projectRequirements": {
           "title": "Refine project requirements boxes",
-          "body": "Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear."
+          "body": "Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
         },
         "gearList": {
           "title": "Audit the generated gear list",
