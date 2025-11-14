@@ -190,20 +190,24 @@
       autoGearCache = { items: [], map: new Map() };
     }
 
-    function refreshCache() {
-      const normalized = loadStoredOwnGearItems();
-      autoGearCache = buildCache(normalized);
-      return getCacheSnapshot();
-    }
-
-    function getCacheSnapshot() {
-      if (!autoGearCache.items.length && !autoGearCache.map.size) {
-        refreshCache();
-      }
+    function snapshotFromCache() {
       return {
         items: autoGearCache.items.slice(),
         map: autoGearCache.map,
       };
+    }
+
+    function refreshCache() {
+      const normalized = loadStoredOwnGearItems();
+      autoGearCache = buildCache(normalized);
+      return snapshotFromCache();
+    }
+
+    function getCacheSnapshot() {
+      if (!autoGearCache.items.length && !autoGearCache.map.size) {
+        return refreshCache();
+      }
+      return snapshotFromCache();
     }
 
     function getCachedItems() {
