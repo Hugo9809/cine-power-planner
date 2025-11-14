@@ -1635,7 +1635,9 @@
       "userProfileInteractionIntro": "Saisissez une fois les informations de votre équipe. Chaque mise à jour se synchronise immédiatement avec Contacts, reste mise en cache hors ligne et se retrouve dans les exports pour que l’équipe sache toujours qui possède le setup.",
       "userProfileInteractionSkipHint": "Appuyez sur Suivant quand vous êtes prêt : Contacts dans la barre latérale affiche toujours ces informations sauvegardées sans réinitialiser la progression du tutoriel.",
       "userProfileAvatarAction": "Ajouter une photo de profil",
-      "userProfileAvatarEditAction": "Modifier la photo",
+        "userProfileAvatarEditAction": "Modifier la photo",
+        "projectRequirementsMiniIntro": "Renseignez ces champs proxy pendant que la boîte de dialogue Exigences du projet reste ouverte.",
+        "projectRequirementsMiniOfflineHint": "Chaque modification est enregistrée immédiatement hors ligne ; utilisez Précédent/Suivant ici sans perdre de données.",
       "unitsPreferencesLanguageLabel": "Langue",
       "unitsPreferencesThemeLabel": "Thème",
       "unitsPreferencesThemeLight": "Clair",
@@ -1790,6 +1792,18 @@
           "title": "Ajoutez votre premier matériel possédé",
           "body": "Saisissez le nom de l’élément, la quantité optionnelle et les notes, puis enregistrez. Le matériel possédé est stocké hors ligne, inclus dans les sauvegardes et signalé dans les exports pour que l’équipe voie immédiatement ce qui est disponible sans doublons."
         },
+        "projectRequirementsBrief": {
+          "title": "Capturer le brief du projet",
+          "body": "Ouvrez Générer la liste et les exigences du projet, consignez la société de production, l'adresse complète, les préférences du loueur, les livrables et les notes de planning. Ces données alimentent les PDF prêts pour la location, restent en cache hors ligne et préparent les sections suivantes."
+        },
+        "projectRequirementsCrew": {
+          "title": "Cartographier la couverture équipe et les contacts",
+          "body": "Renseignez les sections Équipe, Préparation, Tournage et Retour avec noms, rôles et remarques. Liez les contacts enregistrés, ajoutez les informations d'urgence et dupliquez les lignes lorsque plusieurs jours partagent le même plan afin que les exports indiquent qui est présent et quand."
+        },
+        "projectRequirementsLogistics": {
+          "title": "Consigner optiques, rigging et monitoring",
+          "body": "Parcourez les autres sections : spécifications caméra, workflow optiques, scénarios de rigging, quantités de stockage/médias, préférences de mattebox et de monitoring. Chaque champ alimente les règles automatiques, le calcul de stockage et la checklist générée."
+        },
         "generateGearAndRequirements": {
           "title": "Générez exigences et liste du matériel",
           "body": "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections."
@@ -1805,10 +1819,6 @@
         "autoGearRulesCreate": {
           "title": "Ajouter une nouvelle règle automatique",
           "body": "Cliquez sur Ajouter une règle pour créer une automatisation personnalisée. Nommez-la, ajoutez des conditions et le matériel requis, puis enregistrez. Le planificateur applique la nouvelle règle hors ligne à chaque régénération du kit et l’inclut dans les exports, partages et sauvegardes."
-        },
-        "projectRequirements": {
-          "title": "Affinez les encarts d’exigences du projet",
-          "body": "Ajustez la sortie Exigences du projet pour consigner notes d’équipe, livrables et rappels de sécurité. Chaque encart est enregistré avec le projet, imprimé dans les aperçus et intégré aux exports. Parcourez trois sous-étapes rapides pour ne rien oublier : 15A renseigne le brief de projet—société de production, préférences du loueur, calendrier et spécifications de livraison ; 15B relie les lignes d’équipe aux contacts enregistrés en indiquant la couverture préparation/tournage/retour ainsi que les notes d’urgence ; 15C capture la logistique comme les supports de stockage, les préférences de monitoring et les rappels de sécurité, puis régénérez le résumé pour confirmer l’apparition des nouveaux détails."
         },
         "gearList": {
           "title": "Auditez la liste du matériel générée",

@@ -582,7 +582,6 @@
     'autoGearRulesAccess',
     'autoGearRulesEdit',
     'autoGearRulesCreate',
-    'projectRequirements',
     'gearList',
     'exportImport',
     'overviewAndPrint',
@@ -848,11 +847,6 @@
       title: 'Add a new automatic gear rule',
       body:
         'Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups.',
-    },
-    projectRequirements: {
-      title: 'Refine project requirements boxes',
-      body:
-        'Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then re-run exports or backups so downstream teams receive the updated context with every share.',
     },
     gearList: {
       title: 'Audit the generated gear list',
@@ -1514,6 +1508,258 @@
     };
   }
 
+  function hasProjectCrewRows() {
+    const crewSelectors = [
+      '#crewContainer .person-row',
+      '#prepContainer .period-row',
+      '#shootContainer .period-row',
+      '#returnContainer .period-row',
+    ];
+    for (let index = 0; index < crewSelectors.length; index += 1) {
+      const selector = crewSelectors[index];
+      if (!selector) {
+        continue;
+      }
+      try {
+        if (DOCUMENT.querySelector(selector)) {
+          return true;
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not query crew selector.', error);
+      }
+    }
+    return false;
+  }
+
+  function createProjectCrewRequirement() {
+    const evaluate = () => hasProjectCrewRows();
+    return {
+      check() {
+        return evaluate();
+      },
+      attach(context) {
+        const complete = typeof context?.complete === 'function'
+          ? context.complete
+          : (() => {});
+        const incomplete = typeof context?.incomplete === 'function'
+          ? context.incomplete
+          : (() => {});
+
+        const projectForm = getElement('#projectForm');
+        if (!projectForm) {
+          complete();
+          return null;
+        }
+
+        const evaluateAndDispatch = () => {
+          if (evaluate()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+
+        const containers = [
+          '#crewContainer',
+          '#prepContainer',
+          '#shootContainer',
+          '#returnContainer',
+        ];
+        const addButtons = [
+          '#addPersonBtn',
+          '#addPrepBtn',
+          '#addShootBtn',
+          '#addReturnBtn',
+        ];
+        const removers = [];
+
+        for (let index = 0; index < containers.length; index += 1) {
+          const container = getElement(containers[index]);
+          if (!container) {
+            continue;
+          }
+          const handleInput = () => {
+            evaluateAndDispatch();
+          };
+          container.addEventListener('input', handleInput);
+          container.addEventListener('change', handleInput);
+          removers.push(() => {
+            container.removeEventListener('input', handleInput);
+          });
+          removers.push(() => {
+            container.removeEventListener('change', handleInput);
+          });
+          if (typeof MutationObserver === 'function') {
+            try {
+              const observer = new MutationObserver(() => {
+                evaluateAndDispatch();
+              });
+              observer.observe(container, { childList: true, subtree: true });
+              removers.push(() => {
+                observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe crew container.', error);
+            }
+          }
+        }
+
+        for (let index = 0; index < addButtons.length; index += 1) {
+          const button = getElement(addButtons[index]);
+          if (!button) {
+            continue;
+          }
+          const handleClick = () => {
+            setTimeout(evaluateAndDispatch, 120);
+          };
+          button.addEventListener('click', handleClick);
+          removers.push(() => {
+            button.removeEventListener('click', handleClick);
+          });
+        }
+
+        evaluateAndDispatch();
+
+        return () => {
+          for (let index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach crew requirement listener.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
+  function hasProjectLogisticsEntry() {
+    const selectors = [
+      '#deliveryResolution',
+      '#recordingResolution',
+      '#sensorMode',
+      '#codec',
+      '#recordingFrameRate',
+      '#lensManufacturer',
+      '#lensSeries',
+      '#cameraHandle',
+      '#mattebox',
+      '#filter',
+      '#monitoringConfiguration',
+      '#frameGuides',
+      '#videoDistribution',
+      '#storageNeedsContainer .storage-quantity',
+      '#storageNeedsContainer .storage-type',
+      '#storageNeedsContainer .storage-variant',
+      '#storageNeedsContainer .storage-notes',
+    ];
+    for (let index = 0; index < selectors.length; index += 1) {
+      const selector = selectors[index];
+      if (!selector) {
+        continue;
+      }
+      let nodes = [];
+      try {
+        nodes = DOCUMENT.querySelectorAll(selector);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not query logistics selector.', error);
+        nodes = [];
+      }
+      if (!nodes || nodes.length === 0) {
+        continue;
+      }
+      for (let nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
+        const node = nodes[nodeIndex];
+        if (!node) {
+          continue;
+        }
+        if (node.multiple) {
+          if (node.selectedOptions && node.selectedOptions.length > 0) {
+            return true;
+          }
+          continue;
+        }
+        if (node.type === 'number') {
+          const numericValue = Number(node.value);
+          if (!Number.isNaN(numericValue) && node.value !== '') {
+            return true;
+          }
+          continue;
+        }
+        const value = getFieldValue(node);
+        if (typeof value === 'string' && value.trim().length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function createProjectLogisticsRequirement() {
+    return {
+      check() {
+        return hasProjectLogisticsEntry();
+      },
+      attach(context) {
+        const complete = typeof context?.complete === 'function'
+          ? context.complete
+          : (() => {});
+        const incomplete = typeof context?.incomplete === 'function'
+          ? context.incomplete
+          : (() => {});
+
+        const projectForm = getElement('#projectForm');
+        if (!projectForm) {
+          complete();
+          return null;
+        }
+
+        const evaluateAndDispatch = () => {
+          if (hasProjectLogisticsEntry()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+
+        const handleFieldEvent = () => {
+          evaluateAndDispatch();
+        };
+
+        projectForm.addEventListener('input', handleFieldEvent);
+        projectForm.addEventListener('change', handleFieldEvent);
+
+        let storageObserver = null;
+        const storageContainer = getElement('#storageNeedsContainer');
+        if (storageContainer && typeof MutationObserver === 'function') {
+          try {
+            storageObserver = new MutationObserver(() => {
+              evaluateAndDispatch();
+            });
+            storageObserver.observe(storageContainer, { childList: true, subtree: true });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe storage rows.', error);
+            storageObserver = null;
+          }
+        }
+
+        evaluateAndDispatch();
+
+        return () => {
+          projectForm.removeEventListener('input', handleFieldEvent);
+          projectForm.removeEventListener('change', handleFieldEvent);
+          if (storageObserver) {
+            try {
+              storageObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach storage observer.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
   function getProjectNameValue() {
     const input = getElement('#setupName');
     return typeof input?.value === 'string' ? input.value.trim() : '';
@@ -1645,6 +1891,13 @@
     editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
+    projectRequirementsBrief: createFieldCompletionRequirement(
+      '#productionCompany',
+      value => typeof value === 'string' && value.trim().length > 0,
+      ['input', 'change'],
+    ),
+    projectRequirementsCrew: createProjectCrewRequirement(),
+    projectRequirementsLogistics: createProjectLogisticsRequirement(),
     generateGearAndRequirements: createProjectDialogSubmitRequirement(),
     exportImport: createClickCompletionRequirement(
       ['#shareSetupBtn', '#applySharedLinkBtn'],
@@ -2334,10 +2587,6 @@
           tabId: 'settingsTab-autoGear',
         },
         focus: '#autoGearAddRule',
-      },
-      {
-        key: 'projectRequirements',
-        highlight: '#projectRequirementsOutput',
       },
       {
         key: 'gearList',
@@ -5964,6 +6213,549 @@
     return true;
   }
 
+  function resolveCrewRowForProxy() {
+    const container = getElement('#crewContainer');
+    if (!container) {
+      return null;
+    }
+    let row = container.querySelector('.person-row');
+    if (row) {
+      return row;
+    }
+    const addButton = getElement('#addPersonBtn');
+    if (addButton && typeof addButton.click === 'function') {
+      try {
+        addButton.click();
+        row = container.querySelector('.person-row');
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not auto-create crew row for proxy.', error);
+      }
+    }
+    return row || null;
+  }
+
+  function resolvePeriodRowField(containerSelector, addButtonSelector, fieldSelector) {
+    const container = getElement(containerSelector);
+    if (!container) {
+      return null;
+    }
+    let row = container.querySelector('.period-row');
+    if (!row) {
+      const addButton = getElement(addButtonSelector);
+      if (addButton && typeof addButton.click === 'function') {
+        try {
+          addButton.click();
+          row = container.querySelector('.period-row');
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not auto-create schedule row.', error);
+        }
+      }
+    }
+    if (!row) {
+      return null;
+    }
+    try {
+      return row.querySelector(fieldSelector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not resolve schedule field.', error);
+      return null;
+    }
+  }
+
+  function resolveStorageFieldForProxy(selector) {
+    const container = getElement('#storageNeedsContainer');
+    if (!container) {
+      return null;
+    }
+    const primaryRow = container.querySelector('.storage-row');
+    if (primaryRow) {
+      const field = primaryRow.querySelector(selector);
+      if (field) {
+        return field;
+      }
+    }
+    try {
+      return container.querySelector(selector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not resolve storage proxy field.', error);
+    }
+    return null;
+  }
+
+  const PROJECT_REQUIREMENTS_FLOW = [
+    {
+      key: 'projectRequirementsBrief',
+      fields: [
+        {
+          fieldKey: 'project-brief-company',
+          targetSelector: '#productionCompany',
+          labelSelector: '#productionCompanyLabel',
+        },
+        {
+          fieldKey: 'project-brief-street',
+          targetSelector: '#productionCompanyStreet',
+          labelSelector: '#productionCompanyStreetLabel',
+        },
+        {
+          fieldKey: 'project-brief-city',
+          targetSelector: '#productionCompanyCity',
+          labelSelector: '#productionCompanyCityLabel',
+        },
+        {
+          fieldKey: 'project-brief-rental',
+          targetSelector: '#rentalHouse',
+          labelSelector: '#rentalHouseLabel',
+        },
+      ],
+    },
+    {
+      key: 'projectRequirementsCrew',
+      fields: [
+        {
+          fieldKey: 'project-crew-role',
+          resolveTarget: () => {
+            const row = resolveCrewRowForProxy();
+            return row ? row.querySelector('.person-role-select') : null;
+          },
+          fallbackLabel: 'Crew role',
+          type: 'select',
+        },
+        {
+          fieldKey: 'project-crew-name',
+          resolveTarget: () => {
+            const row = resolveCrewRowForProxy();
+            return row ? row.querySelector('.person-name') : null;
+          },
+          fallbackLabel: 'Crew member name',
+        },
+        {
+          fieldKey: 'project-crew-phone',
+          resolveTarget: () => {
+            const row = resolveCrewRowForProxy();
+            return row ? row.querySelector('.person-phone') : null;
+          },
+          fallbackLabel: 'Crew phone',
+        },
+        {
+          fieldKey: 'project-crew-prep',
+          resolveTarget: () => resolvePeriodRowField('#prepContainer', '#addPrepBtn', '.prep-start'),
+          labelSelector: '#prepLabel',
+          inputType: 'date',
+        },
+        {
+          fieldKey: 'project-crew-shoot',
+          resolveTarget: () => resolvePeriodRowField('#shootContainer', '#addShootBtn', '.shoot-start'),
+          labelSelector: '#shootLabel',
+          inputType: 'date',
+        },
+        {
+          fieldKey: 'project-crew-return',
+          resolveTarget: () => resolvePeriodRowField('#returnContainer', '#addReturnBtn', '.return-start'),
+          labelSelector: '#returnLabel',
+          inputType: 'date',
+        },
+      ],
+    },
+    {
+      key: 'projectRequirementsLogistics',
+      fields: [
+        {
+          fieldKey: 'project-logistics-delivery',
+          targetSelector: '#deliveryResolution',
+          labelSelector: '#deliveryResolutionLabel',
+          type: 'select',
+        },
+        {
+          fieldKey: 'project-logistics-recording-rate',
+          targetSelector: '#recordingFrameRate',
+          labelSelector: '#recordingFrameRateLabel',
+          inputType: 'number',
+        },
+        {
+          fieldKey: 'project-logistics-lens',
+          targetSelector: '#lensManufacturer',
+          labelSelector: '#lensManufacturerLabel',
+          type: 'select',
+        },
+        {
+          fieldKey: 'project-logistics-storage',
+          resolveTarget: () => resolveStorageFieldForProxy('.storage-quantity'),
+          labelSelector: '#storageNeedsLabel',
+          inputType: 'number',
+        },
+        {
+          fieldKey: 'project-logistics-mattebox',
+          targetSelector: '#mattebox',
+          labelSelector: '#matteboxLabel',
+          type: 'select',
+        },
+        {
+          fieldKey: 'project-logistics-monitoring',
+          targetSelector: '#monitoringConfiguration',
+          labelSelector: '#monitoringConfigurationLabel',
+          type: 'select',
+        },
+      ],
+    },
+  ];
+
+  const PROJECT_REQUIREMENTS_STEP_KEYS = PROJECT_REQUIREMENTS_FLOW.map(entry => entry.key);
+
+  function renderProjectRequirementsInteraction(registerCleanup, step) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const stepKey = step && step.key;
+    const stepIndex = PROJECT_REQUIREMENTS_FLOW.findIndex(entry => entry.key === stepKey);
+    if (stepIndex === -1) {
+      return false;
+    }
+
+    const stepConfig = PROJECT_REQUIREMENTS_FLOW[stepIndex];
+    const fragment = DOCUMENT.createDocumentFragment();
+
+    const indicatorTemplate = tourTexts && typeof tourTexts.stepIndicator === 'string'
+      ? tourTexts.stepIndicator
+      : 'Step {current} of {total}';
+    const indicator = DOCUMENT.createElement('p');
+    indicator.className = 'onboarding-resume-hint onboarding-step-indicator';
+    indicator.textContent = indicatorTemplate
+      .replace('{current}', String(stepIndex + 1))
+      .replace('{total}', String(PROJECT_REQUIREMENTS_FLOW.length));
+    fragment.appendChild(indicator);
+
+    const intro = DOCUMENT.createElement('p');
+    intro.className = 'onboarding-resume-hint';
+    intro.textContent = tourTexts && typeof tourTexts.projectRequirementsMiniIntro === 'string'
+      ? tourTexts.projectRequirementsMiniIntro
+      : 'Fill these proxy fields while the Project Requirements dialog stays open.';
+    fragment.appendChild(intro);
+
+    const stepBodyText = tourTexts
+      && tourTexts.steps
+      && tourTexts.steps[stepKey]
+      && typeof tourTexts.steps[stepKey].body === 'string'
+        ? tourTexts.steps[stepKey].body.trim()
+        : '';
+    if (stepBodyText) {
+      const description = DOCUMENT.createElement('p');
+      description.className = 'onboarding-resume-hint';
+      description.textContent = stepBodyText;
+      fragment.appendChild(description);
+    }
+
+    const resolveLabelText = (options, target) => {
+      if (options && typeof options.labelSelector === 'string' && options.labelSelector) {
+        const labelElement = getElement(options.labelSelector);
+        if (labelElement && typeof labelElement.textContent === 'string') {
+          const labelText = labelElement.textContent.trim();
+          if (labelText) {
+            return labelText;
+          }
+        }
+      }
+      if (options && typeof options.labelText === 'string' && options.labelText) {
+        return options.labelText;
+      }
+      if (target) {
+        const ariaLabel = typeof target.getAttribute === 'function'
+          ? target.getAttribute('aria-label')
+          : null;
+        if (ariaLabel && ariaLabel.trim()) {
+          return ariaLabel.trim();
+        }
+        if (target.id) {
+          try {
+            const selector = `label[for="${target.id}"]`;
+            const explicitLabel = DOCUMENT.querySelector(selector);
+            if (explicitLabel && typeof explicitLabel.textContent === 'string') {
+              const explicitText = explicitLabel.textContent.trim();
+              if (explicitText) {
+                return explicitText;
+              }
+            }
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not resolve proxy label.', error);
+          }
+        }
+        if (typeof target.placeholder === 'string' && target.placeholder.trim()) {
+          return target.placeholder.trim();
+        }
+      }
+      if (options && typeof options.fallbackLabel === 'string' && options.fallbackLabel) {
+        return options.fallbackLabel;
+      }
+      return 'Field';
+    };
+
+    const resolvePlaceholderText = (options, target) => {
+      if (options && typeof options.placeholder === 'string') {
+        return options.placeholder;
+      }
+      if (target && typeof target.placeholder === 'string' && target.placeholder) {
+        return target.placeholder;
+      }
+      return '';
+    };
+
+    const copySelectOptions = (source, destination) => {
+      if (!destination) {
+        return;
+      }
+      destination.innerHTML = '';
+      if (!source) {
+        return;
+      }
+      const options = source.options || [];
+      for (let index = 0; index < options.length; index += 1) {
+        const option = options[index];
+        if (!option) {
+          continue;
+        }
+        const clone = DOCUMENT.createElement('option');
+        clone.value = option.value;
+        clone.textContent = option.textContent || option.value;
+        if (source.multiple) {
+          clone.selected = option.selected;
+        }
+        destination.appendChild(clone);
+      }
+      if (!source.multiple) {
+        destination.value = source.value || '';
+      }
+    };
+
+    let firstProxyField = null;
+
+    const createProxyField = (options) => {
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const controlId = getProxyControlId(options?.fieldKey || 'project-field');
+      const label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', controlId);
+
+      const target = typeof options?.resolveTarget === 'function'
+        ? options.resolveTarget()
+        : (typeof options?.targetSelector === 'string' ? getElement(options.targetSelector) : null);
+
+      label.textContent = resolveLabelText(options, target);
+      group.appendChild(label);
+
+      let proxyControl = null;
+      const targetNodeName = target && typeof target.nodeName === 'string'
+        ? target.nodeName.toLowerCase()
+        : null;
+      if ((options && options.type === 'select') || targetNodeName === 'select') {
+        proxyControl = DOCUMENT.createElement('select');
+        proxyControl.multiple = Boolean(target && target.multiple);
+        if (proxyControl.multiple && target && target.size) {
+          proxyControl.size = target.size;
+        }
+        copySelectOptions(target, proxyControl);
+      } else if ((options && options.multiline) || targetNodeName === 'textarea') {
+        proxyControl = DOCUMENT.createElement('textarea');
+        proxyControl.rows = options && options.rows ? options.rows : 3;
+      } else {
+        proxyControl = DOCUMENT.createElement('input');
+        const inputType = options && options.inputType
+          ? options.inputType
+          : (target && target.type ? target.type : 'text');
+        try {
+          proxyControl.type = inputType;
+        } catch (error) {
+          proxyControl.type = 'text';
+        }
+      }
+      proxyControl.id = controlId;
+      proxyControl.className = 'onboarding-field-input';
+      const placeholderText = resolvePlaceholderText(options, target);
+      if (placeholderText) {
+        proxyControl.placeholder = placeholderText;
+      }
+      group.appendChild(proxyControl);
+      fragment.appendChild(group);
+
+      if (!firstProxyField) {
+        firstProxyField = proxyControl;
+      }
+
+      if (!target) {
+        proxyControl.disabled = true;
+        proxyControl.setAttribute('aria-disabled', 'true');
+        return proxyControl;
+      }
+
+      const syncFromTarget = () => {
+        if (!target) {
+          return;
+        }
+        if (proxyControl.tagName === 'SELECT') {
+          copySelectOptions(target, proxyControl);
+          if (target.multiple) {
+            const selectedValues = Array.from(target.selectedOptions || []).map(option => option.value);
+            for (let index = 0; index < proxyControl.options.length; index += 1) {
+              const proxyOption = proxyControl.options[index];
+              proxyOption.selected = selectedValues.indexOf(proxyOption.value) !== -1;
+            }
+          } else if (proxyControl.value !== target.value) {
+            proxyControl.value = target.value || '';
+          }
+        } else if (proxyControl.tagName === 'TEXTAREA') {
+          if (proxyControl.value !== target.value) {
+            proxyControl.value = target.value || '';
+          }
+        } else if (proxyControl.type === 'number') {
+          proxyControl.value = target.value || '';
+        } else {
+          proxyControl.value = target.value || '';
+        }
+        proxyControl.disabled = target.disabled;
+        proxyControl.setAttribute('aria-disabled', target.disabled ? 'true' : 'false');
+      };
+
+      const syncToTarget = () => {
+        if (!target) {
+          return;
+        }
+        if (proxyControl.tagName === 'SELECT') {
+          if (target.multiple) {
+            const selections = Array.from(proxyControl.selectedOptions || []).map(option => option.value);
+            const targetOptions = target.options || [];
+            for (let index = 0; index < targetOptions.length; index += 1) {
+              const option = targetOptions[index];
+              option.selected = selections.indexOf(option.value) !== -1;
+            }
+          } else if (target.value !== proxyControl.value) {
+            target.value = proxyControl.value;
+          }
+        } else if (target.value !== proxyControl.value) {
+          target.value = proxyControl.value;
+        }
+        dispatchSyntheticEvent(target, 'input');
+        dispatchSyntheticEvent(target, 'change');
+      };
+
+      proxyControl.addEventListener('input', syncToTarget);
+      proxyControl.addEventListener('change', syncToTarget);
+      target.addEventListener('input', syncFromTarget);
+      target.addEventListener('change', syncFromTarget);
+      registerCleanup(() => {
+        proxyControl.removeEventListener('input', syncToTarget);
+        proxyControl.removeEventListener('change', syncToTarget);
+        target.removeEventListener('input', syncFromTarget);
+        target.removeEventListener('change', syncFromTarget);
+      });
+
+      if (target.tagName && target.tagName.toLowerCase() === 'select' && typeof MutationObserver === 'function') {
+        try {
+          const observer = new MutationObserver(() => {
+            syncFromTarget();
+          });
+          observer.observe(target, { childList: true, subtree: true });
+          registerCleanup(() => {
+            observer.disconnect();
+          });
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not observe select options.', error);
+        }
+      }
+
+      syncFromTarget();
+      return proxyControl;
+    };
+
+    for (let index = 0; index < stepConfig.fields.length; index += 1) {
+      try {
+        createProxyField(stepConfig.fields[index]);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not render project requirements proxy.', error);
+      }
+    }
+
+    const offlineHint = DOCUMENT.createElement('p');
+    offlineHint.className = 'onboarding-resume-hint';
+    offlineHint.textContent = tourTexts && typeof tourTexts.projectRequirementsMiniOfflineHint === 'string'
+      ? tourTexts.projectRequirementsMiniOfflineHint
+      : 'All entries save offline immediately. Use Back or Next here without losing work.';
+    fragment.appendChild(offlineHint);
+
+    const nav = DOCUMENT.createElement('div');
+    nav.className = 'onboarding-inline-nav';
+
+    const inlineBack = DOCUMENT.createElement('button');
+    inlineBack.type = 'button';
+    inlineBack.className = 'button onboarding-inline-button';
+    inlineBack.textContent = tourTexts && typeof tourTexts.backLabel === 'string'
+      ? tourTexts.backLabel
+      : 'Back';
+    inlineBack.disabled = stepIndex === 0;
+    const handleInlineBack = event => {
+      event.preventDefault();
+      if (!inlineBack.disabled) {
+        goToPreviousStep();
+      }
+    };
+    inlineBack.addEventListener('click', handleInlineBack);
+    registerCleanup(() => {
+      inlineBack.removeEventListener('click', handleInlineBack);
+    });
+    nav.appendChild(inlineBack);
+
+    const inlineNext = DOCUMENT.createElement('button');
+    inlineNext.type = 'button';
+    inlineNext.className = 'button onboarding-inline-button onboarding-inline-button--primary';
+    inlineNext.textContent = tourTexts && typeof tourTexts.nextLabel === 'string'
+      ? tourTexts.nextLabel
+      : 'Next';
+    const handleInlineNext = event => {
+      event.preventDefault();
+      goToNextStep();
+    };
+    inlineNext.addEventListener('click', handleInlineNext);
+    registerCleanup(() => {
+      inlineNext.removeEventListener('click', handleInlineNext);
+    });
+    nav.appendChild(inlineNext);
+
+    fragment.appendChild(nav);
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+
+    if (firstProxyField && typeof firstProxyField.focus === 'function') {
+      const focusField = firstProxyField;
+      const focusRunner = () => {
+        try {
+          focusField.focus({ preventScroll: true });
+        } catch (error) {
+          try {
+            focusField.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(focusRunner);
+      } else {
+        setTimeout(focusRunner, 0);
+      }
+    }
+
+    registerCleanup(() => {
+      while (interactionContainerEl.firstChild) {
+        interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+      }
+    });
+
+    return true;
+  }
+
   function renderStepInteraction(step) {
     if (!interactionContainerEl) {
       return;
@@ -5994,6 +6786,9 @@
       }
       if (key === 'unitsPreferences') {
         return renderUnitsPreferencesInteraction(registerCleanup, step);
+      }
+      if (PROJECT_REQUIREMENTS_STEP_KEYS.indexOf(key) !== -1) {
+        return renderProjectRequirementsInteraction(registerCleanup, step);
       }
       return false;
     })();

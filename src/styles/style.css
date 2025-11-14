@@ -8170,6 +8170,36 @@ body.dark-mode .onboarding-resume-hint {
   color: var(--inverse-text-color);
 }
 
+.onboarding-step-indicator {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.onboarding-inline-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: 0.75rem;
+}
+
+.onboarding-inline-button {
+  flex: 1 1 9rem;
+  justify-content: center;
+  min-height: 2.75rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.onboarding-inline-button--primary {
+  background-color: var(--onboarding-button-bg);
+  color: var(--onboarding-button-text);
+}
+
+body.dark-mode .onboarding-inline-button--primary {
+  background-color: color-mix(in srgb, var(--accent-color) 45%, rgba(255, 255, 255, 0.08));
+  color: var(--inverse-text-color);
+}
+
 @keyframes onboarding-storage-pulse {
   0%,
   100% {

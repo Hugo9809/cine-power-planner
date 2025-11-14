@@ -1619,6 +1619,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionSkipHint": "Drücke Weiter, sobald du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorial-Fortschritt zurückzusetzen.",
         "userProfileAvatarAction": "Profilfoto hinzufügen",
         "userProfileAvatarEditAction": "Foto bearbeiten",
+        "projectRequirementsMiniIntro": "Fülle diese Proxy-Felder aus, während der Dialog Projektanforderungen geöffnet bleibt.",
+        "projectRequirementsMiniOfflineHint": "Jede Eingabe wird sofort offline gespeichert – nutze Zurück/Weiter hier, ohne Daten zu verlieren.",
         "unitsPreferencesLanguageLabel": "Sprache",
         "unitsPreferencesThemeLabel": "Design",
         "unitsPreferencesThemeLight": "Hell",
@@ -1783,9 +1785,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Neue automatische Regel hinzufügen",
             "body": "Klicke auf Regel hinzufügen, um eine eigene Automatisierung zu erstellen. Vergib einen Namen, ergänze Bedingungen und benötigtes Equipment und speichere. Der Planner führt die neue Regel offline bei jedem Neuaufbau des Kits aus und nimmt sie in Exporte, Freigaben und Sicherungen auf."
           },
-          "projectRequirements": {
-            "title": "Projektanforderungs-Boxen verfeinern",
-            "body": "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing — Produktionsfirma, Rentalhaus-Präferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
+          "projectRequirementsBrief": {
+            "title": "Projekt-Steckbrief erfassen",
+            "body": "Öffne den Dialog Gear-Liste und Projektanforderungen, protokolliere Produktionsfirma, Adresse, Verleihpräferenzen, Deliverables und Terminhinweise. Die Angaben füllen PDF-Pakete automatisch, bleiben offline im Cache und bereiten die nächsten Abschnitte vor."
+          },
+          "projectRequirementsCrew": {
+            "title": "Crew-Abdeckung und Kontakte planen",
+            "body": "Befülle die Bereiche Crew, Prep, Dreh und Rückgabe mit Namen, Rollen und Hinweisen. Verknüpfe gespeicherte Kontakte, ergänze Notfallinfos und dupliziere Zeilen für identische Einsätze, damit Exporte zeigen, wer wann am Set ist."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Optiken, Rigging und Monitoring festhalten",
+            "body": "Arbeite die übrigen Sektionen durch – Kameraspezifikationen, Linsen-Workflow, Rigging-Szenarien, Speicher-/Medienmengen, Mattebox- und Monitoring-Präferenzen. Jede Eingabe speist automatische Gear-Regeln, Speicherberechnung und die finale Checkliste."
           },
           "gearList": {
             "title": "Generierte Gear-Liste prüfen",

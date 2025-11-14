@@ -1619,6 +1619,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "userProfileInteractionSkipHint": "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
         "userProfileAvatarAction": "Añadir foto de perfil",
         "userProfileAvatarEditAction": "Editar foto",
+        "projectRequirementsMiniIntro": "Completa estos campos proxy mientras el cuadro de diálogo Requisitos del proyecto permanece abierto.",
+        "projectRequirementsMiniOfflineHint": "Cada cambio se guarda al instante sin conexión; usa Atrás/Siguiente aquí sin arriesgar tus datos.",
         "unitsPreferencesLanguageLabel": "Idioma",
         "unitsPreferencesThemeLabel": "Tema",
         "unitsPreferencesThemeLight": "Claro",
@@ -1783,9 +1785,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Añade una nueva regla automática",
             "body": "Pulsa Añadir regla para crear una automatización personalizada. Ponle nombre, agrega condiciones y el equipo necesario y guarda. El planificador ejecuta la nueva regla sin conexión cada vez que regeneras el kit y la incluye en exportaciones, compartidos y copias de seguridad."
           },
-          "projectRequirements": {
-            "title": "Refina los recuadros de requisitos",
-            "body": "Ajusta la salida de Requisitos del proyecto para capturar notas del equipo, entregables y recordatorios de seguridad. Cada recuadro se guarda con el proyecto, se imprime en los resúmenes y fluye hacia las exportaciones. Recorre tres subpasos rápidos para no olvidar nada: 15A documenta el briefing del proyecto—productora, preferencias del rental, calendario y especificaciones de entrega; 15B vincula las filas del equipo con los contactos guardados señalando la cobertura de preparación/rodaje/devolución y las notas de emergencia; 15C captura la logística como soportes de almacenamiento, preferencias de monitorización y avisos de seguridad, luego regenera el resumen para confirmar que aparezcan los nuevos detalles."
+          "projectRequirementsBrief": {
+            "title": "Registrar el brief del proyecto",
+            "body": "Abre Generar lista de equipo y Requisitos del proyecto y documenta la productora, la dirección completa, las preferencias del rental, los entregables y las notas de agenda. Estos datos rellenan los PDF de alquiler, permanecen en caché sin conexión y preparan las siguientes secciones."
+          },
+          "projectRequirementsCrew": {
+            "title": "Mapear la cobertura del equipo y contactos",
+            "body": "Completa las filas de Crew, Prep, Rodaje y Devolución con nombres, roles y notas. Vincula contactos guardados, añade detalles de emergencia y duplica filas cuando varios días comparten el mismo plan para que los exportes indiquen quién está en set y cuándo."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Registrar lentes, rigging y monitorización",
+            "body": "Recorre el resto de secciones: especificaciones de cámara, flujo de lentes, escenarios de rigging, cantidades de almacenamiento/medios, preferencias de mattebox y monitorización. Cada campo alimenta las reglas automáticas, el cálculo de almacenamiento y la lista final."
           },
           "gearList": {
             "title": "Audita la lista de equipo generada",
