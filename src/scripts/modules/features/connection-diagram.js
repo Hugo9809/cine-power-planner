@@ -120,14 +120,6 @@
       context.getDiagramDetailContent,
       () => fallbackValue(context.diagramDetailContent, document ? document.getElementById('diagramDetailDialogContent') : null),
     );
-    const getDiagramDetailHeading = fallbackGetter(
-      context.getDiagramDetailHeading,
-      () => fallbackValue(context.diagramDetailHeading, document ? document.getElementById('diagramDetailDialogHeading') : null),
-    );
-    const getDiagramDetailBackButton = fallbackGetter(
-      context.getDiagramDetailBackButton,
-      () => fallbackValue(context.diagramDetailBackButton, document ? document.getElementById('diagramDetailDialogBack') : null),
-    );
 
     const getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, () => false);
     // Persistence hooks are resolved lazily so feature modules can opt-in to
@@ -219,8 +211,6 @@
     let lastPointerPosition = null;
     let detailDialog = null;
     let detailDialogContent = null;
-    let detailDialogHeading = null;
-    let detailDialogBackButton = null;
     let detailDialogSetupComplete = false;
     let detailDialogDefaultHeading = 'Diagram details';
     let detailDialogBackLabel = 'Back';
@@ -305,14 +295,9 @@
     function ensureDetailDialogElements() {
       const dialogEl = getDiagramDetailDialog();
       const contentEl = getDiagramDetailContent();
-      const headingEl = getDiagramDetailHeading();
-      const backButtonEl = getDiagramDetailBackButton();
-
       const dialogChanged = dialogEl !== detailDialog;
       detailDialog = dialogEl || null;
       detailDialogContent = contentEl || null;
-      detailDialogHeading = headingEl || null;
-      detailDialogBackButton = backButtonEl || null;
 
       if (detailDialog && (dialogChanged || !detailDialogSetupComplete)) {
         const handleBackdropClick = event => {
@@ -329,22 +314,12 @@
           if (detailDialogContent) {
             detailDialogContent.innerHTML = '';
           }
-          if (detailDialogHeading) {
-            detailDialogHeading.textContent = detailDialogDefaultHeading;
-          }
+          detailDialog.removeAttribute('aria-labelledby');
+          detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
           detailDialog.classList.remove('diagram-detail-dialog--camera');
         });
+        detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialogSetupComplete = true;
-      }
-
-      if (detailDialogBackButton) {
-        detailDialogBackButton.onclick = closeDetailDialog;
-        detailDialogBackButton.textContent = detailDialogBackLabel;
-        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
-      }
-
-      if (detailDialogHeading && (!detailDialog || !detailDialog.open)) {
-        detailDialogHeading.textContent = detailDialogDefaultHeading;
       }
     }
 
@@ -360,9 +335,8 @@
         if (detailDialogContent) {
           detailDialogContent.innerHTML = '';
         }
-        if (detailDialogHeading) {
-          detailDialogHeading.textContent = detailDialogDefaultHeading;
-        }
+        detailDialog.removeAttribute('aria-labelledby');
+        detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialog.classList.remove('diagram-detail-dialog--camera');
       }
     }
@@ -416,12 +390,12 @@
       detailDialog.classList.toggle('diagram-detail-dialog--camera', isCamera);
 
       const headingText = entry.label || detailDialogDefaultHeading;
-      if (detailDialogHeading) {
-        detailDialogHeading.textContent = headingText;
-      }
-      if (detailDialogBackButton) {
-        detailDialogBackButton.textContent = detailDialogBackLabel;
-        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      if (entry.headingId) {
+        detailDialog.setAttribute('aria-labelledby', entry.headingId);
+        detailDialog.removeAttribute('aria-label');
+      } else {
+        detailDialog.removeAttribute('aria-labelledby');
+        detailDialog.setAttribute('aria-label', headingText);
       }
 
       if (typeof detailDialog.showModal === 'function') {
@@ -430,15 +404,6 @@
         }
       } else {
         detailDialog.setAttribute('open', '');
-      }
-
-      if (detailDialogBackButton && typeof detailDialogBackButton.focus === 'function') {
-        try {
-          detailDialogBackButton.focus({ preventScroll: true });
-        } catch (focusError) {
-          detailDialogBackButton.focus();
-          void focusError;
-        }
       }
     }
 

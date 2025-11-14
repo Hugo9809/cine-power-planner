@@ -9723,40 +9723,6 @@ body.light-mode #topBar select:focus-visible {
 }
 
 
-.diagram-detail-dialog__header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding-bottom: clamp(0.85rem, 2vw, 1.1rem);
-  margin-bottom: clamp(0.85rem, 2vw, 1.1rem);
-  border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
-  position: relative;
-}
-
-.diagram-detail-dialog__back {
-  font-size: var(--font-size-relative-base);
-  background: none;
-  border: none;
-  color: var(--accent-color);
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--border-radius-sm, 4px);
-  position: absolute;
-  left: 0;
-}
-
-.diagram-detail-dialog__back:hover,
-.diagram-detail-dialog__back:focus-visible {
-  text-decoration: underline;
-}
-
-.diagram-detail-dialog__title {
-  margin: 0;
-  font-size: calc(var(--font-size-relative-base) * 1.1);
-  text-align: center;
-}
-
 .diagram-detail-dialog__content {
   padding: 0;
   max-height: min(70vh, calc(100vh - 200px));
