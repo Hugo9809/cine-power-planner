@@ -212,6 +212,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 - **Contrôles d’accent et typographie** – Ajustez couleur d’accent, taille et famille de police ; les thèmes sombre, rose et contraste élevé persistent entre les sessions.
 - **Raccourcis de recherche globale** – Pressez `/` ou `Ctrl+K` (`⌘K` sur macOS) pour cibler la recherche instantanément, même avec la navigation mobile repliée.
 - **Bouton Forcer le rechargement** – Rafraîchit les ressources du service worker sans effacer projets ni appareils. Une sonde de connectivité robuste interroge désormais le serveur avant le nettoyage pour préserver les caches lorsque le réseau est indisponible.
+  Laissez jusqu’à cinq secondes au module hors ligne pour terminer la désinscription du worker avant que la purge manuelle des caches ne prenne le relais : les portables plus lents évitent ainsi les doubles rechargements et les autosaves restent protégées.
 - **Favoris épinglés** – Étoile les entrées pour garder caméras, batteries et accessoires préférés en tête de liste et inclus dans les backups.
 - **Réinitialisation usine sécurisée** – Télécharge automatiquement un backup avant toute suppression de projets, appareils ou préférences.
 

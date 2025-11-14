@@ -212,6 +212,7 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 - **Controles de acento y tipografía** – Ajusta color de acento, tamaño y familia de fuente; los temas oscuro, rosa y alto contraste persisten entre sesiones.
 - **Atajos de búsqueda global** – Pulsa `/` o `Ctrl+K` (`⌘K` en macOS) para enfocar la búsqueda aunque el menú móvil esté plegado.
 - **Botón de forzar recarga** – Actualiza los recursos del service worker sin borrar proyectos ni dispositivos. Una sonda de conectividad resistente ahora hace ping al servidor antes de limpiar, así las cachés permanecen intactas si la red falla.
+  Dale hasta cinco segundos antes de que aparezca el modo de purga manual; así los equipos más lentos pueden desmontar el service worker con calma y evitar recargas dobles que pondrían en riesgo los auto-guardados.
 - **Favoritos anclados** – Marca opciones con estrella para mantener cámaras, baterías y accesorios habituales arriba y en las copias de seguridad.
 - **Reseteo de fábrica con respaldo** – Descarga automáticamente una copia antes de borrar proyectos, dispositivos y ajustes guardados.
 

@@ -20,8 +20,9 @@ air-gapped workflows.
       Export queued backups immediately.** warnings before disconnecting.
 - [ ] Toggle the browser’s offline mode and confirm the top banner announces
       that force reload requires connectivity while the header reload control
-      remains disabled. This ensures caches and service workers stay intact
-      until a connection is restored.
+      remains disabled. The reload window now waits up to **5 seconds** before
+      falling back to the manual cache purge so slow hardware can finish
+      cleaning up service-worker state without data loss.
 - [ ] While still in developer tools, watch the reload connectivity probe: it
       now appends a `__cineReloadProbe__` token and expects
       `x-cine-connectivity-probe-result: network`. When offline you should see

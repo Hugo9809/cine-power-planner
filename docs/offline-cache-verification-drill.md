@@ -47,6 +47,9 @@ fails when they drift. If it reports differences, regenerate the manifest with
    - Ensure the service worker reinstalls seamlessly and logs the restore.
 6. **Cache reset test**
    - Click the toolbar’s 🔄 **Force reload** button (or open the help dialog and follow its Force reload link).
+   - Allow up to **5 seconds** for the offline module to finish unregistering the
+     service worker and warming caches before the manual fallback triggers; log a
+     defect if the warning reappears faster than that window.
    - Confirm the app reloads cleanly, rehydrates from storage and preserves user
      data.
 
