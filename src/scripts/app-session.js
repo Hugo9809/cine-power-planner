@@ -4383,11 +4383,18 @@ function setProjectAutoSaveOverrides(overrides) {
     const renameInProgress = typeof state.renameInProgress === 'boolean'
       ? state.renameInProgress
       : Boolean(selectedName && typedName && typedName !== selectedName);
+    const typedNameHasTrailingWhitespace = Boolean(
+      typedName
+      && state
+      && typeof state.typedNameHasTrailingWhitespace === 'boolean'
+      && state.typedNameHasTrailingWhitespace,
+    );
     context.setupNameState = {
       typedName,
       selectedName,
       storageKey,
       renameInProgress,
+      typedNameHasTrailingWhitespace,
     };
   }
   projectAutoSaveOverrides = context.setupNameState ? context : null;

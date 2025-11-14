@@ -2315,10 +2315,11 @@ const setupSelectTarget = getSetupSelectElement();
 
 addSafeEventListener(setupSelectTarget, "change", (event) => {
     const setupName = event.target.value;
-  const typedName =
+  const rawTypedName =
     setupNameInput && typeof setupNameInput.value === 'string'
-      ? setupNameInput.value.trim()
+      ? setupNameInput.value
       : '';
+  const typedName = rawTypedName.trim();
   const previousKey =
     (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '')
     || typedName
@@ -2350,6 +2351,11 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
             previousSelection
             && typedName
             && typedName !== previousSelection,
+          ),
+          typedNameHasTrailingWhitespace: Boolean(
+            typedName
+            && typeof rawTypedName === 'string'
+            && /\s$/.test(rawTypedName),
           ),
         },
       };
