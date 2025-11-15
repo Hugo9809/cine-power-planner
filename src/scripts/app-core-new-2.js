@@ -9966,10 +9966,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         label = `${label} — ${detail}`;
       }
       const id = getFeatureSearchOptionId(value);
+      const optionKey = typeof entry === 'object' && entry !== null ? entry.key || '' : '';
+      const optionType = typeof entry === 'object' && entry !== null ? entry.type || 'feature' : 'feature';
+      const baseOption = {
+        value,
+        label: label || value,
+        id,
+        entry,
+        entryKey: optionKey,
+        entryType: optionType,
+      };
       if (!label || label === value) {
-        return { value, label: label || value, id };
+        return baseOption;
       }
-      return { value, label, id };
+      return baseOption;
     };
 
     const normalizeFeatureSearchOption = value => {
@@ -9981,7 +9991,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const optionId = typeof value.id === 'string' && value.id.trim()
           ? value.id.trim()
           : getFeatureSearchOptionId(optionValue);
-        return { value: optionValue, label: optionLabel, id: optionId };
+        return {
+          value: optionValue,
+          label: optionLabel,
+          id: optionId,
+          entry: value.entry,
+          entryKey: value.entryKey,
+          entryType: value.entryType,
+        };
       }
       if (typeof value === 'string') {
         return { value, label: value, id: getFeatureSearchOptionId(value) };
@@ -10010,6 +10027,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!featureSearchDropdown) return;
       featureSearchDropdown.innerHTML = '';
     
+      const optionEntryMap =
+        featureSearchDropdown.__optionEntries instanceof Map
+          ? featureSearchDropdown.__optionEntries
+          : new Map();
+      optionEntryMap.clear();
+      featureSearchDropdown.__optionEntries = optionEntryMap;
+
       if (!Array.isArray(options) || options.length === 0) {
         featureSearchDropdown.dataset.count = '0';
         featureSearchDropdown.dataset.open = 'false';
@@ -10034,8 +10058,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         button.setAttribute('role', 'option');
         button.setAttribute('tabindex', index === 0 ? '0' : '-1');
         button.setAttribute('data-value', option.value);
+        if (option.entryKey) {
+          button.setAttribute('data-entry-key', option.entryKey);
+        }
+        if (option.entryType) {
+          button.setAttribute('data-entry-type', option.entryType);
+        }
         button.setAttribute('aria-label', option.label || option.value);
         button.setAttribute('aria-selected', 'false');
+
+        if (optionId) {
+          optionEntryMap.set(optionId, option.entry || null);
+        }
 
         const labelSpan = document.createElement('span');
         labelSpan.className = 'feature-search-option-label';
