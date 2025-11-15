@@ -19,6 +19,7 @@ function createDeviceSkeleton() {
     videoAssist: {},
     media: {},
     lenses: {},
+    carts: {},
     batteries: {},
     batteryHotswaps: {},
     wirelessReceivers: {},

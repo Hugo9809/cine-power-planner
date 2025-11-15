@@ -985,6 +985,10 @@ data.
 - Gear lists save with the project, appear in printable overviews, live inside
   shareable project files and can be removed with **Delete Gear List** if you
   want a fresh start.
+- Camera cart rows added by automatic gear rules now include a dedicated cart
+  selector plus multi-selects for configuration and accessories. The Backstage
+  Magliner Senior cart loads by default so you can confirm wheel kits, drawers
+  or brand accessories without editing the raw list.
 
 ## Automatic Gear Rules
 

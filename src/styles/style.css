@@ -11675,6 +11675,39 @@ body.dark-mode .requirement-box,
   padding-inline: 0.35rem;
 }
 
+.gear-cart-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.gear-cart-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: min(18rem, 100%);
+}
+
+.gear-cart-option select {
+  min-width: 12rem;
+}
+
+.gear-cart-option-label {
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .gear-cart-detail {
+    flex-direction: column;
+  }
+
+  .gear-cart-option {
+    min-width: 100%;
+  }
+}
+
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);

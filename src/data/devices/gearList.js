@@ -6095,9 +6095,21 @@ const gear = {
       }
     },
     "carts": {
-      "Magliner Senior Videomagliner": {
-        "brand": "Magliner"
-      }
+      "Inovativ Voyager 30 EVO X": { "brand": "Inovativ" },
+      "Inovativ Voyager 36 EVO X": { "brand": "Inovativ" },
+      "Inovativ Voyager 42 EVO X": { "brand": "Inovativ" },
+      "Inovativ Apollo 40 EVO": { "brand": "Inovativ" },
+      "Inovativ Apollo 52 EVO": { "brand": "Inovativ" },
+      "Inovativ Echo 36 Workstation Cart": { "brand": "Inovativ" },
+      "Inovativ Echo 48 Workstation Cart": { "brand": "Inovativ" },
+      "Adicam MINI Camera Cart": { "brand": "Adicam" },
+      "Adicam STANDARD Camera Cart": { "brand": "Adicam" },
+      "Adicam STANDARD+ Camera Cart": { "brand": "Adicam" },
+      "Adicam MAX Camera Cart": { "brand": "Adicam" },
+      "SmallRig MD4573 36\" Lightweight Video Production Camera Cart": { "brand": "SmallRig" },
+      "Tilta Boulder 36\" Camera Cart": { "brand": "Tilta" },
+      "Backstage Magliner Junior 24\" Film Cart (8\" Conversion Kit)": { "brand": "Backstage" },
+      "Backstage Magliner Senior 24\" Film Cart (8\" Conversion Kit)": { "brand": "Backstage" }
     }
   },
   "filterOptions": [

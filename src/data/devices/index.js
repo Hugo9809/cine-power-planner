@@ -57,6 +57,7 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./batteryHotswaps.js');
   require('./chargers.js');
   require('./cages.js');
+  require('./carts.js');
   require('./gearList.js');
   require('./wirelessReceivers.js');
   markDevicesNormalized();
