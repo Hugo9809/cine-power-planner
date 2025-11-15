@@ -19592,7 +19592,10 @@ if (typeof module !== "undefined" && module.exports) {
       featureSearchEntries,
       featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
-      featureListElement: featureList,
+      featureSearchDropdownElement:
+        typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown
+          ? globalThis.featureSearchDropdown
+          : null,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
     },
