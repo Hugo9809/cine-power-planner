@@ -3467,6 +3467,7 @@ if (projectForm) {
         displayGearAndRequirements(html);
         ensureGearListActions();
         bindGearListCageListener();
+        bindGearListCartListener();
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
         bindGearListEyeLeatherListener();
@@ -11230,6 +11231,209 @@ function applyCustomItemsState(state) {
   });
 }
 
+const gearCartCatalogHelpers = (() => {
+    const CART_LEGACY_HINTS = [
+        { pattern: /magliner\s+senior/, value: 'Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)' },
+        { pattern: /magliner\s+junior/, value: 'Backstage Magliner Junior 24" Film Cart (8" Conversion Kit)' },
+        { pattern: /magliner\s+\d+\s*"?\s*cinema/, value: 'Backstage Magliner Junior 24" Film Cart (8" Conversion Kit)' },
+        { pattern: /magliner\s+junior\s+\d+\s*"/, value: 'Backstage Magliner Junior 24" Film Cart (8" Conversion Kit)' },
+        { pattern: /ranger\s*36/, value: 'Inovativ Ranger 36 Equipment Cart' },
+        { pattern: /ranger\s*48/, value: 'Inovativ Ranger 48 Equipment Cart' },
+        { pattern: /voyager\s*30/, value: 'Inovativ Voyager 30 EVO X' },
+        { pattern: /voyager\s*36/, value: 'Inovativ Voyager 36 EVO X' },
+        { pattern: /voyager\s*42/, value: 'Inovativ Voyager 42 EVO X' },
+        { pattern: /apollo\s*40/, value: 'Inovativ Apollo 40 Equipment Cart' },
+        { pattern: /apollo\s*52/, value: 'Inovativ Apollo 52 Equipment Cart' },
+        { pattern: /echo\s*36/, value: 'Inovativ Echo 36 Workstation Cart' },
+        { pattern: /echo\s*48/, value: 'Inovativ Echo 48 Workstation Cart' },
+        { pattern: /adicam\s+mini/, value: 'Adicam MINI Camera Cart' },
+        { pattern: /adicam\s+standard\+/, value: 'Adicam STANDARD+ Camera Cart' },
+        { pattern: /adicam\s+standard/, value: 'Adicam STANDARD Camera Cart' },
+        { pattern: /adicam\s+max/, value: 'Adicam MAX Camera Cart' },
+        { pattern: /tilta\s+boulder/, value: 'Tilta Boulder 36" Camera Cart' },
+        { pattern: /smallrig/, value: 'SmallRig MD4573 36" Lightweight Video Production Camera Cart' }
+    ];
+
+    function normalizeCartName(value) {
+        return value
+            ? value
+                .replace(/[\"'”“]/g, '')
+                .replace(/\(.*?\)/g, '')
+                .replace(/[^a-z0-9]+/gi, ' ')
+                .trim()
+                .toLowerCase()
+            : '';
+    }
+
+    function resolveCartDatasetName(rawName, cartDatabase, cartDatabaseNames) {
+        if (!Array.isArray(cartDatabaseNames) || !cartDatabaseNames.length) {
+            return '';
+        }
+        const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+        if (trimmed && cartDatabase && Object.prototype.hasOwnProperty.call(cartDatabase, trimmed)) {
+            return trimmed;
+        }
+        const normalized = normalizeCartName(trimmed);
+        if (normalized) {
+            const direct = cartDatabaseNames.find(name => normalizeCartName(name) === normalized);
+            if (direct) {
+                return direct;
+            }
+            const hinted = CART_LEGACY_HINTS.find(entry => entry.pattern.test(normalized) && cartDatabaseNames.includes(entry.value));
+            if (hinted) {
+                return hinted.value;
+            }
+        }
+        return '';
+    }
+
+    function formatCartFeatureLabel(value) {
+        if (!value) return '';
+        return value
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function formatWheelOptionLabel(option, prefix) {
+        if (!option || typeof option !== 'object') {
+            return '';
+        }
+        const parts = [];
+        if (prefix) {
+            parts.push(prefix);
+        }
+        if (typeof option.diameterIn !== 'undefined') {
+            parts.push(`${option.diameterIn}\"`);
+        } else if (typeof option.diameterMainMm !== 'undefined') {
+            parts.push(`${option.diameterMainMm} mm`);
+        }
+        if (option.tireType) {
+            parts.push(option.tireType);
+        }
+        const base = parts.filter(Boolean).join(' ');
+        if (option.notes) {
+            return base ? `${base} (${option.notes})` : option.notes;
+        }
+        if (option.name && base) {
+            return `${option.name} - ${base}`;
+        }
+        return option.name || base;
+    }
+
+    function buildCartConfigurationOptions(cartEntry) {
+        if (!cartEntry || typeof cartEntry !== 'object') {
+            return [];
+        }
+        const options = [];
+        const seen = new Set();
+        const addOption = (value, label, selected, title) => {
+            if (!value || !label || seen.has(value)) {
+                return;
+            }
+            const optionLabel = addArriKNumber(label) || label;
+            options.push({ value, label: optionLabel, selected: Boolean(selected), title });
+            seen.add(value);
+        };
+        if (cartEntry.config && typeof cartEntry.config === 'object') {
+            Object.entries(cartEntry.config).forEach(([key, value]) => {
+                if (!value) return;
+                const label = formatCartFeatureLabel(key);
+                if (label) {
+                    addOption(`feature:${key}`, label, true);
+                }
+            });
+        }
+        const wheelConfig = cartEntry.wheelConfig && typeof cartEntry.wheelConfig === 'object'
+            ? cartEntry.wheelConfig
+            : null;
+        if (wheelConfig && wheelConfig.standard) {
+            const wheelLabel = formatWheelOptionLabel(wheelConfig.standard, 'Standard wheel') || 'Standard wheel';
+            addOption('wheel:standard', wheelLabel, true, wheelConfig.standard.notes);
+        }
+        if (wheelConfig && Array.isArray(wheelConfig.options)) {
+            wheelConfig.options.forEach((option, idx) => {
+                const label = formatWheelOptionLabel(option, option && option.name ? option.name : 'Wheel option')
+                    || `Wheel option ${idx + 1}`;
+                addOption(`wheel:option:${idx}`, label, false, option && option.notes);
+            });
+        }
+        if (Array.isArray(cartEntry.kits)) {
+            cartEntry.kits.forEach((kit, idx) => {
+                const label = kit && kit.name ? kit.name : `Kit ${idx + 1}`;
+                addOption(`kit:${idx}`, label, false, kit && kit.notes);
+            });
+        }
+        return options;
+    }
+
+    function buildCartAccessoriesOptions(cartEntry) {
+        if (!cartEntry || typeof cartEntry !== 'object') {
+            return [];
+        }
+        const options = [];
+        const seen = new Set();
+        const addOption = (value, label, selected, title) => {
+            if (!value || !label || seen.has(value)) {
+                return;
+            }
+            const optionLabel = addArriKNumber(label) || label;
+            options.push({ value, label: optionLabel, selected: Boolean(selected), title });
+            seen.add(value);
+        };
+        if (Array.isArray(cartEntry.accessories)) {
+            cartEntry.accessories.forEach((name, idx) => {
+                if (!name) return;
+                addOption(`accessory:${idx}`, name, true);
+            });
+        }
+        if (Array.isArray(cartEntry.brandAccessories)) {
+            cartEntry.brandAccessories.forEach((accessory, idx) => {
+                if (!accessory || !accessory.name) return;
+                const kindLabel = accessory.accessoryKind ? formatCartFeatureLabel(accessory.accessoryKind) : '';
+                const label = kindLabel ? `[${kindLabel}] ${accessory.name}` : accessory.name;
+                addOption(`brand:${idx}`, label, true, accessory.notes);
+            });
+        }
+        return options;
+    }
+
+    function buildCartOptionBlock(id, label, options) {
+        if (!options.length) {
+            return '';
+        }
+        const safeLabel = label || 'Options';
+        const selectSize = Math.min(6, Math.max(2, options.length));
+        const optionsHtml = options
+            .map(option => {
+                const attrs = [`value="${escapeHtml(option.value)}"`];
+                if (option.selected) {
+                    attrs.push('selected');
+                }
+                if (option.title) {
+                    attrs.push(`title="${escapeHtml(option.title)}"`);
+                }
+                return `<option ${attrs.join(' ')}>${escapeHtml(option.label)}</option>`;
+            })
+            .join('');
+        return `
+        <span class="gear-cart-option">
+          <span class="gear-cart-option-label">${escapeHtml(safeLabel)}</span>
+          <select id="${escapeHtml(id)}" multiple size="${selectSize}" aria-label="${escapeHtml(safeLabel)}">
+            ${optionsHtml}
+          </select>
+        </span>
+      `.replace(/\s+/g, ' ').trim();
+    }
+
+    return {
+        resolveCartDatasetName,
+        buildCartConfigurationOptions,
+        buildCartAccessoriesOptions,
+        buildCartOptionBlock,
+    };
+})();
+
 function gearListGenerateHtmlImpl(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -12868,201 +13072,14 @@ function gearListGenerateHtmlImpl(info = {}) {
     const DEFAULT_CART_NAME = cartDatabaseNames.includes('Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)')
       ? 'Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)'
       : (cartDatabaseNames[0] || '');
-    const CART_LEGACY_HINTS = [
-      { pattern: /magliner\s+senior/, value: 'Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)' },
-      { pattern: /magliner\s+junior/, value: 'Backstage Magliner Junior 24" Film Cart (8" Conversion Kit)' },
-      { pattern: /voyager\s*30/, value: 'Inovativ Voyager 30 EVO X' },
-      { pattern: /voyager\s*36/, value: 'Inovativ Voyager 36 EVO X' },
-      { pattern: /voyager\s*42/, value: 'Inovativ Voyager 42 EVO X' },
-      { pattern: /apollo\s*40/, value: 'Inovativ Apollo 40 EVO' },
-      { pattern: /apollo\s*52/, value: 'Inovativ Apollo 52 EVO' },
-      { pattern: /echo\s*36/, value: 'Inovativ Echo 36 Workstation Cart' },
-      { pattern: /echo\s*48/, value: 'Inovativ Echo 48 Workstation Cart' },
-      { pattern: /adicam\s+mini/, value: 'Adicam MINI Camera Cart' },
-      { pattern: /adicam\s+standard\+/, value: 'Adicam STANDARD+ Camera Cart' },
-      { pattern: /adicam\s+standard/, value: 'Adicam STANDARD Camera Cart' },
-      { pattern: /adicam\s+max/, value: 'Adicam MAX Camera Cart' },
-      { pattern: /tilta\s+boulder/, value: 'Tilta Boulder 36" Camera Cart' },
-      { pattern: /smallrig/, value: 'SmallRig MD4573 36" Lightweight Video Production Camera Cart' }
-    ];
-
-    function normalizeCartName(value) {
-      return value
-        ? value
-            .replace(/[\"'”“]/g, '')
-            .replace(/\(.*?\)/g, '')
-            .replace(/[^a-z0-9]+/gi, ' ')
-            .trim()
-            .toLowerCase()
-        : '';
-    }
-
-    function resolveCartDatasetName(rawName) {
-      if (!cartDatabaseNames.length) {
-        return '';
-      }
-      const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
-      if (trimmed && Object.prototype.hasOwnProperty.call(cartDatabase, trimmed)) {
-        return trimmed;
-      }
-      const normalized = normalizeCartName(trimmed);
-      if (normalized) {
-        const direct = cartDatabaseNames.find(name => normalizeCartName(name) === normalized);
-        if (direct) {
-          return direct;
-        }
-        const hinted = CART_LEGACY_HINTS.find(entry => entry.pattern.test(normalized) && cartDatabaseNames.includes(entry.value));
-        if (hinted) {
-          return hinted.value;
-        }
-      }
-      return '';
-    }
-
-    function formatCartFeatureLabel(value) {
-      if (!value) return '';
-      return value
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, char => char.toUpperCase());
-    }
-
-    function formatWheelOptionLabel(option, prefix) {
-      if (!option || typeof option !== 'object') {
-        return '';
-      }
-      const parts = [];
-      if (prefix) {
-        parts.push(prefix);
-      }
-      if (typeof option.diameterIn !== 'undefined') {
-        parts.push(`${option.diameterIn}\"`);
-      } else if (typeof option.diameterMainMm !== 'undefined') {
-        parts.push(`${option.diameterMainMm} mm`);
-      }
-      if (option.tireType) {
-        parts.push(option.tireType);
-      }
-      const base = parts.filter(Boolean).join(' ');
-      if (option.notes) {
-        return base ? `${base} (${option.notes})` : option.notes;
-      }
-      if (option.name && base) {
-        return `${option.name} - ${base}`;
-      }
-      return option.name || base;
-    }
-
-    function buildCartConfigurationOptions(cartEntry) {
-      if (!cartEntry || typeof cartEntry !== 'object') {
-        return [];
-      }
-      const options = [];
-      const seen = new Set();
-      const addOption = (value, label, selected, title) => {
-        if (!value || !label || seen.has(value)) {
-          return;
-        }
-        const optionLabel = addArriKNumber(label) || label;
-        options.push({ value, label: optionLabel, selected: Boolean(selected), title });
-        seen.add(value);
-      };
-      if (cartEntry.config && typeof cartEntry.config === 'object') {
-        Object.entries(cartEntry.config).forEach(([key, value]) => {
-          if (!value) return;
-          const label = formatCartFeatureLabel(key);
-          if (label) {
-            addOption(`feature:${key}`, label, true);
-          }
-        });
-      }
-      const wheelConfig = cartEntry.wheelConfig && typeof cartEntry.wheelConfig === 'object'
-        ? cartEntry.wheelConfig
-        : null;
-      if (wheelConfig && wheelConfig.standard) {
-        const wheelLabel = formatWheelOptionLabel(wheelConfig.standard, 'Standard wheel') || 'Standard wheel';
-        addOption('wheel:standard', wheelLabel, true, wheelConfig.standard.notes);
-      }
-      if (wheelConfig && Array.isArray(wheelConfig.options)) {
-        wheelConfig.options.forEach((option, idx) => {
-          const label = formatWheelOptionLabel(option, option && option.name ? option.name : 'Wheel option')
-            || `Wheel option ${idx + 1}`;
-          addOption(`wheel:option:${idx}`, label, false, option && option.notes);
-        });
-      }
-      if (Array.isArray(cartEntry.kits)) {
-        cartEntry.kits.forEach((kit, idx) => {
-          const label = kit && kit.name ? kit.name : `Kit ${idx + 1}`;
-          addOption(`kit:${idx}`, label, false, kit && kit.notes);
-        });
-      }
-      return options;
-    }
-
-    function buildCartAccessoriesOptions(cartEntry) {
-      if (!cartEntry || typeof cartEntry !== 'object') {
-        return [];
-      }
-      const options = [];
-      const seen = new Set();
-      const addOption = (value, label, selected, title) => {
-        if (!value || !label || seen.has(value)) {
-          return;
-        }
-        const optionLabel = addArriKNumber(label) || label;
-        options.push({ value, label: optionLabel, selected: Boolean(selected), title });
-        seen.add(value);
-      };
-      if (Array.isArray(cartEntry.accessories)) {
-        cartEntry.accessories.forEach((name, idx) => {
-          if (!name) return;
-          addOption(`accessory:${idx}`, name, true);
-        });
-      }
-      if (Array.isArray(cartEntry.brandAccessories)) {
-        cartEntry.brandAccessories.forEach((accessory, idx) => {
-          if (!accessory || !accessory.name) return;
-          const kindLabel = accessory.accessoryKind ? formatCartFeatureLabel(accessory.accessoryKind) : '';
-          const label = kindLabel ? `[${kindLabel}] ${accessory.name}` : accessory.name;
-          addOption(`brand:${idx}`, label, true, accessory.notes);
-        });
-      }
-      return options;
-    }
-
-    function buildCartOptionBlock(id, label, options) {
-      if (!options.length) {
-        return '';
-      }
-      const safeLabel = label || 'Options';
-      const selectSize = Math.min(6, Math.max(2, options.length));
-      const optionsHtml = options
-        .map(option => {
-          const attrs = [`value="${escapeHtml(option.value)}"`];
-          if (option.selected) {
-            attrs.push('selected');
-          }
-          if (option.title) {
-            attrs.push(`title="${escapeHtml(option.title)}"`);
-          }
-          return `<option ${attrs.join(' ')}>${escapeHtml(option.label)}</option>`;
-        })
-        .join('');
-      return `
-        <span class="gear-cart-option">
-          <span class="gear-cart-option-label">${escapeHtml(safeLabel)}</span>
-          <select id="${escapeHtml(id)}" multiple size="${selectSize}" aria-label="${escapeHtml(safeLabel)}">
-            ${optionsHtml}
-          </select>
-        </span>
-      `.replace(/\s+/g, ' ').trim();
-    }
 
     function buildCartItemHtml(rawName, index) {
       if (!cartDatabaseNames.length) {
         return '';
       }
-      const resolved = resolveCartDatasetName(rawName) || DEFAULT_CART_NAME || '';
+      const resolved = gearCartCatalogHelpers.resolveCartDatasetName(rawName, cartDatabase, cartDatabaseNames)
+        || DEFAULT_CART_NAME
+        || '';
       if (!resolved && !rawName) {
         return '';
       }
@@ -13076,13 +13093,13 @@ function gearListGenerateHtmlImpl(info = {}) {
       const cartLabel = resolveGearListCustomText('gearListCartSelectorLabel', 'Camera cart');
       const selectHtml = `<select id="${selectId}" aria-label="${escapeHtml(cartLabel)}">${optionsHtml}</select>`;
       const cartEntry = cartDatabase[resolved] || cartDatabase[cartName] || null;
-      const configOptions = buildCartConfigurationOptions(cartEntry);
-      const accessoriesOptions = buildCartAccessoriesOptions(cartEntry);
+      const configOptions = gearCartCatalogHelpers.buildCartConfigurationOptions(cartEntry);
+      const accessoriesOptions = gearCartCatalogHelpers.buildCartAccessoriesOptions(cartEntry);
       const configBlock = configOptions.length
-        ? buildCartOptionBlock(`gearListCartConfig${index}`, resolveGearListCustomText('gearListCartConfigurationLabel', 'Cart configuration'), configOptions)
+        ? gearCartCatalogHelpers.buildCartOptionBlock(`gearListCartConfig${index}`, resolveGearListCustomText('gearListCartConfigurationLabel', 'Cart configuration'), configOptions)
         : '';
       const accessoriesBlock = accessoriesOptions.length
-        ? buildCartOptionBlock(`gearListCartAccessories${index}`, resolveGearListCustomText('gearListCartAccessoriesLabel', 'Cart accessories'), accessoriesOptions)
+        ? gearCartCatalogHelpers.buildCartOptionBlock(`gearListCartAccessories${index}`, resolveGearListCustomText('gearListCartAccessoriesLabel', 'Cart accessories'), accessoriesOptions)
         : '';
       const detailBlocks = [configBlock, accessoriesBlock].filter(Boolean).join('');
       const detailHtml = detailBlocks ? `<div class="gear-cart-detail">${detailBlocks}</div>` : '';
@@ -15158,6 +15175,99 @@ function bindGearListCageListener() {
     }
 }
 
+function getCartDeviceDatabase() {
+    return typeof devices === 'object' && devices && devices.carts && typeof devices.carts === 'object'
+        ? devices.carts
+        : {};
+}
+
+function syncGearListCartEntry(select) {
+    if (!select || !gearCartCatalogHelpers) return;
+    const gearItem = select.closest('.gear-item[data-gear-cart-entry]');
+    if (!gearItem) return;
+    const cartDatabase = getCartDeviceDatabase();
+    const cartDatabaseNames = Object.keys(cartDatabase)
+        .filter(name => name && name !== 'None');
+    const cartLabel = resolveGearListCustomText('gearListCartSelectorLabel', 'Camera cart');
+    const selectedValue = typeof select.value === 'string' ? select.value.trim() : '';
+    const resolvedName = gearCartCatalogHelpers.resolveCartDatasetName(selectedValue, cartDatabase, cartDatabaseNames)
+        || selectedValue
+        || '';
+    const cartEntry = (resolvedName && cartDatabase[resolvedName]) || (selectedValue && cartDatabase[selectedValue]) || null;
+    const idMatch = select.id && select.id.match(/^gearListCartSelect(.+)$/);
+    const idSuffix = idMatch && idMatch[1] ? idMatch[1] : (select.id || '');
+    const configOptions = gearCartCatalogHelpers.buildCartConfigurationOptions(cartEntry);
+    const accessoriesOptions = gearCartCatalogHelpers.buildCartAccessoriesOptions(cartEntry);
+    const configBlock = configOptions.length
+        ? gearCartCatalogHelpers.buildCartOptionBlock(
+            `gearListCartConfig${idSuffix}`,
+            resolveGearListCustomText('gearListCartConfigurationLabel', 'Cart configuration'),
+            configOptions
+        )
+        : '';
+    const accessoriesBlock = accessoriesOptions.length
+        ? gearCartCatalogHelpers.buildCartOptionBlock(
+            `gearListCartAccessories${idSuffix}`,
+            resolveGearListCustomText('gearListCartAccessoriesLabel', 'Cart accessories'),
+            accessoriesOptions
+        )
+        : '';
+    const detailHtml = [configBlock, accessoriesBlock].filter(Boolean).join('');
+    let detailContainer = gearItem.querySelector('.gear-cart-detail');
+    if (detailHtml) {
+        if (!detailContainer) {
+            detailContainer = document.createElement('div');
+            detailContainer.className = 'gear-cart-detail';
+            const parent = select.closest('.gear-item-text') || gearItem;
+            if (parent && typeof select.insertAdjacentElement === 'function') {
+                select.insertAdjacentElement('afterend', detailContainer);
+            } else {
+                parent.appendChild(detailContainer);
+            }
+        }
+        detailContainer.innerHTML = detailHtml;
+    } else if (detailContainer) {
+        detailContainer.remove();
+        detailContainer = null;
+    }
+    const attributeText = resolvedName ? (addArriKNumber(resolvedName) || resolvedName) : '';
+    const labelText = cartLabel || 'Camera cart';
+    const nameText = attributeText ? `${labelText} (${attributeText})` : labelText;
+    if (nameText) {
+        gearItem.setAttribute('data-gear-name', nameText);
+        gearItem.setAttribute('data-gear-label', labelText);
+    } else {
+        gearItem.removeAttribute('data-gear-name');
+        gearItem.removeAttribute('data-gear-label');
+    }
+    if (attributeText) {
+        gearItem.setAttribute('data-gear-attributes', attributeText);
+    } else {
+        gearItem.removeAttribute('data-gear-attributes');
+    }
+}
+
+function bindGearListCartListener() {
+    if (!gearListOutput) return;
+    const selects = gearListOutput.querySelectorAll('select[id^="gearListCartSelect"]');
+    if (!selects.length) return;
+    selects.forEach(select => {
+        if (select._gearCartListenerBound) {
+            syncGearListCartEntry(select);
+            return;
+        }
+        select.addEventListener('change', () => {
+            syncGearListCartEntry(select);
+            markProjectFormDataDirty();
+            saveCurrentGearList();
+            saveCurrentSession();
+            checkSetupChanged();
+        });
+        select._gearCartListenerBound = true;
+        syncGearListCartEntry(select);
+    });
+}
+
 function bindGearListEasyrigListener() {
     if (!gearListOutput) return;
     const sel = gearListOutput.querySelector('#gearListEasyrig');
@@ -15284,6 +15394,7 @@ function refreshGearListIfVisible() {
     }
     ensureGearListActions();
     bindGearListCageListener();
+    bindGearListCartListener();
     bindGearListEasyrigListener();
     bindGearListSliderBowlListener();
     bindGearListEyeLeatherListener();
