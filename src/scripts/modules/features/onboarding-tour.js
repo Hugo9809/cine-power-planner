@@ -125,6 +125,7 @@
   const PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
   const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+  const SKIP_STATUS_KEY = `${PRIMARY_STORAGE_KEY}:skip`;
   const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
@@ -441,6 +442,68 @@
         }
       }
       return storages;
+    }
+
+    function readSkipStatusPreference() {
+      const storages = collectStorageCandidates();
+      for (let index = 0; index < storages.length; index += 1) {
+        const storage = storages[index];
+        if (!storage || typeof storage.getItem !== 'function') {
+          continue;
+        }
+        try {
+          const value = storage.getItem(SKIP_STATUS_KEY);
+          if (value === null || typeof value === 'undefined') {
+            continue;
+          }
+          if (value === true || value === 'true') {
+            return true;
+          }
+          if (value === false || value === 'false') {
+            return false;
+          }
+          try {
+            const parsed = JSON.parse(value);
+            if (parsed === true || parsed === false) {
+              return parsed;
+            }
+          } catch (parseError) {
+            void parseError;
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+      return null;
+    }
+
+    function persistSkipStatus(skipped) {
+      const storages = collectStorageCandidates();
+      let wrote = false;
+      for (let index = 0; index < storages.length; index += 1) {
+        const storage = storages[index];
+        if (!storage) {
+          continue;
+        }
+        if (skipped === false && typeof storage.removeItem === 'function') {
+          try {
+            storage.removeItem(SKIP_STATUS_KEY);
+            wrote = true;
+            continue;
+          } catch (removeError) {
+            void removeError;
+          }
+        }
+        if (typeof storage.setItem === 'function') {
+          try {
+            storage.setItem(SKIP_STATUS_KEY, skipped ? 'true' : 'false');
+            wrote = true;
+          } catch (setError) {
+            void setError;
+          }
+        }
+      }
+      return wrote;
     }
 
     let storedStateCache = null;
@@ -2244,8 +2307,17 @@
 
   function refreshStoredState() {
     const nextState = loadStoredState();
-    storedState = nextState;
-    return nextState;
+    const skipPreference = readSkipStatusPreference();
+    const mergedState = skipPreference === true && nextState
+      ? normalizeStateSnapshot({
+        ...nextState,
+        skipped: true,
+        activeStep: null,
+        completed: false,
+      })
+      : nextState;
+    storedState = mergedState;
+    return mergedState;
   }
 
   refreshStoredState();
@@ -7359,6 +7431,7 @@
     closeOwnGearIfNeeded();
     closeDeviceManagerIfNeeded();
     endTutorial();
+    persistSkipStatus(true);
     const nextState = {
       ...storedState,
       skipped: true,
@@ -7376,6 +7449,7 @@
     closeOwnGearIfNeeded();
     closeDeviceManagerIfNeeded();
     endTutorial();
+    persistSkipStatus(false);
     const allStepKeys = stepConfig.map(step => step.key);
     const timestamp = getTimestamp();
     const finalStep = allStepKeys.length ? allStepKeys[allStepKeys.length - 1] : null;
@@ -7503,6 +7577,8 @@
     ensureOverlayElements();
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
+    persistSkipStatus(false);
+    storedState = refreshStoredState();
 
     const completedSet = new Set(
       storedState && Array.isArray(storedState.completedSteps)
@@ -7528,7 +7604,6 @@
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
-    storedState = refreshStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
 
@@ -8058,6 +8133,10 @@
 
   function shouldAutoStart() {
     if (!storedState) {
+      const skipPreference = readSkipStatusPreference();
+      if (skipPreference === true) {
+        return false;
+      }
       return true;
     }
     if (storedState.completed) {
@@ -8073,6 +8152,10 @@
     if (storedState.skipped) {
       return false;
     }
+    const skipPreference = readSkipStatusPreference();
+    if (skipPreference === true) {
+      return false;
+    }
     return true;
   }
 
@@ -8081,6 +8164,10 @@
       return;
     }
     setTimeout(() => {
+      storedState = refreshStoredState();
+      if (!shouldAutoStart()) {
+        return;
+      }
       const resume = storedState && storedState.activeStep;
       startTutorial({ resume, focusStart: true });
     }, 600);
@@ -8102,6 +8189,7 @@
   }
 
   function handleFactoryReset() {
+    persistSkipStatus(false);
     const persisted = saveState({ version: STORAGE_VERSION });
     storedState = persisted || refreshStoredState();
     applyHelpButtonLabel();
@@ -8148,6 +8236,7 @@
     start: startTutorial,
     skip: skipTutorial,
     reset() {
+      persistSkipStatus(false);
       const persisted = saveState({ version: STORAGE_VERSION });
       storedState = persisted || refreshStoredState();
       applyHelpButtonLabel();
