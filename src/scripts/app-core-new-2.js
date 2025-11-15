@@ -9447,8 +9447,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var settingsCancel  = document.getElementById("settingsCancel");
     var featureSearch =
       typeof document !== 'undefined' ? document.getElementById("featureSearch") : null;
-    var featureList =
-      typeof document !== 'undefined' ? document.getElementById("featureList") : null;
     var featureSearchDropdown =
       typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
     var featureMap      = new Map();
@@ -10074,38 +10072,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     const renderFeatureListOptions = values => {
       if (!Array.isArray(values)) {
-        if (featureList) {
-          featureList.innerHTML = '';
-        }
         renderFeatureSearchDropdown([]);
         return;
       }
-    
+
       const normalized = [];
-      const fragment = featureList ? document.createDocumentFragment() : null;
-    
+
       for (const value of values) {
         const optionData = normalizeFeatureSearchOption(value);
         if (!optionData || !optionData.value) continue;
         normalized.push(optionData);
-        if (!fragment) continue;
-        const option = document.createElement('option');
-        option.value = optionData.value;
-        const optionLabel = optionData.label || '';
-        if (optionLabel) {
-          option.label = optionLabel;
-          option.textContent = optionLabel;
-        } else {
-          option.textContent = optionData.value;
-        }
-        fragment.appendChild(option);
       }
-    
-      if (featureList) {
-        featureList.innerHTML = '';
-        featureList.appendChild(fragment);
-      }
-    
+
       renderFeatureSearchDropdown(normalized);
     };
     
