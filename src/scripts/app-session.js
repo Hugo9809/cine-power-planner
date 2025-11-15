@@ -16962,8 +16962,9 @@ if (helpButton && helpDialog) {
       }
 
       if (entryType === 'feature') {
-        const featureEl = entry.element || entry;
-        if (featureEl) {
+        const featureEntry = entry.entry || entry;
+        const featureEl = featureEntry.element || featureEntry.rawElement || null;
+        if (featureEl && typeof featureEl.closest === 'function') {
           if (label) {
             updateFeatureSearchValue(label, normalizedQuery);
           }
