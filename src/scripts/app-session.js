@@ -16893,6 +16893,135 @@ if (helpButton && helpDialog) {
   if (featureSearch) {
     const featureSearchDropdown = document.getElementById('featureSearchDropdown');
 
+    const resolveFeatureSearchOptionEntry = option => {
+      if (!option || !featureSearchDropdown) return null;
+      const dropdown = option.closest('#featureSearchDropdown') || featureSearchDropdown;
+      const map = dropdown && dropdown.__optionEntries instanceof Map
+        ? dropdown.__optionEntries
+        : null;
+      if (!map) return null;
+      if (option.id && map.has(option.id)) {
+        return map.get(option.id) || null;
+      }
+      const entryKey = option.getAttribute('data-entry-key');
+      if (entryKey) {
+        for (const value of map.values()) {
+          if (value && value.key === entryKey) {
+            return value;
+          }
+        }
+      }
+      return null;
+    };
+
+    const openFeatureSearchEntry = (entry, queryValue) => {
+      if (!entry) return false;
+      const entryType = entry.type || entry.entryType || 'feature';
+      const normalizedQuery = normalizeSearchValue(queryValue || '');
+      const label = entry.label || entry.display || entry.optionLabel || normalizedQuery || '';
+      const usageKey = entry.key || null;
+      const recordUsage = () => {
+        if (typeof recordFeatureSearchUsage === 'function' && usageKey) {
+          const type = entryType === 'deviceLibrary' ? 'device' : entryType;
+          recordFeatureSearchUsage(usageKey, type, label);
+        }
+      };
+
+      if (entryType === 'device') {
+        if (entry.select) {
+          entry.select.value = entry.value;
+          entry.select.dispatchEvent(new Event('change', { bubbles: true }));
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          focusFeatureElement(entry.select);
+          const highlightTargets = [entry.select, ...findAssociatedLabelElements(entry.select)];
+          highlightFeatureSearchTargets(highlightTargets);
+          return true;
+        }
+        if (entry.entryType === 'deviceLibrary' && (entry.element || entry.rawElement)) {
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          if (typeof entry.focusLibraryEntry === 'function') {
+            entry.focusLibraryEntry();
+          }
+          const focusTarget = entry.element || entry.rawElement;
+          if (focusTarget) {
+            focusFeatureElement(focusTarget);
+            const highlightTargets = [focusTarget, ...findAssociatedLabelElements(focusTarget)];
+            highlightFeatureSearchTargets(highlightTargets);
+          }
+          if (typeof entry.highlightLibraryEntry === 'function') {
+            entry.highlightLibraryEntry();
+          }
+          return true;
+        }
+      }
+
+      if (entryType === 'feature') {
+        const featureEl = entry.element || entry;
+        if (featureEl) {
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          focusFeatureElement(featureEl);
+          const highlightTargets = [featureEl, ...findAssociatedLabelElements(featureEl)];
+          highlightFeatureSearchTargets(highlightTargets);
+          return true;
+        }
+      }
+
+      if (entryType === 'help') {
+        recordUsage();
+        openHelp();
+        if (helpSearch) {
+          helpSearch.value = label || normalizedQuery;
+          filterHelp();
+        }
+        const section = entry.section;
+        if (section) {
+          if (section.hasAttribute('hidden')) {
+            section.removeAttribute('hidden');
+            if (helpNoResults) {
+              helpNoResults.setAttribute('hidden', '');
+            }
+            if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+              helpNoResultsSuggestions.setAttribute('hidden', '');
+            }
+            syncHelpQuickLinksVisibility();
+          }
+          if (typeof section.scrollIntoView === 'function') {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          highlightHelpSection(section);
+          const sectionHeading =
+            section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
+            section.querySelector('button, a');
+          if (sectionHeading) {
+            highlightFeatureSearchTargets([sectionHeading]);
+          } else {
+            highlightFeatureSearchTargets([section]);
+          }
+          const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
+          if (helpQuickLinksList) {
+            helpQuickLinksList
+              .querySelectorAll('.help-quick-link.active')
+              .forEach(btn => btn.classList.remove('active'));
+          }
+          if (quickLink && quickLink.button) {
+            quickLink.button.classList.add('active');
+          }
+          return true;
+        }
+      }
+
+      return false;
+    };
+
     const getDropdownOptions = () => {
       if (!featureSearchDropdown) return [];
       return Array.from(featureSearchDropdown.querySelectorAll('[role="option"]') || []);
@@ -16988,8 +17117,9 @@ if (helpButton && helpDialog) {
       }
     };
 
-    const applyFeatureSearchSuggestion = value => {
+    const applyFeatureSearchSuggestion = (value, option) => {
       if (!featureSearch || !value) return;
+      const entry = option ? resolveFeatureSearchOptionEntry(option) : null;
       featureSearch.value = value;
       try {
         featureSearch.focus({ preventScroll: true });
@@ -16997,6 +17127,11 @@ if (helpButton && helpDialog) {
         featureSearch.focus();
       }
       featureSearch.setSelectionRange?.(value.length, value.length);
+      if (entry && openFeatureSearchEntry(entry, value)) {
+        updateFeatureSearchSuggestions(value);
+        closeFeatureSearchDropdown();
+        return;
+      }
       updateFeatureSearchSuggestions(value);
       runFeatureSearch(value);
       closeFeatureSearchDropdown();
@@ -17076,7 +17211,7 @@ if (helpButton && helpDialog) {
         if (!option) return;
         const value = option.getAttribute('data-value') || '';
         if (!value) return;
-        applyFeatureSearchSuggestion(value);
+        applyFeatureSearchSuggestion(value, option);
       });
       featureSearchDropdown.addEventListener('keydown', e => {
         const options = getDropdownOptions();
@@ -17102,7 +17237,7 @@ if (helpButton && helpDialog) {
           if (currentIndex >= 0 && options[currentIndex]) {
             const value = options[currentIndex].getAttribute('data-value') || '';
             if (value) {
-              applyFeatureSearchSuggestion(value);
+              applyFeatureSearchSuggestion(value, options[currentIndex]);
             }
           }
         } else if (e.key === 'Escape') {
