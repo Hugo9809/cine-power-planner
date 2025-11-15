@@ -13067,7 +13067,7 @@ if (helpButton && helpDialog) {
     return Array.from(labels);
   };
   var ensureFeatureSearchVisibility = function ensureFeatureSearchVisibility(element) {
-    if (!element) return;
+    if (!element || _typeof(element) !== 'object' || typeof element.nodeType !== 'number') return;
     if (backupDiffSectionEl && backupDiffSectionEl.contains(element) && backupDiffSectionEl.hasAttribute('hidden')) {
       if (typeof showBackupDiffSection === 'function') {
         try {

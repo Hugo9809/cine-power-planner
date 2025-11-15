@@ -14892,7 +14892,9 @@ if (helpButton && helpDialog) {
   };
 
   const ensureFeatureSearchVisibility = element => {
-    if (!element) return;
+    if (!element || typeof element !== 'object' || typeof element.nodeType !== 'number') {
+      return;
+    }
 
     if (
       backupDiffSectionEl &&
