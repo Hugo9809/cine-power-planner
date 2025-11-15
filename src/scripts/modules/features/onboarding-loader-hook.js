@@ -4,6 +4,7 @@
   const PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
   const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+  const SKIP_STATUS_KEY = `${PRIMARY_STORAGE_KEY}:skip`;
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const LOAD_REASON_PREFIX = 'onboarding-tour:';
@@ -538,7 +539,7 @@
     return null;
   }
 
-  function readStoredState(scope) {
+  function collectStorageCandidates(scope) {
     const storageCandidates = [];
     const pushCandidate = candidate => {
       if (!candidate) {
@@ -571,7 +572,51 @@
       pushCandidate(currentScope.sessionStorage);
     }
 
+    return storageCandidates;
+  }
+
+  function readSkipPreference(scope) {
+    const storageCandidates = collectStorageCandidates(scope);
+    for (let index = 0; index < storageCandidates.length; index += 1) {
+      const storage = storageCandidates[index];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      try {
+        const value = storage.getItem(SKIP_STATUS_KEY);
+        if (value === null || typeof value === 'undefined') {
+          continue;
+        }
+        if (value === true || value === 'true') {
+          return true;
+        }
+        if (value === false || value === 'false') {
+          return false;
+        }
+        try {
+          const parsed = JSON.parse(value);
+          if (parsed === true || parsed === false) {
+            return parsed;
+          }
+        } catch (parseError) {
+          void parseError;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
+
+  function readStoredState(scope) {
+    const storageCandidates = collectStorageCandidates(scope);
+
     let fallbackState = null;
+
+    const skipPreference = readSkipPreference(scope);
+    if (skipPreference === true) {
+      return { skipped: true, completed: false };
+    }
 
     for (let index = 0; index < storageCandidates.length; index += 1) {
       const storage = storageCandidates[index];
