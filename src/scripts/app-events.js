@@ -4777,6 +4777,41 @@ function resetDeviceForm() {
   }
 }
 
+function clearDeviceManagerFilterForCategory(categoryKey, deviceName) {
+  if (!categoryKey || typeof document === 'undefined' || !document) {
+    return;
+  }
+  const normalizedCategory = String(categoryKey);
+  const filterInput =
+    document.querySelector(`input.list-filter[data-category-key="${normalizedCategory}"]`) ||
+    document.getElementById(`${normalizedCategory.replace(/[^a-z0-9]+/gi, '_')}ListFilter`);
+  if (!filterInput) {
+    return;
+  }
+  const rawFilter = typeof filterInput.value === 'string' ? filterInput.value : '';
+  const trimmedFilter = rawFilter.trim();
+  if (!trimmedFilter) {
+    return;
+  }
+  const normalizedFilter = trimmedFilter.toLowerCase();
+  const normalizedName =
+    typeof deviceName === 'string' && deviceName ? deviceName.trim().toLowerCase() : '';
+  if (normalizedName && normalizedName.includes(normalizedFilter)) {
+    return;
+  }
+  filterInput.value = '';
+  try {
+    filterInput.dispatchEvent(new Event('input', { bubbles: true }));
+  } catch (inputError) {
+    void inputError;
+  }
+  try {
+    filterInput.dispatchEvent(new Event('change', { bubbles: true }));
+  } catch (changeError) {
+    void changeError;
+  }
+}
+
 
 // Add/Update device logic
 function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttributes) {
@@ -5178,6 +5213,8 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     addDeviceBtn.dataset.originalName = name;
   }
+
+  clearDeviceManagerFilterForCategory(category, name);
 
   // After adding/updating, reset form and refresh lists
   resetDeviceForm();
