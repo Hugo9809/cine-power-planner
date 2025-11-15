@@ -2709,6 +2709,7 @@
   let activeRequirementCleanup = null;
   let activeRequirementCompleted = false;
   let activeInteractionCleanup = null;
+  let activeStepAutomationCleanup = null;
   let lastCardPlacement = 'floating';
   let proxyControlId = 0;
   let baselineViewportHeight = null;
@@ -2826,6 +2827,17 @@
     }
   }
 
+  function teardownStepAutomation() {
+    if (typeof activeStepAutomationCleanup === 'function') {
+      try {
+        activeStepAutomationCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach step automation.', error);
+      }
+    }
+    activeStepAutomationCleanup = null;
+  }
+
   function applyStepRequirement(step) {
     if (!nextButton) {
       return;
@@ -2869,6 +2881,17 @@
     });
 
     activeRequirementCleanup = typeof cleanup === 'function' ? cleanup : null;
+  }
+
+  function applyStepAutomation(step) {
+    teardownStepAutomation();
+    if (!step) {
+      return;
+    }
+
+    if (step.key === 'editDeviceDataAdd') {
+      activeStepAutomationCleanup = attachDeviceManagerNameAutofill();
+    }
   }
 
   function clearFrame() {
@@ -3521,6 +3544,22 @@
       }
     }
     return filtered;
+  }
+
+  function findUsableElement(candidates) {
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      return null;
+    }
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (!candidate) {
+        continue;
+      }
+      if (isHighlightElementUsable(candidate)) {
+        return candidate;
+      }
+    }
+    return candidates[0] || null;
   }
 
   function getHighlightElements(step) {
@@ -4498,6 +4537,122 @@
     autoOpenedDeviceManager = false;
   }
 
+  function focusDeviceManagerNameField() {
+    if (!DOCUMENT) {
+      return false;
+    }
+    let nameField = null;
+    try {
+      nameField = DOCUMENT.getElementById('newName');
+    } catch (error) {
+      void error;
+      nameField = null;
+    }
+    if (!nameField || !isHighlightElementUsable(nameField)) {
+      return false;
+    }
+
+    let focused = false;
+    if (typeof nameField.focus === 'function') {
+      try {
+        nameField.focus({ preventScroll: true });
+        focused = true;
+      } catch (error) {
+        void error;
+        try {
+          nameField.focus();
+          focused = true;
+        } catch (focusError) {
+          void focusError;
+        }
+      }
+    }
+
+    if (!focused) {
+      return false;
+    }
+
+    if (typeof nameField.select === 'function') {
+      try {
+        nameField.select();
+        return true;
+      } catch (selectError) {
+        void selectError;
+      }
+    }
+    if (typeof nameField.setSelectionRange === 'function') {
+      try {
+        const length = typeof nameField.value === 'string' ? nameField.value.length : 0;
+        nameField.setSelectionRange(0, length);
+        return true;
+      } catch (rangeError) {
+        void rangeError;
+      }
+    }
+    return true;
+  }
+
+  function attachDeviceManagerNameAutofill() {
+    if (!DOCUMENT) {
+      return null;
+    }
+
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+
+    const scheduleFocusIfVisible = () => {
+      if (!isDeviceManagerVisible()) {
+        return;
+      }
+      focusDeviceManagerNameField();
+    };
+
+    const handleToggleClick = () => {
+      if (typeof setTimeout === 'function') {
+        setTimeout(scheduleFocusIfVisible, 50);
+      } else {
+        scheduleFocusIfVisible();
+      }
+    };
+
+    let toggleListenerAttached = false;
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.addEventListener === 'function') {
+      deviceManagerToggleRef.addEventListener('click', handleToggleClick);
+      toggleListenerAttached = true;
+    }
+
+    let observer = null;
+    if (deviceManagerSectionRef && typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(() => {
+          scheduleFocusIfVisible();
+        });
+        observer.observe(deviceManagerSectionRef, {
+          attributes: true,
+          attributeFilter: ['class', 'hidden'],
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe device manager visibility.', error);
+        observer = null;
+      }
+    }
+
+    scheduleFocusIfVisible();
+
+    return () => {
+      if (toggleListenerAttached && deviceManagerToggleRef && typeof deviceManagerToggleRef.removeEventListener === 'function') {
+        deviceManagerToggleRef.removeEventListener('click', handleToggleClick);
+      }
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }
+
   function isSettingsDialogVisible() {
     if (!settingsDialogRef) {
       return false;
@@ -4699,7 +4854,7 @@
       if (!element) {
         continue;
       }
-      if (typeof element.focus === 'function') {
+      if (typeof element.focus === 'function' && isHighlightElementUsable(element)) {
         target = element;
         break;
       }
@@ -7008,6 +7163,7 @@
     const previousStep = currentStep;
     teardownStepRequirement();
     teardownStepInteraction();
+    teardownStepAutomation();
     const step = stepConfig[index];
 
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
@@ -7065,8 +7221,12 @@
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
-    const focusTarget = focusCandidates.length > 0 ? focusCandidates[0] : null;
-    if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
+    const focusTarget = findUsableElement(focusCandidates);
+    if (
+      focusTarget
+      && isHighlightElementUsable(focusTarget)
+      && typeof focusTarget.scrollIntoView === 'function'
+    ) {
       try {
         focusTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } catch (error) {
@@ -7086,6 +7246,7 @@
 
     updateCardForStep(step, index);
     applyStepRequirement(step);
+    applyStepAutomation(step);
 
     if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
       resumeHintVisible = false;
