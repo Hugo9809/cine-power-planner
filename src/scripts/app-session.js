@@ -16787,6 +16787,31 @@ if (helpButton && helpDialog) {
           highlightFeatureSearchTargets(highlightTargets);
           return;
         }
+        if (device && device.entryType === 'deviceLibrary' && (device.element || device.rawElement)) {
+          const deviceLabel = device.label || clean;
+          if (deviceLabel) {
+            updateFeatureSearchValue(deviceLabel, originalNormalized);
+          }
+          if (typeof recordFeatureSearchUsage === 'function') {
+            recordFeatureSearchUsage(deviceMatch.key, 'device', deviceLabel);
+          }
+          if (typeof device.focusLibraryEntry === 'function') {
+            device.focusLibraryEntry();
+          }
+          const focusTarget = device.element || device.rawElement;
+          if (focusTarget) {
+            focusFeatureElement(focusTarget);
+            const highlightTargets = [
+              focusTarget,
+              ...findAssociatedLabelElements(focusTarget)
+            ];
+            highlightFeatureSearchTargets(highlightTargets);
+          }
+          if (typeof device.highlightLibraryEntry === 'function') {
+            device.highlightLibraryEntry();
+          }
+          return;
+        }
       }
       if (normalizedFeatureMatch) {
         const feature = normalizedFeatureMatch.entry;

@@ -16297,6 +16297,26 @@ function updateDeviceManagerLocalization(lang = currentLang) {
     if (!deviceManagerLists.size) return;
   const placeholderTemplate = (texts[lang] && texts[lang].placeholder_filter) || 'Filter {item}...';
   const clearLabel = (texts[lang] && texts[lang].clearFilter) || 'Clear filter';
+  const librarySearchInput = document.getElementById('deviceLibrarySearch');
+  const librarySearchLabel = document.getElementById('deviceLibrarySearchLabel');
+  const librarySearchHelp = (texts[lang] && texts[lang].deviceLibrarySearchHelp) ||
+    'Filter all categories and press Enter to jump to the best match.';
+  const librarySearchPlaceholder = (texts[lang] && texts[lang].deviceLibrarySearchPlaceholder) ||
+    'Search all device categories…';
+  const librarySearchLabelText = (texts[lang] && texts[lang].deviceLibrarySearchLabel) ||
+    'Search entire library';
+  if (librarySearchLabel) {
+    librarySearchLabel.textContent = librarySearchLabelText;
+  }
+  if (librarySearchInput) {
+    librarySearchInput.placeholder = librarySearchPlaceholder;
+    librarySearchInput.setAttribute('aria-label', librarySearchPlaceholder);
+    librarySearchInput.setAttribute('data-help', librarySearchHelp);
+    librarySearchInput.setAttribute('autocomplete', 'off');
+    librarySearchInput.setAttribute('autocorrect', 'off');
+    librarySearchInput.setAttribute('autocapitalize', 'off');
+    librarySearchInput.setAttribute('spellcheck', 'false');
+  }
   deviceManagerLists.forEach((entry, categoryKey) => {
     const label = getCategoryLabel(categoryKey, lang);
     if (entry.heading) {
@@ -16322,6 +16342,14 @@ function updateDeviceManagerLocalization(lang = currentLang) {
       }
     }
   });
+
+  const applyLibraryLocalization =
+    filterHelperScope && typeof filterHelperScope.updateDeviceLibrarySearchLocalization === 'function'
+      ? filterHelperScope.updateDeviceLibrarySearchLocalization
+      : null;
+  if (applyLibraryLocalization) {
+    applyLibraryLocalization();
+  }
 }
 
 function syncDeviceManagerCategories() {

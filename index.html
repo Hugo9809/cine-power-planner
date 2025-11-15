@@ -979,6 +979,20 @@
     <textarea id="exportOutput" class="hidden" readonly></textarea>
 
     <h3 id="existingDevicesHeading">Existing Devices</h3>
+    <div class="device-library-search">
+      <label for="deviceLibrarySearch" id="deviceLibrarySearchLabel">Search entire library</label>
+      <input
+        type="search"
+        id="deviceLibrarySearch"
+        placeholder="Search all device categories…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        data-help="Find any device across every category. Press Enter to jump to the best match."
+      />
+      <p id="deviceLibrarySearchStatus" class="device-library-search-status" role="status" aria-live="polite"></p>
+    </div>
     <div id="deviceListContainer" class="device-list-container"></div>
   </section>
   </main>
