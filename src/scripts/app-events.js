@@ -4284,7 +4284,7 @@ function applyCameraTimecodes(timecodes) {
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
-  if (wattFieldDiv) wattFieldDiv.style.display = "block";
+  if (wattFieldDiv) wattFieldDiv.style.display = "";
   hideFormSection(batteryFieldsDiv);
   hideFormSection(cameraFieldsDiv);
   hideFormSection(monitorFieldsDiv);
@@ -4588,7 +4588,7 @@ if (newCategorySelectElement) {
     newSubcategorySelect.innerHTML = "";
     newSubcategorySelect.disabled = false;
     if (dtapRow) dtapRow.style.display = "";
-    if (wattFieldDiv) wattFieldDiv.style.display = "block";
+    if (wattFieldDiv) wattFieldDiv.style.display = "";
     hideFormSection(batteryFieldsDiv);
     hideFormSection(cameraFieldsDiv);
     hideFormSection(monitorFieldsDiv);
