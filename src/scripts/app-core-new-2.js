@@ -14863,6 +14863,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return {};
     })();
 
+    let cachedVideoPowerInputsContainer = null;
+
+    function resolveVideoPowerInputsContainer() {
+      if (
+        cachedVideoPowerInputsContainer &&
+        typeof cachedVideoPowerInputsContainer.querySelector === 'function'
+      ) {
+        return cachedVideoPowerInputsContainer;
+      }
+
+      let container = null;
+      if (typeof videoPowerInputsContainer !== 'undefined' && videoPowerInputsContainer) {
+        container = videoPowerInputsContainer;
+      }
+      if (!container && typeof document !== 'undefined') {
+        container = document.getElementById('videoPowerInputsContainer');
+      }
+      if (container) {
+        cachedVideoPowerInputsContainer = container;
+        if (typeof videoPowerInputsContainer !== 'undefined') {
+          videoPowerInputsContainer = container;
+        } else if (typeof globalThis !== 'undefined') {
+          try {
+            globalThis.videoPowerInputsContainer = container;
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      }
+      return container;
+    }
+
     let powerPortOptions = [];
 
     function ensurePowerPortOptionsInitialized() {
@@ -15016,7 +15048,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         actionKey: 'removeEntry'
       });
       removeBtn.addEventListener('click', () => {
-        if (videoPowerInputsContainer && videoPowerInputsContainer.children.length > 1) {
+        const container = resolveVideoPowerInputsContainer();
+        if (container && container.children.length > 1) {
           row.remove();
         }
       });
@@ -15026,25 +15059,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function setVideoPowerInputs(raw) {
-      if (!videoPowerInputsContainer) {
+      const container = resolveVideoPowerInputsContainer();
+      if (!container) {
         return;
       }
-      videoPowerInputsContainer.innerHTML = '';
+      container.innerHTML = '';
       const entries = normalizePowerInputList(raw);
       if (entries.length) {
         entries.forEach(entry => {
-          videoPowerInputsContainer.appendChild(createVideoPowerInputRow(entry));
+          container.appendChild(createVideoPowerInputRow(entry));
         });
       } else {
-        videoPowerInputsContainer.appendChild(createVideoPowerInputRow());
+        container.appendChild(createVideoPowerInputRow());
       }
     }
 
     function getVideoPowerInputs() {
-      if (!videoPowerInputsContainer) {
+      const container = resolveVideoPowerInputsContainer();
+      if (!container) {
         return undefined;
       }
-      const rows = Array.from(videoPowerInputsContainer.querySelectorAll('.video-power-row'));
+      const rows = Array.from(container.querySelectorAll('.video-power-row'));
       const entries = rows.map(row => {
         const select = row.querySelector('.video-power-type-select');
         if (!select) {
