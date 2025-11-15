@@ -5550,6 +5550,8 @@ const POWER_PORT_TYPE_MAP = {
   'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
   'lemo 8-pin': 'Bat LEMO 8-pin',
   '2-pin dc-input': '2-pin DC-IN',
+  'dc-': 'DC IN',
+  'dc': 'DC IN',
   '2-pin xlr': 'XLR 2-pin',
   '2-pin locking connector': 'LEMO 2-pin',
   '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
@@ -5564,20 +5566,32 @@ const POWER_PORT_TYPE_MAP = {
   'usb type-c': 'USB-C',
   'usb-c pd': 'USB-C PD',
   'usb-c (power delivery)': 'USB-C PD',
+  'usb-c pd,dc coupler': 'USB-C PD / DC Coupler',
+  'dc coupler': 'DC Coupler',
+  'dc coupler (dr-e6c)': 'DC Coupler',
   'dc input': 'DC IN',
+  'dc barrel': 'DC Barrel',
+  'dc (barrel)': 'DC Barrel',
+  'locking dc barrel': 'DC Barrel',
+  'dc 24v terminal': 'DC Barrel',
   'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
-  '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
+  '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN',
+  '6-pin 1b dc-,tb50': '6-pin 1B DC-IN'
 };
 
 const mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP);
 
 function normalizePowerPortType(type) {
   if (!type) return [];
-  const toArray = val =>
-    mapPowerPortOne(val)
-      .split('/')
-      .map(p => mapPowerPortOne(p))
+  const toArray = val => {
+    const normalized = mapPowerPortOne(val);
+    if (!normalized) return [];
+    return normalized
+      .split(/[\/,]/)
+      .map(piece => mapPowerPortOne(piece.trim()))
+      .map(piece => (piece && piece.trim()) || '')
       .filter(Boolean);
+  };
   return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
 }
 
