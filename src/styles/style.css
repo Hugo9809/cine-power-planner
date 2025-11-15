@@ -8870,6 +8870,33 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 
 /* Device Manager specific styles */
+.device-library-search {
+  margin-top: 1rem;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.device-library-search label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+}
+
+.device-library-search input {
+  width: 100%;
+}
+
+.device-library-search-status {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * 0.9);
+  color: var(--text-muted-color, color-mix(in srgb, var(--text-color) 65%, transparent));
+}
+
+.dark-mode .device-library-search-status {
+  color: color-mix(in srgb, var(--text-color) 80%, transparent);
+}
+
 .device-list-container {
   display: flex;
   flex-wrap: wrap;
@@ -8894,6 +8921,10 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 .device-category:hover {
   box-shadow: var(--panel-shadow-hover);
   transform: translateY(-2px);
+}
+
+.device-category--global-empty {
+  opacity: 0.45;
 }
 
 @media (max-width: 900px) {

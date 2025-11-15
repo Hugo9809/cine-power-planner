@@ -11216,6 +11216,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     const buildDeviceEntryDetailText = entry => {
       if (!entry || typeof entry !== 'object') return '';
+      if (entry.entryType === 'deviceLibrary') {
+        const parts = [];
+        if (entry.categoryLabel) parts.push(entry.categoryLabel);
+        if (entry.summary) parts.push(entry.summary);
+        return parts.join(' — ');
+      }
       const select = entry.select;
       if (!select) return '';
       const base = normalizeFeatureSearchDetail(entry.label || '').toLowerCase();
@@ -12568,6 +12574,67 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         defaultOptionValues.add(optionData.value);
         featureSearchDefaultOptions.push(optionData);
       };
+      const registerDeviceMapEntry = (key, entry, options = {}) => {
+        if (!key || !entry) return false;
+        const skipIfExists = options && options.skipIfExists === true;
+        if (!deviceMap.has(key)) {
+          deviceMap.set(key, entry);
+          return true;
+        }
+        if (skipIfExists) {
+          return false;
+        }
+        const existing = deviceMap.get(key);
+        if (Array.isArray(existing)) {
+          existing.push(entry);
+        } else {
+          deviceMap.set(key, [existing, entry]);
+        }
+        return true;
+      };
+      const registerDeviceLibraryEntriesForSearch = () => {
+        if (!deviceLibrarySearchEntries.length) {
+          rebuildDeviceLibrarySearchIndex();
+        }
+        if (!deviceLibrarySearchEntries.length) {
+          return;
+        }
+        deviceLibrarySearchEntries.forEach(entry => {
+          if (!entry || !entry.label) return;
+          const key = entry.key || searchKey(entry.label);
+          const tokens = entry.tokens || searchTokens(entry.label);
+          const primaryTokens = entry.primaryTokens || searchTokens(entry.label);
+          const deviceEntry = {
+            entryType: 'deviceLibrary',
+            label: entry.label,
+            value: entry.label,
+            tokens,
+            primaryTokens,
+            element: entry.focusTarget || entry.element,
+            rawElement: entry.element,
+            categoryKey: entry.categoryKey,
+            categoryLabel: entry.categoryLabel,
+            summary: entry.summary,
+            focusLibraryEntry: () => focusDeviceLibraryEntry(entry, { skipScroll: true }),
+            highlightLibraryEntry: () => highlightDeviceLibraryElement(entry.focusTarget || entry.element),
+          };
+          registerDeviceMapEntry(key, deviceEntry);
+          const optionLabel = `${entry.label} · ${entry.categoryLabel}`;
+          const detail = buildDeviceEntryDetailText(deviceEntry) || entry.summary || entry.categoryLabel;
+          const deviceData = {
+            type: 'device',
+            key,
+            display: optionLabel,
+            tokens,
+            primaryTokens,
+            value: deviceEntry,
+            optionLabel,
+            detail,
+          };
+          registerOption(deviceData);
+          featureSearchEntries.push(deviceData);
+        });
+      };
       document
         .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
         .forEach(el => {
@@ -12652,37 +12719,42 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const name = opt.textContent.trim();
           if (!name || opt.value === 'None') return;
           const key = searchKey(name);
-          if (!deviceMap.has(key)) {
-            const keywords =
-              opt.dataset?.searchKeywords ||
-              opt.getAttribute('data-search-keywords') ||
-              sel.dataset?.searchKeywords ||
-              sel.getAttribute('data-search-keywords') ||
-              '';
-            const tokens = searchTokens(`${name} ${keywords}`.trim());
-            const primaryTokens = searchTokens(name);
-            const deviceEntry = {
-              select: sel,
-              value: opt.value,
-              label: name,
-              tokens
-            };
-            deviceMap.set(key, deviceEntry);
-            const deviceData = {
-              type: 'device',
-              key,
-              display: name,
-              tokens,
-              primaryTokens,
-              value: deviceEntry,
-              optionLabel: name,
-              detail: buildDeviceEntryDetailText(deviceEntry)
-            };
-            registerOption(deviceData);
-            featureSearchEntries.push(deviceData);
+          if (deviceMap.has(key)) {
+            return;
           }
+          const keywords =
+            opt.dataset?.searchKeywords ||
+            opt.getAttribute('data-search-keywords') ||
+            sel.dataset?.searchKeywords ||
+            sel.getAttribute('data-search-keywords') ||
+            '';
+          const tokens = searchTokens(`${name} ${keywords}`.trim());
+          const primaryTokens = searchTokens(name);
+          const deviceEntry = {
+            select: sel,
+            value: opt.value,
+            label: name,
+            tokens
+          };
+          const added = registerDeviceMapEntry(key, deviceEntry, { skipIfExists: true });
+          if (!added) {
+            return;
+          }
+          const deviceData = {
+            type: 'device',
+            key,
+            display: name,
+            tokens,
+            primaryTokens,
+            value: deviceEntry,
+            optionLabel: name,
+            detail: buildDeviceEntryDetailText(deviceEntry)
+          };
+          registerOption(deviceData);
+          featureSearchEntries.push(deviceData);
         });
       });
+      registerDeviceLibraryEntriesForSearch();
       featureSearchEntries.forEach(entry => {
         if (!entry || !entry.key) return;
         const type = entry.type || 'feature';
@@ -16907,6 +16979,208 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       inputElem.addEventListener("input", toggle);
       toggle();
     }
+
+    const deviceLibrarySearchEntries = [];
+    const deviceLibrarySearchMap = new Map();
+    const deviceLibraryHighlightTimers = new WeakMap();
+    const deviceLibrarySearchInput = document.getElementById('deviceLibrarySearch');
+    const deviceLibrarySearchStatus = document.getElementById('deviceLibrarySearchStatus');
+
+    function ensureDeviceLibraryEntryContext(entry) {
+      if (!entry || !entry.categoryKey) return;
+      if (!(activeDeviceManagerLists instanceof Map)) return;
+      const categoryEntry = activeDeviceManagerLists.get(entry.categoryKey);
+      if (!categoryEntry) return;
+      const { list, filterInput } = categoryEntry;
+      if (filterInput && filterInput.value) {
+        filterInput.value = '';
+        if (typeof filterDeviceList === 'function') {
+          filterDeviceList(list, '');
+        }
+      }
+    }
+
+    function highlightDeviceLibraryElement(element) {
+      if (!element || typeof element.classList?.add !== 'function') return;
+      const existing = deviceLibraryHighlightTimers.get(element);
+      if (existing) {
+        clearTimeout(existing);
+      }
+      element.classList.add('feature-search-focus');
+      const timeout = setTimeout(() => {
+        element.classList.remove('feature-search-focus');
+        deviceLibraryHighlightTimers.delete(element);
+      }, 2500);
+      if (typeof timeout.unref === 'function') {
+        timeout.unref();
+      }
+      deviceLibraryHighlightTimers.set(element, timeout);
+    }
+
+    function rebuildDeviceLibrarySearchIndex() {
+      deviceLibrarySearchEntries.length = 0;
+      deviceLibrarySearchMap.clear();
+      if (!(activeDeviceManagerLists instanceof Map)) return;
+      activeDeviceManagerLists.forEach(({ list, heading }, categoryKey) => {
+        if (!list) return;
+        const categoryLabel = heading && heading.textContent
+          ? heading.textContent.trim()
+          : categoryKey;
+        Array.from(list.querySelectorAll('li')).forEach(item => {
+          const nameEl = item.querySelector('.device-summary span');
+          if (!nameEl) return;
+          const label = nameEl.textContent ? nameEl.textContent.trim() : '';
+          if (!label || label === 'None') return;
+          const summary = nameEl.getAttribute('title') || '';
+          const key = searchKey(label);
+          const focusTarget = nameEl;
+          const entry = {
+            key,
+            label,
+            summary,
+            categoryKey,
+            categoryLabel,
+            element: item,
+            focusTarget,
+            labelLower: label.toLowerCase(),
+            summaryLower: summary.toLowerCase(),
+            categoryLabelLower: (categoryLabel || '').toLowerCase(),
+            tokens: searchTokens(`${label} ${summary} ${categoryLabel}`.trim()),
+            primaryTokens: searchTokens(label),
+          };
+          deviceLibrarySearchEntries.push(entry);
+          const existing = deviceLibrarySearchMap.get(key);
+          if (!existing) {
+            deviceLibrarySearchMap.set(key, entry);
+          } else if (Array.isArray(existing)) {
+            existing.push(entry);
+          } else {
+            deviceLibrarySearchMap.set(key, [existing, entry]);
+          }
+        });
+      });
+    }
+
+    function applyDeviceLibrarySearchStatus(queryText, visibleCount) {
+      if (!deviceLibrarySearchStatus) return;
+      const total = deviceLibrarySearchEntries.length;
+      const langTexts =
+        (texts && texts[currentLang]) ||
+        (texts && texts.en) ||
+        {};
+      const formattedTotal = formatNumberForLang(currentLang, total);
+      if (!queryText) {
+        const template = langTexts.deviceLibrarySearchStatusDefault || 'Showing all {total} devices.';
+        deviceLibrarySearchStatus.textContent = template.replace('{total}', formattedTotal);
+        return;
+      }
+      if (!visibleCount) {
+        const template = langTexts.deviceLibrarySearchNoResults || 'No devices match “{query}”.';
+        deviceLibrarySearchStatus.textContent = template.replace('{query}', queryText);
+        return;
+      }
+      const template = visibleCount === 1
+        ? langTexts.deviceLibrarySearchResultOne || 'Showing {visible} of {total} devices.'
+        : langTexts.deviceLibrarySearchResultOther || 'Showing {visible} of {total} devices.';
+      const formattedVisible = formatNumberForLang(currentLang, visibleCount);
+      deviceLibrarySearchStatus.textContent = template
+        .replace('{visible}', formattedVisible)
+        .replace('{total}', formattedTotal)
+        .replace('{query}', queryText);
+    }
+
+    function focusDeviceLibraryEntry(entry, options = {}) {
+      if (!entry || !entry.element) return;
+      ensureDeviceLibraryEntryContext(entry);
+      entry.element.hidden = false;
+      const section = entry.element.closest('.device-category');
+      if (section) {
+        section.classList.remove('device-category--global-empty');
+      }
+      const target = entry.focusTarget || entry.element;
+      if (typeof target.scrollIntoView === 'function') {
+        try {
+          target.scrollIntoView({ behavior: options.behavior || 'smooth', block: 'center' });
+        } catch {
+          target.scrollIntoView();
+        }
+      }
+      highlightDeviceLibraryElement(target);
+    }
+
+    function focusDeviceLibraryMatch(query) {
+      if (!query) return;
+      if (!deviceLibrarySearchEntries.length) {
+        rebuildDeviceLibrarySearchIndex();
+      }
+      const key = searchKey(query);
+      const tokens = searchTokens(query);
+      const match = findBestSearchMatch(deviceLibrarySearchMap, key, tokens);
+      const entry = match && match.value;
+      if (entry) {
+        focusDeviceLibraryEntry(entry);
+      }
+    }
+
+    function applyDeviceLibrarySearchFilter(options = {}) {
+      if (!deviceLibrarySearchInput) return;
+      if (!deviceLibrarySearchEntries.length) {
+        rebuildDeviceLibrarySearchIndex();
+      }
+      const query = deviceLibrarySearchInput.value ? deviceLibrarySearchInput.value.trim() : '';
+      const normalized = query.toLowerCase();
+      let visibleCount = 0;
+      deviceLibrarySearchEntries.forEach(entry => {
+        const matches =
+          !normalized ||
+          entry.labelLower.includes(normalized) ||
+          entry.categoryLabelLower.includes(normalized) ||
+          (entry.summaryLower && entry.summaryLower.includes(normalized));
+        entry.element.hidden = normalized && !matches;
+        if (matches) {
+          visibleCount += 1;
+        }
+      });
+      if (activeDeviceManagerLists instanceof Map) {
+        activeDeviceManagerLists.forEach(({ section }) => {
+          if (!section) return;
+          if (!normalized) {
+            section.classList.remove('device-category--global-empty');
+            return;
+          }
+          const hasVisible = Array.from(section.querySelectorAll('li')).some(li => !li.hidden && li.style.display !== 'none');
+          section.classList.toggle('device-category--global-empty', !hasVisible);
+        });
+      }
+      applyDeviceLibrarySearchStatus(query, visibleCount);
+      if (options.scrollToMatch && query) {
+        focusDeviceLibraryMatch(query);
+      }
+    }
+
+    function updateDeviceLibrarySearchLocalization() {
+      applyDeviceLibrarySearchFilter({ scrollToMatch: false });
+    }
+
+    if (deviceLibrarySearchInput) {
+      bindFilterInput(deviceLibrarySearchInput, () => applyDeviceLibrarySearchFilter({ scrollToMatch: false }));
+      deviceLibrarySearchInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const value = deviceLibrarySearchInput.value ? deviceLibrarySearchInput.value.trim() : '';
+          if (value) {
+            focusDeviceLibraryMatch(value);
+          }
+        }
+      });
+      deviceLibrarySearchInput.addEventListener('search', () => {
+        applyDeviceLibrarySearchFilter({ scrollToMatch: false });
+        const value = deviceLibrarySearchInput.value ? deviceLibrarySearchInput.value.trim() : '';
+        if (value) {
+          focusDeviceLibraryMatch(value);
+        }
+      });
+    }
     
     const filterHelperScope =
       (typeof globalThis !== 'undefined' && globalThis)
@@ -16931,6 +17205,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof filterHelperScope.addInputClearButton !== 'function') {
         filterHelperScope.addInputClearButton = addInputClearButton;
       }
+      if (typeof filterHelperScope.applyDeviceLibrarySearchFilter !== 'function') {
+        filterHelperScope.applyDeviceLibrarySearchFilter = options =>
+          applyDeviceLibrarySearchFilter(options || {});
+      }
+      if (typeof filterHelperScope.updateDeviceLibrarySearchLocalization !== 'function') {
+        filterHelperScope.updateDeviceLibrarySearchLocalization = () =>
+          updateDeviceLibrarySearchLocalization();
+      }
     }
     
     function applyFilters() {
@@ -16940,6 +17222,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
       });
+      applyDeviceLibrarySearchFilter({ scrollToMatch: false });
     }
 
     if (filterHelperScope && typeof filterHelperScope.applyFilters !== 'function') {
@@ -17689,16 +17972,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
     
-      if (categoryKey === "accessories.cables") {
-        for (const [subcat, devs] of Object.entries(categoryDevices)) {
-          for (const name in devs) {
-            buildItem(name, devs[name], subcat);
-          }
-        }
-      } else {
-        for (let name in categoryDevices) {
-          buildItem(name, categoryDevices[name]);
-        }
+      if (categoryKey === "accessories.cables" && categoryDevices && typeof categoryDevices === 'object') {
+        Object.keys(categoryDevices)
+          .sort(localeSort)
+          .forEach(subcat => {
+            const devs = categoryDevices[subcat] || {};
+            Object.keys(devs)
+              .filter(name => name !== 'None')
+              .sort(localeSort)
+              .forEach(name => {
+                buildItem(name, devs[name], subcat);
+              });
+          });
+      } else if (categoryDevices && typeof categoryDevices === 'object') {
+        Object.keys(categoryDevices)
+          .filter(name => name !== 'None')
+          .sort(localeSort)
+          .forEach(name => {
+            buildItem(name, categoryDevices[name]);
+          });
       }
     }
     
@@ -17711,6 +18003,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const filterValue = filterInput ? filterInput.value : '';
         filterDeviceList(list, filterValue);
       });
+      rebuildDeviceLibrarySearchIndex();
+      applyDeviceLibrarySearchFilter({ scrollToMatch: false });
+      // Ensure the global feature search dataset is rebuilt with the latest
+      // device-library entries so the top bar can find newly added gear.
+      try {
+        populateFeatureSearch();
+      } catch (featureSearchError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to refresh feature search after device list update.', featureSearchError);
+        }
+      }
     }
     
     const CORE_PART2_GLOBAL_EXPORTS = {
