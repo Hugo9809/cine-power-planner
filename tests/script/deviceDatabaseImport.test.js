@@ -27,6 +27,9 @@ describe('device database import helpers', () => {
       videoAssist: {},
       media: {},
       lenses: {},
+      carts: {
+        'Camera Cart A': { brand: 'Backstage' }
+      },
       fiz: {
         motors: {
           'Motor A': { powerDrawWatts: 1, fizConnector: '7-pin' }
@@ -76,7 +79,7 @@ describe('device database import helpers', () => {
 
     expect(result.errors).toEqual([]);
     expect(result.devices).toEqual(sample);
-    expect(env.utils.countDeviceDatabaseEntries(result.devices)).toBe(9);
+    expect(env.utils.countDeviceDatabaseEntries(result.devices)).toBe(10);
   });
 
   test('accepts dataset nested inside backup export', () => {
@@ -97,6 +100,7 @@ describe('device database import helpers', () => {
     delete legacy.fiz.distance;
     delete legacy.accessories.cardReaders;
     delete legacy.accessories.carts;
+    delete legacy.carts;
 
     const result = env.utils.parseDeviceDatabaseImport(legacy);
 
@@ -105,6 +109,7 @@ describe('device database import helpers', () => {
     expect(result.devices.fiz.distance).toEqual({});
     expect(result.devices.accessories.cardReaders).toEqual({});
     expect(result.devices.accessories.carts).toEqual({});
+    expect(result.devices.carts).toEqual({});
   });
 
   test('rejects malformed device collections', () => {
