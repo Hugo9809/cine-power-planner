@@ -7573,12 +7573,28 @@
   }
 
   function startTutorial(options = {}) {
-    const { resume = false, focusStart = true } = options || {};
+    const {
+      resume = false,
+      focusStart = true,
+      allowSkipOverride = false,
+    } = options || {};
     ensureOverlayElements();
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
-    persistSkipStatus(false);
     storedState = refreshStoredState();
+
+    if (storedState && storedState.skipped && !allowSkipOverride) {
+      applyHelpStatus(storedState, stepConfig);
+      return;
+    }
+
+    persistSkipStatus(false);
+    if (storedState && storedState.skipped) {
+      storedState = normalizeStateSnapshot({
+        ...storedState,
+        skipped: false,
+      });
+    }
 
     const completedSet = new Set(
       storedState && Array.isArray(storedState.completedSteps)
@@ -8069,7 +8085,7 @@
         && storedState.completedSteps.length > 0,
       );
       const resume = hasProgress && Boolean(storedState && storedState.activeStep);
-      startTutorial({ resume });
+      startTutorial({ resume, allowSkipOverride: true });
     };
 
     const helpDialog = DOCUMENT && typeof DOCUMENT.getElementById === 'function'
@@ -8169,7 +8185,7 @@
         return;
       }
       const resume = storedState && storedState.activeStep;
-      startTutorial({ resume, focusStart: true });
+      startTutorial({ resume, focusStart: true, allowSkipOverride: true });
     }, 600);
   }
 
