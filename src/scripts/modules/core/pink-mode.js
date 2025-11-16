@@ -1013,6 +1013,33 @@
         'animated icons 3/video-camera.json'
       ]);
 
+      function collectPinkModeAnimatedIconFiles() {
+        const seen = new Set();
+        const collected = [];
+
+        const register = candidate => {
+          const normalized = normalizePinkModeAssetKey(candidate);
+          if (!normalized || seen.has(normalized)) {
+            return;
+          }
+          seen.add(normalized);
+          collected.push(normalized);
+        };
+
+        if (Array.isArray(PINK_MODE_ANIMATED_ICON_FILES)) {
+          PINK_MODE_ANIMATED_ICON_FILES.forEach(register);
+        }
+
+        const embeddedStore = getPinkModeEmbeddedAssetStore();
+        if (embeddedStore && typeof embeddedStore === 'object') {
+          Object.keys(embeddedStore)
+            .filter(key => typeof key === 'string' && key.indexOf('animated icons 3/') === 0)
+            .forEach(register);
+        }
+
+        return collected;
+      }
+
       const PINK_MODE_ICON_RAIN_MIN_COUNT = 18;
       const PINK_MODE_ICON_RAIN_MAX_COUNT = 30;
       const PINK_MODE_ICON_RAIN_MIN_DURATION_MS = 4200;
@@ -1407,8 +1434,9 @@
         if (pinkModeAnimatedIconTemplatesPromise) {
           return pinkModeAnimatedIconTemplatesPromise;
         }
+        const animatedIconFiles = collectPinkModeAnimatedIconFiles();
         pinkModeAnimatedIconTemplatesPromise = Promise.all(
-          PINK_MODE_ANIMATED_ICON_FILES.map(path =>
+          animatedIconFiles.map(path =>
             loadPinkModeAssetText(path).catch(() => null)
           )
         )
@@ -1418,7 +1446,7 @@
                 .map((content, index) =>
                   content
                     ? Object.freeze({
-                        name: PINK_MODE_ANIMATED_ICON_FILES[index],
+                        name: animatedIconFiles[index],
                         data: content
                       })
                     : null

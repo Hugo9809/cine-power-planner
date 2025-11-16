@@ -677,6 +677,7 @@
     let pinkModeIconRotationTimer = null;
     let pinkModeIconIndex = 0;
     let pinkModeIconPressCount = 0;
+    const pinkModeIconPressTimestamps = [];
     let pinkModeIconPressResetTimer = null;
     const PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     const PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
@@ -685,6 +686,10 @@
       typeof context.pinkModeIconPressResetMs === 'number' && context.pinkModeIconPressResetMs >= 0
         ? context.pinkModeIconPressResetMs
         : 0;
+    const PINK_MODE_ICON_PRESS_BURST_WINDOW_MS =
+      typeof context.pinkModeIconPressBurstWindowMs === 'number' && context.pinkModeIconPressBurstWindowMs >= 0
+        ? context.pinkModeIconPressBurstWindowMs
+        : 1200;
 
     let pinkModeEnabled = false;
     let settingsInitialPinkMode = false;
@@ -1388,6 +1393,7 @@
         pinkModeIconPressResetTimer = setTimeout(() => {
           pinkModeIconPressResetTimer = null;
           pinkModeIconPressCount = 0;
+          pinkModeIconPressTimestamps.length = 0;
         }, PINK_MODE_ICON_PRESS_RESET_MS);
         if (
           pinkModeIconPressResetTimer &&
@@ -1404,6 +1410,22 @@
     function resetPinkModeIconPressCount() {
       pinkModeIconPressCount = 0;
       clearPinkModeIconPressResetTimer();
+      pinkModeIconPressTimestamps.length = 0;
+    }
+
+    function recordPinkModeIconPressTimestamp() {
+      const now = Date.now();
+      pinkModeIconPressTimestamps.push(now);
+
+      const burstWindow = Math.max(PINK_MODE_ICON_PRESS_BURST_WINDOW_MS, 0);
+      if (burstWindow > 0) {
+        const cutoff = now - burstWindow;
+        while (pinkModeIconPressTimestamps.length && pinkModeIconPressTimestamps[0] < cutoff) {
+          pinkModeIconPressTimestamps.shift();
+        }
+      }
+
+      return pinkModeIconPressTimestamps.length;
     }
 
     function triggerPinkModeIconRain() {
@@ -1417,7 +1439,7 @@
     }
 
     function handlePinkModeIconPress() {
-      pinkModeIconPressCount += 1;
+      pinkModeIconPressCount = recordPinkModeIconPressTimestamp();
 
       if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
         schedulePinkModeIconPressReset();
