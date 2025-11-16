@@ -55,6 +55,21 @@
     return overlay;
   }
 
+  function hideOverlay() {
+    if (overlay) {
+      overlay.textContent = '';
+      overlay.hidden = true;
+      overlay.setAttribute('aria-hidden', 'true');
+      if (overlay.classList) {
+        overlay.classList.remove(VISIBLE_CLASS);
+      }
+    }
+
+    if (dialog && dialog.classList) {
+      dialog.classList.remove('has-gear-list-note');
+    }
+  }
+
   // Mirror the source note's text into the overlay, while debouncing redundant
   // updates. This keeps screen reader announcements calm and predictable.
   function updateOverlayText(note) {
@@ -62,22 +77,8 @@
       return;
     }
 
-    var text = lastText;
-    if (note && typeof note.textContent === 'string') {
-      text = note.textContent.trim();
-    }
-
-    if (typeof text !== 'string') {
-      text = '';
-    }
-
-    if (text !== lastText) {
-      lastText = text;
-    }
-
-    if (overlay.textContent !== text) {
-      overlay.textContent = text;
-    }
+    lastText = '';
+    hideOverlay();
   }
 
   // Toggle the overlay when the dialog or source note changes visibility. We
@@ -88,43 +89,7 @@
       return;
     }
 
-    var notePresent = !!(note && document.contains(note));
-    var noteHidden = false;
-
-    if (notePresent) {
-      if (note.hasAttribute && note.hasAttribute('hidden')) {
-        noteHidden = true;
-      } else if (note.classList && note.classList.contains('hidden')) {
-        noteHidden = true;
-      } else if (note.style && (note.style.display === 'none' || note.style.visibility === 'hidden')) {
-        noteHidden = true;
-      }
-    }
-
-    var hasText = typeof lastText === 'string' && lastText.trim().length > 0;
-    var shouldShow = !!(dialog.open && notePresent && !noteHidden && hasText);
-
-    overlay.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-
-    if (dialog && dialog.classList) {
-      if (shouldShow) {
-        dialog.classList.add('has-gear-list-note');
-      } else {
-        dialog.classList.remove('has-gear-list-note');
-      }
-    }
-
-    if (shouldShow) {
-      overlay.hidden = false;
-      if (overlay.classList) {
-        overlay.classList.add(VISIBLE_CLASS);
-      }
-    } else {
-      if (overlay.classList) {
-        overlay.classList.remove(VISIBLE_CLASS);
-      }
-      overlay.hidden = true;
-    }
+    hideOverlay();
   }
 
   // Watch the original autosave note for content changes so we can surface
