@@ -1386,7 +1386,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!select) return;
       const current = typeof currentValue === 'string' ? currentValue : '';
       select.innerHTML = '';
-      GEAR_LIST_CATEGORIES.forEach(cat => {
+
+      const sortedCategories = Array.from(GEAR_LIST_CATEGORIES).sort((a, b) =>
+        a.localeCompare(b, currentLang || 'en', { sensitivity: 'base' })
+      );
+
+      sortedCategories.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = cat;
