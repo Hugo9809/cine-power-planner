@@ -126,6 +126,7 @@
   const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
   const SKIP_STATUS_KEY = `${PRIMARY_STORAGE_KEY}:skip`;
+  const WINDOW_NAME_SKIP_TOKEN = `${SKIP_STATUS_KEY}=true`;
   const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
@@ -440,9 +441,43 @@
         } catch (error) {
           void error;
         }
-      }
-      return storages;
     }
+    return storages;
+  }
+
+  function readWindowNameSkipFlag() {
+    try {
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.name === 'string') {
+        return GLOBAL_SCOPE.name.indexOf(WINDOW_NAME_SKIP_TOKEN) !== -1;
+      }
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
+
+  function writeWindowNameSkipFlag(skipped) {
+    try {
+      if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE.name === 'undefined') {
+        return false;
+      }
+      const rawName = typeof GLOBAL_SCOPE.name === 'string' ? GLOBAL_SCOPE.name : '';
+      const tokens = rawName
+        .split(';')
+        .map(token => token.trim())
+        .filter(Boolean)
+        .filter(token => token.indexOf(`${SKIP_STATUS_KEY}=`) !== 0);
+      if (skipped) {
+        tokens.push(WINDOW_NAME_SKIP_TOKEN);
+      }
+      const nextName = tokens.join('; ');
+      GLOBAL_SCOPE.name = nextName;
+      return true;
+    } catch (error) {
+      void error;
+      return false;
+    }
+  }
 
     function readSkipStatusPreference() {
       const storages = collectStorageCandidates();
@@ -474,6 +509,9 @@
           void error;
         }
       }
+      if (readWindowNameSkipFlag()) {
+        return true;
+      }
       return null;
     }
 
@@ -503,7 +541,8 @@
           }
         }
       }
-      return wrote;
+      const updatedWindowName = writeWindowNameSkipFlag(Boolean(skipped));
+      return wrote || updatedWindowName;
     }
 
     let storedStateCache = null;

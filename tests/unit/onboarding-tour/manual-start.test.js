@@ -758,6 +758,36 @@ describe('onboarding tour manual start', () => {
     }
   });
 
+  test('skipped state stored in window.name prevents auto start after reload', () => {
+    const safeStorage = createTrackableStorage();
+    const secondaryStorage = createTrackableStorage();
+    const sessionStorageStub = createTrackableStorage();
+
+    loadModule({
+      readyState: 'loading',
+      safeStorage,
+      safeLocalStorage: secondaryStorage,
+      localStorage: secondaryStorage,
+      sessionStorage: sessionStorageStub,
+    });
+
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    try {
+      global.name = 'cinePowerPlanner_onboardingTutorial:skip=true';
+
+      document.readyState = 'complete';
+      document.dispatchEvent(new Event('DOMContentLoaded'));
+
+      expect(setTimeoutSpy).not.toHaveBeenCalledWith(expect.any(Function), 600);
+    } finally {
+      setTimeoutSpy.mockRestore();
+      delete global.localStorage;
+      delete global.sessionStorage;
+      delete global.name;
+    }
+  });
+
   test('skipping onboarding persists across reloads when primary storage is unavailable', async () => {
     const persistentStorage = (() => {
       const values = new Map();
