@@ -4828,7 +4828,14 @@ function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttribu
   }
 }
 
-addSafeEventListener(addDeviceBtn, "click", () => {
+addSafeEventListener(addDeviceBtn, "click", (event) => {
+  if (event && typeof event.preventDefault === 'function') {
+    try {
+      event.preventDefault();
+    } catch (preventDefaultError) {
+      void preventDefaultError;
+    }
+  }
   const name = newNameInput.value.trim();
   const categorySelect = resolveNewCategorySelect();
   const category = categorySelect ? categorySelect.value : '';
