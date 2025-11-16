@@ -39,60 +39,31 @@
     }
     return overlay;
   }
+  function hideOverlay() {
+    if (overlay) {
+      overlay.textContent = '';
+      overlay.hidden = true;
+      overlay.setAttribute('aria-hidden', 'true');
+      if (overlay.classList) {
+        overlay.classList.remove(VISIBLE_CLASS);
+      }
+    }
+    if (dialog && dialog.classList) {
+      dialog.classList.remove('has-gear-list-note');
+    }
+  }
   function updateOverlayText(note) {
     if (!overlay) {
       return;
     }
-    var text = lastText;
-    if (note && typeof note.textContent === 'string') {
-      text = note.textContent.trim();
-    }
-    if (typeof text !== 'string') {
-      text = '';
-    }
-    if (text !== lastText) {
-      lastText = text;
-    }
-    if (overlay.textContent !== text) {
-      overlay.textContent = text;
-    }
+    lastText = '';
+    hideOverlay();
   }
   function updateOverlayVisibility(note) {
     if (!overlay || !dialog) {
       return;
     }
-    var notePresent = !!(note && document.contains(note));
-    var noteHidden = false;
-    if (notePresent) {
-      if (note.hasAttribute && note.hasAttribute('hidden')) {
-        noteHidden = true;
-      } else if (note.classList && note.classList.contains('hidden')) {
-        noteHidden = true;
-      } else if (note.style && (note.style.display === 'none' || note.style.visibility === 'hidden')) {
-        noteHidden = true;
-      }
-    }
-    var hasText = typeof lastText === 'string' && lastText.trim().length > 0;
-    var shouldShow = !!(dialog.open && notePresent && !noteHidden && hasText);
-    overlay.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-    if (dialog && dialog.classList) {
-      if (shouldShow) {
-        dialog.classList.add('has-gear-list-note');
-      } else {
-        dialog.classList.remove('has-gear-list-note');
-      }
-    }
-    if (shouldShow) {
-      overlay.hidden = false;
-      if (overlay.classList) {
-        overlay.classList.add(VISIBLE_CLASS);
-      }
-    } else {
-      if (overlay.classList) {
-        overlay.classList.remove(VISIBLE_CLASS);
-      }
-      overlay.hidden = true;
-    }
+    hideOverlay();
   }
   function observeSource(note) {
     if (sourceObserver) {
@@ -151,43 +122,33 @@
     if (!targetDialog || typeof targetDialog.addEventListener !== 'function') {
       return;
     }
-    var handler = function handler() {
+    targetDialog.addEventListener('close', function () {
       updateOverlayVisibility(sourceNote);
-    };
-    targetDialog.addEventListener('close', handler);
-    targetDialog.addEventListener('cancel', handler);
-    targetDialog.addEventListener('submit', handler);
-  }
-  function bindLanguageChange() {
-    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
-      return;
-    }
-    window.addEventListener('languagechange', function () {
-      sourceNote = document.getElementById(SOURCE_NOTE_ID) || null;
-      updateOverlayText(sourceNote);
+    });
+    targetDialog.addEventListener('cancel', function () {
+      updateOverlayVisibility(sourceNote);
+    });
+    targetDialog.addEventListener('submit', function () {
       updateOverlayVisibility(sourceNote);
     });
   }
-  function setup() {
-    var targetDialog = getDialog();
-    if (!targetDialog) {
+  function init() {
+    dialog = getDialog();
+    if (!dialog) {
       return;
     }
-    ensureOverlay(targetDialog);
+    overlay = ensureOverlay(dialog);
     sourceNote = document.getElementById(SOURCE_NOTE_ID) || null;
     updateOverlayText(sourceNote);
     updateOverlayVisibility(sourceNote);
-    observeDialog(targetDialog);
+    bindDialogEvents(dialog);
+    observeDialog(dialog);
     observeSource(sourceNote);
     observeBody();
-    bindDialogEvents(targetDialog);
-    bindLanguageChange();
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setup, {
-      once: true
-    });
+    document.addEventListener('DOMContentLoaded', init, { once: true });
   } else {
-    setup();
+    init();
   }
 })();
