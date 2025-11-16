@@ -5,6 +5,7 @@
   const LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   const STORAGE_KEYS = [PRIMARY_STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
   const SKIP_STATUS_KEY = `${PRIMARY_STORAGE_KEY}:skip`;
+  const WINDOW_NAME_SKIP_TOKEN = `${SKIP_STATUS_KEY}=true`;
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const LOAD_REASON_PREFIX = 'onboarding-tour:';
@@ -604,6 +605,17 @@
       } catch (error) {
         void error;
       }
+    }
+    try {
+      const currentScope = scope || getGlobalScope();
+      const nameValue = currentScope && typeof currentScope.name === 'string'
+        ? currentScope.name
+        : '';
+      if (nameValue && nameValue.indexOf(WINDOW_NAME_SKIP_TOKEN) !== -1) {
+        return true;
+      }
+    } catch (error) {
+      void error;
     }
     return null;
   }
