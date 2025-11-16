@@ -2622,6 +2622,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const baseIndex = Number.isInteger(index) ? index : 0;
       const id = typeof rule.id === 'string' && rule.id ? rule.id : `rule-${baseIndex + 1}`;
       const label = typeof rule.label === 'string' ? rule.label : '';
+      const enabled = rule.enabled !== false;
       const triggers = extractAutoGearTriggers(rule);
       const add = Array.isArray(rule.add) ? rule.add.map(autoGearItemSnapshot).filter(Boolean) : [];
       const remove = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSnapshot).filter(Boolean) : [];
@@ -2630,6 +2631,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         label,
         index: baseIndex,
         position: baseIndex + 1,
+        enabled,
         add,
         remove,
         ...triggers,
@@ -2642,7 +2644,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const position = Number.isInteger(rule.position) ? rule.position : index + 1;
       const id = typeof rule.id === 'string' && rule.id ? rule.id : `rule-${position}`;
       const label = typeof rule.label === 'string' ? rule.label : '';
-      return { id, label, index, position };
+      const enabled = rule.enabled !== false;
+      return { id, label, index, position, enabled };
     }
     
     function dedupeAutoGearRuleReferences(refs) {
@@ -2727,13 +2730,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           snapshots.push(snapshot);
         }
       });
+      const activeSnapshots = snapshots.filter(rule => rule.enabled !== false);
+      const disabledSnapshots = snapshots.filter(rule => rule.enabled === false);
       const summary = {
         generatedAt: new Date().toISOString(),
-        totalRules: snapshots.length,
+        totalRules: activeSnapshots.length,
+        allRules: snapshots.length,
+        disabledRules: dedupeAutoGearRuleReferences(
+          disabledSnapshots.map(createAutoGearRuleReference).filter(Boolean),
+        ),
       };
     
       const catalog = collectAutoGearScenarioCatalog();
-      if (!snapshots.length) {
+      if (!activeSnapshots.length) {
         summary.duplicates = { totalGroups: 0, totalRules: 0, groups: [] };
         summary.conflicts = { totalItems: 0, totalRules: 0, items: [] };
         summary.net = {
@@ -2762,7 +2771,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const duplicateMap = new Map();
       const duplicateRuleIds = new Set();
-      snapshots.forEach(snapshot => {
+      activeSnapshots.forEach(snapshot => {
         const key = createAutoGearTriggerKeyForSummary(snapshot);
         if (!duplicateMap.has(key)) {
           duplicateMap.set(key, {
@@ -2793,7 +2802,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const conflictMap = new Map();
       const conflictRuleIds = new Set();
-      snapshots.forEach(snapshot => {
+      activeSnapshots.forEach(snapshot => {
         const ref = createAutoGearRuleReference(snapshot);
         if (!ref) return;
         snapshot.add.forEach(item => {
@@ -2836,7 +2845,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       let addQuantity = 0;
       let removeItems = 0;
       let removeQuantity = 0;
-      snapshots.forEach(snapshot => {
+      activeSnapshots.forEach(snapshot => {
         snapshot.add.forEach(item => {
           addItems += 1;
           addQuantity += normalizeAutoGearQuantity(item.quantity);
@@ -2860,7 +2869,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         scenarioLabelMap.set(entry.value, entry.label);
       });
       const coverageMap = new Map();
-      snapshots.forEach(snapshot => {
+      activeSnapshots.forEach(snapshot => {
         const ref = createAutoGearRuleReference(snapshot);
         if (!ref) return;
         const list = Array.isArray(snapshot.scenarios) ? snapshot.scenarios : [];
@@ -2895,7 +2904,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       uncovered.sort((a, b) => localeSort(a.label, b.label));
       const overlaps = coverage.filter(entry => entry.rules.length > 1);
       const rulesWithoutScenarios = dedupeAutoGearRuleReferences(
-        snapshots
+        activeSnapshots
           .filter(rule => !rule.always && (!Array.isArray(rule.scenarios) || !rule.scenarios.length))
           .map(createAutoGearRuleReference)
           .filter(Boolean),
@@ -2920,6 +2929,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const baseLabel = ref.label || langTexts.autoGearRuleBadgeUnnamed
         || texts.en?.autoGearRuleBadgeUnnamed
         || 'Automatic rule';
+      const disabledLabel = ref.enabled === false
+        ? (langTexts.autoGearRuleDisabledLabel || texts.en?.autoGearRuleDisabledLabel || 'Disabled')
+        : '';
+      const labeled = disabledLabel ? `${baseLabel} — ${disabledLabel}` : baseLabel;
       const positionText = formatNumberForLang(currentLang, ref.position || 1);
       if (ref.label) {
         const template = langTexts.autoGearSummaryRuleReference
@@ -2927,7 +2940,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           || 'Rule {position}: {label}';
         return template
           .replace('{position}', positionText)
-          .replace('{label}', baseLabel);
+          .replace('{label}', labeled);
       }
       const template = langTexts.autoGearSummaryRuleReferenceUntitled
         || texts.en?.autoGearSummaryRuleReferenceUntitled
@@ -3125,6 +3138,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const focus = context.focus || autoGearSummaryFocus || 'all';
       const hasSearchFilters = Boolean(context.hasSearchFilters);
       const focusApplied = Boolean(context.focusApplied);
+      const disabledRules = Array.isArray(analysis.disabledRules) ? analysis.disabledRules : [];
+      const disabledCount = disabledRules.length;
+      const allRules = typeof analysis.allRules === 'number' ? analysis.allRules : totalRules + disabledCount;
       const scenarioTotal = typeof analysis.scenarios?.total === 'number'
         ? analysis.scenarios.total
         : Array.isArray(analysis.scenarios?.catalog)
@@ -3143,14 +3159,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? Math.round((scenarioCovered / scenarioTotal) * 100)
         : 0;
     
-      if (!totalRules) {
+      if (!totalRules && !disabledCount) {
         autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty
           || texts.en?.autoGearSummaryEmpty
           || 'Add a rule to unlock coverage insights.';
         return;
       }
-    
-      if (hasSearchFilters || (focus !== 'all' && focus !== 'uncovered') || focusApplied) {
+
+      if (!totalRules && disabledCount) {
+        autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryAllDisabled
+          || texts.en?.autoGearSummaryAllDisabled
+          || 'All automatic gear rules are disabled.';
+      } else if (hasSearchFilters || (focus !== 'all' && focus !== 'uncovered') || focusApplied) {
         const template = langTexts.autoGearSummaryFilteredDescription
           || texts.en?.autoGearSummaryFilteredDescription
           || 'Showing {visible} of {total} rules after filters.';
@@ -3163,7 +3183,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           || texts.en?.autoGearSummaryDescription
           || 'Review duplicates, coverage gaps and conflicts before exporting or printing.';
       }
-    
+      if (disabledCount && totalRules) {
+        const disabledTemplate = langTexts.autoGearSummaryDisabledSuffix
+          || texts.en?.autoGearSummaryDisabledSuffix
+          || '{count} disabled rules are ignored in coverage.';
+        autoGearSummaryDescriptionElem.textContent = `${autoGearSummaryDescriptionElem.textContent} ${disabledTemplate.replace('{count}', formatNumberForLang(currentLang, disabledCount))}`.trim();
+      }
+
       const formatRulesCount = count => {
         const template = count === 1
           ? langTexts.autoGearRulesCountOne || texts.en?.autoGearRulesCountOne || '%s rule'
@@ -3277,6 +3303,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || texts.en?.autoGearSummaryDetailsIntro
         || 'Use the dashboard to audit coverage, overlaps and conflicts before exporting or printing.';
       detailsFragment.appendChild(intro);
+
+      if (disabledCount) {
+        const disabledIntro = document.createElement('p');
+        disabledIntro.className = 'auto-gear-summary-detail-text auto-gear-summary-disabled-note';
+        disabledIntro.textContent = langTexts.autoGearSummaryDisabledNote
+          || texts.en?.autoGearSummaryDisabledNote
+          || 'Disabled rules are visible below but ignored until re-enabled.';
+        detailsFragment.appendChild(disabledIntro);
+        if (disabledRules.length) {
+          const disabledList = document.createElement('ul');
+          disabledList.className = 'auto-gear-summary-list';
+          const item = document.createElement('li');
+          appendRuleButtons(item, disabledRules);
+          disabledList.appendChild(item);
+          detailsFragment.appendChild(disabledList);
+        }
+      }
     
       const appendRuleButtons = (container, rules) => {
         const jumpHelp = langTexts.autoGearSummaryJumpToRule
@@ -3286,8 +3329,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const button = document.createElement('button');
           button.type = 'button';
           button.dataset.autoGearRule = ref.id;
-          button.textContent = formatAutoGearRuleReference(ref, langTexts);
+          const label = formatAutoGearRuleReference(ref, langTexts);
+          const disabledLabel = langTexts.autoGearRuleDisabledLabel
+            || texts.en?.autoGearRuleDisabledLabel
+            || 'Disabled';
+          button.textContent = label;
           button.setAttribute('title', jumpHelp);
+          if (ref.enabled === false) {
+            button.dataset.disabled = 'true';
+            button.setAttribute('aria-label', `${label} — ${disabledLabel}`);
+          }
           container.appendChild(button);
           if (index < rules.length - 1) {
             container.appendChild(document.createTextNode(', '));
@@ -3662,6 +3713,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const wrapper = document.createElement('div');
         wrapper.className = 'auto-gear-rule';
         wrapper.dataset.ruleId = rule.id;
+        const isEnabled = rule.enabled !== false;
+        if (!isEnabled) {
+          wrapper.classList.add('auto-gear-rule-disabled');
+        }
         if (typeof index === 'number' && index >= 0) {
           wrapper.dataset.ruleIndex = String(index);
         } else {
@@ -3739,6 +3794,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const fallbackTitle = fallbackSource.length ? fallbackSource.join(' + ') : '';
         title.textContent = rule.label || fallbackTitle;
         info.appendChild(title);
+        if (!isEnabled) {
+          const disabledMeta = document.createElement('p');
+          disabledMeta.className = 'auto-gear-rule-meta auto-gear-rule-disabled-meta';
+          disabledMeta.textContent = texts[currentLang]?.autoGearRuleDisabledLabel
+            || texts.en?.autoGearRuleDisabledLabel
+            || 'Disabled';
+          info.appendChild(disabledMeta);
+        }
         if (rule.always) {
           const alwaysLabel = texts[currentLang]?.autoGearAlwaysMeta
             || texts.en?.autoGearAlwaysMeta
@@ -3983,6 +4046,36 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         wrapper.appendChild(info);
         const actions = document.createElement('div');
         actions.className = 'auto-gear-rule-actions';
+        const toggleWrapper = document.createElement('label');
+        toggleWrapper.className = 'auto-gear-rule-toggle';
+        const toggle = document.createElement('input');
+        toggle.type = 'checkbox';
+        toggle.className = 'auto-gear-enabled-toggle';
+        toggle.checked = isEnabled;
+        toggle.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          toggle.dataset.ruleIndex = String(index);
+        }
+        const toggleOnLabel = texts[currentLang]?.autoGearRuleToggleEnable
+          || texts.en?.autoGearRuleToggleEnable
+          || 'Enable rule';
+        const toggleOffLabel = texts[currentLang]?.autoGearRuleToggleDisable
+          || texts.en?.autoGearRuleToggleDisable
+          || 'Disable rule';
+        const toggleLabel = isEnabled ? toggleOffLabel : toggleOnLabel;
+        toggle.setAttribute('aria-label', toggleLabel);
+        toggle.title = toggleLabel;
+        const toggleStatus = document.createElement('span');
+        toggleStatus.textContent = isEnabled
+          ? (texts[currentLang]?.autoGearRuleEnabledLabel
+            || texts.en?.autoGearRuleEnabledLabel
+            || 'Enabled')
+          : (texts[currentLang]?.autoGearRuleDisabledLabel
+            || texts.en?.autoGearRuleDisabledLabel
+            || 'Disabled');
+        toggleWrapper.appendChild(toggle);
+        toggleWrapper.appendChild(toggleStatus);
+        actions.appendChild(toggleWrapper);
         const editBtn = document.createElement('button');
         editBtn.type = 'button';
         editBtn.className = 'auto-gear-edit';
@@ -5266,10 +5359,42 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           ? original.remove.map(item => ({ ...item, id: generateAutoGearId('item') }))
           : [],
       };
-    
+
       openAutoGearEditor(null, { initialDraft: duplicateRule, highlightLabel: true });
     }
-    
+
+    function setAutoGearRuleEnabled(ruleId, enabled, ruleIndex) {
+      const rules = getAutoGearRules();
+      let index = -1;
+      if (ruleId) {
+        index = rules.findIndex(rule => rule && rule.id === ruleId);
+      }
+      if (index < 0 && ruleIndex !== null && ruleIndex !== undefined) {
+        const parsedIndex = typeof ruleIndex === 'number'
+          ? ruleIndex
+          : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          index = parsedIndex;
+        }
+      }
+      if (index < 0) return false;
+      const normalizedEnabled = enabled !== false;
+      const updatedRule = normalizeAutoGearRule({ ...rules[index], enabled: normalizedEnabled });
+      if (!updatedRule) return false;
+      const nextRules = rules.slice();
+      nextRules[index] = updatedRule;
+      setAutoGearRules(nextRules);
+      updateAutoGearCatalogOptions();
+      renderAutoGearRulesList();
+      if (typeof refreshGearListIfVisible === 'function') {
+        refreshGearListIfVisible();
+      }
+      if (autoGearEditorDraft && autoGearEditorDraft.id === updatedRule.id) {
+        autoGearEditorDraft.enabled = normalizedEnabled;
+      }
+      return normalizedEnabled;
+    }
+
     function deleteAutoGearRule(ruleId, ruleIndex) {
       const rules = getAutoGearRules();
       let index = -1;
@@ -18063,6 +18188,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearPresetsControls,
       renderAutoGearRulesList,
       openAutoGearEditor,
+      setAutoGearRuleEnabled,
       overviewSectionIcons,
       saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection,

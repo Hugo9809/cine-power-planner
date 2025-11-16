@@ -2,7 +2,7 @@
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, filterDetailsStorage,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
-          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
+          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask, getEnabledAutoGearRules,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions, getCameraLetterColors,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
           focusScalePreference, normalizeFocusScale, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
@@ -7367,7 +7367,10 @@ function mergeAutoGearAdditions(baseAdditions, extraAdditions) {
 }
 
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
-    if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
+    const activeRules = typeof getEnabledAutoGearRules === 'function'
+        ? getEnabledAutoGearRules()
+        : autoGearRules.filter(rule => !rule || rule.enabled !== false);
+    if (!tableHtml || !activeRules.length || typeof document === 'undefined') return tableHtml;
   const scenarios = info && info.requiredScenarios
       ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
       : [];
@@ -7569,7 +7572,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       : '';
   const normalizedDistanceSelection = normalizeAutoGearTriggerValue(rawDistanceSelection);
   if (!scenarios.length) {
-    const hasRuleWithoutScenario = autoGearRules.some(rule => {
+    const hasRuleWithoutScenario = activeRules.some(rule => {
       const scenarioList = Array.isArray(rule.scenarios)
           ? rule.scenarios.filter(Boolean)
           : [];
@@ -7590,7 +7593,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     };
 
     const triggeredEntries = [];
-    autoGearRules.forEach(rule => {
+    activeRules.forEach(rule => {
         if (!rule) return;
         let multiplier = 1;
         if (rule.always) {
@@ -12889,7 +12892,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     function normalizeCartName(value) {
       return value
         ? value
-            .replace(/[\"'”“]/g, '')
+            .replace(/["'”“]/g, '')
             .replace(/\(.*?\)/g, '')
             .replace(/[^a-z0-9]+/gi, ' ')
             .trim()
@@ -12936,7 +12939,7 @@ function gearListGenerateHtmlImpl(info = {}) {
         parts.push(prefix);
       }
       if (typeof option.diameterIn !== 'undefined') {
-        parts.push(`${option.diameterIn}\"`);
+        parts.push(`${option.diameterIn}"`);
       } else if (typeof option.diameterMainMm !== 'undefined') {
         parts.push(`${option.diameterMainMm} mm`);
       }

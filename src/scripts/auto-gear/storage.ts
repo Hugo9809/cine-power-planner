@@ -3,7 +3,7 @@
  * exercised directly in unit tests without loading the UI.
  */
 // @ts-nocheck
-/* global AUTO_GEAR_BACKUP_RETENTION_DEFAULT, loadAutoGearBackups, AUTO_GEAR_BACKUPS_KEY,
+/* global loadAutoGearBackups, AUTO_GEAR_BACKUPS_KEY,
   normalizeAutoGearBackupEntry, loadAutoGearPresets, AUTO_GEAR_PRESETS_KEY, normalizeAutoGearPreset,
   saveAutoGearPresets, loadAutoGearMonitorDefaults,
   AUTO_GEAR_MONITOR_DEFAULTS_KEY, saveAutoGearMonitorDefaults,
@@ -11,8 +11,7 @@
   loadAutoGearActivePresetId, AUTO_GEAR_ACTIVE_PRESET_KEY, saveAutoGearActivePresetId,
   loadAutoGearAutoPresetId, AUTO_GEAR_AUTO_PRESET_KEY, saveAutoGearAutoPresetId,
   loadAutoGearBackupVisibility, AUTO_GEAR_BACKUP_VISIBILITY_KEY, saveAutoGearBackupVisibility,
-  AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE, AUTO_GEAR_BACKUP_RETENTION_MAX,
-  loadAutoGearBackupRetention, AUTO_GEAR_BACKUP_RETENTION_KEY, saveAutoGearBackupRetention,
+  loadAutoGearBackupRetention, saveAutoGearBackupRetention,
   saveAutoGearBackups, autoGearBackupRetention, callCoreFunctionIfAvailable,
   autoGearBackupRetentionInput, autoGearBackups, AUTO_GEAR_RULES_KEY, normalizeAutoGearRule,
   loadAutoGearRules */

@@ -165,7 +165,7 @@ describe('shared project gear list handling', () => {
     expect(decoded.setupName).toBe('Mixed Payload');
     expect(decoded.gearList).toBe('<div>Encoded Gear</div>');
     expect(Array.isArray(decoded.autoGearRules)).toBe(true);
-    expect(decoded.autoGearRules).toEqual([{ id: 'rule-1' }]);
+    expect(decoded.autoGearRules).toEqual([{ id: 'rule-1', enabled: true }]);
     expect(payload.gearList).toBeUndefined();
     expect(payload.autoGearRules).toBeUndefined();
   });

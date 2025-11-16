@@ -6,9 +6,9 @@
 // @ts-nocheck
 /* global AUTO_GEAR_SELECTOR_TYPE_SET, AUTO_GEAR_SELECTOR_TYPE_MAP, DEVICE_GLOBAL_SCOPE,
   devices, CORE_PART1_RUNTIME_SCOPE, CORE_GLOBAL_SCOPE, CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-  CORE_SHARED, AUTO_GEAR_TRIPOD_FIELD_IDS, AUTO_GEAR_TRIPOD_SELECTOR_TYPES, localeSort,
+  AUTO_GEAR_TRIPOD_FIELD_IDS, AUTO_GEAR_TRIPOD_SELECTOR_TYPES, localeSort,
   AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS, AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP,
-  getLanguageTexts, currentLang, DEFAULT_LANGUAGE_SAFE, addArriKNumber, GEAR_LIST_CATEGORIES,
+  getLanguageTexts, currentLang, addArriKNumber, GEAR_LIST_CATEGORIES,
   AUTO_GEAR_CUSTOM_CATEGORY, texts, autoGearOwnGearSelect, collectAutoGearSelectedValues,
   getAutoGearOwnGearItems, autoGearEditorDraft, formatOwnGearQuantityText, findAutoGearOwnGearById,
   computeAutoGearMultiSelectSize, AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS, autoGearAddOwnGearSelect,
@@ -1250,6 +1250,15 @@ function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
+  let enabled = true;
+  if (typeof rule.enabled === 'string') {
+    const normalized = rule.enabled.trim().toLowerCase();
+    if (normalized === 'false' || normalized === '0') {
+      enabled = false;
+    }
+  } else if (rule.enabled === false) {
+    enabled = false;
+  }
   let always = false;
   if (Array.isArray(rule.always)) {
     always = rule.always.some(value => {
@@ -1448,6 +1457,7 @@ function normalizeAutoGearRule(rule) {
     conditionLogic,
     add,
     remove,
+    enabled,
   };
 }
 
@@ -1564,6 +1574,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
       : {},
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
+    enabled: normalized.enabled ? 1 : 0,
   };
 }
 
