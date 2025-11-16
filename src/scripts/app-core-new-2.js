@@ -3304,23 +3304,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Use the dashboard to audit coverage, overlaps and conflicts before exporting or printing.';
       detailsFragment.appendChild(intro);
 
-      if (disabledCount) {
-        const disabledIntro = document.createElement('p');
-        disabledIntro.className = 'auto-gear-summary-detail-text auto-gear-summary-disabled-note';
-        disabledIntro.textContent = langTexts.autoGearSummaryDisabledNote
-          || texts.en?.autoGearSummaryDisabledNote
-          || 'Disabled rules are visible below but ignored until re-enabled.';
-        detailsFragment.appendChild(disabledIntro);
-        if (disabledRules.length) {
-          const disabledList = document.createElement('ul');
-          disabledList.className = 'auto-gear-summary-list';
-          const item = document.createElement('li');
-          appendRuleButtons(item, disabledRules);
-          disabledList.appendChild(item);
-          detailsFragment.appendChild(disabledList);
-        }
-      }
-    
       const appendRuleButtons = (container, rules) => {
         const jumpHelp = langTexts.autoGearSummaryJumpToRule
           || texts.en?.autoGearSummaryJumpToRule
@@ -3345,6 +3328,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       };
+
+      if (disabledCount) {
+        const disabledIntro = document.createElement('p');
+        disabledIntro.className = 'auto-gear-summary-detail-text auto-gear-summary-disabled-note';
+        disabledIntro.textContent = langTexts.autoGearSummaryDisabledNote
+          || texts.en?.autoGearSummaryDisabledNote
+          || 'Disabled rules are visible below but ignored until re-enabled.';
+        detailsFragment.appendChild(disabledIntro);
+        if (disabledRules.length) {
+          const disabledList = document.createElement('ul');
+          disabledList.className = 'auto-gear-summary-list';
+          const item = document.createElement('li');
+          appendRuleButtons(item, disabledRules);
+          disabledList.appendChild(item);
+          detailsFragment.appendChild(disabledList);
+        }
+      }
     
       if (focus === 'duplicates') {
         const headingElem = document.createElement('p');
