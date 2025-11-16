@@ -620,6 +620,16 @@
     return null;
   }
 
+  function isOnboardingSuppressed(scope) {
+    const stored = readStoredState(scope);
+    const normalized = normalizeStoredStateSnapshot(stored) || stored;
+    return Boolean(
+      normalized
+      && typeof normalized === 'object'
+      && (normalized.completed === true || normalized.skipped === true),
+    );
+  }
+
   function readStoredState(scope) {
     const storageCandidates = collectStorageCandidates(scope);
 
@@ -662,9 +672,7 @@
     if (onboardingModuleReady) {
       return;
     }
-    const stored = readStoredState(scope);
-    const normalized = normalizeStoredStateSnapshot(stored) || stored;
-    if (normalized && typeof normalized === 'object' && (normalized.completed === true || normalized.skipped === true)) {
+    if (isOnboardingSuppressed(scope)) {
       return;
     }
     schedule(() => {
@@ -747,6 +755,11 @@
 
       const trigger = resolveTrigger(event.target, doc);
       if (!trigger) {
+        return;
+      }
+
+      if (isOnboardingSuppressed(scope)) {
+        uninstallTriggerInterceptor(scope);
         return;
       }
 
