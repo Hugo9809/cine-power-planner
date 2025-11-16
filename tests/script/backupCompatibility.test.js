@@ -127,7 +127,7 @@ describe('backup compatibility utilities', () => {
     const sections = extractBackupSections({ plannerData: legacyPlannerData });
 
     expect(sections.data.setups).toEqual({ Secondary: { name: 'Secondary', items: [] } });
-    expect(sections.data.autoGearRules).toEqual([{ id: 'rule-1' }]);
+    expect(sections.data.autoGearRules).toEqual([{ id: 'rule-1', enabled: true }]);
     expect(sections.data.favorites).toEqual({ rig: 'Steadicam' });
   });
 

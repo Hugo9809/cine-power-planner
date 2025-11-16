@@ -202,6 +202,7 @@
   "./src/data/devices/batteryHotswaps.js",
   "./src/data/devices/cages.js",
   "./src/data/devices/cameras.js",
+  "./src/data/devices/carts.js",
   "./src/data/devices/chargers.js",
   "./src/data/devices/fiz.js",
   "./src/data/devices/gearList.js",

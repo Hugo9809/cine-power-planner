@@ -8119,6 +8119,15 @@ if (autoGearAddItemButton) {
         callSessionCoreFunction('deleteAutoGearRule', args);
       }
     });
+    autoGearRulesList.addEventListener('change', event => {
+      const targetElement = event.target;
+      if (!targetElement || !(targetElement instanceof HTMLElement)) return;
+      if (targetElement.classList.contains('auto-gear-enabled-toggle')) {
+        const ruleId = targetElement.dataset.ruleId || '';
+        const ruleIndex = targetElement.dataset.ruleIndex;
+        callSessionCoreFunction('setAutoGearRuleEnabled', [ruleId, targetElement.checked, ruleIndex]);
+      }
+    });
   }
   if (autoGearBackupSelect) {
     autoGearBackupSelect.addEventListener('change', () => {

@@ -3489,6 +3489,10 @@ function getAutoGearRules() {
   return autoGearRules.slice();
 }
 
+function getEnabledAutoGearRules() {
+  return autoGearRules.filter(rule => !rule || rule.enabled !== false);
+}
+
 function syncAutoGearRulesFromStorage(rules) {
   if (Array.isArray(rules)) {
     setAutoGearRules(rules);
@@ -5587,7 +5591,7 @@ function normalizePowerPortType(type) {
     const normalized = mapPowerPortOne(val);
     if (!normalized) return [];
     return normalized
-      .split(/[\/,]/)
+      .split(/[/,]/)
       .map(piece => mapPowerPortOne(piece.trim()))
       .map(piece => (piece && piece.trim()) || '')
       .filter(Boolean);

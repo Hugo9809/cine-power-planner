@@ -1221,6 +1221,16 @@ function normalizeAutoGearRule(rule) {
         return null;
     var id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
     var label = typeof rule.label === 'string' ? rule.label.trim() : '';
+    var enabled = true;
+    if (typeof rule.enabled === 'string') {
+        var normalized = rule.enabled.trim().toLowerCase();
+        if (normalized === 'false' || normalized === '0') {
+            enabled = false;
+        }
+    }
+    else if (rule.enabled === false) {
+        enabled = false;
+    }
     var always = false;
     if (Array.isArray(rule.always)) {
         always = rule.always.some(function (value) {
@@ -1435,6 +1445,7 @@ function normalizeAutoGearRule(rule) {
         conditionLogic: conditionLogic,
         add: add,
         remove: remove,
+        enabled: enabled,
     };
 }
 function autoGearItemSnapshot(item) {
@@ -1538,6 +1549,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
             : {},
         add: mapItems(normalized.add),
         remove: mapItems(normalized.remove),
+        enabled: normalized.enabled ? 1 : 0,
     };
 }
 function autoGearRuleSortKey(rule) {

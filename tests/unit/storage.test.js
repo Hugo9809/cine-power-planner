@@ -1615,7 +1615,7 @@ describe('automatic gear storage', () => {
   });
 
   test('saveAutoGearRules persists rule arrays', () => {
-    const rules = [{ id: 'rule-a', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    const rules = [{ id: 'rule-a', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [], enabled: true }];
     saveAutoGearRules(rules);
     expect(parseLocalStorageJSON(AUTO_GEAR_RULES_KEY)).toEqual(rules);
     expect(loadAutoGearRules()).toEqual(rules);
@@ -1627,13 +1627,22 @@ describe('automatic gear storage', () => {
   });
 
   test('loadAutoGearRules migrates legacy key prefix', () => {
-    const rules = [{ id: 'legacy', label: 'Legacy', scenarios: [], add: [], remove: [] }];
+    const rules = [{ id: 'legacy', label: 'Legacy', scenarios: [], add: [], remove: [], enabled: true }];
     localStorage.setItem('cinePowerPlanner_autoGearRules', JSON.stringify(rules));
 
     const loaded = loadAutoGearRules();
     expect(loaded).toEqual(rules);
     expect(parseLocalStorageJSON(AUTO_GEAR_RULES_KEY)).toEqual(rules);
     expect(getDecodedLocalStorageItem('cinePowerPlanner_autoGearRules')).toBeNull();
+  });
+
+  test('loadAutoGearRules defaults enabled to true when missing', () => {
+    const stored = [{ id: 'missing-enabled', label: 'Legacy active', add: [], remove: [] }];
+    localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify(stored));
+
+    expect(loadAutoGearRules()).toEqual([
+      { ...stored[0], enabled: true },
+    ]);
   });
 
   test('loadAutoGearBackups returns stored backups and sanitises invalid payloads', () => {
@@ -2416,7 +2425,7 @@ describe('export/import all data', () => {
       project: { Proj: { gearList: '<ol></ol>' } },
       favorites: { cat: ['B'] },
       autoGearRules: [
-        { id: 'rule-indoor', label: 'Indoor', scenarios: ['Indoor'], add: [{ name: 'Item', category: 'Grip', quantity: 1 }], remove: [] }
+        { id: 'rule-indoor', label: 'Indoor', scenarios: ['Indoor'], add: [{ name: 'Item', category: 'Grip', quantity: 1 }], remove: [], enabled: true }
       ],
       autoGearBackups: [
         { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
@@ -2480,6 +2489,18 @@ describe('export/import all data', () => {
     expect(parseLocalStorageJSON('cameraPowerPlanner_customFonts')).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
+  });
+
+  test('exportAllData preserves automatic gear enabled states', () => {
+    const rules = [
+      { id: 'rule-enabled', label: 'Enabled', add: [], remove: [], enabled: true },
+      { id: 'rule-disabled', label: 'Disabled', add: [], remove: [], enabled: false },
+    ];
+
+    saveAutoGearRules(rules);
+
+    const exported = exportAllData();
+    expect(exported.autoGearRules).toEqual(rules);
   });
 
   test('importAllData applies temperature unit preference', () => {
@@ -2578,7 +2599,7 @@ describe('export/import all data', () => {
 
     const createdAt = '2024-01-01T00:00:00.000Z';
     const legacyRules = [
-      { id: 'legacy-rule', label: 'Legacy', scenarios: [], add: [], remove: [] },
+      { id: 'legacy-rule', label: 'Legacy', scenarios: [], add: [], remove: [], enabled: true },
     ];
     const legacyBackups = [
       { id: 'legacy-backup', label: 'Legacy', createdAt: 321, rules: [] },
@@ -2738,7 +2759,7 @@ describe('export/import all data', () => {
           gearList: '<div>Legacy</div>',
           projectInfo: { projectName: 'Legacy JSON' },
           autoGearRules: [
-            { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [] },
+            { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [], enabled: true },
           ],
         }),
       },
@@ -2750,7 +2771,7 @@ describe('export/import all data', () => {
       gearList: '<div>Legacy</div>',
       projectInfo: { projectName: 'Legacy JSON' },
       autoGearRules: [
-        { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [] },
+        { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [], enabled: true },
       ],
     }));
   });
@@ -2841,7 +2862,7 @@ describe('export/import all data', () => {
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
-        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [], enabled: true },
       ],
     });
     localStorage.setItem(PROJECT_KEY, JSON.stringify(jsonString));
@@ -2852,7 +2873,7 @@ describe('export/import all data', () => {
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
-        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [], enabled: true },
       ],
     }));
 
@@ -2862,7 +2883,7 @@ describe('export/import all data', () => {
       gearListAndProjectRequirementsGenerated: true,
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
-        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [], enabled: true },
       ],
     });
   });
@@ -2918,7 +2939,7 @@ describe('export/import all data', () => {
   test('importAllData accepts automatic gear data stored as object maps', () => {
     const payload = {
       autoGearRules: {
-        first: { id: 'first', label: 'First', scenarios: ['Indoor'], add: [], remove: [] },
+        first: { id: 'first', label: 'First', scenarios: ['Indoor'], add: [], remove: [], enabled: true },
       },
       autoGearBackups: {
         keep: { id: 'backup-keep', label: 'Keep', createdAt: 123, rules: [] },
@@ -2938,7 +2959,7 @@ describe('export/import all data', () => {
 
   test('importAllData accepts automatic gear data stored as Map instances', () => {
     const rulesMap = new Map();
-    rulesMap.set('map-rule', { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [] });
+    rulesMap.set('map-rule', { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [], enabled: true });
 
     const backupsMap = new Map();
     backupsMap.set('map-backup', { id: 'map-backup', label: 'Map backup', createdAt: 789, rules: [] });
@@ -2965,7 +2986,7 @@ describe('export/import all data', () => {
 
   test('importAllData accepts automatic gear data stored as JSON strings', () => {
     const rules = [
-      { id: 'rule-json', label: 'JSON', scenarios: [], add: [], remove: [] },
+      { id: 'rule-json', label: 'JSON', scenarios: [], add: [], remove: [], enabled: true },
     ];
     const backups = [
       { id: 'backup-json', label: 'Backup', createdAt: 456, rules: [] },
@@ -3026,7 +3047,7 @@ describe('export/import all data', () => {
 
   test('importAllData normalizes nested legacy project payloads', () => {
     const legacyRules = [
-      { id: 'nested-rule', label: 'Nested', scenarios: [], add: [], remove: [] },
+      { id: 'nested-rule', label: 'Nested', scenarios: [], add: [], remove: [], enabled: true },
     ];
 
     importAllData({

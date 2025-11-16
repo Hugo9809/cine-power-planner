@@ -25,7 +25,7 @@ describe('restore rehearsal safeguards', () => {
     const projectBundle = {
       setupName: 'Shared project',
       projectInfo: { summary: 'Prelight notes' },
-      autoGearRules: [{ id: 'rule-shared' }],
+      autoGearRules: [{ id: 'rule-shared', enabled: true }],
     };
 
     const fakeFile = {
@@ -122,7 +122,7 @@ describe('restore rehearsal safeguards', () => {
         },
       },
       favorites: { monitors: ['17in monitor'] },
-      autoGearRules: [{ id: 'rule-shared' }],
+      autoGearRules: [{ id: 'rule-shared', enabled: true }],
     }));
 
     const status = document.getElementById('restoreRehearsalStatus');
@@ -142,7 +142,7 @@ describe('restore rehearsal safeguards', () => {
         prepDays: ['Day 1'],
       },
       favorites: { monitors: ['17in monitor'] },
-      autoGearRules: [{ id: 'rule-shared' }],
+      autoGearRules: [{ id: 'rule-shared', enabled: true }],
     };
 
     const fakeFile = {
