@@ -50,16 +50,16 @@ const APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT = resolveCoreSupportModule(
 const APP_CORE_BOOTSTRAP_SUITE =
   APP_CORE_BOOTSTRAP_TOOLS && typeof APP_CORE_BOOTSTRAP_TOOLS.createBootstrapSuite === 'function'
     ? APP_CORE_BOOTSTRAP_TOOLS.createBootstrapSuite({
-        directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
-        directBootstrapNamespace: APP_CORE_BOOTSTRAP_TOOLS,
-        directBootstrapFallbackNamespace: APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
-        directBootstrapEnvironmentNamespace: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
-        directBootstrapResultsNamespace: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
-        runtimeScope: getDefaultRuntimeScope(),
-        coreGlobalScope: getDefaultCoreGlobalScope(),
-      })
+      directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+      directBootstrapNamespace: APP_CORE_BOOTSTRAP_TOOLS,
+      directBootstrapFallbackNamespace: APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+      directBootstrapEnvironmentNamespace: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
+      directBootstrapResultsNamespace: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
+      resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null,
+      runtimeScope: getDefaultRuntimeScope(),
+      coreGlobalScope: getDefaultCoreGlobalScope(),
+    })
     : null;
 
 const APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS =
@@ -89,34 +89,34 @@ const APP_CORE_BOOTSTRAP_ENVIRONMENT =
   (APP_CORE_BOOTSTRAP_SUITE &&
     typeof APP_CORE_BOOTSTRAP_SUITE.createBootstrapEnvironment === 'function'
     ? APP_CORE_BOOTSTRAP_SUITE.createBootstrapEnvironment({
-        directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
-        directBootstrapNamespace:
-          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
-          APP_CORE_BOOTSTRAP_TOOLS,
-        directBootstrapFallbackNamespace:
-          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
-          APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
-        runtimeScope: getDefaultRuntimeScope(),
-        coreGlobalScope: getDefaultCoreGlobalScope(),
-      })
+      directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+      directBootstrapNamespace:
+        (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
+        APP_CORE_BOOTSTRAP_TOOLS,
+      directBootstrapFallbackNamespace:
+        (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
+        APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+      resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null,
+      runtimeScope: getDefaultRuntimeScope(),
+      coreGlobalScope: getDefaultCoreGlobalScope(),
+    })
     : null) ||
   (APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS &&
     typeof APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment === 'function'
     ? APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS.createBootstrapEnvironment({
-        directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
-        directBootstrapNamespace:
-          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
-          APP_CORE_BOOTSTRAP_TOOLS,
-        directBootstrapFallbackNamespace:
-          (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
-          APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
-        runtimeScope: getDefaultRuntimeScope(),
-        coreGlobalScope: getDefaultCoreGlobalScope(),
-      })
+      directResolverNamespace: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+      directBootstrapNamespace:
+        (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapTools) ||
+        APP_CORE_BOOTSTRAP_TOOLS,
+      directBootstrapFallbackNamespace:
+        (APP_CORE_BOOTSTRAP_SUITE && APP_CORE_BOOTSTRAP_SUITE.bootstrapFallbackTools) ||
+        APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+      resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null,
+      runtimeScope: getDefaultRuntimeScope(),
+      coreGlobalScope: getDefaultCoreGlobalScope(),
+    })
     : null);
 
 const APP_CORE_BOOTSTRAP_RESOLVER_TOOLS =
@@ -175,25 +175,25 @@ function buildBaseBootstrapInvocationOptions() {
 
 const BOOTSTRAP_INVOCATION_NORMALIZER =
   APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions === 'function'
+    typeof APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions === 'function'
     ? APP_CORE_BOOTSTRAP_TOOLS.normalizeBootstrapInvocationOptions
     : null;
 
 const BOOTSTRAP_FALLBACK_COLLECTOR =
   APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes === 'function'
+    typeof APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes === 'function'
     ? APP_CORE_BOOTSTRAP_TOOLS.collectBootstrapFallbackScopes
     : null;
 
 const BOOTSTRAP_INLINE_LOCALIZATION_CREATOR =
   APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback === 'function'
+    typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback === 'function'
     ? APP_CORE_BOOTSTRAP_TOOLS.createInlineLocalizationFallback
     : null;
 
 const BOOTSTRAP_INLINE_RUNTIME_CREATOR =
   APP_CORE_BOOTSTRAP_TOOLS &&
-  typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback === 'function'
+    typeof APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback === 'function'
     ? APP_CORE_BOOTSTRAP_TOOLS.createInlineRuntimeSharedFallback
     : null;
 
@@ -580,7 +580,7 @@ function createInlineRuntimeSharedFallback(options) {
         fallbackScopes: invocationOptions.fallbackScopes,
         currentRuntimeShared:
           invocationOptions.currentRuntimeShared &&
-          typeof invocationOptions.currentRuntimeShared === 'object'
+            typeof invocationOptions.currentRuntimeShared === 'object'
             ? invocationOptions.currentRuntimeShared
             : null,
       });
@@ -637,7 +637,7 @@ function createInlineRuntimeSharedFallback(options) {
 
   let runtimeShared =
     invocationOptions.currentRuntimeShared &&
-    typeof invocationOptions.currentRuntimeShared === 'object'
+      typeof invocationOptions.currentRuntimeShared === 'object'
       ? invocationOptions.currentRuntimeShared
       : null;
 
@@ -785,61 +785,61 @@ function inlineLocalizationBootstrapWiring(bootstrapResult) {
 
   const localizationFallbackSupport =
     bootstrapResult &&
-    typeof bootstrapResult.localizationFallbackSupport !== 'undefined'
+      typeof bootstrapResult.localizationFallbackSupport !== 'undefined'
       ? bootstrapResult.localizationFallbackSupport
       : null;
 
   const createBasicLocalizationFallbackResolvers =
     bootstrapResult &&
-    typeof bootstrapResult.createBasicLocalizationFallbackResolvers === 'function'
+      typeof bootstrapResult.createBasicLocalizationFallbackResolvers === 'function'
       ? bootstrapResult.createBasicLocalizationFallbackResolvers
       : function createBasicLocalizationFallbackResolversProxy() {
-          return null;
-        };
+        return null;
+      };
 
   const localizationFallbackRegistry =
     bootstrapResult && bootstrapResult.localizationFallbackRegistry
       ? bootstrapResult.localizationFallbackRegistry
       : {
-          createFallbackResolvers(fallbackOptions) {
-            return createBasicLocalizationFallbackResolvers(fallbackOptions);
-          },
-        };
+        createFallbackResolvers(fallbackOptions) {
+          return createBasicLocalizationFallbackResolvers(fallbackOptions);
+        },
+      };
 
   const localizationFallbackResolvers =
     bootstrapResult && bootstrapResult.localizationFallbackResolvers
       ? bootstrapResult.localizationFallbackResolvers
       : localizationFallbackRegistry &&
-          typeof localizationFallbackRegistry.createFallbackResolvers === 'function'
+        typeof localizationFallbackRegistry.createFallbackResolvers === 'function'
         ? localizationFallbackRegistry.createFallbackResolvers({
-            directNamespace: localizationFallbacks,
-            inlineNamespace: inlineLocalizationFallbacks,
-          })
+          directNamespace: localizationFallbacks,
+          inlineNamespace: inlineLocalizationFallbacks,
+        })
         : createBasicLocalizationFallbackResolvers({
-            directNamespace: localizationFallbacks,
-            inlineNamespace: inlineLocalizationFallbacks,
-          });
+          directNamespace: localizationFallbacks,
+          inlineNamespace: inlineLocalizationFallbacks,
+        });
 
   const localizationFallbackNamespace =
     bootstrapResult &&
-    typeof bootstrapResult.localizationFallbackNamespace !== 'undefined'
+      typeof bootstrapResult.localizationFallbackNamespace !== 'undefined'
       ? bootstrapResult.localizationFallbackNamespace
       : null;
 
   const fallbackResolveLocaleModule =
     bootstrapResult &&
-    typeof bootstrapResult.fallbackResolveLocaleModule === 'function'
+      typeof bootstrapResult.fallbackResolveLocaleModule === 'function'
       ? bootstrapResult.fallbackResolveLocaleModule
       : function fallbackResolveLocaleModuleProxy() {
-          return null;
-        };
+        return null;
+      };
 
   const createLocaleFallbacks =
     bootstrapResult && typeof bootstrapResult.createLocaleFallbacks === 'function'
       ? bootstrapResult.createLocaleFallbacks
       : function createLocaleFallbacksProxy() {
-          return null;
-        };
+        return null;
+      };
 
   return {
     localizationBootstrapResult:
@@ -866,3 +866,30 @@ const localizationBootstrapWiring =
       localizationBootstrapResult,
     })) ||
   inlineLocalizationBootstrapWiring(localizationBootstrapResult);
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    localizationBootstrapWiring,
+    APP_CORE_BOOTSTRAP_SUITE,
+    APP_CORE_BOOTSTRAP_TOOLS,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS,
+    APP_CORE_BOOTSTRAP_RESULTS_TOOLS,
+    APP_CORE_BOOTSTRAP_RESOLVER_TOOLS,
+    APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
+    APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+    APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
+    APP_CORE_BOOTSTRAP_RESULTS_DIRECT: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT,
+  };
+}
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof window !== 'undefined') {
+  window.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof self !== 'undefined') {
+  self.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof global !== 'undefined') {
+  global.localizationBootstrapWiring = localizationBootstrapWiring;
+}

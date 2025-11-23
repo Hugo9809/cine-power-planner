@@ -158,12 +158,12 @@ function ensureCriticalGlobalVariable(name, fallback) {
       globalFn(
         'value',
         "if (typeof " +
-          name +
-          " === 'undefined') { " +
-          name +
-          " = value; } return " +
-          name +
-          ';',
+        name +
+        " === 'undefined') { " +
+        name +
+        " = value; } return " +
+        name +
+        ';',
       )(value);
     }
   } catch (bindingError) {
@@ -1471,10 +1471,10 @@ function loaderResolveStructuredClone(scope) {
 function loaderCreateDeepCloneUtility() {
   var globalScope =
     (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
 
   var structuredCloneImpl = loaderResolveStructuredClone(globalScope);
 
@@ -2898,7 +2898,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   }
 
   function supportsModernFeatures(callback) {
-    var cb = typeof callback === 'function' ? callback : function () {};
+    var cb = typeof callback === 'function' ? callback : function () { };
 
     if (typeof window === 'undefined') {
       cb(true);
@@ -3785,18 +3785,20 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/globalthis-polyfill.js',
       'src/data/devices/index.js',
       'src/data/rental-houses.js',
-      { parallel: [
-        'src/data/devices/cameras.js',
-        'src/data/devices/monitors.js',
-        'src/data/devices/video.js',
-        'src/data/devices/fiz.js',
-        'src/data/devices/batteries.js',
-        'src/data/devices/batteryHotswaps.js',
-        'src/data/devices/chargers.js',
-        'src/data/devices/cages.js',
-        'src/data/devices/gearList.js',
-        'src/data/devices/wirelessReceivers.js',
-      ] },
+      {
+        parallel: [
+          'src/data/devices/cameras.js',
+          'src/data/devices/monitors.js',
+          'src/data/devices/video.js',
+          'src/data/devices/fiz.js',
+          'src/data/devices/batteries.js',
+          'src/data/devices/batteryHotswaps.js',
+          'src/data/devices/chargers.js',
+          'src/data/devices/cages.js',
+          'src/data/devices/gearList.js',
+          'src/data/devices/wirelessReceivers.js',
+        ]
+      },
       'src/scripts/storage.js',
       'src/scripts/translations/en.js',
       'src/scripts/translations.js',
@@ -3878,18 +3880,20 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/globalthis-polyfill.js',
       'legacy/data/devices/index.js',
       'legacy/data/rental-houses.js',
-      { parallel: [
-        'legacy/data/devices/cameras.js',
-        'legacy/data/devices/monitors.js',
-        'legacy/data/devices/video.js',
-        'legacy/data/devices/fiz.js',
-        'legacy/data/devices/batteries.js',
-        'legacy/data/devices/batteryHotswaps.js',
-        'legacy/data/devices/chargers.js',
-        'legacy/data/devices/cages.js',
-        'legacy/data/devices/gearList.js',
-        'legacy/data/devices/wirelessReceivers.js',
-      ] },
+      {
+        parallel: [
+          'legacy/data/devices/cameras.js',
+          'legacy/data/devices/monitors.js',
+          'legacy/data/devices/video.js',
+          'legacy/data/devices/fiz.js',
+          'legacy/data/devices/batteries.js',
+          'legacy/data/devices/batteryHotswaps.js',
+          'legacy/data/devices/chargers.js',
+          'legacy/data/devices/cages.js',
+          'legacy/data/devices/gearList.js',
+          'legacy/data/devices/wirelessReceivers.js',
+        ]
+      },
       'legacy/scripts/storage.js',
       'src/scripts/translations/en.js',
       'legacy/scripts/translations.js',
@@ -3941,7 +3945,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/app-core-ui-helpers.js',
       'legacy/scripts/app-core-runtime-ui.js',
       'legacy/scripts/app-core-localization-accessors.js',
-      'legacy/scripts/auto-gear/normalizers.js',
+      'src/scripts/auto-gear/normalizers.js',
       'legacy/scripts/auto-gear/storage.js',
       'legacy/scripts/auto-gear/ui.js',
       'legacy/scripts/app-core-new-1.js',
