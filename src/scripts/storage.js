@@ -72,8 +72,9 @@
   }
 
   // Perform a defensive deep clone that keeps us safe even when the runtime
-  // does not provide a structured clone implementation. We always fall back to
-  // this logic so that backup/restore data is never mutated accidentally.
+  // does not provide a structured clone implementation. JSON serialization is
+  // attempted first, but this manual path is the resilient safety net that
+  // prevents backup/restore data from being mutated when serialization fails.
   function storageManualDeepClone(value, references) {
     if (value === null || typeof value !== 'object') {
       return value;
@@ -143,6 +144,9 @@
     return clone;
   }
 
+  // Try to clone via JSON first so we get predictable behaviour when the data
+  // is serializable. If that throws, we fall back to the manual deep clone to
+  // keep user backups and restore payloads protected from mutation.
   function storageJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
