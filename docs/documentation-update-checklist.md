@@ -38,6 +38,9 @@ instructions.
 
 - [ ] Run the [Operations Checklist](operations-checklist.md) to confirm the
       instructions match the UI.
+- [ ] Perform the [Offline Help & Translation Verification](offline-help-verification.md)
+      drill to prove the help overlay, search results and localized topics load
+      from cached assets and mirror the README updates while offline.
 - [ ] Execute the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
       if service worker assets or icons changed.
 - [ ] Restore backups in the rehearsal sandbox to confirm documentation for
