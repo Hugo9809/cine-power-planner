@@ -33,24 +33,6 @@ If you see something that can be improved, feel free to open an issue or pull re
 
 Interested in hacking on the code? Great! Follow these steps to set up a local development environment:
 
-1. **Fork the repository** (click the "Fork" button at the top right of this page) and clone your fork:
-   ```sh
-   git clone https://github.com/<your-username>/cine-power-planner.git
-   cd cine-power-planner
-Create a branch for your change:
-git checkout -b my-feature-branch
-Install dependencies for development:
-pip install -r requirements.txt
-# (Optional) If there are dev/test requirements:
-pip install -r requirements-dev.txt 
-Make your changes! Ensure code follows our style (we recommend using a linter/formatter like flake8 or black).
-Run tests (if tests exist):
-pytest
-Make sure all tests pass before submitting your PR.
-Commit your changes with a descriptive commit message.
-Push to your fork:
-git push origin my-feature-branch
-Open a Pull Request on the main repository:
 1.  **Fork the repository** (click the "Fork" button at the top right of this page) and clone your fork:
     ```sh
     git clone https://github.com/<your-username>/cine-power-planner.git
@@ -62,14 +44,12 @@ Open a Pull Request on the main repository:
     ```
 3.  Install dependencies for development:
     ```sh
-    pip install -r requirements.txt
-    # (Optional) If there are dev/test requirements:
-    pip install -r requirements-dev.txt
+    npm install
     ```
-4.  Make your changes! Ensure code follows our style (we recommend using a linter/formatter like flake8 or black).
-5.  Run tests (if tests exist):
+4.  Make your changes! Ensure code follows our style (we use ESLint).
+5.  Run tests:
     ```sh
-    pytest
+    npm test
     ```
     Make sure all tests pass before submitting your PR.
 6.  Commit your changes with a descriptive commit message.
@@ -86,7 +66,7 @@ Open a Pull Request on the main repository:
 *   **Discuss first:** If your change is large or architectural, it’s a good idea to open an issue or discussion first to get feedback.
 *   **One feature per PR:** Keep changes focused. It’s better to open multiple small PRs than one big PR that does many things.
 *   **Include tests:** If you add a new feature or fix a bug, please add or update tests to cover the change if possible.
-*   **Respect coding standards:** Follow the code style of the project (PEP8 for Python, etc.). Ensure your editor respects the project’s formatting (spaces vs tabs, line endings, etc.).
+*   **Respect coding standards:** Follow the code style of the project (ESLint). Ensure your editor respects the project’s formatting (spaces vs tabs, line endings, etc.).
 *   **Update documentation:** If your change affects how users use the tool, update the README or any docs accordingly.
 
 ### Validating Changes ✅
