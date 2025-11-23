@@ -417,7 +417,13 @@ function ensureAutoBackupsFromProjects(options) {
     if (!isAutoBackup) return;
     if (Object.prototype.hasOwnProperty.call(setups, name)) return;
 
-    const snapshot = cloneEntry(projects[name]);
+    const projectEntry = projects[name];
+    if (!projectEntry || typeof projectEntry !== 'object') {
+      logger('warn', 'Skipped auto backup key with missing payload', null, { name });
+      return;
+    }
+
+    const snapshot = cloneEntry(projectEntry);
     setups[name] = snapshot;
     changed = true;
     importedCount += 1;
