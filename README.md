@@ -52,6 +52,8 @@ drive without phoning home.
    npx http-server
    # or
    python -m http.server
+   # or
+   npm run serve
    ```
 4. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
    importing, backing up and restoring on every machine before crews rely on the
