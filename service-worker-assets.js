@@ -33,6 +33,7 @@
   "./docs/offline-readiness.md",
   "./docs/operations-checklist.md",
   "./docs/power-summary-warning-reference.md",
+  "./docs/README.md",
   "./docs/review-findings.md",
   "./docs/review-tasks-2025-02-07.md",
   "./docs/runtime-refactor-plan.md",

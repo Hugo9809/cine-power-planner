@@ -26,19 +26,19 @@
   const safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function'
     ? MODULE_BASE.safeWarn
     : function fallbackWarn(message, error) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      try {
+        if (typeof error === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, error);
         }
-        try {
-          if (typeof error === 'undefined') {
-            console.warn(message);
-          } else {
-            console.warn(message, error);
-          }
-        } catch (consoleError) {
-          void consoleError;
-        }
-      };
+      } catch (consoleError) {
+        void consoleError;
+      }
+    };
 
   function dispatchOwnGearChanged(scope) {
     const target = scope || GLOBAL_SCOPE;
@@ -58,6 +58,12 @@
     }
   }
 
+  /**
+   * Generates a unique ID for an own-gear item.
+   * Uses crypto.randomUUID if available, otherwise falls back to a timestamp-based ID.
+   *
+   * @returns {string} A unique identifier string.
+   */
   function generateOwnGearId() {
     try {
       if (typeof GLOBAL_SCOPE.crypto === 'object' && GLOBAL_SCOPE.crypto && typeof GLOBAL_SCOPE.crypto.randomUUID === 'function') {
@@ -71,6 +77,13 @@
     return `own-${timePart}-${randomPart}`;
   }
 
+  /**
+   * Normalizes an own-gear record to ensure it has a valid ID and name.
+   * Trims whitespace from string fields and converts quantity to string.
+   *
+   * @param {object} entry - The raw entry to normalize.
+   * @returns {object|null} The normalized entry, or null if invalid.
+   */
   function normalizeOwnGearRecord(entry) {
     // Normalisation keeps the stored own-gear data predictable. Rather than
     // trusting arbitrary JSON we coerce strings and identifiers up front. This
@@ -101,6 +114,12 @@
     return normalized;
   }
 
+  /**
+   * Loads stored own-gear items from the global storage helper.
+   * Filters out duplicates and invalid entries.
+   *
+   * @returns {Array<object>} An array of normalized own-gear items.
+   */
   function loadStoredOwnGearItems() {
     // The storage helpers can be swapped during tests or legacy restore flows,
     // so we probe the global helpers defensively. Returning an empty array on
@@ -133,6 +152,13 @@
     }
   }
 
+  /**
+   * Persists a list of own-gear items to storage.
+   * Filters out invalid items and dispatches a change event.
+   *
+   * @param {Array<object>} items - The list of items to save.
+   * @returns {boolean} True if save was successful, false otherwise.
+   */
   function persistOwnGearItems(items) {
     // Persistence deliberately trims unknown properties so corrupted entries do
     // not sneak into the autosave pipeline. Every successful write emits the
@@ -142,23 +168,23 @@
     }
     const payload = Array.isArray(items)
       ? items
-          .filter((item) => item && typeof item === 'object')
-          .map((item) => {
-            const entry = {
-              id: item.id,
-              name: item.name,
-            };
-            if (item.quantity) {
-              entry.quantity = item.quantity;
-            }
-            if (item.notes) {
-              entry.notes = item.notes;
-            }
-            if (item.source) {
-              entry.source = item.source;
-            }
-            return entry;
-          })
+        .filter((item) => item && typeof item === 'object')
+        .map((item) => {
+          const entry = {
+            id: item.id,
+            name: item.name,
+          };
+          if (item.quantity) {
+            entry.quantity = item.quantity;
+          }
+          if (item.notes) {
+            entry.notes = item.notes;
+          }
+          if (item.source) {
+            entry.source = item.source;
+          }
+          return entry;
+        })
       : [];
 
     try {
