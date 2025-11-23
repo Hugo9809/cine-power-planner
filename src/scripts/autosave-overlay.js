@@ -77,8 +77,17 @@
       return;
     }
 
-    lastText = '';
-    hideOverlay();
+    var text = (note && note.textContent) ? note.textContent : '';
+    if (text === lastText) {
+      return;
+    }
+
+    lastText = text;
+    overlay.textContent = text;
+
+    if (!text) {
+      hideOverlay();
+    }
   }
 
   // Toggle the overlay when the dialog or source note changes visibility. We
@@ -89,7 +98,28 @@
       return;
     }
 
-    hideOverlay();
+    // If the source note is missing or hidden, hide the overlay.
+    if (!note || note.hidden || note.offsetParent === null) {
+      hideOverlay();
+      return;
+    }
+
+    // If the dialog is not open, hide the overlay.
+    if (!dialog.open) {
+      hideOverlay();
+      return;
+    }
+
+    // Otherwise, show it.
+    overlay.hidden = false;
+    overlay.removeAttribute('aria-hidden');
+    if (overlay.classList) {
+      overlay.classList.add(VISIBLE_CLASS);
+    }
+
+    if (dialog.classList) {
+      dialog.classList.add('has-gear-list-note');
+    }
   }
 
   // Watch the original autosave note for content changes so we can surface
