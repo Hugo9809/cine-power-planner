@@ -303,6 +303,7 @@
   "./src/scripts/modules/features/contacts.js",
   "./src/scripts/modules/features/feature-search-engine.js",
   "./src/scripts/modules/features/feature-search.js",
+  "./src/scripts/modules/features/help-content.js",
   "./src/scripts/modules/features/help.js",
   "./src/scripts/modules/features/onboarding-loader-hook.js",
   "./src/scripts/modules/features/onboarding-tour.js",

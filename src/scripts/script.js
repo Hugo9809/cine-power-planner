@@ -31,6 +31,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/experience.js',
     'modules/logging.js',
     'modules/features/help.js',
+    'modules/features/help-content.js',
     'modules/features/contacts.js',
     'modules/features/own-gear.js',
     'modules/features/feature-search.js',
@@ -110,8 +111,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
   const globalScope =
     (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof global !== 'undefined' && global)
-      || this;
+    || (typeof global !== 'undefined' && global)
+    || this;
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
 
   const ensureModule = relativePath => {
@@ -320,8 +321,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const moduleAppVersion = resolveAppVersion();
   const APP_VERSION =
     (moduleAppVersion && typeof moduleAppVersion === 'string' && moduleAppVersion)
-      || (combinedAppVersion && typeof combinedAppVersion === 'string' && combinedAppVersion)
-      || '0.0.0';
+    || (combinedAppVersion && typeof combinedAppVersion === 'string' && combinedAppVersion)
+    || '0.0.0';
 
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error(
