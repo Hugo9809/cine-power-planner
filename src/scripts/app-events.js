@@ -1678,6 +1678,28 @@ function readCoreDeviceSelectionHelper() {
   return null;
 }
 
+function refreshDeviceListsSafe() {
+  if (typeof refreshDeviceLists === 'function') {
+    try {
+      refreshDeviceLists();
+      return;
+    } catch (refreshError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('refreshDeviceLists failed, retrying via core bridge.', refreshError);
+      }
+    }
+  }
+  if (typeof callEventsCoreFunction === 'function') {
+    try {
+      callEventsCoreFunction('refreshDeviceLists');
+    } catch (bridgeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not refresh device lists via core bridge.', bridgeError);
+      }
+    }
+  }
+}
+
 function hasAnyDeviceSelectionSafe(state) {
   const coreHelper = readCoreDeviceSelectionHelper();
   if (coreHelper) {
@@ -3901,7 +3923,7 @@ function showDeviceManagerSection() {
   toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'true');
-  refreshDeviceLists();
+  refreshDeviceListsSafe();
   updateCalculations();
 }
 
@@ -4538,7 +4560,7 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-      refreshDeviceLists();
+      refreshDeviceListsSafe();
       callCoreFunctionIfAvailable('updateMountTypeOptions', [], { defer: true });
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
@@ -5239,7 +5261,7 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
   callEventsCoreFunction('updatePowerDistCurrentOptions');
   callEventsCoreFunction('updateRecordingMediaOptions');
   callEventsCoreFunction('updateTimecodeTypeOptions');
-  refreshDeviceLists();
+  refreshDeviceListsSafe();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
   populateMonitorSelect();
@@ -5442,7 +5464,7 @@ if (exportAndRevertBtn) {
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-      refreshDeviceLists(); // Update device manager lists
+      refreshDeviceListsSafe(); // Update device manager lists
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
