@@ -7249,6 +7249,9 @@
       if (key === 'unitsPreferences') {
         return renderUnitsPreferencesInteraction(registerCleanup, step);
       }
+      if (key && PROJECT_REQUIREMENTS_STEP_KEYS.indexOf(key) !== -1) {
+        return renderProjectRequirementsInteraction(registerCleanup, step);
+      }
       return false;
     })();
 
