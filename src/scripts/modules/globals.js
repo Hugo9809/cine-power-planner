@@ -344,11 +344,6 @@
       void freezeError;
     }
 
-    // Shallow freeze is sufficient for module metadata; traversing nested
-    // properties can cross VM boundaries in Node and trigger V8 assertions.
-    // Returning early keeps runtime bootstrap safe in test environments.
-    return value;
-
     var keys;
     try {
       keys = Object.getOwnPropertyNames(value);
