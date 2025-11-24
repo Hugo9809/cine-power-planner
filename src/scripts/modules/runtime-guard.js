@@ -56,7 +56,7 @@
   const MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE);
 
   function freezeShallow(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
@@ -128,7 +128,7 @@
   function collectRegistryCandidates(scope) {
     const candidates = [];
     const pushCandidate = (value) => {
-      if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
         return;
       }
       if (candidates.indexOf(value) === -1) {

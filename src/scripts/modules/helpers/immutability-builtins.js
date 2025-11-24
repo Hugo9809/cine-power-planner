@@ -125,7 +125,7 @@
   const BUILTIN_VALUES = collectBuiltinCandidates();
 
   function isImmutableBuiltin(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 

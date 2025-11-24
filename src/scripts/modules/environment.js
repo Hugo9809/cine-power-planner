@@ -332,7 +332,7 @@
   }
 
   function isConsoleCandidate(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -404,7 +404,7 @@
   }
 
   function isNodeModuleCandidate(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -425,7 +425,7 @@
   }
 
   function isEthereumProviderCandidate(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -529,7 +529,7 @@
   }
 
   function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -602,7 +602,7 @@
   }
 
   function fallbackFreezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
@@ -649,7 +649,7 @@
         void accessError;
         child = undefined;
       }
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 
@@ -674,7 +674,7 @@
   }
 
   function freezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 

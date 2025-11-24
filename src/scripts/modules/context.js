@@ -141,7 +141,7 @@
   // Object.freeze. When WeakSet support is missing we gracefully fall back to a
   // list-based tracker so cyclical references still short-circuit.
   function fallbackFreezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
@@ -170,7 +170,7 @@
         child = undefined;
       }
 
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 

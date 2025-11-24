@@ -51,18 +51,37 @@
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? MODULE_BASE.freezeDeep
     : function fallbackFreezeDeep(value) {
-        if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
           return value;
         }
+
         const seen = new WeakSet();
+
         function freeze(target) {
           if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
             return target;
           }
+
+          const isFunction = typeof target === 'function';
           if (seen.has(target)) {
             return target;
           }
           seen.add(target);
+
+          // Functions often carry deep prototype chains and links back into the
+          // runtime environment. Walking those graphs can trigger V8 assertions
+          // (as seen in Jest) and does not improve immutability guarantees for
+          // the serialisable data we expose. Freeze the function object itself
+          // but do not attempt to descend into its internals.
+          if (isFunction) {
+            try {
+              Object.freeze(target);
+            } catch (freezeError) {
+              void freezeError;
+            }
+            return target;
+          }
+
           try {
             const keys = Object.getOwnPropertyNames(target);
             for (let index = 0; index < keys.length; index += 1) {
@@ -74,7 +93,7 @@
                 void accessError;
                 child = undefined;
               }
-              if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+              if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
                 continue;
               }
               freeze(child);
@@ -85,6 +104,7 @@
           }
           return target;
         }
+
         return freeze(value);
       };
 

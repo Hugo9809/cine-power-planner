@@ -634,7 +634,7 @@
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? MODULE_BASE.freezeDeep
     : function fallbackFreezeDeep(value) {
-        if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
           return value;
         }
         const seen = new WeakSet();
@@ -657,7 +657,7 @@
                 void accessError;
                 child = undefined;
               }
-              if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+              if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
                 continue;
               }
               freeze(child);

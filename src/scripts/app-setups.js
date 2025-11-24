@@ -17,6 +17,19 @@
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
 // prefer descriptive names and leave breadcrumbs when adjusting logic.
 
+function escapeHtmlFallback(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Initialize with a fallback so early re-entrant imports never see an
+// uninitialized binding while the module wires up shared helpers.
+var escapeHtml = escapeHtmlFallback;
+
 const normalizeVideoDistributionOptionValueForSetups = (function resolveNormalizeVideoDistributionOptionValue() {
   if (typeof require === 'function') {
     try {
@@ -184,17 +197,10 @@ if (TRANSLATIONS_RUNTIME_FOR_SETUPS && typeof TRANSLATIONS_RUNTIME_FOR_SETUPS.lo
   }
 }
 
-const escapeHtml =
+escapeHtml =
   typeof SETUPS_UI_HELPERS.escapeHtml === 'function'
     ? SETUPS_UI_HELPERS.escapeHtml
-    : function escapeHtmlFallback(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    };
+    : escapeHtmlFallback;
 
 const setButtonLabelWithIconForSetups = (function resolveSetButtonLabelWithIconForSetups() {
   if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {

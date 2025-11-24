@@ -251,7 +251,7 @@
   })();
 
   function isEthereumProviderCandidate(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -355,7 +355,7 @@
   }
 
   function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -459,12 +459,21 @@
   }
 
   function fallbackFreezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
     if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
       return value;
+    }
+
+    if (typeof value === 'function') {
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     }
 
     const tracker = fallbackResolveSeenTracker(seen);
@@ -507,7 +516,7 @@
         void accessError;
         child = undefined;
       }
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 
@@ -826,7 +835,7 @@
   }
 
   function baseFreezeDeep(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
