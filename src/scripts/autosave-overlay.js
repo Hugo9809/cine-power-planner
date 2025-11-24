@@ -77,8 +77,26 @@
       return;
     }
 
-    lastText = '';
-    hideOverlay();
+    var text = '';
+
+    if (note) {
+      text = (note.textContent || '').trim();
+    }
+
+    if (!text) {
+      lastText = '';
+      hideOverlay();
+      return;
+    }
+
+    if (text === lastText) {
+      return;
+    }
+
+    lastText = text;
+    overlay.textContent = text;
+    overlay.setAttribute('title', text);
+    overlay.setAttribute('data-help', text);
   }
 
   // Toggle the overlay when the dialog or source note changes visibility. We
@@ -86,6 +104,22 @@
   // reliably.
   function updateOverlayVisibility(note) {
     if (!overlay || !dialog) {
+      return;
+    }
+
+    var dialogOpen = typeof dialog.open === 'boolean' ? dialog.open : dialog.hasAttribute('open');
+    var hasText = typeof lastText === 'string' && lastText.length > 0;
+    var noteHidden = !note || note.hidden === true || note.getAttribute('hidden') !== null || note.getAttribute('aria-hidden') === 'true';
+
+    if (dialogOpen && hasText && !noteHidden) {
+      overlay.hidden = false;
+      overlay.setAttribute('aria-hidden', 'false');
+      if (overlay.classList) {
+        overlay.classList.add(VISIBLE_CLASS);
+      }
+      if (dialog.classList) {
+        dialog.classList.add('has-gear-list-note');
+      }
       return;
     }
 
