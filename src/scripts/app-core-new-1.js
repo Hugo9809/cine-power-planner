@@ -277,53 +277,34 @@ const FOCUS_SCALE_VALUES = (function resolveFocusScaleValues() {
   return FOCUS_SCALE_VALUES_FALLBACK;
 })();
 
-const FEEDBACK_TEMPERATURE_MIN = (function resolveFeedbackTemperatureMin() {
+function resolveFeedbackTemperatureBound(boundKey, fallbackValue) {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const scope = candidateScopes[index];
     try {
-      if (typeof scope.FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(scope.FEEDBACK_TEMPERATURE_MIN)) {
-        return scope.FEEDBACK_TEMPERATURE_MIN;
+      const candidate = scope && scope[boundKey];
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        return candidate;
       }
-    } catch (feedbackMinError) {
-      void feedbackMinError;
+    } catch (feedbackBoundError) {
+      void feedbackBoundError;
     }
   }
   candidateScopes.forEach(scope => {
     try {
-      if (typeof scope.FEEDBACK_TEMPERATURE_MIN !== 'number' || !Number.isFinite(scope.FEEDBACK_TEMPERATURE_MIN)) {
-        scope.FEEDBACK_TEMPERATURE_MIN = -20;
+      const scopedValue = scope && scope[boundKey];
+      if (typeof scopedValue !== 'number' || !Number.isFinite(scopedValue)) {
+        scope[boundKey] = fallbackValue;
       }
     } catch (assignError) {
       void assignError;
     }
   });
-  return -20;
-})();
+  return fallbackValue;
+}
 
-const FEEDBACK_TEMPERATURE_MAX = (function resolveFeedbackTemperatureMax() {
-  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
-  for (let index = 0; index < candidateScopes.length; index += 1) {
-    const scope = candidateScopes[index];
-    try {
-      if (typeof scope.FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(scope.FEEDBACK_TEMPERATURE_MAX)) {
-        return scope.FEEDBACK_TEMPERATURE_MAX;
-      }
-    } catch (feedbackMaxError) {
-      void feedbackMaxError;
-    }
-  }
-  candidateScopes.forEach(scope => {
-    try {
-      if (typeof scope.FEEDBACK_TEMPERATURE_MAX !== 'number' || !Number.isFinite(scope.FEEDBACK_TEMPERATURE_MAX)) {
-        scope.FEEDBACK_TEMPERATURE_MAX = 50;
-      }
-    } catch (assignError) {
-      void assignError;
-    }
-  });
-  return 50;
-})();
+const FEEDBACK_TEMPERATURE_MIN_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MIN', -20);
+const FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX', 50);
 
 // The planner shares a handful of helper modules across legacy and modern
 // bundles. Rather than assuming a module loader exists we defensively look for
@@ -20947,8 +20928,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY,
     FOCUS_SCALE_VALUES,
-    FEEDBACK_TEMPERATURE_MIN,
-    FEEDBACK_TEMPERATURE_MAX,
+    FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN_VALUE,
+    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX_VALUE,
   };
 
   // Ensure mount voltage helpers remain reachable from the session layer.
