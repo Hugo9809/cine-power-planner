@@ -669,7 +669,46 @@ function __cineNormalizeTemperatureScenarios(candidate) {
   }
   return entries;
 }
-var TEMPERATURE_SCENARIOS = typeof TEMPERATURE_SCENARIOS !== 'undefined' && Array.isArray(TEMPERATURE_SCENARIOS) ? __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', __cineNormalizeTemperatureScenarios(TEMPERATURE_SCENARIOS)) : __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', []);
+// Avoid redeclaring TEMPERATURE_SCENARIOS when the host marks it as
+// non-configurable. Commit the normalized value directly to the global scope so
+// later scripts can read the scenarios without triggering a duplicate binding
+// SyntaxError during startup.
+(function ensureTemperatureScenariosBinding() {
+  var resolved = [];
+
+  try {
+    var existing = __cineResolveGlobalValue('TEMPERATURE_SCENARIOS', []);
+    if (Array.isArray(existing)) {
+      resolved = __cineNormalizeTemperatureScenarios(existing);
+    }
+  } catch (resolveError) {
+    void resolveError;
+  }
+
+  try {
+    __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', resolved);
+  } catch (commitError) {
+    void commitError;
+  }
+
+  try {
+    if (typeof Function === 'function') {
+      Function(
+        'value',
+        "try { this.TEMPERATURE_SCENARIOS = value; } catch (assignError) { void assignError; } return this && this.TEMPERATURE_SCENARIOS;",
+      ).call(
+        typeof globalThis !== 'undefined' && globalThis ||
+          typeof window !== 'undefined' && window ||
+          typeof self !== 'undefined' && self ||
+          typeof global !== 'undefined' && global ||
+          null,
+        resolved,
+      );
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+})();
 var FEEDBACK_TEMPERATURE_MIN = typeof FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MIN) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', FEEDBACK_TEMPERATURE_MIN) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', -20);
 var FEEDBACK_TEMPERATURE_MAX = typeof FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MAX) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', FEEDBACK_TEMPERATURE_MAX) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', 50);
 var FOCUS_SCALE_STORAGE_KEY = typeof FOCUS_SCALE_STORAGE_KEY === 'string' && FOCUS_SCALE_STORAGE_KEY ? FOCUS_SCALE_STORAGE_KEY : __cineCommitGlobalValue('FOCUS_SCALE_STORAGE_KEY', 'cameraPowerPlanner_focusScale');

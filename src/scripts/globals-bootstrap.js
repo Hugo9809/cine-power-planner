@@ -924,10 +924,48 @@ function __cineNormalizeTemperatureScenarios(candidate) {
   return entries;
 }
 
-var TEMPERATURE_SCENARIOS =
-  typeof TEMPERATURE_SCENARIOS !== 'undefined' && Array.isArray(TEMPERATURE_SCENARIOS)
-    ? __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', __cineNormalizeTemperatureScenarios(TEMPERATURE_SCENARIOS))
-    : __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', []);
+// Avoid redeclaring the global binding when a host environment already defined
+// TEMPERATURE_SCENARIOS as a non-configurable property. Instead, normalize any
+// existing value and commit it directly to the global scope so downstream
+// scripts can read the scenarios without tripping a SyntaxError during parsing.
+(function ensureTemperatureScenariosBinding() {
+  var resolved = [];
+
+  try {
+    var existing = __cineResolveGlobalValue('TEMPERATURE_SCENARIOS', []);
+    if (Array.isArray(existing)) {
+      resolved = __cineNormalizeTemperatureScenarios(existing);
+    }
+  } catch (resolveError) {
+    void resolveError;
+  }
+
+  try {
+    __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', resolved);
+  } catch (commitError) {
+    void commitError;
+  }
+
+  try {
+    // Ensure the identifier is usable as a global variable without creating a
+    // new binding that could shadow an existing, non-configurable property.
+    if (typeof Function === 'function') {
+      Function(
+        'value',
+        "try { this.TEMPERATURE_SCENARIOS = value; } catch (assignError) { void assignError; } return this && this.TEMPERATURE_SCENARIOS;",
+      ).call(
+        (typeof globalThis !== 'undefined' && globalThis)
+          || (typeof window !== 'undefined' && window)
+          || (typeof self !== 'undefined' && self)
+          || (typeof global !== 'undefined' && global)
+          || null,
+        resolved,
+      );
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+})();
 
 __cineCommitGlobalNumericBinding('FEEDBACK_TEMPERATURE_MIN', -20);
 
