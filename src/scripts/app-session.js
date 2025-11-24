@@ -424,7 +424,7 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
           triggerBackupDownload, encodeBackupDataUrl, openBackupFallbackWindow,
           downloadBackupPayload, isAutoBackupName, parseAutoBackupName,
           SESSION_AUTO_BACKUP_NAME_PREFIX, SESSION_AUTO_BACKUP_DELETION_PREFIX */
-/* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
+/* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX_LIMIT: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone,
@@ -1844,8 +1844,8 @@ const applyFontSizeSafe = ensureSessionRuntimePlaceholder(
       try {
         const computed =
           typeof window !== 'undefined'
-          && window
-          && typeof window.getComputedStyle === 'function'
+            && window
+            && typeof window.getComputedStyle === 'function'
             ? window.getComputedStyle(root)
             : null;
         if (!computed) {
@@ -2677,7 +2677,7 @@ if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
   }
 }
 
-let recordFullBackupHistoryEntryFn = () => {};
+let recordFullBackupHistoryEntryFn = () => { };
 let ensureCriticalStorageBackupsFn = () => ({ ensured: [], skipped: [], errors: [] });
 try {
   ({
@@ -3442,8 +3442,8 @@ function normalizeRestoreRehearsalRuleItems(items) {
       const selectorEnabled = Boolean(item.selectorEnabled);
       const contextNotes = Array.isArray(item.contextNotes)
         ? item.contextNotes
-            .map((note) => (typeof note === 'string' ? note.trim() : ''))
-            .filter(Boolean)
+          .map((note) => (typeof note === 'string' ? note.trim() : ''))
+          .filter(Boolean)
         : [];
       contextNotes.sort((a, b) => a.localeCompare(b));
       const normalized = {
@@ -3525,8 +3525,8 @@ function normalizeRestoreRehearsalRule(rule, index, origin) {
   normalized.scenarioPrimary = typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary.trim() : '';
   const scenarios = Array.isArray(rule.scenarios)
     ? rule.scenarios
-        .map((value) => (typeof value === 'string' ? value.trim() : ''))
-        .filter(Boolean)
+      .map((value) => (typeof value === 'string' ? value.trim() : ''))
+      .filter(Boolean)
     : [];
   const scenarioSet = new Set(scenarios);
   normalized.scenarios = Array.from(scenarioSet).sort((a, b) => a.localeCompare(b));
@@ -3770,8 +3770,8 @@ function createRestoreRehearsalRuleColumn(title, rule, variant, langTexts, empty
   const additions = rule ? rule.addItems.map((item) => formatRestoreRehearsalRuleItem(item)).filter(Boolean) : [];
   column.appendChild(createRestoreRehearsalRuleSection(
     langTexts.restoreRehearsalRuleAddsLabel
-      || texts.en?.restoreRehearsalRuleAddsLabel
-      || 'Automatic additions',
+    || texts.en?.restoreRehearsalRuleAddsLabel
+    || 'Automatic additions',
     additions,
     emptyText,
   ));
@@ -3779,8 +3779,8 @@ function createRestoreRehearsalRuleColumn(title, rule, variant, langTexts, empty
   const removals = rule ? rule.removeItems.map((item) => formatRestoreRehearsalRuleItem(item)).filter(Boolean) : [];
   column.appendChild(createRestoreRehearsalRuleSection(
     langTexts.restoreRehearsalRuleRemovesLabel
-      || texts.en?.restoreRehearsalRuleRemovesLabel
-      || 'Automatic removals',
+    || texts.en?.restoreRehearsalRuleRemovesLabel
+    || 'Automatic removals',
     removals,
     emptyText,
   ));
@@ -3788,8 +3788,8 @@ function createRestoreRehearsalRuleColumn(title, rule, variant, langTexts, empty
   const scenarioLines = formatRestoreRehearsalRuleScenarioLines(rule, langTexts);
   column.appendChild(createRestoreRehearsalRuleSection(
     langTexts.restoreRehearsalRuleScenariosLabel
-      || texts.en?.restoreRehearsalRuleScenariosLabel
-      || 'Scenario scope',
+    || texts.en?.restoreRehearsalRuleScenariosLabel
+    || 'Scenario scope',
     scenarioLines,
     emptyText,
   ));
@@ -4521,8 +4521,8 @@ function runProjectAutoSave() {
     const contextNow = Date.now();
     const requestTimestamp = pendingRequestContext && typeof pendingRequestContext.requestedAt === 'number'
       && Number.isFinite(pendingRequestContext.requestedAt)
-        ? pendingRequestContext.requestedAt
-        : contextNow;
+      ? pendingRequestContext.requestedAt
+      : contextNow;
     notifyAutoBackupChange({
       commit: true,
       context: {
@@ -6247,29 +6247,29 @@ if (setupNameInput && saveSetupBtn) {
 
 const warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function'
   ? warnMissingMountVoltageHelper
-  : () => {};
+  : () => { };
 
-let updateThemeColor = () => {};
-let setToggleIcon = () => {};
-let applyDarkMode = () => {};
-let applyHighContrast = () => {};
-let applyReduceMotion = () => {};
-let applyRelaxedSpacing = () => {};
-let applyPinkMode = () => {};
-let persistPinkModePreference = () => {};
-let rememberSettingsPinkModeBaseline = () => {};
-let revertSettingsPinkModeIfNeeded = () => {};
-let rememberSettingsTemperatureUnitBaseline = () => {};
-let revertSettingsTemperatureUnitIfNeeded = () => {};
-let rememberSettingsFocusScaleBaseline = () => {};
-let revertSettingsFocusScaleIfNeeded = () => {};
-let applyShowAutoBackupsPreference = () => {};
-let rememberSettingsShowAutoBackupsBaseline = () => {};
-let revertSettingsShowAutoBackupsIfNeeded = () => {};
-let rememberSettingsMountVoltagesBaseline = () => {};
-let revertSettingsMountVoltagesIfNeeded = () => {};
-let handlePinkModeIconPress = () => {};
-let triggerPinkModeIconAnimation = () => {};
+let updateThemeColor = () => { };
+let setToggleIcon = () => { };
+let applyDarkMode = () => { };
+let applyHighContrast = () => { };
+let applyReduceMotion = () => { };
+let applyRelaxedSpacing = () => { };
+let applyPinkMode = () => { };
+let persistPinkModePreference = () => { };
+let rememberSettingsPinkModeBaseline = () => { };
+let revertSettingsPinkModeIfNeeded = () => { };
+let rememberSettingsTemperatureUnitBaseline = () => { };
+let revertSettingsTemperatureUnitIfNeeded = () => { };
+let rememberSettingsFocusScaleBaseline = () => { };
+let revertSettingsFocusScaleIfNeeded = () => { };
+let applyShowAutoBackupsPreference = () => { };
+let rememberSettingsShowAutoBackupsBaseline = () => { };
+let revertSettingsShowAutoBackupsIfNeeded = () => { };
+let rememberSettingsMountVoltagesBaseline = () => { };
+let revertSettingsMountVoltagesIfNeeded = () => { };
+let handlePinkModeIconPress = () => { };
+let triggerPinkModeIconAnimation = () => { };
 
 const pendingPinkModeSupportCalls = [];
 let pinkModeSupportFlushScheduled = false;
@@ -6385,8 +6385,8 @@ let sessionTriggerPinkModeIconRain =
   typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function'
     ? window.triggerPinkModeIconRain
     : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
-let startPinkModeIconRotation = () => {};
-let stopPinkModeIconRotation = () => {};
+let startPinkModeIconRotation = () => { };
+let stopPinkModeIconRotation = () => { };
 const FALLBACK_START_PINK_MODE_ANIMATED_ICONS = () =>
   callPinkModeSupport('startPinkModeAnimatedIcons', null, 'cineSession: startPinkModeAnimatedIcons failed.');
 let sessionStartPinkModeAnimatedIcons =
@@ -6399,9 +6399,9 @@ let sessionStopPinkModeAnimatedIcons =
   typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function'
     ? window.stopPinkModeAnimatedIcons
     : FALLBACK_STOP_PINK_MODE_ANIMATED_ICONS;
-let startPinkModeAnimatedIconRotation = () => {};
-let stopPinkModeAnimatedIconRotation = () => {};
-let applyPinkModeIcon = () => {};
+let startPinkModeAnimatedIconRotation = () => { };
+let stopPinkModeAnimatedIconRotation = () => { };
+let applyPinkModeIcon = () => { };
 let isPinkModeActive = () => !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 
 const appearanceModuleFactoryPlaceholder = ensureSessionRuntimePlaceholder(
@@ -6589,10 +6589,10 @@ const appearanceContext = {
     applyFocusScalePreference:
       typeof applyFocusScalePreference === 'function'
         ? (value, opts) => {
-            applyFocusScalePreference(value, opts);
-            sessionFocusScale =
-              typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
-          }
+          applyFocusScalePreference(value, opts);
+          sessionFocusScale =
+            typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
+        }
         : null,
     getShowAutoBackups: () => showAutoBackups,
     setShowAutoBackups: value => {
@@ -7194,18 +7194,18 @@ const getThemePreference = () => {
 
 const registerThemeControl = (element, config) => {
   if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
-    return () => {};
+    return () => { };
   }
   try {
     return themePreferenceController.registerControl(element, config);
   } catch (registrationError) {
     console.warn('Failed to register theme control', registrationError);
-    return () => {};
+    return () => { };
   }
 };
 
-let unregisterHeaderThemeControl = () => {};
-let unregisterSettingsThemeControl = () => {};
+let unregisterHeaderThemeControl = () => { };
+let unregisterSettingsThemeControl = () => { };
 
 if (themePreferenceController) {
   if (darkModeToggle) {
@@ -7243,15 +7243,15 @@ if (themePreferenceGlobalScope) {
   try {
     themePreferenceGlobalScope.cineThemePreference = themePreferenceController
       ? {
-          registerControl: (element, options) => registerThemeControl(element, options),
-          setValue: (value, options) => setThemePreference(value, options),
-          getValue: () => getThemePreference(),
-          reloadFromStorage: options => (
-            themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
-              ? themePreferenceController.reloadFromStorage(options)
-              : getThemePreference()
-          ),
-        }
+        registerControl: (element, options) => registerThemeControl(element, options),
+        setValue: (value, options) => setThemePreference(value, options),
+        getValue: () => getThemePreference(),
+        reloadFromStorage: options => (
+          themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function'
+            ? themePreferenceController.reloadFromStorage(options)
+            : getThemePreference()
+        ),
+      }
       : null;
   } catch (exposeError) {
     console.warn('Unable to expose theme preference bridge', exposeError);
@@ -7372,64 +7372,64 @@ const mountVoltageResetButtonRef = (() => {
   return null;
 })();
 
-  if (mountVoltageResetButtonRef) {
-    mountVoltageResetButtonRef.addEventListener('click', () => {
-      const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-      if (resetMountVoltagePreferencesFn) {
-        try {
-          resetMountVoltagePreferencesFn({ persist: false, triggerUpdate: true });
-        } catch (resetError) {
-          warnMissingMountVoltageHelper('resetMountVoltagePreferences', resetError);
-        }
-      } else {
-        warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+if (mountVoltageResetButtonRef) {
+  mountVoltageResetButtonRef.addEventListener('click', () => {
+    const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+    if (resetMountVoltagePreferencesFn) {
+      try {
+        resetMountVoltagePreferencesFn({ persist: false, triggerUpdate: true });
+      } catch (resetError) {
+        warnMissingMountVoltageHelper('resetMountVoltagePreferences', resetError);
       }
+    } else {
+      warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+    }
 
-      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-      if (updateMountVoltageInputsFromStateFn) {
-        try {
-          updateMountVoltageInputsFromStateFn();
-        } catch (updateError) {
-          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
-        }
-      } else {
-        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
       }
-    });
-  }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    }
+  });
+}
 
-  if (settingsButton && settingsDialog) {
-    settingsButton.addEventListener('click', () => {
-      const context = consumeSettingsOpenContext({ reason: 'settings-button' });
-      const hiddenBefore = typeof settingsDialog.hasAttribute === 'function'
-        ? settingsDialog.hasAttribute('hidden')
-        : null;
-      const openBefore = typeof isDialogOpen === 'function'
-        ? isDialogOpen(settingsDialog)
-        : !!(settingsDialog && settingsDialog.open);
-      logSettingsEvent(
-        'info',
-        'Settings dialog open requested',
-        { ...context, openBefore, hiddenBefore },
-        { action: 'open-request' },
-      );
+if (settingsButton && settingsDialog) {
+  settingsButton.addEventListener('click', () => {
+    const context = consumeSettingsOpenContext({ reason: 'settings-button' });
+    const hiddenBefore = typeof settingsDialog.hasAttribute === 'function'
+      ? settingsDialog.hasAttribute('hidden')
+      : null;
+    const openBefore = typeof isDialogOpen === 'function'
+      ? isDialogOpen(settingsDialog)
+      : !!(settingsDialog && settingsDialog.open);
+    logSettingsEvent(
+      'info',
+      'Settings dialog open requested',
+      { ...context, openBefore, hiddenBefore },
+      { action: 'open-request' },
+    );
 
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
     rememberSettingsFocusScaleBaseline();
     rememberSettingsShowAutoBackupsBaseline();
-      rememberSettingsMountVoltagesBaseline();
-      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-      if (updateMountVoltageInputsFromStateFn) {
-        try {
-          updateMountVoltageInputsFromStateFn();
-        } catch (updateError) {
-          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
-        }
-      } else {
-        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    rememberSettingsMountVoltagesBaseline();
+    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
       }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    }
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = getThemePreference();
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -7496,20 +7496,20 @@ const mountVoltageResetButtonRef = (() => {
       }
     }
 
-      const hiddenAfter = typeof settingsDialog.hasAttribute === 'function'
-        ? settingsDialog.hasAttribute('hidden')
-        : null;
-      const openAfter = typeof isDialogOpen === 'function'
-        ? isDialogOpen(settingsDialog)
-        : !!(settingsDialog && settingsDialog.open);
-      const resultDetail = { ...context, openBefore, openAfter, hiddenAfter };
-      logSettingsEvent(
-        openAfter ? 'info' : 'warn',
-        openAfter ? 'Settings dialog opened' : 'Settings dialog did not open',
-        resultDetail,
-        { action: 'open-result' },
-      );
-    });
+    const hiddenAfter = typeof settingsDialog.hasAttribute === 'function'
+      ? settingsDialog.hasAttribute('hidden')
+      : null;
+    const openAfter = typeof isDialogOpen === 'function'
+      ? isDialogOpen(settingsDialog)
+      : !!(settingsDialog && settingsDialog.open);
+    const resultDetail = { ...context, openBefore, openAfter, hiddenAfter };
+    logSettingsEvent(
+      openAfter ? 'info' : 'warn',
+      openAfter ? 'Settings dialog opened' : 'Settings dialog did not open',
+      resultDetail,
+      { action: 'open-result' },
+    );
+  });
 
   if (settingsCancel) {
     settingsCancel.addEventListener('click', () => {
@@ -7731,357 +7731,357 @@ const mountVoltageResetButtonRef = (() => {
     settingsDialog.setAttribute('hidden', '');
   });
 
-if (autoGearAddRuleBtn) {
-  autoGearAddRuleBtn.addEventListener('click', () => {
-    invokeSessionOpenAutoGearEditor();
-  });
-}
-if (autoGearConditionSelect) {
-  autoGearConditionSelect.addEventListener('change', () => {
-    updateAutoGearConditionAddButtonState();
-  });
-}
-if (autoGearConditionAddButton) {
-  autoGearConditionAddButton.addEventListener('click', () => {
-    addAutoGearConditionFromPicker();
-  });
-}
-const autoGearScenarioModeSelectHandle = (() => {
-  let resolvedHandle = null;
-
-  try {
-    if (typeof autoGearScenarioModeSelect !== 'undefined') {
-      resolvedHandle = autoGearScenarioModeSelect;
-    }
-  } catch (resolveAutoGearScenarioModeSelectError) {
-    void resolveAutoGearScenarioModeSelectError;
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.addEventListener('click', () => {
+      invokeSessionOpenAutoGearEditor();
+    });
   }
-
-  if (!resolvedHandle) {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
-
-    if (scope && typeof scope === 'object' && 'autoGearScenarioModeSelect' in scope) {
-      resolvedHandle = scope.autoGearScenarioModeSelect || null;
-    }
+  if (autoGearConditionSelect) {
+    autoGearConditionSelect.addEventListener('change', () => {
+      updateAutoGearConditionAddButtonState();
+    });
   }
+  if (autoGearConditionAddButton) {
+    autoGearConditionAddButton.addEventListener('click', () => {
+      addAutoGearConditionFromPicker();
+    });
+  }
+  const autoGearScenarioModeSelectHandle = (() => {
+    let resolvedHandle = null;
 
-  if (
-    !resolvedHandle
-    && typeof document !== 'undefined'
-    && document
-    && typeof document.getElementById === 'function'
-  ) {
     try {
-      resolvedHandle = document.getElementById('autoGearScenarioMode') || null;
-    } catch (resolveAutoGearScenarioModeSelectElementError) {
-      void resolveAutoGearScenarioModeSelectElementError;
-    }
-  }
-
-  return resolvedHandle;
-})();
-
-if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
-  autoGearScenarioModeSelectHandle.addEventListener('change', () => {
-    if (autoGearEditorDraft) {
-      const selectValue =
-        typeof autoGearScenarioModeSelectHandle.value === 'string'
-          ? autoGearScenarioModeSelectHandle.value
-          : '';
-
-      autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(selectValue);
-    }
-
-    applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
-  });
-}
-if (autoGearScenarioBaseSelect) {
-  autoGearScenarioBaseSelect.addEventListener('change', () => {
-    if (autoGearEditorDraft) {
-      autoGearEditorDraft.scenarioPrimary = normalizeAutoGearScenarioPrimary(autoGearScenarioBaseSelect.value);
-    }
-  });
-}
-if (autoGearScenarioFactorInput) {
-  const handleFactorUpdate = () => {
-    if (autoGearEditorDraft) {
-      autoGearEditorDraft.scenarioMultiplier = normalizeAutoGearScenarioMultiplier(autoGearScenarioFactorInput.value);
-    }
-  };
-  autoGearScenarioFactorInput.addEventListener('change', handleFactorUpdate);
-  autoGearScenarioFactorInput.addEventListener('input', handleFactorUpdate);
-}
-if (autoGearConditionList) {
-  autoGearConditionList.addEventListener('click', event => {
-    const target = event.target instanceof HTMLElement
-      ? event.target.closest('button')
-      : null;
-    if (!target) return;
-    if (target.classList.contains('auto-gear-condition-remove')) {
-      const condition = target.dataset.condition || '';
-      if (condition) {
-        removeAutoGearCondition(condition, { focusPicker: true });
+      if (typeof autoGearScenarioModeSelect !== 'undefined') {
+        resolvedHandle = autoGearScenarioModeSelect;
       }
-      return;
+    } catch (resolveAutoGearScenarioModeSelectError) {
+      void resolveAutoGearScenarioModeSelectError;
     }
-    if (target.classList.contains('auto-gear-condition-add')) {
-      handleAutoGearConditionShortcut();
+
+    if (!resolvedHandle) {
+      const scope =
+        (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+      if (scope && typeof scope === 'object' && 'autoGearScenarioModeSelect' in scope) {
+        resolvedHandle = scope.autoGearScenarioModeSelect || null;
+      }
     }
-  });
-}
-const resolveResetAutoGearRulesHandler = () => {
-  if (typeof resetAutoGearRulesToFactoryAdditions === 'function') {
-    return resetAutoGearRulesToFactoryAdditions;
+
+    if (
+      !resolvedHandle
+      && typeof document !== 'undefined'
+      && document
+      && typeof document.getElementById === 'function'
+    ) {
+      try {
+        resolvedHandle = document.getElementById('autoGearScenarioMode') || null;
+      } catch (resolveAutoGearScenarioModeSelectElementError) {
+        void resolveAutoGearScenarioModeSelectElementError;
+      }
+    }
+
+    return resolvedHandle;
+  })();
+
+  if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
+    autoGearScenarioModeSelectHandle.addEventListener('change', () => {
+      if (autoGearEditorDraft) {
+        const selectValue =
+          typeof autoGearScenarioModeSelectHandle.value === 'string'
+            ? autoGearScenarioModeSelectHandle.value
+            : '';
+
+        autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(selectValue);
+      }
+
+      applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
+    });
   }
-  if (typeof globalThis !== 'undefined'
-    && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
-    return globalThis.resetAutoGearRulesToFactoryAdditions;
+  if (autoGearScenarioBaseSelect) {
+    autoGearScenarioBaseSelect.addEventListener('change', () => {
+      if (autoGearEditorDraft) {
+        autoGearEditorDraft.scenarioPrimary = normalizeAutoGearScenarioPrimary(autoGearScenarioBaseSelect.value);
+      }
+    });
   }
-  const moduleApi = resolveModuleApi(
-    'cineFeatureAutoGearRules',
-    candidate => candidate && typeof candidate.resetAutoGearRulesToFactoryAdditions === 'function',
-  );
-  if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
-    return moduleApi.resetAutoGearRulesToFactoryAdditions;
+  if (autoGearScenarioFactorInput) {
+    const handleFactorUpdate = () => {
+      if (autoGearEditorDraft) {
+        autoGearEditorDraft.scenarioMultiplier = normalizeAutoGearScenarioMultiplier(autoGearScenarioFactorInput.value);
+      }
+    };
+    autoGearScenarioFactorInput.addEventListener('change', handleFactorUpdate);
+    autoGearScenarioFactorInput.addEventListener('input', handleFactorUpdate);
   }
-  return null;
-};
-
-if (autoGearResetFactoryButton) {
-  let autoGearResetUnavailableWarningHandle = null;
-
-  const clearAutoGearResetUnavailableWarning = () => {
-    if (autoGearResetUnavailableWarningHandle === null) {
-      return;
+  if (autoGearConditionList) {
+    autoGearConditionList.addEventListener('click', event => {
+      const target = event.target instanceof HTMLElement
+        ? event.target.closest('button')
+        : null;
+      if (!target) return;
+      if (target.classList.contains('auto-gear-condition-remove')) {
+        const condition = target.dataset.condition || '';
+        if (condition) {
+          removeAutoGearCondition(condition, { focusPicker: true });
+        }
+        return;
+      }
+      if (target.classList.contains('auto-gear-condition-add')) {
+        handleAutoGearConditionShortcut();
+      }
+    });
+  }
+  const resolveResetAutoGearRulesHandler = () => {
+    if (typeof resetAutoGearRulesToFactoryAdditions === 'function') {
+      return resetAutoGearRulesToFactoryAdditions;
     }
-
-    try {
-      clearTimeout(autoGearResetUnavailableWarningHandle);
-    } catch (clearError) {
-      void clearError;
+    if (typeof globalThis !== 'undefined'
+      && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
+      return globalThis.resetAutoGearRulesToFactoryAdditions;
     }
-
-    autoGearResetUnavailableWarningHandle = null;
+    const moduleApi = resolveModuleApi(
+      'cineFeatureAutoGearRules',
+      candidate => candidate && typeof candidate.resetAutoGearRulesToFactoryAdditions === 'function',
+    );
+    if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+      return moduleApi.resetAutoGearRulesToFactoryAdditions;
+    }
+    return null;
   };
 
-  const warnAutoGearResetUnavailable = () => {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function' && !resetHandlerAttached) {
-      console.warn('Automatic gear reset action unavailable: reset handler missing.');
-    }
-  };
+  if (autoGearResetFactoryButton) {
+    let autoGearResetUnavailableWarningHandle = null;
 
-  const scheduleAutoGearResetUnavailableWarning = () => {
-    if (autoGearResetUnavailableWarningHandle !== null) {
-      return;
-    }
+    const clearAutoGearResetUnavailableWarning = () => {
+      if (autoGearResetUnavailableWarningHandle === null) {
+        return;
+      }
 
-    if (typeof setTimeout !== 'function') {
-      warnAutoGearResetUnavailable();
-      return;
-    }
+      try {
+        clearTimeout(autoGearResetUnavailableWarningHandle);
+      } catch (clearError) {
+        void clearError;
+      }
 
-    autoGearResetUnavailableWarningHandle = setTimeout(() => {
       autoGearResetUnavailableWarningHandle = null;
-      warnAutoGearResetUnavailable();
-    }, 1500);
-  };
+    };
 
-  const enableResetButton = () => {
-    autoGearResetFactoryButton.disabled = false;
-    autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
-  };
+    const warnAutoGearResetUnavailable = () => {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function' && !resetHandlerAttached) {
+        console.warn('Automatic gear reset action unavailable: reset handler missing.');
+      }
+    };
 
-  const disableResetButton = () => {
-    autoGearResetFactoryButton.disabled = true;
-    autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
-  };
+    const scheduleAutoGearResetUnavailableWarning = () => {
+      if (autoGearResetUnavailableWarningHandle !== null) {
+        return;
+      }
 
-  let resetHandlerAttached = false;
+      if (typeof setTimeout !== 'function') {
+        warnAutoGearResetUnavailable();
+        return;
+      }
 
-  const attachResetHandler = (handler) => {
-    if (resetHandlerAttached || typeof handler !== 'function') {
-      return false;
-    }
+      autoGearResetUnavailableWarningHandle = setTimeout(() => {
+        autoGearResetUnavailableWarningHandle = null;
+        warnAutoGearResetUnavailable();
+      }, 1500);
+    };
 
-    autoGearResetFactoryButton.addEventListener('click', handler);
-    enableResetButton();
-    resetHandlerAttached = true;
-    clearAutoGearResetUnavailableWarning();
-    return true;
-  };
+    const enableResetButton = () => {
+      autoGearResetFactoryButton.disabled = false;
+      autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
+    };
 
-  const initialHandler = resolveResetAutoGearRulesHandler();
+    const disableResetButton = () => {
+      autoGearResetFactoryButton.disabled = true;
+      autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
+    };
 
-  const attachHandlerIfAvailable = (handler, options = {}) => {
-    if (!attachResetHandler(handler)) {
-      return false;
-    }
-    if (options.logReenabledReason === 'deferredModuleLoad'
-      && typeof console !== 'undefined'
-      && typeof console.info === 'function') {
-      console.info('Automatic gear reset action re-enabled after deferred module load.');
-    }
-    return true;
-  };
+    let resetHandlerAttached = false;
 
-  if (!attachHandlerIfAvailable(initialHandler)) {
-    disableResetButton();
-    scheduleAutoGearResetUnavailableWarning();
+    const attachResetHandler = (handler) => {
+      if (resetHandlerAttached || typeof handler !== 'function') {
+        return false;
+      }
 
-    whenGlobalValueAvailable(
-      'resetAutoGearRulesToFactoryAdditions',
-      candidate => typeof candidate === 'function',
-      candidate => {
-        attachHandlerIfAvailable(candidate, { logReenabledReason: 'deferredModuleLoad' });
-      },
-      {
-        interval: 200,
-        maxAttempts: 300,
-        onTimeout: () => {
-          clearAutoGearResetUnavailableWarning();
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
+      autoGearResetFactoryButton.addEventListener('click', handler);
+      enableResetButton();
+      resetHandlerAttached = true;
+      clearAutoGearResetUnavailableWarning();
+      return true;
+    };
+
+    const initialHandler = resolveResetAutoGearRulesHandler();
+
+    const attachHandlerIfAvailable = (handler, options = {}) => {
+      if (!attachResetHandler(handler)) {
+        return false;
+      }
+      if (options.logReenabledReason === 'deferredModuleLoad'
+        && typeof console !== 'undefined'
+        && typeof console.info === 'function') {
+        console.info('Automatic gear reset action re-enabled after deferred module load.');
+      }
+      return true;
+    };
+
+    if (!attachHandlerIfAvailable(initialHandler)) {
+      disableResetButton();
+      scheduleAutoGearResetUnavailableWarning();
+
+      whenGlobalValueAvailable(
+        'resetAutoGearRulesToFactoryAdditions',
+        candidate => typeof candidate === 'function',
+        candidate => {
+          attachHandlerIfAvailable(candidate, { logReenabledReason: 'deferredModuleLoad' });
+        },
+        {
+          interval: 200,
+          maxAttempts: 300,
+          onTimeout: () => {
+            clearAutoGearResetUnavailableWarning();
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
+            }
+          },
+        },
+      );
+
+      whenGlobalValueAvailable(
+        'cineModuleGlobals',
+        candidate => candidate && typeof candidate.whenModuleAvailable === 'function',
+        moduleGlobals => {
+          if (resetHandlerAttached) {
+            return;
+          }
+
+          const attachFromModule = moduleApi => {
+            if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+              attachHandlerIfAvailable(
+                moduleApi.resetAutoGearRulesToFactoryAdditions,
+                { logReenabledReason: 'deferredModuleLoad' },
+              );
+            }
+          };
+
+          if (typeof moduleGlobals.getModule === 'function') {
+            try {
+              const moduleApi = moduleGlobals.getModule('cineFeatureAutoGearRules');
+              attachFromModule(moduleApi);
+            } catch (moduleLookupError) {
+              void moduleLookupError;
+            }
+          }
+
+          if (!resetHandlerAttached && typeof moduleGlobals.whenModuleAvailable === 'function') {
+            try {
+              moduleGlobals.whenModuleAvailable('cineFeatureAutoGearRules', moduleApi => {
+                attachFromModule(moduleApi);
+              });
+            } catch (subscriptionError) {
+              void subscriptionError;
+            }
           }
         },
-      },
-    );
+        { interval: 200, maxAttempts: 150 },
+      );
 
-    whenGlobalValueAvailable(
-      'cineModuleGlobals',
-      candidate => candidate && typeof candidate.whenModuleAvailable === 'function',
-      moduleGlobals => {
-        if (resetHandlerAttached) {
-          return;
-        }
-
-        const attachFromModule = moduleApi => {
-          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
-            attachHandlerIfAvailable(
-              moduleApi.resetAutoGearRulesToFactoryAdditions,
-              { logReenabledReason: 'deferredModuleLoad' },
-            );
+      whenGlobalValueAvailable(
+        'cineModules',
+        candidate => candidate && typeof candidate.get === 'function',
+        registry => {
+          if (resetHandlerAttached) {
+            return;
           }
-        };
-
-        if (typeof moduleGlobals.getModule === 'function') {
           try {
-            const moduleApi = moduleGlobals.getModule('cineFeatureAutoGearRules');
-            attachFromModule(moduleApi);
-          } catch (moduleLookupError) {
-            void moduleLookupError;
+            const moduleApi = registry.get('cineFeatureAutoGearRules');
+            if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+              attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+            }
+          } catch (registryLookupError) {
+            void registryLookupError;
           }
-        }
-
-        if (!resetHandlerAttached && typeof moduleGlobals.whenModuleAvailable === 'function') {
-          try {
-            moduleGlobals.whenModuleAvailable('cineFeatureAutoGearRules', moduleApi => {
-              attachFromModule(moduleApi);
-            });
-          } catch (subscriptionError) {
-            void subscriptionError;
-          }
-        }
-      },
-      { interval: 200, maxAttempts: 150 },
-    );
-
-    whenGlobalValueAvailable(
-      'cineModules',
-      candidate => candidate && typeof candidate.get === 'function',
-      registry => {
-        if (resetHandlerAttached) {
-          return;
-        }
-        try {
-          const moduleApi = registry.get('cineFeatureAutoGearRules');
-          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
-            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
-          }
-        } catch (registryLookupError) {
-          void registryLookupError;
-        }
-      },
-      { interval: 200, maxAttempts: 150 },
-    );
+        },
+        { interval: 200, maxAttempts: 150 },
+      );
+    }
   }
-}
-if (autoGearExportButton) {
-  autoGearExportButton.addEventListener('click', () => {
-    callSessionCoreFunction('exportAutoGearRules', [], { defer: true });
-  });
-}
-if (autoGearImportButton && autoGearImportInput) {
-  autoGearImportButton.addEventListener('click', () => {
-    autoGearImportInput.click();
-  });
-  autoGearImportInput.addEventListener('change', handleAutoGearImportSelection);
-}
-if (autoGearSearchInput) {
-  const updateQuery = event => {
-    setAutoGearSearchQuery(event?.target?.value || '');
-  };
-  autoGearSearchInput.addEventListener('input', updateQuery);
-  autoGearSearchInput.addEventListener('search', updateQuery);
-}
-if (autoGearFilterScenarioSelect) {
-  autoGearFilterScenarioSelect.addEventListener('change', event => {
-    setAutoGearScenarioFilter(event?.target?.value || 'all');
-  });
-}
-if (autoGearFilterClearButton) {
-  autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
-}
-if (autoGearSummaryCards) {
-  autoGearSummaryCards.addEventListener('click', event => {
-    const target = event.target instanceof HTMLElement
-      ? event.target.closest('.auto-gear-summary-action')
-      : null;
-    if (!target || target.disabled) return;
-    const focus = target.dataset.focus || 'all';
-    setAutoGearSummaryFocus(focus);
-  });
-}
-if (autoGearSummaryDetails) {
-  autoGearSummaryDetails.addEventListener('click', event => {
-    const element = event.target instanceof HTMLElement ? event.target : null;
-    if (!element) return;
-    const scenarioButton = element.closest('button[data-auto-gear-scenario]');
-    if (scenarioButton) {
-      const scenario = scenarioButton.dataset.autoGearScenario || '';
-      if (scenario) {
-        setAutoGearSummaryFocus('all');
-        setAutoGearScenarioFilter(scenario);
+  if (autoGearExportButton) {
+    autoGearExportButton.addEventListener('click', () => {
+      callSessionCoreFunction('exportAutoGearRules', [], { defer: true });
+    });
+  }
+  if (autoGearImportButton && autoGearImportInput) {
+    autoGearImportButton.addEventListener('click', () => {
+      autoGearImportInput.click();
+    });
+    autoGearImportInput.addEventListener('change', handleAutoGearImportSelection);
+  }
+  if (autoGearSearchInput) {
+    const updateQuery = event => {
+      setAutoGearSearchQuery(event?.target?.value || '');
+    };
+    autoGearSearchInput.addEventListener('input', updateQuery);
+    autoGearSearchInput.addEventListener('search', updateQuery);
+  }
+  if (autoGearFilterScenarioSelect) {
+    autoGearFilterScenarioSelect.addEventListener('change', event => {
+      setAutoGearScenarioFilter(event?.target?.value || 'all');
+    });
+  }
+  if (autoGearFilterClearButton) {
+    autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
+  }
+  if (autoGearSummaryCards) {
+    autoGearSummaryCards.addEventListener('click', event => {
+      const target = event.target instanceof HTMLElement
+        ? event.target.closest('.auto-gear-summary-action')
+        : null;
+      if (!target || target.disabled) return;
+      const focus = target.dataset.focus || 'all';
+      setAutoGearSummaryFocus(focus);
+    });
+  }
+  if (autoGearSummaryDetails) {
+    autoGearSummaryDetails.addEventListener('click', event => {
+      const element = event.target instanceof HTMLElement ? event.target : null;
+      if (!element) return;
+      const scenarioButton = element.closest('button[data-auto-gear-scenario]');
+      if (scenarioButton) {
+        const scenario = scenarioButton.dataset.autoGearScenario || '';
+        if (scenario) {
+          setAutoGearSummaryFocus('all');
+          setAutoGearScenarioFilter(scenario);
+        }
+        return;
       }
-      return;
-    }
-    const ruleButton = element.closest('button[data-auto-gear-rule]');
-    if (ruleButton) {
-      focusAutoGearRuleById(ruleButton.dataset.autoGearRule || '');
-      return;
-    }
-    const resetButton = element.closest('button[data-auto-gear-summary-reset]');
-    if (resetButton) {
-      setAutoGearSummaryFocus('all');
-    }
-  });
-}
-if (autoGearPresetSelect) {
-  autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);
-}
-if (autoGearSavePresetButton) {
-  autoGearSavePresetButton.addEventListener('click', handleAutoGearSavePreset);
-}
-if (autoGearDeletePresetButton) {
-  autoGearDeletePresetButton.addEventListener('click', handleAutoGearDeletePreset);
-}
-if (autoGearAddItemButton) {
-  autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
-}
+      const ruleButton = element.closest('button[data-auto-gear-rule]');
+      if (ruleButton) {
+        focusAutoGearRuleById(ruleButton.dataset.autoGearRule || '');
+        return;
+      }
+      const resetButton = element.closest('button[data-auto-gear-summary-reset]');
+      if (resetButton) {
+        setAutoGearSummaryFocus('all');
+      }
+    });
+  }
+  if (autoGearPresetSelect) {
+    autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);
+  }
+  if (autoGearSavePresetButton) {
+    autoGearSavePresetButton.addEventListener('click', handleAutoGearSavePreset);
+  }
+  if (autoGearDeletePresetButton) {
+    autoGearDeletePresetButton.addEventListener('click', handleAutoGearDeletePreset);
+  }
+  if (autoGearAddItemButton) {
+    autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
+  }
   if (autoGearRemoveItemButton) {
     autoGearRemoveItemButton.addEventListener('click', () => addAutoGearDraftItem('remove'));
   }
@@ -8405,11 +8405,11 @@ const ensureAutoBackupSpinnerStyles = () => {
 
 const showAutoBackupActivityIndicator = (message) => {
   if (typeof document === 'undefined') {
-    return () => {};
+    return () => { };
   }
   const container = ensureNotificationContainer();
   if (!container) {
-    return () => {};
+    return () => { };
   }
   ensureAutoBackupSpinnerStyles();
 
@@ -8626,11 +8626,11 @@ const getHighResolutionTimestamp = () => {
 
 const showGlobalLoadingIndicator = (message) => {
   if (typeof document === 'undefined') {
-    return () => {};
+    return () => { };
   }
   const container = ensureNotificationContainer();
   if (!container) {
-    return () => {};
+    return () => { };
   }
   ensureAutoBackupSpinnerStyles();
 
@@ -10058,11 +10058,11 @@ function applyPreferencesFromStorage(safeGetItem) {
 
   const focusScaleStorageKey =
     (typeof FOCUS_SCALE_STORAGE_KEY_NAME === 'string' && FOCUS_SCALE_STORAGE_KEY_NAME)
-      || (typeof globalThis !== 'undefined'
-        && globalThis
-        && typeof globalThis.FOCUS_SCALE_STORAGE_KEY_NAME === 'string'
-        && globalThis.FOCUS_SCALE_STORAGE_KEY_NAME)
-      || 'cameraPowerPlanner_focusScale';
+    || (typeof globalThis !== 'undefined'
+      && globalThis
+      && typeof globalThis.FOCUS_SCALE_STORAGE_KEY_NAME === 'string'
+      && globalThis.FOCUS_SCALE_STORAGE_KEY_NAME)
+    || 'cameraPowerPlanner_focusScale';
 
   const storedFocusScale = safeGetItem(focusScaleStorageKey);
   let restoredFocusScale = null;
@@ -10199,16 +10199,16 @@ function applyPreferencesFromStorage(safeGetItem) {
 
     if (parsedVoltages) {
       applySessionMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
-        const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-        if (updateMountVoltageInputsFromStateFn) {
-          try {
-            updateMountVoltageInputsFromStateFn();
-          } catch (updateError) {
-            warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
-          }
-        } else {
-          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+      if (updateMountVoltageInputsFromStateFn) {
+        try {
+          updateMountVoltageInputsFromStateFn();
+        } catch (updateError) {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
         }
+      } else {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      }
       rememberSettingsMountVoltagesBaseline();
     }
   } catch (voltageError) {
@@ -10303,9 +10303,9 @@ const backupFallbackLoaders = [
       || (isPlainObject(value) && Array.isArray(value.releases))
       || Array.isArray(value),
     loader: () =>
-      (typeof loadDocumentationTracker === 'function'
-        ? loadDocumentationTracker()
-        : undefined),
+    (typeof loadDocumentationTracker === 'function'
+      ? loadDocumentationTracker()
+      : undefined),
   },
   {
     key: 'autoGearBackups',
@@ -12527,8 +12527,8 @@ function getSessionLanguageTexts() {
 
   const resolvedLang =
     typeof currentLang === 'string'
-    && allTexts
-    && typeof allTexts[currentLang] === 'object'
+      && allTexts
+      && typeof allTexts[currentLang] === 'object'
       ? currentLang
       : 'en';
 
@@ -13083,23 +13083,23 @@ if (factoryResetButton) {
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
       }
-        try {
-          const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-          if (resetMountVoltagePreferencesFn) {
-            resetMountVoltagePreferencesFn({ persist: true, triggerUpdate: true });
-          } else {
-            warnMissingMountVoltageHelper('resetMountVoltagePreferences');
-          }
+      try {
+        const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+        if (resetMountVoltagePreferencesFn) {
+          resetMountVoltagePreferencesFn({ persist: true, triggerUpdate: true });
+        } else {
+          warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+        }
 
-          const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-          if (updateMountVoltageInputsFromStateFn) {
-            updateMountVoltageInputsFromStateFn();
-          } else {
-            warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
-          }
+        const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+        if (updateMountVoltageInputsFromStateFn) {
+          updateMountVoltageInputsFromStateFn();
+        } else {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+        }
 
-          rememberSettingsMountVoltagesBaseline();
-        } catch (voltageResetError) {
+        rememberSettingsMountVoltagesBaseline();
+      } catch (voltageResetError) {
         console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
       }
       try {
@@ -14691,7 +14691,7 @@ function copyTextToClipboardBestEffort(text) {
     navigator.clipboard &&
     typeof navigator.clipboard.writeText === 'function'
   ) {
-    navigator.clipboard.writeText(text).catch(() => {});
+    navigator.clipboard.writeText(text).catch(() => { });
     return;
   }
 
@@ -14768,7 +14768,7 @@ if (downloadDiagramButton) {
     const now = new Date();
     const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
     const namePart = (safeGetCurrentProjectName('setup') || 'setup')
-        .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+      .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
     const baseName = `${datePart}_${namePart}_diagram`;
 
     const saveSvg = () => {
@@ -16726,7 +16726,7 @@ if (helpButton && helpDialog) {
     const deviceScore = deviceMatch?.score || 0;
     const strongSearchMatchTypes =
       typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' &&
-      STRONG_SEARCH_MATCH_TYPES instanceof Set
+        STRONG_SEARCH_MATCH_TYPES instanceof Set
         ? STRONG_SEARCH_MATCH_TYPES
         : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 
@@ -17635,7 +17635,7 @@ function ensureFeedbackTemperatureOptionsSafe(select) {
   }
 
   const minTemp = typeof FEEDBACK_TEMPERATURE_MIN === 'number' ? FEEDBACK_TEMPERATURE_MIN : -20;
-  const maxTemp = typeof FEEDBACK_TEMPERATURE_MAX === 'number' ? FEEDBACK_TEMPERATURE_MAX : 50;
+  const maxTemp = typeof FEEDBACK_TEMPERATURE_MAX_LIMIT === 'number' ? FEEDBACK_TEMPERATURE_MAX_LIMIT : 50;
   const expectedOptions = maxTemp - minTemp + 2;
   if (select.options.length === expectedOptions) {
     return;
@@ -17751,10 +17751,10 @@ function populateLensDropdown() {
       : null;
     const fallbackPreference =
       typeof sessionFocusScale !== 'undefined' && sessionFocusScale
-      ? sessionFocusScale
-      : typeof focusScalePreference === 'string'
-        ? focusScalePreference
-        : null;
+        ? sessionFocusScale
+        : typeof focusScalePreference === 'string'
+          ? focusScalePreference
+          : null;
     const rawPreference = scopePreference || fallbackPreference || 'metric';
     if (typeof normalizeFocusScale === 'function') {
       try {
@@ -18715,21 +18715,21 @@ const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
 function getFilterValueConfig(type) {
   switch (type) {
     case 'IRND':
-      return { opts: ['0.3','0.6','0.9','1.2','1.5','1.8','2.1','2.5'], defaults: ['0.3','1.2'] };
+      return { opts: ['0.3', '0.6', '0.9', '1.2', '1.5', '1.8', '2.1', '2.5'], defaults: ['0.3', '1.2'] };
     case 'Diopter':
-      return { opts: ['+1/4','+1/2','+1','+2','+3','+4'], defaults: ['+1/2','+1','+2','+4'] };
+      return { opts: ['+1/4', '+1/2', '+1', '+2', '+3', '+4'], defaults: ['+1/2', '+1', '+2', '+4'] };
     case 'ND Grad HE':
       return {
-        opts: ['0.3 HE Vertical','0.6 HE Vertical','0.9 HE Vertical','1.2 HE Vertical','0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal','1.2 HE Horizontal'],
-        defaults: ['0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal']
+        opts: ['0.3 HE Vertical', '0.6 HE Vertical', '0.9 HE Vertical', '1.2 HE Vertical', '0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal', '1.2 HE Horizontal'],
+        defaults: ['0.3 HE Horizontal', '0.6 HE Horizontal', '0.9 HE Horizontal']
       };
     case 'ND Grad SE':
       return {
-        opts: ['0.3 SE Vertical','0.6 SE Vertical','0.9 SE Vertical','1.2 SE Vertical','0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal','1.2 SE Horizontal'],
-        defaults: ['0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal']
+        opts: ['0.3 SE Vertical', '0.6 SE Vertical', '0.9 SE Vertical', '1.2 SE Vertical', '0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal', '1.2 SE Horizontal'],
+        defaults: ['0.3 SE Horizontal', '0.6 SE Horizontal', '0.9 SE Horizontal']
       };
     default:
-      return { opts: ['1','1/2','1/4','1/8','1/16'], defaults: ['1/2','1/4','1/8'] };
+      return { opts: ['1', '1/2', '1/4', '1/8', '1/16'], defaults: ['1/2', '1/4', '1/8'] };
   }
 }
 
@@ -19131,13 +19131,13 @@ function ensureFilterDetailEditButton(element) {
   const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
   const editGlyph = iconRegistry
     ? (
-        iconRegistry.sliders
-        || iconRegistry.gears
-        || iconRegistry.gearList
-        || iconRegistry.settingsGeneral
-        || iconRegistry.note
-        || null
-      )
+      iconRegistry.sliders
+      || iconRegistry.gears
+      || iconRegistry.gearList
+      || iconRegistry.settingsGeneral
+      || iconRegistry.note
+      || null
+    )
     : null;
   if (setLabelWithIcon && editGlyph) {
     setLabelWithIcon.call(scope, button, '', editGlyph);

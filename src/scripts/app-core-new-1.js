@@ -304,7 +304,7 @@ function resolveFeedbackTemperatureBound(boundKey, fallbackValue) {
 }
 
 globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MIN', -20);
-globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX', 50);
+globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX_LIMIT', 50);
 globalThis.INSTALL_BANNER_DISMISSED_KEY = 'cine_install_banner_dismissed';
 globalThis.AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = 1;
 

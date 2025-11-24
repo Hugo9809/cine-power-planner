@@ -445,19 +445,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
 
-    const normalizePowerPortType = resolveCoreBinding('normalizePowerPortType', () => []);
-    const motorPriority = resolveCoreBinding('motorPriority', () => 0);
-    const controllerPriority = resolveCoreBinding('controllerPriority', () => 0);
-    const isArri = resolveCoreBinding('isArri', () => false);
-    const isArriOrCmotion = resolveCoreBinding('isArriOrCmotion', () => false);
-    const fizNeedsPower = resolveCoreBinding('fizNeedsPower', () => false);
-    const fizPowerPort = resolveCoreBinding('fizPowerPort', () => '');
-    const controllerDistancePort = resolveCoreBinding('controllerDistancePort', () => '');
-    const controllerCamPort = resolveCoreBinding('controllerCamPort', () => '');
-    const cameraFizPort = resolveCoreBinding('cameraFizPort', () => '');
-    const motorFizPort = resolveCoreBinding('motorFizPort', () => '');
-    const getSelectedPlate = resolveCoreBinding('getSelectedPlate', () => null);
-    const isSelectedPlateNative = resolveCoreBinding('isSelectedPlateNative', () => false);
+    var normalizePowerPortType = resolveCoreBinding('normalizePowerPortType', () => []);
+    var motorPriority = resolveCoreBinding('motorPriority', () => 0);
+    var controllerPriority = resolveCoreBinding('controllerPriority', () => 0);
+    var isArri = resolveCoreBinding('isArri', () => false);
+    var isArriOrCmotion = resolveCoreBinding('isArriOrCmotion', () => false);
+    var fizNeedsPower = resolveCoreBinding('fizNeedsPower', () => false);
+    var fizPowerPort = resolveCoreBinding('fizPowerPort', () => '');
+    var controllerDistancePort = resolveCoreBinding('controllerDistancePort', () => '');
+    var controllerCamPort = resolveCoreBinding('controllerCamPort', () => '');
+    var cameraFizPort = resolveCoreBinding('cameraFizPort', () => '');
+    var motorFizPort = resolveCoreBinding('motorFizPort', () => '');
+    var getSelectedPlate = resolveCoreBinding('getSelectedPlate', () => null);
+    var isSelectedPlateNative = resolveCoreBinding('isSelectedPlateNative', () => false);
     const formatConnLabel = resolveCoreBinding('formatConnLabel', () => '');
     const connectionLabel = resolveCoreBinding('connectionLabel', () => '');
     const fizPort = resolveCoreBinding('fizPort', () => '');
