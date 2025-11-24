@@ -12896,87 +12896,93 @@ function resetPlannerStateAfterFactoryReset() {
 }
 
 if (factoryResetButton) {
-  factoryResetButton.addEventListener('click', async () => {
-    const langTexts = texts[currentLang] || texts.en || {};
-    const confirmReset = langTexts.confirmFactoryReset
-      || 'Create a backup and wipe all planner data?';
-    if (!confirm(confirmReset)) return;
-    const confirmResetAgain = langTexts.confirmFactoryResetAgain
-      || 'This will permanently delete all saved planner data. Continue?';
-    if (!confirm(confirmResetAgain)) return;
+  const factoryResetConfirmDialog = document.getElementById('factoryResetConfirmDialog');
+  const factoryResetConfirmBtn = document.getElementById('factoryResetConfirmBtn');
+  const factoryResetCancelBtn = document.getElementById('factoryResetCancelBtn');
 
-    if (typeof performSettingsBackup !== 'function') {
-      const errorMsg = langTexts.factoryResetError
-        || 'Factory reset failed. Please try again.';
-      showNotification('error', errorMsg);
-      return;
-    }
+  if (factoryResetConfirmDialog && factoryResetConfirmBtn && factoryResetCancelBtn) {
+    // Open the custom dialog
+    factoryResetButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
 
-    let backupResult = null;
-    try {
-      backupResult = performSettingsBackup(false, new Date());
-    } catch (error) {
-      console.error('Backup before factory reset failed', error);
-    }
+      const langTexts = texts[currentLang] || texts.en || {};
+      const title = langTexts.factoryResetTitle || 'Factory Reset';
+      const message = langTexts.confirmFactoryReset
+        || 'Create a backup and wipe all planner data? This action cannot be undone.';
+      const confirmLabel = langTexts.factoryResetConfirm || 'Reset Everything';
+      const cancelLabel = langTexts.cancel || 'Cancel';
 
-    if (!backupResult || !backupResult.fileName) {
-      const backupFailedMsg = langTexts.factoryResetBackupFailed
-        || 'Backup failed. Data was not deleted.';
-      showNotification('error', backupFailedMsg);
-      return;
-    }
+      const titleEl = document.getElementById('factoryResetConfirmTitle');
+      const messageEl = document.getElementById('factoryResetConfirmMessage');
 
-    let downloadPermissionState = 'unknown';
-    let finalDownloadPermissionState = 'unknown';
-    const downloadResult = backupResult.downloadResult;
-    const permissionMonitor = downloadResult && downloadResult.permission
-      ? downloadResult.permission
-      : null;
+      if (titleEl) titleEl.textContent = title;
+      if (messageEl) messageEl.textContent = message;
+      factoryResetConfirmBtn.textContent = confirmLabel;
+      factoryResetCancelBtn.textContent = cancelLabel;
 
-    if (permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function') {
+      factoryResetConfirmDialog.removeAttribute('hidden');
+      if (typeof factoryResetConfirmDialog.showModal === 'function') {
+        factoryResetConfirmDialog.showModal();
+      }
+    });
+
+    // Handle Cancel
+    factoryResetCancelBtn.addEventListener('click', () => {
+      if (typeof factoryResetConfirmDialog.close === 'function') {
+        factoryResetConfirmDialog.close();
+      }
+      factoryResetConfirmDialog.setAttribute('hidden', '');
+    });
+
+    // Handle Confirm (Actual Reset Logic)
+    factoryResetConfirmBtn.addEventListener('click', async () => {
+      if (typeof factoryResetConfirmDialog.close === 'function') {
+        factoryResetConfirmDialog.close();
+      }
+      factoryResetConfirmDialog.setAttribute('hidden', '');
+
+      const langTexts = texts[currentLang] || texts.en || {};
+
+      if (typeof performSettingsBackup !== 'function') {
+        const errorMsg = langTexts.factoryResetError
+          || 'Factory reset failed. Please try again.';
+        showNotification('error', errorMsg);
+        return;
+      }
+
+      let backupResult = null;
       try {
-        downloadPermissionState = await permissionMonitor.initial;
-      } catch (permissionError) {
-        console.warn('Failed to inspect automatic download permission before factory reset', permissionError);
-        downloadPermissionState = 'unknown';
+        backupResult = performSettingsBackup(false, new Date());
+      } catch (error) {
+        console.error('Backup before factory reset failed', error);
       }
-    }
 
-    if (downloadPermissionState === 'denied') {
-      const deniedMsg = langTexts.factoryResetDownloadBlocked
-        || 'The backup download was blocked. Data was not deleted.';
-      showNotification('error', deniedMsg);
-      if (typeof alert === 'function') {
-        alert(deniedMsg);
+      if (!backupResult || !backupResult.fileName) {
+        const backupFailedMsg = langTexts.factoryResetBackupFailed
+          || 'Backup failed. Data was not deleted.';
+        showNotification('error', backupFailedMsg);
+        return;
       }
-      return;
-    }
 
-    if (downloadPermissionState === 'prompt') {
-      const waitMsg = langTexts.factoryResetAwaitDownload
-        || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
-      showNotification('info', waitMsg);
-      if (typeof alert === 'function') {
-        alert(waitMsg);
-      }
-    }
+      let downloadPermissionState = 'unknown';
+      let finalDownloadPermissionState = 'unknown';
+      const downloadResult = backupResult.downloadResult;
+      const permissionMonitor = downloadResult && downloadResult.permission
+        ? downloadResult.permission
+        : null;
 
-    if (permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function') {
-      try {
-        finalDownloadPermissionState = await permissionMonitor.ready;
-      } catch (permissionAwaitError) {
-        console.warn('Failed to await automatic download permission before factory reset', permissionAwaitError);
-        finalDownloadPermissionState = 'unknown';
+      if (permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function') {
+        try {
+          downloadPermissionState = await permissionMonitor.initial;
+        } catch (permissionError) {
+          console.warn('Failed to inspect automatic download permission before factory reset', permissionError);
+          downloadPermissionState = 'unknown';
+        }
       }
-    } else {
-      finalDownloadPermissionState = downloadPermissionState;
-    }
 
-    if (downloadPermissionState === 'prompt') {
-      if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
-        finalDownloadPermissionState = 'unknown';
-      }
-      if (finalDownloadPermissionState !== 'granted') {
+      if (downloadPermissionState === 'denied') {
         const deniedMsg = langTexts.factoryResetDownloadBlocked
           || 'The backup download was blocked. Data was not deleted.';
         showNotification('error', deniedMsg);
@@ -12985,167 +12991,202 @@ if (factoryResetButton) {
         }
         return;
       }
-    } else if (finalDownloadPermissionState === 'denied') {
-      const deniedMsg = langTexts.factoryResetDownloadBlocked
-        || 'The backup download was blocked. Data was not deleted.';
-      showNotification('error', deniedMsg);
-      if (typeof alert === 'function') {
-        alert(deniedMsg);
+
+      if (downloadPermissionState === 'prompt') {
+        const waitMsg = langTexts.factoryResetAwaitDownload
+          || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
+        showNotification('info', waitMsg);
+        if (typeof alert === 'function') {
+          alert(waitMsg);
+        }
       }
-      return;
-    }
 
-    if (typeof clearAllData !== 'function') {
-      const errorMsg = langTexts.factoryResetError
-        || 'Factory reset failed. Please try again.';
-      showNotification('error', errorMsg);
-      return;
-    }
-
-    try {
-      factoryResetInProgress = true;
-      if (typeof globalThis !== 'undefined') {
+      if (permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function') {
         try {
-          globalThis.__cameraPowerPlannerFactoryResetting = true;
-        } catch (flagError) {
-          console.warn('Unable to flag factory reset on global scope', flagError);
+          finalDownloadPermissionState = await permissionMonitor.ready;
+        } catch (permissionAwaitError) {
+          console.warn('Failed to await automatic download permission before factory reset', permissionAwaitError);
+          finalDownloadPermissionState = 'unknown';
         }
+      } else {
+        finalDownloadPermissionState = downloadPermissionState;
       }
-      if (projectAutoSaveTimer) {
-        clearTimeout(projectAutoSaveTimer);
-        projectAutoSaveTimer = null;
-      }
-      try {
-        stopPinkModeIconRotation();
-        stopPinkModeAnimatedIcons();
-      } catch (animationError) {
-        console.warn('Failed to stop pink mode animations during factory reset', animationError);
-      }
-      clearAllData();
-      try {
-        if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-          const eventName = 'cameraPowerPlannerFactoryReset';
-          let eventInstance = null;
-          if (typeof window.CustomEvent === 'function') {
-            eventInstance = new window.CustomEvent(eventName);
-          } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
-            eventInstance = document.createEvent('Event');
-            eventInstance.initEvent(eventName, false, false);
-          }
-          if (eventInstance) {
-            window.dispatchEvent(eventInstance);
-          }
-        }
-      } catch (factoryResetEventError) {
-        console.warn('Failed to dispatch factory reset event', factoryResetEventError);
-      }
-      try {
-        resetPlannerStateAfterFactoryReset();
-      } catch (resetError) {
-        console.warn('Failed to reset planner state after factory reset', resetError);
-      }
-      try {
-        setThemePreference(false, { persist: true });
-      } catch (darkError) {
-        console.warn('Failed to reset dark mode during factory reset', darkError);
-      }
-      try {
-        highContrastEnabled = false;
-        applyHighContrast(false);
-        if (settingsHighContrast) {
-          settingsHighContrast.checked = false;
-        }
-      } catch (contrastError) {
-        console.warn('Failed to reset high contrast during factory reset', contrastError);
-      }
-      try {
-        pinkModeEnabled = false;
-        applyPinkMode(false);
-        rememberSettingsPinkModeBaseline();
-      } catch (pinkError) {
-        console.warn('Failed to reset pink mode during factory reset', pinkError);
-      }
-      showAutoBackups = false;
-      if (settingsShowAutoBackups) {
-        settingsShowAutoBackups.checked = false;
-      }
-      try {
-        accentColor = DEFAULT_ACCENT_COLOR;
-        prevAccentColor = DEFAULT_ACCENT_COLOR;
-        clearAccentColorOverrides();
-        applyAccentColor(accentColor);
-        if (accentColorInput) {
-          accentColorInput.value = DEFAULT_ACCENT_COLOR;
-        }
-        if (typeof updateAccentColorResetButtonState === 'function') {
-          updateAccentColorResetButtonState();
-        }
-      } catch (accentError) {
-        console.warn('Failed to reset accent color during factory reset', accentError);
-      }
-      try {
-        const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-        if (resetMountVoltagePreferencesFn) {
-          resetMountVoltagePreferencesFn({ persist: true, triggerUpdate: true });
-        } else {
-          warnMissingMountVoltageHelper('resetMountVoltagePreferences');
-        }
 
-        const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-        if (updateMountVoltageInputsFromStateFn) {
-          updateMountVoltageInputsFromStateFn();
-        } else {
-          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      if (downloadPermissionState === 'prompt') {
+        if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
+          finalDownloadPermissionState = 'unknown';
         }
+        if (finalDownloadPermissionState !== 'granted') {
+          const deniedMsg = langTexts.factoryResetDownloadBlocked
+            || 'The backup download was blocked. Data was not deleted.';
+          showNotification('error', deniedMsg);
+          if (typeof alert === 'function') {
+            alert(deniedMsg);
+          }
+          return;
+        }
+      } else if (finalDownloadPermissionState === 'denied') {
+        const deniedMsg = langTexts.factoryResetDownloadBlocked
+          || 'The backup download was blocked. Data was not deleted.';
+        showNotification('error', deniedMsg);
+        if (typeof alert === 'function') {
+          alert(deniedMsg);
+        }
+        return;
+      }
 
-        rememberSettingsMountVoltagesBaseline();
-      } catch (voltageResetError) {
-        console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
+      if (typeof clearAllData !== 'function') {
+        const errorMsg = langTexts.factoryResetError
+          || 'Factory reset failed. Please try again.';
+        showNotification('error', errorMsg);
+        return;
       }
+
       try {
-        fontSize = '16';
-        applyFontSizeSafe(fontSize);
-        if (settingsFontSize) {
-          settingsFontSize.value = fontSize;
+        factoryResetInProgress = true;
+        if (typeof globalThis !== 'undefined') {
+          try {
+            globalThis.__cameraPowerPlannerFactoryResetting = true;
+          } catch (flagError) {
+            console.warn('Unable to flag factory reset on global scope', flagError);
+          }
         }
-      } catch (fontSizeError) {
-        console.warn('Failed to reset font size during factory reset', fontSizeError);
-      }
-      try {
-        fontFamily = "'Ubuntu', sans-serif";
-        applyFontFamilySafe(fontFamily);
-        if (settingsFontFamily) {
-          settingsFontFamily.value = fontFamily;
+        if (projectAutoSaveTimer) {
+          clearTimeout(projectAutoSaveTimer);
+          projectAutoSaveTimer = null;
         }
-      } catch (fontFamilyError) {
-        console.warn('Failed to reset font family during factory reset', fontFamilyError);
-      }
-      if (settingsDialog) {
-        settingsDialog.setAttribute('hidden', '');
-      }
-      const successMsg = langTexts.factoryResetSuccess
-        || 'Backup downloaded. All planner data cleared. Reloading…';
-      showNotification('success', successMsg);
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.location && window.location.reload) {
-          window.location.reload();
-        }
-      }, 600);
-    } catch (error) {
-      console.error('Factory reset failed', error);
-      factoryResetInProgress = false;
-      if (typeof globalThis !== 'undefined') {
         try {
-          delete globalThis.__cameraPowerPlannerFactoryResetting;
-        } catch (cleanupError) {
-          console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+          stopPinkModeIconRotation();
+          stopPinkModeAnimatedIcons();
+        } catch (animationError) {
+          console.warn('Failed to stop pink mode animations during factory reset', animationError);
         }
+        clearAllData();
+        try {
+          if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+            const eventName = 'cameraPowerPlannerFactoryReset';
+            let eventInstance = null;
+            if (typeof window.CustomEvent === 'function') {
+              eventInstance = new window.CustomEvent(eventName);
+            } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+              eventInstance = document.createEvent('Event');
+              eventInstance.initEvent(eventName, false, false);
+            }
+            if (eventInstance) {
+              window.dispatchEvent(eventInstance);
+            }
+          }
+        } catch (factoryResetEventError) {
+          console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+        }
+        try {
+          resetPlannerStateAfterFactoryReset();
+        } catch (resetError) {
+          console.warn('Failed to reset planner state after factory reset', resetError);
+        }
+        try {
+          setThemePreference(false, { persist: true });
+        } catch (darkError) {
+          console.warn('Failed to reset dark mode during factory reset', darkError);
+        }
+        try {
+          highContrastEnabled = false;
+          applyHighContrast(false);
+          if (settingsHighContrast) {
+            settingsHighContrast.checked = false;
+          }
+        } catch (contrastError) {
+          console.warn('Failed to reset high contrast during factory reset', contrastError);
+        }
+        try {
+          pinkModeEnabled = false;
+          applyPinkMode(false);
+          rememberSettingsPinkModeBaseline();
+        } catch (pinkError) {
+          console.warn('Failed to reset pink mode during factory reset', pinkError);
+        }
+        showAutoBackups = false;
+        if (settingsShowAutoBackups) {
+          settingsShowAutoBackups.checked = false;
+        }
+        try {
+          accentColor = DEFAULT_ACCENT_COLOR;
+          prevAccentColor = DEFAULT_ACCENT_COLOR;
+          clearAccentColorOverrides();
+          applyAccentColor(accentColor);
+          if (accentColorInput) {
+            accentColorInput.value = DEFAULT_ACCENT_COLOR;
+          }
+          if (typeof updateAccentColorResetButtonState === 'function') {
+            updateAccentColorResetButtonState();
+          }
+        } catch (accentError) {
+          console.warn('Failed to reset accent color during factory reset', accentError);
+        }
+        try {
+          const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+          if (resetMountVoltagePreferencesFn) {
+            resetMountVoltagePreferencesFn({ persist: true, triggerUpdate: true });
+          } else {
+            warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+          }
+
+          const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+          if (updateMountVoltageInputsFromStateFn) {
+            updateMountVoltageInputsFromStateFn();
+          } else {
+            warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+          }
+
+          rememberSettingsMountVoltagesBaseline();
+        } catch (voltageResetError) {
+          console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
+        }
+        try {
+          fontSize = '16';
+          applyFontSizeSafe(fontSize);
+          if (settingsFontSize) {
+            settingsFontSize.value = fontSize;
+          }
+        } catch (fontSizeError) {
+          console.warn('Failed to reset font size during factory reset', fontSizeError);
+        }
+        try {
+          fontFamily = "'Ubuntu', sans-serif";
+          applyFontFamilySafe(fontFamily);
+          if (settingsFontFamily) {
+            settingsFontFamily.value = fontFamily;
+          }
+        } catch (fontFamilyError) {
+          console.warn('Failed to reset font family during factory reset', fontFamilyError);
+        }
+        if (settingsDialog) {
+          settingsDialog.setAttribute('hidden', '');
+        }
+        const successMsg = langTexts.factoryResetSuccess
+          || 'Backup downloaded. All planner data cleared. Reloading…';
+        showNotification('success', successMsg);
+        setTimeout(() => {
+          if (typeof window !== 'undefined' && window.location && window.location.reload) {
+            window.location.reload();
+          }
+        }, 600);
+      } catch (error) {
+        console.error('Factory reset failed', error);
+        factoryResetInProgress = false;
+        if (typeof globalThis !== 'undefined') {
+          try {
+            delete globalThis.__cameraPowerPlannerFactoryResetting;
+          } catch (cleanupError) {
+            console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+          }
+        }
+        const errorMsg = langTexts.factoryResetError
+          || 'Factory reset failed. Please try again.';
+        showNotification('error', errorMsg);
       }
-      const errorMsg = langTexts.factoryResetError
-        || 'Factory reset failed. Please try again.';
-      showNotification('error', errorMsg);
-    }
-  });
+    });
+  }
 }
 
 const UI_CACHE_STORAGE_KEYS_FOR_RELOAD = [

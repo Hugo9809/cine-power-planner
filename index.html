@@ -361,7 +361,8 @@
         A
       </p>
       <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span>
-        <span id="batteryLifeUnit">hrs</span> <span id="runtimeAverageNote"></span></p>
+        <span id="batteryLifeUnit">hrs</span> <span id="runtimeAverageNote"></span>
+      </p>
       <p><strong><span id="batteryCountLabel">Batteries for 10h shoot:</span></strong> <span id="batteryCount">–</span>
       </p>
       <p id="pinWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
@@ -1942,7 +1943,7 @@
                   data-feature-search-keywords="restore rehearsal sandbox verify test backup practice simulate">
                   Restore rehearsal
                 </button>
-                <button id="factoryResetButton" data-feature-search="true"
+                <button type="button" id="factoryResetButton" data-feature-search="true"
                   data-feature-search-keywords="factory reset clear wipe safety backup sanitize">
                   Factory reset
                 </button>
@@ -3865,7 +3866,8 @@
                 <li><strong>Project Name</strong>, <strong>Production Company</strong>, <strong>Production Company
                     Address</strong>, <strong>Rental House</strong>, <strong>DoP</strong>, <strong>Prep</strong>,
                   <strong>Shooting</strong> and <strong>Return Days</strong> populate the printed header and can trigger
-                  weather gear with outdoor scenarios.</li>
+                  weather gear with outdoor scenarios.
+                </li>
                 <li><strong>Crew</strong> entries keep names, roles and email addresses attached so contact lists and
                   call sheets stay current.</li>
                 <li><strong>Delivery Resolution</strong>, <strong>Recording Resolution</strong>, <strong>Sensor
@@ -3907,7 +3909,8 @@
             </li>
             <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file,
               <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the
-              generator again.</li>
+              generator again.
+            </li>
             <li>
               Each category includes an <strong>Add custom item</strong> button so you can append unique gear with your
               own
@@ -6129,6 +6132,24 @@
       <option value="X-OCN"></option>
     </datalist>
 
+  </dialog>
+
+  <dialog id="factoryResetConfirmDialog" class="app-modal" role="dialog" aria-modal="true"
+    aria-labelledby="factoryResetConfirmTitle" hidden>
+    <div class="modal-surface">
+      <header class="modal-header">
+        <h3 id="factoryResetConfirmTitle" class="modal-title">Factory Reset</h3>
+      </header>
+      <div class="modal-body">
+        <p id="factoryResetConfirmMessage">Create a backup and wipe all planner data? This action cannot be undone.</p>
+      </div>
+      <footer class="modal-footer">
+        <div class="dialog-actions">
+          <button type="button" id="factoryResetCancelBtn">Cancel</button>
+          <button type="button" id="factoryResetConfirmBtn" class="danger">Reset Everything</button>
+        </div>
+      </footer>
+    </div>
   </dialog>
   <dialog id="overviewDialog"></dialog>
   <dialog id="printOptionsDialog" class="app-modal print-options-dialog" aria-labelledby="printOptionsDialogTitle"
