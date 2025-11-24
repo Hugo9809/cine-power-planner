@@ -1791,7 +1791,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function renderAutoGearBackupRetentionControls() {
       const limitValue = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
       if (autoGearBackupRetentionInput) {
-        autoGearBackupRetentionInput.setAttribute('min', String(AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE));
+        autoGearBackupRetentionInput.setAttribute('min', String(globalThis.AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE));
         autoGearBackupRetentionInput.setAttribute('max', String(AUTO_GEAR_BACKUP_RETENTION_MAX));
         if (autoGearBackupRetentionInput.value !== String(limitValue)) {
           autoGearBackupRetentionInput.value = String(limitValue);
@@ -6971,7 +6971,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (getInstallBannerDismissedInSession()) return true;
       if (typeof localStorage === 'undefined') return false;
       try {
-        const storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
+        const storedValue = localStorage.getItem(globalThis.INSTALL_BANNER_DISMISSED_KEY);
         const dismissed = storedValue === '1';
         if (dismissed) {
           setInstallBannerDismissedInSession(true);
@@ -6987,7 +6987,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setInstallBannerDismissedInSession(true);
       if (typeof localStorage === 'undefined') return;
       try {
-        localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
+        localStorage.setItem(globalThis.INSTALL_BANNER_DISMISSED_KEY, '1');
       } catch (error) {
         console.warn('Could not store install banner dismissal', error);
       }

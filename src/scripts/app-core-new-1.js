@@ -227,7 +227,7 @@ const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   return TEMPERATURE_UNITS_FALLBACK;
 })();
 
-const TEMPERATURE_SCENARIOS = (function resolveTemperatureScenarios() {
+var TEMPERATURE_SCENARIOS = (function resolveTemperatureScenarios() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const scope = candidateScopes[index];
@@ -303,7 +303,10 @@ function resolveFeedbackTemperatureBound(boundKey, fallbackValue) {
   return fallbackValue;
 }
 
-const FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX', 50);
+globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MIN', -20);
+globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX', 50);
+globalThis.INSTALL_BANNER_DISMISSED_KEY = 'cine_install_banner_dismissed';
+globalThis.AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = 1;
 
 // The planner shares a handful of helper modules across legacy and modern
 // bundles. Rather than assuming a module loader exists we defensively look for
@@ -20910,6 +20913,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
   exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
   exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
+  exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
+  exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
+  exposeCoreRuntimeConstant('iconGlyph', iconGlyph);
+  exposeCoreRuntimeConstant('resolveIconGlyph', resolveIconGlyph);
+  exposeCoreRuntimeConstant('applyIconGlyph', applyIconGlyph);
+  exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
+  exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
   const CORE_RUNTIME_CONSTANTS = {
     CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY,
@@ -20927,8 +20937,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY,
     FOCUS_SCALE_VALUES: focusScaleValues,
-    FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN_VALUE,
-    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX_VALUE,
+    FEEDBACK_TEMPERATURE_MIN: globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE,
+    FEEDBACK_TEMPERATURE_MAX: globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE,
   };
 
   // Ensure mount voltage helpers remain reachable from the session layer.
