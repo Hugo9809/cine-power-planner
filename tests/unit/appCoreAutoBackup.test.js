@@ -40,6 +40,41 @@ describe('ensureAutoBackupsFromProjects', () => {
     );
   });
 
+  it('imports deletion-prefixed snapshots missing from setups and persists once', () => {
+    const projects = {
+      'auto-backup-before-delete-xyz': { id: 'xyz', data: { keep: true } },
+    };
+    const setups = {};
+
+    const cloneProjectEntry = jest.fn((entry) => ({ clonedFrom: entry.id }));
+    const loadProject = jest.fn(() => projects);
+    const getSetups = jest.fn(() => setups);
+    const storeSetups = jest.fn();
+    const log = jest.fn();
+
+    const result = ensureAutoBackupsFromProjects({
+      loadProject,
+      getSetups,
+      storeSetups,
+      log,
+      cloneProjectEntry,
+    });
+
+    expect(result).toBe(true);
+    expect(cloneProjectEntry).toHaveBeenCalledTimes(1);
+    expect(cloneProjectEntry).toHaveBeenCalledWith(projects['auto-backup-before-delete-xyz']);
+    expect(setups['auto-backup-before-delete-xyz']).toEqual({ clonedFrom: 'xyz' });
+    expect(storeSetups).toHaveBeenCalledTimes(1);
+    expect(storeSetups).toHaveBeenCalledWith(setups);
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(
+      'info',
+      'Auto backup snapshots imported from project storage',
+      null,
+      { importedCount: 1 },
+    );
+  });
+
   it('returns false and logs warning when persisting imported backups fails', () => {
     const projects = { 'auto-backup-1': { id: '1' } };
     const setups = {};

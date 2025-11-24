@@ -30,6 +30,7 @@
   "./docs/documentation-verification-packet.md",
   "./docs/feature-gap-analysis.md",
   "./docs/offline-cache-verification-drill.md",
+  "./docs/offline-help-verification.md",
   "./docs/offline-readiness.md",
   "./docs/operations-checklist.md",
   "./docs/power-summary-warning-reference.md",

@@ -77,6 +77,27 @@ drive without phoning home.
   their own, and the in-app **Force reload** button is there when you want to
   clear cached assets and guarantee a clean refresh.
 
+## Fast Start (2-minute drill)
+
+Need to prove the planner is safe to use before a prep call? Run this condensed
+drill, then follow the [Quick Start](#quick-start) walkthrough for the full
+tour:
+
+1. Clone or unpack the repository to a trusted local drive and keep every
+   bundled asset (including locally stored Uicons and fonts) in place.
+2. Open `index.html` directly in a supported browser. If you prefer the PWA
+   flow, serve the folder over `http://localhost` so the service worker can
+   cache assets for offline use.
+3. Press **Start guided tutorial** in **Help → Quick start checklist** to walk
+   through a save, share, import and backup cycle. Confirm the autosave banner
+   and offline indicator appear as expected.
+4. Export a planner backup plus a sample project bundle immediately after the
+   tutorial. Store both on separate offline media so you have a baseline
+   restore point before continuing prep.
+5. Toggle airplane mode (or disconnect) and reload `index.html`. Verify projects
+   and documentation render exactly the same and that **Force reload** remains
+   available for cache resets without touching saved data.
+
 ## Safety Layers at a Glance
 
 | Safeguard | What it protects | How to exercise it | Evidence to archive |
@@ -330,6 +351,7 @@ air-gapped machines.
 - [Key Features](#key-features)
 - [Installation](#installation)
 - [At a Glance](#at-a-glance)
+- [Fast Start (2-minute drill)](#fast-start-2-minute-drill)
 - [Safety Layers at a Glance](#safety-layers-at-a-glance)
 - [Quick Links](#quick-links)
 - [Offline Audit Toolkit](#offline-audit-toolkit)
@@ -939,7 +961,8 @@ Use Cine Power Planner end-to-end with the following routine:
   before edits and summarises whether new copies were created, the first save is
   still pending or an issue needs a console review. Checking the row before
   travel confirms that mirrored safeguards exist for every project, gear list
-  and preference stored on the device.【F:src/scripts/app-core-new-2.js†L8640-L8740】【F:src/scripts/storage.js†L2800-L2995】
+  and preference stored on the device, keeping offline sessions protected by
+  redundant backups.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.
