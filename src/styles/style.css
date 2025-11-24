@@ -10862,21 +10862,28 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 }
 
 :root[data-onboarding-project-dialog='project-requirements'] #projectDialog {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding: clamp(12px, 2vw, 22px);
-}
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: clamp(12px, 2vw, 22px);
+  }
 
 :root[data-onboarding-project-dialog='project-requirements'] #projectDialog .project-dialog {
-  width: min(88vw, 820px);
-  max-width: min(88vw, 820px);
-  max-height: calc(100vh - clamp(24px, 10vh, 96px));
-  overflow: auto;
-  margin: 0;
-  margin-inline-start: auto;
-  margin-inline-end: 0;
-}
+    position: relative;
+    width: min(88vw, 820px);
+    max-width: min(88vw, 820px);
+    max-height: calc(100vh - clamp(24px, 10vh, 96px));
+    overflow: auto;
+    margin: 0;
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+  }
+
+  :root[data-onboarding-project-dialog='project-requirements'] #projectDialog .onboarding-overlay {
+    position: absolute;
+    inset: 0;
+  }
 
 @media (max-width: 960px) {
   :root[data-onboarding-project-dialog='project-requirements'] #projectDialog {
