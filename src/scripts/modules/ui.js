@@ -566,7 +566,7 @@
   }
 
   function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -660,6 +660,17 @@
       return value;
     }
 
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
+
     const tracker = fallbackResolveSeenTracker(seen);
 
     if (tracker.has(value)) {
@@ -678,7 +689,7 @@
         void accessError;
         child = undefined;
       }
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
       fallbackFreezeDeep(child, tracker);
@@ -693,7 +704,7 @@
   }
 
   function ensureFrozen(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 

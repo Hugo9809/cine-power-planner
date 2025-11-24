@@ -412,10 +412,29 @@ function fallbackEnsureDeepClone(scope) {
 
 var CORE_GLOBAL_SCOPE = fallbackGetCoreGlobalObject();
 
-const CORE_RUNTIME_TOOLS_REFERENCE =
-  typeof CORE_RUNTIME_TOOLS !== 'undefined' && CORE_RUNTIME_TOOLS
-    ? CORE_RUNTIME_TOOLS
-    : null;
+const CORE_RUNTIME_TOOLS_REFERENCE = (function resolveRuntimeToolsReference() {
+  var scopes = [];
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof self !== 'undefined') scopes.push(self);
+  if (typeof global !== 'undefined') scopes.push(global);
+
+  for (var i = 0; i < scopes.length; i += 1) {
+    var scope = scopes[i];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    try {
+      if (scope.CORE_RUNTIME_TOOLS) {
+        return scope.CORE_RUNTIME_TOOLS;
+      }
+    } catch (runtimeToolResolveError) {
+      void runtimeToolResolveError;
+    }
+  }
+
+  return null;
+})();
 
 const getCoreGlobalObject =
   CORE_RUNTIME_TOOLS_REFERENCE && typeof CORE_RUNTIME_TOOLS_REFERENCE.detectScope === 'function'
