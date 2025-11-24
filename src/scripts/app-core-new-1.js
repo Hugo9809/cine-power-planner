@@ -194,7 +194,7 @@ const TEMPERATURE_UNITS_FALLBACK = Object.freeze({
   celsius: 'celsius',
 });
 
-const TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
+const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
 
   for (let index = 0; index < candidateScopes.length; index += 1) {
@@ -7968,21 +7968,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (typeof unit === "string") {
         const trimmed = unit.trim().toLowerCase();
         if (
-          trimmed === TEMPERATURE_UNITS?.fahrenheit ||
+          trimmed === CORE_TEMPERATURE_UNITS?.fahrenheit ||
           trimmed === "fahrenheit" ||
           trimmed === "f"
         ) {
-          return TEMPERATURE_UNITS?.fahrenheit || "fahrenheit";
+          return CORE_TEMPERATURE_UNITS?.fahrenheit || "fahrenheit";
         }
         if (
-          trimmed === TEMPERATURE_UNITS?.celsius ||
+          trimmed === CORE_TEMPERATURE_UNITS?.celsius ||
           trimmed === "celsius" ||
           trimmed === "c"
         ) {
-          return TEMPERATURE_UNITS?.celsius || "celsius";
+          return CORE_TEMPERATURE_UNITS?.celsius || "celsius";
         }
       }
-      return TEMPERATURE_UNITS?.celsius || "celsius";
+      return CORE_TEMPERATURE_UNITS?.celsius || "celsius";
     };
     const FALLBACK_NORMALIZE_FOCUS_SCALE = value => {
       if (typeof value === "string") {
@@ -16838,17 +16838,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function normalizeTemperatureUnit(unit) {
     if (typeof unit === 'string') {
       const normalized = unit.trim().toLowerCase();
-      if (normalized === TEMPERATURE_UNITS.fahrenheit) {
-        return TEMPERATURE_UNITS.fahrenheit;
+      if (normalized === CORE_TEMPERATURE_UNITS.fahrenheit) {
+        return CORE_TEMPERATURE_UNITS.fahrenheit;
       }
-      if (normalized === TEMPERATURE_UNITS.celsius) {
-        return TEMPERATURE_UNITS.celsius;
+      if (normalized === CORE_TEMPERATURE_UNITS.celsius) {
+        return CORE_TEMPERATURE_UNITS.celsius;
       }
     }
-    if (unit === TEMPERATURE_UNITS.fahrenheit) {
-      return TEMPERATURE_UNITS.fahrenheit;
+    if (unit === CORE_TEMPERATURE_UNITS.fahrenheit) {
+      return CORE_TEMPERATURE_UNITS.fahrenheit;
     }
-    return TEMPERATURE_UNITS.celsius;
+    return CORE_TEMPERATURE_UNITS.celsius;
   }
 
   function getRuntimeTemperatureUnit() {
@@ -16879,7 +16879,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
 
-    return TEMPERATURE_UNITS.celsius;
+    return CORE_TEMPERATURE_UNITS.celsius;
   }
 
   function convertCelsiusToUnit(value, unit) {
@@ -16890,7 +16890,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const resolvedUnit = normalizeTemperatureUnit(
       typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
     );
-    if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
+    if (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit) {
       return (numeric * 9) / 5 + 32;
     }
     return numeric;
@@ -16903,13 +16903,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const textsForLang = getLanguageTexts(lang);
     const fallbackTexts = getLanguageTexts('en');
     const key =
-      resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit
         ? 'temperatureUnitSymbolFahrenheit'
         : 'temperatureUnitSymbolCelsius';
     return (
       textsForLang[key] ||
       fallbackTexts[key] ||
-      (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C')
+      (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C')
     );
   }
 
@@ -16920,13 +16920,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const textsForLang = getLanguageTexts(lang);
     const fallbackTexts = getLanguageTexts('en');
     const key =
-      resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit
         ? 'temperatureUnitFahrenheit'
         : 'temperatureUnitCelsius';
     return (
       textsForLang[key] ||
       fallbackTexts[key] ||
-      (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)')
+      (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)')
     );
   }
 
@@ -16958,7 +16958,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const textsForLang = getLanguageTexts(lang);
     const fallbackTexts = getLanguageTexts('en');
     const formatter =
-      resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit
         ? textsForLang.temperatureFormatterFahrenheit || fallbackTexts.temperatureFormatterFahrenheit
         : textsForLang.temperatureFormatterCelsius || fallbackTexts.temperatureFormatterCelsius;
     if (typeof formatter === 'function') {
@@ -20924,7 +20924,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     AUTO_GEAR_MONITOR_DEFAULT_TYPES,
     GEAR_LIST_CATEGORIES,
     TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
-    TEMPERATURE_UNITS,
+    TEMPERATURE_UNITS: CORE_TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY,
     FOCUS_SCALE_VALUES,
