@@ -298,69 +298,6 @@
     // Avoid deep traversal to keep cross-context objects from crashing V8
     // when the bridge is executed inside Node-based test environments.
     return value;
-
-    var keys;
-    try {
-      keys = Object.getOwnPropertyNames(value);
-    } catch (error) {
-      void error;
-      keys = [];
-    }
-
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-
-      var descriptor;
-      try {
-        descriptor = Object.getOwnPropertyDescriptor(value, key);
-      } catch (descriptorError) {
-        void descriptorError;
-        descriptor = null;
-      }
-
-      if (
-        descriptor &&
-        (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')
-      ) {
-        continue;
-      }
-
-      if (key === 'web3' && value === PRIMARY_SCOPE) {
-        // Accessing the deprecated MetaMask web3 shim logs noisy warnings. Skip it entirely
-        // to avoid touching the getter while still freezing the remaining globals.
-        continue;
-      }
-
-      var child;
-      try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
-      }
-
-      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
-        continue;
-      }
-
-      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
-        continue;
-      }
-
-      fallbackFreezeDeep(child, localSeen);
-    }
-
-    try {
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
-      }
-    } catch (freezeError) {
-      void freezeError;
-      return value;
-    }
   }
 
   function fallbackSafeWarn(message, detail) {

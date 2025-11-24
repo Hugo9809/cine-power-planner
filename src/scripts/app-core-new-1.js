@@ -253,7 +253,7 @@ const TEMPERATURE_SCENARIOS = (function resolveTemperatureScenarios() {
 
 const FOCUS_SCALE_VALUES_FALLBACK = Object.freeze(['metric', 'imperial']);
 
-const FOCUS_SCALE_VALUES = (function resolveFocusScaleValues() {
+const focusScaleValues = (function resolveFocusScaleValues() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const scope = candidateScopes[index];
@@ -20927,7 +20927,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEMPERATURE_UNITS: CORE_TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY,
-    FOCUS_SCALE_VALUES,
+    FOCUS_SCALE_VALUES: focusScaleValues,
     FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN_VALUE,
     FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX_VALUE,
   };
