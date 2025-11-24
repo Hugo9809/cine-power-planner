@@ -2925,6 +2925,7 @@
   let autoOpenedProjectDialog = false;
   let projectDialogRef = null;
   let projectDialogTriggerRef = null;
+  let projectDialogVisibilityCleanup = null;
   let autoOpenedDeviceManager = false;
   let deviceManagerSectionRef = null;
   let deviceManagerToggleRef = null;
@@ -4612,6 +4613,73 @@
       }
     }
     projectDialogRef.setAttribute('open', '');
+  }
+
+  function attachProjectDialogVisibilityMonitor() {
+    if (projectDialogVisibilityCleanup) {
+      return;
+    }
+
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+
+    if (!projectDialogRef) {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (!active || !currentStep || !currentStep.ensureProjectDialog) {
+        return;
+      }
+      setTimeout(() => {
+        if (!isProjectDialogVisible()) {
+          ensureProjectDialogForStep(currentStep);
+        }
+      }, 50);
+    };
+
+    projectDialogRef.addEventListener('close', handleVisibilityChange);
+    projectDialogRef.addEventListener('cancel', handleVisibilityChange);
+
+    let observer = null;
+    if (typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(handleVisibilityChange);
+        observer.observe(projectDialogRef, {
+          attributes: true,
+          attributeFilter: ['open', 'hidden', 'aria-hidden'],
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe project dialog visibility.', error);
+        observer = null;
+      }
+    }
+
+    projectDialogVisibilityCleanup = () => {
+      projectDialogRef.removeEventListener('close', handleVisibilityChange);
+      projectDialogRef.removeEventListener('cancel', handleVisibilityChange);
+      if (observer) {
+        try {
+          observer.disconnect();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not detach project dialog observer.', error);
+        }
+      }
+      observer = null;
+      projectDialogVisibilityCleanup = null;
+    };
+  }
+
+  function detachProjectDialogVisibilityMonitor() {
+    if (typeof projectDialogVisibilityCleanup === 'function') {
+      try {
+        projectDialogVisibilityCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach project dialog visibility monitor.', error);
+      }
+    }
+    projectDialogVisibilityCleanup = null;
   }
 
   function closeProjectDialogIfNeeded() {
@@ -7451,10 +7519,13 @@
     }
     if (step.ensureProjectDialog) {
       ensureProjectDialogForStep(step);
+      attachProjectDialogVisibilityMonitor();
     } else if (previousStep && previousStep.ensureProjectDialog) {
       closeProjectDialogIfNeeded();
+      detachProjectDialogVisibilityMonitor();
     } else {
       autoOpenedProjectDialog = false;
+      detachProjectDialogVisibilityMonitor();
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
@@ -7816,6 +7887,7 @@
     clearFrame();
     teardownStepRequirement();
     updateProjectDialogLayoutState(null);
+    detachProjectDialogVisibilityMonitor();
     detachGlobalListeners();
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
