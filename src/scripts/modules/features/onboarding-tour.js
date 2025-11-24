@@ -2070,27 +2070,7 @@
       value => value && value !== 'None',
       ['change'],
     ),
-    addMonitoring: createAnyFieldCompletionRequirement(
-      [
-        '#monitorSelect',
-        '#videoSelect',
-        '#motor1Select',
-        '#controller1Select',
-      ],
-      (value, element) => {
-        if (!value) {
-          return false;
-        }
-        if (value === 'None' || value === '__none__') {
-          return false;
-        }
-        if (element && element.multiple) {
-          return element.selectedOptions && element.selectedOptions.length > 0;
-        }
-        return true;
-      },
-      ['change'],
-    ),
+
     selectBattery: createFieldCompletionRequirement(
       '#batterySelect',
       value => value && value !== 'None',
