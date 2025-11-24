@@ -384,6 +384,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               return undefined;
             };
 
+    const resolveCoreBinding = (name, fallback) => {
+      const defaultValue = fallback;
+      let candidate = readCoreScopeValue(name);
+
+      if (typeof candidate === 'undefined' || candidate === null) {
+        try {
+          const globalScope =
+            (typeof CORE_PART2_RUNTIME_SCOPE !== 'undefined' && CORE_PART2_RUNTIME_SCOPE)
+            || (typeof globalThis !== 'undefined' && globalThis)
+            || (typeof window !== 'undefined' && window)
+            || null;
+          if (globalScope && name in globalScope) {
+            candidate = globalScope[name];
+          }
+        } catch (globalReadError) {
+          void globalReadError;
+          candidate = undefined;
+        }
+      }
+
+      if (typeof candidate === 'undefined' || candidate === null) {
+        return defaultValue;
+      }
+
+      return candidate;
+    };
+
     const writeCoreScopeValue =
       runtimeScopeTools && typeof runtimeScopeTools.writeCoreScopeValue === 'function'
         ? runtimeScopeTools.writeCoreScopeValue
@@ -14251,6 +14278,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const connectionDiagramModule = (typeof cineFeaturesConnectionDiagram === 'object' && cineFeaturesConnectionDiagram)
       || (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.cineFeaturesConnectionDiagram)
       || null;
+
+    const normalizePowerPortType = resolveCoreBinding('normalizePowerPortType', () => []);
+    const motorPriority = resolveCoreBinding('motorPriority', () => 0);
+    const controllerPriority = resolveCoreBinding('controllerPriority', () => 0);
+    const isArri = resolveCoreBinding('isArri', () => false);
+    const isArriOrCmotion = resolveCoreBinding('isArriOrCmotion', () => false);
+    const fizNeedsPower = resolveCoreBinding('fizNeedsPower', () => false);
+    const fizPowerPort = resolveCoreBinding('fizPowerPort', () => '');
+    const controllerDistancePort = resolveCoreBinding('controllerDistancePort', () => '');
+    const controllerCamPort = resolveCoreBinding('controllerCamPort', () => '');
+    const cameraFizPort = resolveCoreBinding('cameraFizPort', () => '');
+    const motorFizPort = resolveCoreBinding('motorFizPort', () => '');
+    const getSelectedPlate = resolveCoreBinding('getSelectedPlate', () => null);
+    const isSelectedPlateNative = resolveCoreBinding('isSelectedPlateNative', () => false);
+    const formatConnLabel = resolveCoreBinding('formatConnLabel', () => '');
+    const connectionLabel = resolveCoreBinding('connectionLabel', () => '');
+    const fizPort = resolveCoreBinding('fizPort', () => '');
+    const iconGlyph = resolveCoreBinding('iconGlyph', () => '');
+    const ICON_FONT_KEYS = resolveCoreBinding('ICON_FONT_KEYS', {});
+    const applyIconGlyph = resolveCoreBinding('applyIconGlyph', () => undefined);
+    const resolveIconGlyph = resolveCoreBinding('resolveIconGlyph', () => null);
+    const positionSvgMarkup = resolveCoreBinding('positionSvgMarkup', markup => markup || '');
+    const ensureSvgHasAriaHidden = resolveCoreBinding('ensureSvgHasAriaHidden', markup => markup || '');
+    const formatSvgCoordinate = resolveCoreBinding('formatSvgCoordinate', value => value);
 
     function powerInputTypes(dev) {
       const out = [];
