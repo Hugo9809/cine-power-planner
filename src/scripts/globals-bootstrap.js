@@ -410,6 +410,38 @@ function __cineCommitGlobalValue(name, value) {
   return value;
 }
 
+function __cineCommitGlobalNumericBinding(name, fallback) {
+  var resolved = fallback;
+  try {
+    var current = __cineResolveGlobalValue(name, fallback);
+    if (typeof current === 'number' && Number.isFinite(current)) {
+      resolved = current;
+    }
+  } catch (resolveError) {
+    void resolveError;
+    resolved = fallback;
+  }
+
+  try {
+    __cineCommitGlobalValue(name, resolved);
+  } catch (commitError) {
+    void commitError;
+  }
+
+  try {
+    if (typeof Function === 'function') {
+      Function(
+        'value',
+        "try { if (typeof " + name + " === 'undefined') { " + name + " = value; } } catch (e) { void e; } return value;",
+      )(resolved);
+    }
+  } catch (bindError) {
+    void bindError;
+  }
+
+  return resolved;
+}
+
 var autoGearAutoPresetId =
   typeof autoGearAutoPresetId !== 'undefined' && typeof autoGearAutoPresetId === 'string'
     ? autoGearAutoPresetId
@@ -869,15 +901,9 @@ var TEMPERATURE_SCENARIOS =
     ? __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', __cineNormalizeTemperatureScenarios(TEMPERATURE_SCENARIOS))
     : __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', []);
 
-var FEEDBACK_TEMPERATURE_MIN =
-  typeof FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MIN)
-    ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', FEEDBACK_TEMPERATURE_MIN)
-    : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', -20);
+__cineCommitGlobalNumericBinding('FEEDBACK_TEMPERATURE_MIN', -20);
 
-var FEEDBACK_TEMPERATURE_MAX =
-  typeof FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MAX)
-    ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', FEEDBACK_TEMPERATURE_MAX)
-    : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', 50);
+__cineCommitGlobalNumericBinding('FEEDBACK_TEMPERATURE_MAX', 50);
 
 var FOCUS_SCALE_STORAGE_KEY =
   typeof FOCUS_SCALE_STORAGE_KEY === 'string' && FOCUS_SCALE_STORAGE_KEY
