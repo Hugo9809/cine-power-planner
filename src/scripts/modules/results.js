@@ -94,13 +94,13 @@
     typeof UI_HELPERS.escapeHtml === 'function'
       ? UI_HELPERS.escapeHtml
       : function escapeHtmlFallback(value) {
-          return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-        };
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
 
   var setButtonLabelWithIconHelper =
     typeof UI_HELPERS.setButtonLabelWithIcon === 'function'
@@ -141,68 +141,68 @@
 
   var freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? function freezeWithBase(value) {
-        try {
-          return MODULE_BASE.freezeDeep(value);
-        } catch (error) {
-          void error;
-        }
-        return value;
+      try {
+        return MODULE_BASE.freezeDeep(value);
+      } catch (error) {
+        void error;
       }
+      return value;
+    }
     : function identity(value) {
-        return value;
-      };
+      return value;
+    };
 
   var exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function expose(name, value, options) {
-        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
-      }
+      return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
+    }
     : function fallbackExpose(name, value) {
-        try {
-          GLOBAL_SCOPE[name] = value;
-          return true;
-        } catch (error) {
-          void error;
-        }
-        return false;
-      };
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (error) {
+        void error;
+      }
+      return false;
+    };
 
   var registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function register(name, api, options, onError) {
-        return MODULE_BASE.registerOrQueueModule(
-          name,
-          api,
-          options,
-          onError,
-          GLOBAL_SCOPE,
-          moduleRegistry
-        );
-      }
+      return MODULE_BASE.registerOrQueueModule(
+        name,
+        api,
+        options,
+        onError,
+        GLOBAL_SCOPE,
+        moduleRegistry
+      );
+    }
     : function fallbackRegister() {
-        return false;
-      };
+      return false;
+    };
 
   var safeWarn = typeof MODULE_BASE.safeWarn === 'function'
     ? function warn(message, detail) {
-        try {
-          MODULE_BASE.safeWarn(message, detail);
-        } catch (error) {
-          void error;
-        }
+      try {
+        MODULE_BASE.safeWarn(message, detail);
+      } catch (error) {
+        void error;
       }
+    }
     : function fallbackWarn(message, detail) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      try {
+        if (typeof detail === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, detail);
         }
-        try {
-          if (typeof detail === 'undefined') {
-            console.warn(message);
-          } else {
-            console.warn(message, detail);
-          }
-        } catch (error) {
-          void error;
-        }
-      };
+      } catch (error) {
+        void error;
+      }
+    };
 
   // Runtime state is tracked in a single bag so UI synchronisation logic is
   // easy to inspect. Keeping the references together helps future maintainers
@@ -298,8 +298,8 @@
     }
 
     if (runtimeFeedbackState.feedbackFieldCacheDoc !== doc ||
-        !runtimeFeedbackState.feedbackFieldCache ||
-        runtimeFeedbackState.feedbackFieldCache.length !== FEEDBACK_FIELD_MAP.length) {
+      !runtimeFeedbackState.feedbackFieldCache ||
+      runtimeFeedbackState.feedbackFieldCache.length !== FEEDBACK_FIELD_MAP.length) {
       return refreshFeedbackFieldCache(doc);
     }
 
@@ -891,7 +891,7 @@
 
   function appendFrameRateRange(results, seen, minValue, maxValue) {
     if (typeof minValue !== 'number' || !Number.isFinite(minValue) ||
-        typeof maxValue !== 'number' || !Number.isFinite(maxValue)) {
+      typeof maxValue !== 'number' || !Number.isFinite(maxValue)) {
       return;
     }
 
@@ -2694,7 +2694,7 @@
     }
   }
 
-    function updateCalculations(options) {
+  function updateCalculations(options) {
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
     var doc = resolveDocument(opts);
@@ -2886,6 +2886,7 @@
     var batteryComparisonSection = resolveElementFromOptions(opts, 'batteryComparisonSection', 'batteryComparison', 'batteryComparisonSection');
     var batteryTableElem = resolveElementFromOptions(opts, 'batteryTableElem', 'batteryTable', 'batteryTableElem');
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
+    var heroBoxTarget = resolveElementFromOptions(opts, 'heroBoxElem', 'resultsHeroBox', 'heroBoxElem');
 
     runtimeFeedbackState.elements.cameraSelect = cameraSelect;
     runtimeFeedbackState.elements.monitorSelect = monitorSelect;
@@ -2913,6 +2914,7 @@
     runtimeFeedbackState.elements.batteryComparisonSection = batteryComparisonSection;
     runtimeFeedbackState.elements.batteryTableElem = batteryTableElem;
     runtimeFeedbackState.elements.setupDiagramContainer = setupDiagramContainer;
+    runtimeFeedbackState.elements.heroBoxElem = heroBoxTarget;
 
     var previewSelections = opts && typeof opts.previewSelections === 'object' && opts.previewSelections
       ? opts.previewSelections
@@ -3346,6 +3348,9 @@
       setStatusLevelFn(pinWarnTarget, null);
       setStatusMessageFn(dtapWarnTarget, '');
       setStatusLevelFn(dtapWarnTarget, null);
+      if (heroBoxTarget) {
+        heroBoxTarget.classList.remove('status-safe', 'status-warning', 'status-danger');
+      }
       if (hotswapWarnTarget) {
         setStatusMessageFn(hotswapWarnTarget, '');
         setStatusLevelFn(hotswapWarnTarget, null);
@@ -3535,6 +3540,24 @@
       } else {
         setStatusMessageFn(dtapWarnTarget, '');
         setStatusLevelFn(dtapWarnTarget, null);
+      }
+
+      if (heroBoxTarget) {
+        heroBoxTarget.classList.remove('status-safe', 'status-warning', 'status-danger');
+        var overallSeverity = 'safe';
+        if (pinSeverity === 'danger' || dtapSeverity === 'danger') {
+          overallSeverity = 'danger';
+        } else if (pinSeverity === 'note' || dtapSeverity === 'note') {
+          overallSeverity = 'warning';
+        }
+
+        if (overallSeverity === 'safe') {
+          heroBoxTarget.classList.add('status-safe');
+        } else if (overallSeverity === 'warning') {
+          heroBoxTarget.classList.add('status-warning');
+        } else if (overallSeverity === 'danger') {
+          heroBoxTarget.classList.add('status-danger');
+        }
       }
 
       var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {
@@ -3902,7 +3925,7 @@
   runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
 
 
-function setupRuntimeFeedback(options) {
+  function setupRuntimeFeedback(options) {
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
     var doc = resolveDocument(opts);
