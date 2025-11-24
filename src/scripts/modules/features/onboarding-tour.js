@@ -677,6 +677,7 @@
     'editDeviceDataEdit',
     'ownGearAccess',
     'ownGearAddDevice',
+    'projectRequirementsAccess',
     'projectRequirementsBrief',
     'projectRequirementsCrew',
     'projectRequirementsLogistics',
@@ -914,6 +915,11 @@
       title: 'Add your first owned device',
       body:
         'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.',
+    },
+    projectRequirementsAccess: {
+      title: 'Open Project Requirements from Generate',
+      body:
+        'Close the Own Gear dialog with its footer button, then press Generate Gear List and Project Requirements to open the requirements form yourself. This keeps the workflow clear and confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.',
     },
     projectRequirementsBrief: {
       title: 'Capture the project brief',
@@ -1497,6 +1503,108 @@
     };
   }
 
+  function createProjectRequirementsAccessRequirement() {
+    return {
+      check() {
+        return !evaluateOwnGearOpenState() && isProjectDialogVisible();
+      },
+      attach({ complete, incomplete }) {
+        const removers = [];
+
+        const evaluate = () => {
+          if (!evaluateOwnGearOpenState() && isProjectDialogVisible()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+
+        const ownGearDialog = getElement('#ownGearDialog');
+        if (ownGearDialog) {
+          const handleOwnGearEvent = () => {
+            setTimeout(evaluate, 75);
+          };
+          ownGearDialog.addEventListener('close', handleOwnGearEvent);
+          ownGearDialog.addEventListener('cancel', handleOwnGearEvent);
+          removers.push(() => {
+            ownGearDialog.removeEventListener('close', handleOwnGearEvent);
+            ownGearDialog.removeEventListener('cancel', handleOwnGearEvent);
+          });
+
+          if (typeof MutationObserver === 'function') {
+            try {
+              const observer = new MutationObserver(() => {
+                evaluate();
+              });
+              observer.observe(ownGearDialog, {
+                attributes: true,
+                attributeFilter: ['open', 'hidden', 'aria-hidden'],
+              });
+              removers.push(() => {
+                observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe Own Gear dialog state for project requirements access.', error);
+            }
+          }
+        }
+
+        const projectDialog = getElement('#projectDialog');
+        if (projectDialog) {
+          const handleProjectDialogEvent = () => {
+            setTimeout(evaluate, 75);
+          };
+          projectDialog.addEventListener('close', handleProjectDialogEvent);
+          projectDialog.addEventListener('cancel', handleProjectDialogEvent);
+          removers.push(() => {
+            projectDialog.removeEventListener('close', handleProjectDialogEvent);
+            projectDialog.removeEventListener('cancel', handleProjectDialogEvent);
+          });
+
+          if (typeof MutationObserver === 'function') {
+            try {
+              const observer = new MutationObserver(() => {
+                evaluate();
+              });
+              observer.observe(projectDialog, {
+                attributes: true,
+                attributeFilter: ['open', 'hidden', 'aria-hidden'],
+              });
+              removers.push(() => {
+                observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe project dialog state for requirements access.', error);
+            }
+          }
+        }
+
+        const generateButton = getElement('#generateGearListBtn');
+        if (generateButton) {
+          const handleGenerateClick = () => {
+            setTimeout(evaluate, 150);
+          };
+          generateButton.addEventListener('click', handleGenerateClick);
+          removers.push(() => {
+            generateButton.removeEventListener('click', handleGenerateClick);
+          });
+        }
+
+        evaluate();
+
+        return () => {
+          for (let index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach project requirements access requirement.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
   function hasOwnGearListEntries() {
     const list = getElement('#ownGearList');
     if (list && typeof list.querySelector === 'function') {
@@ -1993,6 +2101,7 @@
     editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
+    projectRequirementsAccess: createProjectRequirementsAccessRequirement(),
     projectRequirementsBrief: createFieldCompletionRequirement(
       '#productionCompany',
       value => typeof value === 'string' && value.trim().length > 0,
@@ -2647,6 +2756,11 @@
         highlight: '#ownGearDialog',
         ensureOwnGear: true,
         focus: '#ownGearName',
+      },
+      {
+        key: 'projectRequirementsAccess',
+        highlight: ['#ownGearCloseButton', '#generateGearListBtn'],
+        ensureOwnGear: true,
       },
       {
         key: 'projectRequirementsBrief',
