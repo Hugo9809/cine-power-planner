@@ -11,62 +11,13 @@
   getLanguageTexts, currentLang, addArriKNumber, GEAR_LIST_CATEGORIES,
   AUTO_GEAR_CUSTOM_CATEGORY, texts, autoGearOwnGearSelect, collectAutoGearSelectedValues,
   getAutoGearOwnGearItems, autoGearEditorDraft, formatOwnGearQuantityText, findAutoGearOwnGearById,
-  computeAutoGearMultiSelectSize, AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS_SAFE, autoGearAddOwnGearSelect,
+  computeAutoGearMultiSelectSize, AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS, autoGearAddOwnGearSelect,
   autoGearRemoveOwnGearSelect, normalizeAutoGearCameraWeightCondition, stableStringify */
 var AUTO_GEAR_NORMALIZER_SCOPE = (typeof globalThis !== 'undefined' && globalThis)
     || (typeof window !== 'undefined' && window)
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || {};
-var AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS_SAFE = (function resolveMinRows() {
-    var scopes = [AUTO_GEAR_NORMALIZER_SCOPE];
-    if (typeof globalThis !== 'undefined')
-        scopes.push(globalThis);
-    if (typeof window !== 'undefined')
-        scopes.push(window);
-    if (typeof self !== 'undefined')
-        scopes.push(self);
-    if (typeof global !== 'undefined')
-        scopes.push(global);
-    for (var index = 0; index < scopes.length; index += 1) {
-        var scope = scopes[index];
-        if (!scope || typeof scope !== 'object')
-            continue;
-        try {
-            var candidateNames = ['AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS_SAFE', 'AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS'];
-            for (var nameIndex = 0; nameIndex < candidateNames.length; nameIndex += 1) {
-                var candidate = scope[candidateNames[nameIndex]];
-                if (typeof candidate === 'number' && Number.isFinite(candidate)) {
-                    return candidate;
-                }
-            }
-        }
-        catch (minRowsError) {
-            void minRowsError;
-        }
-    }
-    return 1;
-})();
-var computeAutoGearMultiSelectSizeSafe = typeof computeAutoGearMultiSelectSize === 'function'
-    ? computeAutoGearMultiSelectSize
-    : function fallbackComputeAutoGearMultiSelectSize(optionCount, options) {
-        var _a, _b, _c;
-        var minRows = Number.isFinite((_a = options === null || options === void 0 ? void 0 : options.minRows) !== null && _a !== void 0 ? _a : NaN)
-            ? options.minRows
-            : AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS_SAFE;
-        var maxRows = Number.isFinite((_b = options === null || options === void 0 ? void 0 : options.maxRows) !== null && _b !== void 0 ? _b : NaN)
-            ? options.maxRows
-            : minRows;
-        var fallback = Number.isFinite((_c = options === null || options === void 0 ? void 0 : options.fallback) !== null && _c !== void 0 ? _c : NaN)
-            && options.fallback >= minRows
-            ? options.fallback
-            : minRows;
-        if (!Number.isFinite(optionCount) || optionCount <= 0) {
-            return fallback;
-        }
-        var boundedMax = Number.isFinite(maxRows) && maxRows >= minRows ? maxRows : minRows;
-        return Math.max(minRows, Math.min(optionCount, boundedMax));
-    };
 function resolveAutoGearDefaultLanguageSource() {
     var candidateScopes = [
         AUTO_GEAR_NORMALIZER_SCOPE,
@@ -742,9 +693,7 @@ function refreshAutoGearOwnGearConditionOptions(selected) {
             .filter(function (value) { return typeof value === 'string'; })
             .map(function (value) { return value.trim(); })
             .filter(Boolean)
-        : (typeof collectAutoGearSelectedValues === 'function'
-            ? collectAutoGearSelectedValues(selected, 'ownGear')
-            : []);
+        : collectAutoGearSelectedValues(selected, 'ownGear');
     autoGearOwnGearSelect.innerHTML = '';
     autoGearOwnGearSelect.multiple = true;
     var items = getAutoGearOwnGearItems();
@@ -805,7 +754,7 @@ function refreshAutoGearOwnGearConditionOptions(selected) {
         appendOption(value, label, { fallback: true });
     });
     var selectableOptions = Array.from(autoGearOwnGearSelect.options || []).filter(function (option) { return !option.disabled; });
-    autoGearOwnGearSelect.size = computeAutoGearMultiSelectSizeSafe(selectableOptions.length, { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS_SAFE });
+    autoGearOwnGearSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS });
     var hasSelectable = selectableOptions.some(function (option) { return option.dataset.autoGearFallback !== 'true'; });
     autoGearOwnGearSelect.disabled = !hasSelectable && selectedValues.length === 0;
 }

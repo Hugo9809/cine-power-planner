@@ -349,42 +349,6 @@
     // Returning early keeps runtime bootstrap safe in test environments.
     return value;
 
-    var keys;
-    try {
-      keys = Object.getOwnPropertyNames(value);
-    } catch (keysError) {
-      void keysError;
-      keys = [];
-    }
-
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      var child;
-      try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
-      }
-
-      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
-        continue;
-      }
-
-      fallbackFreezeDeep(child, localSeen);
-    }
-
-    try {
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
-      }
-    } catch (freezeError) {
-      void freezeError;
-      return value;
-    }
   }
 
   var freezeDeep = (function resolveFreezeDeep() {
