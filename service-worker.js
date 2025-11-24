@@ -15,6 +15,11 @@ const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
 const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
 const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
 const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+const IS_NODE_ENVIRONMENT =
+  typeof process !== 'undefined' &&
+  process &&
+  process.versions &&
+  typeof process.versions.node === 'string';
 
 let logEntryCounter = 0;
 let logBroadcastChannel = null;
@@ -80,6 +85,11 @@ function cloneLogEntry(entry) {
 
 function getLogBroadcastChannel() {
   if (logBroadcastChannelFailed) {
+    return null;
+  }
+
+  if (IS_NODE_ENVIRONMENT) {
+    logBroadcastChannelFailed = true;
     return null;
   }
 
