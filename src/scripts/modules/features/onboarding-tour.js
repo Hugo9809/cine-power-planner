@@ -6666,6 +6666,19 @@
 
   const PROJECT_REQUIREMENTS_STEP_KEYS = PROJECT_REQUIREMENTS_FLOW.map(entry => entry.key);
 
+  function updateProjectDialogLayoutState(step) {
+    const root = DOCUMENT && DOCUMENT.documentElement;
+    if (!root) {
+      return;
+    }
+    const stepKey = step && step.key;
+    if (stepKey && PROJECT_REQUIREMENTS_STEP_KEYS.indexOf(stepKey) !== -1) {
+      root.setAttribute('data-onboarding-project-dialog', 'project-requirements');
+    } else {
+      root.removeAttribute('data-onboarding-project-dialog');
+    }
+  }
+
   function renderProjectRequirementsInteraction(registerCleanup, step) {
     if (!interactionContainerEl) {
       return false;
@@ -7293,6 +7306,8 @@
       closeProjectDialogIfNeeded();
     }
 
+    updateProjectDialogLayoutState(step);
+
     currentStep = step;
     currentIndex = index;
     autoOpenedSettings = false;
@@ -7689,6 +7704,7 @@
     active = false;
     clearFrame();
     teardownStepRequirement();
+    updateProjectDialogLayoutState(null);
     detachGlobalListeners();
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
