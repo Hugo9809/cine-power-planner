@@ -23,7 +23,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
   function corePart2Runtime() {
     const CORE_SHARED_SCOPE_PART2 = CORE_PART2_RUNTIME_SCOPE;
-    
+
     function resolveCoreSharedPart2() {
       if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.cineCoreShared) {
         return CORE_SHARED_SCOPE_PART2.cineCoreShared;
@@ -37,7 +37,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }
-    
+
     const CORE_SHARED_LOCAL =
       typeof CORE_SHARED !== 'undefined' && CORE_SHARED
         ? CORE_SHARED
@@ -218,91 +218,91 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     })();
 
     var escapeHtml = typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
-        ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
-        : function escapeHtmlFallback(str) {
-            return String(str)
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;');
-          };
+      ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
+      : function escapeHtmlFallback(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
 
     const setButtonLabelWithIcon =
       typeof CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon === 'function'
         ? CORE_RUNTIME_UI_BRIDGE.setButtonLabelWithIcon
         : function setButtonLabelWithIconFallback(button, label) {
-            if (!button) {
-              return;
-            }
+          if (!button) {
+            return;
+          }
 
-            const safeLabel = typeof label === 'string' ? label : '';
+          const safeLabel = typeof label === 'string' ? label : '';
 
-            try {
-              button.textContent = escapeHtml(safeLabel);
-            } catch (assignError) {
-              void assignError;
-            }
-          };
+          try {
+            button.textContent = escapeHtml(safeLabel);
+          } catch (assignError) {
+            void assignError;
+          }
+        };
 
     const autoGearHelpers =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveAutoGearWeightHelpers === 'function'
         ? CORE_PART2_HELPERS.resolveAutoGearWeightHelpers({
-            coreShared: CORE_SHARED_LOCAL,
-            globalScope:
-              typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
-                ? CORE_GLOBAL_SCOPE
-                : null,
-          })
+          coreShared: CORE_SHARED_LOCAL,
+          globalScope:
+            typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+              ? CORE_GLOBAL_SCOPE
+              : null,
+        })
         : null;
 
     const fallbackNormalizeAutoGearWeightOperator =
       typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
         ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator
         : function normalizeAutoGearWeightOperatorFallback() {
-            return 'greater';
-          };
+          return 'greater';
+        };
 
     const fallbackNormalizeAutoGearWeightValue =
       typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue === 'function'
         ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightValue
         : function normalizeAutoGearWeightValueFallback() {
-            return null;
-          };
+          return null;
+        };
 
     const fallbackFormatAutoGearWeight =
       typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight === 'function'
         ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearWeight
         : function formatAutoGearWeightFallback() {
-            return '';
-          };
+          return '';
+        };
 
     const fallbackGetAutoGearCameraWeightOperatorLabel =
       typeof CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel === 'function'
         ? CORE_RUNTIME_FALLBACKS.fallbackGetAutoGearCameraWeightOperatorLabel
         : function getAutoGearCameraWeightOperatorLabelFallback(operator, langTexts) {
-            const textsForLang = langTexts || {};
-            const normalized = fallbackNormalizeAutoGearWeightOperator(operator);
-            if (normalized === 'less') {
-              return textsForLang.autoGearCameraWeightOperatorLess || '';
-            }
-            if (normalized === 'equal') {
-              return textsForLang.autoGearCameraWeightOperatorEqual || '';
-            }
-            return textsForLang.autoGearCameraWeightOperatorGreater || '';
-          };
+          const textsForLang = langTexts || {};
+          const normalized = fallbackNormalizeAutoGearWeightOperator(operator);
+          if (normalized === 'less') {
+            return textsForLang.autoGearCameraWeightOperatorLess || '';
+          }
+          if (normalized === 'equal') {
+            return textsForLang.autoGearCameraWeightOperatorEqual || '';
+          }
+          return textsForLang.autoGearCameraWeightOperatorGreater || '';
+        };
 
     const fallbackFormatAutoGearCameraWeight =
       typeof CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight === 'function'
         ? CORE_RUNTIME_FALLBACKS.fallbackFormatAutoGearCameraWeight
         : function formatAutoGearCameraWeightFallback(condition, langTexts) {
-            if (!condition || !Number.isFinite(condition.value)) {
-              return '';
-            }
-            const label = fallbackGetAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
-            const formattedValue = fallbackFormatAutoGearWeight(condition.value);
-            return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
-          };
+          if (!condition || !Number.isFinite(condition.value)) {
+            return '';
+          }
+          const label = fallbackGetAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+          const formattedValue = fallbackFormatAutoGearWeight(condition.value);
+          return label ? `${label} ${formattedValue} g` : `${formattedValue} g`;
+        };
 
     const normalizeAutoGearWeightOperator =
       autoGearHelpers && typeof autoGearHelpers.normalizeAutoGearWeightOperator === 'function'
@@ -320,8 +320,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition === 'function'
           ? CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearCameraWeightCondition
           : function normalizeAutoGearCameraWeightConditionFallback() {
-              return null;
-            };
+            return null;
+          };
 
     const formatAutoGearWeight =
       autoGearHelpers && typeof autoGearHelpers.formatAutoGearWeight === 'function'
@@ -332,8 +332,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       autoGearHelpers && typeof autoGearHelpers.getAutoGearCameraWeightOperatorLabel === 'function'
         ? autoGearHelpers.getAutoGearCameraWeightOperatorLabel
         : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-            return fallbackGetAutoGearCameraWeightOperatorLabel(operator, langTexts);
-          };
+          return fallbackGetAutoGearCameraWeightOperatorLabel(operator, langTexts);
+        };
 
     const formatAutoGearCameraWeight =
       autoGearHelpers && typeof autoGearHelpers.formatAutoGearCameraWeight === 'function'
@@ -343,13 +343,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const runtimeScopeTools =
       CORE_PART2_HELPERS && typeof CORE_PART2_HELPERS.resolveRuntimeScopeTools === 'function'
         ? CORE_PART2_HELPERS.resolveRuntimeScopeTools({
-            runtimeScope: CORE_PART2_RUNTIME_SCOPE,
-            sharedScope: CORE_SHARED_SCOPE_PART2,
-            globalScope:
-              typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
-                ? CORE_GLOBAL_SCOPE
-                : null,
-          })
+          runtimeScope: CORE_PART2_RUNTIME_SCOPE,
+          sharedScope: CORE_SHARED_SCOPE_PART2,
+          globalScope:
+            typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+              ? CORE_GLOBAL_SCOPE
+              : null,
+        })
         : null;
 
     let runtimeScopeCandidatesRef =
@@ -358,10 +358,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : CORE_PART2_HELPERS &&
           typeof CORE_PART2_HELPERS.fallbackCreateRuntimeScopeCandidates === 'function'
           ? CORE_PART2_HELPERS.fallbackCreateRuntimeScopeCandidates(
-              CORE_PART2_RUNTIME_SCOPE,
-              CORE_SHARED_SCOPE_PART2,
-              typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-            )
+            CORE_PART2_RUNTIME_SCOPE,
+            CORE_SHARED_SCOPE_PART2,
+            typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+          )
           : [];
 
     const runtimeScopeBridge =
@@ -375,14 +375,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : CORE_PART2_HELPERS &&
           typeof CORE_PART2_HELPERS.fallbackReadCoreScopeValue === 'function'
           ? function readCoreScopeValue(name) {
-              return CORE_PART2_HELPERS.fallbackReadCoreScopeValue(
-                name,
-                runtimeScopeCandidatesRef
-              );
-            }
+            return CORE_PART2_HELPERS.fallbackReadCoreScopeValue(
+              name,
+              runtimeScopeCandidatesRef
+            );
+          }
           : function readCoreScopeValue() {
-              return undefined;
-            };
+            return undefined;
+          };
 
     const resolveCoreBinding = (name, fallback) => {
       const defaultValue = fallback;
@@ -417,15 +417,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : CORE_PART2_HELPERS &&
           typeof CORE_PART2_HELPERS.fallbackWriteCoreScopeValue === 'function'
           ? function writeCoreScopeValue(name, value) {
-              return CORE_PART2_HELPERS.fallbackWriteCoreScopeValue(
-                name,
-                value,
-                runtimeScopeCandidatesRef
-              );
-            }
+            return CORE_PART2_HELPERS.fallbackWriteCoreScopeValue(
+              name,
+              value,
+              runtimeScopeCandidatesRef
+            );
+          }
           : function writeCoreScopeValue() {
-              return false;
-            };
+            return false;
+          };
 
     const declareCoreFallbackBinding =
       runtimeScopeTools && typeof runtimeScopeTools.declareCoreFallbackBinding === 'function'
@@ -433,17 +433,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : CORE_PART2_HELPERS &&
           typeof CORE_PART2_HELPERS.fallbackDeclareCoreFallbackBinding === 'function'
           ? function declareCoreFallbackBinding(name, factory) {
-              return CORE_PART2_HELPERS.fallbackDeclareCoreFallbackBinding(
-                name,
-                factory,
-                runtimeScopeCandidatesRef
-              );
-            }
+            return CORE_PART2_HELPERS.fallbackDeclareCoreFallbackBinding(
+              name,
+              factory,
+              runtimeScopeCandidatesRef
+            );
+          }
           : function declareCoreFallbackBinding(name, factory) {
-              return typeof factory === 'function' ? factory() : factory;
-            };
+            return typeof factory === 'function' ? factory() : factory;
+          };
 
     const CORE_RUNTIME_SCOPE_CANDIDATES = runtimeScopeCandidatesRef;
+
+    const normalizePowerPortType = resolveCoreBinding('normalizePowerPortType', () => []);
+    const motorPriority = resolveCoreBinding('motorPriority', () => 0);
+    const controllerPriority = resolveCoreBinding('controllerPriority', () => 0);
+    const isArri = resolveCoreBinding('isArri', () => false);
+    const isArriOrCmotion = resolveCoreBinding('isArriOrCmotion', () => false);
+    const fizNeedsPower = resolveCoreBinding('fizNeedsPower', () => false);
+    const fizPowerPort = resolveCoreBinding('fizPowerPort', () => '');
+    const controllerDistancePort = resolveCoreBinding('controllerDistancePort', () => '');
+    const controllerCamPort = resolveCoreBinding('controllerCamPort', () => '');
+    const cameraFizPort = resolveCoreBinding('cameraFizPort', () => '');
+    const motorFizPort = resolveCoreBinding('motorFizPort', () => '');
+    const getSelectedPlate = resolveCoreBinding('getSelectedPlate', () => null);
+    const isSelectedPlateNative = resolveCoreBinding('isSelectedPlateNative', () => false);
+    const formatConnLabel = resolveCoreBinding('formatConnLabel', () => '');
+    const connectionLabel = resolveCoreBinding('connectionLabel', () => '');
+    const fizPort = resolveCoreBinding('fizPort', () => '');
+    const iconGlyph = resolveCoreBinding('iconGlyph', () => '');
+    const ICON_FONT_KEYS = resolveCoreBinding('ICON_FONT_KEYS', {});
+
+
 
     function resolveRuntimeScopeFunction(name, exclude) {
       if (typeof name !== 'string' || !name) {
@@ -562,8 +583,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fallbackFn = typeof fallback === 'function'
         ? fallback
         : function identityFallback(value) {
-            return value;
-          };
+          return value;
+        };
 
       function dynamicResolverProxy() {
         const args = Array.prototype.slice.call(arguments);
@@ -704,37 +725,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'safeGenerateConnectorSummary',
       () => createFallbackSafeGenerateConnectorSummary(),
     );
-    
+
     var currentProjectInfo = null;
     let loadedSetupState = null;
     let loadedSetupStateSignature = '';
     var restoringSession = false;
     var skipNextGearListRefresh = false;
-    
+
     let defaultProjectInfoSnapshot = null;
-    
+
     const CORE_BOOT_QUEUE_KEY_PART2 = (function resolveBootQueueKeyPart2(scope) {
       if (scope && typeof scope === 'object') {
         const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
         const existingHidden = scope.__cineCoreBootQueueKey;
-    
+
         if (typeof existingPublic === 'string' && existingPublic) {
           return existingPublic;
         }
-    
+
         if (typeof existingHidden === 'string' && existingHidden) {
           return existingHidden;
         }
       }
-    
+
       return '__coreRuntimeBootQueue';
     })(CORE_SHARED_SCOPE_PART2);
-    
+
     const CORE_BOOT_QUEUE_PART2 = (function bootstrapCoreBootQueuePart2(existingQueue) {
       if (Array.isArray(existingQueue)) {
         return existingQueue;
       }
-    
+
       if (CORE_SHARED_SCOPE_PART2 && typeof CORE_SHARED_SCOPE_PART2 === 'object') {
         const shared = CORE_SHARED_SCOPE_PART2.cineCoreShared;
         if (shared && typeof shared === 'object') {
@@ -747,25 +768,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             return shared[CORE_BOOT_QUEUE_KEY_PART2];
           }
         }
-    
+
         if (!Array.isArray(CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE)) {
           CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = [];
         }
         return CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE;
       }
-    
+
       return [];
     })(CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE);
-    
+
     if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE_PART2) {
       CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE_PART2;
     }
-    
+
     function flushCoreBootQueue() {
       if (!Array.isArray(CORE_BOOT_QUEUE_PART2) || CORE_BOOT_QUEUE_PART2.length === 0) {
         return;
       }
-    
+
       const pending = CORE_BOOT_QUEUE_PART2.splice(0, CORE_BOOT_QUEUE_PART2.length);
       for (let index = 0; index < pending.length; index += 1) {
         const task = pending[index];
@@ -781,7 +802,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     const AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL =
       (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
@@ -794,13 +815,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : typeof CORE_RUNTIME_FALLBACKS.fallbackStableStringify === 'function'
           ? CORE_RUNTIME_FALLBACKS.fallbackStableStringify
           : function fallbackStableStringifyProxy(value) {
-              try {
-                return JSON.stringify(value);
-              } catch (serializationError) {
-                void serializationError;
-              }
-              return String(value);
-            };
+            try {
+              return JSON.stringify(value);
+            } catch (serializationError) {
+              void serializationError;
+            }
+            return String(value);
+          };
 
     const coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function'
       ? CORE_SHARED_LOCAL.humanizeKey
@@ -809,10 +830,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : typeof CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey === 'function'
           ? CORE_RUNTIME_FALLBACKS.fallbackHumanizeKey
           : function fallbackHumanizeKeyProxy(key) {
-              const stringValue = typeof key === 'string' ? key : String(key || '');
-              return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
-            };
-    
+            const stringValue = typeof key === 'string' ? key : String(key || '');
+            return stringValue.charAt(0).toUpperCase() + stringValue.slice(1);
+          };
+
     const sharedDeviceManagerLists = (() => {
       const candidates = [
         CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
@@ -826,14 +847,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
         (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
       ].filter(Boolean);
-    
+
       for (let index = 0; index < candidates.length; index += 1) {
         const scope = candidates[index];
         if (scope && scope.deviceManagerLists instanceof Map) {
           return scope.deviceManagerLists;
         }
       }
-    
+
       const fallback = new Map();
       const assignTarget = candidates.find(scope => scope && Object.isExtensible(scope));
       if (assignTarget) {
@@ -854,7 +875,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallback;
     })();
-    
+
     const activeDeviceManagerLists = (() => {
       const candidateScopes = [
         CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object' ? CORE_PART2_RUNTIME_SCOPE : null,
@@ -867,7 +888,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
         (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
       ].filter(Boolean);
-    
+
       for (let index = 0; index < candidateScopes.length; index += 1) {
         const scope = candidateScopes[index];
         const existing = scope && scope.deviceManagerLists;
@@ -875,9 +896,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return existing;
         }
       }
-    
+
       const fallback = sharedDeviceManagerLists instanceof Map ? sharedDeviceManagerLists : new Map();
-    
+
       for (let index = 0; index < candidateScopes.length; index += 1) {
         const scope = candidateScopes[index];
         if (!scope) continue;
@@ -898,24 +919,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
       return fallback;
     })();
-    
+
     function callCoreFunctionFromPart2(functionName, args = [], options = {}) {
       if (typeof callCoreFunctionIfAvailable === 'function') {
         return callCoreFunctionIfAvailable(functionName, args, options);
       }
-    
+
       const scope =
         CORE_SHARED_SCOPE_PART2 ||
         (typeof globalThis !== 'undefined' ? globalThis : null) ||
         (typeof window !== 'undefined' ? window : null) ||
         (typeof self !== 'undefined' ? self : null) ||
         (typeof global !== 'undefined' ? global : null);
-    
+
       const target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
-    
+
       if (typeof target === 'function') {
         try {
           return target.apply(scope, args);
@@ -926,18 +947,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return undefined;
       }
-    
+
       if (options && options.defer === true && Array.isArray(CORE_BOOT_QUEUE_PART2)) {
         CORE_BOOT_QUEUE_PART2.push(() => {
           callCoreFunctionFromPart2(functionName, args, { ...options, defer: false });
         });
       }
-    
+
       return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')
         ? options.defaultValue
         : undefined;
     }
-    
+
     const AUTO_GEAR_CREW_OPTION_TOOLS = resolveCoreSupportModule(
       'cineCoreAppRuntimeAutoGearCrew',
       './modules/app-core/runtime.js'
@@ -946,96 +967,96 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const AUTO_GEAR_CREW_OPTION_NAMESPACE =
       AUTO_GEAR_CREW_OPTION_TOOLS ||
       (typeof globalThis !== 'undefined' && globalThis.cineCoreAppRuntimeAutoGearCrew)
-        || (typeof window !== 'undefined' && window.cineCoreAppRuntimeAutoGearCrew)
-        || (typeof self !== 'undefined' && self.cineCoreAppRuntimeAutoGearCrew)
-        || (typeof global !== 'undefined' && global.cineCoreAppRuntimeAutoGearCrew)
-        || (typeof require === 'function'
-          ? (function requireAutoGearCrewHelpers() {
-              try {
-                return require('./modules/app-core/runtime.js');
-              } catch (autoGearCrewRequireError) {
-                void autoGearCrewRequireError;
-                return null;
-              }
-            })()
-          : null);
+      || (typeof window !== 'undefined' && window.cineCoreAppRuntimeAutoGearCrew)
+      || (typeof self !== 'undefined' && self.cineCoreAppRuntimeAutoGearCrew)
+      || (typeof global !== 'undefined' && global.cineCoreAppRuntimeAutoGearCrew)
+      || (typeof require === 'function'
+        ? (function requireAutoGearCrewHelpers() {
+          try {
+            return require('./modules/app-core/runtime.js');
+          } catch (autoGearCrewRequireError) {
+            void autoGearCrewRequireError;
+            return null;
+          }
+        })()
+        : null);
 
     const AUTO_GEAR_CREW_HELPERS =
       AUTO_GEAR_CREW_OPTION_NAMESPACE &&
-      typeof AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers === 'function'
+        typeof AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers === 'function'
         ? AUTO_GEAR_CREW_OPTION_NAMESPACE.createAutoGearCrewOptionHelpers({
-            documentRef: typeof document !== 'undefined' ? document : null,
-            collectSelectedValues: collectAutoGearSelectedValues,
-            computeMultiSelectSize: computeAutoGearMultiSelectSize,
-            getCrewRoleEntries,
-            autoGearFlexMinRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
-            getLocalizedTexts: () => texts[currentLang] || texts.en || {},
-            getDefaultLanguageTexts: () => texts.en || {},
-          })
+          documentRef: typeof document !== 'undefined' ? document : null,
+          collectSelectedValues: collectAutoGearSelectedValues,
+          computeMultiSelectSize: computeAutoGearMultiSelectSize,
+          getCrewRoleEntries,
+          autoGearFlexMinRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+          getLocalizedTexts: () => texts[currentLang] || texts.en || {},
+          getDefaultLanguageTexts: () => texts.en || {},
+        })
         : null;
 
     const refreshAutoGearCrewOptions =
       AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.refreshCrewOptions === 'function'
         ? AUTO_GEAR_CREW_HELPERS.refreshCrewOptions
         : function refreshAutoGearCrewOptionsFallback(selectElement, selected, key) {
-            if (!selectElement || typeof document === 'undefined') {
-              return;
+          if (!selectElement || typeof document === 'undefined') {
+            return;
+          }
+
+          const selectedValues = collectAutoGearSelectedValues(selected, key);
+
+          selectElement.innerHTML = '';
+          selectElement.multiple = true;
+
+          const entries = getCrewRoleEntries();
+          const seen = new Set();
+
+          const appendOption = (value, label) => {
+            if (!value || seen.has(value)) return;
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            if (selectedValues.includes(value)) {
+              option.selected = true;
             }
-
-            const selectedValues = collectAutoGearSelectedValues(selected, key);
-
-            selectElement.innerHTML = '';
-            selectElement.multiple = true;
-
-            const entries = getCrewRoleEntries();
-            const seen = new Set();
-
-            const appendOption = (value, label) => {
-              if (!value || seen.has(value)) return;
-              const option = document.createElement('option');
-              option.value = value;
-              option.textContent = label;
-              if (selectedValues.includes(value)) {
-                option.selected = true;
-              }
-              selectElement.appendChild(option);
-              seen.add(value);
-            };
-
-            entries.forEach(entry => appendOption(entry.value, entry.label));
-
-            selectedValues.forEach(value => {
-              if (!seen.has(value)) {
-                appendOption(value, value);
-              }
-            });
-
-            const selectableOptions = Array.from(selectElement.options || []).filter(option => !option.disabled);
-            selectElement.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-              minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
-            });
+            selectElement.appendChild(option);
+            seen.add(value);
           };
+
+          entries.forEach(entry => appendOption(entry.value, entry.label));
+
+          selectedValues.forEach(value => {
+            if (!seen.has(value)) {
+              appendOption(value, value);
+            }
+          });
+
+          const selectableOptions = Array.from(selectElement.options || []).filter(option => !option.disabled);
+          selectElement.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
+            minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+          });
+        };
 
     const getCrewRoleLabel =
       AUTO_GEAR_CREW_HELPERS && typeof AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel === 'function'
         ? AUTO_GEAR_CREW_HELPERS.getCrewRoleLabel
         : function getCrewRoleLabelFallback(value) {
-            if (typeof value !== 'string') return '';
-            const trimmed = value.trim();
-            if (!trimmed) return '';
-            const langTexts = texts[currentLang] || texts.en || {};
-            const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
-            return crewRoleMap?.[trimmed] || trimmed;
-          };
-    
+          if (typeof value !== 'string') return '';
+          const trimmed = value.trim();
+          if (!trimmed) return '';
+          const langTexts = texts[currentLang] || texts.en || {};
+          const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
+          return crewRoleMap?.[trimmed] || trimmed;
+        };
+
     function refreshAutoGearCameraOptions(selected) {
       if (!autoGearCameraSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'camera');
-    
+
       autoGearCameraSelect.innerHTML = '';
       autoGearCameraSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1048,7 +1069,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearCameraSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       if (cameraSelect) {
         Array.from(cameraSelect.options || []).forEach(opt => {
           if (!opt || !opt.value || opt.value === 'None') return;
@@ -1057,15 +1078,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       }
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearCameraSelect.options || []).filter(option => !option.disabled).length;
       autoGearCameraSelect.size = computeAutoGearMultiSelectSize(visibleCount);
     }
-    
+
     function refreshAutoGearCameraWeightCondition(selected) {
       const source = (() => {
         if (selected && typeof selected === 'object' && !Array.isArray(selected)) {
@@ -1099,7 +1120,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function updateAutoGearCameraWeightDraft() {
       if (!autoGearEditorDraft) return;
       if (!isAutoGearConditionActive('cameraWeight')) {
@@ -1120,7 +1141,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearEditorDraft.cameraWeight = null;
       }
     }
-    
+
     function updateAutoGearShootingDaysDraft() {
       if (!autoGearEditorDraft) return;
       if (!isAutoGearConditionActive('shootingDays')) {
@@ -1143,15 +1164,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearEditorDraft.shootingDays = null;
       }
     }
-    
+
     function refreshAutoGearMonitorOptions(selected) {
       if (!autoGearMonitorSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'monitor');
-    
+
       autoGearMonitorSelect.innerHTML = '';
       autoGearMonitorSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1164,7 +1185,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearMonitorSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       if (monitorSelect) {
         Array.from(monitorSelect.options || []).forEach(opt => {
           if (!opt || !opt.value || opt.value === 'None') return;
@@ -1173,22 +1194,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       }
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearMonitorSelect.options || []).filter(option => !option.disabled).length;
       autoGearMonitorSelect.size = computeAutoGearMultiSelectSize(visibleCount);
     }
-    
+
     function refreshAutoGearTripodOptions(select, selected, key, placeholderKey, selectorType) {
       if (!select) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, key);
       select.innerHTML = '';
       select.multiple = true;
-    
+
       const langTexts = texts[currentLang] || texts.en || {};
       const placeholder = langTexts[placeholderKey]
         || texts.en?.[placeholderKey]
@@ -1212,12 +1233,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         select.appendChild(option);
         seen.add(keyValue);
       };
-    
+
       entries.forEach(entry => {
         if (!entry) return;
         addOption(entry.value, entry.label);
       });
-    
+
       selectedValues.forEach(value => {
         if (!value) return;
         const keyValue = value.trim().toLowerCase();
@@ -1225,7 +1246,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(value, formatAutoGearSelectorValue(selectorType, value));
         }
       });
-    
+
       if (!select.options.length) {
         const option = document.createElement('option');
         option.value = '';
@@ -1234,11 +1255,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         option.selected = true;
         select.appendChild(option);
       }
-    
+
       const visibleCount = Array.from(select.options || []).filter(option => !option.disabled).length;
       select.size = computeAutoGearMultiSelectSize(visibleCount, { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS });
     }
-    
+
     function refreshAutoGearTripodHeadOptions(selected) {
       refreshAutoGearTripodOptions(
         autoGearTripodHeadBrandSelect,
@@ -1248,7 +1269,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         'tripodHeadBrand'
       );
     }
-    
+
     function refreshAutoGearTripodBowlOptions(selected) {
       refreshAutoGearTripodOptions(
         autoGearTripodBowlSelect,
@@ -1258,7 +1279,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         'tripodBowl'
       );
     }
-    
+
     function refreshAutoGearTripodTypesOptions(selected) {
       refreshAutoGearTripodOptions(
         autoGearTripodTypesSelect,
@@ -1268,7 +1289,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         'tripodTypes'
       );
     }
-    
+
     function refreshAutoGearTripodSpreaderOptions(selected) {
       refreshAutoGearTripodOptions(
         autoGearTripodSpreaderSelect,
@@ -1278,15 +1299,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         'tripodSpreader'
       );
     }
-    
+
     function refreshAutoGearWirelessOptions(selected) {
       if (!autoGearWirelessSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'wireless');
-    
+
       autoGearWirelessSelect.innerHTML = '';
       autoGearWirelessSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1299,7 +1320,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearWirelessSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       if (videoSelect) {
         Array.from(videoSelect.options || []).forEach(opt => {
           if (!opt || !opt.value || opt.value === 'None') return;
@@ -1308,24 +1329,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       }
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearWirelessSelect.options || []).filter(option => !option.disabled).length;
       autoGearWirelessSelect.size = computeAutoGearMultiSelectSize(visibleCount);
     }
-    
+
     function refreshAutoGearMotorsOptions(selected) {
       if (!autoGearMotorsSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'motors');
       const langTexts = texts[currentLang] || texts.en || {};
-    
+
       autoGearMotorsSelect.innerHTML = '';
       autoGearMotorsSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1338,7 +1359,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearMotorsSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       const sourceSelects = Array.isArray(motorSelects) ? motorSelects : [];
       sourceSelects.forEach(sel => {
         Array.from(sel?.options || []).forEach(opt => {
@@ -1348,23 +1369,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       });
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearMotorsSelect.options || []).filter(option => !option.disabled).length;
       autoGearMotorsSelect.size = computeAutoGearMultiSelectSize(visibleCount);
     }
-    
+
     function refreshAutoGearControllersOptions(selected) {
       if (!autoGearControllersSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'controllers');
-    
+
       autoGearControllersSelect.innerHTML = '';
       autoGearControllersSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1377,7 +1398,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearControllersSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       const sourceSelects = Array.isArray(controllerSelects) ? controllerSelects : [];
       sourceSelects.forEach(sel => {
         Array.from(sel?.options || []).forEach(opt => {
@@ -1387,23 +1408,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       });
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearControllersSelect.options || []).filter(option => !option.disabled).length;
       autoGearControllersSelect.size = computeAutoGearMultiSelectSize(visibleCount);
     }
-    
+
     function refreshAutoGearDistanceOptions(selected) {
       if (!autoGearDistanceSelect) return;
-    
+
       const selectedValues = collectAutoGearSelectedValues(selected, 'distance');
-    
+
       autoGearDistanceSelect.innerHTML = '';
       autoGearDistanceSelect.multiple = true;
-    
+
       const seen = new Set();
       const addOption = value => {
         if (!value || seen.has(value)) return;
@@ -1416,7 +1437,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearDistanceSelect.appendChild(option);
         seen.add(value);
       };
-    
+
       if (distanceSelect) {
         Array.from(distanceSelect.options || []).forEach(opt => {
           if (!opt || !opt.value || opt.value === 'None') return;
@@ -1425,18 +1446,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addOption(label);
         });
       }
-    
+
       selectedValues.forEach(value => {
         if (!seen.has(value)) addOption(value);
       });
-    
+
       const visibleCount = Array.from(autoGearDistanceSelect.options || []).filter(option => !option.disabled).length;
       autoGearDistanceSelect.size = computeAutoGearMultiSelectSize(
         visibleCount,
         { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
       );
     }
-    
+
     function populateAutoGearCategorySelect(select, currentValue) {
       if (!select) return;
       const current = typeof currentValue === 'string' ? currentValue : '';
@@ -1461,7 +1482,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!current) customOpt.selected = true;
       select.appendChild(customOpt);
     }
-    
+
     function updateAutoGearCatalogOptions() {
       if (!autoGearItemCatalog) return;
       const names = collectAutoGearCatalogNames();
@@ -1474,7 +1495,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateAutoGearMonitorCatalogOptions();
       updateAutoGearMonitorDefaultOptions();
     }
-    
+
     function updateAutoGearMonitorDefaultOptions(targets = autoGearMonitorDefaultControls) {
       const controls = Array.isArray(targets) ? targets : [targets];
       const placeholder = getAutoGearMonitorDefaultPlaceholder();
@@ -1523,7 +1544,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         select.disabled = names.length === 0 && !normalizedValue;
       });
     }
-    
+
     function renderAutoGearMonitorDefaultsControls() {
       autoGearMonitorDefaultControls.forEach(control => {
         if (!control || !control.select || !Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, control.key)) {
@@ -1544,7 +1565,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     function formatAutoGearCount(count, singularKey, pluralKey) {
       const langTexts = texts[currentLang] || texts.en || {};
       if (count === 1) {
@@ -1554,7 +1575,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const template = langTexts[pluralKey] || texts.en?.[pluralKey];
       return template ? template.replace('%s', String(count)) : String(count);
     }
-    
+
     function formatAutoGearItemSummary(item, options = {}) {
       if (!item || typeof item !== 'object') return '';
       const normalized = normalizeAutoGearItem(item);
@@ -1637,14 +1658,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return summary;
     }
-    
+
     function formatWithPlaceholders(template, ...values) {
       if (typeof template !== 'string') {
         return values.join(' ');
       }
       return values.reduce((acc, value) => acc.replace('%s', value), template);
     }
-    
+
     function formatAutoGearRuleCount(count) {
       const langTexts = texts[currentLang] || texts.en || {};
       if (count === 1) {
@@ -1654,7 +1675,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const template = langTexts.autoGearRulesCountOther || texts.en?.autoGearRulesCountOther;
       return template ? template.replace('%s', String(count)) : String(count);
     }
-    
+
     let autoGearBackupDateFormatter = null;
     let autoGearBackupDateFormatterLocale = '';
 
@@ -1701,7 +1722,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return `${count} auto backups`;
     }
-    
+
     function formatAutoGearBackupTime(isoString) {
       if (typeof isoString !== 'string') return '';
       const date = new Date(isoString);
@@ -1719,7 +1740,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return date.toISOString();
     }
-    
+
     function formatAutoGearBackupMeta(backup) {
       if (!backup) return '';
       const langTexts = texts[currentLang] || texts.en || {};
@@ -1727,8 +1748,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const ruleCount = Array.isArray(backup.rules) ? backup.rules.length : 0;
       const rulesLabel = ruleCount === 0
         ? (langTexts.autoGearBackupClearsRules
-            || texts.en?.autoGearBackupClearsRules
-            || 'Clears all rules')
+          || texts.en?.autoGearBackupClearsRules
+          || 'Clears all rules')
         : formatAutoGearRuleCount(ruleCount);
       const template = langTexts.autoGearBackupMeta || texts.en?.autoGearBackupMeta;
       const baseSummary = template && template.includes('%s')
@@ -1740,19 +1761,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return baseSummary;
     }
-    
+
     function getAutoGearBackupSelectPlaceholder() {
       return texts[currentLang]?.autoGearBackupSelectPlaceholder
         || texts.en?.autoGearBackupSelectPlaceholder
         || 'Select a backup to restore';
     }
-    
+
     function updateAutoGearBackupRestoreButtonState() {
       if (!autoGearBackupRestoreButton) return;
       const hasSelection = Boolean(autoGearBackupSelect && autoGearBackupSelect.value);
       autoGearBackupRestoreButton.disabled = !hasSelection;
     }
-    
+
     function updateAutoGearBackupRetentionWarning(message = '') {
       autoGearBackupRetentionWarningText = typeof message === 'string' ? message : '';
       if (!autoGearBackupRetentionWarning) {
@@ -1766,7 +1787,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearBackupRetentionWarning.hidden = true;
       }
     }
-    
+
     function renderAutoGearBackupRetentionControls() {
       const limitValue = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
       if (autoGearBackupRetentionInput) {
@@ -1789,46 +1810,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       updateAutoGearBackupRetentionWarning(autoGearBackupRetentionWarningText);
     }
-    
+
     function getAutoGearPresetById(presetId) {
       if (!presetId) return null;
       return autoGearPresets.find(preset => preset.id === presetId) || null;
     }
-    
+
     function getAutoGearAutoPresetLabel() {
       const langTexts = texts[currentLang] || texts.en || {};
       return langTexts.autoGearAutoPresetLabel
         || texts.en?.autoGearAutoPresetLabel
         || 'Autosaved rules';
     }
-    
+
     function setAutoGearAutoPresetId(presetId, options = {}) {
       const normalized = typeof presetId === 'string' ? presetId : '';
       const persist = options.persist !== false;
       const skipRender = options.skipRender === true;
-        if (autoGearAutoPresetIdState === normalized) {
-          if (!skipRender) renderAutoGearPresetsControls();
-          return;
-        }
-        autoGearAutoPresetIdState = normalized;
-        writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetIdState);
-        if (persist) {
-          persistAutoGearAutoPresetId(autoGearAutoPresetIdState);
-        }
+      if (autoGearAutoPresetIdState === normalized) {
+        if (!skipRender) renderAutoGearPresetsControls();
+        return;
+      }
+      autoGearAutoPresetIdState = normalized;
+      writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetIdState);
+      if (persist) {
+        persistAutoGearAutoPresetId(autoGearAutoPresetIdState);
+      }
       if (!skipRender) {
         renderAutoGearPresetsControls();
       }
     }
-    
+
     function reconcileAutoGearAutoPresetState(options = {}) {
-        if (!autoGearAutoPresetIdState) {
-          if (options.persist !== false) {
-            persistAutoGearAutoPresetId('');
-          }
-          return false;
+      if (!autoGearAutoPresetIdState) {
+        if (options.persist !== false) {
+          persistAutoGearAutoPresetId('');
         }
-        const managedExists = autoGearPresets.some(preset => preset.id === autoGearAutoPresetIdState);
-        const otherExists = autoGearPresets.some(preset => preset.id !== autoGearAutoPresetIdState);
+        return false;
+      }
+      const managedExists = autoGearPresets.some(preset => preset.id === autoGearAutoPresetIdState);
+      const otherExists = autoGearPresets.some(preset => preset.id !== autoGearAutoPresetIdState);
       if (!managedExists || otherExists) {
         setAutoGearAutoPresetId('', {
           persist: options.persist !== false,
@@ -1838,14 +1859,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return false;
     }
-    
+
     function syncAutoGearAutoPreset(rules) {
       const normalizedRules = Array.isArray(rules) ? rules : [];
       reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-        if (!autoGearAutoPresetIdState) {
-          if (autoGearPresets.length > 0) {
-            return false;
-          }
+      if (!autoGearAutoPresetIdState) {
+        if (autoGearPresets.length > 0) {
+          return false;
+        }
         const label = getAutoGearAutoPresetLabel();
         const normalizedPreset = normalizeAutoGearPreset({
           id: generateAutoGearId('preset'),
@@ -1862,7 +1883,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setActiveAutoGearPresetId(normalizedPreset.id, { persist: true, skipRender: true });
         return true;
       }
-        const managedIndex = autoGearPresets.findIndex(preset => preset.id === autoGearAutoPresetIdState);
+      const managedIndex = autoGearPresets.findIndex(preset => preset.id === autoGearAutoPresetIdState);
       if (managedIndex === -1) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
         return false;
@@ -1893,7 +1914,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setActiveAutoGearPresetId(updatedPreset.id, { persist: true, skipRender: true });
       return managedPreset.fingerprint !== updatedPreset.fingerprint;
     }
-    
+
     function setActiveAutoGearPresetId(presetId, options = {}) {
       const normalized = typeof presetId === 'string' ? presetId : '';
       const persist = options.persist !== false;
@@ -1910,7 +1931,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearPresetsControls();
       }
     }
-    
+
     function resolveBaseAutoGearRulesSnapshot() {
       if (Array.isArray(baseAutoGearRulesState)) {
         return baseAutoGearRulesState;
@@ -1953,7 +1974,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearPresetsControls();
       }
     }
-    
+
     function renderAutoGearPresetsControls() {
       if (!autoGearPresetSelect) return;
       const placeholderText = texts[currentLang]?.autoGearPresetPlaceholder
@@ -1961,30 +1982,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Custom rules';
       const presets = sortAutoGearPresets(autoGearPresets.slice());
       autoGearPresets = presets;
-    
+
       autoGearPresetSelect.innerHTML = '';
-    
+
       const placeholderOption = document.createElement('option');
       placeholderOption.value = '';
       placeholderOption.textContent = placeholderText;
       autoGearPresetSelect.appendChild(placeholderOption);
-    
+
       presets.forEach(preset => {
         const option = document.createElement('option');
         option.value = preset.id;
         option.textContent = preset.label;
         autoGearPresetSelect.appendChild(option);
       });
-    
+
       const targetValue = activeAutoGearPresetId || '';
       autoGearPresetSelect.value = targetValue;
       if (!targetValue) {
         placeholderOption.selected = true;
       }
-    
+
       autoGearPresetSelect.disabled = presets.length === 0;
       autoGearPresetSelect.setAttribute('aria-disabled', presets.length === 0 ? 'true' : 'false');
-    
+
       if (autoGearDeletePresetButton) {
         autoGearDeletePresetButton.disabled = !activeAutoGearPresetId;
       }
@@ -2268,7 +2289,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateAutoGearBackupRestoreButtonState();
       }
     }
-    
+
     function setAutoGearBackupsVisible(show) {
       const next = !!show;
       if (autoGearBackupsVisible === next) {
@@ -2283,7 +2304,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         applyAutoGearBackupVisibility();
       }
     }
-    
+
     function handleAutoGearPresetSelection(event) {
       if (!event || !autoGearPresetSelect) return;
       if (sharedImportProjectPresetActive) {
@@ -2323,7 +2344,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Preset applied.';
       showNotification('success', appliedMessage);
     }
-    
+
     async function handleAutoGearSavePreset() {
       const rules = getAutoGearRules();
       const activePreset = getAutoGearPresetById(activeAutoGearPresetId);
@@ -2400,7 +2421,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Automatic gear preset saved.';
       showNotification('success', savedMessage);
     }
-    
+
     function handleAutoGearDeletePreset() {
       if (!activeAutoGearPresetId) return;
       const preset = getAutoGearPresetById(activeAutoGearPresetId);
@@ -2416,9 +2437,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         confirmed = window.confirm(confirmMessage);
       }
       if (!confirmed) return;
-        if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
-          setAutoGearAutoPresetId('', { persist: true, skipRender: true });
-        }
+      if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
+        setAutoGearAutoPresetId('', { persist: true, skipRender: true });
+      }
       autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
       persistAutoGearPresets(autoGearPresets);
@@ -2429,19 +2450,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Automatic gear preset deleted.';
       showNotification('success', deletedMessage);
     }
-    
+
     function handleAutoGearShowBackupsToggle() {
       if (!autoGearShowBackupsCheckbox) return;
       setAutoGearBackupsVisible(autoGearShowBackupsCheckbox.checked);
     }
-    
+
     function handleAutoGearBackupRetentionInput() {
       if (!autoGearBackupRetentionInput) return;
       if (autoGearBackupRetentionWarningText) {
         updateAutoGearBackupRetentionWarning('');
       }
     }
-    
+
     function handleAutoGearBackupRetentionBlur() {
       setTimeout(() => {
         if (!autoGearBackupRetentionWarningText) {
@@ -2449,7 +2470,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }, 0);
     }
-    
+
     function handleAutoGearBackupRetentionChange() {
       if (!autoGearBackupRetentionInput) return;
       const rawValue = autoGearBackupRetentionInput.value;
@@ -2460,16 +2481,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearBackupRetentionControls();
         return;
       }
-    
+
       const normalized = clampAutoGearBackupRetentionLimit(parsed);
       if (normalized === autoGearBackupRetention) {
         updateAutoGearBackupRetentionWarning('');
         renderAutoGearBackupRetentionControls();
         return;
       }
-    
+
       const previousLimit = autoGearBackupRetention;
-    
+
       if (normalized < previousLimit) {
         const trimmedEstimate = Math.max(0, autoGearBackups.length - normalized);
         const warningTemplate = texts[currentLang]?.autoGearBackupRetentionWarning
@@ -2479,7 +2500,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .replace('{limit}', formatAutoGearBackupCount(normalized))
           .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
         updateAutoGearBackupRetentionWarning(warningMessage);
-    
+
         const confirmTemplate = texts[currentLang]?.autoGearBackupRetentionConfirm
           || texts.en?.autoGearBackupRetentionConfirm
           || 'Save a safety snapshot and trim older backups now?';
@@ -2495,7 +2516,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           renderAutoGearBackupRetentionControls();
           return;
         }
-    
+
         const safetyBase = texts[currentLang]?.autoGearBackupRetentionSafetyNote
           || texts.en?.autoGearBackupRetentionSafetyNote
           || 'Retention lowered to {limit}.';
@@ -2506,13 +2527,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const safetyNote = safetyTemplate
           .replace('{limit}', formatAutoGearBackupCount(normalized))
           .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
-    
+
         const safetyResult = captureAutoGearBackupSnapshot({
           force: true,
           notifySuccess: false,
           note: safetyNote,
         });
-    
+
         if (safetyResult.status !== 'created') {
           const failureMessage = texts[currentLang]?.autoGearBackupRetentionSafetyFailed
             || texts.en?.autoGearBackupRetentionSafetyFailed
@@ -2524,12 +2545,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           renderAutoGearBackupRetentionControls();
           return;
         }
-    
+
         const safetySavedMessage = texts[currentLang]?.autoGearBackupRetentionSafetySaved
           || texts.en?.autoGearBackupRetentionSafetySaved
           || 'Safety snapshot captured before trimming backups.';
         showNotification('success', safetySavedMessage);
-    
+
         const trimResult = enforceAutoGearBackupRetentionLimit(normalized);
         if (!trimResult.success) {
           const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
@@ -2540,15 +2561,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateAutoGearBackupRetentionWarning('');
           return;
         }
-    
+
         const trimmedCount = trimResult.trimmed.length;
         const successTemplate = trimmedCount > 0
           ? texts[currentLang]?.autoGearBackupRetentionUpdated
-            || texts.en?.autoGearBackupRetentionUpdated
-            || 'Retention updated to {limit}. Removed {trimmed}.'
+          || texts.en?.autoGearBackupRetentionUpdated
+          || 'Retention updated to {limit}. Removed {trimmed}.'
           : texts[currentLang]?.autoGearBackupRetentionUpdatedNoTrim
-            || texts.en?.autoGearBackupRetentionUpdatedNoTrim
-            || 'Retention updated to {limit}. No backups were removed.';
+          || texts.en?.autoGearBackupRetentionUpdatedNoTrim
+          || 'Retention updated to {limit}. No backups were removed.';
         const successMessage = successTemplate
           .replace('{limit}', formatAutoGearBackupCount(normalized))
           .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedCount, 1)));
@@ -2556,7 +2577,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateAutoGearBackupRetentionWarning('');
         return;
       }
-    
+
       const increaseResult = enforceAutoGearBackupRetentionLimit(normalized);
       if (!increaseResult.success) {
         const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
@@ -2567,7 +2588,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateAutoGearBackupRetentionWarning('');
         return;
       }
-    
+
       const successTemplate = texts[currentLang]?.autoGearBackupRetentionExpanded
         || texts.en?.autoGearBackupRetentionExpanded
         || 'Retention updated to {limit}.';
@@ -2575,24 +2596,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       showNotification('success', successMessage);
       updateAutoGearBackupRetentionWarning('');
     }
-    
+
     function renderAutoGearBackupControls() {
       if (!autoGearBackupSelect || !autoGearBackupEmptyMessage) return;
-    
+
       const previousValue = autoGearBackupSelect.value;
       const placeholderText = getAutoGearBackupSelectPlaceholder();
-    
+
       autoGearBackupSelect.innerHTML = '';
-    
+
       const placeholder = document.createElement('option');
       placeholder.value = '';
       placeholder.textContent = placeholderText;
       placeholder.disabled = true;
       autoGearBackupSelect.appendChild(placeholder);
-    
+
       const availableIds = new Set(autoGearBackups.map(backup => backup.id));
       const retainSelection = previousValue && availableIds.has(previousValue);
-    
+
       autoGearBackups.forEach(backup => {
         const option = document.createElement('option');
         option.value = backup.id;
@@ -2605,7 +2626,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         autoGearBackupSelect.appendChild(option);
       });
-    
+
       if (!autoGearBackups.length) {
         placeholder.selected = true;
         autoGearBackupSelect.value = '';
@@ -2622,12 +2643,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           autoGearBackupSelect.value = '';
         }
       }
-    
+
       updateAutoGearBackupRestoreButtonState();
       applyAutoGearBackupVisibility();
       renderAutoGearBackupRetentionControls();
     }
-    
+
     function extractAutoGearTriggers(rule) {
       if (!rule || typeof rule !== 'object') {
         return {
@@ -2676,7 +2697,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         shootingDays: rule.shootingDays ? normalizeAutoGearShootingDaysCondition(rule.shootingDays) : null,
       };
     }
-    
+
     function snapshotAutoGearRuleForSummary(rule, index) {
       if (!rule || typeof rule !== 'object') return null;
       const baseIndex = Number.isInteger(index) ? index : 0;
@@ -2697,7 +2718,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ...triggers,
       };
     }
-    
+
     function createAutoGearRuleReference(rule) {
       if (!rule || typeof rule !== 'object') return null;
       const index = Number.isInteger(rule.index) ? rule.index : 0;
@@ -2707,7 +2728,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const enabled = rule.enabled !== false;
       return { id, label, index, position, enabled };
     }
-    
+
     function dedupeAutoGearRuleReferences(refs) {
       const result = [];
       const seen = new Set();
@@ -2720,7 +2741,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return result;
     }
-    
+
     function createAutoGearItemKey(item) {
       const snapshot = autoGearItemSnapshot(item);
       if (!snapshot) return '';
@@ -2735,7 +2756,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         notes: snapshot.notes || '',
       });
     }
-    
+
     function createAutoGearTriggerKeyForSummary(rule) {
       const triggers = extractAutoGearTriggers(rule);
       const sorted = {
@@ -2761,7 +2782,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       };
       return coreStableStringify(sorted);
     }
-    
+
     function collectAutoGearScenarioCatalog() {
       if (typeof document === 'undefined') return [];
       const select = document.getElementById('requiredScenarios');
@@ -2780,7 +2801,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(map.values()).sort((a, b) => localeSort(a.label, b.label));
     }
-    
+
     function getAutoGearRuleCoverageSummary(options = {}) {
       const sourceRules = Array.isArray(options.rules) ? options.rules : getAutoGearRules();
       const snapshots = [];
@@ -2800,7 +2821,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           disabledSnapshots.map(createAutoGearRuleReference).filter(Boolean),
         ),
       };
-    
+
       const catalog = collectAutoGearScenarioCatalog();
       if (!activeSnapshots.length) {
         summary.duplicates = { totalGroups: 0, totalRules: 0, groups: [] };
@@ -2828,7 +2849,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearSummaryLast = summary;
         return summary;
       }
-    
+
       const duplicateMap = new Map();
       const duplicateRuleIds = new Set();
       activeSnapshots.forEach(snapshot => {
@@ -2859,7 +2880,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         totalRules: duplicateRuleIds.size,
         groups: duplicateGroups,
       };
-    
+
       const conflictMap = new Map();
       const conflictRuleIds = new Set();
       activeSnapshots.forEach(snapshot => {
@@ -2900,7 +2921,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         totalRules: conflictRuleIds.size,
         items: conflictItems,
       };
-    
+
       let addItems = 0;
       let addQuantity = 0;
       let removeItems = 0;
@@ -2922,7 +2943,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         removeQuantity,
         netQuantity: addQuantity - removeQuantity,
       };
-    
+
       const scenarioLabelMap = new Map();
       catalog.forEach(entry => {
         scenarioLabelMap.set(entry.normalized, entry.label);
@@ -2969,7 +2990,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .map(createAutoGearRuleReference)
           .filter(Boolean),
       );
-    
+
       summary.scenarios = {
         catalog,
         coverage,
@@ -2979,11 +3000,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         total: catalog.length,
         coveredCount: coverage.length,
       };
-    
+
       autoGearSummaryLast = summary;
       return summary;
     }
-    
+
     function formatAutoGearRuleReference(ref, langTexts) {
       if (!ref || typeof ref !== 'object') return '';
       const baseLabel = ref.label || langTexts.autoGearRuleBadgeUnnamed
@@ -3007,13 +3028,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || 'Rule {position}';
       return template.replace('{position}', positionText);
     }
-    
+
     function getAutoGearAnyMotorLabelForLang(langTexts) {
       const fallbackTexts = texts.en || {};
       const source = langTexts || fallbackTexts;
       return source.autoGearMotorsAny || fallbackTexts.autoGearMotorsAny || 'Any motor selected';
     }
-    
+
     function formatAutoGearMotorValue(value, langTexts) {
       const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
       if (normalized === AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL) {
@@ -3021,7 +3042,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return value;
     }
-    
+
     function formatAutoGearTriggerDescription(triggers, analysis, langTexts) {
       if (!triggers) return '';
       const parts = [];
@@ -3171,7 +3192,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return parts.join('; ');
     }
-    
+
     function renderAutoGearRuleSummary(analysis, context = {}) {
       if (!autoGearSummarySection || !autoGearSummaryHeadingElem || !autoGearSummaryDescriptionElem || !autoGearSummaryCards || !autoGearSummaryDetails) {
         return;
@@ -3182,16 +3203,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || autoGearSummaryHeadingElem.textContent
         || 'Rule coverage overview';
       autoGearSummaryHeadingElem.textContent = heading;
-    
+
       if (!analysis || typeof analysis.totalRules !== 'number') {
         autoGearSummarySection.hidden = true;
         return;
       }
-    
+
       autoGearSummarySection.hidden = false;
       autoGearSummaryCards.innerHTML = '';
       autoGearSummaryDetails.innerHTML = '';
-    
+
       const totalRules = analysis.totalRules;
       const filteredRules = typeof context.filteredRules === 'number' ? context.filteredRules : totalRules;
       const visibleRules = typeof context.visibleRules === 'number' ? context.visibleRules : filteredRules;
@@ -3218,7 +3239,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const coveragePercent = hasScenarioCatalog && scenarioTotal
         ? Math.round((scenarioCovered / scenarioTotal) * 100)
         : 0;
-    
+
       if (!totalRules && !disabledCount) {
         autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty
           || texts.en?.autoGearSummaryEmpty
@@ -3266,9 +3287,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .replace('{covered}', formatNumberForLang(currentLang, scenarioCovered))
           .replace('{total}', formatNumberForLang(currentLang, scenarioTotal))
         : langTexts.autoGearSummaryCoverageEmpty
-          || texts.en?.autoGearSummaryCoverageEmpty
-          || 'Add scenarios to measure coverage.';
-    
+        || texts.en?.autoGearSummaryCoverageEmpty
+        || 'Add scenarios to measure coverage.';
+
       const buildCard = (config) => {
         const { label, value, description, focusKey } = config;
         const isAction = Boolean(focusKey);
@@ -3296,7 +3317,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         autoGearSummaryCards.appendChild(element);
       };
-    
+
       const netValue = `${formatNumberForLang(currentLang, analysis.net.addQuantity)} / −${formatNumberForLang(currentLang, analysis.net.removeQuantity)}`;
       buildCard({
         label: langTexts.autoGearSummaryTotalLabel || texts.en?.autoGearSummaryTotalLabel || 'Rules',
@@ -3323,7 +3344,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         description: analysis.duplicates.totalGroups
           ? (langTexts.autoGearSummaryDuplicatesSome || texts.en?.autoGearSummaryDuplicatesSome || '{rules} across {groups} groups')
             .replace('{rules}', formatRulesCount(analysis.duplicates.totalRules))
-          .replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups))
+            .replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups))
           : langTexts.autoGearSummaryDuplicatesNone || texts.en?.autoGearSummaryDuplicatesNone || 'No duplicate triggers.',
         focusKey: 'duplicates',
       });
@@ -3355,7 +3376,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           : langTexts.autoGearSummaryUncoveredNone || texts.en?.autoGearSummaryUncoveredNone || 'All required scenarios covered.',
         focusKey: 'uncovered',
       });
-    
+
       const detailsFragment = document.createDocumentFragment();
       const intro = document.createElement('p');
       intro.className = 'auto-gear-summary-detail-text';
@@ -3405,7 +3426,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           detailsFragment.appendChild(disabledList);
         }
       }
-    
+
       if (focus === 'duplicates') {
         const headingElem = document.createElement('p');
         headingElem.className = 'auto-gear-summary-detail-title';
@@ -3593,7 +3614,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           detailsFragment.appendChild(list);
         }
       }
-    
+
       if (focus !== 'all') {
         const resetButton = document.createElement('button');
         resetButton.type = 'button';
@@ -3611,10 +3632,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           || 'Everything looks covered—no overlaps or conflicts detected.';
         detailsFragment.appendChild(empty);
       }
-    
+
       autoGearSummaryDetails.appendChild(detailsFragment);
     }
-    
+
     function setAutoGearSummaryFocus(value) {
       const allowed = value === 'duplicates' || value === 'conflicts' || value === 'overlaps' || value === 'uncovered' ? value : 'all';
       const next = autoGearSummaryFocus === allowed && allowed !== 'all' ? 'all' : allowed;
@@ -3624,7 +3645,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       autoGearSummaryFocus = next;
       renderAutoGearRulesList();
     }
-    
+
     function focusAutoGearRuleById(ruleId) {
       if (!ruleId || !autoGearRulesList) return;
       const candidates = Array.from(autoGearRulesList.querySelectorAll('[data-rule-id]'));
@@ -3650,7 +3671,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function renderAutoGearRulesList() {
       if (!autoGearRulesList) return;
       if (autoGearEditor && !autoGearEditor.hidden && !autoGearEditorDraft) {
@@ -3710,7 +3731,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       const hasFilters = Boolean(normalizedQuery) || scenarioFilter !== 'all' || activeFocus !== 'all';
       const allowSearch = rules.length > 0 || Boolean(rawSearch.trim());
-    
+
       if (autoGearSearchInput) {
         if (autoGearSearchInput.value !== rawSearch) {
           autoGearSearchInput.value = rawSearch;
@@ -3738,7 +3759,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return false;
         })
         : filteredRules;
-    
+
       renderAutoGearRuleSummary(analysis, {
         focus: activeFocus,
         totalRules: rules.length,
@@ -3747,7 +3768,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         hasSearchFilters: Boolean(normalizedQuery) || scenarioFilter !== 'all',
         focusApplied: Boolean(focusRuleIds),
       });
-    
+
       if (!visibleRules.length) {
         const empty = document.createElement('p');
         empty.className = 'auto-gear-empty';
@@ -3767,7 +3788,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearRulesList.appendChild(empty);
         return;
       }
-    
+
       visibleRules.forEach(rule => {
         const index = ruleIndexByObject.get(rule);
         const wrapper = document.createElement('div');
@@ -4183,7 +4204,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearRulesList.appendChild(wrapper);
       });
     }
-    
+
     function resetAutoGearDraftInputs(type) {
       const normalizedType = type === 'remove' ? 'remove' : 'add';
       const isAdd = normalizedType === 'add';
@@ -4278,18 +4299,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         notesInput.value = selection.notes;
       }
     }
-    
+
     function updateAutoGearDraftActionState() {
       updateAutoGearItemButtonState('add');
       updateAutoGearItemButtonState('remove');
     }
-    
+
     function getAutoGearDraftList(type) {
       if (!autoGearEditorDraft) return null;
       const normalizedType = type === 'remove' ? 'remove' : 'add';
       return normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
     }
-    
+
     function populateAutoGearDraftForm(type, item) {
       if (!item) return;
       const normalizedType = type === 'remove' ? 'remove' : 'add';
@@ -4369,7 +4390,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function clearAutoGearDraftItemEdit(type, options = {}) {
       const normalizedType = type === 'remove' ? 'remove' : 'add';
       const { skipRender = false } = options;
@@ -4383,7 +4404,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearDraftLists();
       }
     }
-    
+
     function beginAutoGearDraftItemEdit(listType, itemId) {
       if (!autoGearEditorDraft || !itemId) return;
       const normalizedType = listType === 'remove' ? 'remove' : 'add';
@@ -4404,15 +4425,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateAutoGearDraftActionState();
       renderAutoGearDraftLists();
     }
-    
+
     function getAutoGearItemIdentityData(item) {
       const normalized = normalizeAutoGearItem(item);
       if (!normalized) return null;
       const contexts = Array.isArray(normalized.contextNotes)
         ? normalized.contextNotes
-            .map(value => (typeof value === 'string' ? value.trim() : ''))
-            .filter(Boolean)
-            .sort((a, b) => a.localeCompare(b))
+          .map(value => (typeof value === 'string' ? value.trim() : ''))
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b))
         : [];
       const identity = [
         normalized.name || '',
@@ -4433,7 +4454,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         },
       };
     }
-    
+
     function normalizeAutoGearRuleForPreview(rule) {
       if (!rule || typeof rule !== 'object') return null;
       const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
@@ -4442,7 +4463,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const id = typeof rule.id === 'string' && rule.id ? rule.id : '';
       return { id, add, remove };
     }
-    
+
     function aggregateAutoGearRuleItems(rules, options = {}) {
       const allowDraftPreviewRules = Boolean(options.allowDraftPreviewRules);
       const aggregate = new Map();
@@ -4491,7 +4512,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return aggregate;
     }
-    
+
     function computeAutoGearDraftImpactState() {
       if (!autoGearEditorDraft) {
         return { available: false, entries: [], warnings: null };
@@ -4567,7 +4588,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return { available: true, entries, warnings };
     }
-    
+
     function formatAutoGearImpactNumber(value) {
       if (!Number.isFinite(value)) return '0';
       const rounded = Math.round(value);
@@ -4580,7 +4601,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return String(rounded);
     }
-    
+
     function formatAutoGearImpactSigned(value) {
       if (!Number.isFinite(value) || value === 0) return '0';
       const rounded = Math.round(value);
@@ -4588,7 +4609,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const formattedAbs = formatAutoGearImpactNumber(absValue);
       return rounded > 0 ? `+${formattedAbs}` : `−${formattedAbs}`;
     }
-    
+
     function formatAutoGearDraftItemLabel(item, quantity) {
       const snapshot = autoGearItemSnapshot(item);
       if (!snapshot) return '';
@@ -4601,7 +4622,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       };
       return formatAutoGearItemSummary(summaryItem, { includeSign: false });
     }
-    
+
     function hasAutoGearDraftWarnings(warnings) {
       if (!warnings) return false;
       return Boolean(
@@ -4610,7 +4631,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || (Array.isArray(warnings.redundant) && warnings.redundant.length),
       );
     }
-    
+
     function buildAutoGearDraftWarningMessages(warnings, langTexts) {
       if (!warnings) return [];
       const messages = [];
@@ -4637,7 +4658,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(new Set(messages));
     }
-    
+
     function renderAutoGearDraftImpact() {
       if (!autoGearDraftImpactList) return;
       const langTexts = texts[currentLang] || texts.en || {};
@@ -4646,7 +4667,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearDraftWarningList.innerHTML = '';
       }
       autoGearDraftPendingWarnings = null;
-    
+
       if (!autoGearEditorDraft) {
         const message = langTexts.autoGearDraftImpactUnavailable
           || texts.en?.autoGearDraftImpactUnavailable
@@ -4662,10 +4683,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-    
+
       const impact = computeAutoGearDraftImpactState();
       autoGearDraftPendingWarnings = impact.available ? impact.warnings : null;
-    
+
       if (!impact.available) {
         const message = langTexts.autoGearDraftImpactUnavailable
           || texts.en?.autoGearDraftImpactUnavailable
@@ -4681,7 +4702,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-    
+
       if (!impact.entries.length) {
         const message = langTexts.autoGearDraftImpactEmpty
           || texts.en?.autoGearDraftImpactEmpty
@@ -4757,7 +4778,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           autoGearDraftImpactList.appendChild(li);
         });
       }
-    
+
       if (autoGearDraftWarningContainer) {
         const warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
         if (warningMessages.length) {
@@ -4775,7 +4796,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function renderAutoGearDraftLists() {
       updateAutoGearDraftActionState();
       if (!autoGearEditorDraft) {
@@ -4847,7 +4868,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderList(autoGearRemoveList, autoGearEditorDraft.remove, 'remove');
       renderAutoGearDraftImpact();
     }
-    
+
     function openAutoGearEditor(ruleId, options = {}) {
       if (!autoGearEditor) return;
       const { initialDraft, highlightLabel = false, ruleIndex = null } = options;
@@ -4898,7 +4919,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function closeAutoGearEditor() {
       if (!autoGearEditor) return;
       autoGearEditor.hidden = true;
@@ -4916,7 +4937,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateAutoGearDraftActionState();
       renderAutoGearDraftLists();
     }
-    
+
     if (autoGearAddOwnGearSelect) {
       autoGearAddOwnGearSelect.addEventListener('change', () => applyAutoGearOwnGearSelection('add'));
     }
@@ -5045,17 +5066,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearDraftLists();
       updateAutoGearCatalogOptions();
     }
-    
+
     function saveAutoGearRuleFromEditor() {
       if (!autoGearEditorDraft) return;
       const scenarios = isAutoGearConditionActive('scenarios') && autoGearScenariosSelect
         ? Array.from(autoGearScenariosSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(Boolean)
+          .map(option => option.value)
+          .filter(Boolean)
         : [];
-        const rawScenarioMode = autoGearScenarioModeSelectRef
-          ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectRef.value)
-          : 'all';
+      const rawScenarioMode = autoGearScenarioModeSelectRef
+        ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectRef.value)
+        : 'all';
       const multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
       const normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
       let scenarioMode = rawScenarioMode;
@@ -5071,41 +5092,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       const matteboxSelections = isAutoGearConditionActive('mattebox') && autoGearMatteboxSelect
         ? Array.from(autoGearMatteboxSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(Boolean)
+          .map(option => option.value)
+          .filter(Boolean)
         : [];
       const cameraHandleSelections = isAutoGearConditionActive('cameraHandle') && autoGearCameraHandleSelect
         ? Array.from(autoGearCameraHandleSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(Boolean)
+          .map(option => option.value)
+          .filter(Boolean)
         : [];
       const viewfinderSelections = isAutoGearConditionActive('viewfinderExtension') && autoGearViewfinderExtensionSelect
         ? Array.from(autoGearViewfinderExtensionSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const deliveryResolutionSelections = isAutoGearConditionActive('deliveryResolution') && autoGearDeliveryResolutionSelect
         ? Array.from(autoGearDeliveryResolutionSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       let videoDistributionSelections = isAutoGearConditionActive('videoDistribution') && autoGearVideoDistributionSelect
         ? Array.from(autoGearVideoDistributionSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(Boolean)
+          .map(option => option.value)
+          .filter(Boolean)
         : [];
       if (videoDistributionSelections.includes('__none__') && videoDistributionSelections.length > 1) {
         videoDistributionSelections = videoDistributionSelections.filter(value => value !== '__none__');
       }
       const cameraSelections = isAutoGearConditionActive('camera') && autoGearCameraSelect
         ? Array.from(autoGearCameraSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const ownGearSelections = isAutoGearConditionActive('ownGear') && autoGearOwnGearSelect
         ? Array.from(autoGearOwnGearSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const cameraWeightCondition = (() => {
         if (!isAutoGearConditionActive('cameraWeight')) return null;
@@ -5118,38 +5139,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       })();
       const monitorSelections = isAutoGearConditionActive('monitor') && autoGearMonitorSelect
         ? Array.from(autoGearMonitorSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const crewPresentSelections = isAutoGearConditionActive('crewPresent') && autoGearCrewPresentSelect
         ? Array.from(autoGearCrewPresentSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const crewAbsentSelections = isAutoGearConditionActive('crewAbsent') && autoGearCrewAbsentSelect
         ? Array.from(autoGearCrewAbsentSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const wirelessSelections = isAutoGearConditionActive('wireless') && autoGearWirelessSelect
         ? Array.from(autoGearWirelessSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const motorSelections = isAutoGearConditionActive('motors') && autoGearMotorsSelect
         ? Array.from(autoGearMotorsSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const controllerSelections = isAutoGearConditionActive('controllers') && autoGearControllersSelect
         ? Array.from(autoGearControllersSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const distanceSelections = isAutoGearConditionActive('distance') && autoGearDistanceSelect
         ? Array.from(autoGearDistanceSelect.selectedOptions || [])
-            .map(option => option.value)
-            .filter(value => typeof value === 'string' && value.trim())
+          .map(option => option.value)
+          .filter(value => typeof value === 'string' && value.trim())
         : [];
       const draftConditionLogic = {};
       if (scenarioMode !== 'all') {
@@ -5341,7 +5362,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       showNotification('success', successMessage);
       closeAutoGearEditor();
     }
-    
+
     function duplicateAutoGearRule(ruleId, ruleIndex) {
       const rules = getAutoGearRules();
       let original = null;
@@ -5357,7 +5378,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       if (!original) return;
-    
+
       const langTexts = texts[currentLang] || texts.en || {};
       const suffixBase = typeof langTexts.autoGearDuplicateSuffix === 'string'
         ? langTexts.autoGearDuplicateSuffix.trim()
@@ -5372,7 +5393,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .map(rule => (typeof rule?.label === 'string' ? rule.label.trim().toLowerCase() : ''))
           .filter(Boolean)
       );
-    
+
       const formatCandidate = index => {
         if (baseLabel) {
           return index === 1
@@ -5381,14 +5402,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return index === 1 ? suffix : `${suffix} ${index}`;
       };
-    
+
       let attempt = 1;
       let labelCandidate = formatCandidate(attempt);
       while (existingLabels.has(labelCandidate.trim().toLowerCase())) {
         attempt += 1;
         labelCandidate = formatCandidate(attempt);
       }
-    
+
       const duplicateRule = {
         id: generateAutoGearId('rule'),
         label: labelCandidate,
@@ -5484,11 +5505,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         closeAutoGearEditor();
       }
     }
-    
+
     function normalizeAutoGearPayloadMetadata(candidate) {
       if (!candidate || typeof candidate !== 'object') return null;
       const metadata = {};
-    
+
       const assignIfString = (key, value) => {
         if (typeof value !== 'string') return;
         const trimmed = value.trim();
@@ -5497,10 +5518,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           metadata[key] = trimmed;
         }
       };
-    
+
       assignIfString('type', candidate.type);
       assignIfString('version', candidate.version);
-    
+
       const timestampFields = [
         ['createdAt', 'createdAt'],
         ['created_at', 'createdAt'],
@@ -5515,12 +5536,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ['modifiedAt', 'updatedAt'],
         ['modified_at', 'updatedAt'],
       ];
-    
+
       timestampFields.forEach(([prop, target]) => {
         if (metadata[target]) return;
         assignIfString(target, candidate[prop]);
       });
-    
+
       if (!metadata.timestamp) {
         const orderedKeys = ['createdAt', 'timestamp', 'exportedAt', 'savedAt', 'updatedAt'];
         for (let i = 0; i < orderedKeys.length; i += 1) {
@@ -5532,28 +5553,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
       if (metadata.timestamp && !metadata.timestampSource) {
         metadata.timestampSource = 'timestamp';
       }
-    
+
       return Object.keys(metadata).length ? metadata : null;
     }
-    
+
     function collectAutoGearPayloadMetadata(...sources) {
       const queue = [];
       const visited = new Set();
       const metadata = {};
-    
+
       const enqueue = value => {
         if (!value || typeof value !== 'object') return;
         if (visited.has(value)) return;
         visited.add(value);
         queue.push(value);
       };
-    
+
       sources.forEach(source => enqueue(source));
-    
+
       while (queue.length) {
         const candidate = queue.shift();
         const normalized = normalizeAutoGearPayloadMetadata(candidate);
@@ -5565,7 +5586,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
           });
         }
-    
+
         if (candidate.meta && typeof candidate.meta === 'object') {
           enqueue(candidate.meta);
         }
@@ -5573,10 +5594,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           enqueue(candidate.metadata);
         }
       }
-    
+
       return Object.keys(metadata).length ? metadata : null;
     }
-    
+
     function parseAutoGearImportPayload(data) {
       const extractMonitorDefaults = source => {
         if (!source || typeof source !== 'object') return null;
@@ -5588,7 +5609,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return null;
       };
-    
+
       const resolveValue = value => {
         if (typeof value !== 'string') return value;
         const trimmed = value.trim();
@@ -5601,10 +5622,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return value;
         }
       };
-    
+
       const visited = new Set();
       const queue = [];
-    
+
       const enqueue = (rawValue, parent, root, key) => {
         const value = resolveValue(rawValue);
         if (!value || typeof value !== 'object') {
@@ -5621,7 +5642,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           key: typeof key === 'string' ? key : '',
         });
       };
-    
+
       const initialValue = resolveValue(data);
       if (Array.isArray(initialValue)) {
         const metadata = collectAutoGearPayloadMetadata(initialValue);
@@ -5630,14 +5651,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!initialValue || typeof initialValue !== 'object') {
         return null;
       }
-    
+
       const initialRoot = !Array.isArray(initialValue) ? initialValue : null;
       enqueue(initialValue, null, initialRoot, '');
-    
+
       while (queue.length) {
         const { value, parent, root, key } = queue.shift();
         const baseRoot = root || (value && typeof value === 'object' && !Array.isArray(value) ? value : null);
-    
+
         if (Array.isArray(value)) {
           const treatAsRules = !parent || key === 'rules' || key === 'autoGearRules';
           if (treatAsRules) {
@@ -5659,11 +5680,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
           continue;
         }
-    
+
         if (!value || typeof value !== 'object') {
           continue;
         }
-    
+
         const monitorDefaultsFromValue = extractMonitorDefaults(value);
         const monitorDefaultsFromParent = parent ? extractMonitorDefaults(parent) : null;
         const monitorDefaultsFromRoot = root ? extractMonitorDefaults(root) : null;
@@ -5671,7 +5692,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           || monitorDefaultsFromParent
           || monitorDefaultsFromRoot
           || null;
-    
+
         const rawAutoGearRules = Object.prototype.hasOwnProperty.call(value, 'autoGearRules')
           ? resolveValue(value.autoGearRules)
           : null;
@@ -5684,7 +5705,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           );
           return { rules: rawAutoGearRules, monitorDefaults: fallbackDefaults, metadata };
         }
-    
+
         const rawRules = Object.prototype.hasOwnProperty.call(value, 'rules')
           ? resolveValue(value.rules)
           : null;
@@ -5717,7 +5738,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             };
           }
         }
-    
+
         const containerEntries = [
           { value: value.data, key: 'data' },
           { value: value.payload, key: 'payload' },
@@ -5737,7 +5758,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (!entry.value) return;
           enqueue(entry.value, value, baseRoot, entry.key);
         });
-    
+
         Object.keys(value).forEach(prop => {
           if (!Object.prototype.hasOwnProperty.call(value, prop)) return;
           if (prop === 'monitorDefaults' || prop === 'autoGearMonitorDefaults') return;
@@ -5754,10 +5775,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       }
-    
+
       return null;
     }
-    
+
     function parseSemanticVersion(version) {
       if (typeof version !== 'string') return null;
       const trimmed = version.trim();
@@ -5771,7 +5792,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         raw: trimmed,
       };
     }
-    
+
     function compareSemanticVersions(a, b) {
       if (!a || !b) return null;
       if (a.major !== b.major) {
@@ -5785,7 +5806,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return 0;
     }
-    
+
     function isValidIsoTimestamp(value) {
       if (typeof value !== 'string') return false;
       const trimmed = value.trim();
@@ -5794,7 +5815,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (Number.isNaN(parsed)) return false;
       return Number.isFinite(parsed);
     }
-    
+
     function validateAutoGearImportPayload(parsed) {
       const initialMetadata = parsed?.metadata && typeof parsed.metadata === 'object'
         ? { ...parsed.metadata }
@@ -5804,12 +5825,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         warnings: [],
         errors: [],
       };
-    
+
       if (!parsed || !Array.isArray(parsed.rules)) {
         validation.errors.push({ code: 'invalid-rules' });
         return validation;
       }
-    
+
       const metadata = validation.metadata;
       const expectedType = 'camera-power-planner/auto-gear-rules';
       const typeValue = typeof metadata.type === 'string' ? metadata.type.trim() : '';
@@ -5820,7 +5841,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         metadata.type = typeValue;
       }
-    
+
       let versionValue = '';
       if (typeof metadata.version === 'string') {
         versionValue = metadata.version.trim();
@@ -5832,13 +5853,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         validation.warnings.push({ code: 'missing-metadata', field: 'version' });
       }
-    
+
       const parsedVersion = parseSemanticVersion(versionValue);
       if (versionValue && !parsedVersion) {
         validation.warnings.push({ code: 'invalid-version-format', value: versionValue });
       }
       metadata.version = versionValue;
-    
+
       const timestampValue = typeof metadata.timestamp === 'string' ? metadata.timestamp.trim() : '';
       if (!timestampValue) {
         validation.warnings.push({ code: 'missing-metadata', field: 'timestamp' });
@@ -5846,7 +5867,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         validation.warnings.push({ code: 'invalid-timestamp', value: timestampValue });
       }
       metadata.timestamp = timestampValue;
-    
+
       const localVersion = typeof APP_VERSION === 'string' ? parseSemanticVersion(APP_VERSION) : null;
       if (parsedVersion && localVersion) {
         const comparison = compareSemanticVersions(parsedVersion, localVersion);
@@ -5864,14 +5885,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
         }
       }
-    
+
       if (!metadata.type && !metadata.version && !metadata.timestamp) {
         validation.metadata = null;
       }
-    
+
       return validation;
     }
-    
+
     function getAutoGearImportMetadataFieldLabel(field) {
       const localeTexts = getLanguageTexts(currentLang);
       const englishTexts = getLanguageTexts('en');
@@ -5884,11 +5905,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || englishTexts?.[key]
         || field;
     }
-    
+
     function formatAutoGearImportWarningMessage(warning, metadata) {
       const localeTexts = getLanguageTexts(currentLang);
       const englishTexts = getLanguageTexts('en');
-    
+
       switch (warning.code) {
         case 'newer-version': {
           const template = localeTexts?.autoGearImportNewerVersionWarning
@@ -5922,12 +5943,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return '';
       }
     }
-    
+
     function displayAutoGearImportWarnings(warnings, metadata) {
       if (!Array.isArray(warnings) || !warnings.length) return;
       const missingFields = [];
       const invalidFields = [];
-    
+
       warnings.forEach(warning => {
         if (!warning || typeof warning !== 'object') return;
         if (warning.code === 'missing-metadata' && warning.field) {
@@ -5945,10 +5966,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       });
-    
+
       const localeTexts = getLanguageTexts(currentLang);
       const englishTexts = getLanguageTexts('en');
-    
+
       if (missingFields.length) {
         const labels = missingFields.map(field => getAutoGearImportMetadataFieldLabel(field));
         const labelList = formatListForLang(currentLang, labels);
@@ -5957,7 +5978,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           || 'Imported rules are missing required metadata: {fields}.';
         showNotification('warning', template.replace('{fields}', labelList));
       }
-    
+
       if (invalidFields.length) {
         const labels = invalidFields.map(field => getAutoGearImportMetadataFieldLabel(field));
         const labelList = formatListForLang(currentLang, labels);
@@ -5967,7 +5988,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         showNotification('warning', template.replace('{fields}', labelList));
       }
     }
-    
+
     function importAutoGearRulesFromData(data, options = {}) {
       const previousRules = getAutoGearRules();
       const previousMonitorDefaults = getAutoGearMonitorDefaultsSnapshot();
@@ -5981,7 +6002,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         error.validationMetadata = null;
         throw error;
       }
-    
+
       const validation = validateAutoGearImportPayload(parsed);
       if (validation.errors.length) {
         const message = texts[currentLang]?.autoGearImportSchemaError
@@ -5994,7 +6015,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         error.validationMetadata = validation.metadata;
         throw error;
       }
-    
+
       try {
         setAutoGearRules(parsed.rules);
         if (parsed.monitorDefaults && typeof parsed.monitorDefaults === 'object') {
@@ -6020,24 +6041,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         throw error;
       }
-    
+
       if (!options.silent) {
         const message = texts[currentLang]?.autoGearImportSuccess
           || texts.en?.autoGearImportSuccess
           || 'Automatic gear rules imported.';
         showNotification('success', message);
       }
-    
+
       displayAutoGearImportWarnings(validation.warnings, validation.metadata);
       return getAutoGearRules();
     }
-    
+
     function formatAutoGearExportFilename(date) {
       const { iso } = formatFullBackupFilename(date);
       const safeIso = iso.replace(/[:]/g, '-');
       return `${safeIso} auto gear rules.json`;
     }
-    
+
     function exportAutoGearRules() {
       if (typeof document === 'undefined') return null;
       try {
@@ -6198,27 +6219,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { status: 'failed', reason: 'error', error };
       }
     }
-    
+
     function captureAutoGearBackupSnapshot(options = {}) {
       const config = typeof options === 'object' && options !== null ? options : {};
       const force = config.force === true;
       const notifySuccess = config.notifySuccess !== false;
       const notifyFailure = config.notifyFailure !== false;
       const note = typeof config.note === 'string' ? config.note.trim() : '';
-    
+
       if (!force && !autoGearRulesDirtySinceBackup) {
         return { status: 'skipped', reason: 'clean' };
       }
-    
+
       const rules = getBaseAutoGearRules();
       const monitorDefaultsSnapshot = getAutoGearMonitorDefaultsSnapshot();
       const signature = getAutoGearConfigurationSignature(rules, monitorDefaultsSnapshot);
-    
+
       if (!force && signature === autoGearRulesLastBackupSignature) {
         autoGearRulesDirtySinceBackup = false;
         return { status: 'skipped', reason: 'unchanged' };
       }
-    
+
       const entry = {
         id: generateAutoGearId('backup'),
         createdAt: new Date().toISOString(),
@@ -6228,11 +6249,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (note) {
         entry.note = note;
       }
-    
+
       const retentionLimit = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
       const effectiveLimit = Math.max(1, retentionLimit);
       const updatedBackups = [entry, ...autoGearBackups].slice(0, effectiveLimit);
-    
+
       try {
         const persistedBackups = persistAutoGearBackups(updatedBackups) || [];
         const finalBackups = Array.isArray(persistedBackups) ? persistedBackups : [];
@@ -6240,9 +6261,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const persistedEntry = finalBackups[0] || entry;
         const persistedSignature = finalBackups.length
           ? getAutoGearConfigurationSignature(
-              finalBackups[0].rules,
-              finalBackups[0].monitorDefaults,
-            )
+            finalBackups[0].rules,
+            finalBackups[0].monitorDefaults,
+          )
           : signature;
         autoGearRulesLastBackupSignature = persistedSignature;
         autoGearRulesLastPersistedSignature = persistedSignature;
@@ -6268,12 +6289,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { status: 'error', error };
       }
     }
-    
+
     function createAutoGearBackup(options = {}) {
       const result = captureAutoGearBackupSnapshot(options);
       return result.status === 'created';
     }
-    
+
     function restoreAutoGearBackup(backupId) {
       if (!backupId) return false;
       const backup = autoGearBackups.find(entry => entry.id === backupId);
@@ -6313,7 +6334,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return false;
       }
     }
-    
+
     function handleAutoGearImportSelection(event) {
       const input = event?.target;
       const file = input && input.files && input.files[0];
@@ -6366,7 +6387,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       };
       reader.readAsText(file);
     }
-    
+
     let lastActiveBeforeIosHelp = null;
     let lastActiveBeforeInstallGuide = null;
     let currentInstallGuidePlatform = null;
@@ -6765,7 +6786,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function getInstallBannerGlobalScope() {
       const candidates = [];
       if (typeof resolveInstallBannerGlobalScope === 'function') {
@@ -6971,14 +6992,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         console.warn('Could not store install banner dismissal', error);
       }
     }
-    
+
     function shouldShowInstallBanner() {
       if (!installPromptBanner) return false;
       if (isStandaloneDisplayMode()) return false;
       if (hasDismissedInstallBanner()) return false;
       return isIosDevice() || isAndroidDevice();
     }
-    
+
     function updateInstallBannerVisibility() {
       if (!installPromptBanner) return;
       const shouldShow = shouldShowInstallBanner();
@@ -6996,7 +7017,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         installPromptBanner.style.removeProperty('top');
       }
     }
-    
+
     function updateInstallBannerColors() {
       if (!installPromptBanner) return;
       if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
@@ -7020,24 +7041,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         console.warn('Unable to update install banner colors', error);
       }
     }
-    
+
     function renderInstallGuideContent(platform, lang = currentLang) {
       if (!installGuideDialog) return;
       const fallbackTexts = texts.en || {};
       const langTexts = texts[lang] || fallbackTexts;
       const isIos = platform === 'ios';
-    
+
       const titleKey = isIos ? 'installHelpTitleIos' : 'installHelpTitleAndroid';
       const introKey = isIos ? 'installHelpIntroIos' : 'installHelpIntroAndroid';
       const stepsKey = isIos ? 'installHelpStepsIos' : 'installHelpStepsAndroid';
       const noteKey = isIos ? 'installHelpNoteIos' : 'installHelpNoteAndroid';
-    
+
       const title = langTexts[titleKey] || fallbackTexts[titleKey] || '';
       if (installGuideTitle) installGuideTitle.textContent = title;
-    
+
       const intro = langTexts[introKey] || fallbackTexts[introKey] || '';
       if (installGuideIntro) installGuideIntro.textContent = intro;
-    
+
       const stepsSource = langTexts[stepsKey];
       const fallbackStepsSource = fallbackTexts[stepsKey];
       const toArray = value => {
@@ -7056,18 +7077,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           installGuideSteps.appendChild(li);
         });
       }
-    
+
       const note = langTexts[noteKey] || fallbackTexts[noteKey] || '';
       if (installGuideNote) installGuideNote.textContent = note;
-    
+
       if (installGuideDialog) {
         installGuideDialog.setAttribute('data-platform', platform);
       }
-    
+
       if (!installGuideMigration || !installGuideMigrationTitle || !installGuideMigrationIntro || !installGuideMigrationSteps || !installGuideMigrationNote) {
         return;
       }
-    
+
       if (isIos) {
         installGuideMigration.removeAttribute('hidden');
         const migrationTitle = langTexts.installHelpMigrationTitle || fallbackTexts.installHelpMigrationTitle || '';
@@ -7096,7 +7117,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         installGuideMigrationNote.textContent = '';
       }
     }
-    
+
     function openInstallGuide(platform) {
       if (!installGuideDialog) return;
       currentInstallGuidePlatform = platform;
@@ -7108,7 +7129,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         focusTarget.focus();
       }
     }
-    
+
     function closeInstallGuide() {
       if (!installGuideDialog) return;
       installGuideDialog.setAttribute('hidden', '');
@@ -7117,14 +7138,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         lastActiveBeforeInstallGuide.focus();
       }
     }
-    
+
     function setupInstallBanner() {
       if (!installPromptBanner) return;
-    
+
       if (installPromptBannerIcon) {
         applyIconGlyph(installPromptBannerIcon, ICON_GLYPHS.installApp);
       }
-    
+
       if (installPromptBannerAction) {
         installPromptBannerAction.addEventListener('click', event => {
           event.preventDefault();
@@ -7132,7 +7153,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           openInstallGuide(platform);
         });
       }
-    
+
       if (installPromptBannerDismiss) {
         installPromptBannerDismiss.addEventListener('click', event => {
           event.preventDefault();
@@ -7141,11 +7162,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateInstallBannerVisibility();
         });
       }
-    
+
       if (installGuideClose) {
         installGuideClose.addEventListener('click', closeInstallGuide);
       }
-    
+
       if (installGuideDialog) {
         installGuideDialog.addEventListener('click', event => {
           if (event.target === installGuideDialog) {
@@ -7153,12 +7174,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       }
-    
+
       applyInstallTexts(currentLang);
       updateInstallBannerColors();
       updateInstallBannerVisibility();
       updateInstallBannerPosition();
-    
+
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', updateInstallBannerPosition);
         window.addEventListener('appinstalled', updateInstallBannerVisibility);
@@ -7177,7 +7198,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function applyInstallTexts(lang) {
       const fallbackTexts = texts.en || {};
       const langTexts = texts[lang] || fallbackTexts;
@@ -7232,10 +7253,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
         renderInstallGuideContent(currentInstallGuidePlatform, lang);
       }
-    
+
       updateInstallBannerPosition();
     }
-    
+
     function resolveGlobalElement(name, elementId) {
       if (typeof name !== 'string' || !name) {
         return null;
@@ -7290,7 +7311,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const safeExposeCoreRuntimeConstant =
       typeof exposeCoreRuntimeConstant === 'function'
         ? exposeCoreRuntimeConstant
-        : function noopExposeCoreRuntimeConstant() {};
+        : function noopExposeCoreRuntimeConstant() { };
 
     function shouldShowIosPwaHelp() {
       try {
@@ -7364,7 +7385,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         event.preventDefault();
       }
     });
-    
+
     function renderSettingsLogoPreview(dataUrl) {
       if (!settingsLogoPreview) return;
       if (dataUrl) {
@@ -7379,7 +7400,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         settingsLogoPreview.setAttribute('hidden', '');
       }
     }
-    
+
     function loadStoredLogoPreview() {
       if (!settingsLogoPreview || typeof localStorage === 'undefined') return;
       let stored = null;
@@ -7390,9 +7411,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       renderSettingsLogoPreview(stored);
     }
-    
+
     const isPlainObjectValue = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
-    
+
     const REQUIRED_DEVICE_CATEGORIES = [
       'cameras',
       'monitors',
@@ -7910,14 +7931,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       return upgraded;
     }
-    
+
     function isDeviceEntryObject(value) {
       if (!isPlainObjectValue(value)) {
         return false;
       }
       return Object.values(value).some((entry) => entry === null || typeof entry !== 'object' || Array.isArray(entry));
     }
-    
+
     function countDeviceDatabaseEntries(collection) {
       if (!isPlainObjectValue(collection)) {
         return 0;
@@ -7938,7 +7959,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return total;
     }
-    
+
     function looksLikeDeviceDatabase(candidate) {
       if (!isPlainObjectValue(candidate)) {
         return false;
@@ -7951,7 +7972,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return matched >= 3;
     }
-    
+
     function collectReferenceFizKeys() {
       const reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices)
         ? globalThis.defaultDevices
@@ -7964,7 +7985,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return DEFAULT_FIZ_COLLECTIONS;
     }
-    
+
     function collectReferenceAccessoryKeys() {
       const reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices)
         ? globalThis.defaultDevices
@@ -7977,15 +7998,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return DEFAULT_ACCESSORY_COLLECTIONS;
     }
-    
+
     function validateDeviceDatabaseStructure(candidate) {
       if (!isPlainObjectValue(candidate)) {
         return { devices: null, errors: ['Imported data must be a JSON object.'] };
       }
-    
+
       const errors = [];
       const missing = [];
-    
+
       for (const category of REQUIRED_DEVICE_CATEGORIES) {
         if (category === 'fiz') {
           if (!isPlainObjectValue(candidate.fiz)) {
@@ -8015,11 +8036,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           missing.push(category);
         }
       }
-    
+
       if (missing.length) {
         errors.push(`Missing categories: ${missing.join(', ')}`);
       }
-    
+
       if (candidate.accessories !== undefined) {
         if (!isPlainObjectValue(candidate.accessories)) {
           errors.push('Accessory collections must be objects.');
@@ -8031,11 +8052,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
       if (candidate.filterOptions !== undefined && !Array.isArray(candidate.filterOptions)) {
         errors.push('Filter options must be provided as an array.');
       }
-    
+
       if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
         for (const [subKey, subValue] of Object.entries(candidate.fiz)) {
           if (subValue !== undefined && !isPlainObjectValue(subValue)) {
@@ -8043,7 +8064,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
       const structureErrors = [];
       const inspectCollections = (collection, path = []) => {
         if (!isPlainObjectValue(collection)) {
@@ -8066,15 +8087,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       };
-    
+
       inspectCollections(candidate);
       errors.push(...structureErrors);
-    
+
       const deviceCount = countDeviceDatabaseEntries(candidate);
       if (!deviceCount) {
         errors.push('The imported database does not contain any devices.');
       }
-    
+
       const uniqueErrors = [];
       for (const message of errors) {
         if (message && !uniqueErrors.includes(message)) {
@@ -8084,13 +8105,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           break;
         }
       }
-    
+
       return {
         devices: uniqueErrors.length ? null : candidate,
         errors: uniqueErrors,
       };
     }
-    
+
     function parseDeviceDatabaseImport(rawData) {
       if (Array.isArray(rawData)) {
         const converted = convertLegacyDeviceDatabaseContainer(rawData);
@@ -8125,7 +8146,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const normalizedCandidate = upgradeDeviceDatabaseSchema(candidate);
       return validateDeviceDatabaseStructure(normalizedCandidate);
     }
-    
+
     function formatDeviceImportErrors(errors) {
       if (!Array.isArray(errors) || !errors.length) {
         return '';
@@ -8133,26 +8154,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const lines = errors.slice(0, MAX_DEVICE_IMPORT_ERRORS).map((message) => `- ${message}`);
       return lines.join('\n');
     }
-    
+
     function resolveLanguageCode(lang) {
       if (lang && texts && Object.prototype.hasOwnProperty.call(texts, lang)) {
         return lang;
       }
       return 'en';
     }
-    
+
     function getLanguageTexts(lang) {
       const resolved = resolveLanguageCode(lang);
       return (texts && texts[resolved]) || texts.en || {};
     }
-    
+
     const DEFAULT_INTL_CACHE_KEY = '__default__';
-    
+
     const numberFormatCache = new Map();
     const pluralRulesCache = new Map();
     const listFormatCache = new Map();
     const LIST_FORMAT_OPTIONS = Object.freeze({ style: 'long', type: 'conjunction' });
-    
+
     function serializeIntlOptions(options) {
       if (!options || typeof options !== 'object') {
         return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
@@ -8173,7 +8194,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return entries.sort().join('|');
     }
-    
+
     function getCachedIntlObject(cache, locale, options, factory) {
       const key = serializeIntlOptions(options);
       let localeCache = cache.get(locale);
@@ -8193,19 +8214,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         throw error;
       }
     }
-    
+
     function getNumberFormatter(locale, options) {
       return getCachedIntlObject(numberFormatCache, locale, options, (loc, opts) => new Intl.NumberFormat(loc, opts));
     }
-    
+
     function getPluralRules(locale) {
       return getCachedIntlObject(pluralRulesCache, locale, undefined, loc => new Intl.PluralRules(loc));
     }
-    
+
     function getListFormatter(locale) {
       return getCachedIntlObject(listFormatCache, locale, LIST_FORMAT_OPTIONS, loc => new Intl.ListFormat(loc, LIST_FORMAT_OPTIONS));
     }
-    
+
     function formatNumberForLang(lang, value, options) {
       const resolved = resolveLanguageCode(lang);
       try {
@@ -8223,7 +8244,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return String(value);
       }
     }
-    
+
     function formatCountText(lang, langTexts, baseKey, count) {
       const resolved = resolveLanguageCode(lang);
       const localeTexts = langTexts || getLanguageTexts(resolved);
@@ -8256,7 +8277,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const formatted = formatNumberForLang(resolved, count);
       return template.replace('%s', formatted);
     }
-    
+
     function formatListForLang(lang, items) {
       const resolved = resolveLanguageCode(lang);
       if (!Array.isArray(items) || !items.length) return '';
@@ -8275,7 +8296,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return items.join(', ');
       }
     }
-    
+
     function normalizeTemperatureUnit(unit) {
       if (typeof unit === 'string') {
         const normalized = unit.trim().toLowerCase();
@@ -8353,7 +8374,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C')
       );
     }
-    
+
     function getTemperatureUnitLabelForLang(lang = currentLang, unit) {
       const resolvedUnit = normalizeTemperatureUnit(
         typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
@@ -8370,7 +8391,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)')
       );
     }
-    
+
     function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
       const textsForLang = getLanguageTexts(lang);
       const fallbackTexts = getLanguageTexts('en');
@@ -8426,7 +8447,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
       return `${prefix}${formatted} ${symbol}`;
     }
-    
+
     function summarizeCustomDevices() {
       if (typeof getDeviceChanges !== 'function') {
         return { total: 0, categories: [] };
@@ -8456,7 +8477,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return { total, categories };
     }
-    
+
     function hasGearListContent(entry) {
       if (!entry) return false;
       if (typeof entry === 'string') {
@@ -8465,30 +8486,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!isPlainObjectValue(entry)) {
         return false;
       }
-    
+
       if (typeof entry.gearList === 'string') {
         return entry.gearList.trim().length > 0;
       }
-    
+
       if (isPlainObjectValue(entry.gearList)) {
         return Object.values(entry.gearList).some((value) => (
           typeof value === 'string' && value.trim().length > 0
         ));
       }
-    
+
       const legacyProjectHtml = typeof entry.projectHtml === 'string' && entry.projectHtml.trim().length > 0;
       const legacyGearHtml = typeof entry.gearHtml === 'string' && entry.gearHtml.trim().length > 0;
       if (legacyProjectHtml || legacyGearHtml) {
         return true;
       }
-    
+
       return false;
     }
-    
+
     function computeGearListCount(projectData, setupsData) {
       let count = 0;
       const countedNames = new Set();
-    
+
       const addCount = (name, candidate) => {
         if (!hasGearListContent(candidate)) {
           return;
@@ -8500,7 +8521,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         countedNames.add(normalizedName);
         count += 1;
       };
-    
+
       if (typeof projectData === 'string') {
         addCount('', projectData);
       } else if (Array.isArray(projectData)) {
@@ -8517,16 +8538,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         addCount('', projectData);
       }
-    
+
       if (isPlainObjectValue(setupsData)) {
         Object.entries(setupsData).forEach(([name, setup]) => {
           addCount(name, setup);
         });
       }
-    
+
       return count;
     }
-    
+
     function computeFavoritesCount(favorites) {
       if (!isPlainObjectValue(favorites)) return 0;
       return Object.values(favorites).reduce((count, entry) => {
@@ -8536,7 +8557,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return count;
       }, 0);
     }
-    
+
     function computeFeedbackCount(feedback) {
       if (!isPlainObjectValue(feedback)) return 0;
       return Object.values(feedback).reduce((count, entry) => {
@@ -8713,7 +8734,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return 0;
       }
     }
-    
+
     function formatSizeText(lang, langTexts, bytes) {
       const resolved = resolveLanguageCode(lang);
       if (!Number.isFinite(bytes) || bytes <= 0) {
@@ -8734,7 +8755,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const template = langTexts.storageTotalSizeValue || (texts.en?.storageTotalSizeValue) || '~%s KB';
       return template.replace('%s', formatted);
     }
-    
+
     function formatDeviceCategories(lang, categories) {
       if (!Array.isArray(categories) || !categories.length) return '';
       const resolved = resolveLanguageCode(lang);
@@ -8751,7 +8772,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         .map((entry) => entry.text);
       return formatListForLang(resolved, items);
     }
-    
+
     const AUTO_BACKUP_HELPERS_NAMESPACE = (() => {
       if (typeof require === 'function') {
         try {
@@ -8816,7 +8837,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'iso',
     ]);
     const ISO_TIMESTAMP_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
-    
+
     function isAutomaticBackupName(name) {
       if (typeof name !== 'string') return false;
       return (
@@ -8824,7 +8845,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || name.startsWith(STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX)
       );
     }
-    
+
     function parseAutoBackupTimestamp(name) {
       if (typeof name !== 'string') return null;
       let remainder = '';
@@ -8850,13 +8871,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return date;
     }
-    
+
     function extractTimestampFromValue(value) {
       if (!value) return null;
       const visited = new Set();
       const queue = [value];
       let latest = null;
-    
+
       const considerDate = (candidate) => {
         if (!(candidate instanceof Date)) return;
         if (Number.isNaN(candidate.getTime())) return;
@@ -8864,7 +8885,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           latest = candidate;
         }
       };
-    
+
       while (queue.length) {
         const current = queue.shift();
         if (current === null || current === undefined) {
@@ -8914,10 +8935,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       }
-    
+
       return latest;
     }
-    
+
     function extractLatestManualSetupInfo(setups) {
       const result = { hasAny: false, date: null, name: '' };
       if (!isPlainObjectValue(setups)) {
@@ -8939,7 +8960,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return result;
     }
-    
+
     function extractLatestAutoBackupInfo(names) {
       const result = { hasAny: Array.isArray(names) && names.length > 0, date: null, name: '' };
       if (!Array.isArray(names)) {
@@ -8954,7 +8975,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return result;
     }
-    
+
     function extractLatestFullBackupInfo(entries) {
       const result = { hasAny: Array.isArray(entries) && entries.length > 0, date: null, name: '' };
       if (!Array.isArray(entries)) {
@@ -9004,7 +9025,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return result;
     }
-    
+
     function formatAbsoluteTimestamp(date, lang) {
       if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
         return '';
@@ -9019,7 +9040,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return date.toISOString().replace('T', ' ').replace(/Z$/, ' UTC');
     }
-    
+
     function formatRelativeTimestamp(date, lang) {
       if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
         return '';
@@ -9051,7 +9072,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return '';
       }
     }
-    
+
     function formatStatusTimestamp(date, lang, langTexts) {
       if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
         return '';
@@ -9069,15 +9090,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || '{absolute}';
       return fallbackTemplate.replace('{absolute}', absolute);
     }
-    
+
     function applyStorageStatus(element, info, lang, langTexts, hasAny) {
       if (!element) return;
       if (info && info.date instanceof Date && !Number.isNaN(info.date.getTime())) {
         const timeText = formatStatusTimestamp(info.date, lang, langTexts);
         const display = info.name
           ? (langTexts.storageStatusWithName || texts.en?.storageStatusWithName || '{name} — {time}')
-              .replace('{name}', info.name)
-              .replace('{time}', timeText)
+            .replace('{name}', info.name)
+            .replace('{time}', timeText)
           : timeText;
         element.textContent = display;
         if (display) {
@@ -9318,7 +9339,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return li;
     }
-    
+
     function readCriticalStorageGuardResult() {
       const tryInvoke = (fn) => {
         if (typeof fn !== 'function') {
@@ -9333,14 +9354,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return null;
         }
       };
-    
+
       const direct = (typeof getLastCriticalStorageGuardResult === 'function')
         ? tryInvoke(() => getLastCriticalStorageGuardResult())
         : null;
       if (direct && typeof direct === 'object') {
         return direct;
       }
-    
+
       const scopeCandidates = [
         CORE_SHARED_SCOPE_PART2,
         CORE_SHARED_LOCAL,
@@ -9349,7 +9370,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         typeof self !== 'undefined' ? self : null,
         typeof global !== 'undefined' ? global : null,
       ];
-    
+
       for (let index = 0; index < scopeCandidates.length; index += 1) {
         const scope = scopeCandidates[index];
         if (!scope || typeof scope !== 'object') {
@@ -9360,10 +9381,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return candidate;
         }
       }
-    
+
       return null;
     }
-    
+
     function updateStorageSummary() {
       if (!storageSummaryList) return;
       while (storageSummaryList.firstChild) {
@@ -9410,7 +9431,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return count;
       }, 0);
-    
+
       const manualInfo = extractLatestManualSetupInfo(setups);
       const autoInfo = extractLatestAutoBackupInfo(autoBackupNames);
       const fullBackupInfo = extractLatestFullBackupInfo(rawFullBackups);
@@ -9422,7 +9443,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const missingCount = Array.isArray(guardResult.skipped)
           ? guardResult.skipped.filter((entry) => entry && entry.reason === 'missing').length
           : 0;
-    
+
         if (errorCount > 0) {
           guardValue = (langTexts.storageIntegrityGuardStatusIssue || '{count} issue(s) — check console')
             .replace('{count}', String(errorCount));
@@ -9436,7 +9457,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           guardValue = langTexts.storageIntegrityGuardStatus;
         }
       }
-    
+
       const items = [
         {
           storageKey: 'cameraPowerPlanner_setups',
@@ -9503,11 +9524,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           description: langTexts.storageKeyTotalSizeDesc || '',
         },
       ];
-    
+
       items.forEach((item) => {
         storageSummaryList.appendChild(createSummaryItemElement(item));
       });
-    
+
       applyStorageStatus(
         storageStatusLastProjectValue,
         manualInfo,
@@ -9555,7 +9576,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     const settingsLogoInput = resolveGlobalElement('settingsLogo', 'settingsLogo');
     if (settingsLogoInput) {
       settingsLogoInput.addEventListener('change', () => {
@@ -9628,13 +9649,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var backupDiffCloseButton = document.getElementById("backupDiffClose");
     const aboutVersionElem = document.getElementById("aboutVersion");
     const supportLink = document.getElementById("supportLink");
-    var settingsSave    = document.getElementById("settingsSave");
-    var settingsCancel  = document.getElementById("settingsCancel");
+    var settingsSave = document.getElementById("settingsSave");
+    var settingsCancel = document.getElementById("settingsCancel");
     var featureSearch =
       typeof document !== 'undefined' ? document.getElementById("featureSearch") : null;
     var featureSearchDropdown =
       typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
-    var featureMap      = new Map();
+    var featureMap = new Map();
     const featureSearchEntryIndex = new Map();
     const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
     const MAX_FEATURE_SEARCH_HISTORY = 50;
@@ -9645,7 +9666,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const FEATURE_SEARCH_HISTORY_RETRY_DELAY = 1000;
     const featureSearchHistory = new Map();
     let featureSearchHistorySaveTimer = null;
-    
+
     const getFeatureSearchHistoryStorage = () => {
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
@@ -9659,12 +9680,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     };
-    
+
     const buildFeatureSearchHistoryKey = (id, type = 'feature') => {
       if (!id) return '';
       return `${type}:${id}`;
     };
-    
+
     const scheduleFeatureSearchHistorySave = () => {
       if (featureSearchHistorySaveTimer != null) {
         return;
@@ -9692,7 +9713,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }, 200);
     };
-    
+
     const trimFeatureSearchHistory = () => {
       if (featureSearchHistory.size <= MAX_FEATURE_SEARCH_HISTORY) return;
       const entries = Array.from(featureSearchHistory.entries()).sort((a, b) => a[1].lastUsed - b[1].lastUsed);
@@ -9701,7 +9722,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         featureSearchHistory.delete(entries[i][0]);
       }
     };
-    
+
     const resetFeatureSearchHistoryRetryTimer = () => {
       if (!featureSearchHistoryLoadRetryTimer) return;
       if (typeof clearTimeout === 'function') {
@@ -9784,7 +9805,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       trimFeatureSearchHistory();
     };
-    
+
     const cleanupFeatureSearchHistory = () => {
       let changed = false;
       for (const key of featureSearchHistory.keys()) {
@@ -9797,14 +9818,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         scheduleFeatureSearchHistorySave();
       }
     };
-    
+
     const getFeatureSearchHistoryData = (key, type) => {
       if (!key) return null;
       loadFeatureSearchHistory();
       const combinedKey = buildFeatureSearchHistoryKey(key, type);
       return featureSearchHistory.get(combinedKey) || null;
     };
-    
+
     const registerFeatureSearchUsage = (id, type = 'feature', label = '') => {
       if (!id) return;
       loadFeatureSearchHistory();
@@ -9824,7 +9845,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       trimFeatureSearchHistory();
       scheduleFeatureSearchHistorySave();
     };
-    
+
     const resolveRecentFeatureSearchOptions = () => {
       const recentEntries = resolveRecentFeatureSearchEntries();
       if (!recentEntries.length) return [];
@@ -9859,7 +9880,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return results;
     };
-    
+
     const createDefaultSearchNormalizer = () => {
       /* eslint-disable no-control-regex, no-misleading-character-class */
       const ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
@@ -9954,14 +9975,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     safeExposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
-    
+
     const FEATURE_SEARCH_TYPE_LABEL_KEYS = {
       feature: 'featureSearchTypeFeature',
       action: 'featureSearchTypeAction',
       device: 'featureSearchTypeDevice',
       help: 'featureSearchTypeHelp'
     };
-    
+
     const getFeatureSearchEntryType = element => {
       if (!element) return 'feature';
       const explicit =
@@ -9983,7 +10004,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (role === 'button' || role === 'menuitem') return 'action';
       return 'feature';
     };
-    
+
     const getFeatureSearchLabel = element => {
       if (!element) return '';
       const { dataset } = element;
@@ -9996,14 +10017,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const text = element.textContent;
       return text && text.trim() ? text.trim() : '';
     };
-    
+
     const getFeatureSearchKeywords = element => {
       if (!element) return '';
       const { dataset } = element;
       const dataValue = dataset?.featureSearchKeywords || element.getAttribute('data-feature-search-keywords');
       return dataValue && dataValue.trim() ? dataValue.trim() : '';
     };
-    
+
     var updateFeatureSearchValue = (newValue, originalNormalized) => {
       if (!featureSearch || typeof newValue !== 'string') return;
       const trimmed = newValue.trim();
@@ -10018,18 +10039,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       featureSearch.value = newValue;
       restoreFeatureSearchDefaults();
     };
-    var helpMap         = new Map();
-    var deviceMap       = new Map();
-    var runFeatureSearch = () => {};
-    
+    var helpMap = new Map();
+    var deviceMap = new Map();
+    var runFeatureSearch = () => { };
+
     var featureSearchEntries = [];
     var featureSearchDefaultOptions = [];
     var recordFeatureSearchUsage = (id, type, label) => {
       registerFeatureSearchUsage(id, type, label);
     };
-    
+
     let featureSearchHighlightTokens = [];
-    
+
     const sanitizeFeatureSearchHighlightTokens = tokens => {
       try {
         if (featureSearchModuleApi && typeof featureSearchModuleApi.sanitizeHighlightTokens === 'function') {
@@ -10042,11 +10063,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallbackFeatureSearchModuleApi.sanitizeHighlightTokens(tokens);
     };
-    
+
     const updateFeatureSearchHighlightTokens = tokens => {
       featureSearchHighlightTokens = sanitizeFeatureSearchHighlightTokens(tokens);
     };
-    
+
     const collectFeatureSearchHighlightRanges = (text, tokens) => {
       try {
         if (featureSearchModuleApi && typeof featureSearchModuleApi.collectHighlightRanges === 'function') {
@@ -10059,7 +10080,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return fallbackFeatureSearchModuleApi.collectHighlightRanges(text, tokens);
     };
-    
+
     const applyFeatureSearchHighlight = (element, text) => {
       const tokens = featureSearchHighlightTokens;
       try {
@@ -10190,14 +10211,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     };
-    
+
     const getFeatureSearchContainer = () => {
       if (!featureSearchDropdown || typeof featureSearchDropdown.closest !== 'function') {
         return null;
       }
       return featureSearchDropdown.closest('.feature-search');
     };
-    
+
     const setFeatureSearchDropdownOpenClass = open => {
       const container = getFeatureSearchContainer();
       if (!container) return;
@@ -10207,11 +10228,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         container.classList.remove('feature-search-open');
       }
     };
-    
+
     const renderFeatureSearchDropdown = options => {
       if (!featureSearchDropdown) return;
       featureSearchDropdown.innerHTML = '';
-    
+
       const optionEntryMap =
         featureSearchDropdown.__optionEntries instanceof Map
           ? featureSearchDropdown.__optionEntries
@@ -10227,10 +10248,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setFeatureSearchDropdownOpenClass(false);
         return;
       }
-    
+
       const list = document.createElement('div');
       list.className = 'feature-search-dropdown-list';
-    
+
       options.forEach((option, index) => {
         if (!option || !option.value) return;
         const button = document.createElement('button');
@@ -10261,7 +10282,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const labelText = option.label || option.value;
         applyFeatureSearchHighlight(labelSpan, labelText);
         button.appendChild(labelSpan);
-    
+
         const normalizedLabel = (labelText || '').trim().toLowerCase();
         const normalizedValue = option.value.trim().toLowerCase();
         if (normalizedValue && normalizedLabel && normalizedValue !== normalizedLabel) {
@@ -10270,14 +10291,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           applyFeatureSearchHighlight(valueSpan, option.value);
           button.appendChild(valueSpan);
         }
-    
+
         list.appendChild(button);
       });
-    
+
       featureSearchDropdown.appendChild(list);
       featureSearchDropdown.dataset.count = String(options.length);
       featureSearchDropdown.dataset.activeIndex = '';
-    
+
       if (featureSearchDropdown.dataset.open === 'true') {
         featureSearchDropdown.hidden = false;
         featureSearchDropdown.setAttribute('aria-expanded', 'true');
@@ -10288,7 +10309,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setFeatureSearchDropdownOpenClass(false);
       }
     };
-    
+
     const renderFeatureListOptions = values => {
       if (!Array.isArray(values)) {
         renderFeatureSearchDropdown([]);
@@ -10305,9 +10326,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       renderFeatureSearchDropdown(normalized);
     };
-    
+
     const FEATURE_SEARCH_MAX_RESULTS = 40;
-    
+
     function restoreFeatureSearchDefaults() {
       updateFeatureSearchHighlightTokens([]);
       const values = [];
@@ -10325,7 +10346,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       renderFeatureListOptions(values.length ? values : featureSearchDefaultOptions);
     }
-    
+
     const FEATURE_SEARCH_MATCH_PRIORITIES = {
       none: 0,
       fuzzy: 1,
@@ -10335,14 +10356,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       token: 5,
       exactKey: 6
     };
-    
+
     const FEATURE_SEARCH_TYPE_PRIORITIES = {
       feature: 3,
       action: 4,
       device: 3,
       help: 1
     };
-    
+
     const FEATURE_SEARCH_FILTER_ALIASES = new Map([
       ['feature', 'feature'],
       ['features', 'feature'],
@@ -10506,7 +10527,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return phrases;
     };
-    
+
     const extractFeatureSearchFilter = query => {
       if (typeof query !== 'string') {
         return { filterType: null, queryText: '' };
@@ -10531,7 +10552,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const remainder = remainderRaw.replace(FEATURE_SEARCH_FILTER_STRIP_PATTERN, '').trim();
       return { filterType, queryText: remainder };
     };
-    
+
     function scoreFeatureSearchEntry(entry, queryKey, queryTokens, rawQueryText, quotedPhrases = []) {
       if (!entry || !entry.key) return null;
       const display = entry.display;
@@ -10577,7 +10598,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           bestPriority = priority;
         }
       };
-    
+
       if (queryKey) {
         if (entryKey === queryKey) {
           updateType('exactKey');
@@ -10592,11 +10613,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateType('partial');
         }
       }
-    
+
       if (tokenDetails.score > 0) {
         updateType('token');
       }
-    
+
       if (bestPriority === FEATURE_SEARCH_MATCH_PRIORITIES.none && queryKey && entryKey) {
         const distance = computeLevenshteinDistance(entryKey, queryKey);
         if (isAcceptableFuzzyMatch(entryKey, queryKey, distance)) {
@@ -10604,7 +10625,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateType('fuzzy');
         }
       }
-    
+
       return {
         entry,
         entryType,
@@ -10704,7 +10725,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const bLabel = b.entry?.display || '';
       return aLabel.localeCompare(bLabel, undefined, { sensitivity: 'base' });
     };
-    
+
     function renderFeatureSearchFilteredDefaults(filterType) {
       if (!filterType) {
         restoreFeatureSearchDefaults();
@@ -10765,7 +10786,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       renderFeatureListOptions(values);
     }
-    
+
     function updateFeatureSearchSuggestions(query) {
       const raw = typeof query === 'string' ? query : '';
       const rawTrimmed = raw.trim();
@@ -10815,7 +10836,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         restoreFeatureSearchDefaults();
         return;
       }
-    
+
       const scored = entries
         .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed, quotedPhrases))
         .filter(Boolean);
@@ -10840,19 +10861,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       const meaningful = trimmed
         ? enforceQuotedMatches.filter(
-            item =>
-              item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
-              item.tokenScore > 0 ||
-              item.primaryTokenScore > 0 ||
-              item.phraseScore > 0 ||
-              item.quotedPhraseScore > 0
-          )
+          item =>
+            item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
+            item.tokenScore > 0 ||
+            item.primaryTokenScore > 0 ||
+            item.phraseScore > 0 ||
+            item.quotedPhraseScore > 0
+        )
         : [];
 
       const candidates = (meaningful.length > 0 ? meaningful : enforceQuotedMatches).sort(
         compareFeatureSearchCandidates
       );
-    
+
       const values = [];
       const seen = new Set();
       for (const item of candidates) {
@@ -10862,8 +10883,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         seen.add(optionData.value);
         values.push(optionData);
       }
-    
-    
+
+
       if (values.length === 0) {
         if (filterType) {
           renderFeatureSearchFilteredDefaults(filterType);
@@ -10872,7 +10893,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-    
+
       renderFeatureListOptions(values);
     }
     // Provide a minimal search normaliser that lowercases values and strips
@@ -10957,9 +10978,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const NUMBER_WORD_PATTERN =
         NUMBER_WORD_BASE.size > 0
           ? new RegExp(
-              `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
-              'gi',
-            )
+            `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
+            'gi',
+          )
           : null;
 
       function fallbackNormalizeNumberWords(str) {
@@ -11049,7 +11070,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         normalizeSpellingVariants(value) {
           return value;
         },
-        applySearchTokenSynonyms() {},
+        applySearchTokenSynonyms() { },
       };
     }
 
@@ -11229,10 +11250,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       : fallbackFeatureSearchEngine.computeFuzzyTokenScore;
 
     const FEATURE_CONTEXT_LIMIT = 3;
-    
+
     const toTitleCase = str =>
       str.replace(/\b([a-z])/g, (_, ch) => ch.toUpperCase());
-    
+
     const idToContextLabel = id => {
       if (!id) return '';
       const spaced = id
@@ -11243,7 +11264,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!spaced) return '';
       return toTitleCase(spaced);
     };
-    
+
     const addUniqueContext = (contexts, seen, value, baseLabelLower) => {
       if (!value) return;
       const trimmed = value.trim();
@@ -11253,7 +11274,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       contexts.push(trimmed);
       seen.add(normalized);
     };
-    
+
     const collectFeatureContexts = (element, baseLabelLower) => {
       if (!element || !element.parentElement) return [];
       const contexts = [];
@@ -11300,7 +11321,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return contexts.reverse();
     };
-    
+
     const collectFeatureSearchHelpTexts = element => {
       if (!element) return [];
       const texts = new Set();
@@ -11327,13 +11348,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         add(el.getAttribute('aria-description'));
         add(el.getAttribute('title'));
       };
-    
+
       add(element.getAttribute('data-help'));
       add(element.getAttribute('aria-description'));
       add(element.getAttribute('title'));
-    
+
       const ownerDoc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-    
+
       const processIdRefs = (attrName, collector) => {
         if (!ownerDoc) return;
         const attrValue = element.getAttribute(attrName);
@@ -11344,22 +11365,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .filter(Boolean)
           .forEach(collector);
       };
-    
+
       processIdRefs('aria-describedby', addFromElement);
       processIdRefs('aria-labelledby', addFromElement);
-    
+
       if (element.labels && typeof element.labels === 'object') {
         Array.from(element.labels).forEach(addFromElement);
       }
-    
+
       if (typeof element.closest === 'function') {
         const wrappingLabel = element.closest('label');
         if (wrappingLabel) addFromElement(wrappingLabel);
       }
-    
+
       return Array.from(texts);
     };
-    
+
     const buildFeatureEntryDetailText = entry => {
       if (!entry || typeof entry !== 'object') return '';
       const base = normalizeFeatureSearchDetail(
@@ -11382,7 +11403,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     };
-    
+
     const buildHelpSectionDetailText = section => {
       if (!section) return '';
       const candidates = [];
@@ -11410,7 +11431,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     };
-    
+
     const buildDeviceEntryDetailText = entry => {
       if (!entry || typeof entry !== 'object') return '';
       if (entry.entryType === 'deviceLibrary') {
@@ -11438,7 +11459,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     };
-    
+
     const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
       if (!element || !label) return null;
       const baseLabel = label.trim();
@@ -11500,7 +11521,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return entry;
     };
-    
+
     const escapeFeatureSearchRegExp = value =>
       value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -11698,8 +11719,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const current = Number.isFinite(now)
           ? now
           : (typeof Date === 'function' && typeof Date.now === 'function'
-              ? Date.now()
-              : new Date().getTime());
+            ? Date.now()
+            : new Date().getTime());
         const age = Math.max(0, current - timestamp);
         const day = 24 * 60 * 60 * 1000;
         if (age <= day) {
@@ -11746,7 +11767,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return prev[bLen];
     };
-    
+
     const isAcceptableFuzzyMatch = (entryKey, queryKey, distance) => {
       if (!Number.isFinite(distance) || distance <= 0) {
         return false;
@@ -11764,7 +11785,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return distance <= 3 && distance / maxLength <= 0.4;
     };
-    
+
     var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
     const existingDevicesHeading = document.getElementById("existingDevicesHeading");
     const batteryComparisonSection = document.getElementById("batteryComparison");
@@ -11782,17 +11803,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
     var gearListOutput = document.getElementById("gearListOutput");
     var projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
-    
+
     // Load accent color from localStorage
     var DEFAULT_ACCENT_COLOR = '#001589';
     var accentColor = DEFAULT_ACCENT_COLOR;
     var prevAccentColor = accentColor;
     var HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
     const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
-    
+
     const normalizeAccentValue = value =>
       typeof value === 'string' ? value.trim().toLowerCase() : '';
-    
+
     const accentColorInputElement = resolveGlobalElement('accentColorInput', 'accentColorInput');
     const accentColorResetButtonElement = resolveGlobalElement('accentColorResetButton', 'accentColorReset');
 
@@ -11813,13 +11834,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         accentColorResetButtonElement.removeAttribute('aria-disabled');
       }
     };
-    
+
     const DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
     const PINK_REFERENCE_COLOR = '#ff69b4';
     const PINK_LUMINANCE_TOLERANCE = 0.06;
     const BRIGHT_ACCENT_LUMINANCE_THRESHOLD = 0.6;
     const BRIGHT_ACCENT_MIN_SATURATION = 0.35;
-    
+
     function parseRgbComponent(value) {
       const trimmed = value.trim();
       if (!trimmed) return null;
@@ -11832,7 +11853,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (Number.isNaN(numeric)) return null;
       return Math.max(0, Math.min(255, Math.round(numeric)));
     }
-    
+
     function parseColorToRgb(color) {
       if (typeof color !== 'string') return null;
       const trimmed = color.trim();
@@ -11866,7 +11887,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }
-    
+
     function computeRelativeLuminance(rgb) {
       if (!rgb || typeof rgb !== 'object') return 0;
       const clamp = component => {
@@ -11883,7 +11904,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const blue = transform(clamp(rgb.b));
       return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
     }
-    
+
     function computeSaturation(rgb) {
       if (!rgb || typeof rgb !== 'object') return 0;
       const normalize = component => {
@@ -11900,13 +11921,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (max === min) return 0;
       return (max - min) / max;
     }
-    
+
     const PINK_REFERENCE_LUMINANCE = (() => {
       const pinkRgb = parseColorToRgb(PINK_REFERENCE_COLOR);
       if (!pinkRgb) return 0.35;
       return computeRelativeLuminance(pinkRgb);
     })();
-    
+
     function shouldEnableDarkModeAccentBoost({ color, highContrast } = {}) {
       if (typeof document === 'undefined') return false;
       if (!document.body || !document.body.classList.contains('dark-mode')) return false;
@@ -11925,26 +11946,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         saturation >= BRIGHT_ACCENT_MIN_SATURATION
       );
     }
-    
+
     function refreshDarkModeAccentBoost(options = {}) {
       if (typeof document === 'undefined' || !document.body) return;
       const shouldEnable = shouldEnableDarkModeAccentBoost(options);
       document.body.classList.toggle(DARK_MODE_ACCENT_BOOST_CLASS, shouldEnable);
       updateInstallBannerColors();
     }
-    
+
     var isHighContrastActive = () =>
       typeof document !== 'undefined' &&
       (document.documentElement.classList.contains('high-contrast') ||
         (document.body && document.body.classList.contains('high-contrast')));
-    
+
     var hasCustomAccentSelection = () => {
       const normalized = normalizeAccentValue(accentColor);
       return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
     };
-    
+
     var shouldPreserveAccentInPinkMode = () => false;
-    
+
     var applyAccentColor = (color) => {
       const highContrast = isHighContrastActive();
       const accentValue = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : color;
@@ -11966,7 +11987,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       refreshDarkModeAccentBoost({ color: accentValue, highContrast });
     };
-    
+
     var clearAccentColorOverrides = () => {
       const root = document.documentElement;
       const rootStyle = root && root.style;
@@ -11981,7 +12002,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       refreshDarkModeAccentBoost({ color: null, highContrast: isHighContrastActive() });
     };
-    
+
     try {
       const storedAccent = localStorage.getItem('accentColor');
       if (storedAccent) {
@@ -11993,7 +12014,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     prevAccentColor = accentColor;
     updateAccentColorResetButtonState();
-    
+
     if (accentColorInputElement) {
       accentColorInputElement.addEventListener('input', () => {
         if (
@@ -12045,11 +12066,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateAccentColorResetButtonState();
       });
     }
-    
+
     // Font preferences
     var fontSize = '16';
     var fontFamily = "'Ubuntu', sans-serif";
-    
+
     const uiScaleRoot = document.documentElement;
     const defaultUIScaleValues = {
       '--page-padding': 20,
@@ -12063,7 +12084,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const uiScaleProperties = Object.keys(defaultUIScaleValues);
     const baseUIScaleValues = { ...defaultUIScaleValues };
     let baseFontSize = 16;
-    
+
     if (uiScaleRoot) {
       try {
         const computedStyle = getComputedStyle(uiScaleRoot);
@@ -12081,7 +12102,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         console.warn('Unable to read computed styles for UI scaling', error);
       }
     }
-    
+
     const customFontStorageKeyName =
       typeof CUSTOM_FONT_STORAGE_KEY_NAME !== 'undefined'
         ? CUSTOM_FONT_STORAGE_KEY_NAME
@@ -12089,7 +12110,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           ? CUSTOM_FONT_STORAGE_KEY
           : 'cameraPowerPlanner_customFonts';
     var customFontEntries = new Map();
-    
+
     const SUPPORTED_FONT_TYPES = new Set([
       'font/ttf',
       'font/otf',
@@ -12100,9 +12121,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'application/x-font-ttf',
       'application/x-font-opentype'
     ]);
-    
+
     const SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
-    
+
     function loadCustomFontMetadataFromStorage() {
       if (typeof localStorage === 'undefined') return [];
       try {
@@ -12122,7 +12143,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return [];
       }
     }
-    
+
     function persistCustomFontsToStorage() {
       if (typeof localStorage === 'undefined') return true;
       try {
@@ -12138,14 +12159,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return false;
       }
     }
-    
+
     function sanitizeCustomFontName(name) {
       if (!name) return 'Custom Font';
       const trimmed = String(name).trim();
       if (!trimmed) return 'Custom Font';
       return trimmed.replace(/\s+/g, ' ').slice(0, 80);
     }
-    
+
     function deriveFontNameFromFile(file) {
       if (!file) return 'Custom Font';
       const rawName = typeof file.name === 'string' ? file.name : '';
@@ -12154,7 +12175,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const candidate = withoutExtension || rawName;
       return sanitizeCustomFontName(candidate);
     }
-    
+
     function ensureUniqueCustomFontName(baseName) {
       const sanitizedBase = sanitizeCustomFontName(baseName);
       if (!settingsFontFamily) return sanitizedBase;
@@ -12170,14 +12191,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return candidate;
     }
-    
+
     function cssEscapeFontName(name) {
       if (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function') {
         return CSS.escape(name);
       }
       return String(name).replace(/['"\\]/g, match => `\\${match}`);
     }
-    
+
     async function registerCustomFontSource(name, dataUrl, id) {
       if (!name || !dataUrl || typeof document === 'undefined') return false;
       let loaded = false;
@@ -12219,7 +12240,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return loaded;
     }
-    
+
     async function applyStoredCustomFont(entry) {
       if (!entry || !entry.id) return null;
       const value = buildFontFamilyValue(entry.name);
@@ -12230,7 +12251,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       await registerCustomFontSource(entry.name, entry.data, entry.id);
       return value;
     }
-    
+
     async function loadStoredCustomFonts() {
       const stored = loadCustomFontMetadataFromStorage();
       if (!stored.length) return;
@@ -12248,18 +12269,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     function resetCustomFontsForFactoryReset() {
       const hadEntries = customFontEntries && typeof customFontEntries.size === 'number'
         ? customFontEntries.size > 0
         : false;
-    
+
       if (customFontEntries && typeof customFontEntries.clear === 'function') {
         customFontEntries.clear();
       }
-    
+
       let removedUploadedOption = false;
-    
+
       if (settingsFontFamily && settingsFontFamily.options) {
         const options = Array.from(settingsFontFamily.options || []);
         options.forEach(option => {
@@ -12281,7 +12302,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
           }
         });
-    
+
         const hasCurrentSelection = options.some(
           option => option && option.value === settingsFontFamily.value,
         );
@@ -12293,7 +12314,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
       if (typeof document !== 'undefined' && document.querySelectorAll) {
         const inlineStyles = document.querySelectorAll('style[id^="customFontStyle-"]');
         inlineStyles.forEach(styleNode => {
@@ -12302,12 +12323,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       }
-    
+
       if (typeof setLocalFontsStatus === 'function' && (hadEntries || removedUploadedOption)) {
         setLocalFontsStatus(null);
       }
     }
-    
+
     function isSupportedFontFile(file) {
       if (!file) return false;
       const type = typeof file.type === 'string' ? file.type.toLowerCase() : '';
@@ -12317,7 +12338,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const name = typeof file.name === 'string' ? file.name.toLowerCase() : '';
       return SUPPORTED_FONT_EXTENSIONS.some(ext => name.endsWith(ext));
     }
-    
+
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         if (typeof FileReader !== 'function') {
@@ -12334,7 +12355,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     async function addCustomFontFromData(name, dataUrl, { persist = true } = {}) {
       const uniqueName = ensureUniqueCustomFontName(name);
       const value = buildFontFamilyValue(uniqueName);
@@ -12356,7 +12377,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return { name: uniqueName, value, persisted };
     }
-    
+
     async function handleLocalFontFiles(fileList) {
       if (!fileList || fileList.length === 0) {
         setLocalFontsStatus('localFontsNoFonts');
@@ -12405,7 +12426,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         setLocalFontsStatus('localFontsNoFonts');
       }
-    
+
       if (persistFailure) {
         const message = getLocalizedText('localFontsSaveError');
         if (message) {
@@ -12427,16 +12448,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           showNotification('error', message);
         }
       }
-    
+
       if (localFontsButtonElement) {
         localFontsButtonElement.disabled = false;
       }
     }
-    
+
     async function normalizeFontResults(result) {
       if (!result) return [];
       if (Array.isArray(result)) return result;
-    
+
       const hasSymbol = typeof Symbol === 'function';
       const asyncIteratorSymbol = hasSymbol && Symbol.asyncIterator;
       if (asyncIteratorSymbol && typeof result[asyncIteratorSymbol] === 'function') {
@@ -12446,15 +12467,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return fonts;
       }
-    
+
       const iteratorSymbol = hasSymbol && Symbol.iterator;
       if (iteratorSymbol && typeof result[iteratorSymbol] === 'function') {
         return Array.from(result);
       }
-    
+
       return [];
     }
-    
+
     const queryAvailableLocalFonts = (() => {
       if (typeof window === 'undefined') return null;
       if (typeof window.queryLocalFonts === 'function') {
@@ -12471,7 +12492,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     })();
-    
+
     const supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
     const localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
     const localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
@@ -12490,13 +12511,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         typeof window.FileReader === 'function' &&
         typeof localFontsInputElement.click === 'function'
       );
-    
+
     function getLocalizedText(key) {
       if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
       if (texts.en && texts.en[key]) return texts.en[key];
       return '';
     }
-    
+
     function guessFontFallback(name) {
       if (!name) return 'sans-serif';
       const lower = name.toLowerCase();
@@ -12511,13 +12532,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return 'sans-serif';
     }
-    
+
     function buildFontFamilyValue(name) {
       if (!name) return fontFamily;
       const escaped = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       return `'${escaped}', ${guessFontFallback(name)}`;
     }
-    
+
     function extractFontLabel(value) {
       if (!value) return '';
       const trimmed = value.trim();
@@ -12544,7 +12565,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (commaIdx !== -1) return trimmed.slice(0, commaIdx).trim();
       return trimmed;
     }
-    
+
     function ensureFontFamilyOption(value, label, targetGroup, source) {
       if (!settingsFontFamily || !value) {
         return { option: null, created: false };
@@ -12565,7 +12586,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       container.appendChild(option);
       return { option, created: true };
     }
-    
+
     function setLocalFontsStatus(key, replacement) {
       if (!localFontsStatus || !key) {
         if (localFontsStatus) {
@@ -12590,7 +12611,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       localFontsStatus.textContent = message;
       localFontsStatus.removeAttribute('hidden');
     }
-    
+
     async function requestLocalFonts() {
       if (!supportsLocalFonts || !localFontsButtonElement || !queryAvailableLocalFonts) return;
       localFontsButtonElement.disabled = true;
@@ -12654,7 +12675,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         localFontsButtonElement.disabled = false;
       }
     }
-    
+
     if (localFontsButtonElement) {
       if (supportsLocalFonts || canUploadFontFiles) {
         localFontsButtonElement.removeAttribute('hidden');
@@ -12687,23 +12708,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     loadStoredCustomFonts().catch(error => {
       console.warn('Unable to restore stored custom fonts', error);
     });
-    
+
     function applyFontSize(size) {
       const numericSize = parseFloat(size);
       if (!Number.isFinite(numericSize) || numericSize <= 0) {
         return;
       }
-    
+
       document.documentElement.style.fontSize = `${numericSize}px`;
-    
+
       if (!Number.isFinite(baseFontSize) || baseFontSize <= 0) {
         return;
       }
-    
+
       const scale = numericSize / baseFontSize;
       for (const prop of uiScaleProperties) {
         const baseValue = baseUIScaleValues[prop];
@@ -12712,11 +12733,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       document.documentElement.style.setProperty('--ui-scale', String(scale));
     }
-    
+
     function applyFontFamily(family) {
       document.documentElement.style.setProperty('--font-family', family);
     }
-    
+
     try {
       const storedSize = localStorage.getItem('fontSize');
       if (storedSize) {
@@ -12731,7 +12752,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     } catch (e) {
       console.warn('Could not load font preferences', e);
     }
-    
+
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) {
       const hasStoredOption = Array.from(settingsFontFamily.options).some(
@@ -12742,7 +12763,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       settingsFontFamily.value = fontFamily;
     }
-    
+
     var revertAccentColor = () => {
       if (document.body && document.body.classList.contains('pink-mode')) {
         if (shouldPreserveAccentInPinkMode()) {
@@ -12754,7 +12775,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       applyAccentColor(prevAccentColor);
     };
-    
+
     function populateFeatureSearch() {
       featureMap.clear();
       helpMap.clear();
@@ -12910,7 +12931,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           featureSearchEntries.push(helpData);
         });
       }
-    
+
       document.querySelectorAll('select').forEach(sel => {
         sel.querySelectorAll('option').forEach(opt => {
           const name = opt.textContent.trim();
@@ -12965,7 +12986,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateFeatureSearchSuggestions(featureSearch.value);
       }
     }
-    
+
     function setProjectRequirementButtonsText() {
       const langTexts = texts[currentLang] || texts.en || {};
       const fallbackTexts = texts.en || {};
@@ -13004,12 +13025,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         btn = document.createElement('button');
         btn.id = 'editProjectBtn';
       }
-    
+
       const legacyButtonParent = btn.parentElement;
       if (legacyButtonParent && legacyButtonParent !== container && legacyButtonParent.id !== 'editProjectBtn') {
         legacyButtonParent.removeChild(btn);
       }
-    
+
       if (!btn.dataset.editProjectBound) {
         btn.type = 'button';
         btn.addEventListener('click', () => {
@@ -13090,7 +13111,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (extraBtn) extraBtn.remove();
       }
     }
-    
+
     function annotateGearTableCategoryGroups(table) {
       if (!table) return;
       const groups = table.querySelectorAll('tbody.category-group');
@@ -13103,7 +13124,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         group.setAttribute('data-gear-table-category', label);
       });
     }
-    
+
     function ensureGearTableCategoryGrouping(table) {
       if (!table) return;
       const doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
@@ -13152,9 +13173,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       annotateGearTableCategoryGroups(table);
     }
-    
+
     let overviewTitleCandidatesCache = null;
-    
+
     function getOverviewTitleCandidates() {
       if (overviewTitleCandidatesCache && overviewTitleCandidatesCache.length) {
         return overviewTitleCandidatesCache;
@@ -13175,7 +13196,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         .sort((a, b) => b.length - a.length);
       return overviewTitleCandidatesCache;
     }
-    
+
     function extractProjectNameFromHeading(titleElement) {
       if (!titleElement) return '';
       if (typeof titleElement.getAttribute === 'function') {
@@ -13189,7 +13210,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? titleElement.textContent.replace(/\s+/g, ' ').trim()
         : '';
       if (!textValue) return '';
-    
+
       const quoteMatch = textValue.match(/[“"']([^“”"']+)[”"']/);
       if (quoteMatch && quoteMatch[1] && quoteMatch[1].trim()) {
         return quoteMatch[1].trim();
@@ -13198,7 +13219,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (guillemetMatch && guillemetMatch[1] && guillemetMatch[1].trim()) {
         return guillemetMatch[1].trim();
       }
-    
+
       const overviewCandidates = getOverviewTitleCandidates();
       const lowerText = textValue.toLowerCase();
       for (const label of overviewCandidates) {
@@ -13216,19 +13237,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return '';
         }
       }
-    
+
       if (overviewCandidates.some(label => lowerText === label.toLowerCase())) {
         return '';
       }
-    
+
       const stripped = textValue.replace(/^["'“”«»‹›]+/, '').replace(/["'“”«»‹›]+$/, '').trim();
       if (stripped && stripped !== textValue) {
         return stripped;
       }
-    
+
       return textValue;
     }
-    
+
     function splitGearListHtml(html) {
       if (!html) return { projectHtml: '', gearHtml: '' };
       // Support legacy storage formats where the gear list and project
@@ -13255,7 +13276,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (!element || typeof element.compareDocumentPosition !== 'function') return false;
           return Boolean(element.compareDocumentPosition(reqGrid) & Node.DOCUMENT_POSITION_FOLLOWING);
         };
-    
+
         let headingNode = null;
         let sibling = reqGrid.previousElementSibling;
         while (sibling) {
@@ -13265,7 +13286,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
           sibling = sibling.previousElementSibling;
         }
-    
+
         if (!headingNode) {
           const parent = reqGrid.parentElement;
           if (parent) {
@@ -13281,7 +13302,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
           }
         }
-    
+
         if (headingNode) {
           headingNodeUsed = headingNode;
           headingHtml = headingNode.outerHTML;
@@ -13348,7 +13369,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return { projectHtml, gearHtml };
     }
-    
+
     registerGearListSplitImplementation(splitGearListHtml);
 
     function registerGearListSplitImplementation(fn) {
@@ -13557,17 +13578,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         logic: 'Scaled to shoot length and weather needs so consumables never run short.'
       }
     });
-    
+
     const DEFAULT_GEAR_TABLE_CATEGORY_META = Object.freeze({
       summary: 'Automatically generated grouping of related equipment.',
       logic: 'Filled using your project requirements, selections and saved auto gear rules.'
     });
-    
+
     const getGearTableCategoryMeta = category => {
       if (!category) return DEFAULT_GEAR_TABLE_CATEGORY_META;
       return GEAR_TABLE_CATEGORY_META[category] || DEFAULT_GEAR_TABLE_CATEGORY_META;
     };
-    
+
     const buildGearTableCategoryHelp = category => {
       const meta = getGearTableCategoryMeta(category);
       const parts = [];
@@ -13576,7 +13597,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (meta.logic) parts.push(`Logic: ${meta.logic}`);
       return parts.join(' ');
     };
-    
+
     const formatDeviceCategoryLabel = category => {
       if (typeof category !== 'string' || !category.trim()) return '';
       return category
@@ -13587,7 +13608,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
     };
-    
+
     const formatDeviceCategoryPath = path => {
       if (!Array.isArray(path) || !path.length) return '';
       return path
@@ -13595,7 +13616,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         .filter(Boolean)
         .join(' › ');
     };
-    
+
     const DANGEROUS_SHARED_TAGS = new Set([
       'script',
       'style',
@@ -13607,31 +13628,31 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'meta',
       'base'
     ]);
-    
+
     const DANGEROUS_SHARED_ATTRS = new Set([
       'formaction',
       'action',
       'srcdoc'
     ]);
-    
+
     function isSafeSharedUrl(value) {
       if (typeof value !== 'string') {
         return false;
       }
-    
+
       const trimmed = value.trim();
       if (!trimmed) {
         return true;
       }
-    
+
       if (trimmed.startsWith('#')) {
         return true;
       }
-    
+
       if (/^(?:javascript|vbscript|data):/i.test(trimmed)) {
         return false;
       }
-    
+
       try {
         const base = typeof window !== 'undefined' && window.location ? window.location.href : 'https://localhost';
         const url = new URL(trimmed, base);
@@ -13650,19 +13671,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return true;
         }
       }
-    
+
       return false;
     }
-    
+
     function sanitizeSharedHtml(html) {
       if (!html) {
         return '';
       }
-    
+
       if (typeof html !== 'string') {
         return sanitizeSharedHtml(String(html));
       }
-    
+
       let doc;
       try {
         doc = new DOMParser().parseFromString(html, 'text/html');
@@ -13670,17 +13691,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         console.warn('Failed to parse shared HTML for sanitization', error);
         return '';
       }
-    
+
       if (!doc || !doc.body) {
         return '';
       }
-    
+
       DANGEROUS_SHARED_TAGS.forEach(tag => {
         doc.body.querySelectorAll(tag).forEach(node => {
           node.remove();
         });
       });
-    
+
       doc.body.querySelectorAll('*').forEach(element => {
         Array.from(element.attributes).forEach(attribute => {
           const name = attribute.name.toLowerCase();
@@ -13711,10 +13732,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       });
-    
+
       return doc.body.innerHTML;
     }
-    
+
     function displayGearAndRequirements(html) {
       const { projectHtml, gearHtml } = splitGearListHtml(html);
       const safeProjectHtml = sanitizeSharedHtml(projectHtml);
@@ -13799,7 +13820,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
             return { info: null, category: '', categoryPath: [] };
           };
-    
+
           const buildGearItemHelp = ({
             name,
             countText,
@@ -13826,13 +13847,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               let summary = generateSafeConnectorSummary(deviceInfo);
               summary = summary
                 ? (function stripTags(s) {
-                      let prev;
-                      do {
-                        prev = s;
-                        s = s.replace(/<[^>]+>/g, '');
-                      } while (s !== prev);
-                      return s.replace(/\s+/g, ' ').trim();
-                    })(summary)
+                  let prev;
+                  do {
+                    prev = s;
+                    s = s.replace(/<[^>]+>/g, '');
+                  } while (s !== prev);
+                  return s.replace(/\s+/g, ' ').trim();
+                })(summary)
                 : '';
               if (deviceInfo.notes)
                 summary = summary ? `${summary}; Notes: ${deviceInfo.notes}` : deviceInfo.notes;
@@ -13840,7 +13861,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
             return parts.join(' – ');
           };
-    
+
           gearListOutput.querySelectorAll('tbody.category-group').forEach(group => {
             const headingCell = group.querySelector('.category-row td');
             if (!headingCell) return;
@@ -13850,7 +13871,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             headingCell.setAttribute('title', helpText);
             headingCell.setAttribute('data-help', helpText);
           });
-    
+
           gearListOutput.querySelectorAll('.gear-item').forEach(span => {
             const name = span.getAttribute('data-gear-name') || span.textContent.trim();
             const { info, category } = findDevice(name);
@@ -13874,7 +13895,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               initFavoritableSelect(sel);
             });
           });
-    
+
           // Standalone selects (not wrapped in .gear-item) still need descriptive help
           gearListOutput.querySelectorAll('select').forEach(sel => {
             if (sel.getAttribute('data-help')) return;
@@ -13900,7 +13921,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           gearListOutput.innerHTML = '';
           gearListOutput.classList.add('hidden');
         }
-    
+
         if (typeof ensureGearListActions === 'function') {
           ensureGearListActions();
         } else if (!gearListOutput.querySelector('#gearListActions')) {
@@ -13956,7 +13977,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         adjustGearListSelectWidth(sel);
       }
     }
-    
+
     function sanitizeProjectInfoValue(value) {
       if (value === null || value === undefined) return undefined;
       if (typeof value === 'string') {
@@ -13981,7 +14002,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return undefined;
     }
-    
+
     function sanitizeProjectInfo(info) {
       if (!info || typeof info !== 'object') return null;
       const result = {};
@@ -13993,7 +14014,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Object.keys(result).length > 0 ? result : null;
     }
-    
+
     function hasProjectInfoData(value) {
       if (value === null || value === undefined) return false;
       if (typeof value === 'string') {
@@ -14013,7 +14034,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return false;
     }
-    
+
     function projectInfoEquals(a, b) {
       if (a === b) return true;
       if (!a || !b) return false;
@@ -14032,7 +14053,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return false;
     }
-    
+
     function ensureDefaultProjectInfoSnapshot() {
       if (defaultProjectInfoSnapshot !== null) return;
       // Treat an entirely empty project info payload as the only "default" state so
@@ -14040,7 +14061,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       // preserved when sanitizing project info for storage.
       defaultProjectInfoSnapshot = {};
     }
-    
+
     function deriveProjectInfo(info) {
       ensureDefaultProjectInfoSnapshot();
       const sanitized = sanitizeProjectInfo(info);
@@ -14058,15 +14079,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return sanitized;
     }
-    
+
     function setCurrentProjectInfo(info) {
       currentProjectInfo = info;
     }
-    
+
     function getCurrentProjectInfo() {
       return currentProjectInfo;
     }
-    
+
     function computeSetupSignature(state) {
       if (!state) return '';
       return [
@@ -14087,12 +14108,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         coreStableStringify(state.diagramPositions || null)
       ].join('||');
     }
-    
+
     function storeLoadedSetupState(state) {
       loadedSetupState = state;
       loadedSetupStateSignature = computeSetupSignature(state);
     }
-    
+
     function getCurrentSetupState() {
       const info = projectForm ? collectProjectFormData() : {};
       info.sliderBowl = getSliderBowlValue();
@@ -14124,7 +14145,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return state;
     }
-    
+
     function hasAnyDeviceSelection(state) {
       if (!state) return false;
       const isMeaningfulSelection = (value) => {
@@ -14139,7 +14160,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return true;
       };
-    
+
       const primarySelections = [
         state.camera,
         state.monitor,
@@ -14149,22 +14170,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         state.battery,
         state.batteryHotswap
       ];
-    
+
       if (primarySelections.some((value) => isMeaningfulSelection(value))) {
         return true;
       }
-    
+
       if (isMeaningfulSelection(state.motors)) {
         return true;
       }
-    
+
       if (isMeaningfulSelection(state.controllers)) {
         return true;
       }
-    
+
       return false;
     }
-    
+
     function checkSetupChanged() {
       if (!saveSetupBtn) return;
       const langTexts = texts[currentLang] || {};
@@ -14194,13 +14215,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       setButtonLabelWithIcon(saveSetupBtn, saveLabel);
     }
-    
+
     var projectDialog = document.getElementById("projectDialog");
     var projectForm = document.getElementById("projectForm");
     var filterSelectElem = document.getElementById('filter');
     var filterDetailsStorage = document.getElementById('filterDetails');
     var matteboxSelect = document.getElementById('mattebox');
     var projectCancelBtn = document.getElementById("projectCancel");
+    var projectDialogCloseBtn = document.getElementById("projectDialogClose");
     var feedbackDialog = document.getElementById("feedbackDialog");
     var feedbackForm = document.getElementById("feedbackForm");
     var feedbackCancelBtn = document.getElementById("fbCancel");
@@ -14227,7 +14249,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
     }
     var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
-    var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
+    var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => { };
     var setupDiagramContainer = document.getElementById("diagramArea");
     const diagramLegend = document.getElementById("diagramLegend");
     var downloadDiagramBtn = document.getElementById("downloadDiagram");
@@ -14265,10 +14287,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     let getDiagramManualPositions = () => ({
     });
-    let setManualDiagramPositions = () => {};
-    let renderSetupDiagram = () => {};
-    let enableDiagramInteractions = () => {};
-    let updateDiagramLegend = () => {};
+    let setManualDiagramPositions = () => { };
+    let renderSetupDiagram = () => { };
+    let enableDiagramInteractions = () => { };
+    let updateDiagramLegend = () => { };
     let getDiagramCss = () => '';
     let diagramConnectorIcons = {};
     let overviewSectionIcons = {};
@@ -14279,29 +14301,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       || (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.cineFeaturesConnectionDiagram)
       || null;
 
-    const normalizePowerPortType = resolveCoreBinding('normalizePowerPortType', () => []);
-    const motorPriority = resolveCoreBinding('motorPriority', () => 0);
-    const controllerPriority = resolveCoreBinding('controllerPriority', () => 0);
-    const isArri = resolveCoreBinding('isArri', () => false);
-    const isArriOrCmotion = resolveCoreBinding('isArriOrCmotion', () => false);
-    const fizNeedsPower = resolveCoreBinding('fizNeedsPower', () => false);
-    const fizPowerPort = resolveCoreBinding('fizPowerPort', () => '');
-    const controllerDistancePort = resolveCoreBinding('controllerDistancePort', () => '');
-    const controllerCamPort = resolveCoreBinding('controllerCamPort', () => '');
-    const cameraFizPort = resolveCoreBinding('cameraFizPort', () => '');
-    const motorFizPort = resolveCoreBinding('motorFizPort', () => '');
-    const getSelectedPlate = resolveCoreBinding('getSelectedPlate', () => null);
-    const isSelectedPlateNative = resolveCoreBinding('isSelectedPlateNative', () => false);
-    const formatConnLabel = resolveCoreBinding('formatConnLabel', () => '');
-    const connectionLabel = resolveCoreBinding('connectionLabel', () => '');
-    const fizPort = resolveCoreBinding('fizPort', () => '');
-    const iconGlyph = resolveCoreBinding('iconGlyph', () => '');
-    const ICON_FONT_KEYS = resolveCoreBinding('ICON_FONT_KEYS', {});
-    const applyIconGlyph = resolveCoreBinding('applyIconGlyph', () => undefined);
-    const resolveIconGlyph = resolveCoreBinding('resolveIconGlyph', () => null);
-    const positionSvgMarkup = resolveCoreBinding('positionSvgMarkup', markup => markup || '');
-    const ensureSvgHasAriaHidden = resolveCoreBinding('ensureSvgHasAriaHidden', markup => markup || '');
-    const formatSvgCoordinate = resolveCoreBinding('formatSvgCoordinate', value => value);
+
+
 
     function powerInputTypes(dev) {
       const out = [];
@@ -14350,7 +14351,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       try {
         const scheduleProjectAutoSaveFn =
           typeof globalThis !== 'undefined' &&
-          typeof globalThis.scheduleProjectAutoSave === 'function'
+            typeof globalThis.scheduleProjectAutoSave === 'function'
             ? globalThis.scheduleProjectAutoSave
             : null;
 
@@ -14358,8 +14359,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           typeof saveCurrentSession === 'function'
             ? saveCurrentSession
             : (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentSession === 'function'
-                ? (...args) => globalThis.saveCurrentSession(...args)
-                : undefined);
+              ? (...args) => globalThis.saveCurrentSession(...args)
+              : undefined);
 
         const connectionDiagram = connectionDiagramModule.createConnectionDiagram({
           document,
@@ -14481,9 +14482,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     let fizConnectorOptions = getAllFizConnectorTypes();
-    
+
     function updateFizConnectorOptions() {
       fizConnectorOptions = getAllFizConnectorTypes();
       document.querySelectorAll('.fiz-connector-select').forEach(sel => {
@@ -14501,7 +14502,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     function getAllMotorConnectorTypes() {
       const types = new Set();
       Object.values(devices.fiz?.motors || {}).forEach(m => {
@@ -14509,9 +14510,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     let motorConnectorOptions = getAllMotorConnectorTypes();
-    
+
     function updateMotorConnectorOptions() {
       motorConnectorOptions = getAllMotorConnectorTypes();
       if (motorConnectorInput) {
@@ -14527,7 +14528,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (motorConnectorOptions.includes(cur)) motorConnectorInput.value = cur;
       }
     }
-    
+
     function getAllControllerConnectors() {
       const types = new Set();
       Object.values(devices.fiz?.controllers || {}).forEach(c => {
@@ -14537,7 +14538,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     function getAllControllerPowerSources() {
       const types = new Set();
       Object.values(devices.fiz?.controllers || {}).forEach(c => {
@@ -14545,7 +14546,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     function getAllControllerBatteryTypes() {
       const types = new Set();
       Object.values(devices.fiz?.controllers || {}).forEach(c => {
@@ -14553,7 +14554,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     function getAllControllerConnectivity() {
       const types = new Set();
       Object.values(devices.fiz?.controllers || {}).forEach(c => {
@@ -14561,12 +14562,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     let controllerConnectorOptions = getAllControllerConnectors();
     let controllerPowerOptions = getAllControllerPowerSources();
     let controllerBatteryOptions = getAllControllerBatteryTypes();
     let controllerConnectivityOptions = getAllControllerConnectivity();
-    
+
     function updateControllerConnectorOptions() {
       controllerConnectorOptions = getAllControllerConnectors();
       if (controllerConnectorInput) {
@@ -14582,7 +14583,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (controllerConnectorOptions.includes(cur)) controllerConnectorInput.value = cur;
       }
     }
-    
+
     function updateControllerPowerOptions() {
       controllerPowerOptions = getAllControllerPowerSources();
       if (controllerPowerInput) {
@@ -14598,7 +14599,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (controllerPowerOptions.includes(cur)) controllerPowerInput.value = cur;
       }
     }
-    
+
     function updateControllerBatteryOptions() {
       controllerBatteryOptions = getAllControllerBatteryTypes();
       if (controllerBatteryInput) {
@@ -14614,7 +14615,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (controllerBatteryOptions.includes(cur)) controllerBatteryInput.value = cur;
       }
     }
-    
+
     function updateControllerConnectivityOptions() {
       controllerConnectivityOptions = getAllControllerConnectivity();
       if (controllerConnectivityInput) {
@@ -14630,7 +14631,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (controllerConnectivityOptions.includes(cur)) controllerConnectivityInput.value = cur;
       }
     }
-    
+
     function getAllDistanceConnections() {
       const types = new Set();
       Object.values(devices.fiz?.distance || {}).forEach(d => {
@@ -14638,7 +14639,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     function getAllDistanceMethods() {
       const types = new Set();
       Object.values(devices.fiz?.distance || {}).forEach(d => {
@@ -14646,7 +14647,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     function getAllDistanceDisplays() {
       const types = new Set();
       Object.values(devices.fiz?.distance || {}).forEach(d => {
@@ -14654,11 +14655,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).filter(Boolean).sort(localeSort);
     }
-    
+
     let distanceConnectionOptions = getAllDistanceConnections();
     let distanceMethodOptions = getAllDistanceMethods();
     let distanceDisplayOptions = getAllDistanceDisplays();
-    
+
     function updateDistanceConnectionOptions() {
       distanceConnectionOptions = getAllDistanceConnections();
       if (distanceConnectionInput) {
@@ -14674,7 +14675,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (distanceConnectionOptions.includes(cur)) distanceConnectionInput.value = cur;
       }
     }
-    
+
     function updateDistanceMethodOptions() {
       distanceMethodOptions = getAllDistanceMethods();
       if (distanceMethodInput) {
@@ -14690,7 +14691,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (distanceMethodOptions.includes(cur)) distanceMethodInput.value = cur;
       }
     }
-    
+
     function updateDistanceDisplayOptions() {
       distanceDisplayOptions = getAllDistanceDisplays();
       if (distanceOutputInput) {
@@ -14706,96 +14707,96 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (distanceDisplayOptions.includes(cur)) distanceOutputInput.value = cur;
       }
     }
-    
-      var ensureElementIdResolver = null;
-      var ensureElementIdFallbackCounter = 0;
 
-      function fallbackEnsureElementId(element, baseText) {
-        if (!element) {
-          return '';
-        }
-        if (element.id) {
-          return element.id;
-        }
-        var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
-        var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        if (!normalized) {
-          normalized = 'field';
-        }
-        ensureElementIdFallbackCounter += 1;
-        var candidate = normalized + '-' + ensureElementIdFallbackCounter;
-        if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
-          while (document.getElementById(candidate)) {
-            ensureElementIdFallbackCounter += 1;
-            candidate = normalized + '-' + ensureElementIdFallbackCounter;
-          }
-        }
-        element.id = candidate;
-        return candidate;
+    var ensureElementIdResolver = null;
+    var ensureElementIdFallbackCounter = 0;
+
+    function fallbackEnsureElementId(element, baseText) {
+      if (!element) {
+        return '';
       }
-
-      function getEnsureElementId() {
-        if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
-          return ensureElementIdResolver;
+      if (element.id) {
+        return element.id;
+      }
+      var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
+      var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (!normalized) {
+        normalized = 'field';
+      }
+      ensureElementIdFallbackCounter += 1;
+      var candidate = normalized + '-' + ensureElementIdFallbackCounter;
+      if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+        while (document.getElementById(candidate)) {
+          ensureElementIdFallbackCounter += 1;
+          candidate = normalized + '-' + ensureElementIdFallbackCounter;
         }
+      }
+      element.id = candidate;
+      return candidate;
+    }
 
-        var directEnsure = typeof ensureElementId === 'function' ? ensureElementId : null;
-        if (!directEnsure && typeof globalThis !== 'undefined' && globalThis) {
-          var globalEnsure = globalThis.ensureElementId;
-          if (typeof globalEnsure === 'function') {
-            directEnsure = globalEnsure;
-          }
-        }
-
-        if (typeof directEnsure === 'function') {
-          ensureElementIdResolver = directEnsure;
-          return ensureElementIdResolver;
-        }
-
-        ensureElementIdResolver = fallbackEnsureElementId;
-        if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.ensureElementId !== 'function') {
-          try {
-            globalThis.ensureElementId = fallbackEnsureElementId;
-          } catch (assignError) {
-            void assignError;
-          }
-        }
-
+    function getEnsureElementId() {
+      if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
         return ensureElementIdResolver;
       }
 
-      function getHiddenLabelFactory() {
-        if (typeof createHiddenLabel === 'function') {
-          return createHiddenLabel;
+      var directEnsure = typeof ensureElementId === 'function' ? ensureElementId : null;
+      if (!directEnsure && typeof globalThis !== 'undefined' && globalThis) {
+        var globalEnsure = globalThis.ensureElementId;
+        if (typeof globalEnsure === 'function') {
+          directEnsure = globalEnsure;
         }
-        if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.createHiddenLabel === 'function') {
-          return globalThis.createHiddenLabel;
-        }
-        return function fallbackCreateHiddenLabel(forId, text) {
-          var label = document.createElement('label');
-          label.className = 'visually-hidden';
-          if (forId) {
-            label.setAttribute('for', forId);
-          }
-          label.textContent = typeof text === 'string' ? text : '';
-          return label;
-        };
       }
 
-      // Wrap a form field with a div containing a data-label attribute for styling.
-      function createFieldWithLabel(el, label) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'field-with-label';
-        wrapper.dataset.label = label;
-        const ensureId = getEnsureElementId();
-        const fieldId = typeof ensureId === 'function' ? ensureId(el, label) : fallbackEnsureElementId(el, label);
-        const hiddenLabelFactory = getHiddenLabelFactory();
-        const hiddenLabel = hiddenLabelFactory(fieldId, label);
-        wrapper.appendChild(hiddenLabel);
-        wrapper.appendChild(el);
-        return wrapper;
+      if (typeof directEnsure === 'function') {
+        ensureElementIdResolver = directEnsure;
+        return ensureElementIdResolver;
       }
-    
+
+      ensureElementIdResolver = fallbackEnsureElementId;
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.ensureElementId !== 'function') {
+        try {
+          globalThis.ensureElementId = fallbackEnsureElementId;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+
+      return ensureElementIdResolver;
+    }
+
+    function getHiddenLabelFactory() {
+      if (typeof createHiddenLabel === 'function') {
+        return createHiddenLabel;
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.createHiddenLabel === 'function') {
+        return globalThis.createHiddenLabel;
+      }
+      return function fallbackCreateHiddenLabel(forId, text) {
+        var label = document.createElement('label');
+        label.className = 'visually-hidden';
+        if (forId) {
+          label.setAttribute('for', forId);
+        }
+        label.textContent = typeof text === 'string' ? text : '';
+        return label;
+      };
+    }
+
+    // Wrap a form field with a div containing a data-label attribute for styling.
+    function createFieldWithLabel(el, label) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'field-with-label';
+      wrapper.dataset.label = label;
+      const ensureId = getEnsureElementId();
+      const fieldId = typeof ensureId === 'function' ? ensureId(el, label) : fallbackEnsureElementId(el, label);
+      const hiddenLabelFactory = getHiddenLabelFactory();
+      const hiddenLabel = hiddenLabelFactory(fieldId, label);
+      wrapper.appendChild(hiddenLabel);
+      wrapper.appendChild(el);
+      return wrapper;
+    }
+
     // Helper used by select-row builders to insert an empty option.
     // Previously this inserted a blank option at the top of each select.
     // The UI no longer requires an empty choice, so this function is now a
@@ -14803,7 +14804,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function addEmptyOption(/* select */) {
       // Intentionally left blank
     }
-    
+
     // Utility to remove entries with value "None" or empty string
     function filterNoneEntries(list, prop = 'type') {
       if (!Array.isArray(list)) return [];
@@ -14818,7 +14819,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return true;
       });
     }
-    
+
     // Build a single row of the video output editor UI.
     function createVideoOutputRow(value = '') {
       const row = document.createElement('div');
@@ -14859,7 +14860,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setVideoOutputs(list) {
       videoOutputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -14872,17 +14873,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         videoOutputsContainer.appendChild(createVideoOutputRow());
       }
     }
-    
+
     function getVideoOutputs() {
       return Array.from(videoOutputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(vo => vo.type && vo.type !== 'None');
     }
-    
+
     function clearVideoOutputs() {
       setVideoOutputs([]);
     }
-    
+
     function createMonitorVideoInputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -14922,7 +14923,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setMonitorVideoInputs(list) {
       monitorVideoInputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
@@ -14935,17 +14936,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow());
       }
     }
-    
+
     function getMonitorVideoInputs() {
       return Array.from(monitorVideoInputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearMonitorVideoInputs() {
       setMonitorVideoInputs([]);
     }
-    
+
     function createMonitorVideoOutputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -14985,7 +14986,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setMonitorVideoOutputs(list) {
       monitorVideoOutputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
@@ -14998,17 +14999,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow());
       }
     }
-    
+
     function getMonitorVideoOutputs() {
       return Array.from(monitorVideoOutputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearMonitorVideoOutputs() {
       setMonitorVideoOutputs([]);
     }
-    
+
     function createViewfinderVideoInputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -15048,7 +15049,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setViewfinderVideoInputs(list) {
       if (!viewfinderVideoInputsContainer) return;
       viewfinderVideoInputsContainer.innerHTML = '';
@@ -15062,18 +15063,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         viewfinderVideoInputsContainer.appendChild(createViewfinderVideoInputRow());
       }
     }
-    
+
     function getViewfinderVideoInputs() {
       if (!viewfinderVideoInputsContainer) return [];
       return Array.from(viewfinderVideoInputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearViewfinderVideoInputs() {
       setViewfinderVideoInputs([]);
     }
-    
+
     function createViewfinderVideoOutputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -15113,7 +15114,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setViewfinderVideoOutputs(list) {
       if (!viewfinderVideoOutputsContainer) return;
       viewfinderVideoOutputsContainer.innerHTML = '';
@@ -15127,18 +15128,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         viewfinderVideoOutputsContainer.appendChild(createViewfinderVideoOutputRow());
       }
     }
-    
+
     function getViewfinderVideoOutputs() {
       if (!viewfinderVideoOutputsContainer) return [];
       return Array.from(viewfinderVideoOutputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearViewfinderVideoOutputs() {
       setViewfinderVideoOutputs([]);
     }
-    
+
     setViewfinderVideoInputs([]);
     setViewfinderVideoOutputs([]);
 
@@ -15431,7 +15432,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearVideoPowerInputs() {
       setVideoPowerInputs([]);
     }
-    
+
     function createVideoInputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -15471,7 +15472,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setVideoInputs(list) {
       videoVideoInputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
@@ -15484,15 +15485,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         videoVideoInputsContainer.appendChild(createVideoInputRow());
       }
     }
-    
+
     function getVideoInputs() {
       return Array.from(videoVideoInputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearVideoInputs() { setVideoInputs([]); }
-    
+
     function createVideoIOOutputRow(value = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
@@ -15532,7 +15533,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setVideoOutputsIO(list) {
       videoVideoOutputsContainer.innerHTML = '';
       const filtered = filterNoneEntries(list, 'type');
@@ -15545,15 +15546,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         videoVideoOutputsContainer.appendChild(createVideoIOOutputRow());
       }
     }
-    
+
     function getVideoOutputsIO() {
       return Array.from(videoVideoOutputsContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(v => v.type && v.type !== 'None');
     }
-    
+
     function clearVideoOutputsIO() { setVideoOutputsIO([]); }
-    
+
     // Build a row for editing a FIZ connector entry.
     function createFizConnectorRow(value = '') {
       const row = document.createElement('div');
@@ -15594,7 +15595,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    
+
     function setFizConnectors(list) {
       fizConnectorContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -15607,17 +15608,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         fizConnectorContainer.appendChild(createFizConnectorRow());
       }
     }
-    
+
     function getFizConnectors() {
       return Array.from(fizConnectorContainer.querySelectorAll('select'))
         .map(sel => ({ type: sel.value }))
         .filter(fc => fc.type && fc.type !== 'None');
     }
-    
+
     function clearFizConnectors() {
       setFizConnectors([]);
     }
-    
+
     function getAllRecordingMedia() {
       const selectedCameraName =
         cameraSelect && typeof cameraSelect.value === 'string'
@@ -15654,7 +15655,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       return Array.from(media).sort(localeSort);
     }
-    
+
     let recordingMediaOptions = getAllRecordingMedia();
 
     function resolveRecordingMediaPlaceholder() {
@@ -15707,7 +15708,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function createRecordingMediaRow(type = '', notes = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const select = document.createElement('select');
       select.className = 'recording-media-select';
       select.name = 'recordingMediaType';
@@ -15730,14 +15731,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         select.value = '';
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
-    
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
       notesInput.placeholder = 'Notes';
       notesInput.name = 'recordingMediaNotes';
       notesInput.value = notes;
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -15749,7 +15750,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         row.after(createRecordingMediaRow());
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
@@ -15761,10 +15762,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (cameraMediaContainer.children.length > 1) row.remove();
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
-    
+
     const setRecordingMediaLocal = list => {
       cameraMediaContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -15779,7 +15780,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     writeCoreScopeValue('setRecordingMedia', setRecordingMediaLocal);
-    
+
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -15791,15 +15792,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
     writeCoreScopeValue('updateRecordingMediaOptions', updateRecordingMediaOptions);
-    
+
     function clearRecordingMedia() {
       setRecordingMediaLocal([]);
     }
-    
+
     powerPortOptions = getAllPowerPortTypes();
 
     setVideoPowerInputs([]);
-    
+
     function updatePowerPortOptions() {
       powerPortOptions = getAllPowerPortTypes();
       const current = cameraPortTypeInput.value;
@@ -15812,7 +15813,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cameraPortTypeInput.appendChild(opt);
       });
       if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
-    
+
       if (monitorPortTypeInput) {
         const curMon = monitorPortTypeInput.value;
         monitorPortTypeInput.innerHTML = '';
@@ -15847,7 +15848,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       }
     }
-    
+
     function getAllPlateTypes() {
       const types = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -15860,9 +15861,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     let plateTypeOptions = getAllPlateTypes();
-    
+
     function updatePlateTypeOptions() {
       plateTypeOptions = getAllPlateTypes();
       document.querySelectorAll('.battery-plate-type-select').forEach(sel => {
@@ -15878,12 +15879,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (plateTypeOptions.includes(current)) sel.value = current;
       });
     }
-    
+
     // Build a battery plate row with type, mount and optional notes fields.
     function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const typeSelect = document.createElement('select');
       typeSelect.className = 'battery-plate-type-select';
       typeSelect.name = 'batteryPlateType';
@@ -15902,11 +15903,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       typeSelect.value = type;
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
-    
+
       const mountSelect = document.createElement('select');
       addEmptyOption(mountSelect);
       mountSelect.name = 'batteryPlateMount';
-      ['native','adapted'].forEach(m => {
+      ['native', 'adapted'].forEach(m => {
         const opt = document.createElement('option');
         opt.value = m;
         opt.textContent = m;
@@ -15914,14 +15915,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       mountSelect.value = mount || '';
       row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
-    
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
       notesInput.placeholder = 'Notes';
       notesInput.value = notes;
       notesInput.name = 'batteryPlateNotes';
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -15933,7 +15934,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         row.after(createBatteryPlateRow());
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
@@ -15945,10 +15946,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (batteryPlatesContainer.children.length > 1) row.remove();
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
-    
+
     const setBatteryPlatesLocal = list => {
       batteryPlatesContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -15978,7 +15979,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearBatteryPlates() {
       setBatteryPlatesLocal([]);
     }
-    
+
     function getAllViewfinderTypes() {
       const types = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -15990,7 +15991,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     function getAllViewfinderConnectors() {
       const conns = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -16002,15 +16003,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(conns).filter(c => c).sort(localeSort);
     }
-    
+
     var viewfinderTypeOptions = getAllViewfinderTypes();
     var viewfinderConnectorOptions = getAllViewfinderConnectors();
-    
+
     // Build a viewfinder configuration row used in the camera editor.
     function createViewfinderRow(type = '', resolution = '', connector = '', notes = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const typeSelect = document.createElement('select');
       typeSelect.className = 'viewfinder-type-select';
       typeSelect.name = 'viewfinderType';
@@ -16029,14 +16030,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       typeSelect.value = type;
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
-    
+
       const resInput = document.createElement('input');
       resInput.type = 'text';
       resInput.placeholder = 'Resolution';
       resInput.value = resolution;
       resInput.name = 'viewfinderResolution';
       row.appendChild(createFieldWithLabel(resInput, 'Resolution'));
-    
+
       const connSelect = document.createElement('select');
       connSelect.className = 'viewfinder-connector-select';
       addEmptyOption(connSelect);
@@ -16055,14 +16056,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       connSelect.value = connector;
       row.appendChild(createFieldWithLabel(connSelect, 'Connector'));
-    
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
       notesInput.placeholder = 'Notes';
       notesInput.value = notes;
       notesInput.name = 'viewfinderNotes';
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -16074,7 +16075,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         row.after(createViewfinderRow());
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
@@ -16086,10 +16087,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (viewfinderContainer.children.length > 1) row.remove();
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
-    
+
     function setViewfinders(list) {
       viewfinderContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -16102,7 +16103,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         viewfinderContainer.appendChild(createViewfinderRow());
       }
     }
-    
+
     function getViewfinders() {
       return Array.from(viewfinderContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -16116,11 +16117,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(vf => vf.type && vf.type !== 'None');
     }
-    
+
     function clearViewfinders() {
       setViewfinders([]);
     }
-    
+
     function getAllMountTypes() {
       const types = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -16142,9 +16143,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     let mountTypeOptions = getAllMountTypes();
-    
+
     function updateMountTypeOptions() {
       mountTypeOptions = getAllMountTypes();
       document.querySelectorAll('.lens-mount-type-select').forEach(sel => {
@@ -16160,7 +16161,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (mountTypeOptions.includes(current)) sel.value = current;
       });
     }
-    
+
     // Build a lens mount row with type and mount selection fields.
     function createLensMountRow(type = '', mount = 'native', context) {
       const row = document.createElement('div');
@@ -16242,7 +16243,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       return row;
     }
-    
+
     function setLensMounts(list) {
       lensMountContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -16321,7 +16322,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearLensDeviceMountOptions() {
       setLensDeviceMountOptions([]);
     }
-    
+
     function getAllPowerDistTypes() {
       const types = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -16332,7 +16333,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     let powerDistTypeOptions = getAllPowerDistTypes();
     function getAllPowerDistVoltages() {
       const volts = new Set();
@@ -16344,7 +16345,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(volts).filter(v => v).sort(localeSort);
     }
-    
+
     function getAllPowerDistCurrents() {
       const currents = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -16355,10 +16356,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(currents).filter(c => c).sort(localeSort);
     }
-    
+
     let powerDistVoltageOptions = getAllPowerDistVoltages();
     let powerDistCurrentOptions = getAllPowerDistCurrents();
-    
+
     function updatePowerDistVoltageOptions() {
       powerDistVoltageOptions = getAllPowerDistVoltages();
       document.querySelectorAll('.power-dist-voltage-select').forEach(sel => {
@@ -16374,7 +16375,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (powerDistVoltageOptions.includes(cur)) sel.value = cur;
       });
     }
-    
+
     function updatePowerDistCurrentOptions() {
       powerDistCurrentOptions = getAllPowerDistCurrents();
       document.querySelectorAll('.power-dist-current-select').forEach(sel => {
@@ -16390,7 +16391,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (powerDistCurrentOptions.includes(cur)) sel.value = cur;
       });
     }
-    
+
     function updatePowerDistTypeOptions() {
       powerDistTypeOptions = getAllPowerDistTypes();
       document.querySelectorAll('.power-dist-type-select').forEach(sel => {
@@ -16406,12 +16407,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (powerDistTypeOptions.includes(cur)) sel.value = cur;
       });
     }
-    
+
     // Build a power distribution output row for the editor UI.
     function createPowerDistRow(type = '', voltage = '', current = '', wattage = '', notes = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const typeSelect = document.createElement('select');
       typeSelect.className = 'power-dist-type-select';
       typeSelect.name = 'powerDistType';
@@ -16430,7 +16431,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       typeSelect.value = type;
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
-    
+
       const voltSelect = document.createElement('select');
       voltSelect.className = 'power-dist-voltage-select';
       addEmptyOption(voltSelect);
@@ -16449,7 +16450,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       voltSelect.value = voltage;
       row.appendChild(createFieldWithLabel(voltSelect, 'Voltage'));
-    
+
       const currSelect = document.createElement('select');
       currSelect.className = 'power-dist-current-select';
       addEmptyOption(currSelect);
@@ -16468,22 +16469,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       currSelect.value = current;
       row.appendChild(createFieldWithLabel(currSelect, 'Current'));
-    
+
       const wattInput = document.createElement('input');
       wattInput.type = 'number';
       wattInput.step = '0.1';
       wattInput.placeholder = 'W';
       wattInput.value = wattage === null || wattage === undefined ? '' : wattage;
       wattInput.name = 'powerDistWatt';
-      row.appendChild(createFieldWithLabel(wattInput, 'W')); 
-    
+      row.appendChild(createFieldWithLabel(wattInput, 'W'));
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
       notesInput.placeholder = 'Notes';
       notesInput.value = notes;
       notesInput.name = 'powerDistNotes';
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -16495,7 +16496,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         row.after(createPowerDistRow());
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
@@ -16507,10 +16508,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (powerDistContainer.children.length > 1) row.remove();
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
-    
+
     function setPowerDistribution(list) {
       powerDistContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -16523,7 +16524,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         powerDistContainer.appendChild(createPowerDistRow());
       }
     }
-    
+
     function getPowerDistribution() {
       return Array.from(powerDistContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -16538,11 +16539,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(pd => pd.type && pd.type !== 'None');
     }
-    
+
     function clearPowerDistribution() {
       setPowerDistribution([]);
     }
-    
+
     function getAllTimecodeTypes() {
       const types = new Set();
       Object.values(devices.cameras).forEach(cam => {
@@ -16553,9 +16554,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return Array.from(types).sort(localeSort);
     }
-    
+
     let timecodeTypeOptions = getAllTimecodeTypes();
-    
+
     function updateTimecodeTypeOptions() {
       timecodeTypeOptions = getAllTimecodeTypes();
       document.querySelectorAll('.timecode-type-select').forEach(sel => {
@@ -16571,12 +16572,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (timecodeTypeOptions.includes(cur)) sel.value = cur;
       });
     }
-    
+
     // Build a timecode connector row used for editing camera properties.
     function createTimecodeRow(type = '', notes = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const typeSelect = document.createElement('select');
       typeSelect.className = 'timecode-type-select';
       typeSelect.name = 'timecodeType';
@@ -16595,14 +16596,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       typeSelect.value = type;
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
-    
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
       notesInput.placeholder = 'Notes';
       notesInput.value = notes;
       notesInput.name = 'timecodeNotes';
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -16614,7 +16615,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         row.after(createTimecodeRow());
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
@@ -16626,10 +16627,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (timecodeContainer.children.length > 1) row.remove();
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
-    
+
     function setTimecodes(list) {
       timecodeContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
@@ -16642,7 +16643,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         timecodeContainer.appendChild(createTimecodeRow());
       }
     }
-    
+
     function getTimecodes() {
       return Array.from(timecodeContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -16651,373 +16652,373 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(tc => tc.type && tc.type !== 'None');
     }
-    
-      function clearTimecodes() {
-        setTimecodes([]);
-      }
-    
-      function getFavoriteValues(id) {
-        const favs = loadFavorites();
-        return Array.isArray(favs[id]) ? favs[id] : [];
-      }
-    
-      const FAVORITE_BUTTON_BY_SELECT = new WeakMap();
-      const FAVORITE_CHANGE_LISTENER_BY_SELECT = new WeakMap();
-      const FAVORITE_BUTTON_LISTENER = new WeakMap();
 
-      function applyFavoritesToSelect(selectElem) {
-        if (!selectElem || !selectElem.id) return;
-        const favVals = getFavoriteValues(selectElem.id);
-        if (!favVals.length) return;
-        const opts = Array.from(selectElem.options);
-        const noneOpt = opts.find(o => o.value === 'None');
-        const others = opts.filter(o => o !== noneOpt);
-        const favOpts = [];
-        const restOpts = [];
-        others.forEach(o => (favVals.includes(o.value) ? favOpts.push(o) : restOpts.push(o)));
-        favOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
-        restOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
-        selectElem.innerHTML = '';
-        if (noneOpt) selectElem.appendChild(noneOpt);
-        favOpts.forEach(o => selectElem.appendChild(o));
-        restOpts.forEach(o => selectElem.appendChild(o));
-      }
+    function clearTimecodes() {
+      setTimecodes([]);
+    }
 
-      function getFavoriteButton(selectElem) {
-        const button = FAVORITE_BUTTON_BY_SELECT.get(selectElem);
-        if (button && button.isConnected) {
-          return button;
+    function getFavoriteValues(id) {
+      const favs = loadFavorites();
+      return Array.isArray(favs[id]) ? favs[id] : [];
+    }
+
+    const FAVORITE_BUTTON_BY_SELECT = new WeakMap();
+    const FAVORITE_CHANGE_LISTENER_BY_SELECT = new WeakMap();
+    const FAVORITE_BUTTON_LISTENER = new WeakMap();
+
+    function applyFavoritesToSelect(selectElem) {
+      if (!selectElem || !selectElem.id) return;
+      const favVals = getFavoriteValues(selectElem.id);
+      if (!favVals.length) return;
+      const opts = Array.from(selectElem.options);
+      const noneOpt = opts.find(o => o.value === 'None');
+      const others = opts.filter(o => o !== noneOpt);
+      const favOpts = [];
+      const restOpts = [];
+      others.forEach(o => (favVals.includes(o.value) ? favOpts.push(o) : restOpts.push(o)));
+      favOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
+      restOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
+      selectElem.innerHTML = '';
+      if (noneOpt) selectElem.appendChild(noneOpt);
+      favOpts.forEach(o => selectElem.appendChild(o));
+      restOpts.forEach(o => selectElem.appendChild(o));
+    }
+
+    function getFavoriteButton(selectElem) {
+      const button = FAVORITE_BUTTON_BY_SELECT.get(selectElem);
+      if (button && button.isConnected) {
+        return button;
+      }
+      return null;
+    }
+
+    function updateFavoriteButton(selectElem) {
+      if (!selectElem) return;
+      const favoriteButton = getFavoriteButton(selectElem);
+      if (!favoriteButton) return;
+      const favVals = getFavoriteValues(selectElem.id);
+      const val = selectElem.value;
+      const isFav = favVals.includes(val);
+      favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+      favoriteButton.classList.toggle('favorited', isFav);
+      favoriteButton.disabled = val === 'None';
+      favoriteButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+    }
+
+    function toggleFavorite(selectElem) {
+      if (!selectElem || !selectElem.id) return;
+      const val = selectElem.value;
+      if (val === 'None') return;
+      const favs = loadFavorites();
+      const list = Array.isArray(favs[selectElem.id]) ? favs[selectElem.id] : [];
+      const idx = list.indexOf(val);
+      if (idx === -1) list.push(val); else list.splice(idx, 1);
+      if (list.length) favs[selectElem.id] = list; else delete favs[selectElem.id];
+      saveFavorites(favs);
+      applyFavoritesToSelect(selectElem);
+      updateFavoriteButton(selectElem);
+      adjustGearListSelectWidth(selectElem);
+    }
+
+    let selectWidthMeasureElement = null;
+
+    function getSelectWidthMeasureElement() {
+      if (selectWidthMeasureElement && selectWidthMeasureElement.isConnected) {
+        return selectWidthMeasureElement;
+      }
+      const span = document.createElement('span');
+      span.className = 'gear-select-width-measure';
+      Object.assign(span.style, {
+        position: 'absolute',
+        visibility: 'hidden',
+        whiteSpace: 'pre',
+        pointerEvents: 'none',
+        top: '-9999px',
+        left: '-9999px',
+        padding: '0',
+        margin: '0',
+        border: '0'
+      });
+      const parent = document.body || document.documentElement;
+      parent.appendChild(span);
+      selectWidthMeasureElement = span;
+      return span;
+    }
+
+    function measureSelectTextWidth(selectElem, text, styles) {
+      const content = text && text.length ? text : '\u00a0';
+      const computedStyles = styles || window.getComputedStyle(selectElem);
+      if (!computedStyles) {
+        return content.length * 8;
+      }
+      const measureElem = getSelectWidthMeasureElement();
+      const parent = document.body || document.documentElement;
+      if (measureElem.parentElement !== parent) parent.appendChild(measureElem);
+
+      if (computedStyles.font && computedStyles.font !== 'normal normal normal medium/normal serif') {
+        measureElem.style.font = computedStyles.font;
+      } else {
+        measureElem.style.fontStyle = computedStyles.fontStyle || 'normal';
+        measureElem.style.fontVariant = computedStyles.fontVariant || 'normal';
+        measureElem.style.fontWeight = computedStyles.fontWeight || '400';
+        measureElem.style.fontStretch = computedStyles.fontStretch || 'normal';
+        measureElem.style.fontSize = computedStyles.fontSize || '16px';
+        measureElem.style.fontFamily = computedStyles.fontFamily || 'sans-serif';
+        measureElem.style.lineHeight = computedStyles.lineHeight || 'normal';
+      }
+      measureElem.style.letterSpacing = computedStyles.letterSpacing || 'normal';
+      measureElem.style.textTransform = computedStyles.textTransform || 'none';
+      measureElem.textContent = content;
+      return measureElem.getBoundingClientRect().width;
+    }
+
+    function adjustGearListSelectWidth(selectElem) {
+      if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
+      const container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
+      if (!container) return;
+      const styles = window.getComputedStyle(selectElem);
+      if (!styles || styles.display === 'none') {
+        selectElem.style.removeProperty('--gear-select-width');
+        return;
+      }
+      const selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
+      const optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
+      const textWidth = measureSelectTextWidth(selectElem, optionText, styles);
+      const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+      const paddingRight = parseFloat(styles.paddingRight) || 0;
+      const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+      const borderRight = parseFloat(styles.borderRightWidth) || 0;
+      const fontSize = parseFloat(styles.fontSize) || 16;
+      // Reserve space for the native arrow that keeps the disclosure indicator
+      // visible without leaving an oversized gap between the option text and the
+      // edge of the control.
+      const arrowReserve = Math.max(fontSize * 0.5, 10);
+      const minWidth = Math.max(fontSize * 4, 56);
+      const widthPx = Math.max(
+        Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve),
+        minWidth
+      );
+      selectElem.style.setProperty('--gear-select-width', `${widthPx}px`);
+    }
+
+    function adjustGearListSelectWidths(container) {
+      if (!container) return;
+      container
+        .querySelectorAll('select')
+        .forEach(selectElem => adjustGearListSelectWidth(selectElem));
+    }
+
+    function ensureSelectWrapper(selectElem) {
+      if (!selectElem) return null;
+      let wrapper = selectElem.parentElement;
+      if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
+        if (wrapper && wrapper.tagName === 'LABEL') {
+          const label = wrapper;
+          wrapper = document.createElement('div');
+          wrapper.className = 'select-wrapper';
+          label.parentElement.insertBefore(wrapper, label.nextSibling);
+          wrapper.appendChild(selectElem);
+        } else {
+          wrapper = document.createElement('div');
+          wrapper.className = 'select-wrapper';
+          selectElem.insertAdjacentElement('beforebegin', wrapper);
+          wrapper.appendChild(selectElem);
         }
-        return null;
+      }
+      return wrapper;
+    }
+
+    function initFavoritableSelect(selectElem) {
+      if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
+      const wrapper = ensureSelectWrapper(selectElem);
+      const gearItem = selectElem.closest('.gear-item');
+
+      function cleanupFavoriteButton(btn, ownerSelect = null) {
+        if (!btn) return;
+        const listener = FAVORITE_BUTTON_LISTENER.get(btn);
+        if (listener) {
+          btn.removeEventListener('click', listener);
+          FAVORITE_BUTTON_LISTENER.delete(btn);
+        }
+        if (ownerSelect && FAVORITE_BUTTON_BY_SELECT.get(ownerSelect) === btn) {
+          FAVORITE_BUTTON_BY_SELECT.delete(ownerSelect);
+        }
+        btn.remove();
       }
 
-      function updateFavoriteButton(selectElem) {
-        if (!selectElem) return;
-        const favoriteButton = getFavoriteButton(selectElem);
-        if (!favoriteButton) return;
-        const favVals = getFavoriteValues(selectElem.id);
-        const val = selectElem.value;
-        const isFav = favVals.includes(val);
-        favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
-        favoriteButton.classList.toggle('favorited', isFav);
-        favoriteButton.disabled = val === 'None';
-        favoriteButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-      }
-    
-      function toggleFavorite(selectElem) {
-        if (!selectElem || !selectElem.id) return;
-        const val = selectElem.value;
-        if (val === 'None') return;
-        const favs = loadFavorites();
-        const list = Array.isArray(favs[selectElem.id]) ? favs[selectElem.id] : [];
-        const idx = list.indexOf(val);
-        if (idx === -1) list.push(val); else list.splice(idx, 1);
-        if (list.length) favs[selectElem.id] = list; else delete favs[selectElem.id];
-        saveFavorites(favs);
-        applyFavoritesToSelect(selectElem);
-        updateFavoriteButton(selectElem);
-        adjustGearListSelectWidth(selectElem);
-      }
-    
-      let selectWidthMeasureElement = null;
-    
-      function getSelectWidthMeasureElement() {
-        if (selectWidthMeasureElement && selectWidthMeasureElement.isConnected) {
-          return selectWidthMeasureElement;
+      let favoriteButton = getFavoriteButton(selectElem);
+
+      if (wrapper) {
+        const wrapperButtons = Array.from(wrapper.querySelectorAll('.favorite-toggle'));
+        if (favoriteButton && !wrapperButtons.includes(favoriteButton)) {
+          favoriteButton = null;
         }
-        const span = document.createElement('span');
-        span.className = 'gear-select-width-measure';
-        Object.assign(span.style, {
-          position: 'absolute',
-          visibility: 'hidden',
-          whiteSpace: 'pre',
-          pointerEvents: 'none',
-          top: '-9999px',
-          left: '-9999px',
-          padding: '0',
-          margin: '0',
-          border: '0'
+        if (!favoriteButton && wrapperButtons.length > 0) {
+          [favoriteButton] = wrapperButtons;
+        }
+        wrapperButtons.forEach(btn => {
+          if (btn !== favoriteButton) cleanupFavoriteButton(btn, selectElem);
         });
-        const parent = document.body || document.documentElement;
-        parent.appendChild(span);
-        selectWidthMeasureElement = span;
-        return span;
       }
-    
-      function measureSelectTextWidth(selectElem, text, styles) {
-        const content = text && text.length ? text : '\u00a0';
-        const computedStyles = styles || window.getComputedStyle(selectElem);
-        if (!computedStyles) {
-          return content.length * 8;
-        }
-        const measureElem = getSelectWidthMeasureElement();
-        const parent = document.body || document.documentElement;
-        if (measureElem.parentElement !== parent) parent.appendChild(measureElem);
-    
-        if (computedStyles.font && computedStyles.font !== 'normal normal normal medium/normal serif') {
-          measureElem.style.font = computedStyles.font;
-        } else {
-          measureElem.style.fontStyle = computedStyles.fontStyle || 'normal';
-          measureElem.style.fontVariant = computedStyles.fontVariant || 'normal';
-          measureElem.style.fontWeight = computedStyles.fontWeight || '400';
-          measureElem.style.fontStretch = computedStyles.fontStretch || 'normal';
-          measureElem.style.fontSize = computedStyles.fontSize || '16px';
-          measureElem.style.fontFamily = computedStyles.fontFamily || 'sans-serif';
-          measureElem.style.lineHeight = computedStyles.lineHeight || 'normal';
-        }
-        measureElem.style.letterSpacing = computedStyles.letterSpacing || 'normal';
-        measureElem.style.textTransform = computedStyles.textTransform || 'none';
-        measureElem.textContent = content;
-        return measureElem.getBoundingClientRect().width;
-      }
-    
-      function adjustGearListSelectWidth(selectElem) {
-        if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
-        const container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
-        if (!container) return;
-        const styles = window.getComputedStyle(selectElem);
-        if (!styles || styles.display === 'none') {
-          selectElem.style.removeProperty('--gear-select-width');
-          return;
-        }
-        const selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
-        const optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
-        const textWidth = measureSelectTextWidth(selectElem, optionText, styles);
-        const paddingLeft = parseFloat(styles.paddingLeft) || 0;
-        const paddingRight = parseFloat(styles.paddingRight) || 0;
-        const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
-        const borderRight = parseFloat(styles.borderRightWidth) || 0;
-        const fontSize = parseFloat(styles.fontSize) || 16;
-        // Reserve space for the native arrow that keeps the disclosure indicator
-        // visible without leaving an oversized gap between the option text and the
-        // edge of the control.
-        const arrowReserve = Math.max(fontSize * 0.5, 10);
-        const minWidth = Math.max(fontSize * 4, 56);
-        const widthPx = Math.max(
-          Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve),
-          minWidth
-        );
-        selectElem.style.setProperty('--gear-select-width', `${widthPx}px`);
-      }
-    
-      function adjustGearListSelectWidths(container) {
-        if (!container) return;
-        container
-          .querySelectorAll('select')
-          .forEach(selectElem => adjustGearListSelectWidth(selectElem));
-      }
-    
-      function ensureSelectWrapper(selectElem) {
-        if (!selectElem) return null;
-        let wrapper = selectElem.parentElement;
-        if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
-          if (wrapper && wrapper.tagName === 'LABEL') {
-            const label = wrapper;
-            wrapper = document.createElement('div');
-            wrapper.className = 'select-wrapper';
-            label.parentElement.insertBefore(wrapper, label.nextSibling);
-            wrapper.appendChild(selectElem);
-          } else {
-            wrapper = document.createElement('div');
-            wrapper.className = 'select-wrapper';
-            selectElem.insertAdjacentElement('beforebegin', wrapper);
-            wrapper.appendChild(selectElem);
-          }
-        }
-        return wrapper;
-      }
-    
-      function initFavoritableSelect(selectElem) {
-        if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
-        const wrapper = ensureSelectWrapper(selectElem);
-        const gearItem = selectElem.closest('.gear-item');
 
-        function cleanupFavoriteButton(btn, ownerSelect = null) {
-          if (!btn) return;
-          const listener = FAVORITE_BUTTON_LISTENER.get(btn);
-          if (listener) {
-            btn.removeEventListener('click', listener);
-            FAVORITE_BUTTON_LISTENER.delete(btn);
-          }
-          if (ownerSelect && FAVORITE_BUTTON_BY_SELECT.get(ownerSelect) === btn) {
-            FAVORITE_BUTTON_BY_SELECT.delete(ownerSelect);
-          }
-          btn.remove();
-        }
+      if (gearItem) {
+        Array.from(gearItem.querySelectorAll('.favorite-toggle'))
+          .filter(
+            btn =>
+              btn !== favoriteButton && btn.getAttribute('data-fav-select-id') === selectElem.id
+          )
+          .forEach(btn => cleanupFavoriteButton(btn));
+      }
 
-        let favoriteButton = getFavoriteButton(selectElem);
-
+      if (!favoriteButton) {
+        favoriteButton = document.createElement('button');
         if (wrapper) {
-          const wrapperButtons = Array.from(wrapper.querySelectorAll('.favorite-toggle'));
-          if (favoriteButton && !wrapperButtons.includes(favoriteButton)) {
-            favoriteButton = null;
-          }
-          if (!favoriteButton && wrapperButtons.length > 0) {
-            [favoriteButton] = wrapperButtons;
-          }
-          wrapperButtons.forEach(btn => {
-            if (btn !== favoriteButton) cleanupFavoriteButton(btn, selectElem);
-          });
-        }
-
-        if (gearItem) {
-          Array.from(gearItem.querySelectorAll('.favorite-toggle'))
-            .filter(
-              btn =>
-                btn !== favoriteButton && btn.getAttribute('data-fav-select-id') === selectElem.id
-            )
-            .forEach(btn => cleanupFavoriteButton(btn));
-        }
-
-        if (!favoriteButton) {
-          favoriteButton = document.createElement('button');
-          if (wrapper) {
-            wrapper.appendChild(favoriteButton);
-          } else {
-            selectElem.after(favoriteButton);
-          }
-        } else if (wrapper && favoriteButton.parentElement !== wrapper) {
           wrapper.appendChild(favoriteButton);
+        } else {
+          selectElem.after(favoriteButton);
         }
-
-        const previousListener = FAVORITE_BUTTON_LISTENER.get(favoriteButton);
-        if (previousListener) {
-          favoriteButton.removeEventListener('click', previousListener);
-        }
-        favoriteButton.type = 'button';
-        favoriteButton.className = 'favorite-toggle';
-        favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
-        favoriteButton.setAttribute('aria-pressed', 'false');
-        favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
-        const clickHandler = () => toggleFavorite(selectElem);
-        favoriteButton.addEventListener('click', clickHandler);
-        FAVORITE_BUTTON_LISTENER.set(favoriteButton, clickHandler);
-
-        if (!FAVORITE_CHANGE_LISTENER_BY_SELECT.has(selectElem)) {
-          const changeListener = () => updateFavoriteButton(selectElem);
-          selectElem.addEventListener('change', changeListener);
-          FAVORITE_CHANGE_LISTENER_BY_SELECT.set(selectElem, changeListener);
-        }
-
-        FAVORITE_BUTTON_BY_SELECT.set(selectElem, favoriteButton);
-        favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
-
-        const translations = (() => {
-          const translationSource =
-            (typeof texts === 'object' && texts) ||
-            (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE && GLOBAL_SCOPE.texts) ||
-            {};
-          const activeTexts = translationSource?.[currentLang];
-          const fallbackLangCandidates = [];
-          if (
-            typeof DEFAULT_LANGUAGE_SAFE === 'string' &&
-            translationSource?.[DEFAULT_LANGUAGE_SAFE]
-          ) {
-            fallbackLangCandidates.push(DEFAULT_LANGUAGE_SAFE);
-          }
-          if (translationSource?.en) {
-            fallbackLangCandidates.push('en');
-          }
-          const fallbackTexts = fallbackLangCandidates
-            .map(langKey => translationSource?.[langKey])
-            .find(bundle => bundle && typeof bundle === 'object') || {};
-          const label =
-            (activeTexts && activeTexts.favoriteToggleLabel) ||
-            fallbackTexts.favoriteToggleLabel ||
-            'Toggle favorite';
-          const help =
-            (activeTexts && activeTexts.favoriteToggleHelp) ||
-            fallbackTexts.favoriteToggleHelp ||
-            label;
-          return { label, help };
-        })();
-
-        favoriteButton.setAttribute('aria-label', translations.label);
-        favoriteButton.setAttribute('title', translations.label);
-        favoriteButton.setAttribute('data-help', translations.help);
-
-        applyFavoritesToSelect(selectElem);
-        updateFavoriteButton(selectElem);
-        adjustGearListSelectWidth(selectElem);
-      }
-    
-      function applySelectValueAfterPopulate(selectElem, value, includeNone) {
-        if (!selectElem) return;
-        if (typeof setSelectValue === 'function') {
-          setSelectValue(selectElem, value);
-          return;
-        }
-
-        const normalized = value === undefined || value === null ? '' : value;
-        selectElem.value = normalized;
-        if (selectElem.value !== normalized) {
-          if (normalized === 'None' && includeNone) {
-            selectElem.value = 'None';
-            if (selectElem.value !== 'None') {
-              selectElem.selectedIndex = -1;
-            }
-          } else if (normalized === '') {
-            selectElem.selectedIndex = -1;
-          } else {
-            selectElem.selectedIndex = -1;
-          }
-        }
+      } else if (wrapper && favoriteButton.parentElement !== wrapper) {
+        wrapper.appendChild(favoriteButton);
       }
 
-      function restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone) {
-        if (!selectElem) return;
-        const options = Array.from(selectElem.options || []);
+      const previousListener = FAVORITE_BUTTON_LISTENER.get(favoriteButton);
+      if (previousListener) {
+        favoriteButton.removeEventListener('click', previousListener);
+      }
+      favoriteButton.type = 'button';
+      favoriteButton.className = 'favorite-toggle';
+      favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+      favoriteButton.setAttribute('aria-pressed', 'false');
+      favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
+      const clickHandler = () => toggleFavorite(selectElem);
+      favoriteButton.addEventListener('click', clickHandler);
+      FAVORITE_BUTTON_LISTENER.set(favoriteButton, clickHandler);
 
-        if (hadSelection) {
-          const optionExists = options.some(option => option && option.value === previousValue);
-          if (optionExists) {
-            applySelectValueAfterPopulate(selectElem, previousValue, includeNone);
-            return;
+      if (!FAVORITE_CHANGE_LISTENER_BY_SELECT.has(selectElem)) {
+        const changeListener = () => updateFavoriteButton(selectElem);
+        selectElem.addEventListener('change', changeListener);
+        FAVORITE_CHANGE_LISTENER_BY_SELECT.set(selectElem, changeListener);
+      }
+
+      FAVORITE_BUTTON_BY_SELECT.set(selectElem, favoriteButton);
+      favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
+
+      const translations = (() => {
+        const translationSource =
+          (typeof texts === 'object' && texts) ||
+          (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE && GLOBAL_SCOPE.texts) ||
+          {};
+        const activeTexts = translationSource?.[currentLang];
+        const fallbackLangCandidates = [];
+        if (
+          typeof DEFAULT_LANGUAGE_SAFE === 'string' &&
+          translationSource?.[DEFAULT_LANGUAGE_SAFE]
+        ) {
+          fallbackLangCandidates.push(DEFAULT_LANGUAGE_SAFE);
+        }
+        if (translationSource?.en) {
+          fallbackLangCandidates.push('en');
+        }
+        const fallbackTexts = fallbackLangCandidates
+          .map(langKey => translationSource?.[langKey])
+          .find(bundle => bundle && typeof bundle === 'object') || {};
+        const label =
+          (activeTexts && activeTexts.favoriteToggleLabel) ||
+          fallbackTexts.favoriteToggleLabel ||
+          'Toggle favorite';
+        const help =
+          (activeTexts && activeTexts.favoriteToggleHelp) ||
+          fallbackTexts.favoriteToggleHelp ||
+          label;
+        return { label, help };
+      })();
+
+      favoriteButton.setAttribute('aria-label', translations.label);
+      favoriteButton.setAttribute('title', translations.label);
+      favoriteButton.setAttribute('data-help', translations.help);
+
+      applyFavoritesToSelect(selectElem);
+      updateFavoriteButton(selectElem);
+      adjustGearListSelectWidth(selectElem);
+    }
+
+    function applySelectValueAfterPopulate(selectElem, value, includeNone) {
+      if (!selectElem) return;
+      if (typeof setSelectValue === 'function') {
+        setSelectValue(selectElem, value);
+        return;
+      }
+
+      const normalized = value === undefined || value === null ? '' : value;
+      selectElem.value = normalized;
+      if (selectElem.value !== normalized) {
+        if (normalized === 'None' && includeNone) {
+          selectElem.value = 'None';
+          if (selectElem.value !== 'None') {
+            selectElem.selectedIndex = -1;
           }
-          if (includeNone && options.some(option => option && option.value === 'None')) {
-            applySelectValueAfterPopulate(selectElem, 'None', includeNone);
-            return;
-          }
+        } else if (normalized === '') {
+          selectElem.selectedIndex = -1;
         } else {
           selectElem.selectedIndex = -1;
+        }
+      }
+    }
+
+    function restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone) {
+      if (!selectElem) return;
+      const options = Array.from(selectElem.options || []);
+
+      if (hadSelection) {
+        const optionExists = options.some(option => option && option.value === previousValue);
+        if (optionExists) {
+          applySelectValueAfterPopulate(selectElem, previousValue, includeNone);
           return;
         }
-
-        if (!options.length) {
-          selectElem.selectedIndex = -1;
+        if (includeNone && options.some(option => option && option.value === 'None')) {
+          applySelectValueAfterPopulate(selectElem, 'None', includeNone);
+          return;
         }
+      } else {
+        selectElem.selectedIndex = -1;
+        return;
       }
 
-      // Populate dropdowns with device options
-      function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
-        if (!selectElem) return;
-        const previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
-        const hadSelection = selectElem.selectedIndex !== -1;
-
-        // Ensure we always work with an object so Object.keys does not throw if
-        // `optionsObj` is passed as `null`.
-        const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
-        selectElem.innerHTML = "";
-        if (includeNone) {
-          const noneOpt = document.createElement("option");
-          noneOpt.value = "None";
-          const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
-          noneOpt.textContent = noneMap[currentLang] || "None";
-          selectElem.appendChild(noneOpt);
-        }
-        Object.keys(opts)
-          .filter(name => name !== "None")
-          .sort(localeSort)
-          .forEach(name => {
-            const opt = document.createElement("option");
-            opt.value = name;
-            opt.textContent = name;
-            selectElem.appendChild(opt);
-          });
-        initFavoritableSelect(selectElem);
-        restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone);
+      if (!options.length) {
+        selectElem.selectedIndex = -1;
       }
-    
+    }
+
+    // Populate dropdowns with device options
+    function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
+      if (!selectElem) return;
+      const previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
+      const hadSelection = selectElem.selectedIndex !== -1;
+
+      // Ensure we always work with an object so Object.keys does not throw if
+      // `optionsObj` is passed as `null`.
+      const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
+      selectElem.innerHTML = "";
+      if (includeNone) {
+        const noneOpt = document.createElement("option");
+        noneOpt.value = "None";
+        const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
+        noneOpt.textContent = noneMap[currentLang] || "None";
+        selectElem.appendChild(noneOpt);
+      }
+      Object.keys(opts)
+        .filter(name => name !== "None")
+        .sort(localeSort)
+        .forEach(name => {
+          const opt = document.createElement("option");
+          opt.value = name;
+          opt.textContent = name;
+          selectElem.appendChild(opt);
+        });
+      initFavoritableSelect(selectElem);
+      restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone);
+    }
+
     function populateMonitorSelect() {
       const filtered = Object.fromEntries(
         Object.entries(devices.monitors || {})
@@ -17025,7 +17026,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       );
       populateSelect(monitorSelect, filtered, true);
     }
-    
+
     function getCompatibleCagesForCamera(cameraName) {
       const allCages = devices?.accessories?.cages || {};
       if (!cameraName || cameraName === 'None') {
@@ -17047,7 +17048,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
       );
     }
-    
+
     function applyCageSelectValue(value) {
       if (!cageSelect) return;
       if (typeof setSelectValue === 'function') {
@@ -17067,39 +17068,39 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       cageSelect.value = '';
     }
-    
+
     function updateCageSelectOptions(preferredValue) {
       if (!cageSelect) return;
       const cameraName = cameraSelect ? cameraSelect.value : '';
       const compatibleCages = getCompatibleCagesForCamera(cameraName);
       const desiredValue = typeof preferredValue === 'string' ? preferredValue : cageSelect.value;
       populateSelect(cageSelect, compatibleCages, true);
-    
+
       const hasDesired =
         desiredValue && desiredValue !== 'None'
         && Object.prototype.hasOwnProperty.call(compatibleCages, desiredValue);
-    
+
       if (hasDesired) {
         applyCageSelectValue(desiredValue);
         return;
       }
-    
+
       const options = Array.from(cageSelect.options || []);
       const noneOption = options.find(opt => opt.value === 'None');
       if (desiredValue === 'None' && noneOption) {
         applyCageSelectValue('None');
         return;
       }
-    
+
       if (noneOption) {
         applyCageSelectValue('None');
         return;
       }
-    
+
       const firstOption = options.find(opt => opt.value && opt.value !== 'None');
       applyCageSelectValue(firstOption ? firstOption.value : '');
     }
-    
+
     function filterSelect(selectElem, filterValue) {
       const text = filterValue.toLowerCase();
       Array.from(selectElem.options).forEach(opt => {
@@ -17112,7 +17113,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     function filterDeviceList(listElem, filterValue) {
       const text = filterValue.toLowerCase();
       Array.from(listElem.querySelectorAll('li')).forEach(li => {
@@ -17125,7 +17126,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     // Attach in-select search filtering for a dropdown
     function attachSelectSearch(selectElem) {
       if (!selectElem) {
@@ -17149,7 +17150,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           return;
         }
-    
+
         clearTimeout(timer);
         timer = setTimeout(() => {
           searchStr = "";
@@ -17158,13 +17159,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           timer.unref();
         }
       });
-    
+
       selectElem.addEventListener('blur', () => {
         searchStr = "";
         filterSelect(selectElem, "");
       });
     }
-    
+
     function bindFilterInput(inputElem, callback) {
       if (!inputElem) {
         return;
@@ -17178,7 +17179,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       addInputClearButton(inputElem, callback);
     }
-    
+
     function addInputClearButton(inputElem, callback) {
       const label = (texts[currentLang] && texts[currentLang].clearFilter) || "Clear filter";
       const btn = document.createElement("button");
@@ -17402,14 +17403,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
     }
-    
+
     const filterHelperScope =
       (typeof globalThis !== 'undefined' && globalThis)
       || (typeof window !== 'undefined' && window)
       || (typeof self !== 'undefined' && self)
       || (typeof global !== 'undefined' && global)
       || null;
-    
+
     if (filterHelperScope) {
       if (typeof filterHelperScope.filterSelect !== 'function') {
         filterHelperScope.filterSelect = filterSelect;
@@ -17435,7 +17436,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateDeviceLibrarySearchLocalization();
       }
     }
-    
+
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
       activeDeviceManagerLists.forEach(({ list, filterInput }) => {
@@ -17449,7 +17450,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (filterHelperScope && typeof filterHelperScope.applyFilters !== 'function') {
       filterHelperScope.applyFilters = applyFilters;
     }
-    
+
     // Initialize device selection dropdowns
     populateSelect(cameraSelect, devices.cameras, true);
     populateMonitorSelect();
@@ -17462,7 +17463,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
     updateBatteryPlateVisibility();
     updateBatteryOptions();
-    
+
     // Enable search inside dropdowns
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
       .forEach(sel => attachSelectSearch(sel));
@@ -17514,9 +17515,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     updateDistanceConnectionOptions();
     updateDistanceMethodOptions();
     updateDistanceDisplayOptions();
-    
+
     // Set default selections for dropdowns
-    
+
     // Kamera: Wenn Option „None“ existiert, dann setze sie – sonst erste Option
     const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
     if (noneCameraOption) {
@@ -17524,7 +17525,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     } else {
       cameraSelect.selectedIndex = 0;
     }
-    
+
     // Für die anderen Dropdowns
     [monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
@@ -17534,12 +17535,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         sel.selectedIndex = 0;
       }
     });
-    
+
     // FIZ Dropdowns
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    
-        // Calculation function delegates to cineResults module for power and runtime processing
+
+    // Calculation function delegates to cineResults module for power and runtime processing
     function updateCalculations() {
       const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
       const runModuleUpdate =
@@ -17635,17 +17636,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           ? select.value
           : ''
       );
-    
+
       const safeListValues = (list) => (
         Array.isArray(list)
           ? list
-              .map(sel => safeSelectValue(sel))
-              .filter(value => value && value !== 'None')
-              .sort()
-              .join(',')
+            .map(sel => safeSelectValue(sel))
+            .filter(value => value && value !== 'None')
+            .sort()
+            .join(',')
           : ''
       );
-    
+
       const camera = safeSelectValue(cameraSelect);
       const monitor = safeSelectValue(monitorSelect);
       const video = safeSelectValue(videoSelect);
@@ -17656,10 +17657,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const battery = safeSelectValue(batterySelect);
       const hotswap = safeSelectValue(hotswapSelect);
       const plate = typeof getSelectedPlate === 'function' ? (getSelectedPlate() || '') : '';
-    
+
       return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
     }
-    
+
     function deleteFeedbackEntry(key, index) {
       const feedbackData = loadFeedbackSafe();
       if (feedbackData[key]) {
@@ -17671,7 +17672,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateCalculations();
       }
     }
-    
+
     function renderFeedbackTable(currentKey) {
       const container = document.getElementById('feedbackTableContainer');
       const table = document.getElementById('userFeedbackTable');
@@ -17682,7 +17683,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         delete rest.location;
         return rest;
       });
-    
+
       if (!entries.length) {
         if (table) {
           table.innerHTML = '';
@@ -17691,7 +17692,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (container) container.classList.add('hidden');
         return null;
       }
-    
+
       const columns = [
         { key: 'username', label: 'User' },
         { key: 'date', label: 'Date' },
@@ -17708,7 +17709,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         { key: 'batteriesPerDay', label: 'batteries a day' },
         { key: 'weighting', label: 'weight' }
       ];
-    
+
       // Helper functions for weighting factors
       const parseResolution = str => {
         if (!str) return null;
@@ -17735,7 +17736,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (temp >= -20) return 1.6 + (-10 - temp) * 0.04;
         return 2;
       };
-    
+
       const resolutionWeight = res => {
         if (res >= 12000) return 3;
         if (res >= 8000) return 2;
@@ -17743,7 +17744,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (res >= 1080) return 1;
         return res / 1080;
       };
-    
+
       const codecWeight = codec => {
         if (!codec) return 1;
         const c = String(codec).toLowerCase();
@@ -17758,7 +17759,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (/h264|h\.264|avc|xavc|avchd|mpeg-4/.test(c)) return 1.5;
         return 1;
       };
-    
+
       const camPower = devices?.cameras?.[cameraSelect?.value]?.powerDrawWatts || 0;
       const monitorPower = devices?.monitors?.[monitorSelect?.value]?.powerDrawWatts || 0;
       const videoPower = devices?.video?.[videoSelect?.value]?.powerDrawWatts || 0;
@@ -17774,50 +17775,50 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const otherPower = videoPower + motorPower + controllerPower + distancePower;
       const totalPower = camPower + monitorPower + otherPower;
       const specBrightness = devices?.monitors?.[monitorSelect?.value]?.brightnessNits;
-    
+
       let weightedSum = 0;
       let weightTotal = 0;
       let count = 0;
       const breakdown = entries.map(e => {
         const rt = parseFloat(e.runtime);
         if (Number.isNaN(rt)) return null;
-    
+
         let camFactor = 1;
         let monitorFactor = 1;
-    
+
         const res = parseResolution(e.resolution);
         if (res) camFactor *= resolutionWeight(res);
-    
+
         const fps = parseFramerate(e.framerate);
         if (fps) camFactor *= fps / 24;
-    
+
         const wifi = (e.cameraWifi || '').toLowerCase();
         if (wifi.includes('on')) camFactor *= 1.1;
-    
+
         const codec = e.codec;
         if (codec) camFactor *= codecWeight(codec);
-    
+
         const entryBrightness = parseFloat(e.monitorBrightness);
         if (!Number.isNaN(entryBrightness) && specBrightness) {
           const ratio = entryBrightness / specBrightness;
           if (ratio < 1) monitorFactor *= ratio;
         }
-    
+
         let weight = 1;
         if (totalPower > 0) {
           weight =
             (camFactor * camPower + monitorFactor * monitorPower + otherPower) /
             totalPower;
         }
-    
+
         const temp = parseFloat(e.temperature);
         const tempMul = tempFactor(temp);
         const adjustedRuntime = rt * tempMul;
-    
+
         weightedSum += adjustedRuntime * weight;
         weightTotal += weight;
         count++;
-    
+
         return {
           temperature: tempMul,
           resolution: res ? resolutionWeight(res) : 1,
@@ -17828,7 +17829,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           weight
         };
       });
-    
+
       const maxWeight = Math.max(...breakdown.filter(Boolean).map(b => b.weight), 0);
       let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
       const deleteFeedbackLabel =
@@ -17877,13 +17878,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           deleteFeedbackEntry(key, idx);
         });
       });
-    
+
       if (count >= 3 && weightTotal > 0) {
         return { runtime: weightedSum / weightTotal, count, weight: weightTotal };
       }
       return null;
     }
-    
+
     // Normalize device data for comparison so that key ordering and undefined
     // values do not cause false positives when determining whether a device
     // differs from the default database.
@@ -17968,13 +17969,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       return diff;
     }
-    
+
     // Apply a set of device changes to the current in-memory database and update
     // all related UI elements and localStorage. `changes` mirrors the structure
     // returned by getDeviceChanges().
     function applyDeviceChanges(changes) {
       if (!changes || typeof changes !== 'object') return;
-    
+
       const applyToCategory = (target, delta) => {
         Object.keys(delta).forEach(name => {
           const val = delta[name];
@@ -17985,7 +17986,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       };
-    
+
       Object.keys(changes).forEach(cat => {
         if (cat === 'fiz') {
           Object.keys(changes.fiz || {}).forEach(sub => {
@@ -17997,7 +17998,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           applyToCategory(devices[cat], changes[cat]);
         }
       });
-    
+
       unifyDevices(devices, { force: true });
       storeDevices(devices);
       refreshDeviceLists();
@@ -18012,7 +18013,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
-    
+
       updateFizConnectorOptions();
       updateMotorConnectorOptions();
       updateControllerConnectorOptions();
@@ -18023,7 +18024,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateDistanceMethodOptions();
       updateDistanceDisplayOptions();
     }
-    
+
     function formatValue(value) {
       if (Array.isArray(value)) {
         return value.map((v) => formatValue(v)).join('; ');
@@ -18039,18 +18040,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof value === 'boolean') return value ? 'Yes' : 'No';
       return String(value);
     }
-    
+
     function createDeviceDetailsList(deviceData) {
       const list = document.createElement('ul');
       list.className = 'device-detail-list';
-    
+
       const appendItem = (key, value, parent) => {
         if (value === '' || value === null || value === undefined) return;
         const li = document.createElement('li');
         const label = document.createElement('strong');
         label.textContent = coreHumanizeKey(key) + ':';
         li.appendChild(label);
-    
+
         if (Array.isArray(value)) {
           if (value.length && typeof value[0] === 'object') {
             const subList = document.createElement('ul');
@@ -18069,16 +18070,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           li.appendChild(document.createTextNode(formatValue(value)));
         }
-    
+
         parent.appendChild(li);
       };
-    
+
       if (typeof deviceData !== 'object') {
         appendItem('powerDrawWatts', deviceData, list);
       } else {
         Object.keys(deviceData).forEach((k) => appendItem(k, deviceData[k], list));
       }
-    
+
       return list;
     }
     function formatDateString(val) {
@@ -18087,7 +18088,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (Number.isNaN(d.getTime())) return String(val);
       return d.toISOString().split('T')[0];
     }
-    
+
     // Helper to render existing devices in the manager section
     function renderDeviceList(categoryKey, ulElement) {
       ulElement.innerHTML = "";
@@ -18118,13 +18119,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         categoryDevices = devices[mainCat] && devices[mainCat][subCat];
       }
       if (!categoryDevices) return;
-    
+
       const buildItem = (name, deviceData, subcategory) => {
         if (name === "None") return;
         const li = document.createElement("li");
         const header = document.createElement("div");
         header.className = "device-summary";
-    
+
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
         let summary = generateSafeConnectorSummary(deviceData);
@@ -18147,7 +18148,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           nameSpan.setAttribute('data-help', summary);
         }
         header.appendChild(nameSpan);
-    
+
         const toggleBtn = document.createElement("button");
         toggleBtn.className = "detail-toggle";
         toggleBtn.type = "button";
@@ -18181,18 +18182,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         deleteBtn.textContent = deleteLabel;
         deleteBtn.setAttribute('data-help', deleteHelp || deleteLabel);
         header.appendChild(deleteBtn);
-    
+
         li.appendChild(header);
-    
+
         const detailsDiv = document.createElement("div");
         detailsDiv.className = "device-details";
         detailsDiv.style.display = "none";
         detailsDiv.appendChild(createDeviceDetailsList(deviceData));
         li.appendChild(detailsDiv);
-    
+
         ulElement.appendChild(li);
       };
-    
+
       if (categoryKey === "accessories.cables" && categoryDevices && typeof categoryDevices === 'object') {
         Object.keys(categoryDevices)
           .sort(localeSort)
@@ -18214,7 +18215,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
       }
     }
-    
+
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
@@ -18236,7 +18237,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    
+
     const CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect,
       populateMonitorSelect,
@@ -18772,7 +18773,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       (typeof window !== 'undefined' ? window : null) ||
       (typeof self !== 'undefined' ? self : null) ||
       (typeof global !== 'undefined' ? global : null);
-    
+
     const CORE_PART2_RUNTIME = (function resolvePart2Runtime(scope) {
       if (!scope || typeof scope !== 'object') return null;
       if (scope.cineCoreRuntime && typeof scope.cineCoreRuntime === 'object') {
@@ -18784,7 +18785,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     })(CORE_PART2_GLOBAL_SCOPE);
-    
+
     Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, value]) => {
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
@@ -18793,13 +18794,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         CORE_PART2_RUNTIME[name] = value;
       }
     });
-    
+
     // Ensure deferred boot tasks from the first runtime segment execute before final renders
     flushCoreBootQueue();
-    
+
     // Initial render of device lists
     refreshDeviceLists();
-    
+
     if (typeof module !== 'undefined' && module.exports) {
       module.exports = {
         normalizeAutoGearCameraWeightCondition,
@@ -18807,6 +18808,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         formatAutoGearCameraWeight,
         getAutoGearCameraWeightOperatorLabel,
       };
+    }
+
+    if (typeof globalThis !== 'undefined') {
+      globalThis.checkSetupChanged = checkSetupChanged;
+      globalThis.updateCalculations = updateCalculations;
+      globalThis.projectDialog = projectDialog;
+      globalThis.projectDialogCloseBtn = projectDialogCloseBtn;
+      globalThis.projectCancelBtn = projectCancelBtn;
+    } else if (typeof window !== 'undefined') {
+      window.checkSetupChanged = checkSetupChanged;
+      window.updateCalculations = updateCalculations;
+      window.projectDialog = projectDialog;
+      window.projectDialogCloseBtn = projectDialogCloseBtn;
+      window.projectCancelBtn = projectCancelBtn;
     }
   }
 

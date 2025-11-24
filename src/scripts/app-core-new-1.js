@@ -303,7 +303,6 @@ function resolveFeedbackTemperatureBound(boundKey, fallbackValue) {
   return fallbackValue;
 }
 
-const FEEDBACK_TEMPERATURE_MIN_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MIN', -20);
 const FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX', 50);
 
 // The planner shares a handful of helper modules across legacy and modern
@@ -18450,7 +18449,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       : null)
     || (typeof syncMountVoltageResetButtonGlobal === 'function'
       ? syncMountVoltageResetButtonGlobal
-      : function noopSyncMountVoltageResetButtonGlobal() {});
+      : function noopSyncMountVoltageResetButtonGlobal() { });
 
   const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
   const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
