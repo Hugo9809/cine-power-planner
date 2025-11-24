@@ -323,7 +323,7 @@
   }
 
   function isEthereumProviderCandidate(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -440,7 +440,7 @@
   }
 
   function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
@@ -513,7 +513,7 @@
   }
 
   function fallbackFreezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
@@ -556,7 +556,7 @@
         child = undefined;
       }
 
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 
@@ -775,7 +775,7 @@
   );
 
   function freezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 

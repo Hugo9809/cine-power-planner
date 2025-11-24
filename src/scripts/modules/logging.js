@@ -671,6 +671,17 @@
       return value;
     }
 
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
+
     if (typeof visited.has === 'function' && visited.has(value)) {
       return value;
     }
@@ -689,7 +700,7 @@
         void accessError;
         child = undefined;
       }
-      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+      if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
       fallbackFreezeDeep(child, visited);

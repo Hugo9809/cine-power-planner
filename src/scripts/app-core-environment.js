@@ -483,8 +483,42 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopesP
 })();
 
 var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportPart2() {
-  if (typeof CORE_RUNTIME_STATE_SUPPORT !== 'undefined' && CORE_RUNTIME_STATE_SUPPORT) {
-    return CORE_RUNTIME_STATE_SUPPORT;
+  function readExistingRuntimeStateSupport() {
+    var scopes = [];
+    if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+    if (typeof window !== 'undefined') scopes.push(window);
+    if (typeof self !== 'undefined') scopes.push(self);
+    if (typeof global !== 'undefined') scopes.push(global);
+
+    if (Array.isArray(CORE_RUNTIME_CANDIDATE_SCOPES)) {
+      for (var scopeIndex = 0; scopeIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; scopeIndex += 1) {
+        scopes.push(CORE_RUNTIME_CANDIDATE_SCOPES[scopeIndex]);
+      }
+    }
+
+    for (var readIndex = 0; readIndex < scopes.length; readIndex += 1) {
+      var candidateScope = scopes[readIndex];
+      if (!candidateScope || typeof candidateScope !== 'object') {
+        continue;
+      }
+      try {
+        if (candidateScope.CORE_RUNTIME_STATE_SUPPORT) {
+          return candidateScope.CORE_RUNTIME_STATE_SUPPORT;
+        }
+        if (candidateScope.cineCoreRuntimeState) {
+          return candidateScope.cineCoreRuntimeState;
+        }
+      } catch (runtimeSupportReadError) {
+        void runtimeSupportReadError;
+      }
+    }
+
+    return null;
+  }
+
+  var baseRuntimeSupport = readExistingRuntimeStateSupport();
+  if (baseRuntimeSupport) {
+    return baseRuntimeSupport;
   }
 
   var resolvedSupport = null;
@@ -504,7 +538,7 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportP
   }
 
   if (resolvedSupport) {
-    if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+    if (!readExistingRuntimeStateSupport() && typeof globalThis !== 'undefined') {
       try {
         globalThis.CORE_RUNTIME_STATE_SUPPORT = resolvedSupport;
       } catch (runtimeStateAssignError) {
@@ -523,7 +557,7 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportP
     try {
       var candidate = supportScope.cineCoreRuntimeState;
       if (candidate && typeof candidate === 'object') {
-        if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+        if (!readExistingRuntimeStateSupport() && typeof globalThis !== 'undefined') {
           try {
             globalThis.CORE_RUNTIME_STATE_SUPPORT = candidate;
           } catch (runtimeStateCandidateAssignError) {

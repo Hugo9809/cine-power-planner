@@ -43,6 +43,35 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
 
+    const collectAutoGearSelectedValues = (function resolveCollectAutoGearSelectedValues() {
+      const candidateScopes = [
+        CORE_SHARED_LOCAL,
+        CORE_PART2_RUNTIME_SCOPE,
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+      ].filter(scope => scope && (typeof scope === 'object' || typeof scope === 'function'));
+
+      for (let index = 0; index < candidateScopes.length; index += 1) {
+        const scope = candidateScopes[index];
+        try {
+          const candidate =
+            (scope.autoGear && scope.autoGear.collectAutoGearSelectedValues)
+            || (scope.autoGearUi && scope.autoGearUi.collectAutoGearSelectedValues)
+            || scope.collectAutoGearSelectedValues;
+          if (typeof candidate === 'function') {
+            return candidate;
+          }
+        } catch (collectError) {
+          void collectError;
+        }
+      }
+
+      return function fallbackCollectAutoGearSelectedValues() { return []; };
+    })();
+
     function resolveCoreRuntimeHelpersPart2() {
       const candidates = [];
 
@@ -188,8 +217,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return {};
     })();
 
-    const escapeHtml =
-      typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
+    var escapeHtml = typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
         ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
         : function escapeHtmlFallback(str) {
             return String(str)

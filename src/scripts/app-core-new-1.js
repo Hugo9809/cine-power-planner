@@ -181,6 +181,150 @@ const applyLegacyGridSnapValue =
       return typeof value === 'undefined' ? getGridSnapState() : value;
     };
 
+const TEMPERATURE_SCOPE_CANDIDATES = [
+  typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE,
+  typeof globalThis !== 'undefined' ? globalThis : null,
+  typeof window !== 'undefined' ? window : null,
+  typeof self !== 'undefined' ? self : null,
+  typeof global !== 'undefined' ? global : null,
+].filter(scope => scope && (typeof scope === 'object' || typeof scope === 'function'));
+
+const TEMPERATURE_UNITS_FALLBACK = Object.freeze({
+  fahrenheit: 'fahrenheit',
+  celsius: 'celsius',
+});
+
+const TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
+  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      const candidate = scope.TEMPERATURE_UNITS;
+      if (
+        candidate
+        && typeof candidate === 'object'
+        && typeof candidate.fahrenheit === 'string'
+        && typeof candidate.celsius === 'string'
+      ) {
+        return candidate;
+      }
+    } catch (temperatureUnitsError) {
+      void temperatureUnitsError;
+    }
+  }
+
+  candidateScopes.forEach(scope => {
+    try {
+      if (!scope.TEMPERATURE_UNITS) {
+        scope.TEMPERATURE_UNITS = TEMPERATURE_UNITS_FALLBACK;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+
+  return TEMPERATURE_UNITS_FALLBACK;
+})();
+
+const TEMPERATURE_SCENARIOS = (function resolveTemperatureScenarios() {
+  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      if (Array.isArray(scope.TEMPERATURE_SCENARIOS)) {
+        return scope.TEMPERATURE_SCENARIOS;
+      }
+    } catch (temperatureScenarioError) {
+      void temperatureScenarioError;
+    }
+  }
+  candidateScopes.forEach(scope => {
+    try {
+      if (!Array.isArray(scope.TEMPERATURE_SCENARIOS)) {
+        scope.TEMPERATURE_SCENARIOS = [];
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return [];
+})();
+
+const FOCUS_SCALE_VALUES_FALLBACK = Object.freeze(['metric', 'imperial']);
+
+const FOCUS_SCALE_VALUES = (function resolveFocusScaleValues() {
+  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      if (Array.isArray(scope.FOCUS_SCALE_VALUES) && scope.FOCUS_SCALE_VALUES.length) {
+        return scope.FOCUS_SCALE_VALUES;
+      }
+    } catch (focusScaleError) {
+      void focusScaleError;
+    }
+  }
+  candidateScopes.forEach(scope => {
+    try {
+      if (!Array.isArray(scope.FOCUS_SCALE_VALUES) || !scope.FOCUS_SCALE_VALUES.length) {
+        scope.FOCUS_SCALE_VALUES = FOCUS_SCALE_VALUES_FALLBACK;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return FOCUS_SCALE_VALUES_FALLBACK;
+})();
+
+const FEEDBACK_TEMPERATURE_MIN = (function resolveFeedbackTemperatureMin() {
+  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      if (typeof scope.FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(scope.FEEDBACK_TEMPERATURE_MIN)) {
+        return scope.FEEDBACK_TEMPERATURE_MIN;
+      }
+    } catch (feedbackMinError) {
+      void feedbackMinError;
+    }
+  }
+  candidateScopes.forEach(scope => {
+    try {
+      if (typeof scope.FEEDBACK_TEMPERATURE_MIN !== 'number' || !Number.isFinite(scope.FEEDBACK_TEMPERATURE_MIN)) {
+        scope.FEEDBACK_TEMPERATURE_MIN = -20;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return -20;
+})();
+
+const FEEDBACK_TEMPERATURE_MAX = (function resolveFeedbackTemperatureMax() {
+  const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      if (typeof scope.FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(scope.FEEDBACK_TEMPERATURE_MAX)) {
+        return scope.FEEDBACK_TEMPERATURE_MAX;
+      }
+    } catch (feedbackMaxError) {
+      void feedbackMaxError;
+    }
+  }
+  candidateScopes.forEach(scope => {
+    try {
+      if (typeof scope.FEEDBACK_TEMPERATURE_MAX !== 'number' || !Number.isFinite(scope.FEEDBACK_TEMPERATURE_MAX)) {
+        scope.FEEDBACK_TEMPERATURE_MAX = 50;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return 50;
+})();
+
 // The planner shares a handful of helper modules across legacy and modern
 // bundles. Rather than assuming a module loader exists we defensively look for
 // pre-attached namespaces first and then fall back to CommonJS style requires.
@@ -18317,17 +18461,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     iosPwaHelpStep1 = document.getElementById('iosPwaHelpStep1');
     installPromptElementsInitialized = true;
   }
+  const syncResetButtonGlobal =
+    (typeof globalThis !== 'undefined'
+      && globalThis
+      && typeof globalThis.syncMountVoltageResetButtonGlobal === 'function'
+      ? globalThis.syncMountVoltageResetButtonGlobal
+      : null)
+    || (typeof syncMountVoltageResetButtonGlobal === 'function'
+      ? syncMountVoltageResetButtonGlobal
+      : function noopSyncMountVoltageResetButtonGlobal() {});
+
   const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
   const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
   const mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
   const mountVoltageNoteElem = document.getElementById('mountVoltageNote');
   const mountVoltageResetButton = document.getElementById('mountVoltageReset');
-  syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
+  syncResetButtonGlobal(mountVoltageResetButton);
   const mountVoltageTitleElems = {
     V: document.getElementById('mountVoltageVTitle'),
     Gold: document.getElementById('mountVoltageGoldTitle'),
     B: document.getElementById('mountVoltageBTitle'),
   };
+
   const mountVoltageInputs = {
     'V-Mount': {
       high: document.getElementById('mountVoltageVHigh'),
