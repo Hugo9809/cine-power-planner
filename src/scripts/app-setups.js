@@ -13626,8 +13626,19 @@ function getGearListSelectors() {
       selectors[sel.id] = sel.value;
     }
   };
-  if (gearListOutput) {
-    gearListOutput.querySelectorAll('select[id]').forEach(sel => {
+  const gearListElement = (function resolveGearListElement() {
+    if (gearListOutput && typeof gearListOutput.querySelectorAll === 'function') {
+      return gearListOutput;
+    }
+    if (typeof document !== 'undefined' && document) {
+      const resolved = document.getElementById('gearListOutput');
+      if (resolved && typeof resolved.querySelectorAll === 'function') return resolved;
+    }
+    return null;
+  })();
+
+  if (gearListElement) {
+    gearListElement.querySelectorAll('select[id]').forEach(sel => {
       collectSelectValue(sel);
     });
   }
@@ -13642,9 +13653,9 @@ function getGearListSelectors() {
   if (customState && Object.keys(customState).length) {
     selectors.__customItems = customState;
   }
-  if (gearListOutput) {
+  if (gearListElement) {
     const rentalState = {};
-    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
+    gearListElement.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
       const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
       if (span.getAttribute('data-rental-excluded') === 'true') {
