@@ -6134,19 +6134,19 @@
 
   </dialog>
 
-  <dialog id="factoryResetConfirmDialog" class="app-modal" role="dialog" aria-modal="true"
-    aria-labelledby="factoryResetConfirmTitle" hidden>
-    <div class="modal-surface">
+  <dialog id="appConfirmDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="appConfirmTitle"
+    hidden>
+    <div class="modal-surface confirm-dialog-surface">
       <header class="modal-header">
-        <h3 id="factoryResetConfirmTitle" class="modal-title">Factory Reset</h3>
+        <h3 id="appConfirmTitle" class="modal-title">Confirm</h3>
       </header>
       <div class="modal-body">
-        <p id="factoryResetConfirmMessage">Create a backup and wipe all planner data? This action cannot be undone.</p>
+        <p id="appConfirmMessage">Are you sure?</p>
       </div>
       <footer class="modal-footer">
         <div class="dialog-actions">
-          <button type="button" id="factoryResetCancelBtn">Cancel</button>
-          <button type="button" id="factoryResetConfirmBtn" class="danger">Reset Everything</button>
+          <button type="button" id="appConfirmCancelBtn">Cancel</button>
+          <button type="button" id="appConfirmBtn" class="danger">Confirm</button>
         </div>
       </footer>
     </div>

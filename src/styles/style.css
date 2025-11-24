@@ -13136,3 +13136,63 @@ body.pink-mode,
     overflow: visible;
   }
 }
+/* Generic Confirmation Dialog Styling */
+.confirm-dialog-surface {
+  width: min(420px, calc(100vw - 2 * var(--modal-frame-padding, 24px)));
+  max-width: 420px;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.confirm-dialog-surface .modal-header {
+  border-bottom: none;
+  padding-bottom: 12px;
+}
+
+.confirm-dialog-surface .modal-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.confirm-dialog-surface .modal-body {
+  padding-top: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  white-space: pre-wrap; /* Ensure text wraps and respects newlines */
+}
+
+.confirm-dialog-surface .modal-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.confirm-dialog-surface .dialog-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.confirm-dialog-surface .dialog-actions button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: transform 0.1s ease, background-color 0.2s;
+}
+
+.confirm-dialog-surface .dialog-actions button:active {
+  transform: scale(0.96);
+}
+
+/* Dark mode adjustments */
+.dark-mode .confirm-dialog-surface {
+  background: color-mix(in srgb, var(--surface-color) 95%, var(--panel-bg) 5%);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 30%, var(--panel-border));
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}

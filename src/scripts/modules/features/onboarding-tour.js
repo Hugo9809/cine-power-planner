@@ -51,15 +51,15 @@
   const safeWarn = typeof MODULE_BASE.safeWarn === 'function'
     ? MODULE_BASE.safeWarn
     : function fallbackWarn(message, error) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
-        }
-        if (typeof error === 'undefined') {
-          console.warn(message);
-        } else {
-          console.warn(message, error);
-        }
-      };
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      if (typeof error === 'undefined') {
+        console.warn(message);
+      } else {
+        console.warn(message, error);
+      }
+    };
 
   function prefersReducedMotion() {
     if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE.matchMedia !== 'function') {
@@ -303,8 +303,8 @@
   function isDialogElement(element) {
     return Boolean(
       element
-        && typeof element.nodeName === 'string'
-        && element.nodeName.toLowerCase() === 'dialog',
+      && typeof element.nodeName === 'string'
+      && element.nodeName.toLowerCase() === 'dialog',
     );
   }
 
@@ -382,65 +382,65 @@
     return null;
   }
 
-    const SAFE_STORAGE = resolveStorage();
+  const SAFE_STORAGE = resolveStorage();
 
-    function pushUniqueStorage(target, storage) {
-      if (!target || !Array.isArray(target)) {
-        return;
-      }
-      if (!storage) {
-        return;
-      }
-      try {
-        const hasGet = typeof storage.getItem === 'function';
-        const hasSet = typeof storage.setItem === 'function';
-        if (!hasGet && !hasSet) {
-          return;
-        }
-      } catch (error) {
-        void error;
-        return;
-      }
-      if (target.indexOf(storage) !== -1) {
-        return;
-      }
-      target.push(storage);
+  function pushUniqueStorage(target, storage) {
+    if (!target || !Array.isArray(target)) {
+      return;
     }
+    if (!storage) {
+      return;
+    }
+    try {
+      const hasGet = typeof storage.getItem === 'function';
+      const hasSet = typeof storage.setItem === 'function';
+      if (!hasGet && !hasSet) {
+        return;
+      }
+    } catch (error) {
+      void error;
+      return;
+    }
+    if (target.indexOf(storage) !== -1) {
+      return;
+    }
+    target.push(storage);
+  }
 
-    function collectStorageCandidates() {
-      const storages = [];
-      pushUniqueStorage(storages, SAFE_STORAGE);
+  function collectStorageCandidates() {
+    const storages = [];
+    pushUniqueStorage(storages, SAFE_STORAGE);
+    try {
+      if (typeof getSafeLocalStorage === 'function') {
+        const safeStorage = getSafeLocalStorage();
+        pushUniqueStorage(storages, safeStorage);
+      }
+    } catch (error) {
+      void error;
+    }
+    if (typeof SAFE_LOCAL_STORAGE === 'object' && SAFE_LOCAL_STORAGE) {
+      pushUniqueStorage(storages, SAFE_LOCAL_STORAGE);
+    }
+    const scopes = collectCandidateScopes(GLOBAL_SCOPE);
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope) {
+        continue;
+      }
       try {
-        if (typeof getSafeLocalStorage === 'function') {
-          const safeStorage = getSafeLocalStorage();
-          pushUniqueStorage(storages, safeStorage);
+        if (scope.localStorage) {
+          pushUniqueStorage(storages, scope.localStorage);
         }
       } catch (error) {
         void error;
       }
-      if (typeof SAFE_LOCAL_STORAGE === 'object' && SAFE_LOCAL_STORAGE) {
-        pushUniqueStorage(storages, SAFE_LOCAL_STORAGE);
+      try {
+        if (scope.sessionStorage) {
+          pushUniqueStorage(storages, scope.sessionStorage);
+        }
+      } catch (error) {
+        void error;
       }
-      const scopes = collectCandidateScopes(GLOBAL_SCOPE);
-      for (let index = 0; index < scopes.length; index += 1) {
-        const scope = scopes[index];
-        if (!scope) {
-          continue;
-        }
-        try {
-          if (scope.localStorage) {
-            pushUniqueStorage(storages, scope.localStorage);
-          }
-        } catch (error) {
-          void error;
-        }
-        try {
-          if (scope.sessionStorage) {
-            pushUniqueStorage(storages, scope.sessionStorage);
-          }
-        } catch (error) {
-          void error;
-        }
     }
     return storages;
   }
@@ -479,75 +479,75 @@
     }
   }
 
-    function readSkipStatusPreference() {
-      const storages = collectStorageCandidates();
-      for (let index = 0; index < storages.length; index += 1) {
-        const storage = storages[index];
-        if (!storage || typeof storage.getItem !== 'function') {
+  function readSkipStatusPreference() {
+    const storages = collectStorageCandidates();
+    for (let index = 0; index < storages.length; index += 1) {
+      const storage = storages[index];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      try {
+        const value = storage.getItem(SKIP_STATUS_KEY);
+        if (value === null || typeof value === 'undefined') {
           continue;
+        }
+        if (value === true || value === 'true') {
+          return true;
+        }
+        if (value === false || value === 'false') {
+          return false;
         }
         try {
-          const value = storage.getItem(SKIP_STATUS_KEY);
-          if (value === null || typeof value === 'undefined') {
-            continue;
+          const parsed = JSON.parse(value);
+          if (parsed === true || parsed === false) {
+            return parsed;
           }
-          if (value === true || value === 'true') {
-            return true;
-          }
-          if (value === false || value === 'false') {
-            return false;
-          }
-          try {
-            const parsed = JSON.parse(value);
-            if (parsed === true || parsed === false) {
-              return parsed;
-            }
-          } catch (parseError) {
-            void parseError;
-          }
-        } catch (error) {
-          void error;
+        } catch (parseError) {
+          void parseError;
         }
+      } catch (error) {
+        void error;
       }
-      if (readWindowNameSkipFlag()) {
-        return true;
-      }
-      return null;
     }
+    if (readWindowNameSkipFlag()) {
+      return true;
+    }
+    return null;
+  }
 
-    function persistSkipStatus(skipped) {
-      const storages = collectStorageCandidates();
-      let wrote = false;
-      for (let index = 0; index < storages.length; index += 1) {
-        const storage = storages[index];
-        if (!storage) {
+  function persistSkipStatus(skipped) {
+    const storages = collectStorageCandidates();
+    let wrote = false;
+    for (let index = 0; index < storages.length; index += 1) {
+      const storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      if (skipped === false && typeof storage.removeItem === 'function') {
+        try {
+          storage.removeItem(SKIP_STATUS_KEY);
+          wrote = true;
           continue;
-        }
-        if (skipped === false && typeof storage.removeItem === 'function') {
-          try {
-            storage.removeItem(SKIP_STATUS_KEY);
-            wrote = true;
-            continue;
-          } catch (removeError) {
-            void removeError;
-          }
-        }
-        if (typeof storage.setItem === 'function') {
-          try {
-            storage.setItem(SKIP_STATUS_KEY, skipped ? 'true' : 'false');
-            wrote = true;
-          } catch (setError) {
-            void setError;
-          }
+        } catch (removeError) {
+          void removeError;
         }
       }
-      const updatedWindowName = writeWindowNameSkipFlag(Boolean(skipped));
-      return wrote || updatedWindowName;
+      if (typeof storage.setItem === 'function') {
+        try {
+          storage.setItem(SKIP_STATUS_KEY, skipped ? 'true' : 'false');
+          wrote = true;
+        } catch (setError) {
+          void setError;
+        }
+      }
     }
+    const updatedWindowName = writeWindowNameSkipFlag(Boolean(skipped));
+    return wrote || updatedWindowName;
+  }
 
-    let storedStateCache = null;
-    let storedStateCacheRaw = null;
-    let storedStateCacheSource = null;
+  let storedStateCache = null;
+  let storedStateCacheRaw = null;
+  let storedStateCacheSource = null;
 
   const deviceLibraryState = {
     lastAdded: null,
@@ -608,7 +608,7 @@
 
   function subscribeDeviceLibrary(callback) {
     if (typeof callback !== 'function') {
-      return () => {};
+      return () => { };
     }
     deviceLibrarySubscribers.push(callback);
     return () => {
@@ -735,9 +735,9 @@
 
     const menuOpen = Boolean(
       sideMenu
-        && typeof sideMenu.classList === 'object'
-        && typeof sideMenu.classList.contains === 'function'
-        && sideMenu.classList.contains('open'),
+      && typeof sideMenu.classList === 'object'
+      && typeof sideMenu.classList.contains === 'function'
+      && sideMenu.classList.contains('open'),
     );
 
     const selectors = [];
@@ -1112,7 +1112,7 @@
           if (typeof context.complete === 'function') {
             context.complete();
           }
-          return () => {};
+          return () => { };
         }
         const handler = () => {
           let matches = false;
@@ -1642,10 +1642,10 @@
       attach(context) {
         const complete = typeof context?.complete === 'function'
           ? context.complete
-          : (() => {});
+          : (() => { });
         const incomplete = typeof context?.incomplete === 'function'
           ? context.incomplete
-          : (() => {});
+          : (() => { });
 
         const projectForm = getElement('#projectForm');
         if (!projectForm) {
@@ -1805,10 +1805,10 @@
       attach(context) {
         const complete = typeof context?.complete === 'function'
           ? context.complete
-          : (() => {});
+          : (() => { });
         const incomplete = typeof context?.incomplete === 'function'
           ? context.incomplete
-          : (() => {});
+          : (() => { });
 
         const projectForm = getElement('#projectForm');
         if (!projectForm) {
@@ -2101,246 +2101,246 @@
     storedStateCacheSource = source || storedStateCacheSource || null;
   }
 
-    function createStorageEntry(serialized, key) {
-      if (typeof serialized !== 'string') {
-        return null;
-      }
-      const trimmed = serialized.trim();
-      const metrics = {
-        priority: key === PRIMARY_STORAGE_KEY ? 2 : 1,
-        version: 0,
-        hasContent: trimmed ? 1 : 0,
-        parsed: 0,
-        timestamp: 0,
-      };
-      let parsedValue = null;
-      let parseError = null;
-      try {
-        const candidate = JSON.parse(serialized);
-        if (candidate && typeof candidate === 'object') {
-          parsedValue = candidate;
-        }
-      } catch (error) {
-        parseError = error;
-      }
-      if (parsedValue) {
-        metrics.parsed = 1;
-        if (typeof parsedValue.timestamp === 'number' && !Number.isNaN(parsedValue.timestamp)) {
-          metrics.timestamp = parsedValue.timestamp;
-        }
-        if (parsedValue.version === STORAGE_VERSION) {
-          metrics.version = 2;
-        } else if (typeof parsedValue.version === 'number') {
-          metrics.version = 1;
-        }
-      }
-      return {
-        key,
-        raw: serialized,
-        parsed: parsedValue,
-        parseError,
-        metrics,
-      };
+  function createStorageEntry(serialized, key) {
+    if (typeof serialized !== 'string') {
+      return null;
     }
+    const trimmed = serialized.trim();
+    const metrics = {
+      priority: key === PRIMARY_STORAGE_KEY ? 2 : 1,
+      version: 0,
+      hasContent: trimmed ? 1 : 0,
+      parsed: 0,
+      timestamp: 0,
+    };
+    let parsedValue = null;
+    let parseError = null;
+    try {
+      const candidate = JSON.parse(serialized);
+      if (candidate && typeof candidate === 'object') {
+        parsedValue = candidate;
+      }
+    } catch (error) {
+      parseError = error;
+    }
+    if (parsedValue) {
+      metrics.parsed = 1;
+      if (typeof parsedValue.timestamp === 'number' && !Number.isNaN(parsedValue.timestamp)) {
+        metrics.timestamp = parsedValue.timestamp;
+      }
+      if (parsedValue.version === STORAGE_VERSION) {
+        metrics.version = 2;
+      } else if (typeof parsedValue.version === 'number') {
+        metrics.version = 1;
+      }
+    }
+    return {
+      key,
+      raw: serialized,
+      parsed: parsedValue,
+      parseError,
+      metrics,
+    };
+  }
 
-    function isBetterStorageEntry(candidate, current) {
-      if (!candidate) {
-        return false;
-      }
-      if (!current) {
-        return true;
-      }
-      const fields = ['priority', 'version', 'hasContent', 'parsed', 'timestamp'];
-      for (let index = 0; index < fields.length; index += 1) {
-        const field = fields[index];
-        const candidateValue = candidate.metrics[field] || 0;
-        const currentValue = current.metrics[field] || 0;
-        if (candidateValue === currentValue) {
-          continue;
-        }
-        return candidateValue > currentValue;
-      }
+  function isBetterStorageEntry(candidate, current) {
+    if (!candidate) {
       return false;
     }
+    if (!current) {
+      return true;
+    }
+    const fields = ['priority', 'version', 'hasContent', 'parsed', 'timestamp'];
+    for (let index = 0; index < fields.length; index += 1) {
+      const field = fields[index];
+      const candidateValue = candidate.metrics[field] || 0;
+      const currentValue = current.metrics[field] || 0;
+      if (candidateValue === currentValue) {
+        continue;
+      }
+      return candidateValue > currentValue;
+    }
+    return false;
+  }
 
-    function loadStoredState() {
-      const storages = collectStorageCandidates();
-      let bestEntry = null;
-      let readError = null;
+  function loadStoredState() {
+    const storages = collectStorageCandidates();
+    let bestEntry = null;
+    let readError = null;
 
-      for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
-        const storage = storages[storageIndex];
-        if (!storage || typeof storage.getItem !== 'function') {
+    for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+      const storage = storages[storageIndex];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        const key = STORAGE_KEYS[keyIndex];
+        let candidate = null;
+        try {
+          candidate = storage.getItem(key);
+        } catch (error) {
+          if (!readError) {
+            readError = error;
+          }
           continue;
         }
-        for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
-          const key = STORAGE_KEYS[keyIndex];
-          let candidate = null;
+
+        if (candidate === null || typeof candidate === 'undefined') {
+          continue;
+        }
+
+        let serialized = null;
+        if (typeof candidate === 'string') {
+          serialized = candidate;
+        } else {
           try {
-            candidate = storage.getItem(key);
-          } catch (error) {
-            if (!readError) {
-              readError = error;
-            }
-            continue;
+            serialized = JSON.stringify(candidate);
+          } catch (stringifyError) {
+            void stringifyError;
           }
-
-          if (candidate === null || typeof candidate === 'undefined') {
-            continue;
-          }
-
-          let serialized = null;
-          if (typeof candidate === 'string') {
-            serialized = candidate;
-          } else {
+          if (serialized === null) {
             try {
-              serialized = JSON.stringify(candidate);
-            } catch (stringifyError) {
-              void stringifyError;
-            }
-            if (serialized === null) {
-              try {
-                const coerced = String(candidate);
-                serialized = coerced;
-              } catch (coerceError) {
-                void coerceError;
-              }
+              const coerced = String(candidate);
+              serialized = coerced;
+            } catch (coerceError) {
+              void coerceError;
             }
           }
+        }
 
-          if (typeof serialized !== 'string') {
-            continue;
-          }
+        if (typeof serialized !== 'string') {
+          continue;
+        }
 
-          const entry = createStorageEntry(serialized, key);
-          if (entry && (!bestEntry || isBetterStorageEntry(entry, bestEntry))) {
-            bestEntry = entry;
-          }
+        const entry = createStorageEntry(serialized, key);
+        if (entry && (!bestEntry || isBetterStorageEntry(entry, bestEntry))) {
+          bestEntry = entry;
         }
       }
+    }
 
-      if (!storages.length && !bestEntry) {
-        if (storedStateCache && storedStateCacheSource === 'memory') {
-          return storedStateCache;
-        }
-        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        updateStoredStateCache(fallbackState, null, 'memory');
-        return fallbackState;
-      }
-
-      if (!bestEntry) {
-        if (storedStateCache && storedStateCacheSource === 'memory') {
-          return storedStateCache;
-        }
-        if (readError) {
-          safeWarn('cine.features.onboardingTour could not read onboarding state.', readError);
-        }
-        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        updateStoredStateCache(fallbackState, null, 'memory');
-        return fallbackState;
-      }
-
-      const raw = bestEntry.raw;
-      const sourceTag = 'storage';
-      if (typeof raw !== 'string' || !raw) {
-        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
-          return saveState(fallbackState);
-        }
-        updateStoredStateCache(fallbackState, raw, sourceTag);
-        return fallbackState;
-      }
-
-      if (storedStateCache && storedStateCacheSource === 'storage' && raw === storedStateCacheRaw) {
+    if (!storages.length && !bestEntry) {
+      if (storedStateCache && storedStateCacheSource === 'memory') {
         return storedStateCache;
       }
-
-      if (bestEntry.parseError) {
-        safeWarn('cine.features.onboardingTour could not parse onboarding state.', bestEntry.parseError);
-        const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
-          return saveState(fallbackState);
-        }
-        updateStoredStateCache(fallbackState, raw, sourceTag);
-        return fallbackState;
-      }
-
-      const parsed = bestEntry.parsed;
-      if (!parsed || typeof parsed !== 'object') {
-        const emptyState = normalizeStateSnapshot({ version: STORAGE_VERSION });
-        if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
-          return saveState(emptyState);
-        }
-        updateStoredStateCache(emptyState, raw, sourceTag);
-        return emptyState;
-      }
-
-      if (parsed.version !== STORAGE_VERSION) {
-        const migratedState = normalizeStateSnapshot({
-          ...parsed,
-          version: STORAGE_VERSION,
-          completed: false,
-          skipped: false,
-        });
-        return saveState(migratedState);
-      }
-
-      const normalized = normalizeStateSnapshot(parsed);
-      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
-        return saveState(normalized);
-      }
-      updateStoredStateCache(normalized, raw, sourceTag);
-      return normalized;
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      updateStoredStateCache(fallbackState, null, 'memory');
+      return fallbackState;
     }
 
-    function saveState(nextState) {
-      const sanitized = normalizeStateSnapshot({
-        ...nextState,
-        version: STORAGE_VERSION,
-      });
-      const payload = {
-        ...sanitized,
-        timestamp: getTimestamp(),
-      };
-      const serialized = JSON.stringify(payload);
-      const storages = collectStorageCandidates();
-      let persisted = false;
-      let writeError = null;
+    if (!bestEntry) {
+      if (storedStateCache && storedStateCacheSource === 'memory') {
+        return storedStateCache;
+      }
+      if (readError) {
+        safeWarn('cine.features.onboardingTour could not read onboarding state.', readError);
+      }
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      updateStoredStateCache(fallbackState, null, 'memory');
+      return fallbackState;
+    }
 
-      for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
-        const storage = storages[storageIndex];
-        if (!storage || typeof storage.setItem !== 'function') {
-          continue;
-        }
-        let wroteToStorage = false;
-        for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
-          const key = STORAGE_KEYS[keyIndex];
-          try {
-            storage.setItem(key, serialized);
-            wroteToStorage = true;
-          } catch (error) {
-            if (!writeError) {
-              writeError = error;
-            }
+    const raw = bestEntry.raw;
+    const sourceTag = 'storage';
+    if (typeof raw !== 'string' || !raw) {
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(fallbackState);
+      }
+      updateStoredStateCache(fallbackState, raw, sourceTag);
+      return fallbackState;
+    }
+
+    if (storedStateCache && storedStateCacheSource === 'storage' && raw === storedStateCacheRaw) {
+      return storedStateCache;
+    }
+
+    if (bestEntry.parseError) {
+      safeWarn('cine.features.onboardingTour could not parse onboarding state.', bestEntry.parseError);
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(fallbackState);
+      }
+      updateStoredStateCache(fallbackState, raw, sourceTag);
+      return fallbackState;
+    }
+
+    const parsed = bestEntry.parsed;
+    if (!parsed || typeof parsed !== 'object') {
+      const emptyState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+        return saveState(emptyState);
+      }
+      updateStoredStateCache(emptyState, raw, sourceTag);
+      return emptyState;
+    }
+
+    if (parsed.version !== STORAGE_VERSION) {
+      const migratedState = normalizeStateSnapshot({
+        ...parsed,
+        version: STORAGE_VERSION,
+        completed: false,
+        skipped: false,
+      });
+      return saveState(migratedState);
+    }
+
+    const normalized = normalizeStateSnapshot(parsed);
+    if (bestEntry.key !== PRIMARY_STORAGE_KEY) {
+      return saveState(normalized);
+    }
+    updateStoredStateCache(normalized, raw, sourceTag);
+    return normalized;
+  }
+
+  function saveState(nextState) {
+    const sanitized = normalizeStateSnapshot({
+      ...nextState,
+      version: STORAGE_VERSION,
+    });
+    const payload = {
+      ...sanitized,
+      timestamp: getTimestamp(),
+    };
+    const serialized = JSON.stringify(payload);
+    const storages = collectStorageCandidates();
+    let persisted = false;
+    let writeError = null;
+
+    for (let storageIndex = 0; storageIndex < storages.length; storageIndex += 1) {
+      const storage = storages[storageIndex];
+      if (!storage || typeof storage.setItem !== 'function') {
+        continue;
+      }
+      let wroteToStorage = false;
+      for (let keyIndex = 0; keyIndex < STORAGE_KEYS.length; keyIndex += 1) {
+        const key = STORAGE_KEYS[keyIndex];
+        try {
+          storage.setItem(key, serialized);
+          wroteToStorage = true;
+        } catch (error) {
+          if (!writeError) {
+            writeError = error;
           }
         }
-        if (wroteToStorage) {
-          persisted = true;
-        }
       }
-
-      if (persisted) {
-        updateStoredStateCache(payload, serialized, 'storage');
-        return payload;
+      if (wroteToStorage) {
+        persisted = true;
       }
-
-      if (writeError) {
-        safeWarn('cine.features.onboardingTour could not persist onboarding state.', writeError);
-      }
-
-      updateStoredStateCache(sanitized, null, 'memory');
-      return sanitized;
     }
+
+    if (persisted) {
+      updateStoredStateCache(payload, serialized, 'storage');
+      return payload;
+    }
+
+    if (writeError) {
+      safeWarn('cine.features.onboardingTour could not persist onboarding state.', writeError);
+    }
+
+    updateStoredStateCache(sanitized, null, 'memory');
+    return sanitized;
+  }
 
   let storedState = null;
 
@@ -4080,7 +4080,7 @@
           left: targetCenterX - cardRect.width / 2,
           fits:
             targetTop + rect.height + margin + cardRect.height
-              - bottomOverlapOffset - bottomMarginOffset <= viewportBottom - margin,
+            - bottomOverlapOffset - bottomMarginOffset <= viewportBottom - margin,
         },
         {
           name: 'top',
@@ -4089,7 +4089,7 @@
           left: targetCenterX - cardRect.width / 2,
           fits:
             targetTop - cardRect.height - effectiveTopMargin + topOverlapOffset + topMarginOffset
-              >= minTop,
+            >= minTop,
         },
         {
           name: 'right',
@@ -4097,7 +4097,7 @@
           left: targetLeft + rect.width + margin - rightOverlapOffset - rightMarginOffset,
           fits:
             targetLeft + rect.width + margin + cardRect.width
-              - rightOverlapOffset - rightMarginOffset <= viewportRight - margin,
+            - rightOverlapOffset - rightMarginOffset <= viewportRight - margin,
         },
         {
           name: 'left',
@@ -5611,7 +5611,7 @@
       return raw ? raw.charAt(0).toUpperCase() : '•';
     };
 
-    let applyAvatarActionLabel = () => {};
+    let applyAvatarActionLabel = () => { };
 
     const updateAvatarPreview = () => {
       let hasPhoto = false;
@@ -6701,8 +6701,8 @@
       && tourTexts.steps
       && tourTexts.steps[stepKey]
       && typeof tourTexts.steps[stepKey].body === 'string'
-        ? tourTexts.steps[stepKey].body.trim()
-        : '';
+      ? tourTexts.steps[stepKey].body.trim()
+      : '';
     if (stepBodyText) {
       const description = DOCUMENT.createElement('p');
       description.className = 'onboarding-resume-hint';
@@ -7442,15 +7442,29 @@
       return;
     }
 
+    const title = tourTexts.skipConfirmationTitle || '';
+    const message = tourTexts.skipConfirmationBody || '';
+    const accept = tourTexts.skipConfirmationAccept || '';
+    const cancel = tourTexts.skipConfirmationCancel || '';
+
+    if (GLOBAL_SCOPE.cineShowConfirmDialog) {
+      GLOBAL_SCOPE.cineShowConfirmDialog({
+        title,
+        message,
+        confirmLabel: accept,
+        cancelLabel: cancel,
+        onConfirm: () => {
+          skipTutorial();
+        },
+      });
+      return;
+    }
+
     if (!GLOBAL_SCOPE.confirm) {
       skipTutorial();
       return;
     }
 
-    const title = tourTexts.skipConfirmationTitle || '';
-    const message = tourTexts.skipConfirmationBody || '';
-    const accept = tourTexts.skipConfirmationAccept || '';
-    const cancel = tourTexts.skipConfirmationCancel || '';
     const promptMessage = `${title}\n\n${message}`.trim();
     let confirmed = false;
     try {
