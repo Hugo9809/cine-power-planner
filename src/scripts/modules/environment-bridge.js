@@ -295,10 +295,6 @@
       void freezeError;
     }
 
-    // Avoid deep traversal to keep cross-context objects from crashing V8
-    // when the bridge is executed inside Node-based test environments.
-    return value;
-
     var keys;
     try {
       keys = Object.getOwnPropertyNames(value);
