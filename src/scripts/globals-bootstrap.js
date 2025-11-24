@@ -859,15 +859,43 @@ function __cineNormalizeTemperatureUnits(candidate) {
   return normalized;
 }
 
-var TEMPERATURE_UNITS =
-  typeof TEMPERATURE_UNITS !== 'undefined' &&
-  TEMPERATURE_UNITS &&
-  typeof TEMPERATURE_UNITS === 'object'
-    ? __cineCommitGlobalValue('TEMPERATURE_UNITS', __cineNormalizeTemperatureUnits(TEMPERATURE_UNITS))
-    : __cineCommitGlobalValue(
-        'TEMPERATURE_UNITS',
-        __cineNormalizeTemperatureUnits({ celsius: 'celsius', fahrenheit: 'fahrenheit' }),
-      );
+(function ensureTemperatureUnitsBinding() {
+  var scope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
+
+  var existing = null;
+  try {
+    existing = scope && typeof scope.TEMPERATURE_UNITS === 'object' ? scope.TEMPERATURE_UNITS : null;
+  } catch (readError) {
+    void readError;
+    existing = null;
+  }
+
+  var normalized = existing
+    ? __cineNormalizeTemperatureUnits(existing)
+    : __cineNormalizeTemperatureUnits({ celsius: 'celsius', fahrenheit: 'fahrenheit' });
+
+  try {
+    __cineCommitGlobalValue('TEMPERATURE_UNITS', normalized);
+  } catch (commitError) {
+    void commitError;
+  }
+
+  try {
+    if (typeof Function === 'function') {
+      Function(
+        'value',
+        "try { TEMPERATURE_UNITS = value; } catch (error) { try { this.TEMPERATURE_UNITS = value; } catch (assignError) { void assignError; } } return (typeof TEMPERATURE_UNITS !== 'undefined' ? TEMPERATURE_UNITS : this && this.TEMPERATURE_UNITS);",
+      ).call(scope || null, normalized);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+})();
 
 function __cineNormalizeTemperatureScenarios(candidate) {
   if (!Array.isArray(candidate)) {
