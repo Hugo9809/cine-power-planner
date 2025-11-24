@@ -2886,7 +2886,6 @@
     var batteryComparisonSection = resolveElementFromOptions(opts, 'batteryComparisonSection', 'batteryComparison', 'batteryComparisonSection');
     var batteryTableElem = resolveElementFromOptions(opts, 'batteryTableElem', 'batteryTable', 'batteryTableElem');
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
-    var heroBoxTarget = resolveElementFromOptions(opts, 'heroBoxElem', 'resultsHeroBox', 'heroBoxElem');
 
     runtimeFeedbackState.elements.cameraSelect = cameraSelect;
     runtimeFeedbackState.elements.monitorSelect = monitorSelect;
@@ -2914,7 +2913,6 @@
     runtimeFeedbackState.elements.batteryComparisonSection = batteryComparisonSection;
     runtimeFeedbackState.elements.batteryTableElem = batteryTableElem;
     runtimeFeedbackState.elements.setupDiagramContainer = setupDiagramContainer;
-    runtimeFeedbackState.elements.heroBoxElem = heroBoxTarget;
 
     var previewSelections = opts && typeof opts.previewSelections === 'object' && opts.previewSelections
       ? opts.previewSelections
@@ -3348,9 +3346,6 @@
       setStatusLevelFn(pinWarnTarget, null);
       setStatusMessageFn(dtapWarnTarget, '');
       setStatusLevelFn(dtapWarnTarget, null);
-      if (heroBoxTarget) {
-        heroBoxTarget.classList.remove('status-safe', 'status-warning', 'status-danger');
-      }
       if (hotswapWarnTarget) {
         setStatusMessageFn(hotswapWarnTarget, '');
         setStatusLevelFn(hotswapWarnTarget, null);
@@ -3540,24 +3535,6 @@
       } else {
         setStatusMessageFn(dtapWarnTarget, '');
         setStatusLevelFn(dtapWarnTarget, null);
-      }
-
-      if (heroBoxTarget) {
-        heroBoxTarget.classList.remove('status-safe', 'status-warning', 'status-danger');
-        var overallSeverity = 'safe';
-        if (pinSeverity === 'danger' || dtapSeverity === 'danger') {
-          overallSeverity = 'danger';
-        } else if (pinSeverity === 'note' || dtapSeverity === 'note') {
-          overallSeverity = 'warning';
-        }
-
-        if (overallSeverity === 'safe') {
-          heroBoxTarget.classList.add('status-safe');
-        } else if (overallSeverity === 'warning') {
-          heroBoxTarget.classList.add('status-warning');
-        } else if (overallSeverity === 'danger') {
-          heroBoxTarget.classList.add('status-danger');
-        }
       }
 
       var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {

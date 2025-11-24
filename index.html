@@ -196,9 +196,9 @@
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>Delete
         </button>
       </div>
-      <div class="form-row input-group">
+      <div class="form-row">
         <label for="setupName" id="setupNameLabel">Project Name:</label>
-        <input type="text" id="setupName" class="input-field" placeholder=" " aria-labelledby="setupNameLabel" />
+        <input type="text" id="setupName" placeholder="Project name" aria-labelledby="setupNameLabel" />
         <button id="saveSetupBtn" data-feature-search="true"
           data-feature-search-keywords="save project store backup autosave offline archive preserve protect safeguard"><span
             class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
@@ -337,36 +337,6 @@
 
     <section id="results">
       <h2 id="resultsHeading">Power Summary</h2>
-      <div id="resultsHeroBox" class="hero-box">
-        <div class="hero-item" style="grid-column: span 2;" id="resultsTotalPowerRow">
-          <span class="hero-label" id="totalPowerLabel">Total Consumption</span>
-          <div class="hero-value">
-            <span id="totalPower">0.0</span> W
-          </div>
-        </div>
-
-        <div class="hero-item" id="resultsTotalCurrent144Row">
-          <span class="hero-label" id="totalCurrent144Label">Total Current (at 14.4V)</span>
-          <div class="hero-value"><span id="totalCurrent144">0.00</span> <span class="hero-unit">A</span></div>
-        </div>
-
-        <div class="hero-item" id="resultsTotalCurrent12Row">
-          <span class="hero-label" id="totalCurrent12Label">Total Current (at 12V)</span>
-          <div class="hero-value"><span id="totalCurrent12">0.00</span> <span class="hero-unit">A</span></div>
-        </div>
-
-        <div class="hero-item">
-          <span class="hero-label" id="batteryLifeLabel">Runtime (estimated)</span>
-          <div class="hero-value"><span id="batteryLife">0.00</span> <span id="batteryLifeUnit">hrs</span> <span
-              id="runtimeAverageNote"></span></div>
-        </div>
-
-        <div class="hero-item">
-          <span class="hero-label" id="batteryCountLabel">Batteries for 10h shoot</span>
-          <div class="hero-value"><span id="batteryCount">–</span> <span class="hero-unit">packs</span></div>
-        </div>
-      </div>
-
       <ul id="breakdownList">
         <!-- Device breakdown will be inserted here by script.js -->
       </ul>
@@ -375,6 +345,25 @@
         <div id="powerDiagramLegend" class="power-diagram-legend"></div>
         <p id="maxPowerText" class="status-message power-diagram-note"></p>
       </div>
+      <p id="resultsTotalPowerRow">
+        <strong><span id="totalPowerLabel">Total Consumption:</span></strong>
+        <span id="totalPower">0.0</span>
+        W
+      </p>
+      <p id="resultsTotalCurrent144Row">
+        <strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong>
+        <span id="totalCurrent144">0.00</span>
+        A
+      </p>
+      <p id="resultsTotalCurrent12Row">
+        <strong><span id="totalCurrent12Label">Total Current (at 12V):</span></strong>
+        <span id="totalCurrent12">0.00</span>
+        A
+      </p>
+      <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span>
+        <span id="batteryLifeUnit">hrs</span> <span id="runtimeAverageNote"></span></p>
+      <p><strong><span id="batteryCountLabel">Batteries for 10h shoot:</span></strong> <span id="batteryCount">–</span>
+      </p>
       <p id="pinWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
       <p id="dtapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
       <p id="hotswapWarning" class="status-message" role="status" aria-live="polite"
@@ -451,14 +440,13 @@
           <label for="newSubcategory" id="subcategoryLabel">Subcategory:</label>
           <select id="newSubcategory"></select>
         </div>
-        <div class="form-row input-group">
-          <input type="text" id="newName" class="input-field" placeholder=" " aria-labelledby="deviceNameLabel" />
-          <label for="newName" id="deviceNameLabel" class="floating-label">Name</label>
+        <div class="form-row">
+          <label for="newName" id="deviceNameLabel">Name:</label>
+          <input type="text" id="newName" placeholder="Device name" aria-labelledby="deviceNameLabel" />
         </div>
-        <div class="form-row input-group" id="wattField">
-          <input type="number" id="newWatt" class="input-field" step="0.1" placeholder=" "
-            aria-labelledby="consumptionLabel" />
-          <label for="newWatt" id="consumptionLabel" class="floating-label">Consumption (W)</label>
+        <div class="form-row" id="wattField">
+          <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
+          <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" aria-labelledby="consumptionLabel" />
         </div>
         <div id="dynamicFields" hidden></div>
         <div id="cameraFields" class="hidden">
