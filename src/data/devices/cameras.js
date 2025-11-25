@@ -6050,6 +6050,619 @@ const cameraData = {
       "Full HD S&Q: up to 240 fps"
     ]
   },
+  "FUJIFILM GFX ETERNA 55": {
+    "powerDrawWatts": 35,
+    "requiredImageCircleMm": 55,
+    "power": {
+      "input": {
+        "voltageRange": "12-16",
+        "type": [
+          "LEMO 4-pin",
+          "V-Mount"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Via battery plate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": 36,
+          "notes": "Regulated"
+        },
+        {
+          "type": "DC OUT",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": 36,
+          "notes": "Regulated"
+        },
+        {
+          "type": "Hirose 12-pin",
+          "voltage": "14V",
+          "current": "0.5A",
+          "wattage": 7,
+          "notes": "Lens power/control"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "12G-SDI",
+        "notes": "BNC"
+      },
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Lens power/control",
+        "type": "Hirose 12-pin"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Dual 3.5-inch side displays + External 5-inch monitor",
+        "type": "Integrated + External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "G-Mount",
+        "mount": "native",
+        "notes": ""
+      },
+      {
+        "type": "PL",
+        "mount": "adapted",
+        "notes": "Included adapter"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "In/Out"
+      }
+    ],
+    "weight_g": 1030,
+    "recordingCodecs": [
+      "ProRes 422 HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "GF Open Gate",
+      "GF 16:9",
+      "GF 17:9"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "8K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Fujifilm GFX100 II": {
+    "powerDrawWatts": 20,
+    "requiredImageCircleMm": 55,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A (Full Size)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "9.44m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.2\" Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "G-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "3.5mm",
+        "notes": "Timecode sync via mic port (requires adapter usually)"
+      }
+    ],
+    "weight_g": 1030,
+    "recordingCodecs": [
+      "ProRes 422 HQ",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "GF 8K",
+      "GF 4K",
+      "GF 1080p"
+    ],
+    "resolutions": [
+      "7680x4320",
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "8K: up to 30 fps",
+      "4K: up to 60 fps",
+      "1080p: up to 120 fps"
+    ]
+  },
+  "Fujifilm X-H2": {
+    "powerDrawWatts": 15,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A (Full Size)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Vari-angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 660,
+    "recordingCodecs": [
+      "ProRes 422 HQ",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 8K",
+      "APS-C 4K",
+      "APS-C 1080p"
+    ],
+    "resolutions": [
+      "7680x4320",
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "8K: up to 30 fps",
+      "4K: up to 60 fps",
+      "1080p: up to 240 fps"
+    ]
+  },
+  "Fujifilm X-T5": {
+    "powerDrawWatts": 14,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type D (Micro)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 557,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 6.2K",
+      "APS-C 4K",
+      "APS-C 1080p"
+    ],
+    "resolutions": [
+      "6240x3510",
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "6.2K: up to 30 fps",
+      "4K: up to 60 fps",
+      "1080p: up to 240 fps"
+    ]
+  },
+  "Fujifilm X-S20": {
+    "powerDrawWatts": 12,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type D (Micro)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "2.36m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Vari-angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 491,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 6.2K",
+      "APS-C 4K",
+      "APS-C 1080p"
+    ],
+    "resolutions": [
+      "6240x3510",
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "6.2K: up to 30 fps",
+      "4K: up to 60 fps",
+      "1080p: up to 240 fps"
+    ]
+  },
+  "Fujifilm X-T4": {
+    "powerDrawWatts": 13,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type D (Micro)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Vari-angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 607,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 4K",
+      "APS-C 1080p"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 60 fps",
+      "1080p: up to 240 fps"
+    ]
+  },
+  "Fujifilm X-T3": {
+    "powerDrawWatts": 13,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C)",
+        "type": [
+          "Battery Slot",
+          "USB-C"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W126S",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type D (Micro)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 539,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 4K",
+      "APS-C 1080p"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 60 fps",
+      "1080p: up to 120 fps"
+    ]
+  },
+  "Fujifilm GFX100S II": {
+    "powerDrawWatts": 18,
+    "requiredImageCircleMm": 55,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 5-9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type D (Micro)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.2\" Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "G-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 883,
+    "recordingCodecs": [
+      "ProRes (External)",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "GF 4K",
+      "GF 1080p"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 30 fps",
+      "1080p: up to 60 fps"
+    ]
+  },
   "Fujifilm X-H2S": {
     "powerDrawWatts": 15,
     "requiredImageCircleMm": 28.21,
