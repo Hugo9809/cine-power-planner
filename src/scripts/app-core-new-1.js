@@ -15496,6 +15496,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       const scale = 100 / Math.max(availableWatt, total);
       const limitPos = availableWatt * scale;
 
+      // Create inner wrapper for segments to handle rounded corners and overflow
+      const barInner = document.createElement("div");
+      barInner.className = "power-bar-inner";
+      powerDiagramBarElem.appendChild(barInner);
+
       segments.forEach(seg => {
         const widthPercent = seg.power * scale;
         if (widthPercent <= 0) return;
@@ -15504,7 +15509,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         div.className = `segment ${seg.className}`; // Use 'segment' class as per CSS
         div.style.width = `${widthPercent}%`;
         div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
-        powerDiagramBarElem.appendChild(div);
+        barInner.appendChild(div);
 
         const legendItem = document.createElement("span");
         const swatch = document.createElement("span");
@@ -15523,10 +15528,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         // Wait, if total > available, the bar width is based on total. 
         // So limitPos is at availableWatt. 
         // The over-usage should start at limitPos and go to the end.
-        powerDiagramBarElem.appendChild(over);
+        barInner.appendChild(over);
       }
 
-      // Limit Line
+      // Limit Line (outside inner wrapper to avoid clipping)
       const limit = document.createElement("div");
       limit.className = "limit-line";
       limit.style.left = `${limitPos}%`;

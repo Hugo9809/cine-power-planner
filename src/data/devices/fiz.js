@@ -23,7 +23,7 @@
           "0.6 mod",
           "0.8 mod 29mm wide"
         ],
-        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera’s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "notes": "Rated 2.5 N·m at 14.8V. Operating voltage range 7.2-24V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera’s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
         "fizConnectors": [
           {
             "type": "LEMO 7-pin"
@@ -68,7 +68,7 @@
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Ships with Tilta's fixed 0.8 mod gear ring and does not support swapping to other gear rings.",
+        "notes": "Enhanced version of the Nano. Operating voltage 3-17V (7.4-16.8V via USB-C). Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Ships with Tilta's fixed 0.8 mod gear ring and does not support swapping to other gear rings.",
         "fizConnectors": [
           {
             "type": "USB-C"
@@ -212,7 +212,7 @@
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
+        "notes": "Very high torque, often used for focus. Operating voltage 12-36V. Max current 2.7A. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
         "fizConnectors": [
           {
             "type": "LEMO 4-pin"
@@ -843,7 +843,7 @@
         "connectivity": "Wired (Ethernet up to 100 Mbit) plus LBUS pass-through; USB-C for updates/peripherals",
         "notes": "Network interface adapter that bridges ARRI ECS to IP networks. Provides dual LBUS ports for powering and daisy-chaining LBUS devices, 100 Mbit Ethernet for remote operation and USB-C for updates or auxiliary power. Draws approx. 5 W when self-powered (up to 10 W when powering a USB-C device) and will not feed LBUS power if running solely from USB-C."
       },
-      "Arri Master Grip": {
+      "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
         "fizConnectors": [
           {
