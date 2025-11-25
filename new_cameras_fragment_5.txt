@@ -1,0 +1,958 @@
+  "Leica SL3-S": {
+    "powerDrawWatts": 27,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "BP-SCL6",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Full Size (Type A)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EyeRes EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "L-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "Via Audio Adapter"
+      }
+    ],
+    "weight_g": 769,
+    "recordingCodecs": [
+      "ProRes 422 HQ",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "Full Frame 6K",
+      "APS-C 4K"
+    ],
+    "resolutions": [
+      "6000x4000",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "6K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Panasonic Lumix S1R II": {
+    "powerDrawWatts": 27,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "9 (USB-C PD)",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "DMW-BLK22",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Full Size (Type A)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "L-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 898,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "Full Frame 8K",
+      "Full Frame 4K"
+    ],
+    "resolutions": [
+      "7680x4320",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "8K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Canon EOS R6 Mark III": {
+    "powerDrawWatts": 15,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "LP-E6P",
+          "mount": "native",
+          "notes": "Also supports LP-E6NH"
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "RF",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 670,
+    "recordingCodecs": [
+      "RAW Light",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "Full Frame 6K (Oversampled)",
+      "Full Frame 4K"
+    ],
+    "resolutions": [
+      "6000x3374",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "6K: up to 60 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Canon EOS R50 V": {
+    "powerDrawWatts": 8,
+    "requiredImageCircleMm": 27.0,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "LP-E17",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "UHS-I"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "2.36m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "RF",
+        "mount": "native",
+        "notes": "APS-C Sensor"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 375,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 4K"
+    ],
+    "resolutions": [
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 30 fps",
+      "FHD: up to 120 fps"
+    ]
+  },
+  "Canon PowerShot V1": {
+    "powerDrawWatts": 7.5,
+    "requiredImageCircleMm": 16.0,
+    "power": {
+      "input": {
+        "voltageRange": "USB-C PD",
+        "type": [
+          "Internal Battery",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Internal",
+          "mount": "native",
+          "notes": "Non-removable (approx. LP-E17 capacity)"
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "UHS-I (MicroSD)"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "460k dot",
+        "connector": "",
+        "notes": "Flip-up Touchscreen",
+        "type": "Integrated LCD"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Fixed",
+        "mount": "native",
+        "notes": "19mm equivalent f/2.8"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 211,
+    "recordingCodecs": [
+      "H.264"
+    ],
+    "sensorModes": [
+      "1-inch 4K"
+    ],
+    "resolutions": [
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 30 fps",
+      "FHD: up to 60 fps"
+    ]
+  },
+  "Canon EOS C50": {
+    "powerDrawWatts": 15,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / DC / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "DC IN",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "LP-E6P",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Full Size (Type A)"
+      },
+      {
+        "type": "3G-SDI",
+        "notes": "Optional via expansion"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "RF",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "Via expansion"
+      }
+    ],
+    "weight_g": 900,
+    "recordingCodecs": [
+      "XF-AVC",
+      "MP4",
+      "Cinema RAW Light"
+    ],
+    "sensorModes": [
+      "Full Frame 4K",
+      "S35 4K"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "3840x2160",
+      "2048x1080"
+    ],
+    "frameRates": [
+      "4K: up to 60 fps",
+      "2K: up to 120 fps"
+    ]
+  },
+  "Nikon Z5 II": {
+    "powerDrawWatts": 12,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.0 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "EN-EL15c",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Mini HDMI (Type C)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Nikon Z",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 670,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "Full Frame 4K (Crop)"
+    ],
+    "resolutions": [
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 60 fps",
+      "FHD: up to 120 fps"
+    ]
+  },
+  "Sony RX1R III": {
+    "powerDrawWatts": 5.5,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-FW50",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "2.36m dot",
+        "connector": "",
+        "notes": "Pop-up OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Fixed",
+        "mount": "native",
+        "notes": "35mm f/2 ZEISS Sonnar T*"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 480,
+    "recordingCodecs": [
+      "XAVC S"
+    ],
+    "sensorModes": [
+      "Full Frame 4K"
+    ],
+    "resolutions": [
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4K: up to 30 fps",
+      "FHD: up to 120 fps"
+    ]
+  },
+  "Fujifilm GFX100RF": {
+    "powerDrawWatts": 16,
+    "requiredImageCircleMm": 55,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W235",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Fixed",
+        "mount": "native",
+        "notes": "35mm f/4 (28mm equiv)"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 900,
+    "recordingCodecs": [
+      "ProRes 422 HQ",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "Medium Format 4K"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "4K: up to 30 fps"
+    ]
+  },
+  "Fujifilm X-E5": {
+    "powerDrawWatts": 8,
+    "requiredImageCircleMm": 28.2,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-W126S",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "UHS-I"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "2.36m dot",
+        "connector": "",
+        "notes": "OLED EVF",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "X-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 360,
+    "recordingCodecs": [
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "APS-C 6.2K",
+      "APS-C 4K"
+    ],
+    "resolutions": [
+      "6240x4160",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "6.2K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Z CAM E2-M4": {
+    "powerDrawWatts": 30,
+    "requiredImageCircleMm": 21.6,
+    "power": {
+      "input": {
+        "voltageRange": "12-18",
+        "type": [
+          "LEMO 2-pin",
+          "PoE+"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Sony L-Series",
+          "mount": "native",
+          "notes": "NP-F"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": 24,
+          "notes": "Aux Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "LANC",
+        "type": "2.5mm Jack"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "MFT",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "Requires adapter"
+      }
+    ],
+    "weight_g": 1090,
+    "recordingCodecs": [
+      "ZRAW",
+      "ProRes 422 HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "MFT 4K"
+    ],
+    "resolutions": [
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "4K: up to 160 fps"
+    ]
+  },
+  "Z CAM E2-F8": {
+    "powerDrawWatts": 35,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "12-18",
+        "type": [
+          "LEMO 2-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Sony L-Series",
+          "mount": "native",
+          "notes": "NP-F"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": 24,
+          "notes": "Aux Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "LANC",
+        "type": "2.5mm Jack"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Interchangeable to PL, M"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "Requires adapter"
+      }
+    ],
+    "weight_g": 1090,
+    "recordingCodecs": [
+      "ZRAW",
+      "ProRes 422 HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "Full Frame 8K"
+    ],
+    "resolutions": [
+      "8192x3456",
+      "7680x4320",
+      "4096x2160"
+    ],
+    "frameRates": [
+      "8K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "RED V-RAPTOR XE": {
+    "powerDrawWatts": 55,
+    "requiredImageCircleMm": 46.31,
+    "power": {
+      "input": {
+        "voltageRange": "11-17",
+        "type": [
+          "LEMO 6-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Micro V-Mount",
+          "mount": "native",
+          "notes": "Integrated"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Aux Power"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "",
+          "wattage": null,
+          "notes": "Aux Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "12G-SDI",
+        "notes": "x2"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "EXT",
+        "type": "LEMO 9-pin"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "USB-C",
+        "notes": "DSMC3 Touch LCD",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "RF",
+        "mount": "native",
+        "notes": "Locking RF or Z Mount"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "Via adapter"
+      }
+    ],
+    "weight_g": 1810,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes"
+    ],
+    "sensorModes": [
+      "8K VV Global Shutter"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "6144x3240",
+      "4096x2160"
+    ],
+    "frameRates": [
+      "8K: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
