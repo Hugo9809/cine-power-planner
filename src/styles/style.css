@@ -13458,3 +13458,10 @@ body.pink-mode,
   border: 1px solid color-mix(in srgb, var(--accent-color) 30%, var(--panel-border));
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
+
+/* Avatar Drag and Drop */
+.avatar-drag-over {
+  outline: 2px dashed var(--accent-color);
+  outline-offset: -2px;
+  background-color: var(--onboarding-highlight-fill);
+}
