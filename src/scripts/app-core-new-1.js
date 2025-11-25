@@ -14269,6 +14269,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
 
+  function enableAvatarDragAndDrop(container, onFile) {
+    if (!container) return;
+
+    const handleDragOver = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.add('avatar-drag-over');
+    };
+
+    const handleDragLeave = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.remove('avatar-drag-over');
+    };
+
+    const handleDrop = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.remove('avatar-drag-over');
+
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file) {
+        onFile(file);
+      }
+    };
+
+    container.addEventListener('dragenter', handleDragOver);
+    container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('dragleave', handleDragLeave);
+    container.addEventListener('drop', handleDrop);
+  }
+
   function initializeContactsModule() {
     resolveContactsDomRefs();
     if (contactsInitialized) return;
@@ -14305,6 +14337,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     if (userProfileAvatarInput) {
       userProfileAvatarInput.addEventListener('change', handleUserProfileAvatarInputChange);
+    }
+
+    if (userProfileAvatarContainer) {
+      enableAvatarDragAndDrop(userProfileAvatarContainer, (file) => {
+        readAvatarFile(file, dataUrl => {
+          const profile = getUserProfileSnapshot();
+          assignUserProfileState({
+            name: profile.name || '',
+            avatar: dataUrl
+          });
+          persistUserProfileState();
+          announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+          if (isDialogOpen(avatarOptionsDialog)) {
+            closeAvatarOptionsDialog();
+          }
+        }, reason => {
+          if (reason === 'tooLarge') {
+            announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+          } else {
+            announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+          }
+        });
+      });
     }
 
     if (contactsAddButton) {
@@ -14435,6 +14490,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarFileInput.className = 'visually-hidden';
     avatarFileInput.tabIndex = -1;
     avatarContainer.appendChild(avatarFileInput);
+
+    enableAvatarDragAndDrop(avatarContainer, (file) => {
+      handleAvatarFileSelection(row, file);
+    });
 
     const roleSel = document.createElement('select');
     roleSel.name = 'crewRole';
