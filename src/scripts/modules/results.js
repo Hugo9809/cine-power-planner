@@ -2886,6 +2886,7 @@
     var batteryComparisonSection = resolveElementFromOptions(opts, 'batteryComparisonSection', 'batteryComparison', 'batteryComparisonSection');
     var batteryTableElem = resolveElementFromOptions(opts, 'batteryTableElem', 'batteryTable', 'batteryTableElem');
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
+    var heroRuntimeTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroRuntime') : null;
 
     runtimeFeedbackState.elements.cameraSelect = cameraSelect;
     runtimeFeedbackState.elements.monitorSelect = monitorSelect;
@@ -3335,6 +3336,9 @@
           void error;
         }
       }
+      if (heroRuntimeTarget) {
+        heroRuntimeTarget.textContent = '–';
+      }
       if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
         try {
           batteryCountTarget.textContent = '–';
@@ -3427,6 +3431,9 @@
             void error;
           }
         }
+        if (heroRuntimeTarget) {
+          heroRuntimeTarget.textContent = '∞';
+        }
       } else {
         hours = capacityWh / totalWatt;
         if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
@@ -3435,6 +3442,11 @@
           } catch (error) {
             void error;
           }
+        }
+        if (heroRuntimeTarget) {
+          var h = Math.floor(hours);
+          var m = Math.round((hours - h) * 60);
+          heroRuntimeTarget.textContent = `${h}h ${m}m`;
         }
       }
       setLastRuntimeHoursFn(hours);

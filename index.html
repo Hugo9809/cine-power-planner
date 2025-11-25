@@ -337,14 +337,46 @@
 
     <section id="results">
       <h2 id="resultsHeading">Power Summary</h2>
+
+      <!-- Hero Section -->
+      <div id="heroCard" class="power-hero state-safe hidden">
+        <div class="hero-header">
+          <h3 id="heroTitle">System Status</h3>
+          <span id="statusBadge" class="status-badge">Safe</span>
+        </div>
+
+        <div class="hero-metrics">
+          <div class="metric">
+            <span class="metric-label" id="heroTotalDrawLabel">Total Draw</span>
+            <div>
+              <span id="heroTotalDraw" class="metric-value">0</span>
+              <span class="metric-unit">W</span>
+            </div>
+          </div>
+          <div class="metric">
+            <span class="metric-label" id="heroRuntimeLabel">Est. Runtime</span>
+            <div>
+              <span id="heroRuntime" class="metric-value">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="power-bar-container">
+          <div class="bar-header">
+            <span id="heroLoadLabel">Load Distribution</span>
+            <span id="heroLoadPercent">0%</span>
+          </div>
+          <div id="heroStackedBar" class="stacked-bar">
+            <!-- Segments injected via JS -->
+          </div>
+        </div>
+      </div>
+
       <ul id="breakdownList">
         <!-- Device breakdown will be inserted here by script.js -->
       </ul>
-      <div id="powerDiagram" class="hidden power-diagram">
-        <div id="powerDiagramBar" class="power-bar" role="img" aria-label="Power usage diagram"></div>
-        <div id="powerDiagramLegend" class="power-diagram-legend"></div>
-        <p id="maxPowerText" class="status-message power-diagram-note"></p>
-      </div>
+      <!-- Old powerDiagram removed -->
+      <p id="maxPowerText" class="status-message power-diagram-note"></p>
       <p id="resultsTotalPowerRow">
         <strong><span id="totalPowerLabel">Total Consumption:</span></strong>
         <span id="totalPower">0.0</span>

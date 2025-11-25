@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Summary Hero Mockup</title>
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --panel-bg: #ffffff;
+      --text-color: #333;
+      --muted-text: #666;
+      --border-radius: 12px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      
+      /* Status Colors */
+      --status-safe: #10b981;
+      --status-safe-bg: #d1fae5;
+      --status-warning: #f59e0b;
+      --status-warning-bg: #fef3c7;
+      --status-danger: #ef4444;
+      --status-danger-bg: #fee2e2;
+
+      /* Segment Colors */
+      --color-camera: #3b82f6;
+      --color-monitor: #8b5cf6;
+      --color-video: #ec4899;
+      --color-motor: #f97316;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .mockup-controls {
+      background: #eee;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* --- HERO SECTION STYLES --- */
+    .power-hero {
+      background: var(--panel-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 400px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--muted-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .metric-unit {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--muted-text);
+    }
+
+    /* --- ENHANCED STACKED BAR --- */
+    .power-bar-container {
+      margin-top: 1rem;
+    }
+
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .stacked-bar {
+      height: 24px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-segment {
+      height: 100%;
+      transition: width 0.5s ease;
+      position: relative;
+    }
+    
+    .bar-segment:not(:last-child) {
+      border-right: 2px solid var(--panel-bg);
+    }
+
+    .bar-segment.camera { background: var(--color-camera); }
+    .bar-segment.monitor { background: var(--color-monitor); }
+    .bar-segment.video { background: var(--color-video); }
+    .bar-segment.motor { background: var(--color-motor); }
+
+    /* Limit Line */
+    .limit-line {
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      width: 2px;
+      background: #333;
+      z-index: 10;
+    }
+    
+    .limit-label {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #333;
+    }
+
+    /* --- STATES --- */
+    .power-hero.state-safe {
+      border-color: var(--status-safe);
+    }
+    .power-hero.state-safe .status-badge {
+      background: var(--status-safe-bg);
+      color: var(--status-safe);
+    }
+    .power-hero.state-safe .metric-value {
+      color: var(--status-safe);
+    }
+
+    .power-hero.state-warning {
+      border-color: var(--status-warning);
+    }
+    .power-hero.state-warning .status-badge {
+      background: var(--status-warning-bg);
+      color: var(--status-warning);
+    }
+    .power-hero.state-warning .metric-value {
+      color: var(--status-warning);
+    }
+
+    .power-hero.state-danger {
+      border-color: var(--status-danger);
+      animation: pulse-border 2s infinite;
+    }
+    .power-hero.state-danger .status-badge {
+      background: var(--status-danger-bg);
+      color: var(--status-danger);
+    }
+    .power-hero.state-danger .metric-value {
+      color: var(--status-danger);
+    }
+
+    @keyframes pulse-border {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="mockup-controls">
+    <button onclick="setSafe()">Safe (< 80%)</button>
+    <button onclick="setWarning()">Warning (> 80%)</button>
+    <button onclick="setDanger()">Overload (> 100%)</button>
+  </div>
+
+  <!-- HERO COMPONENT -->
+  <div id="heroCard" class="power-hero state-safe">
+    <div class="hero-header">
+      <h2 style="margin:0; font-size:1.1rem; color:var(--text-color);">Power Summary</h2>
+      <span id="statusBadge" class="status-badge">Safe</span>
+    </div>
+
+    <div class="hero-metrics">
+      <div class="metric">
+        <span class="metric-label">Total Draw</span>
+        <div>
+          <span id="totalDraw" class="metric-value">145</span>
+          <span class="metric-unit">W</span>
+        </div>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Est. Runtime</span>
+        <div>
+          <span id="runtime" class="metric-value">2h 15m</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="power-bar-container">
+      <div class="bar-header">
+        <span>Load Distribution</span>
+        <span id="loadPercent">65%</span>
+      </div>
+      <div class="stacked-bar">
+        <div id="segCamera" class="bar-segment camera" style="width: 40%" title="Camera"></div>
+        <div id="segMonitor" class="bar-segment monitor" style="width: 15%" title="Monitor"></div>
+        <div id="segVideo" class="bar-segment video" style="width: 10%" title="Video"></div>
+        
+        <!-- Max Limit Line (Fixed at 100% relative to container if container = max, 
+             but usually container = max capacity. Let's assume container is 100% capacity) -->
+        <!-- In this mockup, let's say the container width represents the Battery Max Continuous Load -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const hero = document.getElementById('heroCard');
+    const badge = document.getElementById('statusBadge');
+    const totalDraw = document.getElementById('totalDraw');
+    const runtime = document.getElementById('runtime');
+    const loadPercent = document.getElementById('loadPercent');
+    
+    const segCamera = document.getElementById('segCamera');
+    const segMonitor = document.getElementById('segMonitor');
+    const segVideo = document.getElementById('segVideo');
+
+    function setSafe() {
+      hero.className = 'power-hero state-safe';
+      badge.textContent = 'Safe';
+      totalDraw.textContent = '145';
+      runtime.textContent = '2h 15m';
+      loadPercent.textContent = '65%';
+      
+      segCamera.style.width = '40%';
+      segMonitor.style.width = '15%';
+      segVideo.style.width = '10%';
+    }
+
+    function setWarning() {
+      hero.className = 'power-hero state-warning';
+      badge.textContent = 'Heavy Load';
+      totalDraw.textContent = '195';
+      runtime.textContent = '1h 20m';
+      loadPercent.textContent = '85%';
+
+      segCamera.style.width = '50%';
+      segMonitor.style.width = '20%';
+      segVideo.style.width = '15%';
+    }
+
+    function setDanger() {
+      hero.className = 'power-hero state-danger';
+      badge.textContent = 'Overload';
+      totalDraw.textContent = '240';
+      runtime.textContent = '0h 45m';
+      loadPercent.textContent = '110%';
+
+      // In overload, the bar might overflow or just fill up
+      segCamera.style.width = '60%';
+      segMonitor.style.width = '25%';
+      segVideo.style.width = '25%'; 
+    }
+  </script>
+</body>
+</html>

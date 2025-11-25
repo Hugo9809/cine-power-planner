@@ -15253,10 +15253,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var powerWarningDtapDetailElem = document.getElementById("powerWarningDtapDetail");
   var powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
   var powerWarningCloseBtn = document.getElementById("powerWarningCloseBtn");
-  var powerDiagramElem = document.getElementById("powerDiagram");
-  var powerDiagramBarElem = document.getElementById("powerDiagramBar");
+  var heroCard = document.getElementById("heroCard");
+  var statusBadge = document.getElementById("statusBadge");
+  var heroTotalDraw = document.getElementById("heroTotalDraw");
+  var heroLoadPercent = document.getElementById("heroLoadPercent");
+  var heroStackedBar = document.getElementById("heroStackedBar");
   var maxPowerTextElem = document.getElementById("maxPowerText");
-  var powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
 
   let currentPowerWarningKey = '';
   let dismissedPowerWarningKey = '';
@@ -15363,61 +15365,68 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   function drawPowerDiagram(availableWatt, segments, maxPinA) {
-    if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem || !powerDiagramLegendElem) return;
+    if (!heroCard || !heroStackedBar) return;
+
     if (!availableWatt || availableWatt <= 0) {
-      powerDiagramElem.classList.add("hidden");
-      powerDiagramBarElem.innerHTML = "";
-      powerDiagramLegendElem.innerHTML = "";
-      maxPowerTextElem.textContent = "";
-      setStatusLevel(maxPowerTextElem, null);
+      heroCard.classList.add("hidden");
+      heroStackedBar.innerHTML = "";
+      if (maxPowerTextElem) {
+        maxPowerTextElem.textContent = "";
+        setStatusLevel(maxPowerTextElem, null);
+      }
       return;
     }
-    powerDiagramElem.classList.remove("hidden");
-    powerDiagramBarElem.innerHTML = "";
-    powerDiagramLegendElem.innerHTML = "";
-    const MAX_WIDTH = 300;
+    heroCard.classList.remove("hidden");
+    heroStackedBar.innerHTML = "";
+
     const total = segments.reduce((sum, s) => sum + s.power, 0);
-    const scale = MAX_WIDTH / Math.max(availableWatt, total);
-    const limitPos = availableWatt * scale;
+
+    if (heroTotalDraw) {
+      heroTotalDraw.textContent = total.toFixed(1);
+    }
+
+    const ratio = total / availableWatt;
+    const percent = Math.min(100, Math.round(ratio * 100));
+
+    if (heroLoadPercent) {
+      heroLoadPercent.textContent = `${percent}%`;
+    }
+
+    let status = 'safe';
+    let statusText = 'Safe';
+
+    if (ratio > 1.0) {
+      status = 'danger';
+      statusText = 'Overload';
+    } else if (ratio >= 0.8) {
+      status = 'warning';
+      statusText = 'Heavy Load';
+    }
+
+    heroCard.classList.remove('state-safe', 'state-warning', 'state-danger');
+    heroCard.classList.add(`state-${status}`);
+
+    if (statusBadge) {
+      statusBadge.textContent = statusText;
+    }
+
+    const scale = 100 / availableWatt;
 
     segments.forEach(seg => {
-      const width = seg.power * scale;
-      if (width <= 0) return;
-      const div = document.createElement("div");
-      div.className = `segment ${seg.className}`;
-      div.style.width = `${width}px`;
-      div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
-      powerDiagramBarElem.appendChild(div);
+      const widthPercent = (seg.power * scale);
+      if (widthPercent <= 0) return;
 
-      const legendItem = document.createElement("span");
-      const swatch = document.createElement("span");
-      swatch.className = `swatch ${seg.className}`;
-      legendItem.appendChild(swatch);
-      legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
-      powerDiagramLegendElem.appendChild(legendItem);
+      const div = document.createElement("div");
+      div.className = `bar-segment ${seg.className}`;
+      div.style.width = `${widthPercent}%`;
+      div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
+      heroStackedBar.appendChild(div);
     });
 
-    if (total > availableWatt) {
-      const over = document.createElement("div");
-      over.className = "over-usage";
-      over.style.left = `${limitPos}px`;
-      powerDiagramBarElem.appendChild(over);
+    if (maxPowerTextElem) {
+      maxPowerTextElem.textContent = `${texts[currentLang].availablePowerLabel} ${availableWatt.toFixed(0)} W`;
+      setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
     }
-
-    const limit = document.createElement("div");
-    limit.className = "limit-line";
-    limit.style.left = `${limitPos}px`;
-    if (typeof maxPinA === 'number' && maxPinA > 0) {
-      const label = document.createElement("span");
-      label.className = "limit-label";
-      label.textContent = `${texts[currentLang].pinLabel} ${maxPinA} A`;
-      limit.appendChild(label);
-    }
-    powerDiagramBarElem.appendChild(limit);
-
-    powerDiagramElem.classList.toggle("over", total > availableWatt);
-    maxPowerTextElem.textContent = `${texts[currentLang].availablePowerLabel} ${availableWatt.toFixed(0)} W`;
-    setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
   }
 
   var setupSelect = document.getElementById("setupSelect");

@@ -7516,8 +7516,10 @@ body.dark-mode .onboarding-hero-banner {
   color: color-mix(in srgb, var(--text-color) 95%, rgba(0, 0, 0, 0.05));
 }
 
-body.dark-mode .onboarding-hero-heading {
-  color: color-mix(in srgb, var(--inverse-text-color) 95%, rgba(255, 255, 255, 0.05));
+body.dark-mode .onboarding-hero-heading,
+body.dark-mode #onboardingCardTitle,
+body.dark-mode .onboarding-hero-highlight-title {
+  color: var(--inverse-text-color);
 }
 
 .onboarding-hero-subheading {
@@ -9398,6 +9400,216 @@ body.light-mode #topBar select:focus-visible {
   border-color: var(--danger-color);
 }
 
+
+/* --- HERO SECTION STYLES --- */
+.power-hero {
+  background: var(--panel-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--panel-shadow);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  /* Keep it contained */
+  transition: all 0.3s ease;
+  border: 1px solid var(--panel-border);
+  margin-bottom: 1.5rem;
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.hero-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  border-bottom: none;
+  /* Override default h3 border */
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: var(--muted-text-color);
+  margin-bottom: 0.25rem;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-color);
+}
+
+.metric-unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted-text-color);
+}
+
+/* --- ENHANCED STACKED BAR --- */
+.power-bar-container {
+  margin-top: 1rem;
+}
+
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted-text-color);
+  margin-bottom: 0.5rem;
+}
+
+.stacked-bar {
+  height: 24px;
+  background: var(--surface-2);
+  /* Use variable for dark mode support */
+  border-radius: 6px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-segment {
+  height: 100%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.bar-segment:not(:last-child) {
+  border-right: 2px solid var(--panel-bg);
+}
+
+/* Re-using existing color vars but applying them to the new class structure if needed, 
+   or ensuring the JS uses these classes. 
+   The existing CSS uses .power-bar .camera etc. 
+   We will adapt the JS to use these or map them.
+*/
+.bar-segment.camera {
+  background-color: var(--camera-color);
+}
+
+.bar-segment.monitor {
+  background-color: var(--monitor-color);
+}
+
+.bar-segment.video {
+  background-color: var(--video-segment-color);
+}
+
+.bar-segment.motors {
+  background-color: var(--motor-color);
+}
+
+.bar-segment.controllers {
+  background-color: var(--controller-color);
+}
+
+.bar-segment.distance {
+  background-color: var(--distance-color);
+}
+
+/* Limit Line */
+.limit-line {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--text-color);
+  z-index: 10;
+}
+
+.limit-label {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: bold;
+  white-space: nowrap;
+  color: var(--text-color);
+}
+
+/* --- STATES --- */
+/* Safe */
+.power-hero.state-safe {
+  border-color: var(--status-success-bg);
+}
+
+.power-hero.state-safe .status-badge {
+  background: var(--status-success-bg);
+  color: var(--status-success-text-color);
+}
+
+.power-hero.state-safe .metric-value {
+  color: var(--status-success-text-color);
+}
+
+/* Warning */
+.power-hero.state-warning {
+  border-color: var(--status-warning-bg);
+}
+
+.power-hero.state-warning .status-badge {
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text-color);
+}
+
+.power-hero.state-warning .metric-value {
+  color: var(--status-warning-text-color);
+}
+
+/* Danger */
+.power-hero.state-danger {
+  border-color: var(--status-error-bg);
+  animation: pulse-border 2s infinite;
+}
+
+.power-hero.state-danger .status-badge {
+  background: var(--status-error-bg);
+  color: var(--status-error-text-color);
+}
+
+.power-hero.state-danger .metric-value {
+  color: var(--status-error-text-color);
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-error-bg) 40%, transparent);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--status-error-bg) 0%, transparent);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-error-bg) 0%, transparent);
+  }
+}
 
 #maxPowerText,
 .power-diagram-note {
@@ -13184,6 +13396,7 @@ body.pink-mode,
     overflow: visible;
   }
 }
+
 /* Generic Confirmation Dialog Styling */
 .confirm-dialog-surface {
   width: min(420px, calc(100vw - 2 * var(--modal-frame-padding, 24px)));
@@ -13211,7 +13424,8 @@ body.pink-mode,
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-muted);
-  white-space: pre-wrap; /* Ensure text wraps and respects newlines */
+  white-space: pre-wrap;
+  /* Ensure text wraps and respects newlines */
 }
 
 .confirm-dialog-surface .modal-footer {
