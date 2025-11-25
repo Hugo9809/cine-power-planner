@@ -6980,6 +6980,1002 @@ const cameraData = {
       "4K: up to 1000 fps"
     ]
   },
+  "Nikon Z9": {
+    "powerDrawWatts": 15,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "10.8 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "EN-EL18d",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": "Dual Slots"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.2\" 4-axis Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Nikon Z",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 1340,
+    "recordingCodecs": [
+      "N-RAW (12-bit)",
+      "ProRes RAW HQ (12-bit)",
+      "ProRes 422 HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "FX 8K",
+      "FX 4K",
+      "DX 4K"
+    ],
+    "resolutions": [
+      "8256x4644",
+      "7680x4320",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "8K: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "Nikon Z8": {
+    "powerDrawWatts": 13,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.0 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "EN-EL15c",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.69m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.2\" 4-axis Tilt Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Nikon Z",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 910,
+    "recordingCodecs": [
+      "N-RAW (12-bit)",
+      "ProRes RAW HQ (12-bit)",
+      "ProRes 422 HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "FX 8K",
+      "FX 4K",
+      "DX 4K"
+    ],
+    "resolutions": [
+      "8256x4644",
+      "7680x4320",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "8K: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "Panasonic Lumix S1H": {
+    "powerDrawWatts": 9,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.4 (battery) / 9 (DC In) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "DMW-BLJ31",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "5.76m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.2\" Tilt/Free-Angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "L-Mount",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "Via included adapter cable to Flash Synchro Socket"
+      }
+    ],
+    "weight_g": 1164,
+    "recordingCodecs": [
+      "H.265",
+      "H.264",
+      "ProRes RAW (External)"
+    ],
+    "sensorModes": [
+      "Full Frame 6K",
+      "Full Frame 5.9K",
+      "S35 4K"
+    ],
+    "resolutions": [
+      "5952x3968",
+      "5888x3312",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "6K: up to 24 fps",
+      "5.9K: up to 30 fps",
+      "4K: up to 60 fps"
+    ]
+  },
+  "Panasonic Lumix GH7": {
+    "powerDrawWatts": 5,
+    "requiredImageCircleMm": 21.6,
+    "power": {
+      "input": {
+        "voltageRange": "7.2 (battery) / 9 (DC In) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "DMW-BLK22",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.68m dot",
+        "connector": "",
+        "notes": "OLED EVF + 3.0\" Free-Angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "MFT",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "Via included adapter cable to Flash Synchro Socket"
+      }
+    ],
+    "weight_g": 805,
+    "recordingCodecs": [
+      "ProRes RAW HQ (Internal)",
+      "ProRes 422 HQ",
+      "H.265",
+      "H.264"
+    ],
+    "sensorModes": [
+      "MFT 5.7K",
+      "MFT 4K",
+      "MFT 5.8K Open Gate"
+    ],
+    "resolutions": [
+      "5760x2880",
+      "5728x3024",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "5.7K: up to 60 fps",
+      "4K: up to 120 fps",
+      "FHD: up to 240 fps"
+    ]
+  },
+  "Blackmagic URSA Mini Pro 4.6K G2": {
+    "powerDrawWatts": 45,
+    "requiredImageCircleMm": 29.08,
+    "power": {
+      "input": {
+        "voltageRange": "12-30",
+        "type": [
+          "XLR 4-pin",
+          "Molex 12-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Optional plate"
+        },
+        {
+          "type": "Gold Mount",
+          "mount": "native",
+          "notes": "Optional plate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "XLR 4-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "12V Output"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "On battery plate"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "12G-SDI",
+        "notes": "Main"
+      },
+      {
+        "type": "3G-SDI",
+        "notes": "Monitor"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Lens Control",
+        "type": "Hirose 12-pin"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": "Dual Slots"
+      },
+      {
+        "type": "SD Card",
+        "notes": "Dual UHS-II"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "4\" LCD Touchscreen",
+        "type": "Integrated"
+      },
+      {
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "Optional URSA Viewfinder",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Interchangeable to PL, B4, F"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "In"
+      },
+      {
+        "type": "BNC",
+        "notes": "Out"
+      }
+    ],
+    "weight_g": 2310,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "ProRes 4444 XQ",
+      "ProRes 422 HQ"
+    ],
+    "sensorModes": [
+      "S35 4.6K"
+    ],
+    "resolutions": [
+      "4608x2592",
+      "4096x2304",
+      "3840x2160",
+      "1920x1080"
+    ],
+    "frameRates": [
+      "4.6K: up to 120 fps",
+      "4K DCI: up to 150 fps",
+      "1080p: up to 300 fps"
+    ]
+  },
+  "Nikon RED ZR": {
+    "powerDrawWatts": 15,
+    "requiredImageCircleMm": 43.3,
+    "power": {
+      "input": {
+        "voltageRange": "7.0 (battery) / USB-C PD",
+        "type": [
+          "Battery Slot",
+          "USB-C PD"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "EN-EL15c",
+          "mount": "native",
+          "notes": ""
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via USB-C or Dummy Battery"
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Micro HDMI (Type D)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFexpress Type B",
+        "notes": ""
+      },
+      {
+        "type": "microSD",
+        "notes": "UHS-I"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "3.07m dot",
+        "connector": "",
+        "notes": "4\" Vari-angle Touchscreen",
+        "type": "Integrated"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "Nikon Z",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [],
+    "weight_g": 540,
+    "recordingCodecs": [
+      "REDCODE RAW (R3D NE)",
+      "N-RAW",
+      "ProRes RAW HQ",
+      "H.265"
+    ],
+    "sensorModes": [
+      "Full Frame 6K",
+      "Full Frame 4K"
+    ],
+    "resolutions": [
+      "6048x4032",
+      "4096x2160",
+      "3840x2160"
+    ],
+    "frameRates": [
+      "6K: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "RED Raven": {
+    "powerDrawWatts": 60,
+    "requiredImageCircleMm": 28.9,
+    "power": {
+      "input": {
+        "voltageRange": "11.5-17",
+        "type": [
+          "DC IN (LEMO 6-pin)"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via Expander Module"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "On Expander"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A (on Expander)"
+      },
+      {
+        "type": "3G-SDI",
+        "notes": "On Expander"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "LEMO 16-pin",
+        "notes": "For RED Touch LCD / EVF",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Fixed Canon EF Mount"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 4-pin",
+        "notes": "Sync/TC (on Expander)"
+      }
+    ],
+    "weight_g": 1590,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 422",
+      "DNxHD"
+    ],
+    "sensorModes": [
+      "Dragon 4.5K"
+    ],
+    "resolutions": [
+      "4608x2160",
+      "4096x2160",
+      "2048x1080"
+    ],
+    "frameRates": [
+      "4.5K: up to 120 fps",
+      "2K: up to 240 fps"
+    ]
+  },
+  "RED Ranger Monstro 8K VV": {
+    "powerDrawWatts": 63,
+    "requiredImageCircleMm": 46.31,
+    "power": {
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": [
+          "XLR 3-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Or Gold Mount"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Aux Power (x2)"
+        },
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "current": "2.5A",
+          "wattage": 60,
+          "notes": "Run/Stop + Power (x2)"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": ""
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "1.5A",
+          "wattage": 7.5,
+          "notes": "Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "x3 (2 Mirrored, 1 Independent)"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Control",
+        "type": "LEMO 4-pin (CTRL)"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "LEMO 16-pin",
+        "notes": "For RED Touch LCD / EVF",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Shimmed PL"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "TC In/Out"
+      }
+    ],
+    "weight_g": 3400,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 4444 XQ",
+      "DNxHR HQX"
+    ],
+    "sensorModes": [
+      "Monstro 8K VV",
+      "Monstro 8K 2.4:1"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "8192x3456",
+      "4096x2160"
+    ],
+    "frameRates": [
+      "8K VV: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "RED Ranger Gemini 5K S35": {
+    "powerDrawWatts": 63,
+    "requiredImageCircleMm": 30.72,
+    "power": {
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": [
+          "XLR 3-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Or Gold Mount"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Aux Power (x2)"
+        },
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "current": "2.5A",
+          "wattage": 60,
+          "notes": "Run/Stop + Power (x2)"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": ""
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "1.5A",
+          "wattage": 7.5,
+          "notes": "Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "x3 (2 Mirrored, 1 Independent)"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Control",
+        "type": "LEMO 4-pin (CTRL)"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "LEMO 16-pin",
+        "notes": "For RED Touch LCD / EVF",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Shimmed PL"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "TC In/Out"
+      }
+    ],
+    "weight_g": 3400,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 4444 XQ",
+      "DNxHR HQX"
+    ],
+    "sensorModes": [
+      "Gemini 5K S35"
+    ],
+    "resolutions": [
+      "5120x3000",
+      "5120x2700",
+      "4096x2160"
+    ],
+    "frameRates": [
+      "5K: up to 96 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "RED Ranger Helium 8K S35": {
+    "powerDrawWatts": 63,
+    "requiredImageCircleMm": 29.9,
+    "power": {
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": [
+          "XLR 3-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Or Gold Mount"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Aux Power (x2)"
+        },
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "current": "2.5A",
+          "wattage": 60,
+          "notes": "Run/Stop + Power (x2)"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": ""
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "1.5A",
+          "wattage": 7.5,
+          "notes": "Power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "x3 (2 Mirrored, 1 Independent)"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Control",
+        "type": "LEMO 4-pin (CTRL)"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "LEMO 16-pin",
+        "notes": "For RED Touch LCD / EVF",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Shimmed PL"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "TC In/Out"
+      }
+    ],
+    "weight_g": 3400,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 4444 XQ",
+      "DNxHR HQX"
+    ],
+    "sensorModes": [
+      "Helium 8K S35"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "8192x3456",
+      "4096x2160"
+    ],
+    "frameRates": [
+      "8K: up to 60 fps",
+      "4K: up to 120 fps"
+    ]
+  },
+  "RED ONE MX": {
+    "powerDrawWatts": 70,
+    "requiredImageCircleMm": 28.0,
+    "power": {
+      "input": {
+        "voltageRange": "11.5-17",
+        "type": [
+          "LEMO 6-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via Battery Belt Clip or Cradle"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "1A",
+          "wattage": 12,
+          "notes": "Aux Power (x4)"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HD-SDI",
+        "notes": "Preview/Program"
+      },
+      {
+        "type": "HDMI",
+        "notes": "Mini-HDMI (Type C)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "Compact Flash",
+        "notes": "RED CF"
+      },
+      {
+        "type": "RED DRIVE",
+        "notes": "External HDD"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "LEMO 16-pin",
+        "notes": "For RED EVF / LCD",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": ""
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "TC In/Out"
+      }
+    ],
+    "weight_g": 4500,
+    "recordingCodecs": [
+      "REDCODE RAW"
+    ],
+    "sensorModes": [
+      "Mysterium-X 4.5K"
+    ],
+    "resolutions": [
+      "4480x2304",
+      "4096x2304",
+      "3072x1728",
+      "2048x1152"
+    ],
+    "frameRates": [
+      "4.5K: up to 30 fps",
+      "4K: up to 30 fps",
+      "3K: up to 60 fps",
+      "2K: up to 120 fps"
+    ]
+  },
   "Fujifilm X-H2S": {
     "powerDrawWatts": 15,
     "requiredImageCircleMm": 28.21,
