@@ -6663,6 +6663,323 @@ const cameraData = {
       "1080p: up to 60 fps"
     ]
   },
+  "Freefly Wave": {
+    "powerDrawWatts": 24,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "12-26",
+        "type": [
+          "DC Barrel (5.5x2.1mm)"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via D-Tap to Barrel adapter"
+        }
+      ],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "Internal NVMe SSD",
+        "notes": "User replaceable"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "E-mount",
+        "mount": "native",
+        "notes": "Locking E-mount"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 716,
+    "recordingCodecs": [
+      "Compressed Bayer RAW"
+    ],
+    "sensorModes": [
+      "S35 4K"
+    ],
+    "resolutions": [
+      "4096x2176"
+    ],
+    "frameRates": [
+      "4K: up to 420 fps",
+      "2K: up to 1461 fps"
+    ]
+  },
+  "Freefly Ember S5K": {
+    "powerDrawWatts": 55,
+    "requiredImageCircleMm": 28.21,
+    "power": {
+      "input": {
+        "voltageRange": "12-26",
+        "type": [
+          "4-pin Microfit Molex"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via D-Tap to 4-pin Microfit cable"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "GPIO",
+          "voltage": "",
+          "current": "",
+          "wattage": null,
+          "notes": "6-pin GPIO for start/stop/sync"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "notes": "Type A (1080p monitoring only)"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "Internal SSD",
+        "notes": "4TB NVMe"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "E-mount",
+        "mount": "native",
+        "notes": "Locking E-mount"
+      },
+      {
+        "type": "PL",
+        "mount": "adapted",
+        "notes": "Via adapter"
+      }
+    ],
+    "timecode": [],
+    "weight_g": 820,
+    "recordingCodecs": [
+      "Apple ProRes 422 LT"
+    ],
+    "sensorModes": [
+      "S35 5K"
+    ],
+    "resolutions": [
+      "5120x4096"
+    ],
+    "frameRates": [
+      "5K: up to 600 fps",
+      "4K: up to 800 fps"
+    ]
+  },
+  "Phantom Flex4K": {
+    "powerDrawWatts": 140,
+    "requiredImageCircleMm": 31.5,
+    "power": {
+      "input": {
+        "voltageRange": "12-28",
+        "type": [
+          "Fischer 3-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Or Gold Mount"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "1.5A",
+          "wattage": 18,
+          "notes": "Accessory power"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Accessory power"
+        },
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "current": "",
+          "wattage": null,
+          "notes": "Accessory power (x2)"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "x4 (Dual-link or Quad-link)"
+      },
+      {
+        "type": "Component",
+        "notes": "Viewfinder"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "notes": "Remote",
+        "type": "Fischer 5-pin"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CineMag IV/V",
+        "notes": "High-speed storage"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "Fischer 7-pin",
+        "notes": "Power + Component video",
+        "type": "External"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Interchangeable (Nikon F/G, Canon EF)"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "Fischer 12-pin",
+        "notes": "TC In/Out via breakout"
+      }
+    ],
+    "weight_g": 6300,
+    "recordingCodecs": [
+      "Cine Raw",
+      "Apple ProRes 422 HQ"
+    ],
+    "sensorModes": [
+      "S35 4K"
+    ],
+    "resolutions": [
+      "4096x2304"
+    ],
+    "frameRates": [
+      "4K: up to 1000 fps"
+    ]
+  },
+  "Phantom VEO 4K": {
+    "powerDrawWatts": 80,
+    "requiredImageCircleMm": 31.5,
+    "power": {
+      "input": {
+        "voltageRange": "16-32",
+        "type": [
+          "Fischer 6-pin"
+        ]
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Via adapter plate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "1A",
+          "wattage": 12,
+          "notes": "Viewfinder power"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "x2 (Din 1.0/2.3)"
+      },
+      {
+        "type": "HDMI",
+        "notes": "Type A"
+      }
+    ],
+    "fizConnectors": [],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": "S-models and 4K-PL"
+      }
+    ],
+    "viewfinder": [
+      {
+        "resolution": "",
+        "connector": "",
+        "notes": "Requires external monitor",
+        "type": "None"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Interchangeable (Nikon, Canon EF)"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "In/Out"
+      }
+    ],
+    "weight_g": 2500,
+    "recordingCodecs": [
+      "Cine Raw"
+    ],
+    "sensorModes": [
+      "S35 4K"
+    ],
+    "resolutions": [
+      "4096x2304"
+    ],
+    "frameRates": [
+      "4K: up to 1000 fps"
+    ]
+  },
   "Fujifilm X-H2S": {
     "powerDrawWatts": 15,
     "requiredImageCircleMm": 28.21,
