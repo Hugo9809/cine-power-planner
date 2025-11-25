@@ -5834,7 +5834,6 @@
     const normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
     const matchesAvatarChangeLabel = (value) => {
       if (!value) {
-        return false;
       }
       return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
     };
@@ -5844,18 +5843,90 @@
       }
       return normalizedAvatarAction;
     };
-    const avatarAction = DOCUMENT.createElement('button');
-    avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
-    applyAvatarActionLabel = (hasPhoto) => {
-      const label = resolveAvatarActionLabel(hasPhoto);
-      if (avatarAction.textContent !== label) {
-        avatarAction.textContent = label;
+
+    const updateAvatarButton = () => {
+      if (avatarButton) {
+        const hasPhoto = avatarPreview.querySelector('img') !== null;
+        avatarButton.textContent = resolveAvatarActionLabel(hasPhoto);
       }
     };
-    applyAvatarActionLabel(false);
-    updateAvatarPreview();
 
+    if (avatarButton) {
+      avatarButton.addEventListener('click', updateAvatarPreview);
+      registerCleanup(() => {
+        avatarButton.removeEventListener('click', updateAvatarPreview);
+      });
+    }
+
+    // Add hidden file input for automation
+    const hiddenFileInput = DOCUMENT.createElement('input');
+    hiddenFileInput.type = 'file';
+    hiddenFileInput.id = 'userProfileAvatarUploadProxy';
+    hiddenFileInput.style.opacity = '0';
+    hiddenFileInput.style.position = 'absolute';
+    hiddenFileInput.style.width = '1px';
+    hiddenFileInput.style.height = '1px';
+    hiddenFileInput.style.pointerEvents = 'none';
+    hiddenFileInput.tabIndex = -1;
+    hiddenFileInput.setAttribute('aria-hidden', 'true');
+
+    hiddenFileInput.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (file && typeof readAvatarFile === 'function') {
+        readAvatarFile(file, (result) => {
+          if (typeof setAvatar === 'function') {
+            setAvatar(result);
+            updateAvatarPreview();
+            updateAvatarButton();
+          }
+        });
+      }
+    });
+    // Drag and drop support
+    const handleDragOver = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.add('onboarding-avatar-group--drag-over');
+    };
+
+    const handleDragLeave = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.remove('onboarding-avatar-group--drag-over');
+    };
+
+    const handleDrop = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.remove('onboarding-avatar-group--drag-over');
+
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file && typeof readAvatarFile === 'function') {
+        readAvatarFile(file, (result) => {
+          if (typeof setAvatar === 'function') {
+            setAvatar(result);
+            updateAvatarPreview();
+            updateAvatarButton();
+          }
+        });
+      }
+    };
+
+    avatarGroup.addEventListener('dragenter', handleDragOver);
+    avatarGroup.addEventListener('dragover', handleDragOver);
+    avatarGroup.addEventListener('dragleave', handleDragLeave);
+    avatarGroup.addEventListener('drop', handleDrop);
+
+    registerCleanup(() => {
+      avatarGroup.removeEventListener('dragenter', handleDragOver);
+      avatarGroup.removeEventListener('dragover', handleDragOver);
+      avatarGroup.removeEventListener('dragleave', handleDragLeave);
+      avatarGroup.removeEventListener('drop', handleDrop);
+    });
+
+    fragment.appendChild(hiddenFileInput);
+
+    updateAvatarPreview();
     let avatarObserver = null;
     if (GLOBAL_SCOPE.MutationObserver && avatarContainer) {
       try {
@@ -6314,17 +6385,17 @@
       pinkSelect.id = pinkId;
       pinkSelect.className = 'onboarding-field-select';
       const pinkOff = DOCUMENT.createElement('option');
-      pinkOff.value = 'off';
+      pinkOff.value = 'disabled';
       pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
       const pinkOn = DOCUMENT.createElement('option');
-      pinkOn.value = 'on';
+      pinkOn.value = 'enabled';
       pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
-      pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
+      pinkSelect.value = pinkToggle.checked ? 'enabled' : 'disabled';
 
       const syncPinkToTarget = () => {
-        const shouldEnable = pinkSelect.value === 'on';
+        const shouldEnable = pinkSelect.value === 'enabled';
         if (pinkToggle.checked !== shouldEnable) {
           pinkToggle.checked = shouldEnable;
           dispatchSyntheticEvent(pinkToggle, 'change');
@@ -6332,7 +6403,7 @@
       };
 
       const syncPinkFromTarget = () => {
-        const expected = pinkToggle.checked ? 'on' : 'off';
+        const expected = pinkToggle.checked ? 'enabled' : 'disabled';
         if (pinkSelect.value !== expected) {
           pinkSelect.value = expected;
         }
@@ -6426,7 +6497,7 @@
       const unitOptions = Array.from(tempUnitSelect.options || []);
       if (unitOptions.length === 0) {
         const option = DOCUMENT.createElement('option');
-        option.value = tempUnitSelect.value || 'celsius';
+        option.value = tempUnitSelect.value || 'Celsius';
         option.textContent = tempUnitSelect.value || 'Celsius';
         proxyUnits.appendChild(option);
       } else {
