@@ -336,7 +336,7 @@
       "requiredImageCircleMm": 33.9,
       "power": {
         "input": {
-          "voltageRange": "19.5-34",
+          "voltageRange": "20.5-33.6",
           "type": [
             "Bat LEMO 8-pin"
           ]
@@ -1334,7 +1334,7 @@
       ]
     },
     "Sony FX3": {
-      "powerDrawWatts": 7.3,
+      "powerDrawWatts": 9,
       "requiredImageCircleMm": 42.82,
       "power": {
         "input": {
@@ -1435,7 +1435,7 @@
       ]
     },
     "Sony FX6": {
-      "powerDrawWatts": 18,
+      "powerDrawWatts": 36,
       "requiredImageCircleMm": 42.82,
       "power": {
         "input": {
@@ -1958,7 +1958,7 @@
       "requiredImageCircleMm": 43.27,
       "power": {
         "input": {
-          "voltageRange": "19.5",
+          "voltageRange": "24",
           "type": [
             "DC 24V Terminal"
           ]
@@ -3232,7 +3232,7 @@
       ]
     },
     "Blackmagic URSA Cine": {
-      "powerDrawWatts": 100,
+      "powerDrawWatts": 150,
       "requiredImageCircleMm": 55.9,
       "power": {
         "input": {
@@ -3403,7 +3403,7 @@
       ]
     },
     "Blackmagic URSA Cine 17K 65": {
-      "powerDrawWatts": 100,
+      "powerDrawWatts": 150,
       "requiredImageCircleMm": 56.4,
       "power": {
         "input": {

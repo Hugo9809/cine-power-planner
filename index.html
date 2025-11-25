@@ -339,35 +339,32 @@
       <h2 id="resultsHeading">Power Summary</h2>
 
       <!-- Hero Section -->
-      <div id="heroCard" class="power-hero state-safe hidden">
-        <div class="hero-header">
-          <h3 id="heroTitle">System Status</h3>
-          <span id="statusBadge" class="status-badge">Safe</span>
+      <div id="heroCard" class="power-hero hidden">
+        <div class="hero-main-stat">
+          <div class="power-draw-container">
+            <span id="heroTotalDraw" class="hero-power-value">0 W</span>
+            <span class="hero-power-divider">/</span>
+            <span id="heroAvailablePower" class="hero-power-limit">0 W</span>
+          </div>
+          <div id="heroBatteryLabel" class="hero-battery-label"></div>
         </div>
 
-        <div class="hero-metrics">
+        <div class="hero-metrics-grid">
           <div class="metric">
-            <span class="metric-label" id="heroTotalDrawLabel">Total Draw</span>
-            <div>
-              <span id="heroTotalDraw" class="metric-value">0</span>
-              <span class="metric-unit">W</span>
-            </div>
+            <span class="metric-label">Runtime</span>
+            <span id="heroRuntime" class="metric-value">--</span>
           </div>
           <div class="metric">
-            <span class="metric-label" id="heroRuntimeLabel">Est. Runtime</span>
-            <div>
-              <span id="heroRuntime" class="metric-value">--</span>
-            </div>
+            <span class="metric-label">Current (14.4V)</span>
+            <span id="heroCurrent144" class="metric-value">0.00 A</span>
           </div>
-        </div>
-
-        <div class="power-bar-container">
-          <div class="bar-header">
-            <span id="heroLoadLabel">Load Distribution</span>
-            <span id="heroLoadPercent">0%</span>
+          <div class="metric">
+            <span class="metric-label">Current (12V)</span>
+            <span id="heroCurrent12" class="metric-value">0.00 A</span>
           </div>
-          <div id="heroStackedBar" class="stacked-bar">
-            <!-- Segments injected via JS -->
+          <div class="metric">
+            <span class="metric-label">Batteries (10h)</span>
+            <span id="heroBatteryCount" class="metric-value">--</span>
           </div>
         </div>
       </div>
@@ -375,28 +372,14 @@
       <ul id="breakdownList">
         <!-- Device breakdown will be inserted here by script.js -->
       </ul>
-      <!-- Old powerDiagram removed -->
-      <p id="maxPowerText" class="status-message power-diagram-note"></p>
-      <p id="resultsTotalPowerRow">
-        <strong><span id="totalPowerLabel">Total Consumption:</span></strong>
-        <span id="totalPower">0.0</span>
-        W
-      </p>
-      <p id="resultsTotalCurrent144Row">
-        <strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong>
-        <span id="totalCurrent144">0.00</span>
-        A
-      </p>
-      <p id="resultsTotalCurrent12Row">
-        <strong><span id="totalCurrent12Label">Total Current (at 12V):</span></strong>
-        <span id="totalCurrent12">0.00</span>
-        A
-      </p>
-      <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span>
-        <span id="batteryLifeUnit">hrs</span> <span id="runtimeAverageNote"></span>
-      </p>
-      <p><strong><span id="batteryCountLabel">Batteries for 10h shoot:</span></strong> <span id="batteryCount">–</span>
-      </p>
+
+      <!-- Power Diagram (Standalone) -->
+      <div id="powerDiagram" class="hidden power-diagram-standalone">
+        <div id="powerDiagramBar" class="power-bar" role="img" aria-label="Power usage diagram"></div>
+        <div id="powerDiagramLegend" class="power-diagram-legend"></div>
+        <p id="maxPowerText" class="status-message power-diagram-note"></p>
+      </div>
+
       <p id="pinWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
       <p id="dtapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
       <p id="hotswapWarning" class="status-message" role="status" aria-live="polite"

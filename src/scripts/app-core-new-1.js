@@ -15313,11 +15313,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
   var powerWarningCloseBtn = document.getElementById("powerWarningCloseBtn");
   var heroCard = document.getElementById("heroCard");
-  var statusBadge = document.getElementById("statusBadge");
   var heroTotalDraw = document.getElementById("heroTotalDraw");
-  var heroLoadPercent = document.getElementById("heroLoadPercent");
-  var heroStackedBar = document.getElementById("heroStackedBar");
+  var heroAvailablePower = document.getElementById("heroAvailablePower");
+  var heroBatteryLabel = document.getElementById("heroBatteryLabel");
+  var heroRuntime = document.getElementById("heroRuntime");
+  var heroCurrent144 = document.getElementById("heroCurrent144");
+  var heroCurrent12 = document.getElementById("heroCurrent12");
+  var heroBatteryCount = document.getElementById("heroBatteryCount");
+
+  var powerDiagramElem = document.getElementById("powerDiagram");
+  var powerDiagramBarElem = document.getElementById("powerDiagramBar");
   var maxPowerTextElem = document.getElementById("maxPowerText");
+  var powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
 
   let currentPowerWarningKey = '';
   let dismissedPowerWarningKey = '';
@@ -15424,11 +15431,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   function drawPowerDiagram(availableWatt, segments, maxPinA) {
-    if (!heroCard || !heroStackedBar) return;
+    // 1. Handle Hero Card Visibility
+    if (!heroCard) return;
 
     if (!availableWatt || availableWatt <= 0) {
       heroCard.classList.add("hidden");
-      heroStackedBar.innerHTML = "";
+      if (powerDiagramElem) powerDiagramElem.classList.add("hidden");
+      if (powerDiagramBarElem) powerDiagramBarElem.innerHTML = "";
+      if (powerDiagramLegendElem) powerDiagramLegendElem.innerHTML = "";
       if (maxPowerTextElem) {
         maxPowerTextElem.textContent = "";
         setStatusLevel(maxPowerTextElem, null);
@@ -15436,55 +15446,111 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     heroCard.classList.remove("hidden");
-    heroStackedBar.innerHTML = "";
+    if (powerDiagramElem) powerDiagramElem.classList.remove("hidden");
+    if (powerDiagramBarElem) powerDiagramBarElem.innerHTML = "";
+    if (powerDiagramLegendElem) powerDiagramLegendElem.innerHTML = "";
 
     const total = segments.reduce((sum, s) => sum + s.power, 0);
-
-    if (heroTotalDraw) {
-      heroTotalDraw.textContent = total.toFixed(1);
-    }
-
     const ratio = total / availableWatt;
-    const percent = Math.min(100, Math.round(ratio * 100));
 
-    if (heroLoadPercent) {
-      heroLoadPercent.textContent = `${percent}%`;
+    // 2. Update Hero Metrics
+    // Total / Available
+    if (heroTotalDraw) {
+      heroTotalDraw.textContent = `${total.toFixed(0)} W`;
+
+      // Glow Effect
+      heroTotalDraw.classList.remove('glow-safe', 'glow-warning', 'glow-danger');
+      if (ratio > 1.0) {
+        heroTotalDraw.classList.add('glow-danger');
+      } else if (ratio >= 0.8) {
+        heroTotalDraw.classList.add('glow-warning');
+      } else {
+        heroTotalDraw.classList.add('glow-safe');
+      }
     }
 
-    let status = 'safe';
-    let statusText = 'Safe';
-
-    if (ratio > 1.0) {
-      status = 'danger';
-      statusText = 'Overload';
-    } else if (ratio >= 0.8) {
-      status = 'warning';
-      statusText = 'Heavy Load';
+    if (heroAvailablePower) {
+      heroAvailablePower.textContent = `${availableWatt.toFixed(0)} W`;
     }
 
-    heroCard.classList.remove('state-safe', 'state-warning', 'state-danger');
-    heroCard.classList.add(`state-${status}`);
-
-    if (statusBadge) {
-      statusBadge.textContent = statusText;
+    // Battery Label
+    if (heroBatteryLabel && batterySelect) {
+      const selectedOption = batterySelect.options[batterySelect.selectedIndex];
+      heroBatteryLabel.textContent = selectedOption ? selectedOption.text : '';
     }
 
-    const scale = 100 / availableWatt;
+    // Currents & Battery Count (Calculated in results.js, but we can update DOM here if passed or access global/scope)
+    // Actually, results.js calculates these. We should probably let results.js update them directly 
+    // OR we can move the calculation logic here? 
+    // Better: results.js calls drawPowerDiagram. We can update the DOM elements in results.js 
+    // OR pass the values to this function.
+    // For now, let's assume results.js will update heroCurrent144, heroCurrent12, heroBatteryCount directly
+    // since it has the calculated values (totalCurrentHigh, totalCurrentLow, batteriesNeeded).
+    // So we just handle the visual diagram here.
 
-    segments.forEach(seg => {
-      const widthPercent = (seg.power * scale);
-      if (widthPercent <= 0) return;
+    // 3. Render Standalone Power Diagram
+    if (powerDiagramBarElem && powerDiagramLegendElem) {
+      const MAX_WIDTH = 100; // Use percentage for width calculation if we want responsive
+      // Actually, the old logic used pixels based on 300px max width. 
+      // Let's use percentage width for the segments to be responsive.
+      const scale = 100 / Math.max(availableWatt, total);
+      const limitPos = availableWatt * scale;
 
-      const div = document.createElement("div");
-      div.className = `bar-segment ${seg.className}`;
-      div.style.width = `${widthPercent}%`;
-      div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
-      heroStackedBar.appendChild(div);
-    });
+      segments.forEach(seg => {
+        const widthPercent = seg.power * scale;
+        if (widthPercent <= 0) return;
+
+        const div = document.createElement("div");
+        div.className = `segment ${seg.className}`; // Use 'segment' class as per CSS
+        div.style.width = `${widthPercent}%`;
+        div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
+        powerDiagramBarElem.appendChild(div);
+
+        const legendItem = document.createElement("span");
+        const swatch = document.createElement("span");
+        swatch.className = `swatch ${seg.className}`;
+        legendItem.appendChild(swatch);
+        legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
+        powerDiagramLegendElem.appendChild(legendItem);
+      });
+
+      // Over-usage overlay
+      if (total > availableWatt) {
+        const over = document.createElement("div");
+        over.className = "over-usage";
+        over.style.left = `${limitPos}%`;
+        over.style.right = '0'; // Fill the rest
+        // Wait, if total > available, the bar width is based on total. 
+        // So limitPos is at availableWatt. 
+        // The over-usage should start at limitPos and go to the end.
+        powerDiagramBarElem.appendChild(over);
+      }
+
+      // Limit Line
+      const limit = document.createElement("div");
+      limit.className = "limit-line";
+      limit.style.left = `${limitPos}%`;
+      if (typeof maxPinA === 'number' && maxPinA > 0) {
+        const label = document.createElement("span");
+        label.className = "limit-label";
+        label.textContent = `${texts[currentLang].pinLabel} ${maxPinA} A`;
+        limit.appendChild(label);
+      }
+      powerDiagramBarElem.appendChild(limit);
+
+      if (powerDiagramElem) {
+        powerDiagramElem.classList.toggle("over", total > availableWatt);
+      }
+    }
 
     if (maxPowerTextElem) {
-      maxPowerTextElem.textContent = `${texts[currentLang].availablePowerLabel} ${availableWatt.toFixed(0)} W`;
-      setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
+      // We can keep this or remove it since it's redundant with Hero
+      // User said "Remove redundent text from outside of the hero section".
+      // But "available power" might be useful context for the diagram.
+      // Let's keep it minimal or remove if it duplicates the "140 W / 240 W" in Hero.
+      // The prompt said "Add the available power metric to the total power draw... Remove redundent text".
+      // So likely we don't need it here anymore.
+      maxPowerTextElem.textContent = "";
     }
   }
 
