@@ -889,6 +889,92 @@
         ]
       },
       "weight_g": 320
+    },
+    "Teradek Bolt 6 LT 750 RX": {
+      "powerDrawWatts": 11,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "frequency": "5/6 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "6-28",
+          "notes": "Regulated DC input"
+        }
+      },
+      "weight_g": 292
+    },
+    "DJI High-Bright Remote Monitor (RX)": {
+      "powerDrawWatts": 15,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6.8-17.6",
+          "notes": "DC Input"
+        },
+        "batteryPlateSupport": [
+          {
+            "type": "WB37",
+            "mount": "integrated"
+          },
+          {
+            "type": "NP-F",
+            "mount": "optional adapter"
+          }
+        ]
+      },
+      "weight_g": 727
+    },
+    "DJI Video Receiver": {
+      "powerDrawWatts": 9,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6-18",
+          "notes": "DC Input"
+        },
+        "batteryPlateSupport": [
+          {
+            "type": "WB37",
+            "mount": "integrated"
+          },
+          {
+            "type": "NP-F",
+            "mount": "optional adapter"
+          }
+        ]
+      },
+      "weight_g": 350
     }
   };
 

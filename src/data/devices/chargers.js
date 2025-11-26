@@ -654,6 +654,79 @@
         57
       ],
       "notes": "Dual Gold Mount Charger"
+    },
+    "Core SWX Mach4 (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 4,
+      "weight_g": 2300,
+      "dimensions_mm": [
+        315,
+        226,
+        80
+      ],
+      "notes": "4-position simultaneous fast charger"
+    },
+    "Core SWX Mach4 (Gold-Mount)": {
+      "mount": "Gold-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 4,
+      "weight_g": 2300,
+      "dimensions_mm": [
+        315,
+        226,
+        80
+      ],
+      "notes": "4-position simultaneous fast charger"
+    },
+    "Core SWX Fleet Q4A (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 2300,
+      "dimensions_mm": [
+        315,
+        226,
+        86
+      ],
+      "notes": "4-position simultaneous charger"
+    },
+    "Core SWX Fleet Q4A (Gold-Mount)": {
+      "mount": "Gold-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 2300,
+      "dimensions_mm": [
+        315,
+        226,
+        86
+      ],
+      "notes": "4-position simultaneous charger"
+    },
+    "IDX VL-2000S (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4,
+      "weight_g": 1240,
+      "notes": "2-channel simultaneous charger, 4A (1 batt) / 3A (2 batts), 100W DC output"
+    },
+    "IDX VL-4S (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 3100,
+      "dimensions_mm": [
+        156,
+        153,
+        288
+      ],
+      "notes": "4-channel simultaneous charger, 3A (1-3 batts) / 2.3A (4 batts)"
     }
   };
 
