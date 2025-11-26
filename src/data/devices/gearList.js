@@ -12360,4 +12360,629 @@
         "needsLensSupport": false,
         "lensType": "spherical",
         "imageCircleMm": 46.5,
-   
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Retro 35mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Retro 50mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Retro 75mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Retro 100mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Retro 125mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Cyber 35mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Cyber 50mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Cyber 75mm T2.1": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1,
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": []
+      },
+      "DZOFILM Vespid Prime II 18mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Vespid Prime II 24mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Vespid Prime II 35mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Vespid Prime II 50mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Vespid Prime II 85mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Vespid Prime II 105mm T1.9": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.5,
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Gnosis 24mm T2.8 Macro": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.8,
+        "mount": "PL / EF (interchangeable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "spherical",
+        "minFocusMeters": 0.18,
+        "imageCircleMm": 46.5,
+        "notes": "1:1 macro prime with swappable PL/EF mounts and 300° focus rotation.",
+        "mountOptions": [
+          {
+            "type": "PL / EF (interchangeable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Gnosis 32mm T2.8 Macro": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.8,
+        "mount": "PL / EF (interchangeable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "spherical",
+        "minFocusMeters": 0.23,
+        "imageCircleMm": 46.5,
+        "notes": "Macro-capable VistaVision prime sharing the Gnosis support foot and unified gear positions.",
+        "mountOptions": [
+          {
+            "type": "PL / EF (interchangeable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "DZOFILM Gnosis 65mm T2.8 Macro": {
+        "brand": "DZOFILM",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.8,
+        "mount": "PL / EF (interchangeable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "spherical",
+        "minFocusMeters": 0.37,
+        "imageCircleMm": 46.5,
+        "notes": "Longer Gnosis macro prime covering FF/VV with native support foot for studio rods.",
+        "mountOptions": [
+          {
+            "type": "PL / EF (interchangeable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "Laowa Proteus 2x 35mm T2": {
+        "brand": "Laowa",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "anamorphic",
+        "anamorphicSqueeze": 2,
+        "imageCircleMm": 31.14,
+        "notes": "Proteus wide 2x anamorphic prime with full-frame/VV coverage and drop-in rear filter slot.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Laowa Proteus 2x 45mm T2": {
+        "brand": "Laowa",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "anamorphic",
+        "anamorphicSqueeze": 2,
+        "imageCircleMm": 31.14,
+        "notes": "Normal-length Proteus 2x anamorphic with unified 114 mm fronts across the set.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Laowa Proteus 2x 60mm T2": {
+        "brand": "Laowa",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "anamorphic",
+        "anamorphicSqueeze": 2,
+        "imageCircleMm": 31.14,
+        "notes": "Proteus mid-tele prime—brace with rods when adding motors or heavy matte boxes.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Laowa Proteus 2x 85mm T2": {
+        "brand": "Laowa",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "anamorphic",
+        "anamorphicSqueeze": 2,
+        "imageCircleMm": 31.14,
+        "notes": "Longest Proteus focal length retaining the same housing and 114 mm clamp-on interface.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 14mm T2.4": {
+        "brand": "NiSi",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.2,
+        "imageCircleMm": 46,
+        "notes": "Ultra-wide Athena prime with full-frame coverage, 80 mm fronts, and matching 0.8 mod gears across the set.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 18mm T2.2": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 2.2,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.2,
+        "imageCircleMm": 46,
+        "notes": "Wide Athena prime balancing minimal distortion with lightweight mechanics and the system's rear drop-in filter holder.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 25mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.25,
+        "imageCircleMm": 46,
+        "notes": "Full-frame Athena prime with matched gear spacing, 77 mm front threads, and rear drop-in filter slot.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 35mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.35,
+        "imageCircleMm": 46,
+        "notes": "Mid-wide Athena focal covering full frame with identical 77 mm front diameter and dual-scale markings.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 40mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.38,
+        "imageCircleMm": 46,
+        "notes": "Natural perspective Athena prime maintaining matched gear spacing and integrated metadata pads for smart mounts.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 50mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.45,
+        "imageCircleMm": 46,
+        "notes": "Standard Athena prime with consistent gear placement for quick swaps across the set and /i-style metadata pads.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 65mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.55,
+        "imageCircleMm": 46,
+        "notes": "Short tele Athena prime that keeps the lightweight 77 mm front housing and synchronized 0.8 mod gears.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 85mm T1.9": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.8,
+        "imageCircleMm": 46,
+        "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 77 mm fronts across the lineup.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "NiSi Athena Prime 135mm T2.2": {
+        "brand": "NiSi",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 2.2,
+        "mount": "PL / E / L / RF (swappable)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 1.1,
+        "imageCircleMm": 46,
+        "notes": "Longest Athena prime while retaining unified gear pitch, rear filter drawer, and metadata contacts for smart mounts.",
+        "mountOptions": [
+          {
+            "type": "PL / E / L / RF (swappable)",
+            "mount": "native"
+          }
+        ]
+      },
+      "Sony FE C 16-35mm T3.1 G": {
+        "brand": "Sony",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3.1,
+        "mount": "Sony E",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "minFocusMeters": 0.28,
+        "imageCircleMm": 43.3,
+        "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs; manufacturer lists ≈43.3 mm image circle.",
+        "mountOptions": [
+          {
+            "type": "Sony E",
+            "mount": "native"
+          }
+        ]
+      },
+      "Canon Flex Zoom 20-50mm T2.4": {
+        "brand": "Canon",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL / EF (convertible)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "spherical",
+        "imageCircleMm": 43.27,
+        "minFocusMeters": 0.5,
+        "notes": "Flex Zoom wide with interchangeable PL/EF mounts, Cooke /i metadata, and servo-ready drive port.",
+        "mountOptions": [
+          {
+            "type": "PL / EF (convertible)",
+            "mount": "native"
+          }
+        ]
+      },
+      "Canon Flex Zoom 45-135mm T2.4": {
+        "brand": "Canon",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL / EF (convertible)",
+        "rodStandard": "15mm",
+        "rodLengthCm": 45,
+        "needsLensSupport": true,
+        "lensType": "spherical",
+        "imageCircleMm": 43.27,
+        "minFocusMeters": 1,
+        "notes": "Tele Flex Zoom sharing the 114 mm front, consistent gear spacing, and swap-ready mount system.",
+        "mountOptions": [
+          {
+            "type": "PL / EF (convertible)",
+            "mount": "native"
+          }
+        ]
+      }
+    }
+  };
+
+  // Expose lenses at the top level for easier access
+  gear.lenses = gear.lenses || {};
+
+  // Remove lenses from accessories to avoid duplicate entries
+  if (gear.accessories && gear.accessories.lenses) {
+    delete gear.accessories.lenses;
+  }
+
+  const categories = {
+    viewfinders: gear.viewfinders,
+    directorMonitors: gear.directorMonitors,
+    iosVideo: gear.iosVideo,
+    videoAssist: gear.videoAssist,
+    media: gear.media,
+    lenses: gear.lenses,
+    accessories: gear.accessories,
+    filterOptions: gear.filterOptions
+  };
+
+  if (typeof registerDevice === 'function') {
+    Object.entries(categories).forEach(([name, data]) => registerDevice(name, data));
+    if (typeof module !== 'undefined' && module.exports) {
+      module.exports = gear;
+    }
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = gear;
+  } else {
+    globalThis.devices = globalThis.devices || {};
+    Object.entries(categories).forEach(([name, data]) => {
+      if (name === 'accessories') {
+        globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, data);
+      } else {
+        globalThis.devices[name] = data;
+      }
+    });
+  }
+})();
