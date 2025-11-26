@@ -697,6 +697,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('clearVideoPowerInputs', clearVideoPowerInputs);
     ensureGlobalFunctionBinding('clearVideoInputs', clearVideoInputs);
     ensureGlobalFunctionBinding('clearVideoOutputsIO', clearVideoOutputsIO);
+    ensureGlobalFunctionBinding('refreshDeviceLists', refreshDeviceLists);
 
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
@@ -11215,6 +11216,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const normaliseMarkVariants = typeof featureSearchEngine.normaliseMarkVariants === 'function'
       ? featureSearchEngine.normaliseMarkVariants
       : fallbackFeatureSearchEngine.normaliseMarkVariants;
+    ensureGlobalFunctionBinding('normaliseMarkVariants', normaliseMarkVariants);
 
     const normalizeUnicodeFractions = typeof featureSearchEngine.normalizeUnicodeFractions === 'function'
       ? featureSearchEngine.normalizeUnicodeFractions
@@ -12076,6 +12078,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     // Font preferences
     var fontSize = '16';
+    if (typeof window !== 'undefined') {
+      try {
+        Object.defineProperty(window, 'fontSize', {
+          get: function () { return fontSize; },
+          set: function (v) { fontSize = v; },
+          configurable: true
+        });
+      } catch (e) { void e; }
+    }
+    if (CORE_SCOPE && typeof CORE_SCOPE === 'object') {
+      try {
+        Object.defineProperty(CORE_SCOPE, 'fontSize', {
+          get: function () { return fontSize; },
+          set: function (v) { fontSize = v; },
+          configurable: true
+        });
+      } catch (e) { void e; }
+    }
     var fontFamily = "'Ubuntu', sans-serif";
 
     const uiScaleRoot = document.documentElement;

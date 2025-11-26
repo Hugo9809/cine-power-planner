@@ -775,6 +775,120 @@
           "notes": "Max 2.0A accessory feed"
         }
       }
+    },
+    "Hollyland Mars 4K RX": {
+      "powerDrawWatts": 5,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        }
+      ],
+      "frequency": "5 GHz",
+      "latencyMs": "60ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6-16",
+          "notes": "Locking coaxial DC input"
+        },
+        "alternateInputs": [
+          {
+            "type": "USB-C",
+            "voltageRange": "5",
+            "notes": "USB-C Power"
+          }
+        ],
+        "batteryPlateSupport": [
+          {
+            "type": "NP-F",
+            "mount": "integrated"
+          }
+        ]
+      },
+      "weight_g": 223
+    },
+    "Vaxis Atom 500 SDI RX": {
+      "powerDrawWatts": 5,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "frequency": "5 GHz",
+      "latencyMs": "< 80ms",
+      "power": {
+        "input": {
+          "type": "USB-C",
+          "voltageRange": "5",
+          "notes": "USB-C Power"
+        },
+        "batteryPlateSupport": [
+          {
+            "type": "NP-F",
+            "mount": "integrated"
+          }
+        ]
+      },
+      "weight_g": 130
+    },
+    "Teradek Bolt 6 LT HDMI RX": {
+      "powerDrawWatts": 11,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "6-28",
+          "notes": "Regulated DC input"
+        }
+      },
+      "weight_g": 200
+    },
+    "Accsoon CineView Master 4K RX": {
+      "powerDrawWatts": 6.5,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz / 6 GHz",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "7.4-16.8",
+          "notes": "DC Input"
+        },
+        "alternateInputs": [
+          {
+            "type": "USB-C",
+            "voltageRange": "5",
+            "notes": "USB-C Power"
+          }
+        ],
+        "batteryPlateSupport": [
+          {
+            "type": "NP-F",
+            "mount": "integrated"
+          }
+        ]
+      },
+      "weight_g": 320
     }
   };
 

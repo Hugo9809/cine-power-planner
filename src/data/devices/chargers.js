@@ -549,6 +549,111 @@
           "access_date": "2025-09-14"
         }
       ]
+    },
+    "FXLion FX-PD65": {
+      "mount": "USB-C",
+      "slots": 1,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "totalPowerW": 65,
+      "weight_g": 46,
+      "dimensions_mm": [
+        63,
+        40,
+        22
+      ],
+      "notes": "USB-C PD Charger"
+    },
+    "FXLion PL-Q480B": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4,
+      "weight_g": 2500,
+      "dimensions_mm": [
+        281,
+        145,
+        191
+      ],
+      "notes": "4-Channel Fast Charger"
+    },
+    "Hawk-Woods VL-MX2": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 597,
+      "dimensions_mm": [
+        180,
+        100,
+        58
+      ],
+      "notes": "Dual Mini V-Lok Charger"
+    },
+    "Shape Full Play Dual V-Mount Charger": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 1100,
+      "dimensions_mm": [
+        178,
+        127,
+        102
+      ],
+      "notes": "Dual Channel, 60W XLR output"
+    },
+    "SmallRig Dual V-Mount Battery Charger": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 1050,
+      "dimensions_mm": [
+        224,
+        141,
+        100
+      ],
+      "notes": "Dual Channel, 3A (single) / 2A (dual)"
+    },
+    "Bebob VS2micro": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "90-264",
+      "chargingSpeedAmps": 2.5,
+      "weight_g": 530,
+      "dimensions_mm": [
+        66,
+        92,
+        45
+      ],
+      "notes": "2-Channel V-Mount Micro"
+    },
+    "SWIT S-3812S": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 6,
+      "weight_g": 1850,
+      "dimensions_mm": [
+        272,
+        246,
+        97
+      ],
+      "notes": "2-Channel Fast Charger (6A), DC Output"
+    },
+    "Anton Bauer GM2": {
+      "mount": "Gold-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4.5,
+      "weight_g": 1000,
+      "dimensions_mm": [
+        235,
+        140,
+        57
+      ],
+      "notes": "Dual Gold Mount Charger"
     }
   };
 

@@ -6674,7 +6674,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
 
     // Filter out hotswaps that cannot supply the required current
-    const totalCurrentLow = totalCurrent12Elem && totalCurrent12Elem.textContent ? parseFloat(totalCurrent12Elem.textContent) : 0;
+    const totalCurrentLow = (totalCurrent12Elem && typeof totalCurrent12Elem.textContent === 'string') ? parseFloat(totalCurrent12Elem.textContent) : 0;
     if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
       swaps = Object.fromEntries(
         Object.entries(swaps).filter(([, info]) => {

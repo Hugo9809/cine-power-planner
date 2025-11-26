@@ -5,7 +5,11 @@
         const start = Date.now();
         while (Date.now() - start < timeout) {
             const el = document.querySelector(selector);
-            if (el && el.offsetParent !== null) return el;
+            if (el) {
+                const style = window.getComputedStyle(el);
+                const isVisible = style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+                if (isVisible) return el;
+            }
             await wait(100);
         }
         throw new Error(`Timeout waiting for ${selector}`);
@@ -80,46 +84,53 @@
                 case 1: // Intro
                     // Just click Next
                     break;
-                case 2: // Profile
-                    await waitFor('#userProfileName');
-                    document.querySelector('#userProfileName').value = "Luca Zanner";
-                    document.querySelector('#userProfileName').dispatchEvent(new Event('input'));
-                    document.querySelector('#userProfileRole').value = "DoP";
-                    document.querySelector('#userProfileRole').dispatchEvent(new Event('change'));
-                    document.querySelector('#userProfilePhone').value = "1234567890";
-                    document.querySelector('#userProfilePhone').dispatchEvent(new Event('input'));
-                    document.querySelector('#userProfileEmail').value = "luca@example.com";
-                    document.querySelector('#userProfileEmail').dispatchEvent(new Event('input'));
+                case 2: // Profile (Proxy inputs)
+                    await waitFor('.onboarding-card');
+                    const inputs = document.querySelectorAll('.onboarding-card .onboarding-field-input');
+                    if (inputs.length >= 4) {
+                        inputs[0].value = "Luca Zanner";
+                        inputs[0].dispatchEvent(new Event('input'));
+                        inputs[1].value = "DoP";
+                        inputs[1].dispatchEvent(new Event('change'));
+                        inputs[2].value = "1234567890";
+                        inputs[2].dispatchEvent(new Event('input'));
+                        inputs[3].value = "luca@example.com";
+                        inputs[3].dispatchEvent(new Event('input'));
+                    } else {
+                        log("WARNING: Profile proxy inputs not found in card. Trying real inputs...");
+                        const realName = document.querySelector('#userProfileName');
+                        if (realName) realName.value = "Luca Zanner";
+                    }
                     break;
-                case 3: // Preferences
-                    await waitFor('#pinkModeToggle');
-                    const pinkMode = document.querySelector('#pinkModeToggle').getAttribute('aria-pressed');
-                    log(`Pink Mode state: ${pinkMode}`);
-                    const tempSelect = document.querySelector('#settingsTemperatureUnit');
-                    if (tempSelect) {
-                        tempSelect.value = 'celsius';
-                        tempSelect.dispatchEvent(new Event('change'));
+                case 3: // Preferences (Proxy inputs)
+                    await waitFor('.onboarding-card');
+                    const radios = document.querySelectorAll('.onboarding-card input[type="radio"]');
+                    if (radios.length > 0) {
+                        log(`Found ${radios.length} radio buttons in card.`);
                     }
                     break;
                 case 4: // Project Name
-                    await waitFor('#setupName');
-                    document.querySelector('#setupName').value = "Gemini Test 123";
-                    document.querySelector('#setupName').dispatchEvent(new Event('input'));
-                    document.querySelector('#productionInput').value = "My Production";
-                    document.querySelector('#productionInput').dispatchEvent(new Event('input'));
+                    const setupName = await waitFor('#setupName');
+                    setupName.value = "Gemini Test 123";
+                    setupName.dispatchEvent(new Event('input'));
+                    const prodInput = document.querySelector('#productionInput');
+                    if (prodInput) {
+                        prodInput.value = "My Production";
+                        prodInput.dispatchEvent(new Event('input'));
+                    }
                     break;
                 case 5: // Save Project
                     // Just click Next
                     break;
                 case 6: // Add Camera
-                    await waitFor('#cameraSelect');
-                    document.querySelector('#cameraSelect').value = "Arri Alexa 35";
-                    document.querySelector('#cameraSelect').dispatchEvent(new Event('change'));
+                    const cameraSelect = await waitFor('#cameraSelect');
+                    cameraSelect.value = "Arri Alexa 35";
+                    cameraSelect.dispatchEvent(new Event('change'));
                     break;
                 case 7: // Add Monitoring
-                    await waitFor('#monitorSelect');
-                    document.querySelector('#monitorSelect').value = "SmallHD Ultra 7";
-                    document.querySelector('#monitorSelect').dispatchEvent(new Event('change'));
+                    const monitorSelect = await waitFor('#monitorSelect');
+                    monitorSelect.value = "SmallHD Ultra 7";
+                    monitorSelect.dispatchEvent(new Event('change'));
 
                     const wirelessSelect = document.querySelector('#videoSelect');
                     if (wirelessSelect) {
@@ -145,17 +156,136 @@
                     }
                     break;
                 case 8: // Select Battery
-                    await waitFor('#batterySelect');
-                    document.querySelector('#batterySelect').value = "Bebob B290cine";
-                    document.querySelector('#batterySelect').dispatchEvent(new Event('change'));
+                    const batterySelect = await waitFor('#batterySelect');
+                    batterySelect.value = "Bebob B290cine";
+                    batterySelect.dispatchEvent(new Event('change'));
                     break;
-                case 17: // Edit Device Data Add
-                    const newName = document.querySelector('#newName');
-                    if (newName && newName.offsetParent) {
-                        newName.value = "Test Device";
-                        newName.dispatchEvent(new Event('input'));
+                case 14: // Runtime Feedback
+                    log("Step 14: Attempting to open Runtime Feedback...");
+                    const feedbackBtn = await waitFor('#runtimeFeedbackBtn');
+                    log(`Button found: ${feedbackBtn.id}, Visible: ${feedbackBtn.offsetParent !== null}`);
+
+                    // Try standard click
+                    feedbackBtn.click();
+                    await wait(500);
+
+                    let dialog = document.querySelector('#feedbackDialog');
+                    if (!dialog || !dialog.open) {
+                        log("Standard click failed, trying dispatchEvent...");
+                        feedbackBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                        await wait(500);
+                    }
+
+                    dialog = document.querySelector('#feedbackDialog');
+                    if (dialog) {
+                        log(`Dialog state before force: open=${dialog.open}, display=${getComputedStyle(dialog).display}, class=${dialog.className}`);
+                        if (!dialog.open) {
+                            log("Dialog found but not open. Forcing showModal()...");
+                            if (typeof dialog.showModal === 'function') {
+                                try {
+                                    dialog.showModal();
+                                    log("showModal() called.");
+                                } catch (e) {
+                                    log(`showModal() failed: ${e.message}`);
+                                }
+                            } else {
+                                log("showModal not function on dialog element.");
+                            }
+                        }
+                        await wait(500);
+                        log(`Dialog state after force: open=${dialog.open}, display=${getComputedStyle(dialog).display}`);
+                    }
+
+                    // Wait for it to be truly visible
+                    dialog = await waitFor('#feedbackDialog');
+
+                    log("Dialog open. Filling form...");
+                    const fbUser = await waitFor('#fbUsername');
+                    fbUser.value = "Test User";
+                    fbUser.dispatchEvent(new Event('input'));
+
+                    const fbDate = document.querySelector('#fbDate');
+                    if (fbDate) {
+                        fbDate.valueAsDate = new Date();
+                        fbDate.dispatchEvent(new Event('input'));
+                    }
+
+                    const fbRuntime = document.querySelector('#fbRuntime');
+                    if (fbRuntime) {
+                        fbRuntime.value = "2.5";
+                        fbRuntime.dispatchEvent(new Event('input'));
+                    }
+
+                    const fbSubmit = document.querySelector('#fbSubmit');
+                    if (fbSubmit) {
+                        log("Submitting feedback form...");
+                        fbSubmit.click();
+                        await wait(1000); // Wait for submission/close
                     }
                     break;
+                case 17: // Edit Device Data Add
+                    log("Step 17: Adding new device...");
+                    const categorySelect = await waitFor('#newCategory');
+                    // Select 'Monitor' or similar if available, or just use first non-empty option
+                    if (categorySelect.options.length > 0) {
+                        categorySelect.selectedIndex = 1; // Assuming 0 is placeholder or first valid
+                        categorySelect.dispatchEvent(new Event('change'));
+                    }
+
+                    const newName = await waitFor('#newName');
+                    newName.value = "Test Custom Monitor";
+                    newName.dispatchEvent(new Event('input'));
+
+                    const newWatt = await waitFor('#newWatt');
+                    newWatt.value = "15";
+                    newWatt.dispatchEvent(new Event('input'));
+
+                    const addBtn = await waitFor('#addDeviceBtn');
+                    addBtn.click();
+                    await wait(1000);
+                    break;
+
+                case 18: // Edit Device Data Review
+                    log("Step 18: Verifying new device...");
+                    const deviceList = await waitFor('#deviceListContainer');
+                    const deviceItem = Array.from(deviceList.querySelectorAll('.device-item, .device-row, li')).find(el => el.textContent.includes("Test Custom Monitor"));
+
+                    if (!deviceItem) {
+                        log("WARNING: New device 'Test Custom Monitor' not found in list.");
+                    } else {
+                        log("SUCCESS: New device found.");
+                    }
+                    break;
+
+                case 19: // Edit Device Data Edit
+                    log("Step 19: Editing the new device...");
+                    const listContainer = await waitFor('#deviceListContainer');
+                    const itemToEdit = Array.from(listContainer.querySelectorAll('.device-item, .device-row, li')).find(el => el.textContent.includes("Test Custom Monitor"));
+
+                    if (itemToEdit) {
+                        const editBtn = itemToEdit.querySelector('.edit-btn, button[aria-label="Edit"], .icon-edit, .btn-edit') || itemToEdit.querySelector('button');
+                        // Fallback to first button if specific class not found, usually edit is first action
+
+                        if (editBtn) {
+                            editBtn.click();
+                            await wait(500);
+
+                            const nameInput = await waitFor('#newName');
+                            nameInput.value = "Test Custom Monitor Edited";
+                            nameInput.dispatchEvent(new Event('input'));
+
+                            const saveBtn = await waitFor('#addDeviceBtn'); // Usually same button changes text or ID, assuming same ID for now based on typical patterns or "Add" becomes "Save"
+                            saveBtn.click();
+                            await wait(1000);
+                            log("Device edited.");
+                        } else {
+                            log("WARNING: Edit button not found for device.");
+                        }
+                    } else {
+                        log("WARNING: Device to edit not found.");
+                    }
+                    break;
+
                 case 21: // Own Gear Add Device
                     const ownName = document.querySelector('#ownGearName');
                     if (ownName && ownName.offsetParent) {

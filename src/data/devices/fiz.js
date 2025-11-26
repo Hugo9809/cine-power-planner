@@ -405,6 +405,21 @@
             "type": "4-pin proprietary"
           }
         ]
+      },
+      "PD Movie Live Air 3 Smart Motor": {
+        "powerDrawWatts": 10,
+        "internalController": true,
+        "torqueNm": 0.75,
+        "weight_g": 132,
+        "gearTypes": [
+          "0.8 mod"
+        ],
+        "notes": "Motor with integrated LiDAR autofocus. 6.4-8.4V input. Uses LI42Bx2 battery.",
+        "fizConnectors": [
+          {
+            "type": "USB-C"
+          }
+        ]
       }
     },
     "handUnits": {
@@ -712,6 +727,108 @@
         "batteryType": "Integrated Li-ion (1400 mAh)",
         "connectivity": "Wireless (2.4 GHz MagicFIZ link) or Wired (USB-C for tethered control)",
         "notes": "Lightweight handgrip controller for SmallRig MagicFIZ motors featuring OLED status display, start/stop trigger, configurable A/B points and gimbal mounting brackets."
+      },
+      "Preston HU3 Hand Unit": {
+        "powerDrawWatts": 1.6,
+        "fizConnectors": [
+          {
+            "type": "Command (LEMO 5-pin)"
+          }
+        ],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-FM50) or External (Command)",
+        "batteryType": "Sony NP-FM50",
+        "connectivity": "Wireless (2.4 GHz G4) or Wired (Command)",
+        "weight_g": 1140,
+        "notes": "Industry standard 3-channel hand unit. 0.2A at 8V."
+      },
+      "PD Movie Live Air 3 Smart Controller": {
+        "powerDrawWatts": 0.5,
+        "fizConnectors": [],
+        "internalController": false,
+        "powerSource": "Internal Battery (LIR2477)",
+        "batteryType": "LIR2477",
+        "connectivity": "Bluetooth 5.3",
+        "weight_g": 28,
+        "notes": "Tiny thumbwheel controller for Live Air 3 Smart system."
+      },
+      "Arri ZMU-4 (body only, wired)": {
+        "powerDrawWatts": 1,
+        "fizConnectors": [
+          {
+            "type": "LBUS (LEMO 4-pin)",
+            "notes": "for motors"
+          },
+          {
+            "type": "CAM (LEMO 7-pin)",
+            "notes": "for camera control"
+          }
+        ],
+        "internalController": false,
+        "powerSource": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
+        "batteryType": "Sony NP-F550/750 compatible, ARRI LBP-3500",
+        "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
+        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control. Connect after the main motor controller for correct priority."
+      },
+      "Teradek RT CTRL.1": {
+        "powerDrawWatts": 2,
+        "fizConnectors": [
+          {
+            "type": "USB-C",
+            "notes": "Charging and configuration"
+          },
+          {
+            "type": "LEMO 4-pin",
+            "notes": "Wired link to MDR"
+          }
+        ],
+        "internalController": false,
+        "powerSource": "Internal Battery (Canon LP-E6) or External USB-C",
+        "batteryType": "Canon LP-E6",
+        "connectivity": "Wireless (Teradek RT FHSS) or Wired (LEMO 4-pin)",
+        "weight_g": 482,
+        "notes": "Single-axis wireless lens controller. 17 oz."
+      },
+      "Cmotion cPRO ONE": {
+        "powerDrawWatts": 3,
+        "fizConnectors": [
+          {
+            "type": "LBUS (LEMO 4-pin)"
+          },
+          {
+            "type": "USB-C"
+          }
+        ],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-FM500H) or External LBUS",
+        "batteryType": "Sony NP-FM500H",
+        "connectivity": "Wireless (cPRO RF) or Wired (LBUS)",
+        "weight_g": 870,
+        "notes": "1-axis wireless hand unit (optional 2nd axis). ~0.87 kg."
+      },
+      "Heden Carat Hand Unit": {
+        "powerDrawWatts": 1,
+        "fizConnectors": [],
+        "internalController": false,
+        "powerSource": "Internal Battery (9V)",
+        "batteryType": "9V Block",
+        "connectivity": "Wireless (Bluetooth)",
+        "weight_g": 456,
+        "notes": "Wireless focus/iris transmitter. 16 oz."
+      },
+      "Tilta Nucleus M II Hand Unit": {
+        "powerDrawWatts": 2,
+        "fizConnectors": [
+          {
+            "type": "USB-C"
+          }
+        ],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-F550)",
+        "batteryType": "Sony NP-F550",
+        "connectivity": "Wireless (2.4GHz)",
+        "weight_g": 441,
+        "notes": "3-axis hand unit, improved over Nucleus M. Est weight."
       }
     },
     "controllers": {
@@ -741,263 +858,335 @@
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
         "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis. Should be connected after the main motor controller for correct priority."
       },
-      "Arri ZMU-4 (body only, wired)": {
-        "powerDrawWatts": 1,
-        "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)",
-            "notes": "for motors"
-          },
-          {
-            "type": "CAM (LEMO 7-pin)",
-            "notes": "for camera control"
-          }
-        ],
-        "internalController": false,
-        "powerSource": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
-        "batteryType": "Sony NP-F550/750 compatible, ARRI LBP-3500",
-        "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
-        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control. Connect after the main motor controller for correct priority."
-      },
-      "Arri UMC-4": {
-        "powerDrawWatts": 4,
-        "fizConnectors": [
-          {
-            "type": "Serial (LEMO 7-pin)"
-          },
-          {
-            "type": "Serial (LEMO 7-pin)"
-          },
-          {
-            "type": "LCS (LEMO 7-pin)",
-            "notes": "adapter available to LBUS"
-          },
-          {
-            "type": "CAM (LEMO 7-pin)"
-          },
-          {
-            "type": "RS (Fischer 3-pin)",
-            "notes": "power via D-Tap"
-          },
-          {
-            "type": "Timecode (LEMO 5-pin)"
-          },
-          {
-            "type": "Motor (LEMO 12-pin)"
-          },
-          {
-            "type": "Motor (LEMO 12-pin)"
-          },
-          {
-            "type": "Motor (LEMO 12-pin)"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External DC (via RS)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wireless (2.4 GHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
-        "notes": "3‑axis motor controller providing lens data and timecode. Works with CLM-3/4/5 motors and, via LCS‑to‑LBUS cable, with cforce motors."
-      },
-      "Arri RIA-1": {
-        "powerDrawWatts": 2.5,
-        "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)"
-          },
-          {
-            "type": "CAM (LEMO 7-pin)"
-          },
-          {
-            "type": "SERIAL (LEMO 4-pin)"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External DC (10.5-34V via camera CAM port or Cam to D-Tap cable)",
-        "batteryType": "N/A (no internal battery, draws power from camera or external source)",
-        "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
-        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Typically powered via a CAM-to-LBUS connection on ALEXA Mini/Mini LF/Alexa 35 cameras or via a Cam to D-Tap cable when used with other cameras. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque."
-      },
-      "Arri NIA-1": {
-        "powerDrawWatts": 5,
-        "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)",
-            "notes": "LBUS 1 (bidirectional power/data)"
-          },
-          {
-            "type": "LBUS (LEMO 4-pin)",
-            "notes": "LBUS 2 (bidirectional power/data)"
-          },
-          {
-            "type": "Ethernet (RJ45 8-pin)",
-            "notes": "100 Mbit network"
-          },
-          {
-            "type": "USB-C",
-            "notes": "Power, firmware updates, supported USB peripherals"
-          }
-        ],
-        "internalController": false,
-        "powerSource": "External DC (6.3-34V via LBUS) or USB-C (4.75-5.25V)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wired (Ethernet up to 100 Mbit) plus LBUS pass-through; USB-C for updates/peripherals",
-        "notes": "Network interface adapter that bridges ARRI ECS to IP networks. Provides dual LBUS ports for powering and daisy-chaining LBUS devices, 100 Mbit Ethernet for remote operation and USB-C for updates or auxiliary power. Draws approx. 5 W when self-powered (up to 10 W when powering a USB-C device) and will not feed LBUS power if running solely from USB-C."
-      },
-      "Arri Master Grip (single unit)": {
-        "powerDrawWatts": 0.72,
-        "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External (12-34VDC via LBUS)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
-        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control. Connect after the main motor controller for correct priority."
-      },
-      "Tilta Nucleus-M Hand Grip (single)": {
-        "powerDrawWatts": 0.5,
-        "fizConnectors": [
-          {
-            "type": "LEMO 7-pin"
-          },
-          {
-            "type": "ARRI rosette or gimbal bar adapter"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "Internal Battery",
-        "batteryType": "2x 18650 Li-ion (per grip, not included)",
-        "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
-        "notes": "Wireless handgrip for Nucleus-M system. Left grip (focus) and Right grip (iris/zoom toggle). Can be mounted to ARRI rosettes or 25/30mm gimbal rods. Allows splitting FIZ control with the FIZ hand unit. Up to 48 hours battery life (idle)."
-      },
-      "Tilta Nucleus-M II Handle (single)": {
-        "powerDrawWatts": 0.5,
-        "fizConnectors": [
-          {
-            "type": "LEMO 7-pin"
-          },
-          {
-            "type": "ARRI rosette or gimbal bar adapter"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "Internal Battery",
-        "batteryType": "NP-F550 (single per handle)",
-        "connectivity": "Wireless (proprietary 2.4GHz RF)",
-        "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable."
-      },
-      "DJI Focus Pro Handle": {
-        "powerDrawWatts": 1,
-        "fizConnectors": [
-          {
-            "type": "USB-C"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "Internal Battery",
-        "batteryType": "Built-in rechargeable",
-        "connectivity": "Wireless (DJI proprietary)",
-        "notes": "Handle unit for the DJI Focus Pro kit. Works with Focus Pro Motors and the DJI LiDAR Range Finder."
-      },
-      "Preston MDR4": {
-        "powerDrawWatts": 48,
-        "fizConnectors": [
-          {
-            "type": "Motor Port (proprietary LEMO 7-pin)"
-          },
-          {
-            "type": "Serial (for Light Ranger 2)"
-          },
-          {
-            "type": "Analog (for Micro Force)"
-          },
-          {
-            "type": "USB (firmware)"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External DC (XLR 4-pin or D-Tap)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
-        "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata."
-      },
-      "Redrock microRemote Basestation": {
-        "powerDrawWatts": 54,
-        "fizConnectors": [
-          {
-            "type": "Motor port (proprietary 4-pin)"
-          },
-          {
-            "type": "USB"
-          },
-          {
-            "type": "AUX"
-          },
-          {
-            "type": "LEMO 2-pin"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External DC (6-18V via LEMO 2-pin)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
-        "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight."
-      },
-      "Cmotion compact LCS receiver": {
-        "powerDrawWatts": 20,
-        "fizConnectors": [
-          {
-            "type": "Motor port (LEMO 4-pin)"
-          },
-          {
-            "type": "Camera (LEMO 7-pin)"
-          },
-          {
-            "type": "EXT (LEMO 4-pin)"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "External DC (10-34V via Camera port or EXT port)",
-        "batteryType": "N/A (no internal battery)",
-        "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
-        "notes": "Compact 3-axis lens control receiver. Compatible with cmotion hand units (e.g., cPRO hand unit, cvolution hand unit). Features an integrated camera run/stop control for various camera systems. Supports lens data communication. Suitable for gimbal, Steadicam, and drone applications due to its small size and lightweight design."
-      },
-      "Teradek RT Motion CTRL.3 Controller": {
-        "powerDrawWatts": 15,
-        "fizConnectors": [
-          {
-            "type": "USB-C"
-          },
-          {
-            "type": "LEMO 2-pin",
-            "notes": "power out"
-          },
-          {
-            "type": "LEMO 4-pin",
-            "notes": "data to MDR"
-          }
-        ],
-        "internalController": true,
-        "powerSource": "Internal Battery (rechargeable) or External (USB-C)",
-        "batteryType": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
-        "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
-        "notes": "3-axis wireless FIZ controller. Features a customizable focus knob with adjustable damping, iris slider, and zoom rocker. Integrated OLED display for lens data and settings. Supports lens mapping and virtual stops. Compatible with Teradek RT MDRs (e.g., MDR.S, MDR.M, MDR.X). USB-C for charging, firmware updates, and camera control."
-      }
+      "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis. Should be connected after the main motor controller for correct priority."
     },
-    "distance": {
-      "None": {
-        "powerDrawWatts": 0,
+    "Arri UMC-4": {
+      "powerDrawWatts": 4,
+      "fizConnectors": [
+        {
+          "type": "Serial (LEMO 7-pin)"
+        },
+        {
+          "type": "Serial (LEMO 7-pin)"
+        },
+        {
+          "type": "LCS (LEMO 7-pin)",
+          "notes": "adapter available to LBUS"
+        },
+        {
+          "type": "CAM (LEMO 7-pin)"
+        },
+        {
+          "type": "RS (Fischer 3-pin)",
+          "notes": "power via D-Tap"
+        },
+        {
+          "type": "Timecode (LEMO 5-pin)"
+        },
+        {
+          "type": "Motor (LEMO 12-pin)"
+        },
+        {
+          "type": "Motor (LEMO 12-pin)"
+        },
+        {
+          "type": "Motor (LEMO 12-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (via RS)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wireless (2.4 GHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
+      "notes": "3‑axis motor controller providing lens data and timecode. Works with CLM-3/4/5 motors and, via LCS‑to‑LBUS cable, with cforce motors."
+    },
+    "Preston MDR-3": {
+      "powerDrawWatts": 96,
+      "fizConnectors": [
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Power (LEMO 4-pin)"
+        },
+        {
+          "type": "Serial (LEMO 4-pin)"
+        },
+        {
+          "type": "Serial (LEMO 4-pin)"
+        },
+        {
+          "type": "Camera (LEMO 8-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (12-36V)",
+      "batteryType": "N/A",
+      "connectivity": "Wireless (2.4 GHz G4) or Wired",
+      "weight_g": 500,
+      "notes": "4-channel motor driver. Max 4A at 24V."
+    },
+    "Preston MDR-4": {
+      "powerDrawWatts": 48,
+      "fizConnectors": [
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Power (LEMO 4-pin)"
+        },
+        {
+          "type": "Serial (LEMO 4-pin)"
+        },
+        {
+          "type": "Camera (LEMO 8-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (12-36V)",
+      "batteryType": "N/A",
+      "connectivity": "Wireless (2.4 GHz G4) or Wired",
+      "weight_g": 300,
+      "notes": "2-channel motor driver. Max 2A at 24V."
+    },
+    "Teradek RT MDR.X": {
+      "powerDrawWatts": 10,
+      "fizConnectors": [
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Motor (LEMO 4-pin)"
+        },
+        {
+          "type": "Power (LEMO 2-pin)"
+        },
+        {
+          "type": "Camera (LEMO 4-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (7-17V)",
+      "batteryType": "N/A",
+      "connectivity": "Wireless (FHSS)",
+      "weight_g": 140,
+      "notes": "3-channel receiver/driver. Ultra lightweight."
+    },
+
+    "Arri RIA-1": {
+      "powerDrawWatts": 2.5,
+      "fizConnectors": [
+        {
+          "type": "LBUS (LEMO 4-pin)"
+        },
+        {
+          "type": "CAM (LEMO 7-pin)"
+        },
+        {
+          "type": "SERIAL (LEMO 4-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (10.5-34V via camera CAM port or Cam to D-Tap cable)",
+      "batteryType": "N/A (no internal battery, draws power from camera or external source)",
+      "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
+      "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Typically powered via a CAM-to-LBUS connection on ALEXA Mini/Mini LF/Alexa 35 cameras or via a Cam to D-Tap cable when used with other cameras. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque."
+    },
+    "Arri NIA-1": {
+      "powerDrawWatts": 5,
+      "fizConnectors": [
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "LBUS 1 (bidirectional power/data)"
+        },
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "LBUS 2 (bidirectional power/data)"
+        },
+        {
+          "type": "Ethernet (RJ45 8-pin)",
+          "notes": "100 Mbit network"
+        },
+        {
+          "type": "USB-C",
+          "notes": "Power, firmware updates, supported USB peripherals"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "External DC (6.3-34V via LBUS) or USB-C (4.75-5.25V)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wired (Ethernet up to 100 Mbit) plus LBUS pass-through; USB-C for updates/peripherals",
+      "notes": "Network interface adapter that bridges ARRI ECS to IP networks. Provides dual LBUS ports for powering and daisy-chaining LBUS devices, 100 Mbit Ethernet for remote operation and USB-C for updates or auxiliary power. Draws approx. 5 W when self-powered (up to 10 W when powering a USB-C device) and will not feed LBUS power if running solely from USB-C."
+    },
+    "Arri Master Grip (single unit)": {
+      "powerDrawWatts": 0.72,
+      "fizConnectors": [
+        {
+          "type": "LBUS (LEMO 4-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External (12-34VDC via LBUS)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
+      "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control. Connect after the main motor controller for correct priority."
+    },
+    "Tilta Nucleus-M Hand Grip (single)": {
+      "powerDrawWatts": 0.5,
+      "fizConnectors": [
+        {
+          "type": "LEMO 7-pin"
+        },
+        {
+          "type": "ARRI rosette or gimbal bar adapter"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "Internal Battery",
+      "batteryType": "2x 18650 Li-ion (per grip, not included)",
+      "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
+      "notes": "Wireless handgrip for Nucleus-M system. Left grip (focus) and Right grip (iris/zoom toggle). Can be mounted to ARRI rosettes or 25/30mm gimbal rods. Allows splitting FIZ control with the FIZ hand unit. Up to 48 hours battery life (idle)."
+    },
+    "Tilta Nucleus-M II Handle (single)": {
+      "powerDrawWatts": 0.5,
+      "fizConnectors": [
+        {
+          "type": "LEMO 7-pin"
+        },
+        {
+          "type": "ARRI rosette or gimbal bar adapter"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "Internal Battery",
+      "batteryType": "NP-F550 (single per handle)",
+      "connectivity": "Wireless (proprietary 2.4GHz RF)",
+      "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable."
+    },
+    "DJI Focus Pro Handle": {
+      "powerDrawWatts": 1,
+      "fizConnectors": [
+        {
+          "type": "USB-C"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "Internal Battery",
+      "batteryType": "Built-in rechargeable",
+      "connectivity": "Wireless (DJI proprietary)",
+      "notes": "Handle unit for the DJI Focus Pro kit. Works with Focus Pro Motors and the DJI LiDAR Range Finder."
+    },
+    "Preston MDR4": {
+      "powerDrawWatts": 48,
+      "fizConnectors": [
+        {
+          "type": "Motor Port (proprietary LEMO 7-pin)"
+        },
+        {
+          "type": "Serial (for Light Ranger 2)"
+        },
+        {
+          "type": "Analog (for Micro Force)"
+        },
+        {
+          "type": "USB (firmware)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (XLR 4-pin or D-Tap)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
+      "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata."
+    },
+    "Redrock microRemote Basestation": {
+      "powerDrawWatts": 54,
+      "fizConnectors": [
+        {
+          "type": "Motor port (proprietary 4-pin)"
+        },
+        {
+          "type": "USB"
+        },
+        {
+          "type": "AUX"
+        },
+        {
+          "type": "LEMO 2-pin"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (6-18V via LEMO 2-pin)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
+      "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight."
+    },
+    "Cmotion compact LCS receiver": {
+      "powerDrawWatts": 20,
+      "fizConnectors": [
+        {
+          "type": "Motor port (LEMO 4-pin)"
+        },
+        {
+          "type": "Camera (LEMO 7-pin)"
+        },
+        {
+          "type": "EXT (LEMO 4-pin)"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "External DC (10-34V via Camera port or EXT port)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
+      "notes": "Compact 3-axis lens control receiver. Compatible with cmotion hand units (e.g., cPRO hand unit, cvolution hand unit). Features an integrated camera run/stop control for various camera systems. Supports lens data communication. Suitable for gimbal, Steadicam, and drone applications due to its small size and lightweight design."
+    },
+    "Teradek RT Motion CTRL.3 Controller": {
+      "powerDrawWatts": 15,
+      "fizConnectors": [
+        {
+          "type": "USB-C"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "notes": "power out"
+        },
+        {
+          "type": "LEMO 4-pin",
+          "notes": "data to MDR"
+        }
+      ],
+      "internalController": true,
+      "powerSource": "Internal Battery (rechargeable) or External (USB-C)",
+      "batteryType": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
+      "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
+      "notes": "3-axis wireless FIZ controller. Features a customizable focus knob with adjustable damping, iris slider, and zoom rocker. Integrated OLED display for lens data and settings. Supports lens mapping and virtual stops. Compatible with Teradek RT MDRs (e.g., MDR.S, MDR.M, MDR.X). USB-C for charging, firmware updates, and camera control."
+    }
+  },
+  "distance": {
+    "None": {
+      "powerDrawWatts": 0,
         "connectionCompatibility": "N/A",
-        "measurementMethod": "N/A",
-        "measurementRange": "N/A",
-        "accuracy": "N/A",
-        "outputDisplay": "N/A",
-        "notes": "Placeholder for no distance measuring device."
-      },
-      "UDM-1 + LCube": {
-        "powerDrawWatts": 6.24,
+          "measurementMethod": "N/A",
+            "measurementRange": "N/A",
+              "accuracy": "N/A",
+                "outputDisplay": "N/A",
+                  "notes": "Placeholder for no distance measuring device."
+    },
+    "UDM-1 + LCube": {
+      "powerDrawWatts": 6.24,
         "fizConnectors": [
           {
             "type": "Serial"
@@ -1011,15 +1200,15 @@
             "notes": "via LCube-1"
           }
         ],
-        "connectionCompatibility": "ARRI and cmotion systems (via LBUS through LCube CUB-1)",
-        "measurementMethod": "Ultrasonic (Sonar)",
-        "measurementRange": "0.4m - 10m (1ft 4in - 33ft)",
-        "accuracy": "High accuracy up close, decreases with distance.",
-        "outputDisplay": "Dedicated UDM-1 Display Unit, ARRI WCU-4/Hi-5, compatible ARRI cameras (via LDD/LBUS)",
-        "notes": "The UDM-1 is the Ultrasonic Distance Measure. The LCube CUB-1 acts as a protocol converter, enabling the UDM-1 to connect to ARRI LBUS systems (like ALEXA Mini) or output serial data for other systems. It can be calibrated for film plane offset. Provides focus tracking with ARRI LDS equipment. Power draw: UDM-1 is ~6W, LCube CUB-1 is ~0.24W. Total combined power is listed as 6.24W."
-      },
-      "Focusbug Cine RT + LCube": {
-        "powerDrawWatts": 15.24,
+          "connectionCompatibility": "ARRI and cmotion systems (via LBUS through LCube CUB-1)",
+            "measurementMethod": "Ultrasonic (Sonar)",
+              "measurementRange": "0.4m - 10m (1ft 4in - 33ft)",
+                "accuracy": "High accuracy up close, decreases with distance.",
+                  "outputDisplay": "Dedicated UDM-1 Display Unit, ARRI WCU-4/Hi-5, compatible ARRI cameras (via LDD/LBUS)",
+                    "notes": "The UDM-1 is the Ultrasonic Distance Measure. The LCube CUB-1 acts as a protocol converter, enabling the UDM-1 to connect to ARRI LBUS systems (like ALEXA Mini) or output serial data for other systems. It can be calibrated for film plane offset. Provides focus tracking with ARRI LDS equipment. Power draw: UDM-1 is ~6W, LCube CUB-1 is ~0.24W. Total combined power is listed as 6.24W."
+    },
+    "Focusbug Cine RT + LCube": {
+      "powerDrawWatts": 15.24,
         "fizConnectors": [
           {
             "type": "Serial"
@@ -1033,45 +1222,45 @@
             "notes": "via LCube-1"
           }
         ],
-        "connectionCompatibility": "ARRI, cmotion, Preston and Teradek systems (via appropriate controllers and LCube CUB-1)",
-        "measurementMethod": "Ultrasonic (with optional 'Bug' transmitters)",
-        "measurementRange": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
-        "accuracy": "Precision clocking and high sampling rates; high accuracy. Adjustable sensitivity and limits.",
-        "outputDisplay": "Handset Control Unit (touchscreen), High-Bright LED Display, ARRI WCU-4/Hi-5, Preston HU3, cmotion, Teradek, Heden LCS",
-        "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow."
-      },
-      "Preston Light Ranger 2 (LR2) Main Sensor": {
-        "powerDrawWatts": 20,
+          "connectionCompatibility": "ARRI, cmotion, Preston and Teradek systems (via appropriate controllers and LCube CUB-1)",
+            "measurementMethod": "Ultrasonic (with optional 'Bug' transmitters)",
+              "measurementRange": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
+                "accuracy": "Precision clocking and high sampling rates; high accuracy. Adjustable sensitivity and limits.",
+                  "outputDisplay": "Handset Control Unit (touchscreen), High-Bright LED Display, ARRI WCU-4/Hi-5, Preston HU3, cmotion, Teradek, Heden LCS",
+                    "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow."
+    },
+    "Preston Light Ranger 2 (LR2) Main Sensor": {
+      "powerDrawWatts": 20,
         "fizConnectors": [
           {
             "type": "Serial",
             "notes": "connects to MDR3/MDR4 serial port"
           }
         ],
-        "connectionCompatibility": "Preston systems only (via MDR3/MDR4)",
-        "measurementMethod": "LADAR (Laser Detection and Ranging)",
-        "measurementRange": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
-        "accuracy": "High precision, measures distance to multiple objects simultaneously.",
-        "outputDisplay": "Preston Hand Unit (HU3, HU4, etc.) graphic overlay (multi-point display), configurable display on monitor (via MDR), camera metadata",
-        "notes": "The Light Ranger 2 is a multi-point LADAR system that provides real-time distance measurements to multiple objects in the frame. It's known for its robust performance, particularly in challenging environments. Designed to work seamlessly with Preston FIZ systems, displaying focus information directly on the hand unit and allowing for advanced focus pulling techniques."
-      },
-      "Teradek TOF.1 Range Finder Module": {
-        "powerDrawWatts": 3.6,
+          "connectionCompatibility": "Preston systems only (via MDR3/MDR4)",
+            "measurementMethod": "LADAR (Laser Detection and Ranging)",
+              "measurementRange": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
+                "accuracy": "High precision, measures distance to multiple objects simultaneously.",
+                  "outputDisplay": "Preston Hand Unit (HU3, HU4, etc.) graphic overlay (multi-point display), configurable display on monitor (via MDR), camera metadata",
+                    "notes": "The Light Ranger 2 is a multi-point LADAR system that provides real-time distance measurements to multiple objects in the frame. It's known for its robust performance, particularly in challenging environments. Designed to work seamlessly with Preston FIZ systems, displaying focus information directly on the hand unit and allowing for advanced focus pulling techniques."
+    },
+    "Teradek TOF.1 Range Finder Module": {
+      "powerDrawWatts": 3.6,
         "fizConnectors": [
           {
             "type": "LEMO 7-pin",
             "notes": "motor cable to MDR.X middle motor input"
           }
         ],
-        "connectionCompatibility": "Teradek systems only (MDR.X/MDR.S/MDR.M)",
-        "measurementMethod": "LiDAR (Time-of-Flight Laser)",
-        "measurementRange": "0.3m - 20m (1ft - 65ft)",
-        "accuracy": "High accuracy, particularly for single-point measurement.",
-        "outputDisplay": "Teradek RT CTRL.3 hand unit, compatible Teradek RT MDRs, Bolt monitor overlays (via MDR)",
-        "notes": "Compact and lightweight single-point LiDAR rangefinder. Designed to integrate seamlessly with the Teradek RT lens control ecosystem. Provides precise real-time distance data for automated or assisted focus. It offers strong performance even in low-light conditions and is suitable for various camera setups."
-      },
-      "DJI LiDAR Range Finder": {
-        "powerDrawWatts": 6.8,
+          "connectionCompatibility": "Teradek systems only (MDR.X/MDR.S/MDR.M)",
+            "measurementMethod": "LiDAR (Time-of-Flight Laser)",
+              "measurementRange": "0.3m - 20m (1ft - 65ft)",
+                "accuracy": "High accuracy, particularly for single-point measurement.",
+                  "outputDisplay": "Teradek RT CTRL.3 hand unit, compatible Teradek RT MDRs, Bolt monitor overlays (via MDR)",
+                    "notes": "Compact and lightweight single-point LiDAR rangefinder. Designed to integrate seamlessly with the Teradek RT lens control ecosystem. Provides precise real-time distance data for automated or assisted focus. It offers strong performance even in low-light conditions and is suitable for various camera setups."
+    },
+    "DJI LiDAR Range Finder": {
+      "powerDrawWatts": 6.8,
         "fizConnectors": [
           {
             "type": "USB-C",
@@ -1082,26 +1271,26 @@
             "notes": "Focus Motor connection"
           }
         ],
-        "connectionCompatibility": "DJI Ronin 4D or Focus Pro Handle with Focus Pro Motors",
-        "measurementMethod": "LiDAR (Light Detection and Ranging)",
-        "measurementRange": "0.5m - 14m (1.6ft - 46ft)",
-        "accuracy": "43,200 ranging points, up to 30Hz refresh rate, high accuracy.",
-        "outputDisplay": "DJI RS gimbal screen, DJI Focus Motor (visual focus assist), DJI RS Focus Motor, Ronin App",
-        "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses."
-      }
+          "connectionCompatibility": "DJI Ronin 4D or Focus Pro Handle with Focus Pro Motors",
+            "measurementMethod": "LiDAR (Light Detection and Ranging)",
+              "measurementRange": "0.5m - 14m (1.6ft - 46ft)",
+                "accuracy": "43,200 ranging points, up to 30Hz refresh rate, high accuracy.",
+                  "outputDisplay": "DJI RS gimbal screen, DJI Focus Motor (visual focus assist), DJI RS Focus Motor, Ronin App",
+                    "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses."
     }
-  };
-
-  if (typeof registerDevice === 'function') {
-    if (typeof module !== 'undefined' && module.exports) {
-      module.exports = registerDevice('fiz', fizData);
-    } else {
-      registerDevice('fiz', fizData);
-    }
-  } else if (typeof module !== 'undefined' && module.exports) {
-    module.exports = fizData;
-  } else {
-    globalThis.devices = globalThis.devices || {};
-    globalThis.devices.fiz = fizData;
   }
-})();
+};
+
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('fiz', fizData);
+  } else {
+    registerDevice('fiz', fizData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
+  module.exports = fizData;
+} else {
+  globalThis.devices = globalThis.devices || {};
+  globalThis.devices.fiz = fizData;
+}
+}) ();
