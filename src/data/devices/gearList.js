@@ -1172,6 +1172,7 @@
           "type": "Clamp-on",
           "traySize": "4x5.65",
           "diameterMm": 95,
+          "weight_g": 368,
           "compatible": "Includes 67/72/77/82–95 mm rings; supports round filters ≤92.5 mm.",
           "topFlag": true,
           "sideFlags": true,
@@ -1185,6 +1186,7 @@
           "type": "Clamp-on",
           "traySize": "4x5.65 / 4x4",
           "diameterMm": 95,
+          "weight_g": 108,
           "compatible": "Adapter rings for 67/72/77/82 mm; multiple plug-in + circular filters.",
           "topFlag": true,
           "sideFlags": false,
@@ -1238,10 +1240,12 @@
       },
       "rigging": {
         "Manfrotto 026 Lite-Tite": {
-          "brand": "Manfrotto"
+          "brand": "Manfrotto",
+          "weight_g": 380
         },
         "Manfrotto 244N Friction Arm": {
-          "brand": "Manfrotto"
+          "brand": "Manfrotto",
+          "weight_g": 1090
         },
         "ULCS Bracket 1/4 to 1/4": {
           "brand": "ULCS"
@@ -1279,6 +1283,7 @@
             "from": "D-Tap",
             "to": "LEMO 2-pin",
             "lengthM": 0.5,
+            "weight_g": 40,
             "connectors": [
               "D-Tap",
               "LEMO 0B 2-pin"
@@ -1292,6 +1297,8 @@
               "D-Tap"
             ],
             "lengthM": 0.2,
+            "maxLoadA": 10,
+            "weight_g": 60,
             "connectors": [
               "D-Tap input",
               "D-Tap outputs"
@@ -1312,6 +1319,7 @@
           "HDMI Cable": {
             "type": "HDMI",
             "lengthM": 1,
+            "weight_g": 50,
             "notes": "High Speed/18 Gbps (typical set use)"
           },
           "Ultraslim BNC Cable 0.3 m": {
@@ -1347,6 +1355,7 @@
           "BNC Cable 10 m": {
             "type": "3G-SDI",
             "lengthM": 10,
+            "weight_g": 400,
             "notes": "75 Ω SDI run"
           },
           "BNC Drum 25 m": {
@@ -4839,6 +4848,7 @@
         "RED Station CFexpress Type B (USB-C)": {
           "brand": "RED",
           "model": "RED Station CFexpress Type B",
+          "powerDrawWatts": 5,
           "supportedMedia": [
             "RED CFexpress",
             "CFexpress Type B"
@@ -4851,6 +4861,7 @@
         "RED Station RED MINI-MAG (USB-C)": {
           "brand": "RED",
           "model": "RED Station RED MINI-MAG",
+          "powerDrawWatts": 5,
           "supportedMedia": [
             "RED MINI-MAG"
           ],
@@ -4863,6 +4874,7 @@
           "brand": "Sony",
           "model": "AXS-AR1",
           "kNumber": "AXS-AR1",
+          "powerDrawWatts": 5,
           "supportedMedia": [
             "Sony AXS"
           ],
@@ -4874,6 +4886,7 @@
         "Sony SBAC-US30 SxS Reader": {
           "brand": "Sony",
           "model": "SBAC-US30",
+          "powerDrawWatts": 5,
           "supportedMedia": [
             "SxS PRO+",
             "SxS PRO X",
@@ -4887,6 +4900,7 @@
         "Sony MRW-G2 CFexpress Type A / SD Reader": {
           "brand": "Sony",
           "model": "MRW-G2",
+          "powerDrawWatts": 5,
           "supportedMedia": [
             "CFexpress Type A",
             "SD UHS-II",
@@ -6088,12 +6102,7 @@
             "Easyrig - STABIL G3"
           ]
         },
-        "DJI Ronin RS4 Pro Combo": {
-          "brand": "DJI"
-        },
-        "DJI Ronin 2": {
-          "brand": "DJI"
-        }
+
       },
       "grip": {
         "Cinekinetic Cinesaddle": {

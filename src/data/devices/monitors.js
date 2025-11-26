@@ -1214,6 +1214,37 @@
       "wirelessTx": false,
       "videoInputs": [],
       "videoOutputs": []
+    },
+    "Atomos Shogun Connect": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2000,
+      "powerDrawWatts": 25,
+      "power": {
+        "input": {
+          "voltageRange": "6.2-16.8",
+          "type": [
+            "DC Barrel",
+            "NP-F"
+          ]
+        }
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "12G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "12G-SDI"
+        }
+      ]
     }
   };
 

@@ -8948,11 +8948,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       updateMountVoltageSettingLabels(lang);
 
       const batteryCountLabelElem = document.getElementById("batteryCountLabel");
-      batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
-      batteryCountLabelElem.setAttribute(
-        "data-help",
-        texts[lang].batteryCountHelp
-      );
+      if (batteryCountLabelElem) {
+        batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
+        batteryCountLabelElem.setAttribute(
+          "data-help",
+          texts[lang].batteryCountHelp
+        );
+      }
 
       if (pinWarnElem)
         pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
@@ -8991,7 +8993,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
       }
       dispatchTemperatureNoteRender(lastRuntimeHours);
-      refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+      if (typeof refreshFeedbackTemperatureLabel === 'function') {
+        refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+      }
       updateFeedbackTemperatureOptions(lang, temperatureUnit);
       const tempNoteElem = document.getElementById("temperatureNote");
       if (tempNoteElem)

@@ -12,6 +12,8 @@
  * side-effect free.
  */
 
+var CINE_LOADER_CACHE_BUSTER = Date.now();
+
 function resolveCriticalGlobalScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
@@ -873,15 +875,18 @@ function resolveAssetUrl(url) {
 
   try {
     var resolved = new URL(url, baseUrl);
+    if (typeof CINE_LOADER_CACHE_BUSTER !== 'undefined') {
+      resolved.searchParams.set('v', CINE_LOADER_CACHE_BUSTER);
+    }
     return resolved.href;
   } catch (resolutionError) {
     void resolutionError;
 
     if (url.charAt(0) === '/') {
-      return url;
+      return url + (typeof CINE_LOADER_CACHE_BUSTER !== 'undefined' ? '?v=' + CINE_LOADER_CACHE_BUSTER : '');
     }
 
-    return baseUrl + url;
+    return baseUrl + url + (typeof CINE_LOADER_CACHE_BUSTER !== 'undefined' ? '?v=' + CINE_LOADER_CACHE_BUSTER : '');
   }
 }
 

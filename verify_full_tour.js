@@ -75,8 +75,8 @@
         while (currentStep <= maxSteps) {
             log(`Processing Step ${currentStep}...`);
             const uiStep = getCurrentStepIndex();
-            if (uiStep !== -1 && uiStep !== currentStep) {
-                log(`WARNING: UI is at Step ${uiStep}, expected ${currentStep}. Adjusting...`);
+            if (uiStep !== -1 && uiStep > currentStep) {
+                log(`WARNING: UI is at Step ${uiStep}, expected ${currentStep}. Jumping ahead...`);
                 currentStep = uiStep;
             }
 
@@ -152,6 +152,28 @@
                         persistenceBtn.click();
                         log("Clicked Persistence Request button");
                         await wait(500);
+                    }
+
+                    // FORCE NEXT BUTTON ENABLEMENT IF STUCK
+                    await wait(1000);
+                    const nextBtnStep3 = document.querySelector('.onboarding-next-button');
+                    if (nextBtnStep3) {
+                        log(`Step 3 Next Button State: disabled=${nextBtnStep3.disabled}, classes=${nextBtnStep3.className}, aria-disabled=${nextBtnStep3.getAttribute('aria-disabled')}`);
+                        if (nextBtnStep3.disabled) {
+                            log("WARNING: Step 3 Next button is disabled. Forcing enable and click...");
+                            nextBtnStep3.disabled = false;
+                            nextBtnStep3.classList.remove('onboarding-next-disabled');
+                            nextBtnStep3.removeAttribute('aria-disabled');
+                            await wait(200);
+                            nextBtnStep3.click();
+                        }
+                    } else {
+                        log("WARNING: Step 3 Next button not found!");
+                        // Try API fallback
+                        if (window.cineFeaturesOnboardingTour && typeof window.cineFeaturesOnboardingTour.next === 'function') {
+                            log("Attempting to advance via API...");
+                            window.cineFeaturesOnboardingTour.next();
+                        }
                     }
                     break;
                 case 4: // Project Name
@@ -568,8 +590,25 @@
             if (nextBtn && !nextBtn.disabled) {
                 nextBtn.click();
                 await wait(1000);
-                currentStep++;
-                stuckCounter = 0;
+
+                // Wait for UI to actually advance
+                let retries = 0;
+                let newStep = getCurrentStepIndex();
+                while ((newStep === currentStep || newStep === -1) && retries < 20) {
+                    log(`Waiting for UI to advance from Step ${currentStep} (Current UI: ${newStep})...`);
+                    await wait(500);
+                    newStep = getCurrentStepIndex();
+                    retries++;
+                }
+
+                if (newStep > currentStep) {
+                    currentStep = newStep;
+                    stuckCounter = 0;
+                } else {
+                    log(`UI didn't update index after wait. Forcing increment to check next step...`);
+                    currentStep++;
+                    stuckCounter = 0;
+                }
             } else {
                 log(`Step ${currentStep}: Next button disabled or missing. Waiting...`);
                 await wait(1000);

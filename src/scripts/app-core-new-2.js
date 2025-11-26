@@ -700,6 +700,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('clearVideoInputs', clearVideoInputs);
     ensureGlobalFunctionBinding('clearVideoOutputsIO', clearVideoOutputsIO);
     ensureGlobalFunctionBinding('refreshDeviceLists', refreshDeviceLists);
+    ensureGlobalFunctionBinding('clearMonitorVideoOutputs', clearMonitorVideoOutputs);
+    ensureGlobalFunctionBinding('storeLoadedSetupState', storeLoadedSetupState);
+    ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
 
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
@@ -12089,9 +12092,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       } catch (e) { void e; }
     }
-    if (typeof CORE_SCOPE !== 'undefined' && CORE_SCOPE && typeof CORE_SCOPE === 'object') {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
       try {
-        Object.defineProperty(CORE_SCOPE, 'fontSize', {
+        Object.defineProperty(CORE_GLOBAL_SCOPE, 'fontSize', {
           get: function () { return fontSize; },
           set: function (v) { fontSize = v; },
           configurable: true
@@ -14851,7 +14854,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
     }
 
-    const videoOutputOptions = ['SDI', 'HDMI', 'Lemo 2-pin', 'Fischer 3-pin'];
+
 
     // Build a single row of the video output editor UI.
     function createVideoOutputRow(value = '') {

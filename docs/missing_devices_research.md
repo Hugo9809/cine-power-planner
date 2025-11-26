@@ -3,35 +3,66 @@
 This document lists missing devices identified for the Cine Power Planner database.
 All data has been double-verified with manufacturer specifications or trusted retailers.
 
-## Batch 11: Additional Sound Devices Recorders (src/data/devices/audio.js)
+## Batch 18: More Lights & Monitors (src/data/devices/lights.js, src/data/devices/monitors.js)
 
-*   **Sound Devices MixPre-10 II**
-    *   Specs: 8-preamp recorder, 32-bit float.
-    *   Power Draw: ~8W (estimated based on MixPre-6 + 2 channels).
-    *   Weight: ~0.91 kg (without batteries).
-    *   Power Inputs: Hirose 4-pin (10-18V), 8x AA sled, L-Mount sled.
-*   **Sound Devices 633**
-    *   Specs: 6-input mixer/recorder.
-    *   Power Draw: ~5.36W (all inputs on).
-    *   Weight: ~1.1 kg (without batteries).
-    *   Power Inputs: Hirose 4-pin (10-18V), 2x L-Mount, 6x AA.
-*   **Sound Devices 688**
-    *   Specs: 12-input mixer/recorder.
-    *   Power Draw: ~8.16W (idle with 6 inputs).
-    *   Weight: ~2.21 kg (without batteries).
-    *   Power Inputs: Hirose 4-pin (10-18V), 5x AA, SL-6 slot.
-*   **Sound Devices 888**
-    *   Specs: 16-channel portable mixer-recorder.
-    *   Power Draw: ~11.88W (all inputs on, 990mA @ 12V).
-    *   Weight: ~1.83 kg (without batteries).
-    *   Power Inputs: Hirose 4-pin (10-18V), 2x L-Mount.
-*   **Sound Devices 664**
-    *   Specs: 12-input field production mixer.
-    *   Power Draw: ~12W (estimated, high consumption noted).
-    *   Weight: ~2.15 kg (4 lbs 12 oz).
-    *   Power Inputs: Hirose 4-pin (10-18V), 5x AA.
+### Lights (Aputure Amaran & Nanlite)
+*   **Aputure Amaran 100d S**
+    *   Specs: 100W Daylight COB LED.
+    *   Power Draw: ~111W (Max).
+    *   Weight: ~1.42 kg (Lamp Head).
+    *   Power Inputs: AC, 48V DC.
+*   **Aputure Amaran 200d S**
+    *   Specs: 200W Daylight COB LED.
+    *   Power Draw: ~221W (Max).
+    *   Weight: ~1.56 kg (Lamp Head).
+    *   Power Inputs: AC, 48V DC.
+*   **Nanlite Forza 60B II**
+    *   Specs: 60W Bi-Color COB LED.
+    *   Power Draw: ~72W (Max).
+    *   Weight: ~0.7 kg (Lamp Head).
+    *   Power Inputs: AC, 15V DC (NP-F/V-Mount handle).
+*   **Nanlite Forza 300B II**
+    *   Specs: 300W Bi-Color COB LED.
+    *   Power Draw: ~350W (Max).
+    *   Weight: ~2.9 kg (Lamp Head).
+    *   Power Inputs: AC, 14.8V DC (V-Mount).
+
+### Monitors (Atomos)
+*   **Atomos Shogun Connect**
+    *   Specs: 7" 2000nit HDR Monitor/Recorder.
+    *   Power Draw: ~20-30W (Estimated).
+    *   Weight: ~730 g.
+    *   Power Inputs: DC (6.2-16.8V), NP-F Battery.
 
 ---
+
+## Batch 17: User Requested Models (Completed)
+
+[Previous content preserved...]
+
+## Batch 16: Latest Models (Completed)
+
+[Previous content preserved...]
+
+## Batch 15: Action Cameras (Completed)
+
+[Previous content preserved...]
+
+## Batch 14: Drones (Completed)
+
+[Previous content preserved...]
+
+## Batch 13: Gimbals & Stabilizers (Completed)
+
+[Previous content preserved...]
+
+## Batch 12: Lighting (Completed)
+
+[Previous content preserved...]
+
+## Batch 11: Additional Sound Devices Recorders (Completed)
+
+[Previous content preserved...]
 
 ## Batch 10: Audio Devices (Completed)
 

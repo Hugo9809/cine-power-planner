@@ -1676,7 +1676,7 @@
         }),
       );
     } catch (error) {
-      safeWarn('cineLogging: Unable to persist logging config', error);
+      console.warn('cineLogging: Unable to persist logging config', error);
     }
   }
 
@@ -1699,7 +1699,7 @@
           storage.removeItem(HISTORY_STORAGE_KEY);
         } catch (e) { void e; }
       }
-      safeWarn('cineLogging: Unable to persist log history', error);
+      console.warn('cineLogging: Unable to persist log history', error);
     }
   }
 

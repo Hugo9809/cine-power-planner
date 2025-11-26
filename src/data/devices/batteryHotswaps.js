@@ -9,7 +9,8 @@
     "bebob ML-120V/V-HL": {
       "capacity": 0,
       "pinA": 20,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 520
     },
     "bebob ML-120V/V": {
       "capacity": 0,
@@ -24,12 +25,14 @@
     "BlueShape MVQUICK Hot-Swap System": {
       "capacity": 21,
       "pinA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 490
     },
     "FX-Lion NANO Dual V-Mount Hot-Swap Plate": {
       "capacity": 0,
       "pinA": 8,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 274
     },
     "bebob B90cineML": {
       "capacity": 86,

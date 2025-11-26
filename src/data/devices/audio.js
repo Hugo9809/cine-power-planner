@@ -13,12 +13,12 @@
         },
         "Sound Devices MixPre-6 II": {
             "brand": "Sound Devices",
-            "powerDrawWatts": 4,
+            "powerDrawWatts": 6,
             "weight_g": 560,
             "inputs": 4,
             "resolution": "32-bit float",
             "powerOptions": ["USB-C", "4x AA", "L-Mount", "Hirose (via adapter)"],
-            "notes": "Versatile 4-preamp recorder. Power draw is idle estimate.",
+            "notes": "Versatile 4-preamp recorder. Power draw is max with phantom power.",
             "verified_source": "https://www.sounddevices.com/product/mixpre-6-ii/"
         },
         "Sound Devices MixPre-10 II": {
@@ -33,37 +33,37 @@
         },
         "Sound Devices 633": {
             "brand": "Sound Devices",
-            "powerDrawWatts": 5.36,
+            "powerDrawWatts": 7,
             "weight_g": 1100,
             "inputs": 6,
             "resolution": "24-bit",
             "powerOptions": ["Hirose 4-pin (10-18V)", "2x L-Mount", "6x AA"],
-            "notes": "Compact 6-input mixer/recorder.",
+            "notes": "Compact 6-input mixer/recorder. Power draw estimate with phantom power.",
             "verified_source": "https://www.sounddevices.com/product/633/"
         },
         "Sound Devices 688": {
             "brand": "Sound Devices",
-            "powerDrawWatts": 8.16,
+            "powerDrawWatts": 10,
             "weight_g": 2210,
             "inputs": 12,
             "resolution": "24-bit",
             "powerOptions": ["Hirose 4-pin (10-18V)", "5x AA", "SL-6 slot"],
-            "notes": "12-input mixer/recorder. Power draw is idle with 6 inputs.",
+            "notes": "12-input mixer/recorder. Power draw estimate with phantom power.",
             "verified_source": "https://www.sounddevices.com/product/688/"
         },
         "Sound Devices 888": {
             "brand": "Sound Devices",
-            "powerDrawWatts": 11.88,
+            "powerDrawWatts": 16.6,
             "weight_g": 1830,
             "inputs": 16,
             "resolution": "32-bit float",
             "powerOptions": ["Hirose 4-pin (10-18V)", "2x L-Mount"],
-            "notes": "16-channel portable mixer-recorder.",
+            "notes": "16-channel portable mixer-recorder. Power draw max with Dante.",
             "verified_source": "https://www.sounddevices.com/product/888/"
         },
         "Sound Devices 664": {
             "brand": "Sound Devices",
-            "powerDrawWatts": 12,
+            "powerDrawWatts": 15,
             "weight_g": 2150,
             "inputs": 12,
             "resolution": "24-bit",

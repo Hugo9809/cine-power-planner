@@ -2689,6 +2689,7 @@
     try {
       target.addEventListener(eventName, handler);
       runtimeFeedbackState.handlers[handlerKey] = handler;
+
     } catch (error) {
       safeWarn('cineResults could not attach runtime feedback handler.', error);
     }
@@ -2885,6 +2886,7 @@
     var hotswapWarnTarget = resolveElementFromOptions(opts, 'hotswapWarnElem', 'hotswapWarning', 'hotswapWarnElem');
     var batteryComparisonSection = resolveElementFromOptions(opts, 'batteryComparisonSection', 'batteryComparison', 'batteryComparisonSection');
     var batteryTableElem = resolveElementFromOptions(opts, 'batteryTableElem', 'batteryTable', 'batteryTableElem');
+
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
     var heroRuntimeTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroRuntime') : null;
     var heroAvailablePowerTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroAvailablePower') : null;
@@ -3457,7 +3459,7 @@
         if (heroRuntimeTarget) {
           var h = Math.floor(hours);
           var m = Math.round((hours - h) * 60);
-          heroRuntimeTarget.textContent = `${h}h ${m}m`;
+          heroRuntimeTarget.textContent = `${h}h ${m} m`;
         }
       }
       setLastRuntimeHoursFn(hours);
@@ -3579,948 +3581,949 @@
         void error;
       }
     }
-  }
 
-  if (batteryComparisonSection && batteryComparisonSection.style) {
-    batteryComparisonSection.style.display = totalWatt > 0 ? 'block' : 'none';
-  }
 
-  if (batteryTableElem && totalWatt > 0 && devices.batteries) {
-    var batteryDevices = devices.batteries;
-    var selectedBatteryName = safeSelectValue(batterySelect, 'battery');
-    var camName = safeSelectValue(cameraSelect, 'camera');
-    var plateFilter = selectedPlate;
-    var supportsB = supportsBMountCameraFn ? !!supportsBMountCameraFn(camName) : false;
-    var supportsGold = supportsGoldMountCameraFn ? !!supportsGoldMountCameraFn(camName) : false;
-    var selectedCandidate = null;
-    if (selectedBatteryName && selectedBatteryName !== 'None' && batteryDevices[selectedBatteryName]) {
-      var selData = batteryDevices[selectedBatteryName];
-      var matchesPlate = !plateFilter || selData.mount_type === plateFilter;
-      var matchesBMount = supportsB || selData.mount_type !== 'B-Mount';
-      var matchesGoldMount = supportsGold || selData.mount_type !== 'Gold-Mount';
-      if (matchesPlate && matchesBMount && matchesGoldMount) {
-        var selPinLimit = coerceCurrentLimit(selData.pinA);
-        var selDtapLimit = coerceCurrentLimit(selData.dtapA);
-        var pinOKSel = Number.isFinite(selPinLimit) && selPinLimit > 0 ? totalCurrentLow <= selPinLimit : false;
-        var dtapOKSel = !bMountCam && Number.isFinite(selDtapLimit) && selDtapLimit > 0
-          ? totalCurrentLow <= selDtapLimit
+    if (typeof batteryComparisonSection !== 'undefined' && batteryComparisonSection && batteryComparisonSection.style) {
+      batteryComparisonSection.style.display = totalWatt > 0 ? 'block' : 'none';
+    }
+
+    if (batteryTableElem && totalWatt > 0 && devices.batteries) {
+      var batteryDevices = devices.batteries;
+      var selectedBatteryName = safeSelectValue(batterySelect, 'battery');
+      var camName = safeSelectValue(cameraSelect, 'camera');
+      var plateFilter = selectedPlate;
+      var supportsB = supportsBMountCameraFn ? !!supportsBMountCameraFn(camName) : false;
+      var supportsGold = supportsGoldMountCameraFn ? !!supportsGoldMountCameraFn(camName) : false;
+      var selectedCandidate = null;
+      if (selectedBatteryName && selectedBatteryName !== 'None' && batteryDevices[selectedBatteryName]) {
+        var selData = batteryDevices[selectedBatteryName];
+        var matchesPlate = !plateFilter || selData.mount_type === plateFilter;
+        var matchesBMount = supportsB || selData.mount_type !== 'B-Mount';
+        var matchesGoldMount = supportsGold || selData.mount_type !== 'Gold-Mount';
+        if (matchesPlate && matchesBMount && matchesGoldMount) {
+          var selPinLimit = coerceCurrentLimit(selData.pinA);
+          var selDtapLimit = coerceCurrentLimit(selData.dtapA);
+          var pinOKSel = Number.isFinite(selPinLimit) && selPinLimit > 0 ? totalCurrentLow <= selPinLimit : false;
+          var dtapOKSel = !bMountCam && Number.isFinite(selDtapLimit) && selDtapLimit > 0
+            ? totalCurrentLow <= selDtapLimit
+            : false;
+          if (pinOKSel || dtapOKSel) {
+            var selHours = totalWatt === 0 ? Infinity : selData.capacity / totalWatt;
+            var selMethod;
+            if (pinOKSel && dtapOKSel) {
+              selMethod = 'both pins and D-Tap';
+            } else if (pinOKSel) {
+              selMethod = 'pins';
+            } else {
+              selMethod = 'dtap';
+            }
+            selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+          }
+        }
+      }
+
+      var pinsCandidates = [];
+      var dtapCandidates = [];
+      var nameCollator = getLocaleAwareCollator(collator, currentLang);
+
+      for (var batteryName in batteryDevices) {
+        if (!Object.prototype.hasOwnProperty.call(batteryDevices, batteryName)) {
+          continue;
+        }
+        if (batteryName === 'None') {
+          continue;
+        }
+        if (selectedCandidate && batteryName === selectedCandidate.name) {
+          continue;
+        }
+        var batteryInfo = batteryDevices[batteryName];
+        if (plateFilter && batteryInfo.mount_type !== plateFilter) {
+          continue;
+        }
+        if (!plateFilter && !supportsB && batteryInfo.mount_type === 'B-Mount') {
+          continue;
+        }
+        if (!plateFilter && !supportsGold && batteryInfo.mount_type === 'Gold-Mount') {
+          continue;
+        }
+        var pinLimit = coerceCurrentLimit(batteryInfo.pinA);
+        var dtapLimit = coerceCurrentLimit(batteryInfo.dtapA);
+        var canPin = Number.isFinite(pinLimit) && pinLimit > 0 ? totalCurrentLow <= pinLimit : false;
+        var canDtap = !bMountCam && Number.isFinite(dtapLimit) && dtapLimit > 0
+          ? totalCurrentLow <= dtapLimit
           : false;
-        if (pinOKSel || dtapOKSel) {
-          var selHours = totalWatt === 0 ? Infinity : selData.capacity / totalWatt;
-          var selMethod;
-          if (pinOKSel && dtapOKSel) {
-            selMethod = 'both pins and D-Tap';
-          } else if (pinOKSel) {
-            selMethod = 'pins';
-          } else {
-            selMethod = 'dtap';
-          }
-          selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+        if (canPin) {
+          var hoursPin = batteryInfo.capacity / totalWatt;
+          var methodPin = canDtap ? 'both pins and D-Tap' : 'pins';
+          pinsCandidates.push({ name: batteryName, hours: hoursPin, method: methodPin });
+        } else if (canDtap) {
+          var hoursDtap = batteryInfo.capacity / totalWatt;
+          dtapCandidates.push({ name: batteryName, hours: hoursDtap, method: 'dtap' });
         }
       }
-    }
 
-    var pinsCandidates = [];
-    var dtapCandidates = [];
-    var nameCollator = getLocaleAwareCollator(collator, currentLang);
-
-    for (var batteryName in batteryDevices) {
-      if (!Object.prototype.hasOwnProperty.call(batteryDevices, batteryName)) {
-        continue;
+      function sortByHoursThenName(a, b) {
+        var diff = b.hours - a.hours;
+        return diff !== 0 ? diff : nameCollator.compare(a.name, b.name);
       }
-      if (batteryName === 'None') {
-        continue;
-      }
-      if (selectedCandidate && batteryName === selectedCandidate.name) {
-        continue;
-      }
-      var batteryInfo = batteryDevices[batteryName];
-      if (plateFilter && batteryInfo.mount_type !== plateFilter) {
-        continue;
-      }
-      if (!plateFilter && !supportsB && batteryInfo.mount_type === 'B-Mount') {
-        continue;
-      }
-      if (!plateFilter && !supportsGold && batteryInfo.mount_type === 'Gold-Mount') {
-        continue;
-      }
-      var pinLimit = coerceCurrentLimit(batteryInfo.pinA);
-      var dtapLimit = coerceCurrentLimit(batteryInfo.dtapA);
-      var canPin = Number.isFinite(pinLimit) && pinLimit > 0 ? totalCurrentLow <= pinLimit : false;
-      var canDtap = !bMountCam && Number.isFinite(dtapLimit) && dtapLimit > 0
-        ? totalCurrentLow <= dtapLimit
-        : false;
-      if (canPin) {
-        var hoursPin = batteryInfo.capacity / totalWatt;
-        var methodPin = canDtap ? 'both pins and D-Tap' : 'pins';
-        pinsCandidates.push({ name: batteryName, hours: hoursPin, method: methodPin });
-      } else if (canDtap) {
-        var hoursDtap = batteryInfo.capacity / totalWatt;
-        dtapCandidates.push({ name: batteryName, hours: hoursDtap, method: 'dtap' });
-      }
-    }
 
-    function sortByHoursThenName(a, b) {
-      var diff = b.hours - a.hours;
-      return diff !== 0 ? diff : nameCollator.compare(a.name, b.name);
-    }
+      pinsCandidates.sort(sortByHoursThenName);
+      dtapCandidates.sort(sortByHoursThenName);
 
-    pinsCandidates.sort(sortByHoursThenName);
-    dtapCandidates.sort(sortByHoursThenName);
+      var batteryHeaderHelp = resolveText('batteryTableBatteryHelp');
+      var runtimeHeaderHelp = resolveText('batteryTableRuntimeHelp');
+      var graphHeaderHelp = resolveText('batteryTableGraphHelp');
+      var graphHeaderLabel = resolveText('batteryTableGraphLabel');
+      var batteryTableLabel = resolveText('batteryTableLabel');
+      var runtimeLabel = resolveText('runtimeLabel');
+      var noBatterySupports = resolveText('noBatterySupports');
 
-    var batteryHeaderHelp = resolveText('batteryTableBatteryHelp');
-    var runtimeHeaderHelp = resolveText('batteryTableRuntimeHelp');
-    var graphHeaderHelp = resolveText('batteryTableGraphHelp');
-    var graphHeaderLabel = resolveText('batteryTableGraphLabel');
-    var batteryTableLabel = resolveText('batteryTableLabel');
-    var runtimeLabel = resolveText('runtimeLabel');
-    var noBatterySupports = resolveText('noBatterySupports');
+      var batteryHelpAttr = batteryHeaderHelp ? ' data-help="' + escapeHtmlFn(batteryHeaderHelp) + '"' : '';
+      var runtimeHelpAttr = runtimeHeaderHelp ? ' data-help="' + escapeHtmlFn(runtimeHeaderHelp) + '"' : '';
+      var graphHelpAttr = graphHeaderHelp ? ' data-help="' + escapeHtmlFn(graphHeaderHelp) + '"' : '';
+      var graphAriaAttr = graphHeaderLabel ? ' aria-label="' + escapeHtmlFn(graphHeaderLabel) + '"' : '';
+      var graphHeaderContent = graphHeaderLabel
+        ? '<span class="visually-hidden">' + escapeHtmlFn(graphHeaderLabel) + '</span>'
+        : '';
 
-    var batteryHelpAttr = batteryHeaderHelp ? ' data-help="' + escapeHtmlFn(batteryHeaderHelp) + '"' : '';
-    var runtimeHelpAttr = runtimeHeaderHelp ? ' data-help="' + escapeHtmlFn(runtimeHeaderHelp) + '"' : '';
-    var graphHelpAttr = graphHeaderHelp ? ' data-help="' + escapeHtmlFn(graphHeaderHelp) + '"' : '';
-    var graphAriaAttr = graphHeaderLabel ? ' aria-label="' + escapeHtmlFn(graphHeaderLabel) + '"' : '';
-    var graphHeaderContent = graphHeaderLabel
-      ? '<span class="visually-hidden">' + escapeHtmlFn(graphHeaderLabel) + '</span>'
-      : '';
-
-    var tableHtml = '<tr>' +
-      '<th' + batteryHelpAttr + '>' + escapeHtmlFn(batteryTableLabel) + '</th>' +
-      '<th' + runtimeHelpAttr + '>' + escapeHtmlFn(runtimeLabel) + '</th>' +
-      '<th' + graphHelpAttr + graphAriaAttr + '>' + graphHeaderContent + '</th>' +
-      '</tr>';
-
-    var allCandidatesForMax = [];
-    if (selectedCandidate) {
-      allCandidatesForMax.push(selectedCandidate);
-    }
-    Array.prototype.push.apply(allCandidatesForMax, pinsCandidates);
-    Array.prototype.push.apply(allCandidatesForMax, dtapCandidates);
-    var maxHours = 1;
-    if (allCandidatesForMax.length) {
-      var maxCandidateHours = allCandidatesForMax.map(function getHours(candidate) { return candidate.hours; });
-      var computedMax = Math.max.apply(Math, maxCandidateHours);
-      maxHours = Number.isFinite(computedMax) && computedMax > 0 ? computedMax : 1;
-    }
-
-    function getBarClass(method) {
-      return method === 'pins' ? 'bar bar-pins-only' : 'bar';
-    }
-
-    function getMethodLabel(method) {
-      var colorMap = {
-        pins: { var: '--warning-color', fallback: '#FF9800', text: resolveText('methodPinsOnly') },
-        'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: resolveText('methodPinsAndDTap') },
-        infinite: { var: '--info-color', fallback: '#007bff', text: resolveText('methodInfinite') }
-      };
-      var entry = colorMap[method];
-      if (entry) {
-        var colorValue = getCssVariableValueFn(entry.var, entry.fallback);
-        return '<span style="color:' + escapeHtmlFn(colorValue) + ';">' + escapeHtmlFn(entry.text) + '</span>';
-      }
-      return escapeHtmlFn(method);
-    }
-
-    function addCandidateRow(candidate, cssClass) {
-      var methodLabel = getMethodLabel(candidate.method);
-      var width = maxHours > 0 ? (candidate.hours / maxHours) * 100 : 0;
-      tableHtml += '<tr' + (cssClass ? ' class="' + cssClass + '"' : '') + '>' +
-        '<td>' + escapeHtmlFn(candidate.name) + '</td>' +
-        '<td>' + candidate.hours.toFixed(2) + 'h (' + methodLabel + ')</td>' +
-        '<td><div class="barContainer"><div class="' + getBarClass(candidate.method) + '" style="width: ' + width + '%;"></div></div></td>' +
+      var tableHtml = '<tr>' +
+        '<th' + batteryHelpAttr + '>' + escapeHtmlFn(batteryTableLabel) + '</th>' +
+        '<th' + runtimeHelpAttr + '>' + escapeHtmlFn(runtimeLabel) + '</th>' +
+        '<th' + graphHelpAttr + graphAriaAttr + '>' + graphHeaderContent + '</th>' +
         '</tr>';
-    }
 
-    if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
-      tableHtml += '<tr><td colspan="3">' + escapeHtmlFn(noBatterySupports) + '</td></tr>';
-    } else {
+      var allCandidatesForMax = [];
       if (selectedCandidate) {
-        addCandidateRow(selectedCandidate, 'selectedBatteryRow');
+        allCandidatesForMax.push(selectedCandidate);
       }
-      for (var pinIndex = 0; pinIndex < pinsCandidates.length; pinIndex += 1) {
-        var pinCandidate = pinsCandidates[pinIndex];
-        if (selectedCandidate && pinCandidate.name === selectedCandidate.name) {
-          continue;
+      Array.prototype.push.apply(allCandidatesForMax, pinsCandidates);
+      Array.prototype.push.apply(allCandidatesForMax, dtapCandidates);
+      var maxHours = 1;
+      if (allCandidatesForMax.length) {
+        var maxCandidateHours = allCandidatesForMax.map(function getHours(candidate) { return candidate.hours; });
+        var computedMax = Math.max.apply(Math, maxCandidateHours);
+        maxHours = Number.isFinite(computedMax) && computedMax > 0 ? computedMax : 1;
+      }
+
+      function getBarClass(method) {
+        return method === 'pins' ? 'bar bar-pins-only' : 'bar';
+      }
+
+      function getMethodLabel(method) {
+        var colorMap = {
+          pins: { var: '--warning-color', fallback: '#FF9800', text: resolveText('methodPinsOnly') },
+          'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: resolveText('methodPinsAndDTap') },
+          infinite: { var: '--info-color', fallback: '#007bff', text: resolveText('methodInfinite') }
+        };
+        var entry = colorMap[method];
+        if (entry) {
+          var colorValue = getCssVariableValueFn(entry.var, entry.fallback);
+          return '<span style="color:' + escapeHtmlFn(colorValue) + ';">' + escapeHtmlFn(entry.text) + '</span>';
         }
-        addCandidateRow(pinCandidate);
+        return escapeHtmlFn(method);
       }
-      for (var dtapIndex = 0; dtapIndex < dtapCandidates.length; dtapIndex += 1) {
-        var dtapCandidate = dtapCandidates[dtapIndex];
-        if (selectedCandidate && dtapCandidate.name === selectedCandidate.name) {
-          continue;
+
+      function addCandidateRow(candidate, cssClass) {
+        var methodLabel = getMethodLabel(candidate.method);
+        var width = maxHours > 0 ? (candidate.hours / maxHours) * 100 : 0;
+        tableHtml += '<tr' + (cssClass ? ' class="' + cssClass + '"' : '') + '>' +
+          '<td>' + escapeHtmlFn(candidate.name) + '</td>' +
+          '<td>' + candidate.hours.toFixed(2) + 'h (' + methodLabel + ')</td>' +
+          '<td><div class="barContainer"><div class="' + getBarClass(candidate.method) + '" style="width: ' + width + '%;"></div></div></td>' +
+          '</tr>';
+      }
+
+      if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
+        tableHtml += '<tr><td colspan="3">' + escapeHtmlFn(noBatterySupports) + '</td></tr>';
+      } else {
+        if (selectedCandidate) {
+          addCandidateRow(selectedCandidate, 'selectedBatteryRow');
         }
-        var alreadyInPins = pinsCandidates.some(function candidateMatches(pinCandidate) {
-          return pinCandidate.name === dtapCandidate.name;
-        });
-        if (!alreadyInPins) {
-          addCandidateRow(dtapCandidate);
+        for (var pinIndex = 0; pinIndex < pinsCandidates.length; pinIndex += 1) {
+          var pinCandidate = pinsCandidates[pinIndex];
+          if (selectedCandidate && pinCandidate.name === selectedCandidate.name) {
+            continue;
+          }
+          addCandidateRow(pinCandidate);
         }
-      }
-    }
-
-    try {
-      batteryTableElem.innerHTML = tableHtml;
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not render battery comparison table.', error);
-    }
-    var tableHelpText = resolveText('batteryComparisonTableHelp');
-    if (tableHelpText) {
-      try {
-        batteryTableElem.setAttribute('data-help', tableHelpText);
-      } catch (error) {
-        void error;
-      }
-    }
-  } else if (batteryComparisonSection && batteryComparisonSection.style) {
-    batteryComparisonSection.style.display = 'none';
-  }
-
-  var feedback = null;
-  if (renderFeedbackTableFn && getCurrentSetupKeyFn) {
-    try {
-      feedback = renderFeedbackTableFn(getCurrentSetupKeyFn());
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not render runtime feedback table.', error);
-      feedback = null;
-    }
-  }
-
-  if (feedback !== null) {
-    var combinedRuntime = feedback.runtime;
-    if (Number.isFinite(hours)) {
-      combinedRuntime = (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
-    }
-    if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
-      try {
-        batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
-      } catch (error) {
-        void error;
-      }
-    }
-    setLastRuntimeHoursFn(combinedRuntime);
-    runtimeHoursValue = combinedRuntime;
-    if (batteryLifeLabelTarget) {
-      var label = resolveText('batteryLifeLabel');
-      var runtimeUserCountNote = resolveText('runtimeUserCountNote');
-      if (runtimeUserCountNote.indexOf('{count}') !== -1) {
-        var userNote = runtimeUserCountNote.replace('{count}', feedback.count);
-        var closingIndex = label.indexOf(')');
-        if (closingIndex !== -1) {
-          label = label.slice(0, closingIndex) + ', ' + userNote + label.slice(closingIndex);
-        } else if (label) {
-          label = label + ' (' + userNote + ')';
-        } else {
-          label = userNote;
-        }
-      }
-      try {
-        batteryLifeLabelTarget.textContent = label;
-        batteryLifeLabelTarget.setAttribute('data-help', resolveText('batteryLifeHelp'));
-      } catch (error) {
-        void error;
-      }
-    }
-    if (runtimeAverageNoteTarget) {
-      var averageNote = feedback.count > 4 ? resolveText('runtimeAverageNote') : '';
-      try {
-        runtimeAverageNoteTarget.textContent = averageNote;
-      } catch (error) {
-        void error;
-      }
-    }
-    var batteriesNeededFeedback = 1;
-    if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
-      batteriesNeededFeedback = Math.max(1, Math.ceil(10 / combinedRuntime));
-    }
-    batteriesNeeded = batteriesNeededFeedback;
-    batteriesNeededValue = batteriesNeededFeedback;
-    if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
-      try {
-        batteryCountTarget.textContent = String(batteriesNeededFeedback);
-      } catch (error) {
-        void error;
-      }
-    }
-  } else {
-    if (batteryLifeLabelTarget) {
-      try {
-        batteryLifeLabelTarget.textContent = resolveText('batteryLifeLabel');
-        batteryLifeLabelTarget.setAttribute('data-help', resolveText('batteryLifeHelp'));
-      } catch (error) {
-        void error;
-      }
-    }
-    if (runtimeAverageNoteTarget) {
-      try {
-        runtimeAverageNoteTarget.textContent = '';
-      } catch (error) {
-        void error;
-      }
-    }
-  }
-
-  if (resultsPlainSummaryTextTarget) {
-    var summaryPrompt = resolveText('resultsPlainSummaryPrompt') || '';
-    var summaryTextValue = buildPlainSummaryText({
-      summaryPrompt: summaryPrompt,
-      needBatterySummary: resolveText('resultsPlainSummaryNeedBattery'),
-      runtimeSummaryTemplate: resolveText('resultsPlainSummaryRuntime'),
-      unlimitedSummaryTemplate: resolveText('resultsPlainSummaryUnlimited'),
-      unnamedBatteryLabel: resolveText('resultsPlainSummaryUnnamedBattery'),
-      batteryLabelText: batteryLabelText,
-      battery: battery,
-      totalWatt: totalWatt,
-      runtimeHoursValue: runtimeHoursValue,
-      batteriesNeededValue: batteriesNeededValue
-    });
-    if (!summaryTextValue) {
-      summaryTextValue = summaryPrompt;
-    }
-    try {
-      resultsPlainSummaryTextTarget.textContent = summaryTextValue;
-    } catch (error) {
-      void error;
-    }
-  }
-
-  if (renderTemperatureNoteFn) {
-    try {
-      renderTemperatureNoteFn(getLastRuntimeHoursFn());
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not render temperature note.', error);
-    }
-  }
-  if (checkFizCompatibilityFn) {
-    try {
-      checkFizCompatibilityFn();
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not verify FIZ compatibility.', error);
-    }
-  }
-  if (checkFizControllerFn) {
-    try {
-      checkFizControllerFn();
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not verify controller compatibility.', error);
-    }
-  }
-  if (checkArriCompatibilityFn) {
-    try {
-      checkArriCompatibilityFn();
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not verify ARRI compatibility.', error);
-    }
-  }
-  if (setupDiagramContainer && renderSetupDiagramFn) {
-    try {
-      renderSetupDiagramFn();
-    } catch (error) {
-      safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
-    }
-  }
-}
-
-function setupRuntimeFeedback(options) {
-  var opts = options || {};
-  var deps = updateRuntimeDependencies(opts);
-  var doc = resolveDocument(opts);
-
-  captureFeedbackOptionElements(doc);
-
-  var button = resolveElementFromOptions(opts, 'runtimeFeedbackButton', 'runtimeFeedbackBtn', 'runtimeFeedbackBtn');
-  var dialog = resolveElementFromOptions(opts, 'feedbackDialog', 'feedbackDialog', 'feedbackDialog');
-  var form = resolveElementFromOptions(opts, 'feedbackForm', 'feedbackForm', 'feedbackForm');
-  var cancelBtn = resolveElementFromOptions(opts, 'feedbackCancelBtn', 'fbCancel', 'feedbackCancelBtn');
-  var useLocationBtn = resolveElementFromOptions(opts, 'feedbackUseLocationBtn', 'fbUseLocationBtn', 'feedbackUseLocationBtn');
-  var sensorModeSelect = resolveElementFromOptions(opts, 'sensorModeSelect', 'fbSensorMode', 'sensorModeSelect');
-  var framerateSelect = resolveElementFromOptions(opts, 'framerateSelect', 'fbFramerate', 'framerateSelect');
-
-  runtimeFeedbackState.elements.runtimeFeedbackButton = button;
-  runtimeFeedbackState.elements.feedbackDialog = dialog;
-  runtimeFeedbackState.elements.feedbackForm = form;
-  runtimeFeedbackState.elements.feedbackCancelBtn = cancelBtn;
-  runtimeFeedbackState.elements.feedbackUseLocationBtn = useLocationBtn;
-  if (sensorModeSelect) {
-    runtimeFeedbackState.elements.sensorModeSelect = sensorModeSelect;
-  }
-  if (framerateSelect) {
-    runtimeFeedbackState.elements.framerateSelect = framerateSelect;
-  }
-
-  function closeRuntimeFeedbackDialog(warnMessage) {
-    if (!dialog) {
-      return false;
-    }
-    var closeDialogFn = deps.closeDialog;
-    if (typeof closeDialogFn === 'function') {
-      try {
-        closeDialogFn(dialog);
-        return true;
-      } catch (error) {
-        if (warnMessage) {
-          safeWarn(warnMessage, error);
-        }
-      }
-    }
-    if (typeof dialog.close === 'function') {
-      try {
-        dialog.close();
-        return true;
-      } catch (dialogError) {
-        void dialogError;
-      }
-    }
-    return false;
-  }
-
-  function sanitizePrefillValue(value) {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return String(value);
-    }
-    if (typeof value !== 'string') {
-      if (value == null) {
-        return '';
-      }
-      value = String(value);
-    }
-    var trimmed = value.trim();
-    if (!trimmed) {
-      return '';
-    }
-    if (trimmed.toLowerCase() === 'none') {
-      return '';
-    }
-    return trimmed;
-  }
-
-  function resolveSelectLabel(select, fallbackId, warnMessage) {
-    var target = select;
-    if (!target && doc && typeof doc.getElementById === 'function' && fallbackId) {
-      try {
-        target = doc.getElementById(fallbackId);
-      } catch (error) {
-        void error;
-        target = null;
-      }
-    }
-    if (!target) {
-      return '';
-    }
-    var resolved = '';
-    try {
-      var options = target.options;
-      var selectedIndex = typeof target.selectedIndex === 'number' ? target.selectedIndex : -1;
-      if (options && selectedIndex >= 0 && selectedIndex < options.length) {
-        var option = options[selectedIndex];
-        if (option) {
-          if (typeof option.text === 'string' && option.text) {
-            resolved = option.text;
-          } else if (typeof option.textContent === 'string' && option.textContent) {
-            resolved = option.textContent;
-          } else if (typeof option.label === 'string' && option.label) {
-            resolved = option.label;
-          } else if (typeof option.value === 'string' && option.value) {
-            resolved = option.value;
+        for (var dtapIndex = 0; dtapIndex < dtapCandidates.length; dtapIndex += 1) {
+          var dtapCandidate = dtapCandidates[dtapIndex];
+          if (selectedCandidate && dtapCandidate.name === selectedCandidate.name) {
+            continue;
+          }
+          var alreadyInPins = pinsCandidates.some(function candidateMatches(pinCandidate) {
+            return pinCandidate.name === dtapCandidate.name;
+          });
+          if (!alreadyInPins) {
+            addCandidateRow(dtapCandidate);
           }
         }
       }
-      if (!resolved && typeof target.value === 'string') {
-        resolved = target.value;
-      }
-    } catch (error) {
-      if (warnMessage) {
-        safeWarn(warnMessage, error);
-      }
-      resolved = '';
-    }
-    return sanitizePrefillValue(resolved);
-  }
 
-  function resolveCameraSelectionLabel() {
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.cameraSelect
-      : null;
-    return resolveSelectLabel(select, 'cameraSelect', 'cineResults could not inspect camera selection for runtime feedback prefill.');
-  }
-
-  function resolveBatteryPlateSelectionLabel() {
-    var label = '';
-    var getSelectedPlateFn = deps && typeof deps.getSelectedPlate === 'function'
-      ? deps.getSelectedPlate
-      : null;
-    if (getSelectedPlateFn) {
       try {
-        label = sanitizePrefillValue(getSelectedPlateFn());
+        batteryTableElem.innerHTML = tableHtml;
       } catch (error) {
-        safeWarn('cineResults could not resolve battery plate selection via helper for runtime feedback.', error);
-        label = '';
+        safeWarn('cineResults.updateCalculations could not render battery comparison table.', error);
       }
-    }
-    if (label) {
-      return label;
-    }
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.batteryPlateSelect
-      : null;
-    return resolveSelectLabel(select, 'batteryPlateSelect', 'cineResults could not inspect battery plate selection for runtime feedback prefill.');
-  }
-
-  function resolveBatterySelectionLabel() {
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.batterySelect
-      : null;
-    return resolveSelectLabel(select, 'batterySelect', 'cineResults could not inspect battery selection for runtime feedback prefill.');
-  }
-
-  function resolveMonitorSelectionLabel() {
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.monitorSelect
-      : null;
-    return resolveSelectLabel(select, 'monitorSelect', 'cineResults could not inspect monitor selection for runtime feedback prefill.');
-  }
-
-  function resolveWirelessVideoSelectionLabel() {
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.videoSelect
-      : null;
-    return resolveSelectLabel(select, 'videoSelect', 'cineResults could not inspect wireless video selection for runtime feedback prefill.');
-  }
-
-  function resolveDistanceSelectionLabel() {
-    var select = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.distanceSelect
-      : null;
-    return resolveSelectLabel(select, 'distanceSelect', 'cineResults could not inspect FIZ distance selection for runtime feedback prefill.');
-  }
-
-  function resolveCollectionSelectionLabels(collection, fallbackIds, warnMessage) {
-    var labels = [];
-    var elements = Array.isArray(collection) ? collection : [];
-    if ((!elements || !elements.length) && doc && typeof doc.getElementById === 'function' && Array.isArray(fallbackIds)) {
-      var fallbackElements = [];
-      for (var fallbackIndex = 0; fallbackIndex < fallbackIds.length; fallbackIndex += 1) {
-        var candidateId = fallbackIds[fallbackIndex];
-        if (!candidateId) {
-          continue;
-        }
-        var fallbackElement = null;
+      var tableHelpText = resolveText('batteryComparisonTableHelp');
+      if (tableHelpText) {
         try {
-          fallbackElement = doc.getElementById(candidateId);
+          batteryTableElem.setAttribute('data-help', tableHelpText);
         } catch (error) {
           void error;
-          fallbackElement = null;
-        }
-        if (fallbackElement) {
-          fallbackElements.push(fallbackElement);
         }
       }
-      elements = fallbackElements;
+    } else if (batteryComparisonSection && batteryComparisonSection.style) {
+      batteryComparisonSection.style.display = 'none';
     }
-    for (var index = 0; index < elements.length; index += 1) {
-      var element = elements[index];
-      var fallbackId = Array.isArray(fallbackIds) && index < fallbackIds.length ? fallbackIds[index] : null;
-      var label = resolveSelectLabel(element, fallbackId, warnMessage);
-      if (label && labels.indexOf(label) === -1) {
-        labels.push(label);
-      }
-    }
-    return labels;
-  }
 
-  function resolveMotorSelectionLabels() {
-    var collection = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.motorSelects
-      : null;
-    return resolveCollectionSelectionLabels(
-      collection,
-      ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'],
-      'cineResults could not inspect FIZ motor selection for runtime feedback prefill.'
-    );
-  }
-
-  function resolveControllerSelectionLabels() {
-    var collection = runtimeFeedbackState && runtimeFeedbackState.elements
-      ? runtimeFeedbackState.elements.controllerSelects
-      : null;
-    return resolveCollectionSelectionLabels(
-      collection,
-      ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'],
-      'cineResults could not inspect FIZ controller selection for runtime feedback prefill.'
-    );
-  }
-
-  function setPrefillValue(input, value) {
-    if (!input || typeof input !== 'object' || typeof input.value === 'undefined') {
-      return;
-    }
-    var normalized = typeof value === 'string' ? value : sanitizePrefillValue(value);
-    if (typeof normalized !== 'string') {
-      normalized = '';
-    }
-    var tagName = typeof input.tagName === 'string' ? input.tagName.toUpperCase() : '';
-    if (tagName === 'SELECT') {
+    var feedback = null;
+    if (renderFeedbackTableFn && getCurrentSetupKeyFn) {
       try {
-        var options = input.options;
-        var foundMatch = false;
-        if (options && typeof options.length === 'number') {
-          for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
-            var option = options[optionIndex];
-            if (!option) {
-              continue;
-            }
-            var optionValue = typeof option.value === 'string' ? option.value : '';
-            var optionLabel = typeof option.text === 'string' ? option.text : option.textContent;
-            if (optionValue === normalized || optionLabel === normalized) {
-              option.selected = true;
-              foundMatch = true;
-              break;
-            }
-          }
-        }
-        if (!foundMatch) {
-          if (normalized) {
-            var ownerDoc = input.ownerDocument && typeof input.ownerDocument.createElement === 'function'
-              ? input.ownerDocument
-              : null;
-            var newOption = ownerDoc ? ownerDoc.createElement('option') : null;
-            if (newOption) {
-              newOption.value = normalized;
-              newOption.textContent = normalized;
-              input.appendChild(newOption);
-              newOption.selected = true;
-              foundMatch = true;
-            }
-          } else if (typeof input.selectedIndex === 'number') {
-            input.selectedIndex = -1;
-          }
-        }
-        if (foundMatch) {
-          input.value = normalized;
-          return;
-        }
-      } catch (selectError) {
-        safeWarn('cineResults could not update runtime feedback select prefill.', selectError);
-      }
-    }
-    try {
-      input.value = normalized;
-    } catch (error) {
-      safeWarn('cineResults could not update runtime feedback field prefill.', error);
-    }
-  }
-
-  function prefillRuntimeFeedbackDefaults() {
-    if (!doc) {
-      return;
-    }
-    var fieldEntries = getFeedbackFieldEntries(doc);
-    var cameraEntry = null;
-    var batteryPlateEntry = null;
-    var batteryEntry = null;
-    var wirelessVideoEntry = null;
-    var monitorEntry = null;
-    var distanceEntry = null;
-    var controllerEntry = null;
-    var motorEntry = null;
-    for (var index = 0; index < fieldEntries.length; index += 1) {
-      var entry = fieldEntries[index];
-      if (!entry || !entry.map) {
-        continue;
-      }
-      if (entry.map.key === 'camera' && !cameraEntry) {
-        cameraEntry = entry;
-      } else if (entry.map.key === 'batteryPlate' && !batteryPlateEntry) {
-        batteryPlateEntry = entry;
-      } else if (entry.map.key === 'battery' && !batteryEntry) {
-        batteryEntry = entry;
-      } else if (entry.map.key === 'wirelessVideo' && !wirelessVideoEntry) {
-        wirelessVideoEntry = entry;
-      } else if (entry.map.key === 'monitor' && !monitorEntry) {
-        monitorEntry = entry;
-      } else if (entry.map.key === 'distance' && !distanceEntry) {
-        distanceEntry = entry;
-      } else if (entry.map.key === 'controllers' && !controllerEntry) {
-        controllerEntry = entry;
-      } else if (entry.map.key === 'motors' && !motorEntry) {
-        motorEntry = entry;
+        feedback = renderFeedbackTableFn(getCurrentSetupKeyFn());
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not render runtime feedback table.', error);
+        feedback = null;
       }
     }
 
-    if (cameraEntry && cameraEntry.element) {
-      setPrefillValue(cameraEntry.element, resolveCameraSelectionLabel());
-    }
-    if (batteryPlateEntry && batteryPlateEntry.element) {
-      setPrefillValue(batteryPlateEntry.element, resolveBatteryPlateSelectionLabel());
-    }
-    if (batteryEntry && batteryEntry.element) {
-      setPrefillValue(batteryEntry.element, resolveBatterySelectionLabel());
-    }
-    if (wirelessVideoEntry && wirelessVideoEntry.element) {
-      setPrefillValue(wirelessVideoEntry.element, resolveWirelessVideoSelectionLabel());
-    }
-    if (monitorEntry && monitorEntry.element) {
-      setPrefillValue(monitorEntry.element, resolveMonitorSelectionLabel());
-    }
-    if (distanceEntry && distanceEntry.element) {
-      setPrefillValue(distanceEntry.element, resolveDistanceSelectionLabel());
-    }
-    if (controllerEntry && controllerEntry.element) {
-      var controllers = resolveControllerSelectionLabels();
-      setPrefillValue(controllerEntry.element, controllers.join(', '));
-    }
-    if (motorEntry && motorEntry.element) {
-      var motors = resolveMotorSelectionLabels();
-      setPrefillValue(motorEntry.element, motors.join(', '));
-    }
-  }
-
-  attachHandlerOnce(button, 'click', 'openDialog', function () {
-    return function openRuntimeFeedbackDialog() {
-      prefillRuntimeFeedbackDefaults();
-      if (!dialog) {
-        return;
+    if (feedback !== null) {
+      var combinedRuntime = feedback.runtime;
+      if (Number.isFinite(hours)) {
+        combinedRuntime = (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
       }
-      var openDialogFn = deps.openDialog;
-      if (typeof openDialogFn === 'function') {
+      if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
         try {
-          openDialogFn(dialog);
-          return;
+          batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
         } catch (error) {
-          safeWarn('cineResults could not open runtime feedback dialog.', error);
+          void error;
         }
       }
-      if (typeof dialog.showModal === 'function') {
+      setLastRuntimeHoursFn(combinedRuntime);
+      runtimeHoursValue = combinedRuntime;
+      if (batteryLifeLabelTarget) {
+        var label = resolveText('batteryLifeLabel');
+        var runtimeUserCountNote = resolveText('runtimeUserCountNote');
+        if (runtimeUserCountNote.indexOf('{count}') !== -1) {
+          var userNote = runtimeUserCountNote.replace('{count}', feedback.count);
+          var closingIndex = label.indexOf(')');
+          if (closingIndex !== -1) {
+            label = label.slice(0, closingIndex) + ', ' + userNote + label.slice(closingIndex);
+          } else if (label) {
+            label = label + ' (' + userNote + ')';
+          } else {
+            label = userNote;
+          }
+        }
         try {
-          dialog.showModal();
+          batteryLifeLabelTarget.textContent = label;
+          batteryLifeLabelTarget.setAttribute('data-help', resolveText('batteryLifeHelp'));
+        } catch (error) {
+          void error;
+        }
+      }
+      if (runtimeAverageNoteTarget) {
+        var averageNote = feedback.count > 4 ? resolveText('runtimeAverageNote') : '';
+        try {
+          runtimeAverageNoteTarget.textContent = averageNote;
+        } catch (error) {
+          void error;
+        }
+      }
+      var batteriesNeededFeedback = 1;
+      if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
+        batteriesNeededFeedback = Math.max(1, Math.ceil(10 / combinedRuntime));
+      }
+      batteriesNeeded = batteriesNeededFeedback;
+      batteriesNeededValue = batteriesNeededFeedback;
+      if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
+        try {
+          batteryCountTarget.textContent = String(batteriesNeededFeedback);
+        } catch (error) {
+          void error;
+        }
+      }
+    } else {
+      if (batteryLifeLabelTarget) {
+        try {
+          batteryLifeLabelTarget.textContent = resolveText('batteryLifeLabel');
+          batteryLifeLabelTarget.setAttribute('data-help', resolveText('batteryLifeHelp'));
+        } catch (error) {
+          void error;
+        }
+      }
+      if (runtimeAverageNoteTarget) {
+        try {
+          runtimeAverageNoteTarget.textContent = '';
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    if (resultsPlainSummaryTextTarget) {
+      var summaryPrompt = resolveText('resultsPlainSummaryPrompt') || '';
+      var summaryTextValue = buildPlainSummaryText({
+        summaryPrompt: summaryPrompt,
+        needBatterySummary: resolveText('resultsPlainSummaryNeedBattery'),
+        runtimeSummaryTemplate: resolveText('resultsPlainSummaryRuntime'),
+        unlimitedSummaryTemplate: resolveText('resultsPlainSummaryUnlimited'),
+        unnamedBatteryLabel: resolveText('resultsPlainSummaryUnnamedBattery'),
+        batteryLabelText: batteryLabelText,
+        battery: battery,
+        totalWatt: totalWatt,
+        runtimeHoursValue: runtimeHoursValue,
+        batteriesNeededValue: batteriesNeededValue
+      });
+      if (!summaryTextValue) {
+        summaryTextValue = summaryPrompt;
+      }
+      try {
+        resultsPlainSummaryTextTarget.textContent = summaryTextValue;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (renderTemperatureNoteFn) {
+      try {
+        renderTemperatureNoteFn(getLastRuntimeHoursFn());
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not render temperature note.', error);
+      }
+    }
+    if (checkFizCompatibilityFn) {
+      try {
+        checkFizCompatibilityFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not verify FIZ compatibility.', error);
+      }
+    }
+    if (checkFizControllerFn) {
+      try {
+        checkFizControllerFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not verify controller compatibility.', error);
+      }
+    }
+    if (checkArriCompatibilityFn) {
+      try {
+        checkArriCompatibilityFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not verify ARRI compatibility.', error);
+      }
+    }
+    if (setupDiagramContainer && renderSetupDiagramFn) {
+      try {
+        renderSetupDiagramFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
+      }
+    }
+  }
+
+
+  function setupRuntimeFeedback(options) {
+    var opts = options || {};
+    var deps = updateRuntimeDependencies(opts);
+    var doc = resolveDocument(opts);
+
+    captureFeedbackOptionElements(doc);
+
+    var button = resolveElementFromOptions(opts, 'runtimeFeedbackButton', 'runtimeFeedbackBtn', 'runtimeFeedbackBtn');
+    var dialog = resolveElementFromOptions(opts, 'feedbackDialog', 'feedbackDialog', 'feedbackDialog');
+    var form = resolveElementFromOptions(opts, 'feedbackForm', 'feedbackForm', 'feedbackForm');
+    var cancelBtn = resolveElementFromOptions(opts, 'feedbackCancelBtn', 'fbCancel', 'feedbackCancelBtn');
+    var useLocationBtn = resolveElementFromOptions(opts, 'feedbackUseLocationBtn', 'fbUseLocationBtn', 'feedbackUseLocationBtn');
+    var sensorModeSelect = resolveElementFromOptions(opts, 'sensorModeSelect', 'fbSensorMode', 'sensorModeSelect');
+    var framerateSelect = resolveElementFromOptions(opts, 'framerateSelect', 'fbFramerate', 'framerateSelect');
+
+    runtimeFeedbackState.elements.runtimeFeedbackButton = button;
+    runtimeFeedbackState.elements.feedbackDialog = dialog;
+    runtimeFeedbackState.elements.feedbackForm = form;
+    runtimeFeedbackState.elements.feedbackCancelBtn = cancelBtn;
+    runtimeFeedbackState.elements.feedbackUseLocationBtn = useLocationBtn;
+    if (sensorModeSelect) {
+      runtimeFeedbackState.elements.sensorModeSelect = sensorModeSelect;
+    }
+    if (framerateSelect) {
+      runtimeFeedbackState.elements.framerateSelect = framerateSelect;
+    }
+
+    function closeRuntimeFeedbackDialog(warnMessage) {
+      if (!dialog) {
+        return false;
+      }
+      var closeDialogFn = deps.closeDialog;
+      if (typeof closeDialogFn === 'function') {
+        try {
+          closeDialogFn(dialog);
+          return true;
+        } catch (error) {
+          if (warnMessage) {
+            safeWarn(warnMessage, error);
+          }
+        }
+      }
+      if (typeof dialog.close === 'function') {
+        try {
+          dialog.close();
+          return true;
         } catch (dialogError) {
           void dialogError;
         }
       }
-    };
-  });
+      return false;
+    }
 
-  attachHandlerOnce(sensorModeSelect, 'change', 'sensorModeChange', function () {
-    return function handleSensorModeChange() {
-      var value = '';
-      if (sensorModeSelect && typeof sensorModeSelect.value === 'string') {
-        value = sensorModeSelect.value;
+    function sanitizePrefillValue(value) {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return String(value);
       }
-      runtimeFeedbackState.selectedSensorMode = value;
-      updateFramerateSelectOptionsForSensorMode(value, '');
-    };
-  });
-
-  attachHandlerOnce(dialog, 'click', 'dialogBackdrop', function () {
-    return function handleRuntimeFeedbackBackdropClick(event) {
-      if (!dialog) {
-        return;
-      }
-      var target = event ? event.target : null;
-      if (target !== dialog) {
-        return;
-      }
-      closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog from backdrop interaction.');
-    };
-  });
-
-  attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
-    return function cancelRuntimeFeedbackDialog() {
-      closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog via helper.');
-    };
-  });
-
-  attachHandlerOnce(useLocationBtn, 'click', 'useLocation', function () {
-    return function handleRuntimeFeedbackLocation() {
-      if (!useLocationBtn) {
-        return;
-      }
-      var nav = deps.navigator;
-      var alertFn = deps.alert;
-      if (!nav || !nav.geolocation || typeof nav.geolocation.getCurrentPosition !== 'function') {
-        if (typeof alertFn === 'function') {
-          alertFn('Geolocation is not supported by your browser');
+      if (typeof value !== 'string') {
+        if (value == null) {
+          return '';
         }
-        return;
+        value = String(value);
       }
-      useLocationBtn.disabled = true;
-      nav.geolocation.getCurrentPosition(function (pos) {
+      var trimmed = value.trim();
+      if (!trimmed) {
+        return '';
+      }
+      if (trimmed.toLowerCase() === 'none') {
+        return '';
+      }
+      return trimmed;
+    }
+
+    function resolveSelectLabel(select, fallbackId, warnMessage) {
+      var target = select;
+      if (!target && doc && typeof doc.getElementById === 'function' && fallbackId) {
         try {
-          if (!doc) {
-            return;
-          }
-          var input = null;
-          try {
-            input = doc.getElementById('fbLocation');
-          } catch (error) {
-            void error;
-            input = null;
-          }
-          if (!input) {
-            return;
-          }
-          var latitude = pos && pos.coords && typeof pos.coords.latitude === 'number' ? pos.coords.latitude : null;
-          var longitude = pos && pos.coords && typeof pos.coords.longitude === 'number' ? pos.coords.longitude : null;
-          if (latitude === null || longitude === null) {
-            return;
-          }
-          var latText = latitude.toFixed ? latitude.toFixed(5) : String(latitude);
-          var lonText = longitude.toFixed ? longitude.toFixed(5) : String(longitude);
-          input.value = latText + ', ' + lonText;
-        } finally {
-          useLocationBtn.disabled = false;
-        }
-      }, function () {
-        useLocationBtn.disabled = false;
-        if (typeof alertFn === 'function') {
-          alertFn('Unable to retrieve your location');
-        }
-      });
-    };
-  });
-
-  attachHandlerOnce(form, 'submit', 'submitFeedback', function () {
-    return function handleRuntimeFeedbackSubmit(event) {
-      if (event && typeof event.preventDefault === 'function') {
-        try {
-          event.preventDefault();
+          target = doc.getElementById(fallbackId);
         } catch (error) {
           void error;
+          target = null;
         }
       }
+      if (!target) {
+        return '';
+      }
+      var resolved = '';
+      try {
+        var options = target.options;
+        var selectedIndex = typeof target.selectedIndex === 'number' ? target.selectedIndex : -1;
+        if (options && selectedIndex >= 0 && selectedIndex < options.length) {
+          var option = options[selectedIndex];
+          if (option) {
+            if (typeof option.text === 'string' && option.text) {
+              resolved = option.text;
+            } else if (typeof option.textContent === 'string' && option.textContent) {
+              resolved = option.textContent;
+            } else if (typeof option.label === 'string' && option.label) {
+              resolved = option.label;
+            } else if (typeof option.value === 'string' && option.value) {
+              resolved = option.value;
+            }
+          }
+        }
+        if (!resolved && typeof target.value === 'string') {
+          resolved = target.value;
+        }
+      } catch (error) {
+        if (warnMessage) {
+          safeWarn(warnMessage, error);
+        }
+        resolved = '';
+      }
+      return sanitizePrefillValue(resolved);
+    }
 
+    function resolveCameraSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.cameraSelect
+        : null;
+      return resolveSelectLabel(select, 'cameraSelect', 'cineResults could not inspect camera selection for runtime feedback prefill.');
+    }
+
+    function resolveBatteryPlateSelectionLabel() {
+      var label = '';
+      var getSelectedPlateFn = deps && typeof deps.getSelectedPlate === 'function'
+        ? deps.getSelectedPlate
+        : null;
+      if (getSelectedPlateFn) {
+        try {
+          label = sanitizePrefillValue(getSelectedPlateFn());
+        } catch (error) {
+          safeWarn('cineResults could not resolve battery plate selection via helper for runtime feedback.', error);
+          label = '';
+        }
+      }
+      if (label) {
+        return label;
+      }
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.batteryPlateSelect
+        : null;
+      return resolveSelectLabel(select, 'batteryPlateSelect', 'cineResults could not inspect battery plate selection for runtime feedback prefill.');
+    }
+
+    function resolveBatterySelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.batterySelect
+        : null;
+      return resolveSelectLabel(select, 'batterySelect', 'cineResults could not inspect battery selection for runtime feedback prefill.');
+    }
+
+    function resolveMonitorSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.monitorSelect
+        : null;
+      return resolveSelectLabel(select, 'monitorSelect', 'cineResults could not inspect monitor selection for runtime feedback prefill.');
+    }
+
+    function resolveWirelessVideoSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.videoSelect
+        : null;
+      return resolveSelectLabel(select, 'videoSelect', 'cineResults could not inspect wireless video selection for runtime feedback prefill.');
+    }
+
+    function resolveDistanceSelectionLabel() {
+      var select = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.distanceSelect
+        : null;
+      return resolveSelectLabel(select, 'distanceSelect', 'cineResults could not inspect FIZ distance selection for runtime feedback prefill.');
+    }
+
+    function resolveCollectionSelectionLabels(collection, fallbackIds, warnMessage) {
+      var labels = [];
+      var elements = Array.isArray(collection) ? collection : [];
+      if ((!elements || !elements.length) && doc && typeof doc.getElementById === 'function' && Array.isArray(fallbackIds)) {
+        var fallbackElements = [];
+        for (var fallbackIndex = 0; fallbackIndex < fallbackIds.length; fallbackIndex += 1) {
+          var candidateId = fallbackIds[fallbackIndex];
+          if (!candidateId) {
+            continue;
+          }
+          var fallbackElement = null;
+          try {
+            fallbackElement = doc.getElementById(candidateId);
+          } catch (error) {
+            void error;
+            fallbackElement = null;
+          }
+          if (fallbackElement) {
+            fallbackElements.push(fallbackElement);
+          }
+        }
+        elements = fallbackElements;
+      }
+      for (var index = 0; index < elements.length; index += 1) {
+        var element = elements[index];
+        var fallbackId = Array.isArray(fallbackIds) && index < fallbackIds.length ? fallbackIds[index] : null;
+        var label = resolveSelectLabel(element, fallbackId, warnMessage);
+        if (label && labels.indexOf(label) === -1) {
+          labels.push(label);
+        }
+      }
+      return labels;
+    }
+
+    function resolveMotorSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.motorSelects
+        : null;
+      return resolveCollectionSelectionLabels(
+        collection,
+        ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'],
+        'cineResults could not inspect FIZ motor selection for runtime feedback prefill.'
+      );
+    }
+
+    function resolveControllerSelectionLabels() {
+      var collection = runtimeFeedbackState && runtimeFeedbackState.elements
+        ? runtimeFeedbackState.elements.controllerSelects
+        : null;
+      return resolveCollectionSelectionLabels(
+        collection,
+        ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'],
+        'cineResults could not inspect FIZ controller selection for runtime feedback prefill.'
+      );
+    }
+
+    function setPrefillValue(input, value) {
+      if (!input || typeof input !== 'object' || typeof input.value === 'undefined') {
+        return;
+      }
+      var normalized = typeof value === 'string' ? value : sanitizePrefillValue(value);
+      if (typeof normalized !== 'string') {
+        normalized = '';
+      }
+      var tagName = typeof input.tagName === 'string' ? input.tagName.toUpperCase() : '';
+      if (tagName === 'SELECT') {
+        try {
+          var options = input.options;
+          var foundMatch = false;
+          if (options && typeof options.length === 'number') {
+            for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+              var option = options[optionIndex];
+              if (!option) {
+                continue;
+              }
+              var optionValue = typeof option.value === 'string' ? option.value : '';
+              var optionLabel = typeof option.text === 'string' ? option.text : option.textContent;
+              if (optionValue === normalized || optionLabel === normalized) {
+                option.selected = true;
+                foundMatch = true;
+                break;
+              }
+            }
+          }
+          if (!foundMatch) {
+            if (normalized) {
+              var ownerDoc = input.ownerDocument && typeof input.ownerDocument.createElement === 'function'
+                ? input.ownerDocument
+                : null;
+              var newOption = ownerDoc ? ownerDoc.createElement('option') : null;
+              if (newOption) {
+                newOption.value = normalized;
+                newOption.textContent = normalized;
+                input.appendChild(newOption);
+                newOption.selected = true;
+                foundMatch = true;
+              }
+            } else if (typeof input.selectedIndex === 'number') {
+              input.selectedIndex = -1;
+            }
+          }
+          if (foundMatch) {
+            input.value = normalized;
+            return;
+          }
+        } catch (selectError) {
+          safeWarn('cineResults could not update runtime feedback select prefill.', selectError);
+        }
+      }
+      try {
+        input.value = normalized;
+      } catch (error) {
+        safeWarn('cineResults could not update runtime feedback field prefill.', error);
+      }
+    }
+
+    function prefillRuntimeFeedbackDefaults() {
       if (!doc) {
         return;
       }
-
-      var entry = {};
       var fieldEntries = getFeedbackFieldEntries(doc);
+      var cameraEntry = null;
+      var batteryPlateEntry = null;
+      var batteryEntry = null;
+      var wirelessVideoEntry = null;
+      var monitorEntry = null;
+      var distanceEntry = null;
+      var controllerEntry = null;
+      var motorEntry = null;
       for (var index = 0; index < fieldEntries.length; index += 1) {
-        var fieldEntry = fieldEntries[index];
-        var field = fieldEntry.map;
-        var input = fieldEntry.element;
-        if (!field || !field.key) {
+        var entry = fieldEntries[index];
+        if (!entry || !entry.map) {
           continue;
         }
-        var value = '';
-        if (input && typeof input.value !== 'undefined') {
-          value = String(input.value);
-          if (field.trim && value) {
-            value = value.trim();
+        if (entry.map.key === 'camera' && !cameraEntry) {
+          cameraEntry = entry;
+        } else if (entry.map.key === 'batteryPlate' && !batteryPlateEntry) {
+          batteryPlateEntry = entry;
+        } else if (entry.map.key === 'battery' && !batteryEntry) {
+          batteryEntry = entry;
+        } else if (entry.map.key === 'wirelessVideo' && !wirelessVideoEntry) {
+          wirelessVideoEntry = entry;
+        } else if (entry.map.key === 'monitor' && !monitorEntry) {
+          monitorEntry = entry;
+        } else if (entry.map.key === 'distance' && !distanceEntry) {
+          distanceEntry = entry;
+        } else if (entry.map.key === 'controllers' && !controllerEntry) {
+          controllerEntry = entry;
+        } else if (entry.map.key === 'motors' && !motorEntry) {
+          motorEntry = entry;
+        }
+      }
+
+      if (cameraEntry && cameraEntry.element) {
+        setPrefillValue(cameraEntry.element, resolveCameraSelectionLabel());
+      }
+      if (batteryPlateEntry && batteryPlateEntry.element) {
+        setPrefillValue(batteryPlateEntry.element, resolveBatteryPlateSelectionLabel());
+      }
+      if (batteryEntry && batteryEntry.element) {
+        setPrefillValue(batteryEntry.element, resolveBatterySelectionLabel());
+      }
+      if (wirelessVideoEntry && wirelessVideoEntry.element) {
+        setPrefillValue(wirelessVideoEntry.element, resolveWirelessVideoSelectionLabel());
+      }
+      if (monitorEntry && monitorEntry.element) {
+        setPrefillValue(monitorEntry.element, resolveMonitorSelectionLabel());
+      }
+      if (distanceEntry && distanceEntry.element) {
+        setPrefillValue(distanceEntry.element, resolveDistanceSelectionLabel());
+      }
+      if (controllerEntry && controllerEntry.element) {
+        var controllers = resolveControllerSelectionLabels();
+        setPrefillValue(controllerEntry.element, controllers.join(', '));
+      }
+      if (motorEntry && motorEntry.element) {
+        var motors = resolveMotorSelectionLabels();
+        setPrefillValue(motorEntry.element, motors.join(', '));
+      }
+    }
+
+    attachHandlerOnce(button, 'click', 'openDialog', function () {
+      return function openRuntimeFeedbackDialog() {
+        prefillRuntimeFeedbackDefaults();
+        if (!dialog) {
+          return;
+        }
+        var openDialogFn = deps.openDialog;
+        if (typeof openDialogFn === 'function') {
+          try {
+            openDialogFn(dialog);
+            return;
+          } catch (error) {
+            safeWarn('cineResults could not open runtime feedback dialog.', error);
           }
         }
-        entry[field.key] = value;
-      }
-
-      var key = '';
-      try {
-        key = deps.getCurrentSetupKey ? deps.getCurrentSetupKey() : '';
-      } catch (error) {
-        safeWarn('cineResults could not resolve the current setup key for runtime feedback.', error);
-        key = '';
-      }
-
-      var feedbackData = null;
-      try {
-        feedbackData = deps.loadFeedback ? deps.loadFeedback() : {};
-      } catch (error) {
-        safeWarn('cineResults could not load runtime feedback from storage.', error);
-        feedbackData = {};
-      }
-      if (!feedbackData || typeof feedbackData !== 'object') {
-        feedbackData = {};
-      }
-      if (!feedbackData[key]) {
-        feedbackData[key] = [];
-      }
-      feedbackData[key].push(entry);
-
-      try {
-        if (typeof deps.saveFeedback === 'function') {
-          deps.saveFeedback(feedbackData);
+        if (typeof dialog.showModal === 'function') {
+          try {
+            dialog.showModal();
+          } catch (dialogError) {
+            void dialogError;
+          }
         }
-      } catch (error) {
-        safeWarn('cineResults could not save runtime feedback entry.', error);
-      }
+      };
+    });
 
-      var lines = [];
-      for (var entryIndex = 0; entryIndex < fieldEntries.length; entryIndex += 1) {
-        var entryMap = fieldEntries[entryIndex].map;
-        if (!entryMap || !entryMap.key) {
-          continue;
+    attachHandlerOnce(sensorModeSelect, 'change', 'sensorModeChange', function () {
+      return function handleSensorModeChange() {
+        var value = '';
+        if (sensorModeSelect && typeof sensorModeSelect.value === 'string') {
+          value = sensorModeSelect.value;
         }
-        lines.push(entryMap.key + ': ' + (entry[entryMap.key] || ''));
-      }
+        runtimeFeedbackState.selectedSensorMode = value;
+        updateFramerateSelectOptionsForSensorMode(value, '');
+      };
+    });
 
-      var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
-      var body = encodeURIComponent(lines.join('\n'));
-      var mailTarget = deps.mailTarget || 'info@lucazanner.de';
-      var targetHref = 'mailto:' + mailTarget + '?subject=' + subject + '&body=' + body;
+    attachHandlerOnce(dialog, 'click', 'dialogBackdrop', function () {
+      return function handleRuntimeFeedbackBackdropClick(event) {
+        if (!dialog) {
+          return;
+        }
+        var target = event ? event.target : null;
+        if (target !== dialog) {
+          return;
+        }
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog from backdrop interaction.');
+      };
+    });
 
-      var win = deps.window || GLOBAL_SCOPE;
-      if (win && win.location) {
+    attachHandlerOnce(cancelBtn, 'click', 'cancelDialog', function () {
+      return function cancelRuntimeFeedbackDialog() {
+        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog via helper.');
+      };
+    });
+
+    attachHandlerOnce(useLocationBtn, 'click', 'useLocation', function () {
+      return function handleRuntimeFeedbackLocation() {
+        if (!useLocationBtn) {
+          return;
+        }
+        var nav = deps.navigator;
+        var alertFn = deps.alert;
+        if (!nav || !nav.geolocation || typeof nav.geolocation.getCurrentPosition !== 'function') {
+          if (typeof alertFn === 'function') {
+            alertFn('Geolocation is not supported by your browser');
+          }
+          return;
+        }
+        useLocationBtn.disabled = true;
+        nav.geolocation.getCurrentPosition(function (pos) {
+          try {
+            if (!doc) {
+              return;
+            }
+            var input = null;
+            try {
+              input = doc.getElementById('fbLocation');
+            } catch (error) {
+              void error;
+              input = null;
+            }
+            if (!input) {
+              return;
+            }
+            var latitude = pos && pos.coords && typeof pos.coords.latitude === 'number' ? pos.coords.latitude : null;
+            var longitude = pos && pos.coords && typeof pos.coords.longitude === 'number' ? pos.coords.longitude : null;
+            if (latitude === null || longitude === null) {
+              return;
+            }
+            var latText = latitude.toFixed ? latitude.toFixed(5) : String(latitude);
+            var lonText = longitude.toFixed ? longitude.toFixed(5) : String(longitude);
+            input.value = latText + ', ' + lonText;
+          } finally {
+            useLocationBtn.disabled = false;
+          }
+        }, function () {
+          useLocationBtn.disabled = false;
+          if (typeof alertFn === 'function') {
+            alertFn('Unable to retrieve your location');
+          }
+        });
+      };
+    });
+
+    attachHandlerOnce(form, 'submit', 'submitFeedback', function () {
+      return function handleRuntimeFeedbackSubmit(event) {
+        if (event && typeof event.preventDefault === 'function') {
+          try {
+            event.preventDefault();
+          } catch (error) {
+            void error;
+          }
+        }
+
+        if (!doc) {
+          return;
+        }
+
+        var entry = {};
+        var fieldEntries = getFeedbackFieldEntries(doc);
+        for (var index = 0; index < fieldEntries.length; index += 1) {
+          var fieldEntry = fieldEntries[index];
+          var field = fieldEntry.map;
+          var input = fieldEntry.element;
+          if (!field || !field.key) {
+            continue;
+          }
+          var value = '';
+          if (input && typeof input.value !== 'undefined') {
+            value = String(input.value);
+            if (field.trim && value) {
+              value = value.trim();
+            }
+          }
+          entry[field.key] = value;
+        }
+
+        var key = '';
         try {
-          win.location.href = targetHref;
+          key = deps.getCurrentSetupKey ? deps.getCurrentSetupKey() : '';
         } catch (error) {
-          safeWarn('cineResults could not trigger runtime feedback email composition.', error);
+          safeWarn('cineResults could not resolve the current setup key for runtime feedback.', error);
+          key = '';
         }
-      }
 
-      if (dialog) {
-        closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog after submit.');
-      }
-
-      if (typeof deps.updateCalculations === 'function') {
+        var feedbackData = null;
         try {
-          deps.updateCalculations();
+          feedbackData = deps.loadFeedback ? deps.loadFeedback() : {};
         } catch (error) {
-          safeWarn('cineResults could not refresh calculations after runtime feedback submit.', error);
+          safeWarn('cineResults could not load runtime feedback from storage.', error);
+          feedbackData = {};
         }
-      }
-    };
+        if (!feedbackData || typeof feedbackData !== 'object') {
+          feedbackData = {};
+        }
+        if (!feedbackData[key]) {
+          feedbackData[key] = [];
+        }
+        feedbackData[key].push(entry);
+
+        try {
+          if (typeof deps.saveFeedback === 'function') {
+            deps.saveFeedback(feedbackData);
+          }
+        } catch (error) {
+          safeWarn('cineResults could not save runtime feedback entry.', error);
+        }
+
+        var lines = [];
+        for (var entryIndex = 0; entryIndex < fieldEntries.length; entryIndex += 1) {
+          var entryMap = fieldEntries[entryIndex].map;
+          if (!entryMap || !entryMap.key) {
+            continue;
+          }
+          lines.push(entryMap.key + ': ' + (entry[entryMap.key] || ''));
+        }
+
+        var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
+        var body = encodeURIComponent(lines.join('\n'));
+        var mailTarget = deps.mailTarget || 'info@lucazanner.de';
+        var targetHref = 'mailto:' + mailTarget + '?subject=' + subject + '&body=' + body;
+
+        var win = deps.window || GLOBAL_SCOPE;
+        if (win && win.location) {
+          try {
+            win.location.href = targetHref;
+          } catch (error) {
+            safeWarn('cineResults could not trigger runtime feedback email composition.', error);
+          }
+        }
+
+        if (dialog) {
+          closeRuntimeFeedbackDialog('cineResults could not close runtime feedback dialog after submit.');
+        }
+
+        if (typeof deps.updateCalculations === 'function') {
+          try {
+            deps.updateCalculations();
+          } catch (error) {
+            safeWarn('cineResults could not refresh calculations after runtime feedback submit.', error);
+          }
+        }
+      };
+    });
+
+    return !!(button && dialog && form);
+  }
+
+  var resultsAPI = {
+    localizeResultsSection: localizeResultsSection,
+    localizeBatteryComparisonSection: localizeBatteryComparisonSection,
+    updateCalculations: updateCalculations,
+    setupRuntimeFeedback: setupRuntimeFeedback,
+    renderTemperatureNote: renderTemperatureNote
+  };
+
+  if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+    runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
+  }
+
+  freezeDeep(resultsAPI);
+
+  if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+    runtimeFeedbackState.dependencies.renderTemperatureNote = renderTemperatureNote;
+  }
+
+  exposeGlobal('renderTemperatureNote', renderTemperatureNote, {
+    configurable: true,
+    enumerable: false,
+    writable: true
   });
 
-  return !!(button && dialog && form);
-}
+  registerOrQueueModule('cineResults', resultsAPI, {
+    category: 'ui',
+    description: 'Power summary localisation and runtime feedback coordination.',
+    replace: true
+  }, function (error) {
+    safeWarn('Unable to register cineResults module.', error);
+  });
 
-var resultsAPI = {
-  localizeResultsSection: localizeResultsSection,
-  localizeBatteryComparisonSection: localizeBatteryComparisonSection,
-  updateCalculations: updateCalculations,
-  setupRuntimeFeedback: setupRuntimeFeedback,
-  renderTemperatureNote: renderTemperatureNote
-};
+  exposeGlobal('cineResults', resultsAPI, {
+    configurable: true,
+    enumerable: false,
+    writable: false
+  });
 
-if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
-  runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
-}
-
-freezeDeep(resultsAPI);
-
-if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
-  runtimeFeedbackState.dependencies.renderTemperatureNote = renderTemperatureNote;
-}
-
-exposeGlobal('renderTemperatureNote', renderTemperatureNote, {
-  configurable: true,
-  enumerable: false,
-  writable: true
-});
-
-registerOrQueueModule('cineResults', resultsAPI, {
-  category: 'ui',
-  description: 'Power summary localisation and runtime feedback coordination.',
-  replace: true
-}, function (error) {
-  safeWarn('Unable to register cineResults module.', error);
-});
-
-exposeGlobal('cineResults', resultsAPI, {
-  configurable: true,
-  enumerable: false,
-  writable: false
-});
-
-if (typeof module !== 'undefined' && module && module.exports) {
-  module.exports = resultsAPI;
-}
-}) ();
+  if (typeof module !== 'undefined' && module && module.exports) {
+    module.exports = resultsAPI;
+  }
+})();
