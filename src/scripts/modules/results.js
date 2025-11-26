@@ -3926,7 +3926,9 @@
     }
   }
 }
-runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
+if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+  runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
+}
 
 
 function setupRuntimeFeedback(options) {

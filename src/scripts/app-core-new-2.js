@@ -691,6 +691,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('getViewfinderFallbackLabel', getViewfinderFallbackLabel);
     ensureGlobalFunctionBinding('getVideoDistributionFallbackLabel', getVideoDistributionFallbackLabel);
 
+    ensureGlobalFunctionBinding('clearMonitorVideoInputs', clearMonitorVideoInputs);
+    ensureGlobalFunctionBinding('ensureDefaultProjectInfoSnapshot', ensureDefaultProjectInfoSnapshot);
+    ensureGlobalFunctionBinding('clearViewfinderVideoInputs', clearViewfinderVideoInputs);
+    ensureGlobalFunctionBinding('clearVideoPowerInputs', clearVideoPowerInputs);
+    ensureGlobalFunctionBinding('clearVideoInputs', clearVideoInputs);
+    ensureGlobalFunctionBinding('clearVideoOutputsIO', clearVideoOutputsIO);
+
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
