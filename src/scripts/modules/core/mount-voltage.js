@@ -21,8 +21,8 @@
 
   const primaryCoreScope =
     typeof globalThis !== 'undefined' &&
-    globalThis &&
-    typeof globalThis.CORE_GLOBAL_SCOPE === 'object'
+      globalThis &&
+      typeof globalThis.CORE_GLOBAL_SCOPE === 'object'
       ? globalThis.CORE_GLOBAL_SCOPE
       : null;
 
@@ -460,6 +460,15 @@
       'data-help',
       renderVoltageTemplate(lowHelpTemplate, config.low, effectiveLang, TOTAL_CURRENT_HELP_LOW_FALLBACK)
     );
+  }
+
+  if (CORE_SCOPE && typeof CORE_SCOPE === 'object') {
+    CORE_SCOPE.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    globalThis.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+  } else if (typeof window !== 'undefined' && window) {
+    window.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
   }
 
   function updateMountVoltageSettingLabels(lang) {

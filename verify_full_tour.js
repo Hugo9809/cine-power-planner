@@ -77,7 +77,10 @@
             }
 
             switch (currentStep) {
-                case 1: // Profile
+                case 1: // Intro
+                    // Just click Next
+                    break;
+                case 2: // Profile
                     await waitFor('#userProfileName');
                     document.querySelector('#userProfileName').value = "Luca Zanner";
                     document.querySelector('#userProfileName').dispatchEvent(new Event('input'));
@@ -88,7 +91,7 @@
                     document.querySelector('#userProfileEmail').value = "luca@example.com";
                     document.querySelector('#userProfileEmail').dispatchEvent(new Event('input'));
                     break;
-                case 2: // Preferences
+                case 3: // Preferences
                     await waitFor('#pinkModeToggle');
                     const pinkMode = document.querySelector('#pinkModeToggle').getAttribute('aria-pressed');
                     log(`Pink Mode state: ${pinkMode}`);
@@ -98,19 +101,22 @@
                         tempSelect.dispatchEvent(new Event('change'));
                     }
                     break;
-                case 3: // Project Name
+                case 4: // Project Name
                     await waitFor('#setupName');
                     document.querySelector('#setupName').value = "Gemini Test 123";
                     document.querySelector('#setupName').dispatchEvent(new Event('input'));
                     document.querySelector('#productionInput').value = "My Production";
                     document.querySelector('#productionInput').dispatchEvent(new Event('input'));
                     break;
-                case 5: // Add Camera
+                case 5: // Save Project
+                    // Just click Next
+                    break;
+                case 6: // Add Camera
                     await waitFor('#cameraSelect');
                     document.querySelector('#cameraSelect').value = "Arri Alexa 35";
                     document.querySelector('#cameraSelect').dispatchEvent(new Event('change'));
                     break;
-                case 6: // Add Monitoring
+                case 7: // Add Monitoring
                     await waitFor('#monitorSelect');
                     document.querySelector('#monitorSelect').value = "SmallHD Ultra 7";
                     document.querySelector('#monitorSelect').dispatchEvent(new Event('change'));
@@ -138,7 +144,7 @@
                         controller.dispatchEvent(new Event('change'));
                     }
                     break;
-                case 7: // Select Battery
+                case 8: // Select Battery
                     await waitFor('#batterySelect');
                     document.querySelector('#batterySelect').value = "Bebob B290cine";
                     document.querySelector('#batterySelect').dispatchEvent(new Event('change'));

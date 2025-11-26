@@ -3926,9 +3926,7 @@
     }
   }
 }
-if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
-  runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
-}
+
 
 
 function setupRuntimeFeedback(options) {
@@ -4500,6 +4498,10 @@ var resultsAPI = {
   setupRuntimeFeedback: setupRuntimeFeedback,
   renderTemperatureNote: renderTemperatureNote
 };
+
+if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+  runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
+}
 
 freezeDeep(resultsAPI);
 
