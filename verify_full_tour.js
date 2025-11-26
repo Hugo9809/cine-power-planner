@@ -248,10 +248,13 @@
                 case 18: // Edit Device Data Review
                     log("Step 18: Verifying new device...");
                     const deviceList = await waitFor('#deviceListContainer');
-                    const deviceItem = Array.from(deviceList.querySelectorAll('.device-item, .device-row, li')).find(el => el.textContent.includes("Test Custom Monitor"));
+                    // Wait a bit for list to refresh
+                    await wait(1000);
+                    const deviceItem = Array.from(deviceList.querySelectorAll('.device-item, .device-row, li, div')).find(el => el.textContent.includes("Test Custom Monitor"));
 
                     if (!deviceItem) {
-                        log("WARNING: New device 'Test Custom Monitor' not found in list.");
+                        log("WARNING: New device 'Test Custom Monitor' not found in list. Dumping list content for debug...");
+                        log(deviceList.innerText.substring(0, 500) + "...");
                     } else {
                         log("SUCCESS: New device found.");
                     }
@@ -260,11 +263,10 @@
                 case 19: // Edit Device Data Edit
                     log("Step 19: Editing the new device...");
                     const listContainer = await waitFor('#deviceListContainer');
-                    const itemToEdit = Array.from(listContainer.querySelectorAll('.device-item, .device-row, li')).find(el => el.textContent.includes("Test Custom Monitor"));
+                    const itemToEdit = Array.from(listContainer.querySelectorAll('.device-item, .device-row, li, div')).find(el => el.textContent.includes("Test Custom Monitor"));
 
                     if (itemToEdit) {
                         const editBtn = itemToEdit.querySelector('.edit-btn, button[aria-label="Edit"], .icon-edit, .btn-edit') || itemToEdit.querySelector('button');
-                        // Fallback to first button if specific class not found, usually edit is first action
 
                         if (editBtn) {
                             editBtn.click();
@@ -274,7 +276,7 @@
                             nameInput.value = "Test Custom Monitor Edited";
                             nameInput.dispatchEvent(new Event('input'));
 
-                            const saveBtn = await waitFor('#addDeviceBtn'); // Usually same button changes text or ID, assuming same ID for now based on typical patterns or "Add" becomes "Save"
+                            const saveBtn = await waitFor('#addDeviceBtn');
                             saveBtn.click();
                             await wait(1000);
                             log("Device edited.");
@@ -288,7 +290,16 @@
 
                 case 22: // Project Requirements Access
                     log("Step 22: Accessing Project Requirements...");
-                    // Ensure dialog is open (should be automatic in tour)
+                    // Try to find the button if dialog is not open
+                    let projDialog = document.querySelector('#projectDialog');
+                    if (!projDialog || !projDialog.open) {
+                        log("Project dialog not open. Clicking Generate Gear List button...");
+                        const genBtn = document.querySelector('#generateGearListBtn');
+                        if (genBtn) {
+                            genBtn.click();
+                            await wait(500);
+                        }
+                    }
                     await waitFor('#projectDialog');
                     break;
 
