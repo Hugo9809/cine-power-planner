@@ -6674,7 +6674,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
 
     // Filter out hotswaps that cannot supply the required current
-    const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    const totalCurrentLow = totalCurrent12Elem ? parseFloat(totalCurrent12Elem.textContent) : 0;
     if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
       swaps = Object.fromEntries(
         Object.entries(swaps).filter(([, info]) => {
@@ -8937,8 +8937,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
 
       const totalPowerLabelElem = document.getElementById("totalPowerLabel");
-      totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
-      totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+      if (totalPowerLabelElem) {
+        totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
+        totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+      }
 
       refreshTotalCurrentLabels(lang);
       updateMountVoltageSettingLabels(lang);

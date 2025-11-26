@@ -17486,6 +17486,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     setVideoOutputs([]);
     setMonitorVideoInputs([]);
     setMonitorVideoOutputs([]);
+
+    ensureGlobalFunctionBinding('clearMonitorVideoInputs', clearMonitorVideoInputs);
+    ensureGlobalFunctionBinding('ensureDefaultProjectInfoSnapshot', ensureDefaultProjectInfoSnapshot);
+
     setViewfinderVideoInputs([]);
     setViewfinderVideoOutputs([]);
     setFizConnectors([]);
