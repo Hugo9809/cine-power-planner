@@ -1,7 +1,7 @@
 (async function runFullTour() {
     const log = (msg) => console.log(`[TourTest] ${msg}`);
     const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-    const waitFor = async (selector, timeout = 5000) => {
+    const waitFor = async (selector, timeout = 10000) => {
         const start = Date.now();
         while (Date.now() - start < timeout) {
             const el = document.querySelector(selector);
@@ -38,16 +38,31 @@
             if (confirmBtn) confirmBtn.click();
             else if (window.confirm) window.confirm = () => true;
         }
-        await wait(2000);
+        await wait(3000);
 
         // Start Tour
         let overlay = document.querySelector('#onboardingTutorialOverlay');
         if (!overlay) {
-            log("Tour not started automatically. Attempting to start manually...");
-            const helpBtn = document.querySelector('#helpButton');
-            if (helpBtn) helpBtn.click();
+            log("Tour not started automatically. Attempting to start via API or UI...");
+            if (window.cineFeaturesOnboardingTour && typeof window.cineFeaturesOnboardingTour.start === 'function') {
+                window.cineFeaturesOnboardingTour.start();
+            } else {
+                const helpBtn = document.querySelector('#helpButton');
+                if (helpBtn) {
+                    helpBtn.click();
+                    await wait(500);
+                    const tourBtn = document.querySelector('#helpOnboardingTutorialButton');
+                    if (tourBtn) tourBtn.click();
+                }
+            }
         }
-        await wait(1000);
+        await wait(2000);
+
+        // Verify start
+        overlay = document.querySelector('#onboardingTutorialOverlay');
+        if (!overlay) {
+            throw new Error("Failed to start tour.");
+        }
 
         let currentStep = 1;
         const maxSteps = 35;
