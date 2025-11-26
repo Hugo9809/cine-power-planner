@@ -1695,9 +1695,13 @@
       storage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(logHistory));
     } catch (error) {
       if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        // Disable persistence for this session to prevent loop
+        activeConfig.persistSession = false;
         try {
           storage.removeItem(HISTORY_STORAGE_KEY);
         } catch (e) { void e; }
+        // Do NOT log a warning here, as it might trigger the proxy and cause a loop
+        return;
       }
       console.warn('cineLogging: Unable to persist log history', error);
     }
