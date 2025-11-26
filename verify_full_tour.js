@@ -104,9 +104,54 @@
                     break;
                 case 3: // Preferences (Proxy inputs)
                     await waitFor('.onboarding-card');
-                    const radios = document.querySelectorAll('.onboarding-card input[type="radio"]');
-                    if (radios.length > 0) {
-                        log(`Found ${radios.length} radio buttons in card.`);
+                    log("Step 3: Interacting with Preferences proxy inputs...");
+
+                    // Language
+                    const languageSelect = document.querySelector('.onboarding-card select[id*="language"]');
+                    if (languageSelect) {
+                        languageSelect.value = "en";
+                        languageSelect.dispatchEvent(new Event('change'));
+                        log("Set Language to English");
+                    }
+
+                    // Theme
+                    const themeSelect = document.querySelector('.onboarding-card select[id*="theme"]');
+                    if (themeSelect) {
+                        themeSelect.value = "dark";
+                        themeSelect.dispatchEvent(new Event('change'));
+                        log("Set Theme to Dark");
+                    }
+
+                    // Pink Mode (optional)
+                    const pinkSelect = document.querySelector('.onboarding-card select[id*="pink"]');
+                    if (pinkSelect) {
+                        pinkSelect.value = "enabled";
+                        pinkSelect.dispatchEvent(new Event('change'));
+                        log("Enabled Pink Mode");
+                    }
+
+                    // Focus Scale
+                    const focusSelect = document.querySelector('.onboarding-card select[id*="focus-scale"]');
+                    if (focusSelect) {
+                        focusSelect.value = "metric";
+                        focusSelect.dispatchEvent(new Event('change'));
+                        log("Set Focus Scale to Metric");
+                    }
+
+                    // Units
+                    const unitsSelect = document.querySelector('.onboarding-card select[id*="units"]');
+                    if (unitsSelect) {
+                        unitsSelect.value = "Celsius";
+                        unitsSelect.dispatchEvent(new Event('change'));
+                        log("Set Units to Celsius");
+                    }
+
+                    // Persistence Button (if present)
+                    const persistenceBtn = document.querySelector('.onboarding-interaction-button.primary');
+                    if (persistenceBtn && !persistenceBtn.disabled) {
+                        persistenceBtn.click();
+                        log("Clicked Persistence Request button");
+                        await wait(500);
                     }
                     break;
                 case 4: // Project Name
@@ -248,12 +293,18 @@
                 case 18: // Edit Device Data Review
                     log("Step 18: Verifying new device...");
                     const deviceList = await waitFor('#deviceListContainer');
-                    // Wait a bit for list to refresh
-                    await wait(1000);
-                    const deviceItem = Array.from(deviceList.querySelectorAll('.device-item, .device-row, li, div')).find(el => el.textContent.includes("Test Custom Monitor"));
+
+                    // Retry logic for finding the device
+                    let deviceItem = null;
+                    for (let i = 0; i < 5; i++) {
+                        await wait(1000); // Wait for list refresh
+                        deviceItem = Array.from(deviceList.querySelectorAll('.device-item, .device-row, li, div')).find(el => el.textContent.includes("Test Custom Monitor"));
+                        if (deviceItem) break;
+                        log(`Attempt ${i + 1}: Device not found yet...`);
+                    }
 
                     if (!deviceItem) {
-                        log("WARNING: New device 'Test Custom Monitor' not found in list. Dumping list content for debug...");
+                        log("WARNING: New device 'Test Custom Monitor' not found in list after retries. Dumping list content for debug...");
                         log(deviceList.innerText.substring(0, 500) + "...");
                     } else {
                         log("SUCCESS: New device found.");
@@ -288,6 +339,20 @@
                     }
                     break;
 
+                case 20: // Own Gear Access
+                    log("Step 20: Own Gear Access...");
+                    await wait(500);
+                    break;
+
+                case 21: // Own Gear Add Device
+                    log("Step 21: Adding Own Gear...");
+                    const ownName = document.querySelector('#ownGearName');
+                    if (ownName && ownName.offsetParent) {
+                        ownName.value = "My Own Light";
+                        ownName.dispatchEvent(new Event('input'));
+                    }
+                    break;
+
                 case 22: // Project Requirements Access
                     log("Step 22: Accessing Project Requirements...");
                     // Try to find the button if dialog is not open
@@ -296,8 +361,18 @@
                         log("Project dialog not open. Clicking Generate Gear List button...");
                         const genBtn = document.querySelector('#generateGearListBtn');
                         if (genBtn) {
+                            log(`Found Generate Gear List button. Visible: ${genBtn.offsetParent !== null}`);
                             genBtn.click();
                             await wait(500);
+
+                            // Check if opened
+                            if (!projDialog || !projDialog.open) {
+                                log("Standard click failed, trying dispatchEvent...");
+                                genBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                                await wait(1000);
+                            }
+                        } else {
+                            log("WARNING: Generate Gear List button not found!");
                         }
                     }
                     await waitFor('#projectDialog');
@@ -326,37 +401,165 @@
                     const crewContainer = document.querySelector('#crewContainer');
                     const lastCrewRow = crewContainer.lastElementChild;
                     if (lastCrewRow) {
-                        const inputs = lastCrewRow.querySelectorAll('input');
-                        if (inputs.length >= 1) {
-                            inputs[0].value = "John Doe"; // Name
-                            inputs[0].dispatchEvent(new Event('input'));
+                        const nameInput = lastCrewRow.querySelector('.person-name');
+                        if (nameInput) {
+                            nameInput.value = "John Doe";
+                            nameInput.dispatchEvent(new Event('input'));
                         }
-                        if (inputs.length >= 2) {
-                            inputs[1].value = "Gaffer"; // Role
-                            inputs[1].dispatchEvent(new Event('input'));
+
+                        const roleSelect = lastCrewRow.querySelector('.person-role-select');
+                        if (roleSelect) {
+                            if (roleSelect.options.length > 0) {
+                                roleSelect.selectedIndex = 1;
+                                roleSelect.dispatchEvent(new Event('change'));
+                            }
+                        }
+
+                        const phoneInput = lastCrewRow.querySelector('.person-phone');
+                        if (phoneInput) {
+                            phoneInput.value = "123456789";
+                            phoneInput.dispatchEvent(new Event('input'));
                         }
                     }
                     break;
 
                 case 25: // Project Requirements Logistics
                     log("Step 25: Adding Logistics...");
+
+                    // Prep
                     const addPrepBtn = await waitFor('#addPrepBtn');
                     addPrepBtn.click();
                     await wait(200);
+                    const prepContainer = document.querySelector('#prepContainer');
+                    const lastPrep = prepContainer.lastElementChild;
+                    if (lastPrep) {
+                        const start = lastPrep.querySelector('.prep-start, input[type="date"]');
+                        if (start) {
+                            start.valueAsDate = new Date();
+                            start.dispatchEvent(new Event('input'));
+                        }
+                    }
 
+                    // Shoot
                     const addShootBtn = await waitFor('#addShootBtn');
                     addShootBtn.click();
                     await wait(200);
+                    const shootContainer = document.querySelector('#shootContainer');
+                    const lastShoot = shootContainer.lastElementChild;
+                    if (lastShoot) {
+                        const start = lastShoot.querySelector('input[type="date"]');
+                        if (start) {
+                            start.valueAsDate = new Date();
+                            start.dispatchEvent(new Event('input'));
+                        }
+                    }
 
+                    // Return
                     const addReturnBtn = await waitFor('#addReturnBtn');
                     addReturnBtn.click();
                     await wait(200);
+                    const returnContainer = document.querySelector('#returnContainer');
+                    const lastReturn = returnContainer.lastElementChild;
+                    if (lastReturn) {
+                        const start = lastReturn.querySelector('input[type="date"]');
+                        if (start) {
+                            start.valueAsDate = new Date();
+                            start.dispatchEvent(new Event('input'));
+                        }
+                    }
                     break;
-                case 21: // Own Gear Add Device
-                    const ownName = document.querySelector('#ownGearName');
-                    if (ownName && ownName.offsetParent) {
-                        ownName.value = "My Own Light";
-                        ownName.dispatchEvent(new Event('input'));
+
+                case 26: // Generate Gear & Requirements
+                    log("Step 26: Generate Gear & Requirements...");
+                    await wait(500);
+                    break;
+
+                case 27: // Auto Gear Rules Access
+                    log("Step 27: Accessing Auto Gear Rules...");
+                    // Ensure settings dialog is open
+                    let settingsDialog = document.querySelector('#settingsDialog');
+                    if (!settingsDialog || !settingsDialog.open) {
+                        log("Settings dialog not open. Clicking Settings button...");
+                        const settingsBtn = document.querySelector('#settingsButton');
+                        if (settingsBtn) {
+                            settingsBtn.click();
+                            await wait(500);
+                        }
+                    }
+                    await waitFor('#settingsDialog');
+
+                    // Switch to Auto Gear tab
+                    const autoGearTab = await waitFor('#settingsTab-autoGear');
+                    autoGearTab.click();
+                    await wait(500);
+                    break;
+
+                case 28: // Auto Gear Rules Edit
+                    log("Step 28: Editing an Auto Gear Rule...");
+                    const rulesList = await waitFor('#autoGearRulesList');
+                    // Wait for rules to populate
+                    await wait(1000);
+
+                    const firstRule = rulesList.querySelector('.auto-gear-rule-item, li, div[role="listitem"]');
+                    if (firstRule) {
+                        const editBtn = firstRule.querySelector('.edit-btn, button[aria-label="Edit"], .icon-edit, .btn-edit') || firstRule.querySelector('button');
+                        if (editBtn) {
+                            editBtn.click();
+                            await wait(500);
+
+                            const ruleNameInput = await waitFor('#autoGearRuleName');
+                            ruleNameInput.value = "Edited Rule Name";
+                            ruleNameInput.dispatchEvent(new Event('input'));
+
+                            const saveRuleBtn = await waitFor('#autoGearSaveRule');
+                            saveRuleBtn.click();
+                            await wait(1000);
+                            log("Rule edited.");
+                        } else {
+                            log("WARNING: Edit button not found for rule.");
+                        }
+                    } else {
+                        log("WARNING: No rules found to edit. This is expected if list is empty.");
+                    }
+                    break;
+
+                case 29: // Auto Gear Rules Create
+                    log("Step 29: Creating a new Auto Gear Rule...");
+                    const addRuleBtn = await waitFor('#autoGearAddRule');
+                    addRuleBtn.click();
+                    await wait(500);
+
+                    const ruleNameInput = await waitFor('#autoGearRuleName');
+                    ruleNameInput.value = "New Test Rule";
+                    ruleNameInput.dispatchEvent(new Event('input'));
+
+                    // Add an item
+                    const addItemName = await waitFor('#autoGearAddName');
+                    addItemName.value = "Test Monitor";
+                    addItemName.dispatchEvent(new Event('input'));
+
+                    const addItemCategory = await waitFor('#autoGearAddCategory');
+                    addItemCategory.value = "Monitoring";
+                    addItemCategory.dispatchEvent(new Event('change'));
+
+                    const addItemQty = await waitFor('#autoGearAddQuantity');
+                    addItemQty.value = "1";
+                    addItemQty.dispatchEvent(new Event('input'));
+
+                    const addItemBtn = await waitFor('#autoGearAddItemButton');
+                    addItemBtn.click();
+                    await wait(500);
+
+                    const saveRuleBtn = await waitFor('#autoGearSaveRule');
+                    saveRuleBtn.click();
+                    await wait(1000);
+
+                    // Verify creation
+                    const rulesList2 = await waitFor('#autoGearRulesList');
+                    if (rulesList2.textContent.includes("New Test Rule")) {
+                        log("SUCCESS: New rule created and found.");
+                    } else {
+                        log("WARNING: New rule not found in list.");
                     }
                     break;
             }

@@ -1071,6 +1071,77 @@
         ]
       },
       "weight_g": 322
+    },
+    "Teradek Bolt 6 LT 750 TX": {
+      "powerDrawWatts": 9,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "type": "3G-SDI",
+          "notes": "Loop-out"
+        }
+      ],
+      "frequency": "5/6 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          {
+            "notes": "6-28V",
+            "type": [
+              "LEMO 2-pin"
+            ]
+          }
+        ]
+      },
+      "weight_g": 212
+    },
+    "DJI Video Transmitter": {
+      "powerDrawWatts": 11,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "type": "3G-SDI",
+          "notes": "Loop-out"
+        }
+      ],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": [
+          {
+            "notes": "6-18V",
+            "type": [
+              "DC Barrel"
+            ]
+          },
+          {
+            "type": [
+              "WB37"
+            ]
+          },
+          {
+            "type": [
+              "NP-F"
+            ],
+            "notes": "Optional adapter"
+          }
+        ]
+      },
+      "weight_g": 350
     }
   };
 

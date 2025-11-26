@@ -471,8 +471,10 @@
   }
   if (typeof globalThis !== 'undefined' && globalThis) {
     globalThis.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+    globalThis.updateMountVoltageSettingLabels = updateMountVoltageSettingLabels;
   } else if (typeof window !== 'undefined' && window) {
     window.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+    window.updateMountVoltageSettingLabels = updateMountVoltageSettingLabels;
   }
 
   function updateMountVoltageSettingLabels(lang) {

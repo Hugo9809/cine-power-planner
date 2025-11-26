@@ -5728,6 +5728,7 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   --storage-accent-soft: color-mix(in srgb, var(--accent-color) 62%, var(--text-color) 38%);
   --storage-accent-surface: color-mix(in srgb, var(--surface-color) 88%, var(--accent-color) 12%);
   --storage-accent-border: color-mix(in srgb, var(--accent-color) 40%, transparent);
+  color: black;
 }
 
 body.dark-mode #settingsPanel-data {
@@ -5735,6 +5736,7 @@ body.dark-mode #settingsPanel-data {
   --storage-accent-soft: color-mix(in srgb, var(--accent-color) 55%, var(--inverse-text-color) 45%);
   --storage-accent-surface: color-mix(in srgb, var(--surface-color) 82%, var(--accent-color) 18%);
   --storage-accent-border: color-mix(in srgb, var(--accent-color) 52%, transparent);
+  color: white;
 }
 
 body.high-contrast #settingsPanel-data {

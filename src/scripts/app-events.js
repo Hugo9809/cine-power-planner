@@ -1264,15 +1264,15 @@ function showAutoBackupIndicatorSafe() {
     ? scope.__cineShowAutoBackupIndicator
     : null;
   if (!indicator) {
-    return () => {};
+    return () => { };
   }
   try {
     const message = resolveAutoBackupIndicatorMessage();
     const hide = indicator(message);
-    return typeof hide === 'function' ? hide : () => {};
+    return typeof hide === 'function' ? hide : () => { };
   } catch (indicatorError) {
     console.warn('Failed to show auto backup indicator', indicatorError);
-    return () => {};
+    return () => { };
   }
 }
 
@@ -2057,11 +2057,11 @@ function handleSaveSetupClick() {
   const saveAlertTemplate = hasDeviceSelection
     ? (langTexts.alertSetupSaved || fallbackTexts.alertSetupSaved)
     : (
-        langTexts.alertSetupSavedNoDevices
-        || fallbackTexts.alertSetupSavedNoDevices
-        || langTexts.alertSetupSaved
-        || fallbackTexts.alertSetupSaved
-      );
+      langTexts.alertSetupSavedNoDevices
+      || fallbackTexts.alertSetupSavedNoDevices
+      || langTexts.alertSetupSaved
+      || fallbackTexts.alertSetupSaved
+    );
   if (typeof saveAlertTemplate === 'string' && saveAlertTemplate) {
     alert(saveAlertTemplate.replace("{name}", finalName));
   }
@@ -2336,7 +2336,7 @@ function finalizeSetupSelection(nextSetupName) {
 const setupSelectTarget = getSetupSelectElement();
 
 addSafeEventListener(setupSelectTarget, "change", (event) => {
-    const setupName = event.target.value;
+  const setupName = event.target.value;
   const rawTypedName =
     setupNameInput && typeof setupNameInput.value === 'string'
       ? setupNameInput.value
@@ -2633,7 +2633,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
   }
 
   finalizeSetupSelection(setupName);
-  });
+});
 
 
 function populateSetupSelect() {
@@ -2953,14 +2953,14 @@ function attachAutoBackupMetadata(target, metadata) {
 
   const snapshotMetadata = metadata && typeof metadata === 'object'
     ? {
-        version: typeof metadata.version === 'number' ? metadata.version : 1,
-        snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
-        base: typeof metadata.base === 'string' ? metadata.base : null,
-        sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
-        createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
-        changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
-        removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
-      }
+      version: typeof metadata.version === 'number' ? metadata.version : 1,
+      snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
+      base: typeof metadata.base === 'string' ? metadata.base : null,
+      sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
+      createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
+      changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
+      removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+    }
     : null;
 
   try {
@@ -3037,8 +3037,8 @@ function autoBackup(options = {}) {
   const triggerAutoSaveNotification = Boolean(config.triggerAutoSaveNotification);
   const autoSaveNotificationMessage = typeof config.autoSaveNotificationMessage === 'string'
     && config.autoSaveNotificationMessage.trim()
-      ? config.autoSaveNotificationMessage.trim()
-      : successMessage;
+    ? config.autoSaveNotificationMessage.trim()
+    : successMessage;
   const normalizeProjectName = (value) =>
     typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   const hasProjectNameOverride = Object.prototype.hasOwnProperty.call(
@@ -3963,8 +3963,8 @@ function getEventsLanguageTexts() {
 
   const resolvedLang =
     typeof currentLang === 'string'
-    && allTexts
-    && typeof allTexts[currentLang] === 'object'
+      && allTexts
+      && typeof allTexts[currentLang] === 'object'
       ? currentLang
       : 'en';
 
@@ -4570,19 +4570,19 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
-        updateFizConnectorOptions();
-        updateMotorConnectorOptions();
-        updateControllerConnectorOptions();
-        updateControllerPowerOptions();
-        updateControllerBatteryOptions();
-        updateControllerConnectivityOptions();
-        updatePowerDistTypeOptions();
-        updatePowerDistVoltageOptions();
-        updatePowerDistCurrentOptions();
-        updateTimecodeTypeOptions();
-        updateDistanceConnectionOptions();
-        updateDistanceMethodOptions();
-        updateDistanceDisplayOptions();
+      updateFizConnectorOptions();
+      updateMotorConnectorOptions();
+      updateControllerConnectorOptions();
+      updateControllerPowerOptions();
+      updateControllerBatteryOptions();
+      updateControllerConnectivityOptions();
+      updatePowerDistTypeOptions();
+      updatePowerDistVoltageOptions();
+      updatePowerDistCurrentOptions();
+      updateTimecodeTypeOptions();
+      updateDistanceConnectionOptions();
+      updateDistanceMethodOptions();
+      updateDistanceDisplayOptions();
       applyFilters();
       updateCalculations();
     }
@@ -4691,7 +4691,11 @@ if (newCategorySelectElement) {
     monitorWirelessTxInput.checked = false;
     monitorLatencyInput.value = "";
     monitorAudioOutputInput.value = "";
-    clearMonitorVideoInputs();
+    if (typeof clearMonitorVideoInputs === 'function') {
+      clearMonitorVideoInputs();
+    } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
+      window.clearMonitorVideoInputs();
+    }
     clearMonitorVideoOutputs();
     viewfinderScreenSizeInput.value = "";
     viewfinderBrightnessInput.value = "";
@@ -4887,10 +4891,10 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
   const storedOriginalSubcategory = originalSubcategory || null;
   const originalCollection = isEditing
     ? getCategoryContainer(
-        storedOriginalCategory,
-        storedOriginalCategory === "accessories.cables" ? storedOriginalSubcategory : null,
-        { create: false }
-      )
+      storedOriginalCategory,
+      storedOriginalCategory === "accessories.cables" ? storedOriginalSubcategory : null,
+      { create: false }
+    )
     : null;
   const originalDeviceData = isEditing && originalCollection ? originalCollection[originalName] : undefined;
   const editingSameCategory = isEditing && storedOriginalCategory === category;
@@ -5105,13 +5109,13 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
     const existingVideoDevice =
       isEditing && originalDeviceData && typeof originalDeviceData === 'object'
         ? (() => {
-            try {
-              return JSON.parse(JSON.stringify(originalDeviceData));
-            } catch (cloneError) {
-              void cloneError;
-              return { ...originalDeviceData };
-            }
-          })()
+          try {
+            return JSON.parse(JSON.stringify(originalDeviceData));
+          } catch (cloneError) {
+            void cloneError;
+            return { ...originalDeviceData };
+          }
+        })()
         : {};
     const videoDeviceData =
       existingVideoDevice && typeof existingVideoDevice === 'object'
@@ -5148,10 +5152,10 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
         typeof VIDEO_POWER_INPUT_HELPERS.mergePowerInput === 'function'
           ? VIDEO_POWER_INPUT_HELPERS.mergePowerInput
           : (power, input) => {
-              const base = power && typeof power === 'object' ? { ...power } : {};
-              base.input = input;
-              return base;
-            };
+            const base = power && typeof power === 'object' ? { ...power } : {};
+            base.input = input;
+            return base;
+          };
       const mergedPower = mergePowerInput(videoDeviceData.power, videoPowerInputs);
       if (mergedPower && Object.keys(mergedPower).length) {
         videoDeviceData.power = mergedPower;
@@ -5305,9 +5309,9 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
   let categoryKey = category.replace(".", "_");
   let categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;
   if (isEditing) {
-      alert(texts[currentLang].alertDeviceUpdated.replace("{name}", name).replace("{category}", categoryDisplay));
+    alert(texts[currentLang].alertDeviceUpdated.replace("{name}", name).replace("{category}", categoryDisplay));
   } else {
-      alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
+    alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
   }
 });
 
@@ -5343,7 +5347,7 @@ addSafeEventListener(exportBtn, "click", () => {
   URL.revokeObjectURL(url);
 });
 
-const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
+const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 
 if (exportAndRevertBtn) {
   addSafeEventListener(exportAndRevertBtn, 'click', () => {
@@ -5398,11 +5402,11 @@ if (exportAndRevertBtn) {
 }
 
 // Import device data
-  addSafeEventListener(importDataBtn, "click", () => {
+addSafeEventListener(importDataBtn, "click", () => {
   importFileInput.click(); // Trigger the file input click
 });
 
-  addSafeEventListener(importFileInput, "change", (event) => {
+addSafeEventListener(importFileInput, "change", (event) => {
   const file = event.target.files[0];
   if (!file) {
     return;

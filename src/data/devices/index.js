@@ -60,6 +60,7 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./carts.js');
   require('./gearList.js');
   require('./wirelessReceivers.js');
+  require('./audio.js');
   markDevicesNormalized();
   delete globalThis.registerDevice;
   module.exports = devices;

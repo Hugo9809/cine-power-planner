@@ -50,18 +50,18 @@
   const safeWarn = typeof MODULE_BASE.safeWarn === 'function'
     ? MODULE_BASE.safeWarn.bind(MODULE_BASE)
     : (message, error) => {
-        if (GLOBAL_SCOPE && GLOBAL_SCOPE.console && typeof GLOBAL_SCOPE.console.warn === 'function') {
-          try {
-            if (typeof error === 'undefined') {
-              GLOBAL_SCOPE.console.warn(message);
-            } else {
-              GLOBAL_SCOPE.console.warn(message, error);
-            }
-          } catch (consoleError) {
-            void consoleError;
+      if (GLOBAL_SCOPE && GLOBAL_SCOPE.console && typeof GLOBAL_SCOPE.console.warn === 'function') {
+        try {
+          if (typeof error === 'undefined') {
+            GLOBAL_SCOPE.console.warn(message);
+          } else {
+            GLOBAL_SCOPE.console.warn(message, error);
           }
+        } catch (consoleError) {
+          void consoleError;
         }
-      };
+      }
+    };
 
   function fallbackGetter(value, fallback) {
     if (typeof value === 'function') {
@@ -1058,7 +1058,7 @@
         const nodeCls = id === 'motor0' ? 'diagram-node' : 'diagram-node';
         const rectCls = id === 'motor0' ? 'node-box' : 'node-box';
         svg += `<g class="${nodeCls}" data-node="${id}">`;
-        svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - h/2}" width="${NODE_W}" height="${h}" rx="4" ry="4" />`;
+        svg += `<rect class="${rectCls}" x="${p.x - NODE_W / 2}" y="${p.y - h / 2}" width="${NODE_W}" height="${h}" rx="4" ry="4" />`;
 
         const conns = connectorsFor(id);
         conns.forEach(c => {

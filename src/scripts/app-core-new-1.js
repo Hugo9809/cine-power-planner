@@ -9188,7 +9188,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn("Could not save language to localStorage", e);
     }
     // Recalculate and update dynamic content (results, breakdown, battery comparison)
-    refreshDeviceLists(); // Call refreshDeviceLists to update Edit/Delete buttons in the list
+    if (typeof refreshDeviceLists === 'function') {
+      refreshDeviceLists();
+    } else if (typeof window !== 'undefined' && typeof window.refreshDeviceLists === 'function') {
+      window.refreshDeviceLists();
+    }
     applyFilters();
     updateCalculations();
 

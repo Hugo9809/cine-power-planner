@@ -657,7 +657,7 @@
 
   function fallbackFreezeDeep(value, seen) {
     const visited = seen || (typeof WeakSet === 'function' ? new WeakSet() : {
-      add() {},
+      add() { },
       has() {
         return false;
       },
@@ -984,15 +984,15 @@
     stackTraces: true,
   };
 
-const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
+  const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
 
-const SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
-const SERVICE_WORKER_LOG_ENTRY_TYPE = 'cine-sw:log-entry';
-const SERVICE_WORKER_LOG_STATE_REQUEST = 'cine-sw:log-state-request';
-const SERVICE_WORKER_LOG_STATE_RESPONSE = 'cine-sw:log-state';
-const SERVICE_WORKER_LOG_REQUEST_TIMEOUT = 5000;
-const SERVICE_WORKER_LOG_POLL_INTERVAL = 60 * 1000;
-const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
+  const SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+  const SERVICE_WORKER_LOG_ENTRY_TYPE = 'cine-sw:log-entry';
+  const SERVICE_WORKER_LOG_STATE_REQUEST = 'cine-sw:log-state-request';
+  const SERVICE_WORKER_LOG_STATE_RESPONSE = 'cine-sw:log-state';
+  const SERVICE_WORKER_LOG_REQUEST_TIMEOUT = 5000;
+  const SERVICE_WORKER_LOG_POLL_INTERVAL = 60 * 1000;
+  const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
 
   function cloneDefaultConfig() {
     return {
@@ -1694,6 +1694,11 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
     try {
       storage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(logHistory));
     } catch (error) {
+      if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        try {
+          storage.removeItem(HISTORY_STORAGE_KEY);
+        } catch (e) { void e; }
+      }
       safeWarn('cineLogging: Unable to persist log history', error);
     }
   }
@@ -2077,10 +2082,10 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
       const hasSanitizedErrorShape =
         sanitizedValue && typeof sanitizedValue === 'object' && sanitizedValue !== null
           ? Boolean(
-              typeof sanitizedValue.stack === 'string'
-                || typeof sanitizedValue.message === 'string'
-                || typeof sanitizedValue.name === 'string'
-            )
+            typeof sanitizedValue.stack === 'string'
+            || typeof sanitizedValue.message === 'string'
+            || typeof sanitizedValue.name === 'string'
+          )
           : false;
 
       if (!isErrorInstance && !hasSanitizedErrorShape) {

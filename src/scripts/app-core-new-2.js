@@ -693,6 +693,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     ensureGlobalFunctionBinding('clearMonitorVideoInputs', clearMonitorVideoInputs);
     ensureGlobalFunctionBinding('ensureDefaultProjectInfoSnapshot', ensureDefaultProjectInfoSnapshot);
+    ensureGlobalFunctionBinding('storeLoadedSetupState', storeLoadedSetupState);
+    ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
     ensureGlobalFunctionBinding('clearViewfinderVideoInputs', clearViewfinderVideoInputs);
     ensureGlobalFunctionBinding('clearVideoPowerInputs', clearVideoPowerInputs);
     ensureGlobalFunctionBinding('clearVideoInputs', clearVideoInputs);
@@ -12087,7 +12089,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       } catch (e) { void e; }
     }
-    if (CORE_SCOPE && typeof CORE_SCOPE === 'object') {
+    if (typeof CORE_SCOPE !== 'undefined' && CORE_SCOPE && typeof CORE_SCOPE === 'object') {
       try {
         Object.defineProperty(CORE_SCOPE, 'fontSize', {
           get: function () { return fontSize; },
@@ -14461,6 +14463,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
           if (connectionDiagram.diagramConnectorIcons) {
             diagramConnectorIcons = connectionDiagram.diagramConnectorIcons;
+            if (typeof window !== 'undefined') window.diagramConnectorIcons = diagramConnectorIcons;
+            else if (typeof globalThis !== 'undefined') globalThis.diagramConnectorIcons = diagramConnectorIcons;
           }
           if (connectionDiagram.overviewSectionIcons) {
             overviewSectionIcons = connectionDiagram.overviewSectionIcons;
@@ -14846,6 +14850,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return true;
       });
     }
+
+    const videoOutputOptions = ['SDI', 'HDMI', 'Lemo 2-pin', 'Fischer 3-pin'];
 
     // Build a single row of the video output editor UI.
     function createVideoOutputRow(value = '') {

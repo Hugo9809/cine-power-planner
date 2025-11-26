@@ -17683,7 +17683,11 @@ function initApp() {
     }
   });
   resetDeviceForm();
-  ensureDefaultProjectInfoSnapshot();
+  if (typeof ensureDefaultProjectInfoSnapshot === 'function') {
+    ensureDefaultProjectInfoSnapshot();
+  } else if (typeof window !== 'undefined' && typeof window.ensureDefaultProjectInfoSnapshot === 'function') {
+    window.ensureDefaultProjectInfoSnapshot();
+  }
   restoreSessionState();
   applySharedSetupFromUrl();
   if (requiredScenariosSelect) {
