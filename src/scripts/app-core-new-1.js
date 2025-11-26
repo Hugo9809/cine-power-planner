@@ -8942,7 +8942,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
       }
 
-      refreshTotalCurrentLabels(lang);
+      if (typeof refreshTotalCurrentLabels === 'function') {
+        refreshTotalCurrentLabels(lang);
+      }
       updateMountVoltageSettingLabels(lang);
 
       const batteryCountLabelElem = document.getElementById("batteryCountLabel");

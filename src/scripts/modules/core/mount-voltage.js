@@ -462,6 +462,10 @@
     );
   }
 
+  if (typeof console !== 'undefined') {
+    console.log('mount-voltage.js: refreshTotalCurrentLabels defined');
+  }
+
   if (CORE_SCOPE && typeof CORE_SCOPE === 'object') {
     CORE_SCOPE.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
   }

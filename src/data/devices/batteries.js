@@ -734,6 +734,70 @@
       "mount_type": "Gold-Mount",
       "weight_g": 544
     },
+    "Anton Bauer Titon Micro 90 (V-Mount)": {
+      "capacity": 94,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 570
+    },
+    "Anton Bauer Titon Micro 90 (Gold-Mount)": {
+      "capacity": 94,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 570
+    },
+    "Anton Bauer Titon Micro 150 (V-Mount)": {
+      "capacity": 140,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 790
+    },
+    "Anton Bauer Titon Micro 150 (Gold-Mount)": {
+      "capacity": 140,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 770
+    },
+    "Anton Bauer Dionic XT90 (V-Mount)": {
+      "capacity": 99,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 800
+    },
+    "Anton Bauer Dionic XT90 (Gold-Mount)": {
+      "capacity": 99,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 800
+    },
+    "Anton Bauer Dionic XT150 (V-Mount)": {
+      "capacity": 156,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 1100
+    },
+    "Anton Bauer Dionic XT150 (Gold-Mount)": {
+      "capacity": 156,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 1100
+    },
+    "Anton Bauer Cine VCLX (Block)": {
+      "capacity": 630,
+      "pinA": 20,
+      "dtapA": 0,
+      "mount_type": "Block",
+      "weight_g": 11300,
+      "voltage": 28
+    },
     "SWIT PB-S98A (Gold-Mount)": {
       "capacity": 98,
       "pinA": 12,

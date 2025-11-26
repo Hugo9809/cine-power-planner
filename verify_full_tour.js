@@ -286,6 +286,61 @@
                     }
                     break;
 
+                case 22: // Project Requirements Access
+                    log("Step 22: Accessing Project Requirements...");
+                    // Ensure dialog is open (should be automatic in tour)
+                    await waitFor('#projectDialog');
+                    break;
+
+                case 23: // Project Requirements Brief
+                    log("Step 23: Filling Project Brief...");
+                    const prodCo = await waitFor('#productionCompany');
+                    prodCo.value = "Test Production Co";
+                    prodCo.dispatchEvent(new Event('input'));
+
+                    const prodCity = document.querySelector('#productionCompanyCity');
+                    if (prodCity) {
+                        prodCity.value = "Berlin";
+                        prodCity.dispatchEvent(new Event('input'));
+                    }
+                    break;
+
+                case 24: // Project Requirements Crew
+                    log("Step 24: Adding Crew...");
+                    const addCrewBtn = await waitFor('#addPersonBtn');
+                    addCrewBtn.click();
+                    await wait(500);
+
+                    // Find inputs in the newly added row
+                    const crewContainer = document.querySelector('#crewContainer');
+                    const lastCrewRow = crewContainer.lastElementChild;
+                    if (lastCrewRow) {
+                        const inputs = lastCrewRow.querySelectorAll('input');
+                        if (inputs.length >= 1) {
+                            inputs[0].value = "John Doe"; // Name
+                            inputs[0].dispatchEvent(new Event('input'));
+                        }
+                        if (inputs.length >= 2) {
+                            inputs[1].value = "Gaffer"; // Role
+                            inputs[1].dispatchEvent(new Event('input'));
+                        }
+                    }
+                    break;
+
+                case 25: // Project Requirements Logistics
+                    log("Step 25: Adding Logistics...");
+                    const addPrepBtn = await waitFor('#addPrepBtn');
+                    addPrepBtn.click();
+                    await wait(200);
+
+                    const addShootBtn = await waitFor('#addShootBtn');
+                    addShootBtn.click();
+                    await wait(200);
+
+                    const addReturnBtn = await waitFor('#addReturnBtn');
+                    addReturnBtn.click();
+                    await wait(200);
+                    break;
                 case 21: // Own Gear Add Device
                     const ownName = document.querySelector('#ownGearName');
                     if (ownName && ownName.offsetParent) {
