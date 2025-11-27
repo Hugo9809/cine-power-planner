@@ -1602,7 +1602,11 @@ function generatePrintableOverview(config = {}) {
     }
 
     const safeSetupName = escapeHtmlSafe(setupName);
-    const diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
+    let getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss : null;
+    if (!getDiagramCssFn && typeof cineFeaturesConnectionDiagram === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function') {
+        getDiagramCssFn = cineFeaturesConnectionDiagram.getDiagramCss;
+    }
+    const diagramCss = getDiagramCssFn ? getDiagramCssFn(false) : '';
 
     const resolveDiagramElement = (fallbackId, globalRefName) => {
         if (globalRefName) {

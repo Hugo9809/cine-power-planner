@@ -14749,7 +14749,11 @@ function exportDiagramSvg() {
   });
   const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
   // Always export using the bright theme regardless of the current mode
-  style.textContent = getDiagramCss(false);
+  let getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss : null;
+  if (!getDiagramCssFn && typeof cineFeaturesConnectionDiagram === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function') {
+    getDiagramCssFn = cineFeaturesConnectionDiagram.getDiagramCss;
+  }
+  style.textContent = getDiagramCssFn ? getDiagramCssFn(false) : '';
   clone.insertBefore(style, clone.firstChild);
   const serializer = new XMLSerializer();
   return serializer.serializeToString(clone);

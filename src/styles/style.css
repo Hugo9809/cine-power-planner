@@ -4694,7 +4694,7 @@ body.pink-mode.dark-mode .settings-card h4 {
 
 .auto-gear-preset-name-card {
   width: min(100%, 360px);
-  padding: 16px;
+  padding: 32px;
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   background: var(--panel-bg);
@@ -6635,40 +6635,40 @@ body.pink-mode .pink-mode-icon {
 
 .pink-mode-animation-instance {
   position: absolute;
-  top: var(--pink-mode-animation-y, 50%);
-  left: var(--pink-mode-animation-x, 50%);
+  top: var(--pink-mode-animation-y, 110vh);
+  left: var(--pink-mode-animation-x, 50vw);
   width: var(--pink-mode-animation-size, 72px);
   height: var(--pink-mode-animation-size, 72px);
   margin-top: calc(-0.5 * var(--pink-mode-animation-size, 72px));
   margin-left: calc(-0.5 * var(--pink-mode-animation-size, 72px));
   opacity: 0;
-  animation: pink-mode-floating-icon var(--pink-mode-animation-duration, 7s) ease-in-out forwards;
+  animation: pink-mode-floating-icon var(--pink-mode-animation-duration, 15s) linear forwards;
   transform-origin: center;
   will-change: transform, opacity;
   filter: drop-shadow(0 4px 12px rgba(255, 105, 180, 0.25));
-  pointer-events: none;
-  cursor: default;
-  touch-action: none;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-drag: none;
+  z-index: 10000;
 }
 
 .pink-mode-animation-instance svg {
   width: 100%;
   height: 100%;
   display: block;
+  pointer-events: none;
 }
 
 .pink-mode-animation-instance.pink-mode-icon-rain {
   animation-name: pink-mode-rain-icon;
-  animation-duration: var(--pink-mode-rain-duration, 4800ms);
-  animation-timing-function: ease-in;
+  animation-duration: var(--pink-mode-rain-duration, 5s);
+  animation-timing-function: linear;
   pointer-events: none;
   cursor: default;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-drag: none;
+  z-index: 10001;
 }
 
 .pink-mode-animation-instance.pink-mode-icon-rain svg {
@@ -6678,47 +6678,49 @@ body.pink-mode .pink-mode-icon {
 @keyframes pink-mode-floating-icon {
   0% {
     opacity: 0;
-    transform: translate3d(var(--pink-mode-animation-translate-x-start, 0px),
-        var(--pink-mode-animation-translate-y-start, 12%),
-        0) scale(var(--pink-mode-animation-scale-start, 0.75)) rotate(var(--pink-mode-animation-rotation-start, 0deg));
+    transform: translate3d(0, 0, 0) scale(0.5) rotate(var(--pink-mode-animation-rotation-start, -10deg));
   }
 
-  18% {
-    opacity: 0.9;
-    transform: translate3d(var(--pink-mode-animation-translate-x-settle, 0px),
-        var(--pink-mode-animation-translate-y-settle, 0px),
-        0) scale(var(--pink-mode-animation-scale-settle, 1)) rotate(var(--pink-mode-animation-rotation-settle, 0deg));
+  5% {
+    opacity: 1;
+    transform: translate3d(var(--pink-mode-animation-sway-1, 20px), -5vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 0deg));
   }
 
-  82% {
-    opacity: 0.9;
-    transform: translate3d(var(--pink-mode-animation-translate-x-drift, 0px),
-        var(--pink-mode-animation-translate-y-drift, -4%),
-        0) scale(var(--pink-mode-animation-scale-drift, 1.05)) rotate(var(--pink-mode-animation-rotation-drift, 0deg));
+  25% {
+    transform: translate3d(var(--pink-mode-animation-sway-2, -20px), -25vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 5deg));
+  }
+
+  50% {
+    transform: translate3d(var(--pink-mode-animation-sway-3, 20px), -50vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, -5deg));
+  }
+
+  75% {
+    transform: translate3d(var(--pink-mode-animation-sway-4, -20px), -75vh, 0) scale(1) rotate(var(--pink-mode-animation-rotation-mid, 5deg));
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(var(--pink-mode-animation-translate-x-end, 0px),
-        var(--pink-mode-animation-translate-y-end, -14%),
-        0) scale(var(--pink-mode-animation-scale-end, 0.85)) rotate(var(--pink-mode-animation-rotation-end, 0deg));
+    transform: translate3d(var(--pink-mode-animation-sway-5, 10px), -120vh, 0) scale(0.8) rotate(var(--pink-mode-animation-rotation-end, 10deg));
   }
 }
 
 @keyframes pink-mode-rain-icon {
   0% {
     opacity: 0;
-    transform: translate3d(0, -18vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
+    transform: translate3d(0, -120vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
   }
 
-  12% {
+  5% {
     opacity: 1;
-    transform: translate3d(0, -2vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
+  }
+
+  90% {
+    opacity: 1;
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(var(--pink-mode-rain-drift, 0vw), 112vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
+    transform: translate3d(var(--pink-mode-rain-drift, 0px), 120vh, 0) scale(var(--pink-mode-rain-scale, 1)) rotate(var(--pink-mode-rain-rotation, 0deg));
   }
 }
 
@@ -13004,6 +13006,8 @@ body.light-mode #topBar select:focus-visible {
   #sideMenuTitle {
     font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
     margin: 0;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: -0.01em;
   }
 
   #sideMenu .sidebar-close {
@@ -13011,26 +13015,27 @@ body.light-mode #topBar select:focus-visible {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 6px;
+    padding: 8px;
     border: none;
-    background: none;
+    background: transparent;
     color: var(--text-color);
     font: inherit;
     cursor: pointer;
-    border-radius: 8px;
-    min-width: 44px;
-    min-height: 44px;
+    border-radius: 50%;
+    min-width: 40px;
+    min-height: 40px;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   #sideMenu .sidebar-close:hover {
     color: var(--accent-color);
-    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
   }
 
   #sideMenu .sidebar-close:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
-    background: color-mix(in srgb, var(--accent-color) 16%, transparent);
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
   }
 
   #sideMenu {
@@ -13038,14 +13043,20 @@ body.light-mode #topBar select:focus-visible {
     top: 0;
     right: 0;
     height: 100%;
-    width: 250px;
+    width: 300px;
     background: var(--surface-color);
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-    padding: calc(var(--page-padding) + 10px);
-    padding-left: calc(var(--page-padding) + 20px);
+    background: color-mix(in srgb, var(--surface-color) 90%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.12);
+    padding: calc(var(--page-padding) + 15px);
+    padding-left: calc(var(--page-padding) + 25px);
     z-index: 200;
-    transition: transform 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     transform: translateX(100%);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid color-mix(in srgb, var(--panel-border) 60%, transparent);
   }
 
   #sideMenu.open {
@@ -13055,9 +13066,11 @@ body.light-mode #topBar select:focus-visible {
   #sideMenu ul {
     list-style: none;
     padding: 0;
-    margin: 0;
-    border-top: 1px solid var(--accent-color);
-    border-bottom: 1px solid var(--accent-color);
+    margin: 10px 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   #sideMenu li {
@@ -13065,71 +13078,75 @@ body.light-mode #topBar select:focus-visible {
   }
 
   #sideMenu li+li {
-    border-top: 1px solid var(--accent-color);
+    border: none;
   }
 
   #sideMenu li.sidebar-divider {
-    padding: 8px 0;
-    margin: 12px 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--panel-border) 60%, transparent);
+    margin: 12px 4px;
+    padding: 0;
+    width: auto;
   }
 
   #sideMenu li.sidebar-divider+li {
     border-top: none;
   }
 
-  #sideMenu a {
+  #sideMenu a,
+  #sideMenu button[data-sidebar-action] {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
     color: var(--text-color);
     text-decoration: none;
-    font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
-    display: block;
-    padding: 10px 0;
-  }
-
-  #sideMenu button[data-sidebar-action] {
-    display: block;
-    width: 100%;
-    padding: 10px 0;
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
-    font-weight: inherit;
+    font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+    font-weight: var(--font-weight-medium);
     text-align: left;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    user-select: none;
   }
 
+  #sideMenu a:hover,
   #sideMenu button[data-sidebar-action]:hover {
     color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
   }
 
+  #sideMenu a:active,
+  #sideMenu button[data-sidebar-action]:active {
+    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+    transform: scale(0.98);
+  }
+
+  #sideMenu a:focus-visible,
   #sideMenu button[data-sidebar-action]:focus-visible {
     outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
+    outline-offset: -2px;
+    background: color-mix(in srgb, var(--accent-color) 5%, transparent);
   }
 
-  body.light-mode #sideMenu ul {
-    border-top: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
-    border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
-  }
-
-  body.light-mode #sideMenu li+li {
-    border-top: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--surface-color));
+  /* Remove old borders for light/dark modes as we use gap and hover bg now */
+  body.light-mode #sideMenu ul,
+  body.light-mode #sideMenu li+li,
+  .dark-mode #sideMenu ul,
+  .dark-mode #sideMenu li+li {
+    border: none;
   }
 
   body.light-mode #sideMenu a,
   body.light-mode #sideMenu button[data-sidebar-action] {
-    color: color-mix(in srgb, var(--accent-color) 72%, var(--text-color));
+    color: var(--text-color);
   }
 
   body.light-mode #sideMenu a:hover,
   body.light-mode #sideMenu button[data-sidebar-action]:hover {
     color: var(--accent-color);
-  }
-
-  body.light-mode #sideMenu a:focus-visible,
-  body.light-mode #sideMenu button[data-sidebar-action]:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--accent-color) 70%, var(--surface-color));
-    outline-offset: 3px;
   }
 
   .dark-mode,
@@ -13145,14 +13162,6 @@ body.light-mode #topBar select:focus-visible {
     --nd-grad-border-color: #ff69b4;
   }
 
-  .dark-mode #sideMenu ul {
-    border-color: var(--accent-color);
-  }
-
-  .dark-mode #sideMenu li+li {
-    border-color: var(--accent-color);
-  }
-
   @media (max-width: 768px) {
     body.menu-open {
       overflow: hidden;
@@ -13163,15 +13172,18 @@ body.light-mode #topBar select:focus-visible {
       right: 0;
       bottom: 0;
       top: auto;
-      width: auto;
+      width: 100%;
       max-width: 100%;
-      max-height: min(80vh, 640px);
-      border-radius: 18px 18px 0 0;
-      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.35);
+      height: auto;
+      max-height: 85vh;
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
       transform: translateY(100%);
-      padding: clamp(16px, 5vw, 28px);
-      padding-bottom: clamp(20px, 6vw, 32px);
+      padding: clamp(20px, 5vw, 32px);
+      padding-bottom: max(clamp(20px, 6vw, 32px), env(safe-area-inset-bottom) + 20px);
       overflow-y: auto;
+      border-left: none;
+      border-top: 1px solid color-mix(in srgb, var(--surface-color) 20%, rgba(255, 255, 255, 0.1));
     }
 
     #sideMenu.open {
@@ -13183,7 +13195,9 @@ body.light-mode #topBar select:focus-visible {
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: clamp(12px, 3vw, 18px);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 50%, transparent);
     }
 
     #sideMenuTitle {
@@ -13191,37 +13205,18 @@ body.light-mode #topBar select:focus-visible {
     }
 
     #sideMenu .sidebar-controls {
-      margin-bottom: clamp(12px, 3vw, 18px);
+      margin-bottom: 12px;
     }
 
     #sideMenu ul {
-      border: none;
-      border-radius: 14px;
-      padding: clamp(8px, 3vw, 12px) clamp(4px, 2vw, 8px);
-      background: var(--background-color);
-      box-shadow: inset 0 0 0 1px var(--panel-border);
+      margin: 0;
+      gap: 2px;
     }
 
-    #sideMenu li+li {
-      border-top: 1px solid var(--panel-border);
-    }
-
-    body.light-mode #sideMenu ul {
-      background: color-mix(in srgb, var(--surface-color) 92%, white 8%);
-    }
-
-    body.light-mode #sideMenu li+li {
-      border-top: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
-    }
-
-    body.dark-mode #sideMenu ul,
-    .dark-mode #sideMenu ul {
-      background: color-mix(in srgb, var(--surface-color) 78%, black 22%);
-    }
-
-    body.dark-mode #sideMenu li+li,
-    .dark-mode #sideMenu li+li {
-      border-top: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+    #sideMenu a,
+    #sideMenu button[data-sidebar-action] {
+      padding: 12px 16px;
+      font-size: calc(var(--font-size-relative-base) * 1.05);
     }
   }
 
@@ -13239,23 +13234,26 @@ body.light-mode #topBar select:focus-visible {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     z-index: 150;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  body.menu-open #menuOverlay {
+    opacity: 1;
+    visibility: visible;
   }
 
   @supports (padding: env(safe-area-inset-top)) {
     @media (min-width: 769px) {
       #sideMenu {
-        padding:
-          calc(var(--page-padding) + 10px + env(safe-area-inset-top)) calc(var(--page-padding) + 10px + env(safe-area-inset-right)) calc(var(--page-padding) + 10px + env(safe-area-inset-bottom)) calc(var(--page-padding) + 20px + env(safe-area-inset-left));
-      }
-    }
-
-    @media (max-width: 768px) {
-      #sideMenu {
-        padding-top: calc(clamp(16px, 5vw, 28px) + env(safe-area-inset-top));
-        padding-right: calc(clamp(16px, 5vw, 28px) + env(safe-area-inset-right));
-        padding-left: calc(clamp(16px, 5vw, 28px) + env(safe-area-inset-left));
+        padding-top: calc(var(--page-padding) + 15px + env(safe-area-inset-top));
+        padding-bottom: calc(var(--page-padding) + 15px + env(safe-area-inset-bottom));
+        padding-right: calc(var(--page-padding) + 15px + env(safe-area-inset-right));
       }
     }
   }
@@ -13326,7 +13324,7 @@ body.light-mode #topBar select:focus-visible {
   .confirm-dialog-surface {
     width: min(420px, calc(100vw - 2 * var(--modal-frame-padding, 24px)));
     max-width: 420px;
-    padding: 28px;
+    padding: 32px;
     border-radius: 16px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
     display: flex;
@@ -13336,7 +13334,7 @@ body.light-mode #topBar select:focus-visible {
 
   .confirm-dialog-surface .modal-header {
     border-bottom: none;
-    padding-bottom: 12px;
+    padding-bottom: 20px;
   }
 
   .confirm-dialog-surface .modal-title {
@@ -13354,7 +13352,7 @@ body.light-mode #topBar select:focus-visible {
   }
 
   .confirm-dialog-surface .modal-footer {
-    margin-top: 24px;
+    margin-top: 32px;
     display: flex;
     justify-content: flex-end;
   }

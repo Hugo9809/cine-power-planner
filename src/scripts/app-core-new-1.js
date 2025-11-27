@@ -4701,7 +4701,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     menu.classList.remove('open');
     menu.scrollTop = 0;
     menu.setAttribute('hidden', '');
-    overlay.classList.add('hidden');
     const menuLabel = toggle.dataset?.menuLabel || 'Menu';
     const menuHelp = toggle.dataset?.menuHelp || menuLabel;
     toggle.setAttribute('aria-expanded', 'false');
@@ -4724,7 +4723,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (menu.classList.contains('open')) return;
     menu.classList.add('open');
     menu.removeAttribute('hidden');
-    overlay.classList.remove('hidden');
     toggle.setAttribute('aria-expanded', 'true');
     const closeLabel =
       toggle.dataset?.closeLabel ||
