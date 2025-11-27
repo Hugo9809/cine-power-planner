@@ -3417,6 +3417,7 @@ html.install-banner-visible .app-modal[open] {
   display: flex;
   flex-direction: column;
   gap: clamp(0.6rem, 1.8vw, 0.95rem);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
   padding-bottom: clamp(0.85rem, 2.1vw, 1.2rem);
   border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
 }
@@ -3465,6 +3466,7 @@ html.install-banner-visible .app-modal[open] {
   flex-direction: column;
   gap: clamp(0.9rem, 2.2vw, 1.35rem);
   padding-top: clamp(1rem, 2.5vw, 1.5rem);
+  padding-inline: clamp(1rem, 2.5vw, 1.5rem);
 }
 
 .modal-section {
@@ -3475,6 +3477,8 @@ html.install-banner-visible .app-modal[open] {
 
 .modal-footer {
   margin-top: clamp(1rem, 2.6vw, 1.5rem);
+  padding-inline: clamp(1rem, 2.5vw, 1.5rem);
+  padding-bottom: clamp(1rem, 2.5vw, 1.5rem);
 }
 
 .dark-mode .modal-title {

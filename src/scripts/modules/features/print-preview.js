@@ -61,6 +61,10 @@
     function bindEvents() {
         if (!state.elements.modal) return;
 
+        // Remove existing listeners to avoid duplicates if re-bound
+        const newCloseBtn = state.elements.closeBtn.cloneNode(true);
+        state.elements.closeBtn.parentNode.replaceChild(newCloseBtn, state.elements.closeBtn);
+        state.elements.closeBtn = newCloseBtn;
         state.elements.closeBtn.addEventListener('click', closePreview);
 
         // Layout Toggle
@@ -83,16 +87,98 @@
 
         // Actions
         if (state.elements.printBtn) {
+            const newPrintBtn = state.elements.printBtn.cloneNode(true);
+            state.elements.printBtn.parentNode.replaceChild(newPrintBtn, state.elements.printBtn);
+            state.elements.printBtn = newPrintBtn;
             state.elements.printBtn.addEventListener('click', () => {
                 triggerNativePrint();
             });
         }
         if (state.elements.exportBtn) {
+            const newExportBtn = state.elements.exportBtn.cloneNode(true);
+            state.elements.exportBtn.parentNode.replaceChild(newExportBtn, state.elements.exportBtn);
+            state.elements.exportBtn = newExportBtn;
             state.elements.exportBtn.addEventListener('click', () => {
-                // For now, export is same as print but maybe with different title/settings
                 triggerNativePrint();
             });
         }
+    }
+
+    // --- Helper Functions ---
+
+    function generateRentalDeviceGrid() {
+        const sourceDevs = document.getElementById('overviewDeviceSection');
+        if (!sourceDevs) return '<p>No devices selected.</p>';
+
+        const container = document.createElement('div');
+        container.className = 'device-category-container';
+
+        // Parse the source HTML to find categories and devices
+        // Assuming structure: <h3>Category</h3> ... <div class="device-block">...</div>
+        // We need to group them.
+
+        const children = Array.from(sourceDevs.children);
+        let currentCategoryDiv = null;
+
+        children.forEach(child => {
+            if (child.tagName === 'H3') {
+                // New Category
+                currentCategoryDiv = document.createElement('div');
+                currentCategoryDiv.className = 'device-category';
+
+                const title = document.createElement('h3');
+                title.innerHTML = child.innerHTML; // Keep icons
+                currentCategoryDiv.appendChild(title);
+
+                container.appendChild(currentCategoryDiv);
+            } else if (child.classList.contains('device-block')) {
+                if (!currentCategoryDiv) {
+                    // Orphaned device, create a generic category
+                    currentCategoryDiv = document.createElement('div');
+                    currentCategoryDiv.className = 'device-category';
+                    const title = document.createElement('h3');
+                    title.textContent = 'Other';
+                    currentCategoryDiv.appendChild(title);
+                    container.appendChild(currentCategoryDiv);
+                }
+                // Clone the device block
+                const clone = child.cloneNode(true);
+                currentCategoryDiv.appendChild(clone);
+            }
+        });
+
+        return container.outerHTML;
+    }
+
+    function generatePowerSummary() {
+        // Extract values from main DOM
+        const totalWatt = document.getElementById('totalPower')?.textContent || '0 W';
+        const runtime = document.getElementById('batteryLife')?.textContent || '—';
+        const batteryCount = document.getElementById('batteryCount')?.textContent || '0';
+
+        // Try to get more details if available
+        const batteryName = document.getElementById('batterySelect')?.selectedOptions[0]?.text || 'Battery';
+        const peakLoad = document.getElementById('totalCurrent144Elem')?.textContent || ''; // Approximation
+
+        return `
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
+                    <div style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">Total Load</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #14532d;">${totalWatt}</div>
+                    <div style="font-size: 0.8em; color: #166534;">${peakLoad ? 'Peak: ' + peakLoad : ''}</div>
+                </div>
+                <div style="flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;">
+                    <div style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">Est. Runtime</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #1e3a8a;">${runtime}</div>
+                    <div style="font-size: 0.8em; color: #1e40af;">w/ ${batteryName}</div>
+                </div>
+                <div style="flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;">
+                    <div style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">Daily Needs</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">${batteryCount} Batts</div>
+                    <div style="font-size: 0.8em; color: #9a3412;">for 12h day</div>
+                </div>
+            </div>
+        `;
     }
 
     // --- Rendering Logic ---
@@ -106,7 +192,6 @@
         // 1. Header (Project Info)
         const header = document.createElement('div');
         header.className = 'preview-header';
-        // Grab project info from global state or DOM
         const projectName = document.getElementById('setupName')?.value || 'Untitled Project';
         const production = document.getElementById('productionInput')?.value || '';
         const dateStr = new Date().toLocaleDateString();
@@ -119,116 +204,91 @@
         paper.appendChild(header);
 
         // 2. Project Requirements
-        if (state.preferences.sections.project) {
-            const reqSection = document.createElement('section');
-            reqSection.id = 'preview-section-project';
-            reqSection.className = 'print-section';
-            // Clone from main DOM if available, or mock for now
-            const sourceReq = document.getElementById('projectRequirementsOutput');
-            if (sourceReq) {
-                reqSection.innerHTML = sourceReq.innerHTML;
-            } else {
-                reqSection.innerHTML = '<p><em>No project requirements data.</em></p>';
-            }
-            paper.appendChild(reqSection);
+        const reqSection = document.createElement('section');
+        reqSection.id = 'preview-section-project';
+        reqSection.className = 'print-section project-requirements-section';
+        const sourceReq = document.getElementById('projectRequirementsOutput');
+        if (sourceReq) {
+            reqSection.innerHTML = sourceReq.innerHTML;
+        } else {
+            reqSection.innerHTML = '<p><em>No project requirements data.</em></p>';
         }
+        paper.appendChild(reqSection);
 
         // 3. Device Selection (Rental Layout vs Standard)
-        if (state.preferences.sections.devices) {
-            const devSection = document.createElement('section');
-            devSection.id = 'preview-section-devices';
-            devSection.className = 'print-section';
-            devSection.innerHTML = '<h2>Device Selection</h2>';
+        const devSection = document.createElement('section');
+        devSection.id = 'preview-section-devices';
+        devSection.className = 'print-section';
+        devSection.innerHTML = '<h2>Device Selection</h2>';
 
-            if (state.preferences.layout === 'rental') {
-                // Generate Grid Layout
-                const grid = document.createElement('div');
-                grid.className = 'device-category-container';
-
-                // TODO: Real logic to grab devices from state and populate grid
-                // For now, cloning the overview list and wrapping it
-                const sourceDevs = document.getElementById('overviewDeviceSection');
-                if (sourceDevs) {
-                    // This is a simplification. Real implementation needs to parse the device list.
-                    // For the prototype, we'll just dump the source HTML.
-                    // Ideally we iterate over `GLOBAL_SCOPE.devices` or similar.
-                    grid.innerHTML = sourceDevs.innerHTML;
-                }
-                devSection.appendChild(grid);
-            } else {
-                // Standard List
-                const sourceDevs = document.getElementById('overviewDeviceSection');
-                if (sourceDevs) {
-                    devSection.innerHTML += sourceDevs.innerHTML;
-                }
+        if (state.preferences.layout === 'rental') {
+            devSection.innerHTML += generateRentalDeviceGrid();
+        } else {
+            const sourceDevs = document.getElementById('overviewDeviceSection');
+            if (sourceDevs) {
+                devSection.innerHTML += sourceDevs.innerHTML;
             }
-            paper.appendChild(devSection);
         }
+        paper.appendChild(devSection);
 
         // 4. Power Diagram
-        if (state.preferences.sections.diagram) {
-            const diagSection = document.createElement('section');
-            diagSection.id = 'preview-section-diagram';
-            diagSection.className = 'print-section';
-            diagSection.innerHTML = '<h2>Power Diagram</h2>';
-            const sourceDiag = document.getElementById('setupDiagram');
-            if (sourceDiag) {
-                // Canvas cloning is tricky. We might need to re-render or use toDataURL
-                const canvas = sourceDiag.querySelector('canvas');
-                if (canvas) {
-                    const img = document.createElement('img');
-                    img.src = canvas.toDataURL();
-                    img.style.maxWidth = '100%';
-                    diagSection.appendChild(img);
-                } else {
-                    diagSection.innerHTML += sourceDiag.innerHTML;
-                }
+        const diagSection = document.createElement('section');
+        diagSection.id = 'preview-section-diagram';
+        diagSection.className = 'print-section';
+        diagSection.innerHTML = '<h2>Power Diagram</h2>';
+        const sourceDiag = document.getElementById('setupDiagram');
+        if (sourceDiag) {
+            // Clone SVG or Canvas
+            const svg = sourceDiag.querySelector('svg');
+            if (svg) {
+                diagSection.appendChild(svg.cloneNode(true));
+            } else {
+                diagSection.innerHTML += sourceDiag.innerHTML;
             }
-            paper.appendChild(diagSection);
         }
+        paper.appendChild(diagSection);
 
         // 5. Power Summary
-        // Always show summary? Or controlled by 'battery' toggle? 
-        // Mockup has "Power Summary" separate. Let's assume it's part of "Battery Comparison" or separate.
-        // The mockup has "Power Summary" section. Let's add it if 'battery' is checked for now, or add a new toggle.
-        // Re-using 'battery' toggle for Power Summary + Battery Comparison
-        if (state.preferences.sections.battery) {
-            const powerSection = document.createElement('section');
-            powerSection.className = 'print-section';
-            powerSection.innerHTML = '<h2>Power Summary</h2>';
-            const sourceResults = document.getElementById('resultsSection'); // or heroCard
-            if (sourceResults) {
-                powerSection.innerHTML += sourceResults.innerHTML;
-            }
-            paper.appendChild(powerSection);
+        const powerSection = document.createElement('section');
+        powerSection.id = 'preview-section-battery'; // Using battery ID for toggle mapping
+        powerSection.className = 'print-section';
+        powerSection.style.marginTop = '20px';
+        powerSection.innerHTML = '<h2>Power Summary</h2>';
+        powerSection.innerHTML += generatePowerSummary();
+
+        // Also append Battery Comparison Table if needed, or just the summary
+        const sourceBatteryTable = document.getElementById('batteryComparison');
+        if (sourceBatteryTable) {
+            const batteryClone = sourceBatteryTable.cloneNode(true);
+            // Remove the heading from clone as we have our own section heading
+            const heading = batteryClone.querySelector('h2');
+            if (heading) heading.remove();
+            powerSection.appendChild(batteryClone);
         }
 
+        paper.appendChild(powerSection);
+
         // 6. Gear List
-        if (state.preferences.sections.gearList) {
-            const gearSection = document.createElement('section');
-            gearSection.id = 'preview-section-gearList';
-            gearSection.className = 'print-section';
-            gearSection.innerHTML = '<h2>Gear List</h2>';
-            const sourceGear = document.getElementById('gearListOutput');
-            if (sourceGear) {
-                gearSection.innerHTML += sourceGear.innerHTML;
-            }
-            paper.appendChild(gearSection);
+        const gearSection = document.createElement('section');
+        gearSection.id = 'preview-section-gearList';
+        gearSection.className = 'print-section gear-list-section';
+        gearSection.innerHTML = '<h2>Gear List</h2>';
+        const sourceGear = document.getElementById('gearListOutput');
+        if (sourceGear) {
+            gearSection.innerHTML += sourceGear.innerHTML;
         }
+        paper.appendChild(gearSection);
 
         updateSectionVisibility();
     }
 
     function updateSectionVisibility() {
-        // Logic to hide/show sections based on preferences
-        // Since we re-render on layout change, this might be redundant if we just re-render on toggle too.
-        // But for performance, we can just toggle display.
         const map = {
             project: 'preview-section-project',
             devices: 'preview-section-devices',
             diagram: 'preview-section-diagram',
             gearList: 'preview-section-gearList',
-            // battery: ...
+            battery: 'preview-section-battery'
         };
 
         Object.entries(map).forEach(([key, id]) => {
@@ -243,11 +303,11 @@
         if (!state.elements.modal) initializeDomReferences();
         if (!state.elements.modal) return;
 
-        bindEvents(); // Re-bind or check if bound
+        bindEvents();
         renderPreviewContent();
         state.elements.modal.classList.remove('hidden');
         state.isOpen = true;
-        document.body.style.overflow = 'hidden'; // Prevent background scroll
+        document.body.style.overflow = 'hidden';
     }
 
     function closePreview() {
@@ -258,8 +318,6 @@
     }
 
     function triggerNativePrint() {
-        // We want to print ONLY the paper content.
-        // The easiest way is to add a class to body that hides everything else via CSS media print
         document.body.classList.add('printing-preview');
         window.print();
         document.body.classList.remove('printing-preview');

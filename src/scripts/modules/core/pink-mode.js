@@ -689,8 +689,14 @@
             return null;
           })()
             .catch(error => {
-              console.warn('Could not load pink mode asset', error);
+              console.warn('Could not load pink mode asset', normalized, error);
               return null;
+            })
+            // Debug log
+            .then(result => {
+              console.log(`[PinkMode] Asset loaded: ${normalized} -> ${result ? 'Success' : 'Failed'}`);
+              if (!result) console.log(`[PinkMode] Failed asset url was: ${fallbackUrl}`);
+              return result; // Ensure the result is passed down the chain
             })
             .finally(() => {
               pinkModeAssetTextPromiseCache.delete(normalized);
@@ -1459,6 +1465,7 @@
               return Object.freeze([]);
             })
             .then(templates => {
+              console.log('[PinkMode] Loaded Templates:', templates.map(t => t ? t.name : 'null'));
               pinkModeAnimatedIconTemplates = templates;
               updatePinkModeAnimatedIconTemplateRotation(templates);
               console.log('[PinkMode] Loaded', templates.length, 'icon templates in background');
@@ -1491,6 +1498,7 @@
 
         function selectPinkModeAnimatedIconTemplate(availableTemplates) {
           if (!Array.isArray(availableTemplates) || !availableTemplates.length) {
+            console.log('[PinkMode] No available templates to select from.');
             return null;
           }
 

@@ -1943,6 +1943,13 @@ function generatePrintableOverview(config = {}) {
     const openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
     if (openOptionsBtn) {
         openOptionsBtn.addEventListener('click', () => {
+            // New Print Preview Integration
+            const globalScope = (typeof window !== 'undefined' ? window : this);
+            if (globalScope.cineFeaturePrintPreview && typeof globalScope.cineFeaturePrintPreview.open === 'function') {
+                globalScope.cineFeaturePrintPreview.open();
+                return;
+            }
+
             const storedPreferences = loadPrintPreferences() || { sections: {}, layout: 'standard' };
             const dialogContext = getPrintOptionsDialogContext();
             const onConfirm = (result) => {
