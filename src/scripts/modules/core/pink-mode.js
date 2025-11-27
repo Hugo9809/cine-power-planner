@@ -689,7 +689,7 @@
             return null;
           })()
             .catch(error => {
-              console.warn('Could not load pink mode asset', error);
+              console.warn('Could not load pink mode asset', normalized, error);
               return null;
             })
             .finally(() => {
@@ -1459,6 +1459,7 @@
               return Object.freeze([]);
             })
             .then(templates => {
+              console.log('Loaded Pink Mode Templates:', templates.map(t => t ? t.name : 'null'));
               pinkModeAnimatedIconTemplates = templates;
               updatePinkModeAnimatedIconTemplateRotation(templates);
               return templates;
