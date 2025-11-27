@@ -78,22 +78,22 @@
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? MODULE_BASE.freezeDeep
     : function identity(value) {
-        return value;
-      };
+      return value;
+    };
 
   const exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function expose(name, value, options) {
-        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
-      }
+      return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
+    }
     : function fallbackExpose(name, value) {
-        try {
-          GLOBAL_SCOPE[name] = value;
-          return true;
-        } catch (error) {
-          void error;
-          return false;
-        }
-      };
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (error) {
+        void error;
+        return false;
+      }
+    };
 
   const moduleRegistry = typeof MODULE_BASE.getModuleRegistry === 'function'
     ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE)
@@ -101,18 +101,18 @@
 
   const registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function register(name, api, options, onError) {
-        return MODULE_BASE.registerOrQueueModule(
-          name,
-          api,
-          options,
-          onError,
-          GLOBAL_SCOPE,
-          moduleRegistry,
-        );
-      }
+      return MODULE_BASE.registerOrQueueModule(
+        name,
+        api,
+        options,
+        onError,
+        GLOBAL_SCOPE,
+        moduleRegistry,
+      );
+    }
     : function noopRegister() {
-        return false;
-      };
+      return false;
+    };
 
   function sanitizeLogger(candidate) {
     if (!candidate || typeof candidate !== 'object') {
@@ -141,13 +141,13 @@
       typeof context.openFallbackPrintView === 'function'
         ? context.openFallbackPrintView
         : function noopFallback() {
-            return false;
-          };
+          return false;
+        };
 
     const closeAfterPrint =
       typeof context.closeAfterPrint === 'function'
         ? context.closeAfterPrint
-        : function noopClose() {};
+        : function noopClose() { };
 
     const printDocumentTitle = typeof context.printDocumentTitle === 'string'
       ? context.printDocumentTitle
@@ -260,13 +260,25 @@
 
     let success = false;
 
-    if (preferFallback && !isExportReason) {
-      success = attemptFallback();
-      if (!success) {
+    // Try Print Preview first
+    if (!success && GLOBAL_SCOPE.cineFeaturePrintPreview && typeof GLOBAL_SCOPE.cineFeaturePrintPreview.open === 'function') {
+      try {
+        GLOBAL_SCOPE.cineFeaturePrintPreview.open();
+        success = true;
+      } catch (previewError) {
+        log(logger, 'warn', `${logPrefix}: preview failed to open.`, previewError);
+      }
+    }
+
+    if (!success) {
+      if (preferFallback && !isExportReason) {
+        success = attemptFallback();
+        if (!success) {
+          success = attemptNativePrint();
+        }
+      } else {
         success = attemptNativePrint();
       }
-    } else {
-      success = attemptNativePrint();
     }
 
     if (!success && fallbackAttempts === 0) {

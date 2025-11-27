@@ -528,94 +528,94 @@ function logOverview(level, message, detail, meta) {
                     overviewConsoleFallback.warn('Overview logger invocation failed', loggerError, { meta: consoleMeta });
                 } catch (consoleError) {
                     void consoleError;
-    }
-}
-
-/* exported resolveOverviewGearListSections */
-var resolveOverviewGearListSections = function resolveOverviewGearListSections(html) {
-    const normalizedHtml = typeof html === 'string' ? html : '';
-    if (!normalizedHtml) {
-        return { projectHtml: '', gearHtml: '' };
-    }
-
-    const fallbackResult = { projectHtml: '', gearHtml: normalizedHtml };
-
-    const globalScope = (typeof globalThis !== 'undefined' && globalThis)
-        || (typeof window !== 'undefined' && window)
-        || (typeof self !== 'undefined' && self)
-        || (typeof global !== 'undefined' && global)
-        || null;
-
-    const trySplit = (fn, source) => {
-        if (typeof fn !== 'function') {
-            return null;
-        }
-        try {
-            const result = fn.call(globalScope, normalizedHtml);
-            if (!result || typeof result !== 'object') {
-                return null;
+                }
             }
-            const projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
-            const gearHtml = typeof result.gearHtml === 'string'
-                ? result.gearHtml
-                : (projectHtml ? '' : normalizedHtml);
-            return { projectHtml, gearHtml };
-        } catch (error) {
-            logOverview('warn', 'Unable to split gear list HTML for overview rendering.', error, {
-                action: 'split-gear-html',
-                source,
-            });
-            return null;
-        }
-    };
 
-    const candidates = [];
-    if (typeof getSafeGearListHtmlSections === 'function') {
-        candidates.push({ fn: getSafeGearListHtmlSections, source: 'global-getSafeGearListHtmlSections' });
-    }
-    if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.getSafeGearListHtmlSections === 'function') {
-        candidates.push({ fn: globalScope.cineGearList.getSafeGearListHtmlSections, source: 'cineGearList.getSafeGearListHtmlSections' });
-    }
-    if (typeof splitGearListHtml === 'function') {
-        candidates.push({ fn: splitGearListHtml, source: 'global-splitGearListHtml' });
-    }
-    if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.splitGearListHtml === 'function') {
-        candidates.push({ fn: globalScope.cineGearList.splitGearListHtml, source: 'cineGearList.splitGearListHtml' });
-    }
+            /* exported resolveOverviewGearListSections */
+            var resolveOverviewGearListSections = function resolveOverviewGearListSections(html) {
+                const normalizedHtml = typeof html === 'string' ? html : '';
+                if (!normalizedHtml) {
+                    return { projectHtml: '', gearHtml: '' };
+                }
 
-    for (let index = 0; index < candidates.length; index += 1) {
-        const candidate = candidates[index];
-        const sections = trySplit(candidate.fn, candidate.source);
-        if (sections) {
-            return sections;
-        }
-    }
+                const fallbackResult = { projectHtml: '', gearHtml: normalizedHtml };
 
-    return fallbackResult;
-};
+                const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+                    || (typeof window !== 'undefined' && window)
+                    || (typeof self !== 'undefined' && self)
+                    || (typeof global !== 'undefined' && global)
+                    || null;
 
-(function exposeOverviewGearListSections() {
-    const scopes = [];
-    if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
-    if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
-    if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
-    if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+                const trySplit = (fn, source) => {
+                    if (typeof fn !== 'function') {
+                        return null;
+                    }
+                    try {
+                        const result = fn.call(globalScope, normalizedHtml);
+                        if (!result || typeof result !== 'object') {
+                            return null;
+                        }
+                        const projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
+                        const gearHtml = typeof result.gearHtml === 'string'
+                            ? result.gearHtml
+                            : (projectHtml ? '' : normalizedHtml);
+                        return { projectHtml, gearHtml };
+                    } catch (error) {
+                        logOverview('warn', 'Unable to split gear list HTML for overview rendering.', error, {
+                            action: 'split-gear-html',
+                            source,
+                        });
+                        return null;
+                    }
+                };
 
-    for (let index = 0; index < scopes.length; index += 1) {
-        const scope = scopes[index];
-        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-            continue;
-        }
+                const candidates = [];
+                if (typeof getSafeGearListHtmlSections === 'function') {
+                    candidates.push({ fn: getSafeGearListHtmlSections, source: 'global-getSafeGearListHtmlSections' });
+                }
+                if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.getSafeGearListHtmlSections === 'function') {
+                    candidates.push({ fn: globalScope.cineGearList.getSafeGearListHtmlSections, source: 'cineGearList.getSafeGearListHtmlSections' });
+                }
+                if (typeof splitGearListHtml === 'function') {
+                    candidates.push({ fn: splitGearListHtml, source: 'global-splitGearListHtml' });
+                }
+                if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.splitGearListHtml === 'function') {
+                    candidates.push({ fn: globalScope.cineGearList.splitGearListHtml, source: 'cineGearList.splitGearListHtml' });
+                }
 
-        try {
-            if (!scope.resolveOverviewGearListSections) {
-                scope.resolveOverviewGearListSections = resolveOverviewGearListSections;
-            }
-        } catch (assignError) {
-            void assignError;
-        }
-    }
-})();
+                for (let index = 0; index < candidates.length; index += 1) {
+                    const candidate = candidates[index];
+                    const sections = trySplit(candidate.fn, candidate.source);
+                    if (sections) {
+                        return sections;
+                    }
+                }
+
+                return fallbackResult;
+            };
+
+            (function exposeOverviewGearListSections() {
+                const scopes = [];
+                if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+                if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+                if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+                if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+                for (let index = 0; index < scopes.length; index += 1) {
+                    const scope = scopes[index];
+                    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+                        continue;
+                    }
+
+                    try {
+                        if (!scope.resolveOverviewGearListSections) {
+                            scope.resolveOverviewGearListSections = resolveOverviewGearListSections;
+                        }
+                    } catch (assignError) {
+                        void assignError;
+                    }
+                }
+            })();
 
         }
     } else {
@@ -1097,8 +1097,8 @@ function generatePrintableOverview(config = {}) {
             let deviceInfo;
             if (subcategory) {
                 deviceInfo = devices[category] &&
-                       devices[category][subcategory] &&
-                       devices[category][subcategory][deviceKey];
+                    devices[category][subcategory] &&
+                    devices[category][subcategory][deviceKey];
             } else {
                 deviceInfo = devices[category] && devices[category][deviceKey];
             }
@@ -1444,21 +1444,21 @@ function generatePrintableOverview(config = {}) {
     processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
 
     sectionOrder.forEach(key => {
-      const heading = t[key] || key;
-      const icon = overviewSectionIcons[key] || '';
-      const iconHtml = icon && typeof iconMarkup === 'function'
-        ? iconMarkup(icon, 'category-icon')
-        : icon
-          ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
-          : '';
-      const isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
-      const isLensList = key === 'category_lenses';
-      const gridClasses = isFizList
-        ? 'device-block-grid two-column fiz-single-column'
-        : isLensList
-          ? 'device-block-grid two-column lens-device-grid'
-          : 'device-block-grid single-column';
-      deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
+        const heading = t[key] || key;
+        const icon = overviewSectionIcons[key] || '';
+        const iconHtml = icon && typeof iconMarkup === 'function'
+            ? iconMarkup(icon, 'category-icon')
+            : icon
+                ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
+                : '';
+        const isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
+        const isLensList = key === 'category_lenses';
+        const gridClasses = isFizList
+            ? 'device-block-grid two-column fiz-single-column'
+            : isLensList
+                ? 'device-block-grid two-column lens-device-grid'
+                : 'device-block-grid single-column';
+        deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
     });
     deviceListHtml += '</div>';
     const deviceSectionHeading = deviceListHtml
@@ -1469,7 +1469,7 @@ function generatePrintableOverview(config = {}) {
         : '';
 
     const breakdownHtml = breakdownListElem.innerHTML;
-    const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
+    // batteryLifeUnitElem is no longer needed as heroRuntime includes units
     const powerDiagramElem = typeof document !== 'undefined'
         ? document.getElementById('powerDiagram')
         : null;
@@ -1499,14 +1499,19 @@ function generatePrintableOverview(config = {}) {
         }
         powerDiagramHtml = clone.outerHTML;
     }
+    const getElemText = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.textContent : '';
+    };
+
     const resultsHtml = `
         <ul id="breakdownList">${breakdownHtml}</ul>
         ${powerDiagramHtml}
-        <p><strong>${t.totalPowerLabel}</strong> ${escapeHtmlSafe(totalPowerElem.textContent)} W</p>
-        <p><strong>${t.totalCurrent144Label}</strong> ${escapeHtmlSafe(totalCurrent144Elem.textContent)} A</p>
-        <p><strong>${t.totalCurrent12Label}</strong> ${escapeHtmlSafe(totalCurrent12Elem.textContent)} A</p>
-        <p><strong>${t.batteryLifeLabel}</strong> ${escapeHtmlSafe(batteryLifeElem.textContent)} ${batteryLifeUnitElem ? escapeHtmlSafe(batteryLifeUnitElem.textContent) : ''}</p>
-        <p><strong>${t.batteryCountLabel}</strong> ${escapeHtmlSafe(batteryCountElem.textContent)}</p>
+        <p><strong>${t.totalPowerLabel}</strong> ${escapeHtmlSafe(getElemText('heroTotalDraw'))}</p>
+        <p><strong>${t.totalCurrent144Label}</strong> ${escapeHtmlSafe(getElemText('heroCurrent144'))}</p>
+        <p><strong>${t.totalCurrent12Label}</strong> ${escapeHtmlSafe(getElemText('heroCurrent12'))}</p>
+        <p><strong>${t.batteryLifeLabel}</strong> ${escapeHtmlSafe(getElemText('heroRuntime'))}</p>
+        <p><strong>${t.batteryCountLabel}</strong> ${escapeHtmlSafe(getElemText('heroBatteryCount'))}</p>
     `;
 
     // Get current warning messages with their colors
@@ -2362,7 +2367,7 @@ ${fallbackRoot.outerHTML}
             : () => false;
         const cleanup = context && typeof context.closeAfterPrint === 'function'
             ? context.closeAfterPrint
-            : () => {};
+            : () => { };
         const printTitle = context && typeof context.printDocumentTitle === 'string'
             ? context.printDocumentTitle
             : '';
