@@ -1459,7 +1459,6 @@
               return Object.freeze([]);
             })
             .then(templates => {
-              console.log('Loaded Pink Mode Templates:', templates.map(t => t ? t.name : 'null'));
               pinkModeAnimatedIconTemplates = templates;
               updatePinkModeAnimatedIconTemplateRotation(templates);
               return templates;

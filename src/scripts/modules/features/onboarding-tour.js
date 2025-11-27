@@ -7687,19 +7687,22 @@
     applyHelpButtonLabel();
   }
 
-  function confirmSkip() {
-    if (!tourTexts.skipConfirmationTitle || !tourTexts.skipConfirmationAccept) {
-      skipTutorial();
-      return;
+  function handleSkipTutorial(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
     }
 
-    const title = tourTexts.skipConfirmationTitle || '';
-    const message = tourTexts.skipConfirmationBody || '';
-    const accept = tourTexts.skipConfirmationAccept || '';
-    const cancel = tourTexts.skipConfirmationCancel || '';
+    const title = resolveText('tutorialSkipTitle', 'Skip Tutorial');
+    const message = resolveText('tutorialSkipMessage', 'Are you sure you want to skip the tutorial? You can restart it later from the Help menu.');
+    const accept = resolveText('tutorialSkipConfirm', 'Skip');
+    const cancel = resolveText('tutorialSkipCancel', 'Cancel');
 
-    if (GLOBAL_SCOPE.cineShowConfirmDialog) {
-      GLOBAL_SCOPE.cineShowConfirmDialog({
+    // Try to find the custom dialog helper on the global scope or window
+    const showConfirm = GLOBAL_SCOPE.cineShowConfirmDialog || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+
+    if (typeof showConfirm === 'function') {
+      showConfirm({
         title,
         message,
         confirmLabel: accept,
