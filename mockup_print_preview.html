@@ -233,8 +233,13 @@
             border-bottom: 1px solid var(--accent-color);
             color: var(--accent-color);
             font-weight: bold;
-            background: #fff;
+            background: transparent;
             padding-top: 12px;
+        }
+
+        .paper .gear-table tr,
+        .paper .gear-table tr:nth-child(even) {
+            background-color: transparent !important;
         }
 
         .paper .gear-item {
@@ -551,9 +556,9 @@
                 <table class="gear-table">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">Category</th>
-                            <th style="width: 45%;">Item</th>
-                            <th style="width: 10%;">Qty</th>
+                            <th style="width: 20%;">Category</th>
+                            <th style="width: 50%;">Item</th>
+                            <th style="width: 10%; text-align: center;">Qty</th>
                             <th style="width: 20%;">Notes</th>
                         </tr>
                     </thead>
@@ -562,33 +567,21 @@
                             <td colspan="4">Camera System</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Camera Body</span>
-                                    <span class="gear-select-value">ARRI Alexa 35</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Camera Body</td>
+                            <td><span class="gear-select-value">ARRI Alexa 35</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Unit A</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Cage</span>
-                                    <span class="gear-select-value">ARRI Production Set</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Cage</td>
+                            <td><span class="gear-select-value">ARRI Production Set</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Top Plate, Side Brackets, CCH-5</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Baseplate</span>
-                                    <span class="gear-select-value">ARRI CBP-5</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Baseplate</td>
+                            <td><span class="gear-select-value">ARRI CBP-5</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>19mm Rod Support</td>
                         </tr>
 
@@ -596,63 +589,39 @@
                             <td colspan="4">Lenses</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 18mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 18mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 25mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 25mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 32mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 32mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 50mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 50mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 75mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 75mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Prime Lens</span>
-                                    <span class="gear-select-value">Cooke S4/i 100mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Prime Lens</td>
+                            <td><span class="gear-select-value">Cooke S4/i 100mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>T2.0</td>
                         </tr>
 
@@ -660,54 +629,34 @@
                             <td colspan="4">Monitoring</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>On-Camera</span>
-                                    <span class="gear-select-value">SmallHD Ultra 7</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>On-Camera</td>
+                            <td><span class="gear-select-value">SmallHD Ultra 7</span></td>
+                            <td style="text-align: center;">1</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Director's</span>
-                                    <span class="gear-select-value">SmallHD Cine 13</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Director's</td>
+                            <td><span class="gear-select-value">SmallHD Cine 13</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Yoke Mount</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>AC Handheld</span>
-                                    <span class="gear-select-value">SmallHD 703 Bolt</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>AC Handheld</td>
+                            <td><span class="gear-select-value">SmallHD 703 Bolt</span></td>
+                            <td style="text-align: center;">1</td>
                             <td><span class="icon-glyph" style="color: #2e7d32;" data-icon-font="uicons">&#xE88E;</span>
                                 Own Gear</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Wireless TX</span>
-                                    <span class="gear-select-value">Teradek Bolt 6 XT 1500</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Wireless TX</td>
+                            <td><span class="gear-select-value">Teradek Bolt 6 XT 1500</span></td>
+                            <td style="text-align: center;">1</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Wireless RX</span>
-                                    <span class="gear-select-value">Teradek Bolt 6 XT 1500</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Wireless RX</td>
+                            <td><span class="gear-select-value">Teradek Bolt 6 XT 1500</span></td>
+                            <td style="text-align: center;">2</td>
                             <td></td>
                         </tr>
 
@@ -715,33 +664,21 @@
                             <td colspan="4">FIZ & Control</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Hand Unit</span>
-                                    <span class="gear-select-value">Arri Hi-5</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Hand Unit</td>
+                            <td><span class="gear-select-value">Arri Hi-5</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>RF Motor License</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Motor</span>
-                                    <span class="gear-select-value">Arri cforce mini RF</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Motor</td>
+                            <td><span class="gear-select-value">Arri cforce mini RF</span></td>
+                            <td style="text-align: center;">1</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Motor</span>
-                                    <span class="gear-select-value">Arri cforce mini</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Motor</td>
+                            <td><span class="gear-select-value">Arri cforce mini</span></td>
+                            <td style="text-align: center;">2</td>
                             <td>Daisy-chained</td>
                         </tr>
 
@@ -749,33 +686,21 @@
                             <td colspan="4">Power</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>On-board Battery</span>
-                                    <span class="gear-select-value">Bebob B290cine</span>
-                                </div>
-                            </td>
-                            <td>8</td>
+                            <td>On-board Battery</td>
+                            <td><span class="gear-select-value">Bebob B290cine</span></td>
+                            <td style="text-align: center;">8</td>
                             <td>B-Mount</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Charger</span>
-                                    <span class="gear-select-value">Bebob BS4</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Charger</td>
+                            <td><span class="gear-select-value">Bebob BS4</span></td>
+                            <td style="text-align: center;">2</td>
                             <td>4-Channel Simultaneous</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Block Battery</span>
-                                    <span class="gear-select-value">Bebob Cube 1200</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Block Battery</td>
+                            <td><span class="gear-select-value">Bebob Cube 1200</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>For Director's Monitor</td>
                         </tr>
 
@@ -783,43 +708,27 @@
                             <td colspan="4">Support</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Fluid Head</span>
-                                    <span class="gear-select-value">OConnor Ultimate 2575D</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Fluid Head</td>
+                            <td><span class="gear-select-value">OConnor Ultimate 2575D</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>150mm Bowl</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Tripod Legs</span>
-                                    <span class="gear-select-value">Ronford-Baker Heavy Duty (Tall)</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Tripod Legs</td>
+                            <td><span class="gear-select-value">Ronford-Baker Heavy Duty (Tall)</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Mitchell / 150mm</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Tripod Legs</span>
-                                    <span class="gear-select-value">Ronford-Baker Heavy Duty (Short)</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Tripod Legs</td>
+                            <td><span class="gear-select-value">Ronford-Baker Heavy Duty (Short)</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Mitchell / 150mm</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Hi-Hat</span>
-                                    <span class="gear-select-value">Ronford-Baker 150mm</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Hi-Hat</td>
+                            <td><span class="gear-select-value">Ronford-Baker 150mm</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Board Mounted</td>
                         </tr>
 
@@ -827,43 +736,27 @@
                             <td colspan="4">Matte Box & Filters</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Matte Box</span>
-                                    <span class="gear-select-value">ARRI LMB 4x5 Pro Set</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Matte Box</td>
+                            <td><span class="gear-select-value">ARRI LMB 4x5 Pro Set</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>3-Stage, Swing-Away</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>ND Filter Set</span>
-                                    <span class="gear-select-value">Tiffen 4x5.65 Full Spectrum IRND</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>ND Filter Set</td>
+                            <td><span class="gear-select-value">Tiffen 4x5.65 Full Spectrum IRND</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>.3, .6, .9, 1.2, 1.5, 1.8, 2.1</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Polarizer</span>
-                                    <span class="gear-select-value">Revar Cine Rota-Pola</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Polarizer</td>
+                            <td><span class="gear-select-value">Revar Cine Rota-Pola</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>4x5.65 Tray Mount</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Diopters</span>
-                                    <span class="gear-select-value">Schneider 138mm</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Diopters</td>
+                            <td><span class="gear-select-value">Schneider 138mm</span></td>
+                            <td style="text-align: center;">2</td>
                             <td>+1, +2</td>
                         </tr>
 
@@ -871,23 +764,15 @@
                             <td colspan="4">Media</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Drive</span>
-                                    <span class="gear-select-value">CODEX Compact Drive 2TB</span>
-                                </div>
-                            </td>
-                            <td>4</td>
+                            <td>Drive</td>
+                            <td><span class="gear-select-value">CODEX Compact Drive 2TB</span></td>
+                            <td style="text-align: center;">4</td>
                             <td>High Speed</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Reader</span>
-                                    <span class="gear-select-value">CODEX Compact Drive Dock</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>Reader</td>
+                            <td><span class="gear-select-value">CODEX Compact Drive Dock</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>Thunderbolt 3</td>
                         </tr>
 
@@ -895,43 +780,27 @@
                             <td colspan="4">Cables</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>SDI Cable</span>
-                                    <span class="gear-select-value">12G-SDI (Short)</span>
-                                </div>
-                            </td>
-                            <td>4</td>
+                            <td>SDI Cable</td>
+                            <td><span class="gear-select-value">12G-SDI (Short)</span></td>
+                            <td style="text-align: center;">4</td>
                             <td>0.3m / 1ft</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>SDI Cable</span>
-                                    <span class="gear-select-value">12G-SDI (Medium)</span>
-                                </div>
-                            </td>
-                            <td>4</td>
+                            <td>SDI Cable</td>
+                            <td><span class="gear-select-value">12G-SDI (Medium)</span></td>
+                            <td style="text-align: center;">4</td>
                             <td>0.6m / 2ft</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Power Cable</span>
-                                    <span class="gear-select-value">RS 3-pin to 2-pin LEMO</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Power Cable</td>
+                            <td><span class="gear-select-value">RS 3-pin to 2-pin LEMO</span></td>
+                            <td style="text-align: center;">2</td>
                             <td>For Teradek</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>Power Cable</span>
-                                    <span class="gear-select-value">D-Tap to 2-pin LEMO</span>
-                                </div>
-                            </td>
-                            <td>2</td>
+                            <td>Power Cable</td>
+                            <td><span class="gear-select-value">D-Tap to 2-pin LEMO</span></td>
+                            <td style="text-align: center;">2</td>
                             <td>Spare</td>
                         </tr>
 
@@ -939,43 +808,27 @@
                             <td colspan="4">Crew</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>DP</span>
-                                    <span class="gear-select-value">Sarah Jenkins</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>DP</td>
+                            <td><span class="gear-select-value">Sarah Jenkins</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>+49 123 456 789</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>1st AC</span>
-                                    <span class="gear-select-value">John Doe</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>1st AC</td>
+                            <td><span class="gear-select-value">John Doe</span></td>
+                            <td style="text-align: center;">1</td>
                             <td>+49 987 654 321</td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>2nd AC</span>
-                                    <span class="gear-select-value">Emily Chen</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>2nd AC</td>
+                            <td><span class="gear-select-value">Emily Chen</span></td>
+                            <td style="text-align: center;">1</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gear-item">
-                                    <span>DIT</span>
-                                    <span class="gear-select-value">Michael Ross</span>
-                                </div>
-                            </td>
-                            <td>1</td>
+                            <td>DIT</td>
+                            <td><span class="gear-select-value">Michael Ross</span></td>
+                            <td style="text-align: center;">1</td>
                             <td></td>
                         </tr>
                     </tbody>

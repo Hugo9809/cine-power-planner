@@ -1,4 +1,4 @@
-```
+
 /* global registerDevice */
 (() => {
     const dronesData = {
