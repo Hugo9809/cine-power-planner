@@ -21094,28 +21094,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   // Ensure mount voltage helpers remain reachable from the session layer.
   Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
 
-  Object.assign(CORE_RUNTIME_CONSTANTS, {
-    // Pink mode animated icon controls are required for theme toggles during imports.
-    startPinkModeAnimatedIcons,
-    stopPinkModeAnimatedIcons,
-    pinkModeIcons,
-    ensureSvgHasAriaHidden,
-    triggerPinkModeIconRain,
-    PINK_MODE_ICON_INTERVAL_MS,
-    PINK_MODE_ICON_ANIMATION_CLASS,
-    PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-    getGridSnapState,
-    setGridSnapState,
-  });
+
 
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
 
   exposeCoreRuntimeBindings({
-    updatePowerSummary: updatePowerSummary,
-    updateBatteryComparison: updateBatteryComparison,
     drawPowerDiagram: drawPowerDiagram,
-    pinkModeIcons: pinkModeIcons,
-    snapToGrid: snapToGrid,
     safeGenerateConnectorSummary: {
       get: () => sessionSafeGenerateConnectorSummary,
       set: value => {
