@@ -215,7 +215,7 @@
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 798
+      "weight_g": 800
     },
     "Anton/Bauer Titon 150 (V-Mount)": {
       "capacity": 144,
@@ -225,25 +225,25 @@
       "weight_g": 1088
     },
     "Anton/Bauer Titon 240 (V-Mount)": {
-      "capacity": 240,
+      "capacity": 238,
       "pinA": 10,
-      "dtapA": 5,
+      "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 1740
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic XT90 (V-Mount)": {
       "capacity": 99,
       "pinA": 12,
-      "dtapA": 5,
+      "dtapA": 12,
       "mount_type": "V-Mount",
       "weight_g": 800
     },
     "Anton/Bauer Dionic XT150 (V-Mount)": {
       "capacity": 156,
       "pinA": 12,
-      "dtapA": 5,
+      "dtapA": 12,
       "mount_type": "V-Mount",
-      "weight_g": 1090
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic 240Wh (V-Mount)": {
       "capacity": 240,
@@ -290,14 +290,14 @@
     "Core SWX Helix Max 98Wh (V-Mount)": {
       "capacity": 98,
       "pinA": 20,
-      "dtapA": 7.14,
+      "dtapA": 20,
       "mount_type": "V-Mount",
-      "weight_g": 800
+      "weight_g": 820
     },
     "Core SWX Helix Max 150Wh (V-Mount)": {
       "capacity": 147,
       "pinA": 20,
-      "dtapA": 7.14,
+      "dtapA": 20,
       "mount_type": "V-Mount",
       "weight_g": 1000
     },
@@ -480,7 +480,7 @@
       "pinA": 10,
       "dtapA": 5,
       "mount_type": "V-Mount",
-      "weight_g": 798
+      "weight_g": 800
     },
     "IDX CUE-D150 (V-Mount)": {
       "capacity": 146,
@@ -500,7 +500,7 @@
       "pinA": 15,
       "dtapA": 10,
       "mount_type": "B-Mount",
-      "weight_g": 1030
+      "weight_g": 1000
     },
     "IDX HV-320B (B-Mount)": {
       "capacity": 320,
@@ -676,7 +676,7 @@
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "Gold-Mount",
-      "weight_g": 1320
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic XT 90 (Gold-Mount)": {
       "capacity": 99,
@@ -711,14 +711,14 @@
       "pinA": 12,
       "dtapA": 12,
       "mount_type": "Gold-Mount",
-      "weight_g": 816
+      "weight_g": 820
     },
     "Core SWX Helix Max 98 (Gold-Mount)": {
       "capacity": 98,
       "pinA": 20,
       "dtapA": 20,
       "mount_type": "Gold-Mount",
-      "weight_g": 800
+      "weight_g": 820
     },
     "Core SWX Helix Max 150 (Gold-Mount)": {
       "capacity": 147,

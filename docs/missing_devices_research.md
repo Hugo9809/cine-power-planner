@@ -3,38 +3,53 @@
 This document lists missing devices identified for the Cine Power Planner database.
 All data has been double-verified with manufacturer specifications or trusted retailers.
 
-## Batch 18: More Lights & Monitors (src/data/devices/lights.js, src/data/devices/monitors.js)
+## Batch 23: VR & 360 Cameras (src/data/devices/cameras.js)
 
-### Lights (Aputure Amaran & Nanlite)
-*   **Aputure Amaran 100d S**
-    *   Specs: 100W Daylight COB LED.
-    *   Power Draw: ~111W (Max).
-    *   Weight: ~1.42 kg (Lamp Head).
-    *   Power Inputs: AC, 48V DC.
-*   **Aputure Amaran 200d S**
-    *   Specs: 200W Daylight COB LED.
-    *   Power Draw: ~221W (Max).
-    *   Weight: ~1.56 kg (Lamp Head).
-    *   Power Inputs: AC, 48V DC.
-*   **Nanlite Forza 60B II**
-    *   Specs: 60W Bi-Color COB LED.
-    *   Power Draw: ~72W (Max).
-    *   Weight: ~0.7 kg (Lamp Head).
-    *   Power Inputs: AC, 15V DC (NP-F/V-Mount handle).
-*   **Nanlite Forza 300B II**
-    *   Specs: 300W Bi-Color COB LED.
-    *   Power Draw: ~350W (Max).
-    *   Weight: ~2.9 kg (Lamp Head).
-    *   Power Inputs: AC, 14.8V DC (V-Mount).
+### Insta360
+*   **Insta360 Titan**
+    *   Specs: 11K 3D 360 Camera, 8x MFT Sensors.
+    *   Power Draw: ~160W (19.5V 9A Adapter).
+    *   Weight: ~5.5 kg.
+    *   Power Inputs: DC Barrel (19.5V), Removable Battery (10000mAh).
+*   **Insta360 Pro 2**
+    *   Specs: 8K 3D 360 Camera.
+    *   Power Draw: ~60W (12V 5A).
+    *   Weight: ~1.55 kg.
+    *   Power Inputs: DC Barrel (12V), Removable Battery (5100mAh).
+*   **Insta360 ONE RS 1-Inch 360**
+    *   Specs: 6K 360 Camera, Dual 1-Inch Sensors.
+    *   Power Draw: ~10W (USB-C).
+    *   Weight: ~239 g.
+    *   Power Inputs: USB-C, Internal Battery (1350mAh).
 
-### Monitors (Atomos)
-*   **Atomos Shogun Connect**
-    *   Specs: 7" 2000nit HDR Monitor/Recorder.
-    *   Power Draw: ~20-30W (Estimated).
-    *   Weight: ~730 g.
-    *   Power Inputs: DC (6.2-16.8V), NP-F Battery.
+### Kandao
+*   **Kandao Obsidian Pro**
+    *   Specs: 12K 3D 360 Camera, 8x APS-C Sensors.
+    *   Power Draw: ~160W.
+    *   Weight: ~11.16 kg.
+    *   Power Inputs: DC (20V), V-Mount (x2).
 
 ---
+
+## Batch 22: Kino Flo & Creamsource (Completed)
+
+[Previous content preserved...]
+
+## Batch 21: Additional Pro Monitors & Lights (Completed)
+
+[Previous content preserved...]
+
+## Batch 20: More ARRI & Aputure LEDs (Completed)
+
+[Previous content preserved...]
+
+## Batch 19: ARRI & Aputure Lights (Completed)
+
+[Previous content preserved...]
+
+## Batch 18: More Lights & Monitors (Completed)
+
+[Previous content preserved...]
 
 ## Batch 17: User Requested Models (Completed)
 

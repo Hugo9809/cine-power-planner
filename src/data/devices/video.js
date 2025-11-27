@@ -3,6 +3,7 @@
   const videoData = {
     "Teradek Bolt 6 LT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 212,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -29,6 +30,7 @@
     },
     "Teradek Bolt 6 XT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 342,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -70,6 +72,7 @@
     },
     "Teradek Bolt 6 MAX TX": {
       "powerDrawWatts": 20,
+      "weight_g": 342,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -111,6 +114,7 @@
     },
     "Teradek Bolt 4K LT": {
       "powerDrawWatts": 9,
+      "weight_g": 206,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -137,6 +141,7 @@
     },
     "Teradek Bolt 4K XT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 360,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -178,6 +183,7 @@
     },
     "Teradek Bolt Pro 300 TX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 226,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -204,6 +210,7 @@
     },
     "Teradek Bolt Pro 600 TX": {
       "powerDrawWatts": 8,
+      "weight_g": 226,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -230,6 +237,7 @@
     },
     "Teradek Bolt Pro 2000 TX": {
       "powerDrawWatts": 7.7,
+      "weight_g": 226,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -256,6 +264,7 @@
     },
     "Teradek Bolt Pro 500 TX": {
       "powerDrawWatts": 7.3,
+      "weight_g": 217,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -282,6 +291,7 @@
     },
     "Teradek Bolt Pro 750 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 217,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -308,6 +318,7 @@
     },
     "Teradek Bolt Pro 1000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 217,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -334,6 +345,7 @@
     },
     "Teradek Bolt 3000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 226,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -360,6 +372,7 @@
     },
     "Teradek Bolt 10000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 600,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -386,6 +399,7 @@
     },
     "Hollyland Pyro S TX": {
       "powerDrawWatts": 11,
+      "weight_g": 207,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -428,6 +442,7 @@
     },
     "Hollyland Mars 300 Pro TX": {
       "powerDrawWatts": 11,
+      "weight_g": 136,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -458,6 +473,7 @@
     },
     "Hollyland Mars 400S Pro TX": {
       "powerDrawWatts": 11,
+      "weight_g": 206,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -500,6 +516,7 @@
     },
     "DJI Transmission (TX)": {
       "powerDrawWatts": 11,
+      "weight_g": 350,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -541,6 +558,7 @@
     },
     "Vaxis Storm 800 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 260,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -570,6 +588,7 @@
     },
     "Vaxis Storm 1000 TX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 260,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -599,6 +618,7 @@
     },
     "Vaxis Storm 3000 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 260,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -628,6 +648,7 @@
     },
     "Dwarf Connection LR1 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 250,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -657,6 +678,7 @@
     },
     "Accsoon CineEye 2S Pro TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 225,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -690,6 +712,7 @@
     },
     "Accsoon CineEye II TX": {
       "powerDrawWatts": 3.5,
+      "weight_g": 200,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -720,6 +743,7 @@
     },
     "Accsoon CineView HE TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 200,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -756,6 +780,7 @@
     },
     "Accsoon CineView SE TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 210,
       "videoInputs": [
         {
           "type": "HDMI"
@@ -792,6 +817,7 @@
     },
     "Accsoon CineView Nano TX": {
       "powerDrawWatts": 2.5,
+      "weight_g": 72,
       "videoInputs": [
         {
           "type": "HDMI"

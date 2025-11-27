@@ -11446,6 +11446,100 @@
         "2K 17:9: up to 240 fps"
       ]
     },
+    "Insta360 Titan": {
+      "powerDrawWatts": 160,
+      "power": {
+        "input": {
+          "voltageRange": "19.5",
+          "type": [
+            "DC Barrel",
+            "Removable Battery (10000mAh)"
+          ]
+        }
+      },
+      "weight_g": 5500,
+      "recordingMedia": [
+        {
+          "type": "SD Card (x9)",
+          "notes": "8x MicroSD for lenses, 1x SD for proxy/stabilization"
+        }
+      ],
+      "resolutions": [
+        "11K 2D",
+        "10K 3D"
+      ],
+      "notes": "11K Cinematic VR Camera. 8x Micro Four Thirds Sensors."
+    },
+    "Insta360 Pro 2": {
+      "powerDrawWatts": 60,
+      "power": {
+        "input": {
+          "voltageRange": "12",
+          "type": [
+            "DC Barrel",
+            "Removable Battery (5100mAh)"
+          ]
+        }
+      },
+      "weight_g": 1550,
+      "recordingMedia": [
+        {
+          "type": "SD Card (x7)",
+          "notes": "6x MicroSD for lenses, 1x SD for proxy/stabilization"
+        }
+      ],
+      "resolutions": [
+        "8K 3D",
+        "8K 2D"
+      ],
+      "notes": "8K Professional VR Camera. 6x F2.4 Fisheye Lenses."
+    },
+    "Insta360 ONE RS 1-Inch 360": {
+      "powerDrawWatts": 10,
+      "power": {
+        "input": {
+          "voltageRange": "5",
+          "type": [
+            "USB-C",
+            "Internal Battery (1350mAh)"
+          ]
+        }
+      },
+      "weight_g": 239,
+      "recordingMedia": [
+        {
+          "type": "MicroSD",
+          "notes": "UHS-I V30 Speed Class"
+        }
+      ],
+      "resolutions": [
+        "6K 360"
+      ],
+      "notes": "Dual 1-Inch Sensors. Co-engineered with Leica."
+    },
+    "Kandao Obsidian Pro": {
+      "powerDrawWatts": 160,
+      "power": {
+        "input": {
+          "voltageRange": "20",
+          "type": [
+            "DC Barrel",
+            "V-Mount (x2)"
+          ]
+        }
+      },
+      "weight_g": 11160,
+      "recordingMedia": [
+        {
+          "type": "SSD (x8)",
+          "notes": "8x M.2 NVMe SSD modules"
+        }
+      ],
+      "resolutions": [
+        "12K 3D"
+      ],
+      "notes": "12K 3D VR Camera. 8x APS-C Sensors."
+    },
     "None": {
       "powerDrawWatts": 0,
       "requiredImageCircleMm": null,

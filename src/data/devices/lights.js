@@ -120,6 +120,216 @@
             "powerOptions": ["AC", "14.8V DC (V-Mount)"],
             "notes": "300W Bi-Color. Weight is lamp head only.",
             "verified_source": "https://nanliteus.com/products/nanlite-forza-300b-ii-bi-color-led-monolight"
+        },
+        "ARRI SkyPanel S30-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 220,
+            "weight_g": 9500,
+            "type": "LED Soft Light",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "DC (23-36V)"],
+            "notes": "200W Soft Light. Weight includes head + PSU.",
+            "verified_source": "https://www.arri.com/en/lighting/led/skypanel/s30-c"
+        },
+        "ARRI SkyPanel S120-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 430,
+            "weight_g": 17500,
+            "type": "LED Soft Light",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "DC (23-36V)"],
+            "notes": "400W Soft Light (Long). Weight includes head + PSU.",
+            "verified_source": "https://www.arri.com/en/lighting/led/skypanel/s120-c"
+        },
+        "ARRI Orbiter": {
+            "brand": "ARRI",
+            "powerDrawWatts": 500,
+            "weight_g": 11700,
+            "type": "Directional LED",
+            "mount": "QLM (Changeable Optics)",
+            "powerOptions": ["AC", "48V DC (3-pin XLR)"],
+            "notes": "Versatile directional LED. Weight is fixture only.",
+            "verified_source": "https://www.arri.com/en/lighting/led/orbiter"
+        },
+        "Aputure LS 600c Pro": {
+            "brand": "Aputure",
+            "powerDrawWatts": 720,
+            "weight_g": 11070,
+            "type": "COB LED (RGBWW)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "600W RGBWW. Weight includes head + control box.",
+            "verified_source": "https://www.aputure.com/products/ls-600c-pro/"
+        },
+        "Aputure LS 1200d Pro": {
+            "brand": "Aputure",
+            "powerDrawWatts": 1440,
+            "weight_g": 14750,
+            "type": "COB LED (Daylight)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "48V DC (Dual)"],
+            "notes": "1200W Daylight. Weight includes head + control box.",
+            "verified_source": "https://www.aputure.com/products/ls-1200d-pro/"
+        },
+        "Aputure Nova P300c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 360,
+            "weight_g": 10350,
+            "type": "LED Panel (RGBWW)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "24-48V DC"],
+            "notes": "300W RGBWW Panel. Weight is fixture only.",
+            "verified_source": "https://www.aputure.com/products/nova-p300c/"
+        },
+        "Aputure Nova P600c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 720,
+            "weight_g": 13740,
+            "type": "LED Panel (RGBWW)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "600W RGBWW Panel. Weight is fixture only.",
+            "verified_source": "https://www.aputure.com/products/nova-p600c/"
+        },
+        "ARRI L7-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 220,
+            "weight_g": 10000,
+            "type": "LED Fresnel (Tunable)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "DC (23-36V)"],
+            "notes": "Tunable LED Fresnel. Weight is Pole Op version.",
+            "verified_source": "https://www.arri.com/en/lighting/led/l-series/l7-c"
+        },
+        "ARRI L5-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 115,
+            "weight_g": 5100,
+            "type": "LED Fresnel (Tunable)",
+            "mount": "Baby Pin",
+            "powerOptions": ["AC", "DC (23-36V)"],
+            "notes": "Compact Tunable LED Fresnel.",
+            "verified_source": "https://www.arri.com/en/lighting/led/l-series/l5-c"
+        },
+        "Aputure Amaran F21c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 120,
+            "weight_g": 1800,
+            "type": "Flexible LED Mat (RGBWW)",
+            "mount": "X-Bracket (Baby Pin)",
+            "powerOptions": ["AC", "48V DC (V-Mount)"],
+            "notes": "2x1 Flexible Mat. Weight includes mat + control box.",
+            "verified_source": "https://www.aputure.com/products/amaran-f21c/"
+        },
+        "Aputure Amaran F22c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 240,
+            "weight_g": 3000,
+            "type": "Flexible LED Mat (RGBWW)",
+            "mount": "X-Bracket (Baby Pin)",
+            "powerOptions": ["AC", "48V DC (V-Mount)"],
+            "notes": "2x2 Flexible Mat. Weight includes mat + control box.",
+            "verified_source": "https://www.aputure.com/products/amaran-f22c/"
+        },
+        "Aputure Infinibar PB6": {
+            "brand": "Aputure",
+            "powerDrawWatts": 20,
+            "weight_g": 1000,
+            "type": "LED Pixel Bar",
+            "length": "2ft",
+            "powerOptions": ["AC", "Internal Battery (29.6Wh)"],
+            "notes": "2ft Pixel Bar. Can be spliced.",
+            "verified_source": "https://www.aputure.com/products/infinibar-pb6/"
+        },
+        "Aputure Infinibar PB12": {
+            "brand": "Aputure",
+            "powerDrawWatts": 40,
+            "weight_g": 2000,
+            "type": "LED Pixel Bar",
+            "length": "4ft",
+            "powerOptions": ["AC", "Internal Battery (59.2Wh)"],
+            "notes": "4ft Pixel Bar. Can be spliced.",
+            "verified_source": "https://www.aputure.com/products/infinibar-pb12/"
+        },
+        "Astera Hyperion Tube (FP3)": {
+            "brand": "Astera",
+            "powerDrawWatts": 92,
+            "weight_g": 2900,
+            "type": "LED Tube (RGBMintAmber)",
+            "length": "2031mm",
+            "powerOptions": ["Internal Battery", "24V DC"],
+            "notes": "2m Tube. Approx 1h 45m runtime at max brightness.",
+            "verified_source": "https://astera-led.com/hyperion/"
+        },
+        "Litepanels Gemini 2x1 Hard": {
+            "brand": "Litepanels",
+            "powerDrawWatts": 500,
+            "weight_g": 11500,
+            "type": "RGBWW LED Panel",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "DC (26-33V)"],
+            "notes": "High output 2x1 panel. Weight includes yoke + PSU.",
+            "verified_source": "https://www.litepanels.com/en/products/gemini-2x1-hard/"
+        },
+        "Litepanels Gemini 1x1 Hard": {
+            "brand": "Litepanels",
+            "powerDrawWatts": 200,
+            "weight_g": 6000,
+            "type": "RGBWW LED Panel",
+            "mount": "Baby Pin",
+            "powerOptions": ["AC", "DC (13-28V)"],
+            "notes": "High output 1x1 panel. Weight includes yoke + PSU.",
+            "verified_source": "https://www.litepanels.com/en/products/gemini-1x1-hard/"
+        },
+        "Kino Flo Select 20 DMX": {
+            "brand": "Kino Flo",
+            "powerDrawWatts": 150,
+            "weight_g": 6500,
+            "type": "LED Panel (Tunable)",
+            "mount": "Baby Pin",
+            "powerOptions": ["AC", "24V DC"],
+            "notes": "Tunable LED. Weight includes fixture + ballast.",
+            "verified_source": "https://kinoflo.com/select-20-dmx/"
+        },
+        "Kino Flo Select 30 DMX": {
+            "brand": "Kino Flo",
+            "powerDrawWatts": 150,
+            "weight_g": 5000,
+            "type": "LED Panel (Tunable)",
+            "mount": "Baby Pin",
+            "powerOptions": ["AC", "24V DC"],
+            "notes": "Tunable LED. Weight is fixture only.",
+            "verified_source": "https://kinoflo.com/select-30-dmx/"
+        },
+        "Kino Flo FreeStyle 31": {
+            "brand": "Kino Flo",
+            "powerDrawWatts": 150,
+            "weight_g": 7000,
+            "type": "LED Panel (Tunable)",
+            "mount": "Baby Pin",
+            "powerOptions": ["AC", "24V DC"],
+            "notes": "Tunable LED. Weight includes fixture + barndoors.",
+            "verified_source": "https://kinoflo.com/freestyle-31/"
+        },
+        "Creamsource Vortex8": {
+            "brand": "Creamsource",
+            "powerDrawWatts": 650,
+            "weight_g": 16000,
+            "type": "RGBW LED Panel (IP65)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "High power 2x1 IP65 panel. Weight includes yoke.",
+            "verified_source": "https://creamsource.com/product/vortex8/"
+        },
+        "Creamsource Vortex4": {
+            "brand": "Creamsource",
+            "powerDrawWatts": 325,
+            "weight_g": 10700,
+            "type": "RGBW LED Panel (IP65)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "High power 1x1 IP65 panel. Weight includes yoke.",
+            "verified_source": "https://creamsource.com/product/vortex4/"
         }
     };
 
