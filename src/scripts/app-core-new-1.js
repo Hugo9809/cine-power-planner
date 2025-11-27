@@ -15304,13 +15304,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
 
-  var totalPowerElem = document.getElementById("totalPower");
-  var totalCurrent144Elem = document.getElementById("totalCurrent144");
-  var totalCurrent12Elem = document.getElementById("totalCurrent12");
-  var batteryLifeElem = document.getElementById("batteryLife");
+  var totalPowerElem = document.getElementById("totalPower") || document.getElementById("heroTotalDraw");
+  var totalCurrent144Elem = document.getElementById("totalCurrent144") || document.getElementById("heroCurrent144");
+  var totalCurrent12Elem = document.getElementById("totalCurrent12") || document.getElementById("heroCurrent12");
+  var batteryLifeElem = document.getElementById("batteryLife") || document.getElementById("heroRuntime");
   var batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
   var runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
-  var batteryCountElem = document.getElementById("batteryCount");
+  var batteryCountElem = document.getElementById("batteryCount") || document.getElementById("heroBatteryCount");
   var pinWarnElem = document.getElementById("pinWarning");
   var dtapWarnElem = document.getElementById("dtapWarning");
   var hotswapWarnElem = document.getElementById("hotswapWarning");

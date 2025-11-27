@@ -13321,20 +13321,6 @@
     return { name, role, avatar, phone, email };
   }
 
-  function savePrintPreferences(preferences) {
-    if (!preferences || typeof preferences !== 'object') {
-      return;
-    }
-
-    const normalized = {
-      layout: typeof preferences.layout === 'string' ? preferences.layout : 'rental',
-      sections: isPlainObject(preferences.sections) ? preferences.sections : {},
-    };
-
-    const serialized = JSON.stringify(normalized);
-    safeSetLocalStorage(PRINT_PREFERENCES_STORAGE_KEY, serialized);
-  }
-
   function loadUserProfile() {
     applyLegacyStorageMigrations();
     const safeStorage = getSafeLocalStorage();
@@ -16269,7 +16255,6 @@
     saveOwnGear,
     loadUserProfile,
     saveUserProfile,
-    savePrintPreferences,
     loadDocumentationTracker,
     saveDocumentationTracker,
     loadAutoGearBackups,
