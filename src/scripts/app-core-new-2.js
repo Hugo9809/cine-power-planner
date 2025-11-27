@@ -18862,6 +18862,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.projectDialog = projectDialog;
       window.projectDialogCloseBtn = projectDialogCloseBtn;
       window.projectCancelBtn = projectCancelBtn;
+      window.renderSetupDiagram = renderSetupDiagram;
     }
   }
 
