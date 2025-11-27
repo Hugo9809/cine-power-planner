@@ -9456,13 +9456,13 @@ body.light-mode #topBar select:focus-visible {
 }
 
 .hero-power-divider {
-  font-size: calc(var(--font-size-base) * 2.5);
+  font-size: calc(var(--font-size-base) * 3.5);
   color: var(--muted-text-color);
   font-weight: var(--font-weight-light);
 }
 
 .hero-power-limit {
-  font-size: calc(var(--font-size-base) * 2.5);
+  font-size: calc(var(--font-size-base) * 3.5);
   color: var(--muted-text-color);
   font-weight: var(--font-weight-medium);
 }

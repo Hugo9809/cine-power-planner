@@ -3873,7 +3873,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/auto-gear-monitoring.js',
       'src/scripts/overview.js',
       'src/scripts/autosave-overlay.js',
-      'src/scripts/modules/features/onboarding-tour.js'
+      'src/scripts/modules/features/onboarding-tour.js',
+      'src/scripts/data/pink-mode-animated-icons.js'
     ],
   };
 
@@ -3967,7 +3968,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/auto-gear-monitoring.js',
       'legacy/scripts/overview.js',
       'legacy/scripts/autosave-overlay.js',
-      'legacy/scripts/modules/features/onboarding-tour.js'
+      'legacy/scripts/modules/features/onboarding-tour.js',
+      'legacy/scripts/data/pink-mode-animated-icons.js'
     ],
   };
 

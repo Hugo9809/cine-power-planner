@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Preview Mockup - Cine Power Planner</title>
+
+    <!-- Link to the actual application styles for 100% fidelity -->
+    <link rel="stylesheet" href="src/styles/fonts.css" />
+    <link rel="stylesheet" href="src/styles/style.css" />
+    <link rel="stylesheet" href="src/styles/overview-print.css" />
+
+    <style>
+        /* Mockup-specific layout styles */
+        body {
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background-color: var(--background-color);
+            margin: 0;
+        }
+
+        /* Sidebar Layout */
+        .mockup-sidebar {
+            width: 340px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-xl);
+            box-shadow: var(--panel-shadow);
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .mockup-sidebar-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .mockup-sidebar-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: var(--font-weight-medium);
+            color: var(--accent-color);
+        }
+
+        .control-section {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: var(--font-scale-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted-text-color);
+            margin-bottom: var(--spacing-md);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--control-bg);
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--control-border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--control-text);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+            background-color: #fff;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            flex: 1;
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px;
+            overflow-y: auto;
+        }
+
+        .paper {
+            background-color: #ffffff;
+            color: #000000;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+            position: relative;
+            transform-origin: top center;
+
+            /* Force light mode vars for the paper content to match print output */
+            --accent-color: #001589;
+            --text-color: #000000;
+            --panel-border: #ddd;
+            --panel-bg: #fff;
+            --control-bg: #f0f0f0;
+            --control-text: #333;
+            --muted-text-color: #555;
+            --font-family: 'Ubuntu', sans-serif;
+        }
+
+        /* Scoped styles to match overview.css structure within .paper */
+        .paper h1 {
+            font-size: 2em;
+            margin-bottom: 0.2em;
+            color: var(--accent-color);
+        }
+
+        .paper h2 {
+            font-size: 1.5em;
+            margin-top: 1.3em;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 5px;
+            color: var(--accent-color);
+        }
+
+        .paper p {
+            margin: 0.5em 0;
+            line-height: 1.5;
+        }
+
+        /* Device Blocks Grid */
+        .paper .device-category-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .paper .device-category {
+            flex: 1 1 calc((100% - 20px) / 3);
+            border: 1px solid var(--panel-border);
+            padding: 10px;
+            border-radius: 5px;
+            background: #fff;
+            box-shadow: none;
+            /* Print usually removes shadows */
+        }
+
+        .paper .device-category h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 3px;
+            font-size: 1em;
+            color: var(--accent-color);
+        }
+
+        .paper .device-block {
+            background: #fff;
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .paper .device-block strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Gear Table */
+        .paper .gear-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            table-layout: fixed;
+        }
+
+        .paper .gear-table td {
+            border: 1px solid var(--panel-border);
+            padding: 4px 8px;
+            font-size: 0.9em;
+            vertical-align: middle;
+        }
+
+        .paper .gear-table .category-row td {
+            border-top: 1px solid var(--accent-color);
+            border-bottom: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            font-weight: bold;
+            background: #fff;
+            padding-top: 12px;
+        }
+
+        .paper .gear-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .paper .gear-select-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 0.2em 0.55em;
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border-color: var(--control-border);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--control-hover-bg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="mockup-sidebar">
+        <div class="mockup-sidebar-header">
+            <h2>Print & Export</h2>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Layout Mode</div>
+            <div class="control-row">
+                <label>Rental Friendly</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--muted-text-color); line-height: 1.4;">
+                Optimizes layout for rental houses by grouping items by category.
+            </p>
+        </div>
+
+        <div class="control-section">
+            <div class="section-title">Sections</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" checked
+                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
+                    Project Requirements
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" checked
+                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
+                    Device List
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" checked
+                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
+                    Power Diagram
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" checked
+                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
+                    Gear List
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" checked
+                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
+                    Battery Comparison
+                </label>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="sidebar-btn btn-primary">
+                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
+                Export PDF
+            </button>
+            <button class="sidebar-btn btn-secondary">
+                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
+                Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Preview Area -->
+    <div class="preview-area">
+        <div class="paper" id="overviewDialogContent">
+            <h1>Overview</h1>
+            <p><strong>Project Name:</strong> Midnight Chase - Unit A</p>
+            <p><strong>Production:</strong> Nightfall Pictures | <strong>Company:</strong> CineRentals Berlin</p>
+            <p><em>Generated on: Nov 27, 2025</em></p>
+
+            <!-- Project Requirements -->
+            <section id="projectRequirementsOutput" class="print-section project-requirements-section">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div
+                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Resolution</div>
+                        <div style="font-weight: bold; color: var(--accent-color);">4.6K OG</div>
+                    </div>
+                    <div
+                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Frame Rate</div>
+                        <div style="font-weight: bold; color: var(--accent-color);">24 / 48 fps</div>
+                    </div>
+                    <div
+                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Codec</div>
+                        <div style="font-weight: bold; color: var(--accent-color);">ARRIRAW</div>
+                    </div>
+                    <div
+                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Aspect Ratio</div>
+                        <div style="font-weight: bold; color: var(--accent-color);">2.39:1</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
+                            Logistics</div>
+                        <div style="font-size: 0.9em;"><strong>Prep:</strong> 2025-12-01 (CineRentals)</div>
+                        <div style="font-size: 0.9em;"><strong>Shoot:</strong> 2025-12-03 to 2025-12-15</div>
+                        <div style="font-size: 0.9em;"><strong>Return:</strong> 2025-12-16</div>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
+                            Location</div>
+                        <div style="font-size: 0.9em;"><strong>Base:</strong> Studio Babelsberg</div>
+                        <div style="font-size: 0.9em;"><strong>Unit:</strong> A-Cam, Steadicam</div>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">Notes
+                        </div>
+                        <div style="font-size: 0.9em; font-style: italic;">"Heavy rain sequences expected. Bring rain
+                            covers for all monitors and heads."</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Selection -->
+            <section class="print-section">
+                <h2>Device Selection</h2>
+                <div class="device-category-container">
+                    <!-- Camera -->
+                    <div class="device-category">
+                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                data-icon-font="uicons">&#xE90F;</span>Camera</h3>
+                        <div class="device-block">
+                            <strong>ARRI Alexa 35</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Power: 90.0 W</div>
+                                <div>Voltage: 20.5-33.6 V</div>
+                                <div>Mount: LPL</div>
+                                <div>Weight: 2.9 kg</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lens -->
+                    <div class="device-category">
+                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                data-icon-font="uicons">&#xE910;</span>Lenses</h3>
+                        <div class="device-block">
+                            <strong>Cooke S4/i Set (18-100mm)</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>6 Lenses</div>
+                                <div>Avg Weight: 1.8 kg</div>
+                                <div>Front Dia: 110mm</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Monitor -->
+                    <div class="device-category">
+                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                data-icon-font="uicons">&#xE913;</span>Monitoring</h3>
+                        <div class="device-block">
+                            <strong>SmallHD Ultra 7</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>On-Board</div>
+                                <div>Power: 16.0 W</div>
+                            </div>
+                        </div>
+                        <div class="device-block">
+                            <strong>SmallHD Cine 13</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Director's Monitor</div>
+                                <div>Power: 45.0 W</div>
+                            </div>
+                        </div>
+                        <div class="device-block">
+                            <strong><span class="icon-glyph" style="color: #2e7d32;"
+                                    data-icon-font="uicons">&#xE88E;</span> SmallHD 703 Bolt</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>AC Monitor (Own Gear)</div>
+                                <div>Power: 22.0 W</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Wireless -->
+                    <div class="device-category">
+                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                data-icon-font="uicons">&#xE912;</span>Wireless</h3>
+                        <div class="device-block">
+                            <strong>Teradek Bolt 6 XT 1500 TX</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Transmitter</div>
+                                <div>Power: 11.0 W</div>
+                            </div>
+                        </div>
+                        <div class="device-block">
+                            <strong>Teradek Bolt 6 XT 1500 RX</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Receiver (x2)</div>
+                                <div>Power: 9.0 W</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIZ -->
+                    <div class="device-category">
+                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                data-icon-font="uicons">&#xE90E;</span>FIZ</h3>
+                        <div class="device-block">
+                            <strong>Arri Hi-5</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Hand Unit</div>
+                                <div>Radio: White</div>
+                            </div>
+                        </div>
+                        <div class="device-block">
+                            <strong>Arri cforce mini RF</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Motor (Brain)</div>
+                            </div>
+                        </div>
+                        <div class="device-block">
+                            <strong>Arri cforce mini</strong>
+                            <div style="font-size: 0.85em; color: #666;">
+                                <div>Motor (x2)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Power Summary -->
+            <section class="print-section" style="margin-top: 20px;">
+                <h2>Power Summary</h2>
+                <div style="display: flex; gap: 15px;">
+                    <div
+                        style="flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
+                        <div style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">
+                            Total Load</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #14532d;">~185 W</div>
+                        <div style="font-size: 0.8em; color: #166534;">Peak: 210 W</div>
+                    </div>
+                    <div
+                        style="flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;">
+                        <div style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">
+                            Est. Runtime</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #1e3a8a;">~1h 35m</div>
+                        <div style="font-size: 0.8em; color: #1e40af;">w/ Bebob B290cine</div>
+                    </div>
+                    <div
+                        style="flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;">
+                        <div style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">
+                            Daily Needs</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">8 Batts</div>
+                        <div style="font-size: 0.8em; color: #9a3412;">for 12h day</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gear List -->
+            <section id="gearListOutput" class="gear-list-section print-section">
+                <h2>Gear List</h2>
+                <table class="gear-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Category</th>
+                            <th style="width: 45%;">Item</th>
+                            <th style="width: 10%;">Qty</th>
+                            <th style="width: 20%;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-row">
+                            <td colspan="4">Camera System</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Camera Body</span>
+                                    <span class="gear-select-value">ARRI Alexa 35</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>Unit A</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Cage</span>
+                                    <span class="gear-select-value">ARRI Production Set</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>Top Plate, Side Brackets, CCH-5</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Baseplate</span>
+                                    <span class="gear-select-value">ARRI CBP-5</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>19mm Rod Support</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Lenses</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 18mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 25mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 32mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 50mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 75mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Prime Lens</span>
+                                    <span class="gear-select-value">Cooke S4/i 100mm</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>T2.0</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Monitoring</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>On-Camera</span>
+                                    <span class="gear-select-value">SmallHD Ultra 7</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Director's</span>
+                                    <span class="gear-select-value">SmallHD Cine 13</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>Yoke Mount</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>AC Handheld</span>
+                                    <span class="gear-select-value">SmallHD 703 Bolt</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td><span class="icon-glyph" style="color: #2e7d32;" data-icon-font="uicons">&#xE88E;</span>
+                                Own Gear</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Wireless TX</span>
+                                    <span class="gear-select-value">Teradek Bolt 6 XT 1500</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Wireless RX</span>
+                                    <span class="gear-select-value">Teradek Bolt 6 XT 1500</span>
+                                </div>
+                            </td>
+                            <td>2</td>
+                            <td></td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">FIZ & Control</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Hand Unit</span>
+                                    <span class="gear-select-value">Arri Hi-5</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>RF Motor License</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Motor</span>
+                                    <span class="gear-select-value">Arri cforce mini RF</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Motor</span>
+                                    <span class="gear-select-value">Arri cforce mini</span>
+                                </div>
+                            </td>
+                            <td>2</td>
+                            <td>Daisy-chained</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Power</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>On-board Battery</span>
+                                    <span class="gear-select-value">Bebob B290cine</span>
+                                </div>
+                            </td>
+                            <td>8</td>
+                            <td>B-Mount</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Charger</span>
+                                    <span class="gear-select-value">Bebob BS4</span>
+                                </div>
+                            </td>
+                            <td>2</td>
+                            <td>4-Channel Simultaneous</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>Block Battery</span>
+                                    <span class="gear-select-value">Bebob Cube 1200</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>For Director's Monitor</td>
+                        </tr>
+
+                        <tr class="category-row">
+                            <td colspan="4">Crew</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>DP</span>
+                                    <span class="gear-select-value">Sarah Jenkins</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>+49 123 456 789</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>1st AC</span>
+                                    <span class="gear-select-value">John Doe</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td>+49 987 654 321</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>2nd AC</span>
+                                    <span class="gear-select-value">Emily Chen</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="gear-item">
+                                    <span>DIT</span>
+                                    <span class="gear-select-value">Michael Ross</span>
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+</body>
+
+</html>

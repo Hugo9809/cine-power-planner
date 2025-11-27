@@ -1,0 +1,301 @@
+/* Print Preview Modal Styles */
+#printPreviewModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-color);
+    z-index: 9999;
+    display: flex;
+    overflow: hidden;
+}
+
+#printPreviewModal.hidden {
+    display: none !important;
+}
+
+/* Sidebar Layout */
+.mockup-sidebar {
+    width: 340px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    box-shadow: var(--panel-shadow);
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.mockup-sidebar-header {
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mockup-sidebar-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--accent-color);
+}
+
+.control-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.control-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: var(--font-scale-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted-text-color);
+    margin-bottom: var(--spacing-md);
+    font-weight: var(--font-weight-bold);
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Custom Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--control-bg);
+    transition: .3s;
+    border-radius: 24px;
+    border: 1px solid var(--control-border);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--control-text);
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+    background-color: #fff;
+}
+
+/* Preview Area */
+.preview-area {
+    flex: 1;
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px;
+    overflow-y: auto;
+}
+
+.paper {
+    background-color: #ffffff;
+    color: #000000;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 15mm;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    position: relative;
+    transform-origin: top center;
+    margin-bottom: 60px;
+
+    /* Force light mode vars for the paper content to match print output */
+    --accent-color: #001589;
+    --text-color: #000000;
+    --panel-border: #ddd;
+    --panel-bg: #fff;
+    --control-bg: #f0f0f0;
+    --control-text: #333;
+    --muted-text-color: #555;
+    --font-family: 'Ubuntu', sans-serif;
+}
+
+/* Scoped styles to match overview.css structure within .paper */
+.paper h1 {
+    font-size: 2em;
+    margin-bottom: 0.2em;
+    color: var(--accent-color);
+}
+
+.paper h2 {
+    font-size: 1.5em;
+    margin-top: 1.3em;
+    border-bottom: 1px solid var(--accent-color);
+    padding-bottom: 5px;
+    color: var(--accent-color);
+}
+
+.paper p {
+    margin: 0.5em 0;
+    line-height: 1.5;
+}
+
+/* Device Blocks Grid */
+.paper .device-category-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.paper .device-category {
+    flex: 1 1 calc((100% - 20px) / 3);
+    border: 1px solid var(--panel-border);
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: none;
+}
+
+.paper .device-category h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 3px;
+    font-size: 1em;
+    color: var(--accent-color);
+}
+
+.paper .device-block {
+    background: #fff;
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.paper .device-block strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Gear Table */
+.paper .gear-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    table-layout: fixed;
+}
+
+.paper .gear-table td {
+    border: 1px solid var(--panel-border);
+    padding: 4px 8px;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+.paper .gear-table .category-row td {
+    border-top: 1px solid var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    font-weight: bold;
+    background: #fff;
+    padding-top: 12px;
+}
+
+.paper .gear-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.paper .gear-select-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 0.2em 0.55em;
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border-color: var(--control-border);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--control-hover-bg);
+}
+
+/* Close button for modal */
+.close-preview-btn {
+    background: none;
+    border: none;
+    color: var(--muted-text-color);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.close-preview-btn:hover {
+    color: var(--text-color);
+}
