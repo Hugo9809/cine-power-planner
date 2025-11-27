@@ -498,3 +498,28 @@ function inlineLocalizationBootstrapWiring(bootstrapResult) {
 var localizationBootstrapWiring = APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS && typeof APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS.createLocalizationBootstrapWiring === 'function' && APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS.createLocalizationBootstrapWiring({
   localizationBootstrapResult: localizationBootstrapResult
 }) || inlineLocalizationBootstrapWiring(localizationBootstrapResult);
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    localizationBootstrapWiring: localizationBootstrapWiring,
+    APP_CORE_BOOTSTRAP_SUITE: APP_CORE_BOOTSTRAP_SUITE,
+    APP_CORE_BOOTSTRAP_TOOLS: APP_CORE_BOOTSTRAP_TOOLS,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT: APP_CORE_BOOTSTRAP_ENVIRONMENT,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS,
+    APP_CORE_BOOTSTRAP_RESULTS_TOOLS: APP_CORE_BOOTSTRAP_RESULTS_TOOLS,
+    APP_CORE_BOOTSTRAP_RESOLVER_TOOLS: APP_CORE_BOOTSTRAP_RESOLVER_TOOLS,
+    APP_CORE_BOOTSTRAP_FALLBACK_TOOLS: APP_CORE_BOOTSTRAP_FALLBACK_TOOLS,
+    APP_CORE_BOOTSTRAP_RESOLVER_DIRECT: APP_CORE_BOOTSTRAP_RESOLVER_DIRECT,
+    APP_CORE_BOOTSTRAP_FALLBACK_DIRECT: APP_CORE_BOOTSTRAP_FALLBACK_DIRECT,
+    APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT: APP_CORE_BOOTSTRAP_ENVIRONMENT_TOOLS_DIRECT,
+    APP_CORE_BOOTSTRAP_RESULTS_DIRECT: APP_CORE_BOOTSTRAP_RESULTS_TOOLS_DIRECT
+  };
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof window !== 'undefined') {
+  window.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof self !== 'undefined') {
+  self.localizationBootstrapWiring = localizationBootstrapWiring;
+} else if (typeof global !== 'undefined') {
+  global.localizationBootstrapWiring = localizationBootstrapWiring;
+}

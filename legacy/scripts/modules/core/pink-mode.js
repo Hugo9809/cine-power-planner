@@ -1,13 +1,4 @@
 function _regeneratorValues(e) { if (null != e) { var t = e["function" == typeof Symbol && Symbol.iterator || "@@iterator"], r = 0; if (t) return t.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) return { next: function next() { return e && r >= e.length && (e = void 0), { value: e && e[r++], done: !e }; } }; } throw new TypeError(_typeof(e) + " is not iterable"); }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
@@ -931,6 +922,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(PINK_MODE_ICON_FILES.map(createPinkModeIconImageMarkup).filter(Boolean));
         var PINK_MODE_ANIMATED_ICON_FILES = Object.freeze(['src/animations/cat.json', 'src/animations/cup.json', 'src/animations/cupcake.json', 'src/animations/flamingo.json', 'src/animations/float.json', 'src/animations/float-2.json', 'src/animations/fox.json', 'src/animations/heart.json', 'src/animations/horn.json', 'src/animations/invitation.json', 'src/animations/mask.json', 'src/animations/rainbow.json', 'src/animations/rocking-horse.json', 'src/animations/slippers.json', 'src/animations/sunglasses.json', 'src/animations/unicorn.json', 'animated icons 3/camera.json', 'animated icons 3/director-chair.json', 'animated icons 3/dog.json', 'animated icons 3/fox.json', 'animated icons 3/fox-2.json', 'animated icons 3/fox-3.json', 'animated icons 3/horse.json', 'animated icons 3/mountains.json', 'animated icons 3/movie-camera.json', 'animated icons 3/pinata.json', 'animated icons 3/script.json', 'animated icons 3/video-camera.json']);
+        function collectPinkModeAnimatedIconFiles() {
+          var seen = new Set();
+          var collected = [];
+          var register = function register(candidate) {
+            var normalized = normalizePinkModeAssetKey(candidate);
+            if (!normalized || seen.has(normalized)) {
+              return;
+            }
+            seen.add(normalized);
+            collected.push(normalized);
+          };
+          if (Array.isArray(PINK_MODE_ANIMATED_ICON_FILES)) {
+            PINK_MODE_ANIMATED_ICON_FILES.forEach(register);
+          }
+          var embeddedStore = getPinkModeEmbeddedAssetStore();
+          if (embeddedStore && _typeof(embeddedStore) === 'object') {
+            Object.keys(embeddedStore).filter(function (key) {
+              return typeof key === 'string' && key.indexOf('animated icons 3/') === 0;
+            }).forEach(register);
+          }
+          return collected;
+        }
         var PINK_MODE_ICON_RAIN_MIN_COUNT = 18;
         var PINK_MODE_ICON_RAIN_MAX_COUNT = 30;
         var PINK_MODE_ICON_RAIN_MIN_DURATION_MS = 4200;
@@ -1095,6 +1108,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return true;
         }
         var pinkModeAnimatedIconPressListenerCleanup = null;
+        var pinkModeAnimatedIconPressListenerAttached = false;
         var pinkModeAnimatedIconLastTouchTime = 0;
         var pinkModeReduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
         var PINK_MODE_REDUCE_MOTION_TRUTHY_VALUES = Object.freeze(['true', '1', 'yes', 'on', 'enabled']);
@@ -1274,6 +1288,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         function _loadPinkModeAnimatedIconTemplates() {
           _loadPinkModeAnimatedIconTemplates = _asyncToGenerator(_regenerator().m(function _callee7() {
+            var animatedIconFiles;
             return _regenerator().w(function (_context8) {
               while (1) switch (_context8.n) {
                 case 0:
@@ -1289,14 +1304,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   }
                   return _context8.a(2, pinkModeAnimatedIconTemplatesPromise);
                 case 2:
-                  pinkModeAnimatedIconTemplatesPromise = Promise.all(PINK_MODE_ANIMATED_ICON_FILES.map(function (path) {
+                  animatedIconFiles = collectPinkModeAnimatedIconFiles();
+                  pinkModeAnimatedIconTemplatesPromise = Promise.all(animatedIconFiles.map(function (path) {
                     return loadPinkModeAssetText(path).catch(function () {
                       return null;
                     });
                   })).then(function (contents) {
                     return Object.freeze(contents.map(function (content, index) {
                       return content ? Object.freeze({
-                        name: PINK_MODE_ANIMATED_ICON_FILES[index],
+                        name: animatedIconFiles[index],
                         data: content
                       }) : null;
                     }).filter(Boolean));
@@ -1306,6 +1322,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   }).then(function (templates) {
                     pinkModeAnimatedIconTemplates = templates;
                     updatePinkModeAnimatedIconTemplateRotation(templates);
+                    console.log('[PinkMode] Loaded', templates.length, 'icon templates in background');
                     return templates;
                   });
                   return _context8.a(2, pinkModeAnimatedIconTemplatesPromise);
@@ -1313,6 +1330,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }, _callee7);
           }));
           return _loadPinkModeAnimatedIconTemplates.apply(this, arguments);
+        }
+        function startPinkModeIconPreload() {
+          if (typeof window === 'undefined') {
+            return;
+          }
+          var startLoad = function startLoad() {
+            setTimeout(function () {
+              loadPinkModeAnimatedIconTemplates().catch(function (error) {
+                console.warn('[PinkMode] Background icon preload failed', error);
+              });
+            }, 100);
+          };
+          if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            startLoad();
+          } else {
+            document.addEventListener('DOMContentLoaded', startLoad, {
+              once: true
+            });
+          }
         }
         function selectPinkModeAnimatedIconTemplate(availableTemplates) {
           if (!Array.isArray(availableTemplates) || !availableTemplates.length) {
@@ -1694,19 +1730,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           detectPinkModeAnimatedIconPress(point);
         }
         function teardownPinkModeAnimatedIconPressListener() {
-          if (!pinkModeAnimatedIconPressListenerCleanup) {
+          if (!pinkModeAnimatedIconPressListenerAttached) {
             return;
           }
+          var cleanup = pinkModeAnimatedIconPressListenerCleanup;
           try {
-            pinkModeAnimatedIconPressListenerCleanup();
+            if (typeof cleanup === 'function') {
+              cleanup();
+            }
           } catch (cleanupError) {
             console.warn('Could not detach pink mode animation press listener', cleanupError);
           }
           pinkModeAnimatedIconPressListenerCleanup = null;
           pinkModeAnimatedIconLastTouchTime = 0;
+          pinkModeAnimatedIconPressListenerAttached = false;
         }
         function ensurePinkModeAnimatedIconPressListener() {
-          if (pinkModeAnimatedIconPressListenerCleanup || typeof document === 'undefined') {
+          if (pinkModeAnimatedIconPressListenerAttached || typeof document === 'undefined') {
             return;
           }
           var target = document;
@@ -1719,6 +1759,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               target.removeEventListener('pointerdown', handlePinkModeAnimatedIconPointerEvent, true);
               pinkModeAnimatedIconLastTouchTime = 0;
             };
+            pinkModeAnimatedIconPressListenerAttached = true;
             return;
           }
           target.addEventListener('mousedown', handlePinkModeAnimatedIconMouseEvent, true);
@@ -1728,6 +1769,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             target.removeEventListener('touchstart', handlePinkModeAnimatedIconTouchEvent, true);
             pinkModeAnimatedIconLastTouchTime = 0;
           };
+          pinkModeAnimatedIconPressListenerAttached = true;
         }
         function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions, options) {
           if (typeof document === 'undefined' || typeof document.elementFromPoint !== 'function') {
@@ -1880,9 +1922,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               staggerMs: Math.round(PINK_MODE_ANIMATED_ICON_SPAWN_STAGGER_MS * 0.75)
             });
           }
-          if (!pinkModeAnimatedIconInstances.size) {
-            teardownPinkModeAnimatedIconPressListener();
-          }
         }
         function destroyPinkModeIconRainInstance(instance) {
           if (!instance || instance.destroyed) {
@@ -1977,44 +2016,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var container = document.createElement('div');
           container.className = 'pink-mode-animation-instance pink-mode-icon-rain';
           container.setAttribute('aria-hidden', 'true');
-          var size = Math.round(Math.random() * (PINK_MODE_ICON_RAIN_MAX_SIZE_PX - PINK_MODE_ICON_RAIN_MIN_SIZE_PX) + PINK_MODE_ICON_RAIN_MIN_SIZE_PX);
-          container.style.setProperty('--pink-mode-animation-size', "".concat(size, "px"));
-          var minHorizontalPercent = 0;
-          var maxHorizontalPercent = 100;
-          if (typeof window !== 'undefined' && window.visualViewport) {
-            var viewport = window.visualViewport;
-            var layoutWidth = typeof window.innerWidth === 'number' && window.innerWidth > 0 ? window.innerWidth : typeof viewport.width === 'number' && viewport.width > 0 ? viewport.width : 0;
-            var visualWidth = typeof viewport.width === 'number' && viewport.width > 0 ? viewport.width : layoutWidth;
-            if (layoutWidth > 0 && visualWidth > 0) {
-              var rawOffsetLeft = typeof viewport.offsetLeft === 'number' ? viewport.offsetLeft : typeof viewport.pageLeft === 'number' ? viewport.pageLeft : 0;
-              var offsetLeft = Math.min(Math.max(rawOffsetLeft, 0), Math.max(layoutWidth - visualWidth, 0));
-              var offsetRight = Math.max(0, layoutWidth - visualWidth - offsetLeft);
-              var computedMin = offsetLeft / layoutWidth * 100;
-              var computedMax = 100 - offsetRight / layoutWidth * 100;
-              if (Number.isFinite(computedMin) && Number.isFinite(computedMax) && computedMax > computedMin) {
-                minHorizontalPercent = Math.max(0, Math.min(100, computedMin));
-                maxHorizontalPercent = Math.max(minHorizontalPercent, Math.min(100, computedMax));
-              }
-            }
-          }
-          var horizontalMargin = Math.max(0, Math.min(40, PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT));
-          minHorizontalPercent = Math.max(minHorizontalPercent, horizontalMargin);
-          maxHorizontalPercent = Math.min(100 - horizontalMargin, maxHorizontalPercent);
-          if (maxHorizontalPercent <= minHorizontalPercent) {
-            minHorizontalPercent = 0;
-            maxHorizontalPercent = 100;
-          }
-          var horizontalPercent = Math.random() * (maxHorizontalPercent - minHorizontalPercent) + minHorizontalPercent;
-          container.style.setProperty('--pink-mode-animation-x', "".concat(horizontalPercent.toFixed(2), "%"));
-          var verticalOffset = Math.random() * (PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MAX - PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN) + PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN;
-          container.style.setProperty('--pink-mode-animation-y', "-".concat(verticalOffset.toFixed(2), "vh"));
-          var duration = Math.round(Math.random() * (PINK_MODE_ICON_RAIN_MAX_DURATION_MS - PINK_MODE_ICON_RAIN_MIN_DURATION_MS) + PINK_MODE_ICON_RAIN_MIN_DURATION_MS);
+          var horizontalPercent = Math.random() * 100;
+          container.style.setProperty('--pink-mode-animation-x', "".concat(horizontalPercent.toFixed(2), "vw"));
+          var duration = Math.round(4000 + Math.random() * 3000);
           container.style.setProperty('--pink-mode-rain-duration', "".concat(duration, "ms"));
-          var scale = Math.random() * (PINK_MODE_ICON_RAIN_MAX_SCALE - PINK_MODE_ICON_RAIN_MIN_SCALE) + PINK_MODE_ICON_RAIN_MIN_SCALE;
+          var scale = 0.6 + Math.random() * 0.6;
           container.style.setProperty('--pink-mode-rain-scale', scale.toFixed(3));
-          var drift = Math.random() * (PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MAX - PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN) + PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN;
+          var drift = (Math.random() - 0.5) * 30;
           container.style.setProperty('--pink-mode-rain-drift', "".concat(drift.toFixed(2), "vw"));
-          var rotation = Math.random() * 40 - 20;
+          var rotation = (Math.random() - 0.5) * 90;
           container.style.setProperty('--pink-mode-rain-rotation', "".concat(rotation.toFixed(2), "deg"));
           layer.appendChild(container);
           var animationData;
@@ -2087,10 +2097,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               if (!Array.isArray(templates) || !templates.length) {
                 return templates;
               }
-              var maxAdditional = Math.max(0, PINK_MODE_ICON_RAIN_MAX_COUNT - PINK_MODE_ICON_RAIN_MIN_COUNT);
-              var dropCount = PINK_MODE_ICON_RAIN_MIN_COUNT + Math.round(Math.random() * maxAdditional);
+              var dropCount = 80;
+              var duration = 20000;
               for (var i = 0; i < dropCount; i += 1) {
-                var delay = Math.round(Math.random() * PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS + i * 60);
+                var delay = Math.random() * duration;
                 window.setTimeout(function () {
                   spawnPinkModeIconRainInstance(templates);
                 }, delay);
@@ -2191,7 +2201,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return !activeTemplateNames.has(template.name);
           });
           if (!availableTemplates.length) {
-            return false;
+            availableTemplates = sanitizedTemplates;
           }
           if (availableTemplates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
             var filteredTemplates = availableTemplates.filter(function (template) {
@@ -2201,240 +2211,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               availableTemplates = filteredTemplates;
             }
           }
-          var template = availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+          var template = selectPinkModeAnimatedIconTemplate(availableTemplates);
           if (!template || !template.data) {
             return false;
           }
           var container = document.createElement('div');
           container.className = 'pink-mode-animation-instance';
           container.setAttribute('aria-hidden', 'true');
-          var duration = Math.round(Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS - PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS) + PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS);
-          var baseSize = Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX - PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX) + PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX;
-          var viewportWidth = typeof window !== 'undefined' && typeof window.innerWidth === 'number' ? window.innerWidth : document.documentElement && typeof document.documentElement.clientWidth === 'number' ? document.documentElement.clientWidth : null;
-          var viewportScale = viewportWidth && viewportWidth < PINK_MODE_ANIMATED_ICON_FULL_SIZE_VIEWPORT_MIN ? Math.max(PINK_MODE_ANIMATED_ICON_MIN_SCALE, viewportWidth / PINK_MODE_ANIMATED_ICON_FULL_SIZE_VIEWPORT_MIN) : 1;
-          var size = Math.max(Math.round(baseSize * viewportScale), Math.round(PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX * PINK_MODE_ANIMATED_ICON_MIN_SCALE));
-          var host = layer.parentElement || document.body;
-          var viewportHeight = typeof window !== 'undefined' && window.innerHeight ? window.innerHeight : document.documentElement && document.documentElement.clientHeight ? document.documentElement.clientHeight : size * 4;
-          var viewportTop = typeof window !== 'undefined' && typeof window.scrollY === 'number' ? window.scrollY : document.documentElement && typeof document.documentElement.scrollTop === 'number' ? document.documentElement.scrollTop : 0;
-          var viewportBottom = viewportTop + viewportHeight;
-          var hostRect = host ? host.getBoundingClientRect() : null;
-          var hostTop = hostRect ? hostRect.top + viewportTop : 0;
-          var hostHeight = resolvePinkModeHostExtent(host, hostRect, viewportHeight);
-          var hostBottom = hostTop + hostHeight;
-          var visibleTop = Math.max(hostTop, viewportTop);
-          var visibleBottom = Math.min(hostBottom, viewportBottom);
-          if (visibleBottom <= visibleTop) {
-            visibleTop = hostTop;
-            visibleBottom = hostBottom;
-          }
-          var hostWidth = host && typeof host.clientWidth === 'number' && host.clientWidth > 0 ? host.clientWidth : viewportWidth || size * 4;
-          var hostOffsetLeft = hostRect && Number.isFinite(hostRect.left) ? hostRect.left : 0;
-          var hostOffsetTop = hostRect && Number.isFinite(hostRect.top) ? hostRect.top : 0;
-          var safeHorizontalRange = Math.max(hostWidth, size * 3);
-          var safeVerticalRange = Math.max(hostHeight, size * 3);
-          var horizontalPadding = Math.min(Math.max(size * 0.6 + 48, 48), safeHorizontalRange / 2);
-          var verticalPadding = Math.min(Math.max(size * 0.6 + 64, 64), safeVerticalRange / 2);
-          var hostRight = hostRect && Number.isFinite(hostRect.right) ? hostRect.right : hostOffsetLeft + hostWidth;
-          var leftMarginSpace = viewportWidth && Number.isFinite(hostOffsetLeft) ? Math.max(0, hostOffsetLeft) : 0;
-          var rightMarginSpace = viewportWidth && Number.isFinite(hostRight) ? Math.max(0, viewportWidth - hostRight) : leftMarginSpace;
-          var leftMarginExtension = 0;
-          var rightMarginExtension = 0;
-          if (viewportWidth && hostWidth && viewportWidth > hostWidth && (leftMarginSpace > 0 || rightMarginSpace > 0)) {
-            var marginSafetyBuffer = Math.min(horizontalPadding, Math.max(size * 0.4, 32));
-            leftMarginExtension = Math.max(0, leftMarginSpace - marginSafetyBuffer);
-            rightMarginExtension = Math.max(0, rightMarginSpace - marginSafetyBuffer);
-          }
-          var historicalAvoidRegions = pinkModeAnimatedIconPlacementHistory.map(function (spot) {
-            if (!spot) {
-              return null;
-            }
-            var spotX = spot.x,
-              spotY = spot.y,
-              spotSize = spot.size;
-            if (!Number.isFinite(spotX) || !Number.isFinite(spotY)) {
-              return null;
-            }
-            var halfSize = Number.isFinite(spotSize) && spotSize > 0 ? spotSize / 2 : PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX / 2;
-            var margin = Math.max(PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX, PINK_MODE_ANIMATED_ICON_RECENT_SPOT_MARGIN_PX, halfSize);
-            var centerX = hostOffsetLeft + spotX;
-            var centerY = hostOffsetTop + spotY;
-            return {
-              left: centerX - halfSize,
-              right: centerX + halfSize,
-              top: centerY - halfSize,
-              bottom: centerY + halfSize,
-              margin: margin
-            };
-          }).filter(Boolean);
-          var staticAvoidRegions = computePinkModeAnimationAvoidRegions(layer);
-          var activeInstanceRegions = collectPinkModeAnimationInstanceRegions(layer);
-          var basePlacementConfig = {
-            layer: layer,
-            hostRect: hostRect,
-            hostTop: hostTop,
-            visibleTop: visibleTop,
-            visibleBottom: visibleBottom,
-            hostWidth: hostWidth,
-            size: size
-          };
-          var attemptPlacement = function attemptPlacement(placementOptions) {
-            return findPinkModeAnimationPlacement(_objectSpread(_objectSpread({}, basePlacementConfig), {}, {
-              horizontalPadding: horizontalPadding,
-              verticalPadding: verticalPadding,
-              leftMarginExtension: leftMarginExtension,
-              rightMarginExtension: rightMarginExtension
-            }, placementOptions));
-          };
-          var placement = attemptPlacement({
-            avoidRegions: [].concat(_toConsumableArray(staticAvoidRegions), _toConsumableArray(activeInstanceRegions), _toConsumableArray(historicalAvoidRegions))
-          });
-          if (!placement) {
-            placement = attemptPlacement({
-              avoidRegions: [].concat(_toConsumableArray(activeInstanceRegions), _toConsumableArray(historicalAvoidRegions)),
-              horizontalPadding: Math.max(horizontalPadding * 0.65, 48),
-              verticalPadding: Math.max(verticalPadding * 0.65, 64),
-              leftMarginExtension: Math.max(leftMarginExtension, size * 0.5),
-              rightMarginExtension: Math.max(rightMarginExtension, size * 0.5)
-            });
-          }
-          if (!placement) {
-            placement = attemptPlacement({
-              avoidRegions: _toConsumableArray(historicalAvoidRegions),
-              horizontalPadding: Math.max(horizontalPadding * 0.45, 32),
-              verticalPadding: Math.max(verticalPadding * 0.45, 48),
-              leftMarginExtension: Math.max(leftMarginExtension, size * 1.5),
-              rightMarginExtension: Math.max(rightMarginExtension, size * 1.5),
-              spotOptions: {
-                allowInteractiveOverlap: true
-              }
-            });
-          }
-          if (!placement) {
-            placement = attemptPlacement({
-              avoidRegions: [],
-              horizontalPadding: Math.max(horizontalPadding * 0.25, 24),
-              verticalPadding: Math.max(verticalPadding * 0.25, 32),
-              leftMarginExtension: Math.max(leftMarginExtension, size * 2),
-              rightMarginExtension: Math.max(rightMarginExtension, size * 2),
-              spotOptions: {
-                allowInteractiveOverlap: true
-              }
-            });
-          }
-          if (!placement) {
-            var fallbackHorizontalPadding = Math.max(horizontalPadding * 0.2, 16);
-            var fallbackVerticalPadding = Math.max(verticalPadding * 0.2, 28);
-            var marginLeft = Math.max(0, Math.max(leftMarginExtension, size));
-            var marginRight = Math.max(0, Math.max(rightMarginExtension, size));
-            var minX = fallbackHorizontalPadding - marginLeft;
-            var maxX = Math.max(hostWidth - fallbackHorizontalPadding, minX) + marginRight;
-            var minY = Math.max(visibleTop - hostTop + fallbackVerticalPadding, fallbackVerticalPadding);
-            var maxY = Math.max(visibleBottom - hostTop - fallbackVerticalPadding, minY);
-            placement = {
-              x: maxX > minX ? (minX + maxX) / 2 : minX,
-              y: maxY > minY ? (minY + maxY) / 2 : minY
-            };
-          }
-          if (!placement) {
-            if (container.parentNode) {
-              container.parentNode.removeChild(container);
-            }
-            return false;
-          }
-          var _placement = placement,
-            x = _placement.x,
-            y = _placement.y;
-          pinkModeAnimatedIconPlacementHistory.push({
-            x: x,
-            y: y,
-            size: size
-          });
-          if (pinkModeAnimatedIconPlacementHistory.length > PINK_MODE_ANIMATED_ICON_RECENT_SPOT_LIMIT) {
-            pinkModeAnimatedIconPlacementHistory.splice(0, pinkModeAnimatedIconPlacementHistory.length - PINK_MODE_ANIMATED_ICON_RECENT_SPOT_LIMIT);
-          }
-          var randomInRange = function randomInRange(min, max) {
-            if (!Number.isFinite(min) || !Number.isFinite(max)) {
-              return 0;
-            }
-            if (max === min) {
-              return max;
-            }
-            var lower = Math.min(min, max);
-            var upper = Math.max(min, max);
-            return Math.random() * (upper - lower) + lower;
-          };
-          var setAnimationMetric = function setAnimationMetric(name, value, options) {
-            if (!name || !container || !container.style) {
-              return;
-            }
-            var finiteValue = Number.isFinite(value) ? value : null;
-            if (finiteValue === null) {
-              return;
-            }
-            var unit = options && typeof options.unit === 'string' ? options.unit : 'px';
-            var precision = options && Number.isFinite(options.precision) && options.precision >= 0 ? options.precision : 2;
-            var formatted = "".concat(finiteValue.toFixed(precision)).concat(unit);
-            container.style.setProperty(name, formatted);
-          };
-          var horizontalDirection = Math.random() < 0.5 ? -1 : 1;
-          var translateXStart = randomInRange(-36, 36);
-          var translateXSettle = translateXStart + randomInRange(-28, 28);
-          var translateXDrift = translateXSettle + horizontalDirection * randomInRange(36, 84);
-          var translateXEnd = translateXDrift + horizontalDirection * randomInRange(48, 132);
-          var translateYStart = randomInRange(Math.max(24, size * 0.3), Math.max(60, size * 0.85));
-          var translateYSettle = randomInRange(-16, 16);
-          var translateYDrift = -Math.abs(randomInRange(Math.max(32, size * 0.25), Math.max(96, size * 0.65)));
-          var translateYEnd = -Math.abs(randomInRange(Math.max(80, size * 0.6), Math.max(180, size * 1.35)));
-          var scaleJitter = randomInRange(-0.08, 0.08);
-          var scaleStart = Math.min(0.92, Math.max(0.62, 0.75 + scaleJitter * 0.5));
-          var scaleSettle = Math.min(1.2, Math.max(0.9, 1 + scaleJitter));
-          var scaleDrift = Math.min(1.25, Math.max(0.95, 1.05 + scaleJitter * 0.5));
-          var scaleEnd = Math.min(1.05, Math.max(0.7, 0.85 + scaleJitter * 0.5));
-          var rotationDirection = Math.random() < 0.5 ? -1 : 1;
-          var rotationStart = -rotationDirection * randomInRange(4, 12);
-          var rotationSettle = rotationDirection * randomInRange(-3, 3);
-          var rotationDrift = rotationDirection * randomInRange(6, 14);
-          var rotationEnd = rotationDirection * randomInRange(10, 18);
+          var duration = Math.round(15000 + Math.random() * 10000);
+          var size = Math.round(64 + Math.random() * 64);
+          var xPercent = Math.random() * 90 + 5;
           container.style.setProperty('--pink-mode-animation-duration', "".concat(duration, "ms"));
           container.style.setProperty('--pink-mode-animation-size', "".concat(size, "px"));
-          container.style.setProperty('--pink-mode-animation-x', "".concat(x, "px"));
-          container.style.setProperty('--pink-mode-animation-y', "".concat(y, "px"));
-          setAnimationMetric('--pink-mode-animation-translate-x-start', translateXStart);
-          setAnimationMetric('--pink-mode-animation-translate-x-settle', translateXSettle);
-          setAnimationMetric('--pink-mode-animation-translate-x-drift', translateXDrift);
-          setAnimationMetric('--pink-mode-animation-translate-x-end', translateXEnd);
-          setAnimationMetric('--pink-mode-animation-translate-y-start', translateYStart);
-          setAnimationMetric('--pink-mode-animation-translate-y-settle', translateYSettle);
-          setAnimationMetric('--pink-mode-animation-translate-y-drift', translateYDrift);
-          setAnimationMetric('--pink-mode-animation-translate-y-end', translateYEnd);
-          setAnimationMetric('--pink-mode-animation-scale-start', scaleStart, {
-            unit: '',
-            precision: 3
-          });
-          setAnimationMetric('--pink-mode-animation-scale-settle', scaleSettle, {
-            unit: '',
-            precision: 3
-          });
-          setAnimationMetric('--pink-mode-animation-scale-drift', scaleDrift, {
-            unit: '',
-            precision: 3
-          });
-          setAnimationMetric('--pink-mode-animation-scale-end', scaleEnd, {
-            unit: '',
-            precision: 3
-          });
-          setAnimationMetric('--pink-mode-animation-rotation-start', rotationStart, {
-            unit: 'deg'
-          });
-          setAnimationMetric('--pink-mode-animation-rotation-settle', rotationSettle, {
-            unit: 'deg'
-          });
-          setAnimationMetric('--pink-mode-animation-rotation-drift', rotationDrift, {
-            unit: 'deg'
-          });
-          setAnimationMetric('--pink-mode-animation-rotation-end', rotationEnd, {
-            unit: 'deg'
-          });
+          container.style.setProperty('--pink-mode-animation-x', "".concat(xPercent.toFixed(2), "vw"));
+          for (var i = 1; i <= 5; i++) {
+            var sway = (Math.random() - 0.5) * 60;
+            container.style.setProperty("--pink-mode-animation-sway-".concat(i), "".concat(sway.toFixed(2), "px"));
+          }
+          container.style.setProperty('--pink-mode-animation-rotation-start', "".concat((Math.random() - 0.5) * 30, "deg"));
+          container.style.setProperty('--pink-mode-animation-rotation-mid', "".concat((Math.random() - 0.5) * 20, "deg"));
+          container.style.setProperty('--pink-mode-animation-rotation-end', "".concat((Math.random() - 0.5) * 30, "deg"));
           layer.appendChild(container);
           var animationData;
           try {
@@ -2466,8 +2262,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             container: container,
             animation: animationInstance,
             destroyed: false,
-            templateName: typeof template.name === 'string' ? template.name : null
+            templateName: typeof template.name === 'string' ? template.name : null,
+            clicks: 0,
+            lastClickTime: 0
           };
+          container.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var now = Date.now();
+            if (now - instance.lastClickTime > 1000) {
+              instance.clicks = 0;
+            }
+            instance.lastClickTime = now;
+            instance.clicks += 1;
+            if (instance.clicks > 3) {
+              triggerPinkModeIconRain();
+              instance.clicks = 0;
+            }
+          });
           container.addEventListener('animationend', function () {
             destroyPinkModeAnimatedIconInstance(instance);
           }, {
@@ -2543,6 +2354,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (!document.body.classList.contains('pink-mode')) {
             return;
           }
+          ensurePinkModeAnimatedIconPressListener();
           var runtime = resolvePinkModeLottieRuntime();
           if (runtime && typeof runtime.loadAnimation === 'function') {
             activatePinkModeAnimatedIcons();
@@ -2802,6 +2614,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           startPinkModeAnimatedIcons: support.startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons: support.stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain: support.triggerPinkModeIconRain,
+          startPinkModeIconPreload: startPinkModeIconPreload,
           getPinkModeIconRotationTimer: support.getPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: support.setPinkModeIconRotationTimer,
           getPinkModeIconIndex: support.getPinkModeIconIndex,
@@ -2877,6 +2690,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       globalScope[targetName] = existing;
     } catch (assignError) {
       void assignError;
+    }
+    if (exportsMap['modules/core/pink-mode'] && exportsMap['modules/core/pink-mode'].startPinkModeIconPreload) {
+      try {
+        exportsMap['modules/core/pink-mode'].startPinkModeIconPreload();
+      } catch (preloadError) {
+        console.warn('[PinkMode] Could not start icon preload', preloadError);
+      }
     }
   }
 })();

@@ -270,8 +270,38 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = function resolveCoreRuntimeCandidateScopesPa
   return resolvedScopes;
 }();
 var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPart2() {
-  if (typeof CORE_RUNTIME_STATE_SUPPORT !== 'undefined' && CORE_RUNTIME_STATE_SUPPORT) {
-    return CORE_RUNTIME_STATE_SUPPORT;
+  function readExistingRuntimeStateSupport() {
+    var scopes = [];
+    if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+    if (typeof window !== 'undefined') scopes.push(window);
+    if (typeof self !== 'undefined') scopes.push(self);
+    if (typeof global !== 'undefined') scopes.push(global);
+    if (Array.isArray(CORE_RUNTIME_CANDIDATE_SCOPES)) {
+      for (var scopeIndex = 0; scopeIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; scopeIndex += 1) {
+        scopes.push(CORE_RUNTIME_CANDIDATE_SCOPES[scopeIndex]);
+      }
+    }
+    for (var readIndex = 0; readIndex < scopes.length; readIndex += 1) {
+      var candidateScope = scopes[readIndex];
+      if (!candidateScope || _typeof(candidateScope) !== 'object') {
+        continue;
+      }
+      try {
+        if (candidateScope.CORE_RUNTIME_STATE_SUPPORT) {
+          return candidateScope.CORE_RUNTIME_STATE_SUPPORT;
+        }
+        if (candidateScope.cineCoreRuntimeState) {
+          return candidateScope.cineCoreRuntimeState;
+        }
+      } catch (runtimeSupportReadError) {
+        void runtimeSupportReadError;
+      }
+    }
+    return null;
+  }
+  var baseRuntimeSupport = readExistingRuntimeStateSupport();
+  if (baseRuntimeSupport) {
+    return baseRuntimeSupport;
   }
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -284,7 +314,7 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPa
     }
   }
   if (resolvedSupport) {
-    if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+    if (!readExistingRuntimeStateSupport() && typeof globalThis !== 'undefined') {
       try {
         globalThis.CORE_RUNTIME_STATE_SUPPORT = resolvedSupport;
       } catch (runtimeStateAssignError) {
@@ -301,7 +331,7 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPa
     try {
       var candidate = supportScope.cineCoreRuntimeState;
       if (candidate && _typeof(candidate) === 'object') {
-        if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+        if (!readExistingRuntimeStateSupport() && typeof globalThis !== 'undefined') {
           try {
             globalThis.CORE_RUNTIME_STATE_SUPPORT = candidate;
           } catch (runtimeStateCandidateAssignError) {
@@ -995,6 +1025,219 @@ ensureGlobalFallback('iconGlyph', function () {
         char: glyphChar,
         font: resolvedFont
       };
+    }
+  };
+});
+ensureGlobalFallback('resolveIconGlyph', function () {
+  var iconFontKeys = ensureGlobalFallback('ICON_FONT_KEYS', function () {
+    return createFallbackIconFontKeys();
+  });
+  var validFonts = new Set(Object.values(iconFontKeys || {}).filter(function (value) {
+    return typeof value === 'string' && value;
+  }));
+  var fallbackFont = iconFontKeys && iconFontKeys.UICONS ? iconFontKeys.UICONS : 'uicons';
+  function toCodePointChar(value, radix) {
+    var codePoint = parseInt(value, radix);
+    if (!Number.isFinite(codePoint) || codePoint < 0) {
+      return null;
+    }
+    try {
+      if (typeof String.fromCodePoint === 'function') {
+        return String.fromCodePoint(codePoint);
+      }
+    } catch (rangeError) {
+      void rangeError;
+    }
+    if (codePoint <= 0xffff) {
+      return String.fromCharCode(codePoint);
+    }
+    return null;
+  }
+  function normalizeGlyphChar(char) {
+    if (typeof char !== 'string') {
+      return '';
+    }
+    var trimmed = char.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
+    if (unicodeMatch) {
+      var decoded = toCodePointChar(unicodeMatch[1], 16);
+      if (decoded) {
+        return decoded;
+      }
+    }
+    var unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
+    if (unicodeBraceMatch) {
+      var _decoded = toCodePointChar(unicodeBraceMatch[1], 16);
+      if (_decoded) {
+        return _decoded;
+      }
+    }
+    var hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
+    if (hexEntityMatch) {
+      var _decoded2 = toCodePointChar(hexEntityMatch[1], 16);
+      if (_decoded2) {
+        return _decoded2;
+      }
+    }
+    var decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
+    if (decimalEntityMatch) {
+      var _decoded3 = toCodePointChar(decimalEntityMatch[1], 10);
+      if (_decoded3) {
+        return _decoded3;
+      }
+    }
+    return trimmed;
+  }
+  return function resolveIconGlyph(glyph) {
+    if (!glyph) {
+      return {
+        char: '',
+        font: fallbackFont,
+        className: ''
+      };
+    }
+    if (glyph.markup) {
+      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      return {
+        markup: glyph.markup,
+        className: glyph.className || '',
+        font: fallbackFont,
+        size: size
+      };
+    }
+    if (typeof glyph === 'string') {
+      return {
+        char: normalizeGlyphChar(glyph),
+        font: fallbackFont,
+        className: ''
+      };
+    }
+    if (_typeof(glyph) === 'object') {
+      var char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
+      var fontKey = glyph.font && validFonts.has(glyph.font) ? glyph.font : fallbackFont;
+      var className = typeof glyph.className === 'string' ? glyph.className : '';
+      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      if (glyph.markup) {
+        return {
+          markup: glyph.markup,
+          className: className,
+          font: fontKey,
+          size: _size
+        };
+      }
+      return {
+        char: char,
+        font: fontKey,
+        className: className,
+        size: _size
+      };
+    }
+    return {
+      char: '',
+      font: fallbackFont,
+      className: ''
+    };
+  };
+});
+ensureGlobalFallback('formatSvgCoordinate', function () {
+  return function formatSvgCoordinate(value) {
+    if (!Number.isFinite(value)) return '0';
+    var rounded = Math.round(value * 100) / 100;
+    if (Number.isInteger(rounded)) return String(rounded);
+    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  };
+});
+ensureGlobalFallback('positionSvgMarkup', function () {
+  var formatSvgCoordinate = ensureGlobalFallback('formatSvgCoordinate', function () {
+    return function fallbackFormat(value) {
+      if (!Number.isFinite(value)) return '0';
+      var rounded = Math.round(value * 100) / 100;
+      if (Number.isInteger(rounded)) return String(rounded);
+      return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+    };
+  });
+  return function positionSvgMarkup(markup, centerX, centerY) {
+    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
+    if (typeof markup !== 'string') {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var trimmed = markup.trim();
+    if (!trimmed) {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var half = size / 2;
+    var x = formatSvgCoordinate(centerX);
+    var y = formatSvgCoordinate(centerY);
+    var width = formatSvgCoordinate(size);
+    var height = formatSvgCoordinate(size);
+    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
+      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
+      var additions = [];
+      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
+      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
+      additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
+      additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
+      attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
+      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
+    });
+    return {
+      markup: cleaned,
+      x: x,
+      y: y
+    };
+  };
+});
+ensureGlobalFallback('applyIconGlyph', function () {
+  var resolveIconGlyph = ensureGlobalFallback('resolveIconGlyph', function () {
+    return function passthrough(glyph) {
+      if (glyph && _typeof(glyph) === 'object') {
+        return glyph;
+      }
+      return {
+        char: typeof glyph === 'string' ? glyph : '',
+        font: 'uicons'
+      };
+    };
+  });
+  var ensureSvgHasAriaHidden = ensureGlobalFallback('ensureSvgHasAriaHidden', function () {
+    return function passthrough(markup) {
+      return markup;
+    };
+  });
+  return function applyIconGlyph(element, glyph) {
+    if (!element) return;
+    var resolved = resolveIconGlyph(glyph);
+    if (resolved && resolved.markup) {
+      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+      element.setAttribute('aria-hidden', 'true');
+      if (resolved.className && element.classList) {
+        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
+          return element.classList.add(cls);
+        });
+      }
+      element.removeAttribute('data-icon-font');
+      return;
+    }
+    var char = resolved && resolved.char || '';
+    element.textContent = char;
+    if (char) {
+      element.setAttribute('data-icon-font', resolved.font || 'uicons');
+    } else {
+      element.removeAttribute('data-icon-font');
     }
   };
 });

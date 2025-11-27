@@ -5987,6 +5987,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function removeOldestRenamedAutoBackupEntry(container) {
+    if (!isPlainObject(container)) {
+      return null;
+    }
+    var removeFromEntries = function removeFromEntries(entries) {
+      if (!Array.isArray(entries) || entries.length === 0) {
+        return null;
+      }
+      for (var index = 0; index < entries.length; index += 1) {
+        var entry = entries[index];
+        if (!entry || typeof entry.key !== 'string') {
+          continue;
+        }
+        if (Object.prototype.hasOwnProperty.call(container, entry.key)) {
+          delete container[entry.key];
+          return entry.key;
+        }
+      }
+      return null;
+    };
+    var autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
+    var oldestAutoBackupKey = removeFromEntries(autoBackups);
+    if (oldestAutoBackupKey) {
+      return oldestAutoBackupKey;
+    }
+    var deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
+    var oldestDeletionBackupKey = removeFromEntries(deletionBackups);
+    if (oldestDeletionBackupKey) {
+      return oldestDeletionBackupKey;
+    }
+    return null;
+  }
   function describeAutoGearBackupEntry(entry) {
     if (!entry || _typeof(entry) !== 'object') {
       return '';
@@ -7914,17 +7946,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     shootingDays: ['Shooting Days', 'Drehtage', 'Jours de tournage', 'Días de rodaje', 'Giorni di riprese'],
     returnDays: ['Return Days', 'Rückgabetage', 'Jours de restitution', 'Días de devolución', 'Giorni di restituzione'],
     deliveryResolution: ['Delivery Resolution', 'Auslieferungsauflösung', 'Résolution de livraison', 'Resolución de entrega', 'Risoluzione di consegna'],
-  recordingResolution: ['Recording Resolution', 'Aufnahmeauflösung', 'Résolution d’enregistrement', 'Resolución de grabación', 'Risoluzione di registrazione'],
-  slowMotionRecordingResolution: ['Slow Motion Recording Resolution', 'Zeitlupen-Aufnahmeauflösung', 'Résolution d’enregistrement au ralenti', 'Resolución de grabación en cámara lenta', 'Risoluzione di registrazione slow motion'],
-  aspectRatio: ['Aspect Ratio', 'Seitenverhältnis', "Format d’image", 'Relación de aspecto', 'Formato'],
-  codec: ['Codec', 'Codec', 'Codec', 'Códec', 'Codec'],
-  baseFrameRate: ['Base Frame Rate', 'Basis-Framerate', 'Cadence de base', 'Velocidad base', 'Frame rate base'],
-  slowMotionBaseFrameRate: ['Slow Motion Base Frame Rate', 'Zeitlupen-Basis-Framerate', 'Cadence de base au ralenti', 'Velocidad base en cámara lenta', 'Frame rate base slow motion'],
-  recordingFrameRate: ['Recording Frame Rate', 'Aufnahmebildrate', 'Cadence d’enregistrement', 'Velocidad de grabación', 'Frame rate di registrazione'],
-  slowMotionRecordingFrameRate: ['Slow Motion Recording Frame Rate', 'Zeitlupen-Aufnahmebildrate', 'Cadence d’enregistrement au ralenti', 'Velocidad de grabación en cámara lenta', 'Frame rate di registrazione slow motion'],
-  sensorMode: ['Sensor Mode', 'Sensormodus', 'Mode capteur', 'Modo de sensor', 'Modalità sensore'],
-  slowMotionSensorMode: ['Slow Motion Sensor Mode', 'Zeitlupen-Sensormodus', 'Mode capteur au ralenti', 'Modo de sensor en cámara lenta', 'Modalità sensore slow motion'],
-  slowMotionAspectRatio: ['Slow Motion Aspect Ratio', 'Zeitlupen-Seitenverhältnis', "Format d’image au ralenti", 'Relación de aspecto en cámara lenta', 'Formato slow motion'],
+    recordingResolution: ['Recording Resolution', 'Aufnahmeauflösung', 'Résolution d’enregistrement', 'Resolución de grabación', 'Risoluzione di registrazione'],
+    slowMotionRecordingResolution: ['Slow Motion Recording Resolution', 'Zeitlupen-Aufnahmeauflösung', 'Résolution d’enregistrement au ralenti', 'Resolución de grabación en cámara lenta', 'Risoluzione di registrazione slow motion'],
+    aspectRatio: ['Aspect Ratio', 'Seitenverhältnis', "Format d’image", 'Relación de aspecto', 'Formato'],
+    codec: ['Codec', 'Codec', 'Codec', 'Códec', 'Codec'],
+    baseFrameRate: ['Base Frame Rate', 'Basis-Framerate', 'Cadence de base', 'Velocidad base', 'Frame rate base'],
+    slowMotionBaseFrameRate: ['Slow Motion Base Frame Rate', 'Zeitlupen-Basis-Framerate', 'Cadence de base au ralenti', 'Velocidad base en cámara lenta', 'Frame rate base slow motion'],
+    recordingFrameRate: ['Recording Frame Rate', 'Aufnahmebildrate', 'Cadence d’enregistrement', 'Velocidad de grabación', 'Frame rate di registrazione'],
+    slowMotionRecordingFrameRate: ['Slow Motion Recording Frame Rate', 'Zeitlupen-Aufnahmebildrate', 'Cadence d’enregistrement au ralenti', 'Velocidad de grabación en cámara lenta', 'Frame rate di registrazione slow motion'],
+    sensorMode: ['Sensor Mode', 'Sensormodus', 'Mode capteur', 'Modo de sensor', 'Modalità sensore'],
+    slowMotionSensorMode: ['Slow Motion Sensor Mode', 'Zeitlupen-Sensormodus', 'Mode capteur au ralenti', 'Modo de sensor en cámara lenta', 'Modalità sensore slow motion'],
+    slowMotionAspectRatio: ['Slow Motion Aspect Ratio', 'Zeitlupen-Seitenverhältnis', "Format d’image au ralenti", 'Relación de aspecto en cámara lenta', 'Formato slow motion'],
     lenses: ['Lenses', 'Objektive', 'Optiques', 'Ópticas', 'Obiettivi'],
     requiredScenarios: ['Required Scenarios', 'Anforderungen', 'Scénarios requis', 'Escenarios requeridos', 'Scenari richiesti'],
     cameraHandle: ['Camera Handle', 'Kamera-Handgriff', 'Poignée caméra', 'Empuñadura de cámara', 'Maniglia camera'],
@@ -9419,6 +9451,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         clone.mount = mount;
         entryChanged = true;
       }
+      if (Object.prototype.hasOwnProperty.call(clone, 'mountState')) {
+        var rawMountState = typeof clone.mountState === 'string' ? clone.mountState : '';
+        var mountState = rawMountState.trim();
+        if (clone.mountState !== mountState) {
+          clone.mountState = mountState;
+          entryChanged = true;
+        }
+        if (!mountState) {
+          delete clone.mountState;
+          entryChanged = true;
+        }
+      }
       if (entryChanged) {
         changed = true;
       }
@@ -10357,6 +10401,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           delete serializedProjects[removedKey];
           if (typeof console !== 'undefined' && typeof console.warn === 'function') {
             console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
+          }
+          return true;
+        }
+        var removedRenamedKey = removeOldestRenamedAutoBackupEntry(projects);
+        if (removedRenamedKey) {
+          delete serializedProjects[removedRenamedKey];
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn("Removed renamed automatic project backup \"".concat(removedRenamedKey, "\" to free up storage space before saving projects."));
           }
           return true;
         }

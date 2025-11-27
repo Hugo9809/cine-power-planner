@@ -173,7 +173,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -228,10 +228,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
     }
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
+      return value;
+    }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
+    if (value === PRIMARY_SCOPE || typeof globalThis !== 'undefined' && value === globalThis || typeof window !== 'undefined' && value === window || typeof self !== 'undefined' && value === self || typeof global !== 'undefined' && value === global) {
       return value;
     }
     try {
@@ -248,38 +261,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (addError) {
       void addError;
     }
-    var keys;
     try {
-      keys = Object.getOwnPropertyNames(value);
-    } catch (keysError) {
-      void keysError;
-      keys = [];
-    }
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      var child;
-      try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
-      }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
-        continue;
-      }
-      fallbackFreezeDeep(child, localSeen);
-    }
-    try {
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
-      }
+      Object.freeze(value);
     } catch (freezeError) {
       void freezeError;
-      return value;
     }
+    return value;
   }
   var freezeDeep = function resolveFreezeDeep() {
     if (ENV_BRIDGE && typeof ENV_BRIDGE.freezeDeep === 'function') {

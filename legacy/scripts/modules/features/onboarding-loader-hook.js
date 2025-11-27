@@ -1,8 +1,15 @@
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
   var LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   var STORAGE_KEYS = [PRIMARY_STORAGE_KEY].concat(LEGACY_STORAGE_KEYS);
+  var SKIP_STATUS_KEY = "".concat(PRIMARY_STORAGE_KEY, ":skip");
+  var WINDOW_NAME_SKIP_TOKEN = "".concat(SKIP_STATUS_KEY, "=true");
   var HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   var LOAD_REASON_PREFIX = 'onboarding-tour:';
@@ -367,12 +374,67 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return onboardingModulePromise;
   }
+  function coerceStoredBooleanFlag(value, options) {
+    var settings = options || {};
+    var trueValues = Array.isArray(settings.trueValues) ? settings.trueValues : [];
+    var falseValues = Array.isArray(settings.falseValues) ? settings.falseValues : [];
+    if (value === true) {
+      return true;
+    }
+    if (value === false) {
+      return false;
+    }
+    if (typeof value === 'number') {
+      if (Number.isFinite(value)) {
+        if (value === 1) {
+          return true;
+        }
+        if (value === 0) {
+          return false;
+        }
+      }
+      return value;
+    }
+    if (typeof value !== 'string') {
+      return value;
+    }
+    var normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return value;
+    }
+    if (trueValues.indexOf(normalized) !== -1) {
+      return true;
+    }
+    if (falseValues.indexOf(normalized) !== -1) {
+      return false;
+    }
+    return value;
+  }
+  function normalizeStoredStateSnapshot(snapshot) {
+    if (!snapshot || _typeof(snapshot) !== 'object') {
+      return null;
+    }
+    var normalized = _objectSpread({}, snapshot);
+    if (Object.prototype.hasOwnProperty.call(normalized, 'completed')) {
+      normalized.completed = coerceStoredBooleanFlag(normalized.completed, {
+        trueValues: ['true', '1', 'yes', 'completed', 'done', 'finished'],
+        falseValues: ['false', '0', 'no', 'pending', 'incomplete']
+      });
+    }
+    if (Object.prototype.hasOwnProperty.call(normalized, 'skipped')) {
+      normalized.skipped = coerceStoredBooleanFlag(normalized.skipped, {
+        trueValues: ['true', '1', 'yes', 'skipped', 'dismissed'],
+        falseValues: ['false', '0', 'no', 'pending', 'incomplete']
+      });
+    }
+    return normalized;
+  }
   function parseStoredStateValue(rawValue) {
     if (!rawValue) {
       return null;
     }
     if (_typeof(rawValue) === 'object') {
-      return rawValue;
+      return normalizeStoredStateSnapshot(rawValue) || rawValue;
     }
     if (typeof rawValue !== 'string') {
       return null;
@@ -384,26 +446,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     try {
       var parsed = JSON.parse(trimmed);
       if (parsed && _typeof(parsed) === 'object') {
-        return parsed;
+        return normalizeStoredStateSnapshot(parsed) || parsed;
       }
       if (parsed === true) {
-        return {
+        return normalizeStoredStateSnapshot({
+          completed: true
+        }) || {
           completed: true
         };
       }
       if (parsed === false) {
-        return {
+        return normalizeStoredStateSnapshot({
+          completed: false
+        }) || {
           completed: false
         };
       }
       if (typeof parsed === 'string') {
         if (parsed === 'completed') {
-          return {
+          return normalizeStoredStateSnapshot({
+            completed: true
+          }) || {
             completed: true
           };
         }
         if (parsed === 'skipped') {
-          return {
+          return normalizeStoredStateSnapshot({
+            skipped: true
+          }) || {
             skipped: true
           };
         }
@@ -412,28 +482,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
     }
     if (trimmed === 'completed') {
-      return {
+      return normalizeStoredStateSnapshot({
+        completed: true
+      }) || {
         completed: true
       };
     }
     if (trimmed === 'skipped') {
-      return {
+      return normalizeStoredStateSnapshot({
+        skipped: true
+      }) || {
         skipped: true
       };
     }
     if (trimmed === 'true') {
-      return {
+      return normalizeStoredStateSnapshot({
+        completed: true
+      }) || {
         completed: true
       };
     }
     if (trimmed === 'false') {
-      return {
+      return normalizeStoredStateSnapshot({
+        completed: false
+      }) || {
         completed: false
       };
     }
     return null;
   }
-  function readStoredState(scope) {
+  function collectStorageCandidates(scope) {
     var storageCandidates = [];
     var pushCandidate = function pushCandidate(candidate) {
       if (!candidate) {
@@ -462,7 +540,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (currentScope && _typeof(currentScope.sessionStorage) === 'object' && currentScope.sessionStorage) {
       pushCandidate(currentScope.sessionStorage);
     }
+    return storageCandidates;
+  }
+  function readSkipPreference(scope) {
+    var storageCandidates = collectStorageCandidates(scope);
+    for (var index = 0; index < storageCandidates.length; index += 1) {
+      var storage = storageCandidates[index];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      try {
+        var value = storage.getItem(SKIP_STATUS_KEY);
+        if (value === null || typeof value === 'undefined') {
+          continue;
+        }
+        if (value === true || value === 'true') {
+          return true;
+        }
+        if (value === false || value === 'false') {
+          return false;
+        }
+        try {
+          var parsed = JSON.parse(value);
+          if (parsed === true || parsed === false) {
+            return parsed;
+          }
+        } catch (parseError) {
+          void parseError;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    try {
+      var currentScope = scope || getGlobalScope();
+      var nameValue = currentScope && typeof currentScope.name === 'string' ? currentScope.name : '';
+      if (nameValue && nameValue.indexOf(WINDOW_NAME_SKIP_TOKEN) !== -1) {
+        return true;
+      }
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+  function isOnboardingSuppressed(scope) {
+    var stored = readStoredState(scope);
+    var normalized = normalizeStoredStateSnapshot(stored) || stored;
+    return Boolean(normalized && _typeof(normalized) === 'object' && (normalized.completed === true || normalized.skipped === true));
+  }
+  function readStoredState(scope) {
+    var storageCandidates = collectStorageCandidates(scope);
     var fallbackState = null;
+    var skipPreference = readSkipPreference(scope);
+    if (skipPreference === true) {
+      return {
+        skipped: true,
+        completed: false
+      };
+    }
     for (var index = 0; index < storageCandidates.length; index += 1) {
       var storage = storageCandidates[index];
       if (!storage || typeof storage.getItem !== 'function') {
@@ -474,11 +609,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var value = storage.getItem(key);
           var parsed = parseStoredStateValue(value);
           if (parsed) {
-            if (parsed.completed === true || parsed.skipped === true) {
-              return parsed;
+            var normalized = normalizeStoredStateSnapshot(parsed) || parsed;
+            if (normalized.completed === true || normalized.skipped === true) {
+              return normalized;
             }
             if (!fallbackState) {
-              fallbackState = parsed;
+              fallbackState = normalized;
             }
           }
         } catch (error) {
@@ -486,14 +622,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-    return fallbackState;
+    return fallbackState ? normalizeStoredStateSnapshot(fallbackState) || fallbackState : fallbackState;
   }
   function detectFirstRun(scope) {
     if (onboardingModuleReady) {
       return;
     }
-    var stored = readStoredState(scope);
-    if (stored && _typeof(stored) === 'object' && (stored.completed === true || stored.skipped === true)) {
+    if (isOnboardingSuppressed(scope)) {
       return;
     }
     schedule(function () {
@@ -565,6 +700,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var trigger = resolveTrigger(event.target, doc);
       if (!trigger) {
+        return;
+      }
+      if (isOnboardingSuppressed(scope)) {
+        uninstallTriggerInterceptor(scope);
         return;
       }
       if (typeof event.preventDefault === 'function') {

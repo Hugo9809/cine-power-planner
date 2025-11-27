@@ -514,7 +514,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return;
   }
   var freezeDeep = typeof MODULE_BASE.freezeDeep === 'function' ? MODULE_BASE.freezeDeep : function fallbackFreezeDeep(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     var seen = new WeakSet();
@@ -537,7 +537,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void accessError;
             child = undefined;
           }
-          if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+          if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
             continue;
           }
           freeze(child);

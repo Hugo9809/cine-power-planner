@@ -2,6 +2,7 @@
   var wirelessReceiversData = {
     "Teradek Bolt 6 XT RX": {
       "powerDrawWatts": 18,
+      "weight_g": 342,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -27,6 +28,7 @@
     },
     "Teradek Bolt 4K RX": {
       "powerDrawWatts": 16,
+      "weight_g": 440,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -52,6 +54,7 @@
     },
     "Teradek Bolt 4K LT 750 RX": {
       "powerDrawWatts": 10,
+      "weight_g": 292,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -77,6 +80,7 @@
     },
     "Vaxis Storm 3000 RX": {
       "powerDrawWatts": 9,
+      "weight_g": 430,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -116,6 +120,7 @@
     },
     "Teradek Bolt 6 LT RX": {
       "powerDrawWatts": 18,
+      "weight_g": 292,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -132,6 +137,7 @@
     },
     "Teradek Bolt 6 MAX RX": {
       "powerDrawWatts": 20,
+      "weight_g": 342,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -157,6 +163,7 @@
     },
     "Teradek Bolt 4K LT RX": {
       "powerDrawWatts": 9,
+      "weight_g": 292,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -173,6 +180,7 @@
     },
     "Teradek Bolt 4K XT RX": {
       "powerDrawWatts": 20,
+      "weight_g": 360,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -198,6 +206,7 @@
     },
     "Teradek Bolt Pro 300 RX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -214,6 +223,7 @@
     },
     "Teradek Bolt Pro 600 RX": {
       "powerDrawWatts": 8,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -230,6 +240,7 @@
     },
     "Teradek Bolt Pro 2000 RX": {
       "powerDrawWatts": 7.7,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -246,6 +257,7 @@
     },
     "Teradek Bolt Pro 500 RX": {
       "powerDrawWatts": 7.3,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -262,6 +274,7 @@
     },
     "Teradek Bolt Pro 750 RX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -278,6 +291,7 @@
     },
     "Teradek Bolt Pro 1000 RX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -294,6 +308,7 @@
     },
     "Teradek Bolt 3000 RX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 260,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -310,6 +325,7 @@
     },
     "Teradek Bolt 10000 RX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 800,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -325,7 +341,8 @@
       }
     },
     "Hollyland Pyro S RX": {
-      "powerDrawWatts": 11,
+      "powerDrawWatts": 8,
+      "weight_g": 207,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -353,6 +370,7 @@
     },
     "Hollyland Mars 300 Pro RX": {
       "powerDrawWatts": 11,
+      "weight_g": 136,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -378,6 +396,7 @@
     },
     "Hollyland Mars 400S Pro RX": {
       "powerDrawWatts": 11,
+      "weight_g": 206,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -404,7 +423,8 @@
       }
     },
     "DJI Transmission (RX)": {
-      "powerDrawWatts": 11,
+      "powerDrawWatts": 9,
+      "weight_g": 350,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -430,6 +450,7 @@
     },
     "Vaxis Storm 800 RX": {
       "powerDrawWatts": 6,
+      "weight_g": 430,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -448,6 +469,7 @@
     },
     "Vaxis Storm 1000 RX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 430,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -466,6 +488,7 @@
     },
     "Dwarf Connection LR1 RX": {
       "powerDrawWatts": 6,
+      "weight_g": 300,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -484,6 +507,7 @@
     },
     "Accsoon CineEye 2S Pro RX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 225,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -504,6 +528,7 @@
     },
     "Accsoon CineEye II RX": {
       "powerDrawWatts": 3.5,
+      "weight_g": 200,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -524,6 +549,7 @@
     },
     "Accsoon CineView HE RX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 200,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -546,6 +572,7 @@
     },
     "Accsoon CineView SE RX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 210,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -568,6 +595,7 @@
     },
     "Accsoon CineView Nano RX": {
       "powerDrawWatts": 2.5,
+      "weight_g": 72,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -588,6 +616,7 @@
     },
     "Accsoon CineView Quad RX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 225,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
@@ -610,6 +639,7 @@
     },
     "ARRI WVR-1 RX": {
       "powerDrawWatts": 7,
+      "weight_g": 700,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -633,6 +663,7 @@
     },
     "ARRI WVR-1s RX": {
       "powerDrawWatts": 7,
+      "weight_g": 500,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
@@ -651,6 +682,171 @@
           "notes": "Max 2.0A accessory feed"
         }
       }
+    },
+    "Hollyland Mars 4K RX": {
+      "powerDrawWatts": 5,
+      "weight_g": 223,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }],
+      "frequency": "5 GHz",
+      "latencyMs": "60ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6-16",
+          "notes": "Locking coaxial DC input"
+        },
+        "alternateInputs": [{
+          "type": "USB-C",
+          "voltageRange": "5",
+          "notes": "USB-C Power"
+        }],
+        "batteryPlateSupport": [{
+          "type": "NP-F",
+          "mount": "integrated"
+        }]
+      }
+    },
+    "Vaxis Atom 500 SDI RX": {
+      "powerDrawWatts": 5,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "5 GHz",
+      "latencyMs": "< 80ms",
+      "power": {
+        "input": {
+          "type": "USB-C",
+          "voltageRange": "5",
+          "notes": "USB-C Power"
+        },
+        "batteryPlateSupport": [{
+          "type": "NP-F",
+          "mount": "integrated"
+        }]
+      },
+      "weight_g": 130
+    },
+    "Teradek Bolt 6 LT HDMI RX": {
+      "powerDrawWatts": 11,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "6-28",
+          "notes": "Regulated DC input"
+        }
+      },
+      "weight_g": 200
+    },
+    "Accsoon CineView Master 4K RX": {
+      "powerDrawWatts": 6.5,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "2.4 GHz / 5 GHz / 6 GHz",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "7.4-16.8",
+          "notes": "DC Input"
+        },
+        "alternateInputs": [{
+          "type": "USB-C",
+          "voltageRange": "5",
+          "notes": "USB-C Power"
+        }],
+        "batteryPlateSupport": [{
+          "type": "NP-F",
+          "mount": "integrated"
+        }]
+      },
+      "weight_g": 320
+    },
+    "Teradek Bolt 6 LT 750 RX": {
+      "powerDrawWatts": 11,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "5/6 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": {
+          "type": "LEMO 2-pin",
+          "voltageRange": "6-28",
+          "notes": "Regulated DC input"
+        }
+      },
+      "weight_g": 292
+    },
+    "DJI High-Bright Remote Monitor (RX)": {
+      "powerDrawWatts": 15,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6.8-17.6",
+          "notes": "DC Input"
+        },
+        "batteryPlateSupport": [{
+          "type": "WB37",
+          "mount": "integrated"
+        }, {
+          "type": "NP-F",
+          "mount": "optional adapter"
+        }]
+      },
+      "weight_g": 727
+    },
+    "DJI Video Receiver": {
+      "powerDrawWatts": 9,
+      "videoInputs": [],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": {
+          "type": "DC Barrel",
+          "voltageRange": "6-18",
+          "notes": "DC Input"
+        },
+        "batteryPlateSupport": [{
+          "type": "WB37",
+          "mount": "integrated"
+        }, {
+          "type": "NP-F",
+          "mount": "optional adapter"
+        }]
+      },
+      "weight_g": 350
     }
   };
   if (typeof registerDevice === 'function') {

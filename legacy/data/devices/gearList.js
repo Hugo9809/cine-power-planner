@@ -19,6 +19,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "brand": "Sony",
         "model": "DVF-EL200 OLED Viewfinder",
         "kNumber": "DVF-EL200",
+        "powerDrawWatts": 3,
         "compatible": ["Sony Venice", "Sony Venice 2", "Sony F55"],
         "isPersonalGear": false,
         "listOfOrigin": "240315_Detective_von_Fock_Equipment_B-Cam_Rental.pdf"
@@ -101,7 +102,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "Cine 24",
         "screenSizeInches": 24,
         "brightnessNits": 1350,
-        "powerDrawWatts": 110,
+        "powerDrawWatts": 128,
         "power": {
           "input": {
             "voltageRange": "12-34",
@@ -548,7 +549,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
     },
     "iosVideo": {
       "Teradek - Serv 4K v2": {
-        "powerDrawWatts": 9,
+        "powerDrawWatts": 18,
         "videoInputs": [{
           "type": "HDMI"
         }, {
@@ -568,7 +569,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "notes": "Streams to iOS devices for on-set monitoring"
       },
       "Teradek - Link AX WifiRouter/Access Point": {
-        "powerDrawWatts": 9,
+        "powerDrawWatts": 17.5,
         "videoInputs": [{
           "type": "HDMI"
         }, {
@@ -784,6 +785,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "compatible": "Requires LMB 4x5 clamp adapters (Ø80–162 mm incl. 156 mm adapter).",
           "topFlag": true,
           "sideFlags": false,
+          "weight_g": 707,
           "provenance": ":contentReference[oaicite:23]{index=23}"
         },
         "ARRI LMB 4x5 Pro Set": {
@@ -796,6 +798,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "compatible": "Clamp-on via adapters Ø80–162 mm (plus Ø156); includes LWS console; side + top flags.",
           "topFlag": true,
           "sideFlags": true,
+          "weight_g": 2272,
           "provenance": ":contentReference[oaicite:24]{index=24}"
         },
         "ARRI LMB 4x5 15mm LWS Set 3-Stage": {
@@ -808,6 +811,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "compatible": "Clamp-on diameters via adapters Ø80–162 mm (plus Ø156); includes LWS console, Tilt & Flex.",
           "topFlag": true,
           "sideFlags": false,
+          "weight_g": 893,
           "provenance": ":contentReference[oaicite:25]{index=25}"
         },
         "ARRI LMB 19mm Studio Rod Adapter": {
@@ -994,6 +998,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "type": "Clamp-on",
           "traySize": "4x5.65",
           "diameterMm": 95,
+          "weight_g": 368,
           "compatible": "Includes 67/72/77/82–95 mm rings; supports round filters ≤92.5 mm.",
           "topFlag": true,
           "sideFlags": true,
@@ -1007,6 +1012,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "type": "Clamp-on",
           "traySize": "4x5.65 / 4x4",
           "diameterMm": 95,
+          "weight_g": 108,
           "compatible": "Adapter rings for 67/72/77/82 mm; multiple plug-in + circular filters.",
           "topFlag": true,
           "sideFlags": false,
@@ -1060,10 +1066,12 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
       },
       "rigging": {
         "Manfrotto 026 Lite-Tite": {
-          "brand": "Manfrotto"
+          "brand": "Manfrotto",
+          "weight_g": 380
         },
         "Manfrotto 244N Friction Arm": {
-          "brand": "Manfrotto"
+          "brand": "Manfrotto",
+          "weight_g": 1090
         },
         "ULCS Bracket 1/4 to 1/4": {
           "brand": "ULCS"
@@ -1081,7 +1089,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "pinV": 7.2
         },
         "Sony NP-F750": {
-          "capacity": 33,
+          "capacity": 21.6,
           "mount_type": "NP-F",
           "weight_g": 220,
           "pinA": 4,
@@ -1101,12 +1109,15 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "from": "D-Tap",
             "to": "LEMO 2-pin",
             "lengthM": 0.5,
+            "weight_g": 40,
             "connectors": ["D-Tap", "LEMO 0B 2-pin"]
           },
           "D-Tap Splitter 3-way": {
             "from": "D-Tap",
             "to": ["D-Tap", "D-Tap", "D-Tap"],
             "lengthM": 0.2,
+            "maxLoadA": 10,
+            "weight_g": 60,
             "connectors": ["D-Tap input", "D-Tap outputs"]
           },
           "D-Tap to miniXLR (0.3 m)": {
@@ -1124,6 +1135,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "HDMI Cable": {
             "type": "HDMI",
             "lengthM": 1,
+            "weight_g": 50,
             "notes": "High Speed/18 Gbps (typical set use)"
           },
           "Ultraslim BNC Cable 0.3 m": {
@@ -1159,6 +1171,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "BNC Cable 10 m": {
             "type": "3G-SDI",
             "lengthM": 10,
+            "weight_g": 400,
             "notes": "75 Ω SDI run"
           },
           "BNC Drum 25 m": {
@@ -3971,6 +3984,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED Station CFexpress Type B (USB-C)": {
           "brand": "RED",
           "model": "RED Station CFexpress Type B",
+          "powerDrawWatts": 5,
           "supportedMedia": ["RED CFexpress", "CFexpress Type B"],
           "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
           "slots": 1,
@@ -3980,6 +3994,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED Station RED MINI-MAG (USB-C)": {
           "brand": "RED",
           "model": "RED Station RED MINI-MAG",
+          "powerDrawWatts": 5,
           "supportedMedia": ["RED MINI-MAG"],
           "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
           "slots": 1,
@@ -3990,6 +4005,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "brand": "Sony",
           "model": "AXS-AR1",
           "kNumber": "AXS-AR1",
+          "powerDrawWatts": 5,
           "supportedMedia": ["Sony AXS"],
           "interface": "USB 3.0 (USB 3.1 Gen 1 Type-B)",
           "slots": 1,
@@ -3999,6 +4015,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony SBAC-US30 SxS Reader": {
           "brand": "Sony",
           "model": "SBAC-US30",
+          "powerDrawWatts": 5,
           "supportedMedia": ["SxS PRO+", "SxS PRO X", "SxS-1"],
           "interface": "USB 3.0 (USB 3.1 Gen 1 Micro-B)",
           "slots": 1,
@@ -4008,6 +4025,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony MRW-G2 CFexpress Type A / SD Reader": {
           "brand": "Sony",
           "model": "MRW-G2",
+          "powerDrawWatts": 5,
           "supportedMedia": ["CFexpress Type A", "SD UHS-II", "SD UHS-I"],
           "interface": "USB 3.2 Gen 2 (USB-C)",
           "slots": 2,
@@ -4217,27 +4235,32 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "OConnor 2560 Head": {
           "brand": "OConnor",
           "bowlSizeMm": 150,
-          "material": "Aluminum"
+          "material": "Aluminum",
+          "weightKg": 8.2
         },
         "Sachtler FSB 8 Head": {
           "brand": "Sachtler",
           "bowlSizeMm": 75,
-          "material": "Aluminum"
+          "material": "Aluminum",
+          "weightKg": 2.6
         },
         "Sachtler Cine 30": {
           "brand": "Sachtler",
           "bowlSizeMm": 150,
-          "material": "Aluminum"
+          "material": "Aluminum",
+          "weightKg": 6.7
         },
         "Sachtler Video 20 S1": {
           "brand": "Sachtler",
           "bowlSizeMm": 100,
-          "material": "Aluminum"
+          "material": "Aluminum",
+          "weightKg": 4.1
         },
         "OConnor Ultimate 1040": {
           "brand": "OConnor",
           "bowlSizeMm": 100,
-          "material": "Aluminum"
+          "material": "Aluminum",
+          "weightKg": 4.8
         },
         "Manfrotto Nitrotech 608": {
           "brand": "Manfrotto",
@@ -4931,12 +4954,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Easyrig 5 Vario": {
           "brand": "Easyrig",
           "options": ["FlowCine Serene Spring Arm", "Easyrig - STABIL G3"]
-        },
-        "DJI Ronin RS4 Pro Combo": {
-          "brand": "DJI"
-        },
-        "DJI Ronin 2": {
-          "brand": "DJI"
         }
       },
       "grip": {
@@ -4948,8 +4965,50 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         }
       },
       "carts": {
-        "Magliner Senior Videomagliner": {
-          "brand": "Magliner"
+        "Inovativ Voyager 30 EVO X": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Voyager 36 EVO X": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Voyager 42 EVO X": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Apollo 40 EVO": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Apollo 52 EVO": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Echo 36 Workstation Cart": {
+          "brand": "Inovativ"
+        },
+        "Inovativ Echo 48 Workstation Cart": {
+          "brand": "Inovativ"
+        },
+        "Adicam MINI Camera Cart": {
+          "brand": "Adicam"
+        },
+        "Adicam STANDARD Camera Cart": {
+          "brand": "Adicam"
+        },
+        "Adicam STANDARD+ Camera Cart": {
+          "brand": "Adicam"
+        },
+        "Adicam MAX Camera Cart": {
+          "brand": "Adicam"
+        },
+        "SmallRig MD4573 36\" Lightweight Video Production Camera Cart": {
+          "brand": "SmallRig"
+        },
+        "Tilta Boulder 36\" Camera Cart": {
+          "brand": "Tilta"
+        },
+        "Backstage Magliner Junior 24\" Film Cart (8\" Conversion Kit)": {
+          "brand": "Backstage"
+        },
+        "Backstage Magliner Senior 24\" Film Cart (8\" Conversion Kit)": {
+          "brand": "Backstage"
         }
       }
     },
@@ -4968,7 +5027,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "mount": "PL",
         "lengthMm": 95,
         "minFocusMeters": 0.28,
-        "weight_g": 1600,
+        "weight_g": 1200,
         "notes": "Front Ø80 mm; S35; T1.3-T16",
         "mountOptions": [{
           "type": "PL",
@@ -5020,7 +5079,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "mount": "PL",
         "lengthMm": 64,
         "minFocusMeters": 0.3,
-        "weight_g": 700,
+        "weight_g": 800,
         "notes": "Front Ø80 mm; S35",
         "mountOptions": [{
           "type": "PL",
@@ -5301,6 +5360,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "needsLensSupport": true,
         "lensType": "spherical",
         "imageCircleMm": 31.14,
+        "weight_g": 3200,
         "mountOptions": []
       },
       "LOMO Anamorphic RF 50mm T2.4": {
@@ -5313,6 +5373,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "needsLensSupport": true,
         "lensType": "spherical",
         "imageCircleMm": 31.14,
+        "weight_g": 2725,
         "mountOptions": []
       },
       "LOMO Anamorphic RF 75mm T2.4": {
@@ -5325,6 +5386,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "needsLensSupport": true,
         "lensType": "spherical",
         "imageCircleMm": 31.14,
+        "weight_g": 2050,
         "mountOptions": []
       },
       "LOMO Anamorphic RF 100mm T3.2": {
@@ -5337,6 +5399,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "needsLensSupport": true,
         "lensType": "spherical",
         "imageCircleMm": 31.14,
+        "weight_g": 2500,
         "mountOptions": []
       },
       "Canon CN7x17 17-120mm T2.95-3.9": {
@@ -5371,7 +5434,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "lensType": "spherical",
         "imageCircleMm": 31.4,
         "minFocusMeters": 0.6,
-        "weight_g": 3400,
+        "weight_g": 3500,
         "lengthMm": 233.3,
         "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 241.3 mm / 3.4 kg.",
         "mountOptions": [{

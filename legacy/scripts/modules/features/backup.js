@@ -52,7 +52,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return;
   }
   var freezeDeep = typeof MODULE_BASE.freezeDeep === 'function' ? MODULE_BASE.freezeDeep : function fallbackFreezeDeep(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     var seen = new WeakSet();
@@ -60,10 +60,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
         return target;
       }
+      var isFunction = typeof target === 'function';
       if (seen.has(target)) {
         return target;
       }
       seen.add(target);
+      if (isFunction) {
+        try {
+          Object.freeze(target);
+        } catch (freezeError) {
+          void freezeError;
+        }
+        return target;
+      }
       try {
         var keys = Object.getOwnPropertyNames(target);
         for (var index = 0; index < keys.length; index += 1) {
@@ -75,7 +84,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void accessError;
             child = undefined;
           }
-          if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+          if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
             continue;
           }
           freeze(child);
@@ -882,11 +891,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           payload: record.payload
         };
       }));
+      var escapedSerializedRecords = serializedRecords.replace(/</g, "\\u003c");
+      var emptyMessage = resolveBackupVaultEmptyMessage();
+      var bootstrapScript = "(() => {\n" + "  'use strict';\n" + "  try {\n" + "    var source = document.getElementById('queued-backups');\n" + "    var records = [];\n" + "    if (source) {\n" + "      var text = source.textContent || '';\n" + "      var parsed = JSON.parse(text);\n" + "      if (Array.isArray(parsed)) {\n" + "        records = parsed;\n" + "      }\n" + "    }\n" + "    var container = document.getElementById('vault');\n" + "    if (!container) {\n" + "      return;\n" + "    }\n" + "    if (!records.length) {\n" + "      var empty = document.createElement('p');\n" + "      empty.className = 'empty';\n" + "      empty.textContent = ".concat(JSON.stringify(emptyMessage), ";\n") + "      container.appendChild(empty);\n" + "      return;\n" + "    }\n" + "    records.forEach(function (record) {\n" + "      var entry = document.createElement('section');\n" + "      entry.className = 'backup-entry';\n" + "      var header = document.createElement('header');\n" + "      var heading = document.createElement('h2');\n" + "      heading.textContent = String(record.fileName || 'cine-power-planner-backup.json') + ' \u2014 ' + String(record.createdAt || '');\n" + "      header.appendChild(heading);\n" + "      var downloadButton = document.createElement('button');\n" + "      downloadButton.type = 'button';\n" + "      downloadButton.textContent = 'Download JSON';\n" + "      downloadButton.addEventListener('click', function () {\n" + "        try {\n" + "          var blob = new Blob([record.payload], { type: 'application/json' });\n" + "          var url = URL.createObjectURL(blob);\n" + "          var link = document.createElement('a');\n" + "          link.href = url;\n" + "          link.download = record.fileName || 'cine-power-planner-backup.json';\n" + "          link.click();\n" + "          setTimeout(function () { URL.revokeObjectURL(url); }, 0);\n" + "        } catch (error) {\n" + "          alert('Download blocked \u2014 copy the JSON below instead.');\n" + "        }\n" + "      });\n" + "      header.appendChild(downloadButton);\n" + "      entry.appendChild(header);\n" + "      var textArea = document.createElement('textarea');\n" + "      textArea.readOnly = true;\n" + "      textArea.value = record.payload;\n" + "      entry.appendChild(textArea);\n" + "      container.appendChild(entry);\n" + "    });\n" + "  } catch (error) {\n" + "    console.error('Failed to bootstrap queued backup vault', error);\n" + "  }\n" + "})();";
+      var bootstrapScriptSrc = "data:text/javascript;charset=utf-8,".concat(encodeURIComponent(bootstrapScript));
       var popupBlockedMessage = resolveBackupTexts().fallbackTexts && resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked ? resolveBackupTexts().fallbackTexts.queuedBackupVaultPopupBlocked : 'Enable pop-ups to review queued backups stored in the local vault.';
       var doc = vaultWindow.document;
       try {
         doc.open();
-        doc.write("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" />\n" + "<title>".concat(title, "</title>\n") + "<style>\n" + ":root { color-scheme: light dark; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }\n" + "body { margin: 0; padding: 1.5rem; background: #0f1624; color: #f5f7fb; }\n" + "h1 { margin-top: 0; font-size: 1.5rem; }\n" + "p { line-height: 1.6; max-width: 38rem; }\n" + ".backup-entry { background: rgba(15, 22, 36, 0.65); border: 1px solid rgba(111, 120, 141, 0.35); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }\n" + ".backup-entry header { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: baseline; justify-content: space-between; }\n" + ".backup-entry h2 { font-size: 1rem; margin: 0; }\n" + ".backup-entry button { background: #ffbf3c; border: none; border-radius: 999px; padding: 0.5rem 1.25rem; font-weight: 600; cursor: pointer; color: #11131a; }\n" + ".backup-entry button:focus { outline: 2px solid #ffffff; outline-offset: 2px; }\n" + ".backup-entry textarea { width: 100%; min-height: 10rem; margin-top: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.75rem; background: rgba(6, 10, 18, 0.92); color: #f5f7fb; font-family: 'Fira Code', 'SFMono-Regular', 'Consolas', 'Menlo', monospace; }\n" + ".empty { margin-top: 2rem; font-style: italic; color: rgba(245, 247, 251, 0.7); }\n" + ".banner { margin-bottom: 1.5rem; padding: 1rem 1.25rem; border-radius: 1rem; background: rgba(255, 191, 60, 0.18); border: 1px solid rgba(255, 191, 60, 0.4); color: #ffe3a4; }\n" + ".banner strong { display: block; font-size: 1.1rem; margin-bottom: 0.35rem; }\n" + "</style>\n" + "</head><body>\n" + "<div class=\"banner\"><strong>".concat(title, "</strong><p>").concat(intro, "</p></div>\n") + "<main id=\"vault\"></main>\n" + "<script>\n" + "const records = ".concat(serializedRecords, ";\n") + "const container = document.getElementById('vault');\n" + "if (!records.length) {\n" + "  const empty = document.createElement('p');\n" + "  empty.className = 'empty';\n" + "  empty.textContent = ".concat(JSON.stringify(resolveBackupVaultEmptyMessage()), ";\n") + "  container.appendChild(empty);\n" + "}\n" + "records.forEach((record, index) => {\n" + "  const entry = document.createElement('section');\n" + "  entry.className = 'backup-entry';\n" + "  const header = document.createElement('header');\n" + "  const heading = document.createElement('h2');\n" + "  heading.textContent = record.fileName + ' \u2014 ' + (record.createdAt || '');\n" + "  header.appendChild(heading);\n" + "  const downloadButton = document.createElement('button');\n" + "  downloadButton.type = 'button';\n" + "  downloadButton.textContent = 'Download JSON';\n" + "  downloadButton.addEventListener('click', () => {\n" + "    try {\n" + "      const blob = new Blob([record.payload], { type: 'application/json' });\n" + "      const url = URL.createObjectURL(blob);\n" + "      const link = document.createElement('a');\n" + "      link.href = url;\n" + "      link.download = record.fileName || 'cine-power-planner-backup.json';\n" + "      link.click();\n" + "      setTimeout(() => URL.revokeObjectURL(url), 0);\n" + "    } catch (error) {\n" + "      alert('Download blocked \u2014 copy the JSON below instead.');\n" + "    }\n" + "  });\n" + "  header.appendChild(downloadButton);\n" + "  entry.appendChild(header);\n" + "  const textArea = document.createElement('textarea');\n" + "  textArea.readOnly = true;\n" + "  textArea.value = record.payload;\n" + "  entry.appendChild(textArea);\n" + "  container.appendChild(entry);\n" + "});\n" + "</script>\n" + "</body></html>");
+        doc.write("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" />\n" + "<title>".concat(title, "</title>\n") + "<style>\n" + ":root { color-scheme: light dark; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }\n" + "body { margin: 0; padding: 1.5rem; background: #0f1624; color: #f5f7fb; }\n" + "h1 { margin-top: 0; font-size: 1.5rem; }\n" + "p { line-height: 1.6; max-width: 38rem; }\n" + ".backup-entry { background: rgba(15, 22, 36, 0.65); border: 1px solid rgba(111, 120, 141, 0.35); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }\n" + ".backup-entry header { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: baseline; justify-content: space-between; }\n" + ".backup-entry h2 { font-size: 1rem; margin: 0; }\n" + ".backup-entry button { background: #ffbf3c; border: none; border-radius: 999px; padding: 0.5rem 1.25rem; font-weight: 600; cursor: pointer; color: #11131a; }\n" + ".backup-entry button:focus { outline: 2px solid #ffffff; outline-offset: 2px; }\n" + ".backup-entry textarea { width: 100%; min-height: 10rem; margin-top: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.75rem; background: rgba(6, 10, 18, 0.92); color: #f5f7fb; font-family: 'Fira Code', 'SFMono-Regular', 'Consolas', 'Menlo', monospace; }\n" + ".empty { margin-top: 2rem; font-style: italic; color: rgba(245, 247, 251, 0.7); }\n" + ".banner { margin-bottom: 1.5rem; padding: 1rem 1.25rem; border-radius: 1rem; background: rgba(255, 191, 60, 0.18); border: 1px solid rgba(255, 191, 60, 0.4); color: #ffe3a4; }\n" + ".banner strong { display: block; font-size: 1.1rem; margin-bottom: 0.35rem; }\n" + "</style>\n" + "</head><body>\n" + "<div class=\"banner\"><strong>".concat(title, "</strong><p>").concat(intro, "</p></div>\n") + "<main id=\"vault\"></main>\n" + "<script type=\"application/json\" id=\"queued-backups\">".concat(escapedSerializedRecords, "</script>\n") + "<script src=\"".concat(bootstrapScriptSrc, "\"></script>\n") + "</body></html>");
         doc.close();
       } catch (renderError) {
         console.warn('Failed to render queued backup vault window', renderError);

@@ -105,6 +105,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "downloadDiagramBtn": "Scarica il diagramma",
       "gridSnapToggle": "Aggancia alla griglia",
       "existingDevicesHeading": "Dispositivi esistenti",
+      "deviceLibrarySearchLabel": "Cerca in tutta la libreria",
+      "deviceLibrarySearchPlaceholder": "Cerca in tutte le categorie di dispositivi…",
+      "deviceLibrarySearchHelp": "Filtra tutte le categorie insieme. Premi Invio per passare al risultato migliore.",
+      "deviceLibrarySearchStatusDefault": "Visualizzazione di tutti i {total} dispositivi.",
+      "deviceLibrarySearchResultOne": "Visualizzazione di {visible} su {total} dispositivi.",
+      "deviceLibrarySearchResultOther": "Visualizzazione di {visible} su {total} dispositivi.",
+      "deviceLibrarySearchNoResults": "Nessun dispositivo corrisponde a “{query}”.",
       "darkModeLabel": "Attiva modalità scura",
       "pinkModeLabel": "Attiva modalità rosa",
       "menuToggleLabel": "Menu",
@@ -119,7 +126,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "description": "Salva una volta i membri della troupe, conservali offline e riutilizzali in ogni progetto.",
         "addContactButton": "Aggiungi contatto",
         "importButton": "Importa vCard",
-        "importHint": "Importa file .vcf per aggiungere contatti all'istante.",
+        "importHint": "Importa file .vcf per aggiungere contatti all'istante. I dettagli già salvati vengono mantenuti automaticamente.",
         "emptyState": "Nessun contatto salvato. Aggiungi la tua troupe per riutilizzarla più avanti.",
         "close": "Chiudi",
         "selectLabel": "Contatti salvati",
@@ -398,6 +405,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "monitorVideoOutputsLabel": "Output:",
       "monitorWirelessTxLabel": "TX wireless:",
       "monitorLatencyLabel": "Latenza:",
+      "monitorLatencyHelp": "La latenza viene salvata anche se il TX wireless è disattivato. Svuota il campo per rimuovere il valore salvato.",
       "monitorAudioOutputLabel": "Output audio:",
       "viewfinderDetailsHeading": "Dettagli mirino",
       "viewfinderScreenSizeLabel": "Dimensione schermo (in):",
@@ -412,11 +420,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "viewfinderVideoOutputsLabel": "Uscite:",
       "viewfinderWirelessTxLabel": "TX wireless:",
       "viewfinderLatencyLabel": "Latenza:",
+      "viewfinderLatencyHelp": "La latenza viene salvata anche se il TX wireless è disattivato. Svuota il campo per rimuovere il valore salvato.",
+      "videoPowerInputsHeading": "Ingressi di alimentazione",
       "videoVideoInputsHeading": "Input video",
       "videoVideoInputsLabel": "Input:",
       "videoVideoOutputsHeading": "Output video",
       "videoVideoOutputsLabel": "Output:",
-      "videoPowerInputLabel": "Input di potenza:",
+      "videoPowerInputLabel": "Connettori:",
+      "videoPowerInputHelp": "Aggiungi tutti i connettori di alimentazione supportati, incluse le piastre batteria. Usa le note per adattatori o altri dettagli.",
+      "videoPowerTypeLabel": "Connettore",
+      "videoPowerVoltageLabel": "Gamma di tensione",
+      "videoPowerNotesLabel": "Note",
+      "videoPowerVoltagePlaceholder": "Gamma di tensione (es. 6-28V)",
+      "videoPowerNotesPlaceholder": "Note (piastra, adattatore, ecc.)",
       "videoFrequencyLabel": "Frequenza:",
       "videoLatencyLabel": "Latenza:",
       "motorConnectorLabel": "Connettore:",
@@ -722,6 +738,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCustomItemNameAria": "Nome dell'elemento personalizzato in {category}",
       "gearListCustomItemNamePlaceholder": "Elemento personalizzato",
       "gearListCustomItemPreviewFallback": "Elemento personalizzato",
+      "gearListCartSelectorLabel": "Carrello camera",
+      "gearListCartConfigurationLabel": "Configurazione del carrello",
+      "gearListCartAccessoriesLabel": "Accessori del carrello",
       "gearListExcludeRentalToggle": "Escludi per il service di noleggio",
       "gearListIncludeRentalToggle": "Includi per il service di noleggio",
       "gearListRentalNote": "Il service di noleggio fornisce questo elemento",
@@ -1186,6 +1205,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearBackupRetentionUpdateFailed": "Impossibile applicare il nuovo limite di conservazione. Riprova.",
       "autoGearRulesCountOne": "%s regola",
       "autoGearRulesCountOther": "%s regole",
+      "autoGearRuleToggleEnable": "Attiva regola",
+      "autoGearRuleToggleDisable": "Disattiva regola",
+      "autoGearRuleEnabledLabel": "Attiva",
+      "autoGearRuleDisabledLabel": "Disattivata",
+      "autoGearSummaryAllDisabled": "Tutte le regole automatiche sono disattivate.",
+      "autoGearSummaryDisabledSuffix": "{count} regole disattivate vengono ignorate nel riepilogo.",
+      "autoGearSummaryDisabledNote": "Le regole disattivate sono visibili qui sotto ma ignorate finché non vengono riattivate.",
       "autoGearBackupClearsRules": "Rimuove tutte le regole",
       "autoGearBackupMeta": "%s · %s",
       "autoGearAddsCountOne": "%s aggiunta",
@@ -1391,6 +1417,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storagePersistenceStatusRequesting": "Richiesta di archiviazione persistente al browser…",
       "storagePersistenceStatusGranted": "Archiviazione persistente concessa. I dati del planner sono protetti dalla pulizia automatica.",
       "storagePersistenceStatusDenied": "Il browser non ha concesso l'archiviazione persistente. Continua a esportare regolarmente i backup.",
+      "storagePersistenceStatusSafariIncompatible": "Safari al momento blocca le richieste di archiviazione persistente. Consideralo una limitazione del browser.",
       "storagePersistenceStatusError": "Richiesta di archiviazione persistente non riuscita. Riprova dopo aver liberato spazio o controlla le impostazioni del browser.",
       "storagePersistenceStatusUnsupported": "Questo browser non può concedere automaticamente l'archiviazione persistente. Continua a mantenere backup esterni.",
       "storagePersistenceUsage": "Utilizzo approssimativo: {used} su {quota}.",
@@ -1769,6 +1796,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Aggiungi il primo dispositivo di tua proprietà",
             "body": "Inserisci nome elemento, quantità opzionale e note, quindi salva. L’attrezzatura posseduta viene archiviata offline, inclusa nei backup e contrassegnata nelle esportazioni così la troupe vede subito cosa è disponibile senza doppioni."
           },
+          "projectRequirementsBrief": {
+            "title": "Raccogliere il brief del progetto",
+            "body": "Apri Genera elenco attrezzatura e Requisiti del progetto e annota casa di produzione, indirizzo completo, preferenze del rental, deliverable e note di calendario. Queste voci compilano automaticamente i PDF per il noleggio, restano memorizzate offline e preparano le sezioni successive."
+          },
+          "projectRequirementsCrew": {
+            "title": "Mappare copertura crew e contatti",
+            "body": "Compila le sezioni Crew, Prep, Riprese e Rientro con nomi, ruoli e note. Collega i contatti salvati, aggiungi dettagli di emergenza e duplica le righe quando più giorni condividono lo stesso piano così che gli export mostrino chi è sul set e quando."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Registrare ottiche, rigging e monitoraggio",
+            "body": "Prosegui con le altre sezioni: specifiche camera, workflow lenti, scenari di rigging, quantità di storage/media, preferenze per matte box e monitoraggio. Ogni campo alimenta le regole automatiche, il calcolo delle scorte e la checklist generata."
+          },
           "generateGearAndRequirements": {
             "title": "Genera requisiti e elenco attrezzatura",
             "body": "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
@@ -1785,18 +1824,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Aggiungi una nuova regola automatica",
             "body": "Premi Aggiungi regola per creare un'automazione personalizzata. Dai un nome, aggiungi condizioni e l'attrezzatura richiesta, quindi salva. Il planner applica la nuova regola offline ogni volta che rigeneri il kit e la include in esportazioni, condivisioni e backup."
           },
-        "projectRequirementsBrief": {
-          "title": "Raccogliere il brief del progetto",
-          "body": "Apri Genera elenco attrezzatura e Requisiti del progetto e annota casa di produzione, indirizzo completo, preferenze del rental, deliverable e note di calendario. Queste voci compilano automaticamente i PDF per il noleggio, restano memorizzate offline e preparano le sezioni successive."
-        },
-        "projectRequirementsCrew": {
-          "title": "Mappare copertura crew e contatti",
-          "body": "Compila le sezioni Crew, Prep, Riprese e Rientro con nomi, ruoli e note. Collega i contatti salvati, aggiungi dettagli di emergenza e duplica le righe quando più giorni condividono lo stesso piano così che gli export mostrino chi è sul set e quando."
-        },
-        "projectRequirementsLogistics": {
-          "title": "Registrare ottiche, rigging e monitoraggio",
-          "body": "Prosegui con le altre sezioni: specifiche camera, workflow lenti, scenari di rigging, quantità di storage/media, preferenze per matte box e monitoraggio. Ogni campo alimenta le regole automatiche, il calcolo delle scorte e la checklist generata."
-        },
           "gearList": {
             "title": "Verifica l'elenco attrezzatura generato",
             "body": "Controlla l'elenco attrezzatura categorizzato per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF."

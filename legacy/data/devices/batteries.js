@@ -212,9 +212,9 @@
     "Anton/Bauer Titon 90 (V-Mount)": {
       "capacity": 92,
       "pinA": 10,
-      "dtapA": 5,
+      "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 798
+      "weight_g": 800
     },
     "Anton/Bauer Titon 150 (V-Mount)": {
       "capacity": 144,
@@ -224,25 +224,25 @@
       "weight_g": 1088
     },
     "Anton/Bauer Titon 240 (V-Mount)": {
-      "capacity": 240,
+      "capacity": 238,
       "pinA": 10,
-      "dtapA": 5,
+      "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 1740
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic XT90 (V-Mount)": {
       "capacity": 99,
       "pinA": 12,
-      "dtapA": 5,
+      "dtapA": 12,
       "mount_type": "V-Mount",
       "weight_g": 800
     },
     "Anton/Bauer Dionic XT150 (V-Mount)": {
       "capacity": 156,
       "pinA": 12,
-      "dtapA": 5,
+      "dtapA": 12,
       "mount_type": "V-Mount",
-      "weight_g": 1090
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic 240Wh (V-Mount)": {
       "capacity": 240,
@@ -289,14 +289,14 @@
     "Core SWX Helix Max 98Wh (V-Mount)": {
       "capacity": 98,
       "pinA": 20,
-      "dtapA": 7.14,
+      "dtapA": 20,
       "mount_type": "V-Mount",
-      "weight_g": 800
+      "weight_g": 820
     },
     "Core SWX Helix Max 150Wh (V-Mount)": {
       "capacity": 147,
       "pinA": 20,
-      "dtapA": 7.14,
+      "dtapA": 20,
       "mount_type": "V-Mount",
       "weight_g": 1000
     },
@@ -479,7 +479,7 @@
       "pinA": 10,
       "dtapA": 5,
       "mount_type": "V-Mount",
-      "weight_g": 798
+      "weight_g": 800
     },
     "IDX CUE-D150 (V-Mount)": {
       "capacity": 146,
@@ -499,7 +499,7 @@
       "pinA": 15,
       "dtapA": 10,
       "mount_type": "B-Mount",
-      "weight_g": 1030
+      "weight_g": 1000
     },
     "IDX HV-320B (B-Mount)": {
       "capacity": 320,
@@ -555,21 +555,21 @@
       "pinA": 8,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 330
+      "weight_g": 340
     },
     "SmallRig VB99 mini (V-Mount)": {
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 540
+      "weight_g": 550
     },
     "SmallRig VB155 mini (V-Mount)": {
       "capacity": 155,
       "pinA": 12,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 760
+      "weight_g": 780
     },
     "SmallRig VB210 mini (V-Mount)": {
       "capacity": 210,
@@ -655,7 +655,8 @@
       "capacity": 98,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 500
     },
     "Hawk-Woods X-Lok 150Wh (XL-150) (V-Mount)": {
       "capacity": 150,
@@ -675,7 +676,7 @@
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "Gold-Mount",
-      "weight_g": 1320
+      "weight_g": 1100
     },
     "Anton/Bauer Dionic XT 90 (Gold-Mount)": {
       "capacity": 99,
@@ -710,14 +711,14 @@
       "pinA": 12,
       "dtapA": 12,
       "mount_type": "Gold-Mount",
-      "weight_g": 816
+      "weight_g": 820
     },
     "Core SWX Helix Max 98 (Gold-Mount)": {
       "capacity": 98,
       "pinA": 20,
       "dtapA": 20,
       "mount_type": "Gold-Mount",
-      "weight_g": 800
+      "weight_g": 820
     },
     "Core SWX Helix Max 150 (Gold-Mount)": {
       "capacity": 147,
@@ -733,13 +734,77 @@
       "mount_type": "Gold-Mount",
       "weight_g": 544
     },
+    "Anton Bauer Titon Micro 90 (V-Mount)": {
+      "capacity": 94,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 570
+    },
+    "Anton Bauer Titon Micro 90 (Gold-Mount)": {
+      "capacity": 94,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 570
+    },
+    "Anton Bauer Titon Micro 150 (V-Mount)": {
+      "capacity": 140,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 790
+    },
+    "Anton Bauer Titon Micro 150 (Gold-Mount)": {
+      "capacity": 140,
+      "pinA": 10,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 770
+    },
+    "Anton Bauer Dionic XT90 (V-Mount)": {
+      "capacity": 99,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 800
+    },
+    "Anton Bauer Dionic XT90 (Gold-Mount)": {
+      "capacity": 99,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 800
+    },
+    "Anton Bauer Dionic XT150 (V-Mount)": {
+      "capacity": 156,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 1100
+    },
+    "Anton Bauer Dionic XT150 (Gold-Mount)": {
+      "capacity": 156,
+      "pinA": 12,
+      "dtapA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 1100
+    },
+    "Anton Bauer Cine VCLX (Block)": {
+      "capacity": 630,
+      "pinA": 20,
+      "dtapA": 0,
+      "mount_type": "Block",
+      "weight_g": 11300,
+      "voltage": 28
+    },
     "SWIT PB-S98A (Gold-Mount)": {
       "capacity": 98,
       "pinA": 12,
       "dtapA": 10,
       "mount_type": "Gold-Mount",
-      "weight_g": 800,
-      "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g"
+      "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g",
+      "weight_g": 800
     },
     "SWIT PB-S98S (V-Mount)": {
       "capacity": 98,
@@ -753,7 +818,7 @@
       "capacity": 220,
       "pinA": null,
       "mount_type": "Gold-Mount",
-      "weight_g": 1435
+      "weight_g": 1440
     },
     "SWIT PB-S220S (V-Mount)": {
       "capacity": 220,
@@ -765,7 +830,8 @@
       "capacity": 290,
       "pinA": 18,
       "dtapA": 10,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 1580
     },
     "BLUESHAPE BG095HDmini (Gold-Mount)": {
       "capacity": 95,

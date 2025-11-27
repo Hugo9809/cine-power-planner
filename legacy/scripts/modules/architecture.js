@@ -257,7 +257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function fallbackCreateImmutability() {
     function shouldBypass(value) {
-      if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
         return false;
       }
       try {
@@ -286,7 +286,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     function freeze(value) {
       var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
-      if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
         return value;
       }
       if (shouldBypass(value)) {
@@ -306,7 +306,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void accessError;
           child = undefined;
         }
-        if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
           continue;
         }
         freeze(child, seen);

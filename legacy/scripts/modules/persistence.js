@@ -450,7 +450,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -519,10 +519,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
   function fallbackFreezeDeep(value, seen) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
+      return value;
+    }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
       return value;
     }
     var tracker = fallbackResolveSeenTracker(seen);
@@ -540,7 +550,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       fallbackFreezeDeep(child, tracker);

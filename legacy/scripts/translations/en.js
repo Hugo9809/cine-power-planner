@@ -104,6 +104,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "downloadDiagramBtn": "Download Diagram",
       "gridSnapToggle": "Snap to Grid",
       "existingDevicesHeading": "Existing Devices",
+      "deviceLibrarySearchLabel": "Search entire library",
+      "deviceLibrarySearchPlaceholder": "Search all device categories…",
+      "deviceLibrarySearchHelp": "Filter across every category at once. Press Enter to jump to the closest match.",
+      "deviceLibrarySearchStatusDefault": "Showing all {total} devices.",
+      "deviceLibrarySearchResultOne": "Showing {visible} of {total} devices.",
+      "deviceLibrarySearchResultOther": "Showing {visible} of {total} devices.",
+      "deviceLibrarySearchNoResults": "No devices match “{query}”.",
       "darkModeLabel": "Toggle dark mode",
       "pinkModeLabel": "Toggle pink mode",
       "menuToggleLabel": "Menu",
@@ -118,7 +125,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "description": "Save crew members once, keep them stored offline and reuse them for every project.",
         "addContactButton": "Add contact",
         "importButton": "Import vCard",
-        "importHint": "Import .vcf files to add contacts instantly.",
+        "importHint": "Import .vcf files to add contacts instantly. Existing details are preserved automatically.",
         "emptyState": "No contacts saved yet. Add your crew to reuse them later.",
         "close": "Close",
         "selectLabel": "Saved contacts",
@@ -212,6 +219,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "documentationTrackerLocaleFrench": "French README",
       "documentationTrackerLocaleItalian": "Italian README",
       "documentationTrackerHelpHeading": "Help center topics",
+      "helpTopics": {
+        "projectManagement": {
+          "title": "Project Management",
+          "content": "Manage your projects with ease. **Save** your work to keep it on your device. **Export** projects to share them with others or create backups. **Import** previously saved or shared projects to continue working. Use **Delete** to remove unwanted projects."
+        },
+        "deviceConfiguration": {
+          "title": "Device Configuration",
+          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. The app automatically filters for compatible accessories based on your selections."
+        },
+        "powerCalculation": {
+          "title": "Power Calculation",
+          "content": "The **Power Summary** shows the total power consumption of your rig. It calculates estimated runtime based on the selected battery. Watch out for **Pin Warnings** (if current exceeds limits) and **D-Tap Warnings** (if the battery plate doesn't support the load)."
+        },
+        "connectionDiagram": {
+          "title": "Connection Diagram",
+          "content": "The **Connection Diagram** visualizes how your devices are connected. It helps you verify your setup and ensures everything is routed correctly. You can zoom and pan to inspect details."
+        },
+        "gearList": {
+          "title": "Gear List",
+          "content": "Generate a comprehensive **Gear List** based on your configured devices. You can customize this list, add your own items, and export it for rental houses or crew."
+        },
+        "contacts": {
+          "title": "Contacts",
+          "content": "Save crew members in the **Contacts** section. You can reuse them across projects, making it easy to assign roles and keep track of your team."
+        },
+        "ownGear": {
+          "title": "Own Gear",
+          "content": "Track your personal inventory in **Own Gear**. Mark items you own so they are automatically identified in your gear lists."
+        },
+        "settings": {
+          "title": "Settings",
+          "content": "Customize the app in **Settings**. Adjust the **Language**, toggle **Dark Mode** or **Pink Mode**, and manage **Backups** to keep your data safe."
+        },
+        "offlineUse": {
+          "title": "Offline Use",
+          "content": "Cine Power Planner works fully **Offline**. All data is stored locally on your device. You can continue working even without an internet connection."
+        }
+      },
       "documentationTrackerHelpStart": "Start Here & navigation",
       "documentationTrackerHelpSave": "Saving, sharing & exports",
       "documentationTrackerHelpBackup": "Backup & restore drills",
@@ -547,6 +592,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearBackupRetentionUpdateFailed": "Could not apply the new retention limit. Try again.",
       "autoGearRulesCountOne": "%s rule",
       "autoGearRulesCountOther": "%s rules",
+      "autoGearRuleToggleEnable": "Enable rule",
+      "autoGearRuleToggleDisable": "Disable rule",
+      "autoGearRuleEnabledLabel": "Enabled",
+      "autoGearRuleDisabledLabel": "Disabled",
+      "autoGearSummaryAllDisabled": "All automatic gear rules are disabled.",
+      "autoGearSummaryDisabledSuffix": "{count} disabled rules are ignored in coverage.",
+      "autoGearSummaryDisabledNote": "Disabled rules are visible below but ignored until re-enabled.",
       "autoGearBackupClearsRules": "Clears all rules",
       "autoGearBackupMeta": "%s · %s",
       "autoGearAddsCountOne": "%s addition",
@@ -752,6 +804,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storagePersistenceStatusRequesting": "Requesting persistent storage from the browser…",
       "storagePersistenceStatusGranted": "Persistent storage granted. Planner data is protected from automatic cleanup.",
       "storagePersistenceStatusDenied": "The browser could not grant persistent storage. Keep exporting backups regularly.",
+      "storagePersistenceStatusSafariIncompatible": "Safari currently blocks persistent storage requests. Treat this as a browser limitation.",
       "storagePersistenceStatusError": "Persistent storage request failed. Try again after freeing space or review browser settings.",
       "storagePersistenceStatusUnsupported": "This browser cannot grant persistent storage automatically. Continue keeping external backups.",
       "storagePersistenceUsage": "Approximate usage: {used} of {quota}.",
@@ -1146,6 +1199,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "monitorVideoOutputsLabel": "Outputs:",
       "monitorWirelessTxLabel": "Wireless TX:",
       "monitorLatencyLabel": "Latency:",
+      "monitorLatencyHelp": "Latency is saved even if Wireless TX is off. Clear this field to remove the stored value.",
       "monitorAudioOutputLabel": "Audio Output:",
       "viewfinderDetailsHeading": "Viewfinder Details",
       "viewfinderScreenSizeLabel": "Screen Size (in):",
@@ -1160,11 +1214,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "viewfinderVideoOutputsLabel": "Outputs:",
       "viewfinderWirelessTxLabel": "Wireless TX:",
       "viewfinderLatencyLabel": "Latency:",
+      "viewfinderLatencyHelp": "Latency is saved even if Wireless TX is off. Clear this field to remove the stored value.",
+      "videoPowerInputsHeading": "Power Inputs",
       "videoVideoInputsHeading": "Video Inputs",
       "videoVideoInputsLabel": "Inputs:",
       "videoVideoOutputsHeading": "Video Outputs",
       "videoVideoOutputsLabel": "Outputs:",
-      "videoPowerInputLabel": "Power Input:",
+      "videoPowerInputLabel": "Connectors:",
+      "videoPowerInputHelp": "Add every supported power connector, including battery plates. Use notes for mount adapters or other details.",
+      "videoPowerTypeLabel": "Connector",
+      "videoPowerVoltageLabel": "Voltage range",
+      "videoPowerNotesLabel": "Notes",
+      "videoPowerVoltagePlaceholder": "Voltage range (e.g. 6-28V)",
+      "videoPowerNotesPlaceholder": "Notes (mount, adapter, etc.)",
       "videoFrequencyLabel": "Frequency:",
       "videoLatencyLabel": "Latency:",
       "motorConnectorLabel": "Connector:",
@@ -1470,6 +1532,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCustomItemNameAria": "Item name for custom item in {category}",
       "gearListCustomItemNamePlaceholder": "Custom item",
       "gearListCustomItemPreviewFallback": "Custom item",
+      "gearListCartSelectorLabel": "Camera cart",
+      "gearListCartConfigurationLabel": "Cart configuration",
+      "gearListCartAccessoriesLabel": "Cart accessories",
       "gearListExcludeRentalToggle": "Exclude for rental house",
       "gearListIncludeRentalToggle": "Include for rental house",
       "gearListRentalNote": "Rental house handles this item",
@@ -1725,7 +1790,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "resultsChangeover": {
             "title": "Power Summary: Changeovers",
-            "body": "Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan."
+            "body": "Use the changeover card to review the category-by-category draw chart, see exactly which devices contribute the most load, and confirm every swap sequence keeps enough headroom. The breakdown ties each accessory to its watt draw so the next charged pack is staged for the hungriest circuit and the saved snapshot captures the latest handoff plan."
           },
           "resultsWarnings": {
             "title": "Power Summary: Warnings and backups",
@@ -1794,6 +1859,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "autoGearRulesCreate": {
             "title": "Add a new automatic gear rule",
             "body": "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups."
+          },
+          "projectRequirements": {
+            "title": "Refine project requirements boxes",
+            "body": "Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share."
           },
           "gearList": {
             "title": "Audit the generated gear list",

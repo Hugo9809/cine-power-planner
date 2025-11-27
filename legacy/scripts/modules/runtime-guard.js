@@ -37,7 +37,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE);
   function freezeShallow(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     try {
@@ -100,7 +100,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function collectRegistryCandidates(scope) {
     var candidates = [];
     var pushCandidate = function pushCandidate(value) {
-      if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
         return;
       }
       if (candidates.indexOf(value) === -1) {

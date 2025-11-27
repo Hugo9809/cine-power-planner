@@ -1384,7 +1384,6 @@ function generatePrintableOverview() {
   var deviceSectionHeading = deviceListHtml ? t.overviewDeviceSelectionHeading || t.deviceSelectionHeading || 'Device Selection' : '';
   var deviceSectionHtml = deviceListHtml ? "<section id=\"overviewDeviceSection\" class=\"device-overview-section print-section\"><h2>".concat(escapeHtmlSafe(deviceSectionHeading), "</h2>").concat(deviceListHtml, "</section>") : '';
   var breakdownHtml = breakdownListElem.innerHTML;
-  var batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
   var powerDiagramElem = typeof document !== 'undefined' ? document.getElementById('powerDiagram') : null;
   var powerDiagramHtml = '';
   if (powerDiagramElem && !powerDiagramElem.classList.contains('hidden') && powerDiagramElem.innerHTML.trim().length > 0) {
@@ -1408,7 +1407,11 @@ function generatePrintableOverview() {
     }
     powerDiagramHtml = clone.outerHTML;
   }
-  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(escapeHtmlSafe(totalPowerElem.textContent), " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(escapeHtmlSafe(totalCurrent144Elem.textContent), " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(escapeHtmlSafe(totalCurrent12Elem.textContent), " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(escapeHtmlSafe(batteryLifeElem.textContent), " ").concat(batteryLifeUnitElem ? escapeHtmlSafe(batteryLifeUnitElem.textContent) : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(escapeHtmlSafe(batteryCountElem.textContent), "</p>\n    ");
+  var getElemText = function getElemText(id) {
+    var el = document.getElementById(id);
+    return el ? el.textContent : '';
+  };
+  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(escapeHtmlSafe(getElemText('heroTotalDraw')), "</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(escapeHtmlSafe(getElemText('heroCurrent144')), "</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(escapeHtmlSafe(getElemText('heroCurrent12')), "</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(escapeHtmlSafe(getElemText('heroRuntime')), "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(escapeHtmlSafe(getElemText('heroBatteryCount')), "</p>\n    ");
   var severityClassMap = {
     danger: 'status-message--danger',
     warning: 'status-message--warning',
@@ -1485,7 +1488,11 @@ function generatePrintableOverview() {
     batteryComparisonHtml = "<div class=\"page-break\"></div>".concat(_clone.outerHTML);
   }
   var safeSetupName = escapeHtmlSafe(setupName);
-  var diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
+  var getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss : null;
+  if (!getDiagramCssFn && (typeof cineFeaturesConnectionDiagram === "undefined" ? "undefined" : _typeof(cineFeaturesConnectionDiagram)) === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function') {
+    getDiagramCssFn = cineFeaturesConnectionDiagram.getDiagramCss;
+  }
+  var diagramCss = getDiagramCssFn ? getDiagramCssFn(false) : '';
   var resolveDiagramElement = function resolveDiagramElement(fallbackId, globalRefName) {
     if (globalRefName) {
       try {

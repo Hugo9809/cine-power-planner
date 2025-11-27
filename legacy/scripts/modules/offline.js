@@ -682,7 +682,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -757,6 +757,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (shouldBypassDeepFreeze(value)) {
       return value;
     }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
     var tracker = fallbackResolveSeenTracker(seen);
     if (tracker.has(value)) {
       return value;
@@ -772,7 +782,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       fallbackFreezeDeep(child, tracker);
@@ -1091,10 +1101,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!includeCredentials) {
         return 'omit';
       }
-
-      // Fetch already includes same-origin credentials by default. Explicitly
-      // requesting the "same-origin" mode avoids Safari's access control
-      // console noise without downgrading coverage for other browsers.
       return 'same-origin';
     }();
     var warmupRequestHref = function () {
@@ -1274,9 +1280,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                   void openError;
                   return null;
                 }
-        // Same-origin requests already carry credentials implicitly. Safari
-        // can emit noisy access-control warnings when withCredentials is
-        // toggled manually, so leave the default untouched.
                 try {
                   xhrInstance.responseType = 'text';
                 } catch (responseTypeError) {

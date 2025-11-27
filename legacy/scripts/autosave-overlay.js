@@ -56,14 +56,36 @@
     if (!overlay) {
       return;
     }
-    lastText = '';
-    hideOverlay();
+    var text = note && note.textContent ? note.textContent : '';
+    if (text === lastText) {
+      return;
+    }
+    lastText = text;
+    overlay.textContent = text;
+    if (!text) {
+      hideOverlay();
+    }
   }
   function updateOverlayVisibility(note) {
     if (!overlay || !dialog) {
       return;
     }
-    hideOverlay();
+    if (!note || note.hidden || note.offsetParent === null) {
+      hideOverlay();
+      return;
+    }
+    if (!dialog.open) {
+      hideOverlay();
+      return;
+    }
+    overlay.hidden = false;
+    overlay.removeAttribute('aria-hidden');
+    if (overlay.classList) {
+      overlay.classList.add(VISIBLE_CLASS);
+    }
+    if (dialog.classList) {
+      dialog.classList.add('has-gear-list-note');
+    }
   }
   function observeSource(note) {
     if (sourceObserver) {
@@ -122,33 +144,43 @@
     if (!targetDialog || typeof targetDialog.addEventListener !== 'function') {
       return;
     }
-    targetDialog.addEventListener('close', function () {
+    var handler = function handler() {
       updateOverlayVisibility(sourceNote);
-    });
-    targetDialog.addEventListener('cancel', function () {
-      updateOverlayVisibility(sourceNote);
-    });
-    targetDialog.addEventListener('submit', function () {
+    };
+    targetDialog.addEventListener('close', handler);
+    targetDialog.addEventListener('cancel', handler);
+    targetDialog.addEventListener('submit', handler);
+  }
+  function bindLanguageChange() {
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
+      return;
+    }
+    window.addEventListener('languagechange', function () {
+      sourceNote = document.getElementById(SOURCE_NOTE_ID) || null;
+      updateOverlayText(sourceNote);
       updateOverlayVisibility(sourceNote);
     });
   }
-  function init() {
-    dialog = getDialog();
-    if (!dialog) {
+  function setup() {
+    var targetDialog = getDialog();
+    if (!targetDialog) {
       return;
     }
-    overlay = ensureOverlay(dialog);
+    ensureOverlay(targetDialog);
     sourceNote = document.getElementById(SOURCE_NOTE_ID) || null;
     updateOverlayText(sourceNote);
     updateOverlayVisibility(sourceNote);
-    bindDialogEvents(dialog);
-    observeDialog(dialog);
+    observeDialog(targetDialog);
     observeSource(sourceNote);
     observeBody();
+    bindDialogEvents(targetDialog);
+    bindLanguageChange();
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', setup, {
+      once: true
+    });
   } else {
-    init();
+    setup();
   }
 })();

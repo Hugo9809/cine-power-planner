@@ -281,7 +281,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function isConsoleCandidate(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -334,7 +334,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function isNodeModuleCandidate(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     try {
@@ -352,7 +352,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function isEthereumProviderCandidate(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (PRIMARY_SCOPE && _typeof(PRIMARY_SCOPE) === 'object') {
@@ -431,7 +431,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     try {
@@ -494,7 +494,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
   function fallbackFreezeDeep(value, seen) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value) || isConsoleCandidate(value) || isNodeModuleCandidate(value)) {
@@ -525,7 +525,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child) || isConsoleCandidate(child) || isNodeModuleCandidate(child)) {
@@ -541,7 +541,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function freezeDeep(value, seen) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value) || isConsoleCandidate(value) || isNodeModuleCandidate(value)) {

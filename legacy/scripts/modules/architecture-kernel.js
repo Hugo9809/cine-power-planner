@@ -262,7 +262,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return queue;
   }
   function isEthereumProviderCandidate(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -347,7 +347,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     try {
@@ -410,7 +410,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
   function fallbackFreezeDeep(value, seen) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
@@ -441,7 +441,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
@@ -597,7 +597,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var baseFreezeDeep = preferFunction(CORE_INSTANCE && CORE_INSTANCE.freezeDeep, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.freezeDeep, ARCHITECTURE && ARCHITECTURE.freezeDeep, fallbackFreezeDeep);
   function freezeDeep(value, seen) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {

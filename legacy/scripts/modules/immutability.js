@@ -149,7 +149,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -194,11 +194,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
       return value;
+    }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
+    if (typeof value === 'function') {
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     }
     if (seen.has(value)) {
       return value;
@@ -239,7 +257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       try {

@@ -2,7 +2,6 @@ var _excluded = ["portType", "type"],
   _excluded2 = ["count"],
   _excluded3 = ["type"],
   _excluded4 = ["type"];
-function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
@@ -26,17 +25,198 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var _require2 = require('./runtime/bootstrap.js'),
-  fallbackResolveRuntimeModuleLoader = _require2.fallbackResolveRuntimeModuleLoader,
-  fallbackRequireCoreRuntimeModule = _require2.fallbackRequireCoreRuntimeModule,
-  exposeCoreRuntimeConstant = _require2.exposeCoreRuntimeConstant,
-  exposeCoreRuntimeConstants = _require2.exposeCoreRuntimeConstants,
-  CORE_BOOT_QUEUE_KEY = _require2.CORE_BOOT_QUEUE_KEY,
-  CORE_BOOT_QUEUE = _require2.CORE_BOOT_QUEUE,
-  enqueueCoreBootTask = _require2.enqueueCoreBootTask,
-  getGridSnapState = _require2.getGridSnapState,
-  setGridSnapState = _require2.setGridSnapState,
-  applyLegacyGridSnapValue = _require2.applyLegacyGridSnapValue;
+var runtimeBootstrapExports = function resolveRuntimeBootstrapExports() {
+  if (typeof require === 'function') {
+    try {
+      var requiredBootstrap = require('./runtime/bootstrap.js');
+      if (requiredBootstrap && _typeof(requiredBootstrap) === 'object') {
+        return requiredBootstrap;
+      }
+    } catch (runtimeBootstrapError) {
+      void runtimeBootstrapError;
+    }
+  }
+  var scopes = [];
+  function pushScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+  pushScope((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null);
+  if (typeof globalThis !== 'undefined') pushScope(globalThis);
+  if (typeof window !== 'undefined') pushScope(window);
+  if (typeof self !== 'undefined') pushScope(self);
+  if (typeof global !== 'undefined') pushScope(global);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    try {
+      var namespace = scope && scope.cineRuntimeBootstrapExports;
+      if (namespace && _typeof(namespace) === 'object') {
+        return namespace;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  return null;
+}();
+var defaultCoreBootQueue = [];
+var _ref = runtimeBootstrapExports || {},
+  _ref$fallbackResolveR = _ref.fallbackResolveRuntimeModuleLoader,
+  fallbackResolveRuntimeModuleLoader = _ref$fallbackResolveR === void 0 ? function fallbackResolveRuntimeModuleLoaderMissing() {
+    return null;
+  } : _ref$fallbackResolveR,
+  _ref$fallbackRequireC = _ref.fallbackRequireCoreRuntimeModule,
+  fallbackRequireCoreRuntimeModule = _ref$fallbackRequireC === void 0 ? function fallbackRequireCoreRuntimeModuleMissing() {
+    return null;
+  } : _ref$fallbackRequireC,
+  _ref$exposeCoreRuntim = _ref.exposeCoreRuntimeConstant,
+  exposeCoreRuntimeConstant = _ref$exposeCoreRuntim === void 0 ? function noopExposeCoreRuntimeConstant() {} : _ref$exposeCoreRuntim,
+  _ref$exposeCoreRuntim2 = _ref.exposeCoreRuntimeConstants,
+  exposeCoreRuntimeConstants = _ref$exposeCoreRuntim2 === void 0 ? function noopExposeCoreRuntimeConstants() {} : _ref$exposeCoreRuntim2,
+  _ref$CORE_BOOT_QUEUE_ = _ref.CORE_BOOT_QUEUE_KEY,
+  CORE_BOOT_QUEUE_KEY = _ref$CORE_BOOT_QUEUE_ === void 0 ? '__coreRuntimeBootQueue' : _ref$CORE_BOOT_QUEUE_,
+  _ref$CORE_BOOT_QUEUE = _ref.CORE_BOOT_QUEUE,
+  resolvedCoreBootQueue = _ref$CORE_BOOT_QUEUE === void 0 ? defaultCoreBootQueue : _ref$CORE_BOOT_QUEUE,
+  resolvedEnqueueCoreBootTask = _ref.enqueueCoreBootTask,
+  _ref$getGridSnapState = _ref.getGridSnapState,
+  getGridSnapState = _ref$getGridSnapState === void 0 ? function fallbackGetGridSnapState() {
+    return 'normal';
+  } : _ref$getGridSnapState,
+  resolvedSetGridSnapState = _ref.setGridSnapState,
+  resolvedApplyLegacyGridSnapValue = _ref.applyLegacyGridSnapValue;
+var CORE_BOOT_QUEUE = resolvedCoreBootQueue;
+var enqueueCoreBootTask = typeof resolvedEnqueueCoreBootTask === 'function' ? resolvedEnqueueCoreBootTask : function fallbackEnqueueCoreBootTask(task) {
+  if (typeof task === 'function') {
+    try {
+      CORE_BOOT_QUEUE.push(task);
+    } catch (queueError) {
+      void queueError;
+      try {
+        task();
+      } catch (taskError) {
+        void taskError;
+      }
+    }
+  }
+  return CORE_BOOT_QUEUE.length;
+};
+var setGridSnapState = typeof resolvedSetGridSnapState === 'function' ? resolvedSetGridSnapState : function fallbackSetGridSnapState(value) {
+  return typeof value === 'undefined' ? getGridSnapState() : value;
+};
+var applyLegacyGridSnapValue = typeof resolvedApplyLegacyGridSnapValue === 'function' ? resolvedApplyLegacyGridSnapValue : function fallbackApplyLegacyGridSnapValue(value) {
+  return typeof value === 'undefined' ? getGridSnapState() : value;
+};
+var TEMPERATURE_SCOPE_CANDIDATES = [(typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null].filter(function (scope) {
+  return scope && (_typeof(scope) === 'object' || typeof scope === 'function');
+});
+var TEMPERATURE_UNITS_FALLBACK = Object.freeze({
+  fahrenheit: 'fahrenheit',
+  celsius: 'celsius'
+});
+var CORE_TEMPERATURE_UNITS = function resolveTemperatureUnits() {
+  var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    try {
+      var candidate = scope.TEMPERATURE_UNITS;
+      if (candidate && _typeof(candidate) === 'object' && typeof candidate.fahrenheit === 'string' && typeof candidate.celsius === 'string') {
+        return candidate;
+      }
+    } catch (temperatureUnitsError) {
+      void temperatureUnitsError;
+    }
+  }
+  candidateScopes.forEach(function (scope) {
+    try {
+      if (!scope.TEMPERATURE_UNITS) {
+        scope.TEMPERATURE_UNITS = TEMPERATURE_UNITS_FALLBACK;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return TEMPERATURE_UNITS_FALLBACK;
+}();
+var TEMPERATURE_SCENARIOS = function resolveTemperatureScenarios() {
+  var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    try {
+      if (Array.isArray(scope.TEMPERATURE_SCENARIOS)) {
+        return scope.TEMPERATURE_SCENARIOS;
+      }
+    } catch (temperatureScenarioError) {
+      void temperatureScenarioError;
+    }
+  }
+  candidateScopes.forEach(function (scope) {
+    try {
+      if (!Array.isArray(scope.TEMPERATURE_SCENARIOS)) {
+        scope.TEMPERATURE_SCENARIOS = [];
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return [];
+}();
+var FOCUS_SCALE_VALUES_FALLBACK = Object.freeze(['metric', 'imperial']);
+var focusScaleValues = function resolveFocusScaleValues() {
+  var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    try {
+      if (Array.isArray(scope.FOCUS_SCALE_VALUES) && scope.FOCUS_SCALE_VALUES.length) {
+        return scope.FOCUS_SCALE_VALUES;
+      }
+    } catch (focusScaleError) {
+      void focusScaleError;
+    }
+  }
+  candidateScopes.forEach(function (scope) {
+    try {
+      if (!Array.isArray(scope.FOCUS_SCALE_VALUES) || !scope.FOCUS_SCALE_VALUES.length) {
+        scope.FOCUS_SCALE_VALUES = FOCUS_SCALE_VALUES_FALLBACK;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return FOCUS_SCALE_VALUES_FALLBACK;
+}();
+function resolveFeedbackTemperatureBound(boundKey, fallbackValue) {
+  var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    try {
+      var candidate = scope && scope[boundKey];
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        return candidate;
+      }
+    } catch (feedbackBoundError) {
+      void feedbackBoundError;
+    }
+  }
+  candidateScopes.forEach(function (scope) {
+    try {
+      var scopedValue = scope && scope[boundKey];
+      if (typeof scopedValue !== 'number' || !Number.isFinite(scopedValue)) {
+        scope[boundKey] = fallbackValue;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+  return fallbackValue;
+}
+globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MIN', -20);
+globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE = resolveFeedbackTemperatureBound('FEEDBACK_TEMPERATURE_MAX_LIMIT', 50);
+globalThis.INSTALL_BANNER_DISMISSED_KEY = 'cine_install_banner_dismissed';
+globalThis.AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = 1;
 var CORE_RUNTIME_SUPPORT_EXPORT_NAMESPACE = function resolveRuntimeSupportExportNamespace() {
   var namespaces = [];
   try {
@@ -75,41 +255,386 @@ var resolvedRequireCoreRuntimeModule = (typeof globalThis === "undefined" ? "und
 if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && typeof globalThis.requireCoreRuntimeModule !== 'function') {
   globalThis.requireCoreRuntimeModule = resolvedRequireCoreRuntimeModule;
 }
-var _localizationBootstra = localizationBootstrapWiring,
-  APP_CORE_LOCALIZATION_SUPPORT = _localizationBootstra.localizationSupport,
-  localizationRuntimeEnvironment = _localizationBootstra.localizationRuntimeEnvironment,
-  CORE_LOCALIZATION_BRIDGE = _localizationBootstra.localizationBridge,
-  CORE_LOCALIZATION_FALLBACKS = _localizationBootstra.localizationFallbacks,
-  CORE_INLINE_LOCALIZATION_FALLBACKS = _localizationBootstra.inlineLocalizationFallbacks,
-  LOCALIZATION_FALLBACK_SUPPORT = _localizationBootstra.localizationFallbackSupport,
-  createBasicLocalizationFallbackResolvers = _localizationBootstra.createBasicLocalizationFallbackResolvers,
-  LOCALIZATION_FALLBACK_REGISTRY = _localizationBootstra.localizationFallbackRegistry,
-  LOCALIZATION_FALLBACK_RESOLVERS = _localizationBootstra.localizationFallbackResolvers,
-  LOCALIZATION_FALLBACK_NAMESPACE = _localizationBootstra.localizationFallbackNamespace,
-  fallbackResolveLocaleModule = _localizationBootstra.fallbackResolveLocaleModule,
-  createLocaleFallbacks = _localizationBootstra.createLocaleFallbacks;
+if (typeof resolveCoreSupportModule === 'undefined') {
+  global.resolveCoreSupportModule = function (name, path) {
+    if (typeof require === 'function') {
+      try {
+        return require(path);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  };
+}
+var localizationBootstrapWiringRef = typeof localizationBootstrapWiring !== 'undefined' ? localizationBootstrapWiring : null;
+if (!localizationBootstrapWiringRef && typeof require === 'function') {
+  try {
+    var bootstrapModule = require('./app-core-bootstrap.js');
+    localizationBootstrapWiringRef = bootstrapModule.localizationBootstrapWiring;
+  } catch (e) {}
+}
+var _ref2 = localizationBootstrapWiringRef || {},
+  APP_CORE_LOCALIZATION_SUPPORT = _ref2.localizationSupport,
+  localizationRuntimeEnvironment = _ref2.localizationRuntimeEnvironment,
+  CORE_LOCALIZATION_BRIDGE = _ref2.localizationBridge,
+  CORE_LOCALIZATION_FALLBACKS = _ref2.localizationFallbacks,
+  CORE_INLINE_LOCALIZATION_FALLBACKS = _ref2.inlineLocalizationFallbacks,
+  LOCALIZATION_FALLBACK_SUPPORT = _ref2.localizationFallbackSupport,
+  createBasicLocalizationFallbackResolvers = _ref2.createBasicLocalizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_REGISTRY = _ref2.localizationFallbackRegistry,
+  LOCALIZATION_FALLBACK_RESOLVERS = _ref2.localizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_NAMESPACE = _ref2.localizationFallbackNamespace,
+  fallbackResolveLocaleModule = _ref2.fallbackResolveLocaleModule,
+  createLocaleFallbacks = _ref2.createLocaleFallbacks;
 var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');
 var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRuntimeToolFallbacks', './modules/core/runtime-tool-fallbacks.js');
 var RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeToolInlineFallbacks', './modules/app-core/runtime.js');
 var SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule('cineCoreAppSettingsDocumentationTracker', './modules/app-core/settings-documentation-tracker.js');
-var _PINK_MODE_SUPPORT_AP = PINK_MODE_SUPPORT_API,
-  pinkModeIcons = _PINK_MODE_SUPPORT_AP.pinkModeIcons,
-  ensureSvgHasAriaHidden = _PINK_MODE_SUPPORT_AP.ensureSvgHasAriaHidden,
-  setPinkModeIconSequence = _PINK_MODE_SUPPORT_AP.setPinkModeIconSequence,
-  loadPinkModeIconsFromFiles = _PINK_MODE_SUPPORT_AP.loadPinkModeIconsFromFiles,
-  ensurePinkModeLottieRuntime = _PINK_MODE_SUPPORT_AP.ensurePinkModeLottieRuntime,
-  resolvePinkModeLottieRuntime = _PINK_MODE_SUPPORT_AP.resolvePinkModeLottieRuntime,
-  startPinkModeAnimatedIcons = _PINK_MODE_SUPPORT_AP.startPinkModeAnimatedIcons,
-  stopPinkModeAnimatedIcons = _PINK_MODE_SUPPORT_AP.stopPinkModeAnimatedIcons,
-  triggerPinkModeIconRain = _PINK_MODE_SUPPORT_AP.triggerPinkModeIconRain,
-  getPinkModeIconRotationTimer = _PINK_MODE_SUPPORT_AP.getPinkModeIconRotationTimer,
-  setPinkModeIconRotationTimer = _PINK_MODE_SUPPORT_AP.setPinkModeIconRotationTimer,
-  getPinkModeIconIndex = _PINK_MODE_SUPPORT_AP.getPinkModeIconIndex,
-  setPinkModeIconIndex = _PINK_MODE_SUPPORT_AP.setPinkModeIconIndex,
-  PINK_MODE_ICON_INTERVAL_MS = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_INTERVAL_MS,
-  PINK_MODE_ICON_ANIMATION_CLASS = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_ANIMATION_CLASS,
-  PINK_MODE_ICON_ANIMATION_RESET_DELAY = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-  PINK_MODE_ICON_FALLBACK_MARKUP = _PINK_MODE_SUPPORT_AP.PINK_MODE_ICON_FALLBACK_MARKUP;
+var pinkModeSupportApiRef = typeof PINK_MODE_SUPPORT_API !== 'undefined' ? PINK_MODE_SUPPORT_API : null;
+if (!pinkModeSupportApiRef && typeof require === 'function') {
+  try {
+    var pinkModeModule = require('./app-core-pink-mode.js');
+    pinkModeSupportApiRef = pinkModeModule.PINK_MODE_SUPPORT_API;
+  } catch (e) {}
+}
+var _ref3 = pinkModeSupportApiRef || {},
+  pinkModeIcons = _ref3.pinkModeIcons,
+  ensureSvgHasAriaHidden = _ref3.ensureSvgHasAriaHidden,
+  setPinkModeIconSequence = _ref3.setPinkModeIconSequence,
+  loadPinkModeIconsFromFiles = _ref3.loadPinkModeIconsFromFiles,
+  ensurePinkModeLottieRuntime = _ref3.ensurePinkModeLottieRuntime,
+  resolvePinkModeLottieRuntime = _ref3.resolvePinkModeLottieRuntime,
+  startPinkModeAnimatedIcons = _ref3.startPinkModeAnimatedIcons,
+  stopPinkModeAnimatedIcons = _ref3.stopPinkModeAnimatedIcons,
+  triggerPinkModeIconRain = _ref3.triggerPinkModeIconRain,
+  getPinkModeIconRotationTimer = _ref3.getPinkModeIconRotationTimer,
+  setPinkModeIconRotationTimer = _ref3.setPinkModeIconRotationTimer,
+  getPinkModeIconIndex = _ref3.getPinkModeIconIndex,
+  setPinkModeIconIndex = _ref3.setPinkModeIconIndex,
+  PINK_MODE_ICON_INTERVAL_MS = _ref3.PINK_MODE_ICON_INTERVAL_MS,
+  PINK_MODE_ICON_ANIMATION_CLASS = _ref3.PINK_MODE_ICON_ANIMATION_CLASS,
+  PINK_MODE_ICON_ANIMATION_RESET_DELAY = _ref3.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+  PINK_MODE_ICON_FALLBACK_MARKUP = _ref3.PINK_MODE_ICON_FALLBACK_MARKUP;
+var VALID_ICON_FONTS = function createValidIconFontSet() {
+  if ((typeof ICON_FONT_KEYS === "undefined" ? "undefined" : _typeof(ICON_FONT_KEYS)) !== 'object' || !ICON_FONT_KEYS) {
+    return new Set();
+  }
+  var fonts = Object.values(ICON_FONT_KEYS).filter(function (font) {
+    return typeof font === 'string' && font;
+  });
+  return new Set(fonts);
+}();
+function toCodePointChar(value, radix) {
+  var codePoint = parseInt(value, radix);
+  if (!Number.isFinite(codePoint) || codePoint < 0) {
+    return '';
+  }
+  if (typeof String.fromCodePoint === 'function') {
+    try {
+      return String.fromCodePoint(codePoint);
+    } catch (rangeError) {
+      void rangeError;
+    }
+  }
+  if (codePoint <= 0xffff) {
+    return String.fromCharCode(codePoint);
+  }
+  return '';
+}
+function normalizeGlyphChar(char) {
+  if (typeof char !== 'string') {
+    return '';
+  }
+  var trimmed = char.trim();
+  if (!trimmed) {
+    return '';
+  }
+  var unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
+  if (unicodeMatch) {
+    var decoded = toCodePointChar(unicodeMatch[1], 16);
+    if (decoded) {
+      return decoded;
+    }
+  }
+  var unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
+  if (unicodeBraceMatch) {
+    var _decoded = toCodePointChar(unicodeBraceMatch[1], 16);
+    if (_decoded) {
+      return _decoded;
+    }
+  }
+  var hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
+  if (hexEntityMatch) {
+    var _decoded2 = toCodePointChar(hexEntityMatch[1], 16);
+    if (_decoded2) {
+      return _decoded2;
+    }
+  }
+  var decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
+  if (decimalEntityMatch) {
+    var _decoded3 = toCodePointChar(decimalEntityMatch[1], 10);
+    if (_decoded3) {
+      return _decoded3;
+    }
+  }
+  return trimmed;
+}
+function iconGlyph(char) {
+  var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
+  var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+  var normalizedChar = normalizeGlyphChar(char);
+  var glyph = {
+    char: normalizedChar,
+    font: normalizedFont
+  };
+  return typeof Object.freeze === 'function' ? Object.freeze(glyph) : glyph;
+}
+function resolveIconGlyph(glyph) {
+  if (!glyph) {
+    return {
+      char: '',
+      font: ICON_FONT_KEYS.UICONS,
+      className: '',
+      size: undefined
+    };
+  }
+  if (glyph.markup) {
+    var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    return {
+      markup: glyph.markup,
+      className: glyph.className || '',
+      font: ICON_FONT_KEYS.UICONS,
+      size: size
+    };
+  }
+  if (typeof glyph === 'string') {
+    return {
+      char: normalizeGlyphChar(glyph),
+      font: ICON_FONT_KEYS.UICONS,
+      className: '',
+      size: undefined
+    };
+  }
+  if (_typeof(glyph) === 'object') {
+    var char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
+    var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
+    var className = typeof glyph.className === 'string' ? glyph.className : '';
+    var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    if (glyph.markup) {
+      return {
+        markup: glyph.markup,
+        className: className,
+        font: fontKey,
+        size: _size
+      };
+    }
+    return {
+      char: char,
+      font: fontKey,
+      className: className,
+      size: _size
+    };
+  }
+  return {
+    char: '',
+    font: ICON_FONT_KEYS.UICONS,
+    className: '',
+    size: undefined
+  };
+}
+function applyIconGlyph(element, glyph) {
+  if (!element) return;
+  var resolved = resolveIconGlyph(glyph);
+  if (resolved.markup) {
+    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+    element.setAttribute('aria-hidden', 'true');
+    if (resolved.className) {
+      resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
+        return element.classList.add(cls);
+      });
+    }
+    element.removeAttribute('data-icon-font');
+    return;
+  }
+  var char = resolved.char || '';
+  element.textContent = char;
+  if (char) {
+    element.setAttribute('data-icon-font', resolved.font);
+  } else {
+    element.removeAttribute('data-icon-font');
+  }
+}
+function formatSvgCoordinate(value) {
+  if (!Number.isFinite(value)) return '0';
+  var rounded = Math.round(value * 100) / 100;
+  if (Number.isInteger(rounded)) return String(rounded);
+  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+function positionSvgMarkup(markup, centerX, centerY) {
+  var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
+  if (typeof markup !== 'string') {
+    return {
+      markup: '',
+      x: '0',
+      y: '0'
+    };
+  }
+  var trimmed = markup.trim();
+  if (!trimmed) {
+    return {
+      markup: '',
+      x: '0',
+      y: '0'
+    };
+  }
+  var half = size / 2;
+  var x = formatSvgCoordinate(centerX);
+  var y = formatSvgCoordinate(centerY);
+  var width = formatSvgCoordinate(size);
+  var height = formatSvgCoordinate(size);
+  var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
+    var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
+    var additions = [];
+    if (!/(?:^|\s)width\s*=/i.test(attrText)) additions.push("width=\"".concat(width, "\""));
+    if (!/(?:^|\s)height\s*=/i.test(attrText)) additions.push("height=\"".concat(height, "\""));
+    additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
+    additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
+    attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
+    return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
+  });
+  return {
+    markup: cleaned,
+    x: x,
+    y: y
+  };
+}
+var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
+var ICON_GLYPHS = Object.freeze({
+  batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
+  batteryFull: iconGlyph("\uE1A9", ICON_FONT_KEYS.UICONS),
+  bolt: iconGlyph("\uF1F8", ICON_FONT_KEYS.ESSENTIAL),
+  plug: iconGlyph("\uEE75", ICON_FONT_KEYS.UICONS),
+  sliders: iconGlyph("\uF143", ICON_FONT_KEYS.ESSENTIAL),
+  screen: iconGlyph("\uF11D", ICON_FONT_KEYS.GADGET),
+  brightness: iconGlyph("\uE2B3", ICON_FONT_KEYS.UICONS),
+  wifi: iconGlyph("\uF4AC", ICON_FONT_KEYS.UICONS),
+  gears: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
+  controller: iconGlyph("\uF117", ICON_FONT_KEYS.GADGET),
+  distance: iconGlyph("\uEFB9", ICON_FONT_KEYS.UICONS),
+  sensor: iconGlyph("\uEC2B", ICON_FONT_KEYS.UICONS),
+  viewfinder: iconGlyph("\uF114", ICON_FONT_KEYS.FILM),
+  camera: iconGlyph("\uE333", ICON_FONT_KEYS.UICONS),
+  trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
+  reload: iconGlyph("\uF202", ICON_FONT_KEYS.ESSENTIAL),
+  load: iconGlyph("\uE0E0", ICON_FONT_KEYS.UICONS),
+  installApp: iconGlyph("\uE9D4", ICON_FONT_KEYS.UICONS),
+  add: Object.freeze({
+    char: '+',
+    font: ICON_FONT_KEYS.TEXT,
+    className: 'icon-text'
+  }),
+  minus: Object.freeze({
+    char: '−',
+    font: ICON_FONT_KEYS.TEXT,
+    className: 'icon-text'
+  }),
+  arrowLeft: Object.freeze({
+    char: '←',
+    font: ICON_FONT_KEYS.TEXT,
+    className: 'icon-text'
+  }),
+  check: iconGlyph("\uE3D8", ICON_FONT_KEYS.UICONS),
+  fileExport: iconGlyph("\uE7AB", ICON_FONT_KEYS.UICONS),
+  fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
+  save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
+  share: iconGlyph("\uF219", ICON_FONT_KEYS.ESSENTIAL),
+  paperPlane: iconGlyph("\uED67", ICON_FONT_KEYS.UICONS),
+  magnet: iconGlyph("\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
+  codec: iconGlyph("\uE4CD", ICON_FONT_KEYS.UICONS),
+  timecode: iconGlyph("\uF10E", ICON_FONT_KEYS.FILM),
+  audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
+  audioOut: iconGlyph("\uF22F", ICON_FONT_KEYS.ESSENTIAL),
+  note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
+  overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
+  gearList: iconGlyph("\uE467", ICON_FONT_KEYS.UICONS),
+  contacts: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
+  feedback: iconGlyph("\uE791", ICON_FONT_KEYS.UICONS),
+  resetView: iconGlyph("\uEB6D", ICON_FONT_KEYS.UICONS),
+  pin: iconGlyph("\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
+  sun: iconGlyph("\uF1FE", ICON_FONT_KEYS.UICONS),
+  moon: iconGlyph("\uEC7E", ICON_FONT_KEYS.UICONS),
+  circleX: iconGlyph("\uF131", ICON_FONT_KEYS.ESSENTIAL),
+  settingsGeneral: iconGlyph("\uE5A3", ICON_FONT_KEYS.UICONS),
+  settingsAutoGear: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
+  settingsAccessibility: iconGlyph("\uF392", ICON_FONT_KEYS.UICONS),
+  settingsBackup: iconGlyph("\uE5BD", ICON_FONT_KEYS.UICONS),
+  settingsData: iconGlyph("\uE5C7", ICON_FONT_KEYS.UICONS),
+  settingsAbout: iconGlyph("\uEA4F", ICON_FONT_KEYS.UICONS),
+  star: Object.freeze({
+    markup: STAR_ICON_SVG,
+    className: 'icon-svg favorite-star-icon'
+  }),
+  warning: iconGlyph("\uF26F", ICON_FONT_KEYS.ESSENTIAL)
+});
+function iconMarkup(glyph) {
+  var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  if (!glyph) return '';
+  var opts = {};
+  var resolvedClassName = 'info-icon';
+  if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
+    resolvedClassName = classNameOrOptions || '';
+    if (options && _typeof(options) === 'object') {
+      opts = options;
+    }
+  } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
+    opts = classNameOrOptions;
+    resolvedClassName = classNameOrOptions.className || 'info-icon';
+  }
+  if (typeof opts.className === 'string') {
+    resolvedClassName = opts.className;
+  }
+  var styleParts = [];
+  if (typeof opts.size === 'string' && opts.size.trim()) {
+    styleParts.push("--icon-size: ".concat(opts.size.trim()));
+  }
+  if (typeof opts.scale === 'string' && opts.scale.trim()) {
+    styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
+  }
+  if (typeof opts.style === 'string' && opts.style.trim()) {
+    styleParts.push(opts.style.trim());
+  }
+  var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
+  var resolved = resolveIconGlyph(glyph);
+  var classes = ['icon-glyph'];
+  if (resolvedClassName) classes.unshift(resolvedClassName);
+  if (resolved.markup) {
+    if (resolved.className) {
+      resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
+        return classes.push(cls);
+      });
+    }
+    var markup = ensureSvgHasAriaHidden(resolved.markup);
+    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
+  }
+  var char = resolved.char || '';
+  if (!char) return '';
+  return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
+}
+var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
+var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
+var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
+var REQUIRED_SCENARIOS_ICON = iconGlyph("\uF4D4", ICON_FONT_KEYS.UICONS);
+var MONITORING_SUPPORT_ICON = iconGlyph("\uEFFC", ICON_FONT_KEYS.UICONS);
+exposeCoreRuntimeConstant('iconGlyph', iconGlyph);
+exposeCoreRuntimeConstant('resolveIconGlyph', resolveIconGlyph);
+exposeCoreRuntimeConstant('applyIconGlyph', applyIconGlyph);
+exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
+exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
+exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
+exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
 var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -422,10 +947,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!scope || _typeof(scope) !== 'object') {
       return;
     }
-    Object.entries(bindings).forEach(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-        name = _ref2[0],
-        descriptor = _ref2[1];
+    Object.entries(bindings).forEach(function (_ref4) {
+      var _ref5 = _slicedToArray(_ref4, 2),
+        name = _ref5[0],
+        descriptor = _ref5[1];
       if (typeof name !== 'string' || !name) {
         return;
       }
@@ -762,7 +1287,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       void exposeCreateStateError;
     }
   }
-    }
   function isAutoGearGlobalReferenceError(error) {
     if (!CORE_RUNTIME_STATE || !CORE_RUNTIME_STATE.autoGearGuards) {
       return false;
@@ -1575,8 +2099,207 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return deviceSchema;
   };
+  var bundledSchema = null;
+  var contactsProfileModule = null;
+  var contactsListModule = null;
+  var CONTACTS_PROFILE_GLOBAL_KEY = 'CINE_CONTACTS_PROFILE_MODULE';
+  var CONTACTS_LIST_GLOBAL_KEY = 'CINE_CONTACTS_LIST_MODULE';
+  var canRequireModule = typeof require === 'function';
+  if (canRequireModule) {
+    try {
+      bundledSchema = require('../data/schema.json');
+    } catch (schemaRequireError) {
+      void schemaRequireError;
+    }
+    try {
+      contactsProfileModule = require('./contacts/profile.js');
+    } catch (profileModuleError) {
+      console.warn('Failed to load contacts profile module', profileModuleError);
+    }
+    try {
+      contactsListModule = require('./contacts/list.js');
+    } catch (contactsListModuleError) {
+      console.warn('Failed to load contacts list module', contactsListModuleError);
+    }
+  }
+  var contactsModuleGlobalScope = typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || typeof window !== 'undefined' && window || typeof global !== 'undefined' && global || null;
+  var readContactsModuleFromGlobal = function readContactsModuleFromGlobal(key) {
+    if (!contactsModuleGlobalScope || !key) {
+      return null;
+    }
+    try {
+      var candidate = contactsModuleGlobalScope[key];
+      return candidate || null;
+    } catch (contactsModuleError) {
+      console.warn('Failed to read contacts module from global scope', contactsModuleError);
+      return null;
+    }
+  };
+  if (!contactsProfileModule) {
+    contactsProfileModule = readContactsModuleFromGlobal(CONTACTS_PROFILE_GLOBAL_KEY);
+  }
+  if (!contactsListModule) {
+    contactsListModule = readContactsModuleFromGlobal(CONTACTS_LIST_GLOBAL_KEY);
+  }
+  if (!contactsProfileModule || !contactsListModule) {
+    console.warn('Module loader is not available in this environment. Contacts features limited.');
+  }
+  var fallbackSanitizeContactValue = function fallbackSanitizeContactValue(value) {
+    return typeof value === 'string' ? value.trim() : '';
+  };
+  var fallbackNormalizeContactEntry = function fallbackNormalizeContactEntry(entry) {
+    return {
+      id: fallbackSanitizeContactValue(entry && entry.id) || "contact-".concat(Date.now().toString(36)),
+      name: fallbackSanitizeContactValue(entry && entry.name),
+      role: fallbackSanitizeContactValue(entry && entry.role),
+      phone: fallbackSanitizeContactValue(entry && entry.phone),
+      email: fallbackSanitizeContactValue(entry && entry.email),
+      website: fallbackSanitizeContactValue(entry && entry.website),
+      avatar: typeof (entry === null || entry === void 0 ? void 0 : entry.avatar) === 'string' ? entry.avatar : '',
+      createdAt: Number.isFinite(entry === null || entry === void 0 ? void 0 : entry.createdAt) ? entry.createdAt : Date.now(),
+      updatedAt: Number.isFinite(entry === null || entry === void 0 ? void 0 : entry.updatedAt) ? entry.updatedAt : Date.now()
+    };
+  };
+  function createFallbackProfileController() {
+    var state = {
+      name: '',
+      role: '',
+      avatar: '',
+      phone: '',
+      email: ''
+    };
+    var listeners = new Set();
+    var snapshot = function snapshot() {
+      return _objectSpread({}, state);
+    };
+    var emit = function emit() {
+      var current = snapshot();
+      listeners.forEach(function (listener) {
+        try {
+          listener(current);
+        } catch (listenerError) {
+          console.warn('Profile listener failed in fallback controller', listenerError);
+        }
+      });
+      return current;
+    };
+    return {
+      assignUserProfileState: function assignUserProfileState() {
+        var updates = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        Object.assign(state, updates);
+        return emit();
+      },
+      getUserProfileSnapshot: snapshot,
+      handleFieldInput: function handleFieldInput(field, rawValue) {
+        if (!field) return false;
+        state[field] = typeof rawValue === 'string' ? rawValue : '';
+        emit();
+        return true;
+      },
+      handleFieldBlur: function handleFieldBlur() {
+        return undefined;
+      },
+      load: function load(newState) {
+        if (newState && _typeof(newState) === 'object') {
+          Object.assign(state, newState);
+        }
+        return emit();
+      },
+      setAvatar: function setAvatar(value) {
+        state.avatar = typeof value === 'string' ? value : '';
+        emit();
+      },
+      clearAvatar: function clearAvatar() {
+        if (!state.avatar) return false;
+        state.avatar = '';
+        emit();
+        return true;
+      },
+      onChange: function onChange(listener) {
+        if (typeof listener !== 'function') return function () {
+          return undefined;
+        };
+        listeners.add(listener);
+        return function () {
+          return listeners.delete(listener);
+        };
+      },
+      schedulePersist: function schedulePersist() {
+        return undefined;
+      },
+      markDirty: function markDirty() {
+        return undefined;
+      },
+      setPendingAnnouncement: function setPendingAnnouncement() {
+        return undefined;
+      }
+    };
+  }
+  var _ref7 = contactsProfileModule || {},
+    _ref7$CONTACT_AVATAR_ = _ref7.CONTACT_AVATAR_MAX_BYTES,
+    resolvedContactAvatarMaxBytes = _ref7$CONTACT_AVATAR_ === void 0 ? 300 * 1024 : _ref7$CONTACT_AVATAR_,
+    _ref7$CONTACT_AVATAR_2 = _ref7.CONTACT_AVATAR_MAX_SOURCE_BYTES,
+    resolvedContactAvatarMaxSourceBytes = _ref7$CONTACT_AVATAR_2 === void 0 ? 6 * 1024 * 1024 : _ref7$CONTACT_AVATAR_2,
+    _ref7$CONTACT_AVATAR_3 = _ref7.CONTACT_AVATAR_MAX_DIMENSION,
+    resolvedContactAvatarMaxDimension = _ref7$CONTACT_AVATAR_3 === void 0 ? 256 : _ref7$CONTACT_AVATAR_3,
+    _ref7$CONTACT_AVATAR_4 = _ref7.CONTACT_AVATAR_JPEG_QUALITY,
+    resolvedContactAvatarJpegQuality = _ref7$CONTACT_AVATAR_4 === void 0 ? 0.85 : _ref7$CONTACT_AVATAR_4,
+    _ref7$CONTACT_AVATAR_5 = _ref7.CONTACT_AVATAR_JPEG_MIN_QUALITY,
+    resolvedContactAvatarJpegMinQuality = _ref7$CONTACT_AVATAR_5 === void 0 ? 0.55 : _ref7$CONTACT_AVATAR_5,
+    resolvedCreateProfileController = _ref7.createProfileController,
+    resolvedEstimateDataUrlSize = _ref7.estimateDataUrlSize,
+    resolvedOptimiseAvatarDataUrl = _ref7.optimiseAvatarDataUrl,
+    resolvedReadAvatarFile = _ref7.readAvatarFile,
+    resolvedIsSafeImageUrl = _ref7.isSafeImageUrl;
+  var _ref8 = contactsListModule || {},
+    resolvedSanitizeContactValue = _ref8.sanitizeContactValue,
+    resolvedNormalizeContactEntry = _ref8.normalizeContactEntry,
+    resolvedSortContacts = _ref8.sortContacts,
+    resolvedParseVCardEntries = _ref8.parseVCard,
+    resolvedMergeImportedContacts = _ref8.mergeImportedContacts,
+    resolvedCreateCrewRowSync = _ref8.createCrewRowSync;
+  var CONTACT_AVATAR_MAX_BYTES = resolvedContactAvatarMaxBytes;
+  var CONTACT_AVATAR_MAX_SOURCE_BYTES = resolvedContactAvatarMaxSourceBytes;
+  var CONTACT_AVATAR_MAX_DIMENSION = resolvedContactAvatarMaxDimension;
+  var CONTACT_AVATAR_JPEG_QUALITY = resolvedContactAvatarJpegQuality;
+  var CONTACT_AVATAR_JPEG_MIN_QUALITY = resolvedContactAvatarJpegMinQuality;
+  var createProfileController = typeof resolvedCreateProfileController === 'function' ? resolvedCreateProfileController : createFallbackProfileController;
+  var estimateDataUrlSize = typeof resolvedEstimateDataUrlSize === 'function' ? resolvedEstimateDataUrlSize : function (dataUrl) {
+    return typeof dataUrl === 'string' ? dataUrl.length : 0;
+  };
+  var optimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'function' ? resolvedOptimiseAvatarDataUrl : function (dataUrl, _mime, onSuccess) {
+    if (typeof onSuccess === 'function') {
+      onSuccess(typeof dataUrl === 'string' ? dataUrl : '');
+    }
+    return Promise.resolve(typeof dataUrl === 'string' ? dataUrl : '');
+  };
+  var readAvatarFile = typeof resolvedReadAvatarFile === 'function' ? resolvedReadAvatarFile : function () {
+    return Promise.reject(new Error('Avatar file reader unavailable'));
+  };
+  var isSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function' ? resolvedIsSafeImageUrl : function () {
+    return false;
+  };
+  var sanitizeContactValueHelper = typeof resolvedSanitizeContactValue === 'function' ? resolvedSanitizeContactValue : fallbackSanitizeContactValue;
+  var normalizeContactEntryHelper = typeof resolvedNormalizeContactEntry === 'function' ? resolvedNormalizeContactEntry : fallbackNormalizeContactEntry;
+  var sortContactsHelper = typeof resolvedSortContacts === 'function' ? resolvedSortContacts : function (list) {
+    return Array.isArray(list) ? list.slice() : [];
+  };
+  var parseVCardEntries = typeof resolvedParseVCardEntries === 'function' ? resolvedParseVCardEntries : function () {
+    return [];
+  };
+  var mergeImportedContactEntries = typeof resolvedMergeImportedContacts === 'function' ? resolvedMergeImportedContacts : function (options) {
+    return {
+      contacts: sortContactsHelper([].concat(_toConsumableArray((options === null || options === void 0 ? void 0 : options.existing) || []), _toConsumableArray((options === null || options === void 0 ? void 0 : options.imported) || []))),
+      added: Array.isArray(options === null || options === void 0 ? void 0 : options.imported) ? options.imported.length : 0,
+      updated: 0
+    };
+  };
+  var createCrewRowSync = typeof resolvedCreateCrewRowSync === 'function' ? resolvedCreateCrewRowSync : function () {
+    var rowState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var contact = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return _objectSpread(_objectSpread({}, rowState), contact);
+  };
   try {
-    var bundledSchema = require('../data/schema.json');
     var appliedSchema = applyDeviceSchema(bundledSchema);
     if (appliedSchema) {
       deviceSchema = appliedSchema;
@@ -1793,6 +2516,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     tripodTypes: 'tripodTypes',
     tripodSpreader: 'tripodSpreader'
   };
+  exposeCoreRuntimeConstant('AUTO_GEAR_SELECTOR_TYPE_MAP', AUTO_GEAR_SELECTOR_TYPE_MAP);
+  exposeCoreRuntimeConstant('AUTO_GEAR_SELECTOR_TYPE_SET', AUTO_GEAR_SELECTOR_TYPE_SET);
+  exposeCoreRuntimeConstant('AUTO_GEAR_TRIPOD_SELECTOR_TYPES', AUTO_GEAR_TRIPOD_SELECTOR_TYPES);
+  exposeCoreRuntimeConstant('AUTO_GEAR_TRIPOD_FIELD_IDS', AUTO_GEAR_TRIPOD_FIELD_IDS);
+  exposeCoreRuntimeConstant('AUTO_GEAR_CUSTOM_CATEGORY', AUTO_GEAR_CUSTOM_CATEGORY);
+  exposeCoreRuntimeConstant('GEAR_LIST_CATEGORIES', GEAR_LIST_CATEGORIES);
   var AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUP_DATA = Object.freeze([{
     key: 'tilta-nucleus-m',
     label: 'Tilta Nucleus ecosystem (M / M II)',
@@ -1890,1756 +2619,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   if (typeof globalThis !== 'undefined') {
     globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
     globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
-  }
-  function generateAutoGearId(prefix) {
-    var base = prefix || 'rule';
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return "".concat(base, "-").concat(crypto.randomUUID());
-    }
-    return "".concat(base, "-").concat(Math.random().toString(36).slice(2), "-").concat(Date.now());
-  }
-  function normalizeAutoGearQuantity(value) {
-    var num = parseInt(value, 10);
-    return Number.isFinite(num) && num > 0 ? num : 1;
-  }
-  function parseAutoGearDraftNames(value) {
-    if (typeof value !== 'string') return [];
-    var raw = value.trim();
-    if (!raw) return [];
-    var hasDelimiters = /[;\n\r]/.test(raw);
-    var parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
-    return parts.map(function (part) {
-      var segment = part.trim();
-      if (!segment) return null;
-      var signMatch = segment.match(/^([+-])\s*(.+)$/);
-      var listType = signMatch ? signMatch[1] === '-' ? 'remove' : 'add' : null;
-      var content = signMatch ? signMatch[2].trim() : segment;
-      if (!content) return null;
-      var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
-      if (quantityMatch) {
-        var name = quantityMatch[2].trim();
-        if (!name) return null;
-        return {
-          name: name,
-          quantity: normalizeAutoGearQuantity(quantityMatch[1]),
-          listType: listType
-        };
-      }
-      return {
-        name: content,
-        listType: listType
-      };
-    }).filter(Boolean);
-  }
-  function normalizeAutoGearText(value) {
-    var _ref4 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref4$collapseWhitesp = _ref4.collapseWhitespace,
-      collapseWhitespace = _ref4$collapseWhitesp === void 0 ? true : _ref4$collapseWhitesp;
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return String(value);
-    }
-    if (typeof value !== 'string') return '';
-    var trimmed = value.trim();
-    if (!collapseWhitespace) return trimmed;
-    return trimmed.replace(/\s+/g, ' ');
-  }
-  function normalizeAutoGearSelectorType(value) {
-    var candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
-    if (!candidate) return 'none';
-    if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate)) return 'none';
-    return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
-  }
-  function normalizeAutoGearSelectorDefault(type, value, context) {
-    var text = normalizeAutoGearText(value);
-    if (!text) return '';
-    var options = getAutoGearSelectorOptions(type, context ? {
-      selectorContext: context
-    } : null);
-    if (!options.length) return text;
-    var match = options.find(function (option) {
-      return option.toLowerCase() === text.toLowerCase();
-    });
-    return match || text;
-  }
-  function resolveDevicesSnapshot() {
-    if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && _typeof(DEVICE_GLOBAL_SCOPE.devices) === 'object') {
-      return DEVICE_GLOBAL_SCOPE.devices;
-    }
-    try {
-      return typeof devices !== 'undefined' && devices && (typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' ? devices : null;
-    } catch (error) {
-      if (error && _typeof(error) === 'object' && error.name === 'ReferenceError') {
-        return null;
-      }
-      throw error;
-    }
-  }
-  function updateGlobalDevicesReference(nextDevices) {
-    var normalizedDevices = nextDevices && _typeof(nextDevices) === 'object' ? nextDevices : {};
-    var seenScopes = new Set();
-    var scopes = [];
-    var enqueueScope = function enqueueScope(scope) {
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-        return;
-      }
-      if (seenScopes.has(scope)) {
-        return;
-      }
-      seenScopes.add(scope);
-      scopes.push(scope);
-    };
-    try {
-      if (typeof DEVICE_GLOBAL_SCOPE !== 'undefined') {
-        enqueueScope(DEVICE_GLOBAL_SCOPE);
-      }
-    } catch (scopeError) {
-      void scopeError;
-    }
-    enqueueScope(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
-    enqueueScope(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
-    enqueueScope(typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined' ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null);
-    enqueueScope(typeof globalThis !== 'undefined' ? globalThis : null);
-    enqueueScope(typeof window !== 'undefined' ? window : null);
-    enqueueScope(typeof self !== 'undefined' ? self : null);
-    enqueueScope(typeof global !== 'undefined' ? global : null);
-    for (var index = 0; index < scopes.length; index += 1) {
-      var scope = scopes[index];
-      if (!scope) continue;
-      try {
-        scope.devices = normalizedDevices;
-      } catch (assignError) {
-        void assignError;
-        try {
-          Object.defineProperty(scope, 'devices', {
-            configurable: true,
-            writable: true,
-            value: normalizedDevices
-          });
-        } catch (defineError) {
-          void defineError;
-        }
-      }
-      try {
-        var shared = scope.CORE_SHARED || scope.cineCoreShared;
-        if (shared && _typeof(shared) === 'object') {
-          shared.devices = normalizedDevices;
-          if (typeof shared.updateDevices === 'function') {
-            try {
-              shared.updateDevices(normalizedDevices);
-            } catch (updateError) {
-              void updateError;
-            }
-          }
-        }
-      } catch (sharedError) {
-        void sharedError;
-      }
-      if (scope && scope.global && scope.global !== scope) {
-        enqueueScope(scope.global);
-      }
-      var runtimeState = scope.__cineRuntimeState;
-      if (runtimeState && _typeof(runtimeState) === 'object') {
-        try {
-          runtimeState.devices = normalizedDevices;
-        } catch (runtimeError) {
-          void runtimeError;
-        }
-      }
-    }
-    if (CORE_SHARED && _typeof(CORE_SHARED) === 'object') {
-      try {
-        CORE_SHARED.devices = normalizedDevices;
-        if (typeof CORE_SHARED.updateDevices === 'function') {
-          CORE_SHARED.updateDevices(normalizedDevices);
-        }
-      } catch (sharedAssignError) {
-        void sharedAssignError;
-      }
-    }
-    if (typeof module !== 'undefined' && module && _typeof(module.exports) === 'object' && module.exports) {
-      try {
-        module.exports.devices = normalizedDevices;
-      } catch (moduleError) {
-        void moduleError;
-      }
-    }
-    return normalizedDevices;
-  }
-  function resolveTripodPreferenceSelect(type) {
-    if (typeof document === 'undefined') return null;
-    var id = AUTO_GEAR_TRIPOD_FIELD_IDS[type];
-    if (!id) return null;
-    return document.getElementById(id);
-  }
-  function collectTripodPreferenceOptions(type) {
-    if (!AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(type)) return [];
-    var select = resolveTripodPreferenceSelect(type);
-    if (!select || !select.options) return [];
-    var options = Array.from(select.options);
-    var seen = new Set();
-    var results = [];
-    options.forEach(function (option) {
-      if (!option) return;
-      var value = typeof option.value === 'string' ? option.value.trim() : '';
-      var label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
-      var storeValue = value || label;
-      if (!storeValue) return;
-      var dedupeKey = storeValue.toLowerCase();
-      if (seen.has(dedupeKey)) return;
-      seen.add(dedupeKey);
-      results.push({
-        value: storeValue,
-        label: label || storeValue
-      });
-    });
-    return results;
-  }
-  function getAutoGearSelectorOptions(type, itemOrContext) {
-    var normalizedType = normalizeAutoGearSelectorType(type);
-    var catalog = resolveDevicesSnapshot();
-    if (!catalog || _typeof(catalog) !== 'object') {
-      return [];
-    }
-    if (normalizedType === 'monitor') {
-      var monitorDb = catalog && catalog.monitors ? catalog.monitors : null;
-      if (!monitorDb || _typeof(monitorDb) !== 'object') return [];
-      return Object.keys(monitorDb).filter(function (name) {
-        return name && name !== 'None';
-      }).sort(localeSort);
-    }
-    if (normalizedType === 'directorMonitor') {
-      var directorDb = catalog && catalog.directorMonitors ? catalog.directorMonitors : null;
-      if (!directorDb || _typeof(directorDb) !== 'object') return [];
-      return Object.keys(directorDb).filter(function (name) {
-        return name && name !== 'None';
-      }).sort(localeSort);
-    }
-    if (normalizedType === 'fizHandUnit') {
-      var groups = _typeof(AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS) === 'object' ? AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS : typeof globalThis !== 'undefined' && _typeof(globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS) === 'object' ? globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS : Object.create(null);
-      var motorMap = _typeof(AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP) === 'object' ? AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP : typeof globalThis !== 'undefined' && _typeof(globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP) === 'object' ? globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP : Object.create(null);
-      var contextValue = '';
-      if (itemOrContext && _typeof(itemOrContext) === 'object') {
-        var context = itemOrContext.selectorContext || itemOrContext.context;
-        if (typeof context === 'string') {
-          contextValue = context.trim();
-        }
-      } else if (typeof itemOrContext === 'string') {
-        contextValue = itemOrContext.trim();
-      }
-      var group = null;
-      if (contextValue) {
-        group = groups[contextValue] || null;
-        if (!group) {
-          var normalizedContext = normalizeAutoGearTriggerValue(contextValue);
-          if (normalizedContext) {
-            if (groups[normalizedContext]) {
-              group = groups[normalizedContext];
-            } else if (motorMap[normalizedContext] && groups[motorMap[normalizedContext]]) {
-              group = groups[motorMap[normalizedContext]];
-            }
-          }
-        }
-      }
-      if (group && Array.isArray(group.options)) {
-        return group.options.slice();
-      }
-      var fallback = [];
-      Object.values(groups).forEach(function (entry) {
-        if (!entry || !Array.isArray(entry.options)) return;
-        entry.options.forEach(function (option) {
-          if (!option || fallback.includes(option)) return;
-          fallback.push(option);
-        });
-      });
-      return fallback;
-    }
-    if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
-      return collectTripodPreferenceOptions(normalizedType).map(function (option) {
-        return option.value;
-      });
-    }
-    return [];
-  }
-  function getAutoGearSelectorLabel(type) {
-    var normalizedType = normalizeAutoGearSelectorType(type);
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    if (normalizedType === 'monitor') {
-      return langTexts.autoGearSelectorMonitorOption || fallbackTexts.autoGearSelectorMonitorOption || 'Monitor selector';
-    }
-    if (normalizedType === 'directorMonitor') {
-      return langTexts.autoGearSelectorDirectorOption || fallbackTexts.autoGearSelectorDirectorOption || 'Director monitor selector';
-    }
-    if (normalizedType === 'tripodHeadBrand') {
-      return langTexts.autoGearSelectorTripodHeadOption || fallbackTexts.autoGearSelectorTripodHeadOption || 'Tripod head selector';
-    }
-    if (normalizedType === 'tripodBowl') {
-      return langTexts.autoGearSelectorTripodBowlOption || fallbackTexts.autoGearSelectorTripodBowlOption || 'Tripod bowl selector';
-    }
-    if (normalizedType === 'tripodTypes') {
-      return langTexts.autoGearSelectorTripodTypesOption || fallbackTexts.autoGearSelectorTripodTypesOption || 'Tripod type selector';
-    }
-    if (normalizedType === 'tripodSpreader') {
-      return langTexts.autoGearSelectorTripodSpreaderOption || fallbackTexts.autoGearSelectorTripodSpreaderOption || 'Tripod spreader selector';
-    }
-    if (normalizedType === 'fizHandUnit') {
-      return langTexts.autoGearSelectorFizHandUnitOption || fallbackTexts.autoGearSelectorFizHandUnitOption || 'FIZ hand unit selector';
-    }
-    return langTexts.autoGearSelectorNoneOption || fallbackTexts.autoGearSelectorNoneOption || 'No selector';
-  }
-  function getAutoGearSelectorScrollHint() {
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    return langTexts.autoGearSelectorScrollHint || fallbackTexts.autoGearSelectorScrollHint || 'Scroll to see more devices.';
-  }
-  function getAutoGearSelectorDefaultPlaceholder() {
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    return langTexts.autoGearSelectorDefaultPlaceholder || fallbackTexts.autoGearSelectorDefaultPlaceholder || 'Choose a default device';
-  }
-  function getAutoGearMonitorDefaultPlaceholder() {
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    return langTexts.autoGearMonitorDefaultPlaceholder || fallbackTexts.autoGearMonitorDefaultPlaceholder || 'Use recommended automatically';
-  }
-  function formatAutoGearSelectorValue(type, value) {
-    var normalizedValue = typeof value === 'string' ? value.trim() : '';
-    if (!normalizedValue) return '';
-    var normalizedType = normalizeAutoGearSelectorType(type);
-    if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
-      var options = collectTripodPreferenceOptions(normalizedType);
-      var match = options.find(function (option) {
-        return option.value.toLowerCase() === normalizedValue.toLowerCase();
-      });
-      if (match && match.label) {
-        return match.label;
-      }
-    }
-    if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor' || normalizedType === 'fizHandUnit')) {
-      return addArriKNumber(normalizedValue);
-    }
-    return normalizedValue;
-  }
-  function populateAutoGearCategorySelect(select, currentValue) {
-    var _texts, _texts2;
-    if (!select) return;
-    var current = typeof currentValue === 'string' ? currentValue : '';
-    var lang = typeof currentLang === 'string' ? currentLang : 'en';
-    select.innerHTML = '';
-    GEAR_LIST_CATEGORIES.forEach(function (category) {
-      var option = document.createElement('option');
-      option.value = category;
-      option.textContent = category;
-      if (current === category) {
-        option.selected = true;
-      }
-      select.appendChild(option);
-    });
-    var customOption = document.createElement('option');
-    customOption.value = AUTO_GEAR_CUSTOM_CATEGORY;
-    customOption.textContent = ((_texts = texts) === null || _texts === void 0 || (_texts = _texts[lang]) === null || _texts === void 0 ? void 0 : _texts.autoGearCustomCategory) || ((_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2.en) === null || _texts2 === void 0 ? void 0 : _texts2.autoGearCustomCategory) || 'Custom Additions';
-    if (!current || current === AUTO_GEAR_CUSTOM_CATEGORY) {
-      customOption.selected = true;
-    }
-    select.appendChild(customOption);
-  }
-  function formatAutoGearOwnGearLabel(item) {
-    if (!item || typeof item.name !== 'string') return '';
-    var quantityValue = typeof (item === null || item === void 0 ? void 0 : item.quantity) === 'number' ? String(item.quantity) : item === null || item === void 0 ? void 0 : item.quantity;
-    var quantityText = formatOwnGearQuantityText(quantityValue);
-    if (quantityText) {
-      return "".concat(item.name, " (").concat(quantityText, ")");
-    }
-    return item.name;
-  }
-  function refreshAutoGearOwnGearConditionOptions(selected) {
-    if (!autoGearOwnGearSelect) return;
-    var selectedValues = Array.isArray(selected) ? selected.filter(function (value) {
-      return typeof value === 'string';
-    }).map(function (value) {
-      return value.trim();
-    }).filter(Boolean) : collectAutoGearSelectedValues(selected, 'ownGear');
-    autoGearOwnGearSelect.innerHTML = '';
-    autoGearOwnGearSelect.multiple = true;
-    var items = getAutoGearOwnGearItems();
-    var seen = new Set();
-    var appendOption = function appendOption(id, label) {
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      if (typeof id !== 'string') return;
-      var trimmedId = id.trim();
-      if (!trimmedId || seen.has(trimmedId)) return;
-      var option = document.createElement('option');
-      option.value = trimmedId;
-      option.textContent = label || trimmedId;
-      if (options.dataset && option.dataset) {
-        Object.entries(options.dataset).forEach(function (_ref5) {
-          var _ref6 = _slicedToArray(_ref5, 2),
-            key = _ref6[0],
-            value = _ref6[1];
-          if (value == null) return;
-          option.dataset[key] = value;
-        });
-      }
-      if (options.fallback) {
-        option.dataset.autoGearFallback = 'true';
-      }
-      if (selectedValues.includes(trimmedId)) {
-        option.selected = true;
-      }
-      autoGearOwnGearSelect.appendChild(option);
-      seen.add(trimmedId);
-    };
-    items.forEach(function (item) {
-      if (!item || typeof item.id !== 'string') return;
-      var trimmedId = item.id.trim();
-      if (!trimmedId) return;
-      var dataset = {};
-      if (typeof item.name === 'string' && item.name) {
-        dataset.name = item.name;
-      }
-      var formattedQuantity = formatOwnGearQuantityText(item.quantity);
-      if (formattedQuantity) {
-        dataset.quantity = formattedQuantity;
-      }
-      if (typeof item.notes === 'string' && item.notes) {
-        dataset.notes = item.notes;
-      }
-      appendOption(trimmedId, formatAutoGearOwnGearLabel(item) || item.name || trimmedId, {
-        dataset: dataset
-      });
-    });
-    selectedValues.forEach(function (value) {
-      if (!value || seen.has(value)) return;
-      var record = typeof findAutoGearOwnGearById === 'function' ? findAutoGearOwnGearById(value) : null;
-      var label = (record === null || record === void 0 ? void 0 : record.name) || value;
-      appendOption(value, label, {
-        fallback: true
-      });
-    });
-    var selectableOptions = Array.from(autoGearOwnGearSelect.options || []).filter(function (option) {
-      return !option.disabled;
-    });
-    autoGearOwnGearSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
-      minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
-    });
-    var hasSelectable = selectableOptions.some(function (option) {
-      return option.dataset.autoGearFallback !== 'true';
-    });
-    autoGearOwnGearSelect.disabled = !hasSelectable && selectedValues.length === 0;
-  }
-  function updateAutoGearOwnGearOptions() {
-    var selects = [autoGearAddOwnGearSelect, autoGearRemoveOwnGearSelect].filter(Boolean);
-    if (!selects.length) return;
-    var items = getAutoGearOwnGearItems();
-    selects.forEach(function (select) {
-      var _texts$currentLang, _texts$en;
-      if (!select) return;
-      var currentValue = select.value || '';
-      var placeholder = select.getAttribute('data-placeholder') || ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.autoGearOwnGearPlaceholder) || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.autoGearOwnGearPlaceholder) || 'Manual entry';
-      select.innerHTML = '';
-      var placeholderOption = document.createElement('option');
-      placeholderOption.value = '';
-      placeholderOption.textContent = placeholder;
-      select.appendChild(placeholderOption);
-      items.forEach(function (item) {
-        if (!item || typeof item.id !== 'string' || !item.id || typeof item.name !== 'string') return;
-        var option = document.createElement('option');
-        option.value = item.id;
-        option.textContent = formatAutoGearOwnGearLabel(item) || item.name;
-        option.dataset.name = item.name;
-        if (item.notes) option.dataset.notes = item.notes;
-        if (item.source) option.dataset.source = item.source;
-        var formattedQuantity = formatOwnGearQuantityText(item.quantity);
-        if (formattedQuantity) option.dataset.quantity = formattedQuantity;
-        if (item.id === currentValue) option.selected = true;
-        select.appendChild(option);
-      });
-      if (currentValue && select.value !== currentValue) {
-        if (select.querySelector("option[value=\"".concat(currentValue, "\"]"))) {
-          select.value = currentValue;
-        } else {
-          select.value = '';
-        }
-      }
-      select.disabled = items.length === 0;
-    });
-    refreshAutoGearOwnGearConditionOptions(Array.isArray(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.ownGear) ? autoGearEditorDraft.ownGear : undefined);
-  }
-  function isAutoGearMonitoringCategory(value) {
-    if (typeof value !== 'string') return false;
-    return value.trim().toLowerCase() === 'monitoring';
-  }
-  function isMonitoringCategorySelected(select) {
-    var _select$options;
-    if (!select) return false;
-    var directValue = typeof select.value === 'string' ? select.value : '';
-    if (isAutoGearMonitoringCategory(directValue)) {
-      return true;
-    }
-    var option = ((_select$options = select.options) === null || _select$options === void 0 ? void 0 : _select$options[select.selectedIndex]) || null;
-    if (!option) return false;
-    var optionValue = typeof option.value === 'string' ? option.value : '';
-    if (isAutoGearMonitoringCategory(optionValue)) {
-      return true;
-    }
-    var optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
-    return isAutoGearMonitoringCategory(optionLabel);
-  }
-  function matchesTripodCategory(value) {
-    var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
-    if (!normalized) return false;
-    if (normalized === 'camera support') return true;
-    if (normalized === 'grip') return true;
-    return normalized.includes('tripod');
-  }
-  function isTripodCategorySelected(select) {
-    var _select$options2;
-    if (!select) return false;
-    var directValue = typeof select.value === 'string' ? select.value : '';
-    if (matchesTripodCategory(directValue)) return true;
-    var option = ((_select$options2 = select.options) === null || _select$options2 === void 0 ? void 0 : _select$options2[select.selectedIndex]) || null;
-    if (!option) return false;
-    if (matchesTripodCategory(option.value)) return true;
-    var optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
-    return matchesTripodCategory(optionLabel);
-  }
-  function setAutoGearFieldVisibility(field, isVisible) {
-    if (!field) return;
-    if (isVisible) {
-      field.hidden = false;
-      field.removeAttribute('hidden');
-      field.removeAttribute('aria-hidden');
-      if (Object.prototype.hasOwnProperty.call(field.dataset, 'autoGearHiddenDisplay')) {
-        var storedDisplay = field.dataset.autoGearHiddenDisplay;
-        if (storedDisplay) {
-          field.style.display = storedDisplay;
-        } else {
-          field.style.removeProperty('display');
-        }
-        delete field.dataset.autoGearHiddenDisplay;
-      } else if (field.style.display === 'none') {
-        field.style.removeProperty('display');
-      }
-    } else {
-      field.hidden = true;
-      field.setAttribute('hidden', '');
-      field.setAttribute('aria-hidden', 'true');
-      if (!Object.prototype.hasOwnProperty.call(field.dataset, 'autoGearHiddenDisplay')) {
-        field.dataset.autoGearHiddenDisplay = field.style.display || '';
-      }
-      field.style.display = 'none';
-    }
-  }
-  function updateAutoGearMonitorFieldGroup(group) {
-    if (!group || !group.select) return;
-    var select = group.select,
-      screenSizeField = group.screenSizeField,
-      screenSizeInput = group.screenSizeInput,
-      selectorTypeField = group.selectorTypeField,
-      selectorTypeSelect = group.selectorTypeSelect,
-      selectorDefaultField = group.selectorDefaultField,
-      selectorDefaultInput = group.selectorDefaultInput;
-    var isMonitoring = isMonitoringCategorySelected(select);
-    var isTripod = isTripodCategorySelected(select);
-    var showScreenSize = isMonitoring;
-    var showSelectorFields = isMonitoring || isTripod;
-    setAutoGearFieldVisibility(screenSizeField, showScreenSize);
-    setAutoGearFieldVisibility(selectorTypeField, showSelectorFields);
-    setAutoGearFieldVisibility(selectorDefaultField, showSelectorFields);
-    if (!showScreenSize && screenSizeInput) {
-      screenSizeInput.value = '';
-    }
-    if (!showSelectorFields) {
-      if (selectorTypeSelect) selectorTypeSelect.value = 'none';
-      if (selectorDefaultInput) {
-        selectorDefaultInput.value = '';
-        if (Object.prototype.hasOwnProperty.call(selectorDefaultInput.dataset || {}, 'autoGearPreferredDefault')) {
-          delete selectorDefaultInput.dataset.autoGearPreferredDefault;
-        }
-      }
-    }
-  }
-  function extractAutoGearContextNotes(name) {
-    var contexts = [];
-    if (!name || typeof name !== 'string') {
-      return {
-        baseName: '',
-        contexts: contexts
-      };
-    }
-    var baseName = name.trim();
-    var contextPattern = /^(.*\([^()]*\)) \(([^()]+)\)$/;
-    var match = baseName.match(contextPattern);
-    while (match) {
-      var candidate = match[2].trim();
-      if (/handheld\b/i.test(candidate) || /15-21"?$/.test(candidate)) {
-        contexts.unshift(candidate);
-        baseName = match[1].trim();
-      } else {
-        break;
-      }
-      match = baseName.match(contextPattern);
-    }
-    return {
-      baseName: baseName,
-      contexts: contexts
-    };
-  }
-  function normalizeAutoGearItem(entry) {
-    var _ownGearRecord;
-    if (!entry || _typeof(entry) !== 'object') return null;
-    var requestedName = normalizeAutoGearText(entry.name);
-    var ownGearSourceId = typeof entry.ownGearId === 'string' ? entry.ownGearId.trim() : '';
-    var ownGearFallbackLabel = normalizeAutoGearText(entry.ownGearLabel);
-    var ownGearNameInput = normalizeAutoGearText(entry.ownGearName);
-    var ownGearRecord = null;
-    if (ownGearSourceId) {
-      ownGearRecord = findAutoGearOwnGearById(ownGearSourceId) || null;
-    }
-    var rawName = ((_ownGearRecord = ownGearRecord) === null || _ownGearRecord === void 0 ? void 0 : _ownGearRecord.name) || ownGearNameInput || requestedName;
-    if (!rawName) return null;
-    var _extractAutoGearConte = extractAutoGearContextNotes(requestedName || rawName),
-      baseName = _extractAutoGearConte.baseName,
-      contexts = _extractAutoGearConte.contexts;
-    var name = baseName || rawName;
-    var storedContexts = Array.isArray(entry.contextNotes) ? entry.contextNotes.filter(function (value) {
-      return typeof value === 'string' && value.trim();
-    }) : [];
-    storedContexts.forEach(function (note) {
-      var trimmed = note.trim();
-      if (!trimmed) return;
-      if (!contexts.includes(trimmed)) contexts.push(trimmed);
-    });
-    var category = normalizeAutoGearText(entry.category);
-    var quantity = normalizeAutoGearQuantity(entry.quantity);
-    var id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
-    var screenSize = normalizeAutoGearText(entry.screenSize);
-    var selectorType = normalizeAutoGearSelectorType(entry.selectorType);
-    var selectorContext = typeof entry.selectorContext === 'string' ? entry.selectorContext.trim() : '';
-    var selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault, selectorContext);
-    var selectorEnabled = !!entry.selectorEnabled;
-    if (selectorType === 'none') {
-      selectorEnabled = false;
-    } else if (isAutoGearMonitoringCategory(category)) {
-      selectorEnabled = true;
-    }
-    var notes = normalizeAutoGearText(entry.notes);
-    var ownGearId = '';
-    var ownGearLabel = '';
-    if (ownGearRecord) {
-      ownGearId = ownGearRecord.id;
-      ownGearLabel = ownGearRecord.name || '';
-      name = ownGearRecord.name || name;
-      if (!notes && typeof ownGearRecord.notes === 'string') {
-        var trimmedNotes = normalizeAutoGearText(ownGearRecord.notes);
-        if (trimmedNotes) notes = trimmedNotes;
-      }
-    } else if (ownGearSourceId) {
-      ownGearId = ownGearSourceId;
-      ownGearLabel = ownGearFallbackLabel || ownGearNameInput || name;
-    }
-    return {
-      id: id,
-      name: name,
-      category: category,
-      quantity: quantity,
-      screenSize: screenSize,
-      selectorType: selectorType,
-      selectorDefault: selectorDefault,
-      selectorEnabled: selectorEnabled,
-      selectorContext: selectorContext,
-      notes: notes,
-      contextNotes: contexts,
-      ownGearId: ownGearId,
-      ownGearLabel: ownGearLabel
-    };
-  }
-  function normalizeAutoGearTriggerList(values) {
-    if (!Array.isArray(values)) return [];
-    return Array.from(new Set(values.map(function (value) {
-      return typeof value === 'string' ? value.trim() : '';
-    }).filter(Boolean)));
-  }
-  var AUTO_GEAR_SCENARIO_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
-  function normalizeAutoGearScenarioLogic(value) {
-    if (typeof value !== 'string') return 'all';
-    var normalized = value.trim().toLowerCase();
-    if (!normalized) return 'all';
-    if (normalized === 'or') return 'any';
-    if (normalized === 'and') return 'all';
-    if (normalized === 'any') return 'any';
-    if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
-      return 'multiplier';
-    }
-    return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
-  }
-  var AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'or', 'none', 'multiplier']);
-  var AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
-    mattebox: 'matteboxLogic',
-    cameraHandle: 'cameraHandleLogic',
-    viewfinderExtension: 'viewfinderExtensionLogic',
-    deliveryResolution: 'deliveryResolutionLogic',
-    videoDistribution: 'videoDistributionLogic',
-    camera: 'cameraLogic',
-    ownGear: 'ownGearLogic',
-    monitor: 'monitorLogic',
-    tripodHeadBrand: 'tripodHeadBrandLogic',
-    tripodBowl: 'tripodBowlLogic',
-    tripodTypes: 'tripodTypesLogic',
-    tripodSpreader: 'tripodSpreaderLogic',
-    crewPresent: 'crewPresentLogic',
-    crewAbsent: 'crewAbsentLogic',
-    wireless: 'wirelessLogic',
-    motors: 'motorsLogic',
-    controllers: 'controllersLogic',
-    distance: 'distanceLogic'
-  };
-  function normalizeAutoGearConditionLogic(value) {
-    if (typeof value !== 'string') return 'all';
-    var normalized = value.trim().toLowerCase();
-    if (!normalized) return 'all';
-    if (normalized === 'or') return 'or';
-    if (normalized === 'and') return 'all';
-    if (normalized === 'any') return 'any';
-    if (normalized === 'none' || normalized === 'no' || normalized === 'exclude' || normalized === 'absent') {
-      return 'none';
-    }
-    if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
-      return 'multiplier';
-    }
-    if (!AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized)) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unknown auto gear condition logic joiner. Falling back to "all".', value);
-      }
-      return 'all';
-    }
-    return normalized;
-  }
-  function readAutoGearConditionLogic(rule, key) {
-    if (!rule || _typeof(rule) !== 'object') return 'all';
-    var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
-    var raw;
-    if (property && Object.prototype.hasOwnProperty.call(rule, property)) {
-      raw = rule[property];
-    }
-    if (raw == null) {
-      var alias = "".concat(key, "Mode");
-      if (Object.prototype.hasOwnProperty.call(rule, alias)) {
-        raw = rule[alias];
-      }
-    }
-    if (raw == null && rule.conditionLogic && _typeof(rule.conditionLogic) === 'object') {
-      raw = rule.conditionLogic[key];
-    }
-    return normalizeAutoGearConditionLogic(raw);
-  }
-  function normalizeAutoGearScenarioMultiplier(value) {
-    var num = parseInt(value, 10);
-    return Number.isFinite(num) && num > 1 ? num : 1;
-  }
-  function normalizeAutoGearScenarioPrimary(value) {
-    return typeof value === 'string' ? value.trim() : '';
-  }
-  function normalizeVideoDistributionTriggerList(values) {
-    if (!Array.isArray(values)) return [];
-    var base = normalizeAutoGearTriggerList(values);
-    var seen = new Set();
-    var result = [];
-    base.forEach(function (value) {
-      var lower = value.toLowerCase();
-      var normalized = lower === '__none__' || lower === 'none' ? '__none__' : value;
-      if (!normalized || seen.has(normalized)) return;
-      seen.add(normalized);
-      result.push(normalized);
-    });
-    return result;
-  }
-  function normalizeAutoGearTriggerValue(value) {
-    return typeof value === 'string' ? value.trim().toLowerCase() : '';
-  }
-  function autoGearRuleMatteboxKey(rule) {
-    if (!rule || _typeof(rule) !== 'object') return '';
-    var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
-    if (!matteboxList.length) return '';
-    return matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean).sort(function (a, b) {
-      return a.localeCompare(b);
-    }).join('|');
-  }
-  var AUTO_GEAR_SHOOTING_DAY_MODES = new Set(['minimum', 'maximum', 'every']);
-  function normalizeAutoGearShootingDayMode(value) {
-    if (typeof value !== 'string') return 'minimum';
-    var normalized = value.trim().toLowerCase();
-    if (!normalized) return 'minimum';
-    if (AUTO_GEAR_SHOOTING_DAY_MODES.has(normalized)) return normalized;
-    if (normalized === 'min' || normalized === 'at least') return 'minimum';
-    if (normalized === 'max' || normalized === 'at most') return 'maximum';
-    if (normalized === 'each' || normalized === 'every') return 'every';
-    return 'minimum';
-  }
-  function normalizeAutoGearShootingDayValue(value) {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      var rounded = Math.round(value);
-      return rounded > 0 ? rounded : null;
-    }
-    if (typeof value === 'string') {
-      var trimmed = value.trim();
-      if (!trimmed) return null;
-      var parsed = Number.parseInt(trimmed, 10);
-      if (!Number.isFinite(parsed)) return null;
-      return parsed > 0 ? parsed : null;
-    }
-    return null;
-  }
-  function normalizeAutoGearShootingDaysList(values) {
-    if (!Array.isArray(values)) return [];
-    var unique = new Set();
-    values.forEach(function (value) {
-      var normalized = normalizeAutoGearShootingDayValue(value);
-      if (Number.isFinite(normalized) && normalized > 0) {
-        unique.add(normalized);
-      }
-    });
-    return Array.from(unique).sort(function (a, b) {
-      return a - b;
-    });
-  }
-  function normalizeAutoGearShootingDaysCondition(setting) {
-    if (!setting) return null;
-    if (Array.isArray(setting)) {
-      var values = normalizeAutoGearShootingDaysList(setting);
-      if (!values.length) return null;
-      var maxValue = values[values.length - 1];
-      return Number.isFinite(maxValue) && maxValue > 0 ? {
-        mode: 'minimum',
-        value: maxValue
-      } : null;
-    }
-    if (_typeof(setting) === 'object') {
-      var _ref7, _ref8, _ref9, _setting$mode, _ref0, _ref1, _ref10, _ref11, _setting$value;
-      var modeSource = (_ref7 = (_ref8 = (_ref9 = (_setting$mode = setting.mode) !== null && _setting$mode !== void 0 ? _setting$mode : setting.type) !== null && _ref9 !== void 0 ? _ref9 : setting.comparison) !== null && _ref8 !== void 0 ? _ref8 : setting.condition) !== null && _ref7 !== void 0 ? _ref7 : setting.kind;
-      var mode = normalizeAutoGearShootingDayMode(modeSource);
-      var valueSource = (_ref0 = (_ref1 = (_ref10 = (_ref11 = (_setting$value = setting.value) !== null && _setting$value !== void 0 ? _setting$value : setting.count) !== null && _ref11 !== void 0 ? _ref11 : setting.days) !== null && _ref10 !== void 0 ? _ref10 : setting.minimum) !== null && _ref1 !== void 0 ? _ref1 : setting.maximum) !== null && _ref0 !== void 0 ? _ref0 : setting.frequency;
-      var value = normalizeAutoGearShootingDayValue(valueSource);
-      if (Number.isFinite(value) && value > 0) {
-        return {
-          mode: mode,
-          value: value
-        };
-      }
-      return null;
-    }
-    var normalizedValue = normalizeAutoGearShootingDayValue(setting);
-    if (Number.isFinite(normalizedValue) && normalizedValue > 0) {
-      return {
-        mode: 'minimum',
-        value: normalizedValue
-      };
-    }
-    return null;
-  }
-  function normalizeAutoGearRule(rule) {
-    if (!rule || _typeof(rule) !== 'object') return null;
-    var id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
-    var label = typeof rule.label === 'string' ? rule.label.trim() : '';
-    var always = false;
-    if (Array.isArray(rule.always)) {
-      always = rule.always.some(function (value) {
-        if (typeof value === 'string') {
-          var trimmed = value.trim().toLowerCase();
-          if (!trimmed) return false;
-          if (trimmed === 'false' || trimmed === '0') return false;
-          return true;
-        }
-        return Boolean(value);
-      });
-    } else if (typeof rule.always === 'string') {
-      var trimmed = rule.always.trim().toLowerCase();
-      always = trimmed === 'true' || trimmed && trimmed !== 'false' && trimmed !== '0';
-    } else {
-      always = Boolean(rule.always);
-    }
-    var scenarios = normalizeAutoGearTriggerList(rule.scenarios);
-    var scenarioLogic = normalizeAutoGearScenarioLogic(rule.scenarioLogic);
-    var scenarioMultiplier = 1;
-    var scenarioPrimary = '';
-    if (scenarioLogic === 'multiplier') {
-      scenarioMultiplier = normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier);
-      var requestedPrimary = normalizeAutoGearScenarioPrimary(rule.scenarioPrimary);
-      var normalizedPrimary = normalizeAutoGearTriggerValue(requestedPrimary);
-      if (normalizedPrimary) {
-        var matched = scenarios.find(function (value) {
-          return normalizeAutoGearTriggerValue(value) === normalizedPrimary;
-        });
-        if (matched) {
-          scenarioPrimary = matched;
-        } else if (requestedPrimary) {
-          scenarioPrimary = requestedPrimary;
-          scenarios.push(requestedPrimary);
-        }
-      }
-      if (!scenarioPrimary && scenarios.length) {
-        scenarioPrimary = scenarios[0];
-      }
-    }
-    scenarios = scenarios.sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    if (scenarioLogic === 'multiplier' && scenarioPrimary) {
-      var _normalizedPrimary = normalizeAutoGearTriggerValue(scenarioPrimary);
-      var hasPrimary = scenarios.some(function (value) {
-        return normalizeAutoGearTriggerValue(value) === _normalizedPrimary;
-      });
-      if (!hasPrimary) {
-        scenarios.push(scenarioPrimary);
-        scenarios.sort(function (a, b) {
-          return a.localeCompare(b);
-        });
-      }
-    }
-    var mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var cameraHandle = normalizeAutoGearTriggerList(rule.cameraHandle).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var viewfinderExtension = normalizeAutoGearTriggerList(rule.viewfinderExtension).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var deliveryResolution = normalizeAutoGearTriggerList(rule.deliveryResolution).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var videoDistribution = normalizeVideoDistributionTriggerList(rule.videoDistribution).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var camera = normalizeAutoGearTriggerList(rule.camera).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var ownGear = normalizeAutoGearTriggerList(rule.ownGear).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var cameraWeight = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
-    var monitor = normalizeAutoGearTriggerList(rule.monitor).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var tripodHeadBrand = normalizeAutoGearTriggerList(rule.tripodHeadBrand).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var tripodBowl = normalizeAutoGearTriggerList(rule.tripodBowl).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var tripodTypes = normalizeAutoGearTriggerList(rule.tripodTypes).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var tripodSpreader = normalizeAutoGearTriggerList(rule.tripodSpreader).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var crewPresent = normalizeAutoGearTriggerList(rule.crewPresent).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var crewAbsent = normalizeAutoGearTriggerList(rule.crewAbsent).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var wireless = normalizeAutoGearTriggerList(rule.wireless).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var motors = normalizeAutoGearTriggerList(rule.motors).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var controllers = normalizeAutoGearTriggerList(rule.controllers).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var distance = normalizeAutoGearTriggerList(rule.distance).sort(function (a, b) {
-      return a.localeCompare(b);
-    });
-    var shootingDays = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
-    var matteboxLogic = readAutoGearConditionLogic(rule, 'mattebox');
-    var cameraHandleLogic = readAutoGearConditionLogic(rule, 'cameraHandle');
-    var viewfinderExtensionLogic = readAutoGearConditionLogic(rule, 'viewfinderExtension');
-    var deliveryResolutionLogic = readAutoGearConditionLogic(rule, 'deliveryResolution');
-    var videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
-    var cameraLogic = readAutoGearConditionLogic(rule, 'camera');
-    var ownGearLogic = readAutoGearConditionLogic(rule, 'ownGear');
-    var monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
-    var tripodHeadBrandLogic = readAutoGearConditionLogic(rule, 'tripodHeadBrand');
-    var tripodBowlLogic = readAutoGearConditionLogic(rule, 'tripodBowl');
-    var tripodTypesLogic = readAutoGearConditionLogic(rule, 'tripodTypes');
-    var tripodSpreaderLogic = readAutoGearConditionLogic(rule, 'tripodSpreader');
-    var crewPresentLogic = readAutoGearConditionLogic(rule, 'crewPresent');
-    var crewAbsentLogic = readAutoGearConditionLogic(rule, 'crewAbsent');
-    var wirelessLogic = readAutoGearConditionLogic(rule, 'wireless');
-    var motorsLogic = readAutoGearConditionLogic(rule, 'motors');
-    var controllersLogic = readAutoGearConditionLogic(rule, 'controllers');
-    var distanceLogic = readAutoGearConditionLogic(rule, 'distance');
-    var conditionLogic = {};
-    if (scenarioLogic && scenarioLogic !== 'all') {
-      conditionLogic.scenarios = scenarioLogic;
-    }
-    if (matteboxLogic && matteboxLogic !== 'all') conditionLogic.mattebox = matteboxLogic;
-    if (cameraHandleLogic && cameraHandleLogic !== 'all') conditionLogic.cameraHandle = cameraHandleLogic;
-    if (viewfinderExtensionLogic && viewfinderExtensionLogic !== 'all') {
-      conditionLogic.viewfinderExtension = viewfinderExtensionLogic;
-    }
-    if (deliveryResolutionLogic && deliveryResolutionLogic !== 'all') {
-      conditionLogic.deliveryResolution = deliveryResolutionLogic;
-    }
-    if (videoDistributionLogic && videoDistributionLogic !== 'all') {
-      conditionLogic.videoDistribution = videoDistributionLogic;
-    }
-    if (cameraLogic && cameraLogic !== 'all') conditionLogic.camera = cameraLogic;
-    if (ownGearLogic && ownGearLogic !== 'all') conditionLogic.ownGear = ownGearLogic;
-    if (monitorLogic && monitorLogic !== 'all') conditionLogic.monitor = monitorLogic;
-    if (tripodHeadBrandLogic && tripodHeadBrandLogic !== 'all') {
-      conditionLogic.tripodHeadBrand = tripodHeadBrandLogic;
-    }
-    if (tripodBowlLogic && tripodBowlLogic !== 'all') {
-      conditionLogic.tripodBowl = tripodBowlLogic;
-    }
-    if (tripodTypesLogic && tripodTypesLogic !== 'all') {
-      conditionLogic.tripodTypes = tripodTypesLogic;
-    }
-    if (tripodSpreaderLogic && tripodSpreaderLogic !== 'all') {
-      conditionLogic.tripodSpreader = tripodSpreaderLogic;
-    }
-    if (crewPresentLogic && crewPresentLogic !== 'all') conditionLogic.crewPresent = crewPresentLogic;
-    if (crewAbsentLogic && crewAbsentLogic !== 'all') conditionLogic.crewAbsent = crewAbsentLogic;
-    if (wirelessLogic && wirelessLogic !== 'all') conditionLogic.wireless = wirelessLogic;
-    if (motorsLogic && motorsLogic !== 'all') conditionLogic.motors = motorsLogic;
-    if (controllersLogic && controllersLogic !== 'all') conditionLogic.controllers = controllersLogic;
-    if (distanceLogic && distanceLogic !== 'all') conditionLogic.distance = distanceLogic;
-    if (!always && !scenarios.length && !shootingDays && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !deliveryResolution.length && !videoDistribution.length && !camera.length && !ownGear.length && !cameraWeight && !monitor.length && !tripodHeadBrand.length && !tripodBowl.length && !tripodTypes.length && !tripodSpreader.length && !crewPresent.length && !crewAbsent.length && !wireless.length && !motors.length && !controllers.length && !distance.length) return null;
-    var add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
-    var remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
-    if (!add.length && !remove.length) return null;
-    return {
-      id: id,
-      label: label,
-      always: always,
-      scenarioLogic: scenarioLogic,
-      scenarioPrimary: scenarioPrimary,
-      scenarioMultiplier: scenarioMultiplier,
-      scenarios: scenarios,
-      mattebox: mattebox,
-      cameraHandle: cameraHandle,
-      viewfinderExtension: viewfinderExtension,
-      deliveryResolution: deliveryResolution,
-      videoDistribution: videoDistribution,
-      camera: camera,
-      ownGear: ownGear,
-      cameraWeight: cameraWeight,
-      monitor: monitor,
-      tripodHeadBrand: tripodHeadBrand,
-      tripodBowl: tripodBowl,
-      tripodTypes: tripodTypes,
-      tripodSpreader: tripodSpreader,
-      crewPresent: crewPresent,
-      crewAbsent: crewAbsent,
-      wireless: wireless,
-      motors: motors,
-      controllers: controllers,
-      distance: distance,
-      shootingDays: shootingDays,
-      matteboxLogic: matteboxLogic,
-      cameraHandleLogic: cameraHandleLogic,
-      viewfinderExtensionLogic: viewfinderExtensionLogic,
-      deliveryResolutionLogic: deliveryResolutionLogic,
-      videoDistributionLogic: videoDistributionLogic,
-      cameraLogic: cameraLogic,
-      ownGearLogic: ownGearLogic,
-      monitorLogic: monitorLogic,
-      tripodHeadBrandLogic: tripodHeadBrandLogic,
-      tripodBowlLogic: tripodBowlLogic,
-      tripodTypesLogic: tripodTypesLogic,
-      tripodSpreaderLogic: tripodSpreaderLogic,
-      crewPresentLogic: crewPresentLogic,
-      crewAbsentLogic: crewAbsentLogic,
-      wirelessLogic: wirelessLogic,
-      motorsLogic: motorsLogic,
-      controllersLogic: controllersLogic,
-      distanceLogic: distanceLogic,
-      conditionLogic: conditionLogic,
-      add: add,
-      remove: remove
-    };
-  }
-  function autoGearItemSnapshot(item) {
-    var normalized = normalizeAutoGearItem(item);
-    if (!normalized) {
-      return {
-        name: '',
-        category: '',
-        quantity: 0,
-        screenSize: '',
-        selectorType: 'none',
-        selectorDefault: '',
-        selectorEnabled: false,
-        notes: '',
-        ownGearId: '',
-        ownGearLabel: ''
-      };
-    }
-    var name = normalized.name,
-      category = normalized.category,
-      quantity = normalized.quantity,
-      screenSize = normalized.screenSize,
-      selectorType = normalized.selectorType,
-      selectorDefault = normalized.selectorDefault,
-      selectorEnabled = normalized.selectorEnabled,
-      notes = normalized.notes,
-      ownGearId = normalized.ownGearId,
-      ownGearLabel = normalized.ownGearLabel;
-    return {
-      name: name,
-      category: category,
-      quantity: normalizeAutoGearQuantity(quantity),
-      screenSize: screenSize,
-      selectorType: selectorType,
-      selectorDefault: selectorDefault,
-      selectorEnabled: selectorEnabled,
-      notes: notes,
-      ownGearId: ownGearId,
-      ownGearLabel: ownGearLabel
-    };
-  }
-  function autoGearItemSortKey(item) {
-    var snapshot = autoGearItemSnapshot(item);
-    var name = snapshot.name || '';
-    var category = snapshot.category || '';
-    var quantity = normalizeAutoGearQuantity(snapshot.quantity);
-    var screenSize = snapshot.screenSize || '';
-    var selectorType = snapshot.selectorType || 'none';
-    var selectorDefault = snapshot.selectorDefault || '';
-    var selectorEnabled = snapshot.selectorEnabled ? '1' : '0';
-    var notes = snapshot.notes || '';
-    var ownGearId = snapshot.ownGearId || '';
-    var ownGearLabel = snapshot.ownGearLabel || '';
-    return "".concat(name, "|").concat(category, "|").concat(quantity, "|").concat(screenSize, "|").concat(selectorType, "|").concat(selectorEnabled, "|").concat(selectorDefault, "|").concat(notes, "|").concat(ownGearId, "|").concat(ownGearLabel);
-  }
-  function snapshotAutoGearRuleForFingerprint(rule) {
-    var normalized = normalizeAutoGearRule(rule);
-    if (!normalized) return null;
-    var mapItems = function mapItems(items) {
-      return items.map(autoGearItemSnapshot).sort(function (a, b) {
-        return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b));
-      });
-    };
-    return {
-      label: normalized.label || '',
-      always: normalized.always ? 1 : 0,
-      scenarios: normalized.scenarios.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      mattebox: normalized.mattebox.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      cameraHandle: normalized.cameraHandle.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      viewfinderExtension: normalized.viewfinderExtension.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      deliveryResolution: normalized.deliveryResolution.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      videoDistribution: normalized.videoDistribution.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      camera: normalized.camera.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      cameraWeight: normalized.cameraWeight ? {
-        operator: normalized.cameraWeight.operator,
-        value: normalized.cameraWeight.value
-      } : null,
-      monitor: normalized.monitor.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      tripodHeadBrand: normalized.tripodHeadBrand.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      tripodBowl: normalized.tripodBowl.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      tripodTypes: normalized.tripodTypes.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      tripodSpreader: normalized.tripodSpreader.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      crewPresent: normalized.crewPresent.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      crewAbsent: normalized.crewAbsent.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      wireless: normalized.wireless.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      motors: normalized.motors.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      controllers: normalized.controllers.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      distance: normalized.distance.slice().sort(function (a, b) {
-        return a.localeCompare(b);
-      }),
-      shootingDays: normalizeAutoGearShootingDaysCondition(normalized.shootingDays),
-      matteboxLogic: normalizeAutoGearConditionLogic(normalized.matteboxLogic),
-      cameraHandleLogic: normalizeAutoGearConditionLogic(normalized.cameraHandleLogic),
-      viewfinderExtensionLogic: normalizeAutoGearConditionLogic(normalized.viewfinderExtensionLogic),
-      deliveryResolutionLogic: normalizeAutoGearConditionLogic(normalized.deliveryResolutionLogic),
-      videoDistributionLogic: normalizeAutoGearConditionLogic(normalized.videoDistributionLogic),
-      cameraLogic: normalizeAutoGearConditionLogic(normalized.cameraLogic),
-      monitorLogic: normalizeAutoGearConditionLogic(normalized.monitorLogic),
-      tripodHeadBrandLogic: normalizeAutoGearConditionLogic(normalized.tripodHeadBrandLogic),
-      tripodBowlLogic: normalizeAutoGearConditionLogic(normalized.tripodBowlLogic),
-      tripodTypesLogic: normalizeAutoGearConditionLogic(normalized.tripodTypesLogic),
-      tripodSpreaderLogic: normalizeAutoGearConditionLogic(normalized.tripodSpreaderLogic),
-      crewPresentLogic: normalizeAutoGearConditionLogic(normalized.crewPresentLogic),
-      crewAbsentLogic: normalizeAutoGearConditionLogic(normalized.crewAbsentLogic),
-      wirelessLogic: normalizeAutoGearConditionLogic(normalized.wirelessLogic),
-      motorsLogic: normalizeAutoGearConditionLogic(normalized.motorsLogic),
-      controllersLogic: normalizeAutoGearConditionLogic(normalized.controllersLogic),
-      distanceLogic: normalizeAutoGearConditionLogic(normalized.distanceLogic),
-      conditionLogic: normalized.conditionLogic ? Object.keys(normalized.conditionLogic).reduce(function (acc, key) {
-        acc[key] = normalizeAutoGearConditionLogic(normalized.conditionLogic[key]);
-        return acc;
-      }, {}) : {},
-      add: mapItems(normalized.add),
-      remove: mapItems(normalized.remove)
-    };
-  }
-  function autoGearRuleSortKey(rule) {
-    var alwaysKey = rule && rule.always ? '1' : '0';
-    var scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
-    var matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
-    var cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
-    var viewfinderKey = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.join('|') : '';
-    var deliveryResolutionKey = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.join('|') : '';
-    var videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
-    var cameraKey = Array.isArray(rule.camera) ? rule.camera.join('|') : '';
-    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule === null || rule === void 0 ? void 0 : rule.cameraWeight);
-    var cameraWeightKey = cameraWeightCondition ? "".concat(cameraWeightCondition.operator, ":").concat(cameraWeightCondition.value) : '';
-    var monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
-    var tripodHeadBrandKey = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.join('|') : '';
-    var tripodBowlKey = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.join('|') : '';
-    var tripodTypesKey = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.join('|') : '';
-    var tripodSpreaderKey = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.join('|') : '';
-    var crewPresentKey = Array.isArray(rule.crewPresent) ? rule.crewPresent.join('|') : '';
-    var crewAbsentKey = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.join('|') : '';
-    var wirelessKey = Array.isArray(rule.wireless) ? rule.wireless.join('|') : '';
-    var motorsKey = Array.isArray(rule.motors) ? rule.motors.join('|') : '';
-    var controllersKey = Array.isArray(rule.controllers) ? rule.controllers.join('|') : '';
-    var distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
-    var shootingDaysCondition = normalizeAutoGearShootingDaysCondition(rule === null || rule === void 0 ? void 0 : rule.shootingDays);
-    var shootingDaysKey = shootingDaysCondition ? "".concat(shootingDaysCondition.mode, ":").concat(shootingDaysCondition.value) : '';
-    var matteboxLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.matteboxLogic);
-    var cameraHandleLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.cameraHandleLogic);
-    var viewfinderLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.viewfinderExtensionLogic);
-    var deliveryResolutionLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.deliveryResolutionLogic);
-    var videoDistributionLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.videoDistributionLogic);
-    var cameraLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.cameraLogic);
-    var monitorLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.monitorLogic);
-    var tripodHeadBrandLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.tripodHeadBrandLogic);
-    var tripodBowlLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.tripodBowlLogic);
-    var tripodTypesLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.tripodTypesLogic);
-    var tripodSpreaderLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.tripodSpreaderLogic);
-    var crewPresentLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.crewPresentLogic);
-    var crewAbsentLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.crewAbsentLogic);
-    var wirelessLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.wirelessLogic);
-    var motorsLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.motorsLogic);
-    var controllersLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.controllersLogic);
-    var distanceLogicKey = normalizeAutoGearConditionLogic(rule === null || rule === void 0 ? void 0 : rule.distanceLogic);
-    var addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
-    var removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-    return "".concat(alwaysKey, "|").concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(deliveryResolutionKey, "|").concat(videoDistributionKey, "|").concat(cameraKey, "|").concat(cameraWeightKey, "|").concat(monitorKey, "|").concat(tripodHeadBrandKey, "|").concat(tripodBowlKey, "|").concat(tripodTypesKey, "|").concat(tripodSpreaderKey, "|").concat(crewPresentKey, "|").concat(crewAbsentKey, "|").concat(wirelessKey, "|").concat(motorsKey, "|").concat(controllersKey, "|").concat(distanceKey, "|").concat(shootingDaysKey, "|").concat(matteboxLogicKey, "|").concat(cameraHandleLogicKey, "|").concat(viewfinderLogicKey, "|").concat(deliveryResolutionLogicKey, "|").concat(videoDistributionLogicKey, "|").concat(cameraLogicKey, "|").concat(monitorLogicKey, "|").concat(tripodHeadBrandLogicKey, "|").concat(tripodBowlLogicKey, "|").concat(tripodTypesLogicKey, "|").concat(tripodSpreaderLogicKey, "|").concat(crewPresentLogicKey, "|").concat(crewAbsentLogicKey, "|").concat(wirelessLogicKey, "|").concat(motorsLogicKey, "|").concat(controllersLogicKey, "|").concat(distanceLogicKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
-  }
-  function createAutoGearRulesFingerprint(rules) {
-    var snapshot = (Array.isArray(rules) ? rules : []).map(snapshotAutoGearRuleForFingerprint).filter(Boolean).sort(function (a, b) {
-      return autoGearRuleSortKey(a).localeCompare(autoGearRuleSortKey(b));
-    });
-    return stableStringify(snapshot);
-  }
-  function normalizeAutoGearPreset(entry) {
-    if (!entry || _typeof(entry) !== 'object') return null;
-    var label = typeof entry.label === 'string' ? entry.label.trim() : '';
-    if (!label) return null;
-    var rawRules = Array.isArray(entry.rules) ? entry.rules : [];
-    var rules = rawRules.map(normalizeAutoGearRule).filter(Boolean);
-    var id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('preset');
-    var fingerprint = createAutoGearRulesFingerprint(rules);
-    return {
-      id: id,
-      label: label,
-      rules: rules,
-      fingerprint: fingerprint
-    };
-  }
-  function normalizeAutoGearBackupEntry(entry) {
-    if (!entry || _typeof(entry) !== 'object') return null;
-    var rawCreatedAt = typeof entry.createdAt === 'string' ? entry.createdAt : null;
-    var timestamp = rawCreatedAt ? Date.parse(rawCreatedAt) : NaN;
-    if (!Number.isFinite(timestamp)) return null;
-    var createdAt = new Date(timestamp).toISOString();
-    var rawRules = Array.isArray(entry.rules) ? entry.rules : [];
-    var normalizedRules = rawRules.map(normalizeAutoGearRule).filter(Boolean);
-    var rules = rawRules.length === 0 ? [] : normalizedRules;
-    var id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('backup');
-    var monitorDefaults = normalizeAutoGearMonitorDefaults(entry.monitorDefaults);
-    var note = typeof entry.note === 'string' ? entry.note : '';
-    return {
-      id: id,
-      createdAt: createdAt,
-      rules: rules,
-      monitorDefaults: monitorDefaults,
-      note: note
-    };
-  }
-  function readAutoGearBackupsFromStorage() {
-    var retentionLimit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    var stored = [];
-    if (typeof loadAutoGearBackups === 'function') {
-      try {
-        stored = loadAutoGearBackups();
-      } catch (error) {
-        console.warn('Failed to load automatic gear backups', error);
-        stored = [];
-      }
-    } else if (typeof localStorage !== 'undefined') {
-      try {
-        var raw = localStorage.getItem(AUTO_GEAR_BACKUPS_KEY);
-        stored = raw ? JSON.parse(raw) : [];
-      } catch (error) {
-        console.warn('Failed to read automatic gear backups from storage', error);
-        stored = [];
-      }
-    }
-    if (!Array.isArray(stored)) return [];
-    var limit = clampAutoGearBackupRetentionLimit(retentionLimit);
-    return stored.map(normalizeAutoGearBackupEntry).filter(Boolean).sort(function (a, b) {
-      if (a.createdAt === b.createdAt) return 0;
-      return a.createdAt > b.createdAt ? -1 : 1;
-    }).slice(0, limit);
-  }
-  function sortAutoGearPresets(list) {
-    return list.sort(function (a, b) {
-      return a.label.localeCompare(b.label, undefined, {
-        sensitivity: 'base',
-        numeric: true
-      });
-    });
-  }
-  function readAutoGearPresetsFromStorage() {
-    var stored = [];
-    if (typeof loadAutoGearPresets === 'function') {
-      try {
-        stored = loadAutoGearPresets();
-      } catch (error) {
-        console.warn('Failed to load automatic gear presets', error);
-        stored = [];
-      }
-    } else if (typeof localStorage !== 'undefined') {
-      try {
-        var raw = localStorage.getItem(AUTO_GEAR_PRESETS_KEY);
-        stored = raw ? JSON.parse(raw) : [];
-      } catch (error) {
-        console.warn('Failed to read automatic gear presets from storage', error);
-        stored = [];
-      }
-    }
-    if (!Array.isArray(stored)) return [];
-    return sortAutoGearPresets(stored.map(normalizeAutoGearPreset).filter(Boolean));
-  }
-  function persistAutoGearPresets(presets) {
-    var payload = Array.isArray(presets) ? presets.map(function (preset) {
-      return {
-        id: preset.id,
-        label: preset.label,
-        rules: Array.isArray(preset.rules) ? preset.rules : []
-      };
-    }) : [];
-    if (typeof saveAutoGearPresets === 'function') {
-      try {
-        saveAutoGearPresets(payload);
-        return;
-      } catch (error) {
-        console.warn('Failed to save automatic gear presets', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') return;
-    try {
-      localStorage.setItem(AUTO_GEAR_PRESETS_KEY, JSON.stringify(payload));
-    } catch (error) {
-      console.warn('Failed to persist automatic gear presets', error);
-    }
-  }
-  var AUTO_GEAR_MONITOR_DEFAULT_TYPES = {
-    focus: 'monitor',
-    handheld7: 'monitor',
-    combo15: 'directorMonitor',
-    director15: 'directorMonitor'
-  };
-  var AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = {
-    focus: 'autoGearDefaultFocusMonitorLabel',
-    handheld7: 'autoGearDefaultHandheldMonitorLabel',
-    combo15: 'autoGearDefaultComboMonitorLabel',
-    director15: 'autoGearDefaultDirectorMonitorLabel'
-  };
-  function normalizeAutoGearMonitorDefaults(value) {
-    var result = {
-      focus: '',
-      handheld7: '',
-      combo15: '',
-      director15: ''
-    };
-    if (!value || _typeof(value) !== 'object') {
-      return result;
-    }
-    Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(function (key) {
-      var type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[key];
-      var normalized = normalizeAutoGearSelectorDefault(type, value[key]);
-      result[key] = normalized;
-    });
-    return result;
-  }
-  function readAutoGearMonitorDefaultsFromStorage() {
-    var stored = {};
-    if (typeof loadAutoGearMonitorDefaults === 'function') {
-      try {
-        stored = loadAutoGearMonitorDefaults();
-      } catch (error) {
-        console.warn('Failed to load automatic gear monitor defaults', error);
-        stored = {};
-      }
-    } else if (typeof localStorage !== 'undefined') {
-      try {
-        var raw = localStorage.getItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY);
-        stored = raw ? JSON.parse(raw) : {};
-      } catch (error) {
-        console.warn('Failed to read automatic gear monitor defaults from storage', error);
-        stored = {};
-      }
-    }
-    return normalizeAutoGearMonitorDefaults(stored);
-  }
-  function persistAutoGearMonitorDefaults(defaults) {
-    var payload = normalizeAutoGearMonitorDefaults(defaults);
-    if (typeof saveAutoGearMonitorDefaults === 'function') {
-      try {
-        saveAutoGearMonitorDefaults(payload);
-        return payload;
-      } catch (error) {
-        console.warn('Failed to save automatic gear monitor defaults', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') {
-      return payload;
-    }
-    try {
-      localStorage.setItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY, JSON.stringify(payload));
-    } catch (error) {
-      console.warn('Failed to persist automatic gear monitor defaults', error);
-    }
-    return payload;
-  }
-  function readActiveAutoGearPresetIdFromStorage() {
-    if (typeof loadAutoGearActivePresetId === 'function') {
-      try {
-        var value = loadAutoGearActivePresetId();
-        return typeof value === 'string' ? value : '';
-      } catch (error) {
-        console.warn('Failed to load automatic gear active preset id', error);
-        return '';
-      }
-    }
-    if (typeof localStorage === 'undefined') return '';
-    try {
-      var _value = localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
-      return typeof _value === 'string' ? _value : '';
-    } catch (error) {
-      console.warn('Failed to read automatic gear active preset id from storage', error);
-      return '';
-    }
-  }
-  function persistActiveAutoGearPresetId(presetId) {
-    if (typeof saveAutoGearActivePresetId === 'function') {
-      try {
-        saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
-        return;
-      } catch (error) {
-        console.warn('Failed to save automatic gear active preset id', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') return;
-    try {
-      if (presetId) {
-        localStorage.setItem(AUTO_GEAR_ACTIVE_PRESET_KEY, presetId);
-      } else {
-        localStorage.removeItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
-      }
-    } catch (error) {
-      console.warn('Failed to persist automatic gear active preset id', error);
-    }
-  }
-  function readAutoGearAutoPresetIdFromStorage() {
-    if (typeof loadAutoGearAutoPresetId === 'function') {
-      try {
-        var value = loadAutoGearAutoPresetId();
-        return typeof value === 'string' ? value : '';
-      } catch (error) {
-        console.warn('Failed to load automatic gear auto preset id', error);
-        return '';
-      }
-    }
-    if (typeof localStorage === 'undefined') return '';
-    try {
-      var _value2 = localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY);
-      return typeof _value2 === 'string' ? _value2 : '';
-    } catch (error) {
-      console.warn('Failed to read automatic gear auto preset id from storage', error);
-      return '';
-    }
-  }
-  function persistAutoGearAutoPresetId(presetId) {
-    if (typeof saveAutoGearAutoPresetId === 'function') {
-      try {
-        saveAutoGearAutoPresetId(typeof presetId === 'string' ? presetId : '');
-        return;
-      } catch (error) {
-        console.warn('Failed to save automatic gear auto preset id', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') return;
-    try {
-      if (presetId) {
-        localStorage.setItem(AUTO_GEAR_AUTO_PRESET_KEY, presetId);
-      } else {
-        localStorage.removeItem(AUTO_GEAR_AUTO_PRESET_KEY);
-      }
-    } catch (error) {
-      console.warn('Failed to persist automatic gear auto preset id', error);
-    }
-  }
-  function readAutoGearBackupVisibilityFromStorage() {
-    if (typeof loadAutoGearBackupVisibility === 'function') {
-      try {
-        return !!loadAutoGearBackupVisibility();
-      } catch (error) {
-        console.warn('Failed to load automatic gear backup visibility', error);
-        return false;
-      }
-    }
-    if (typeof localStorage === 'undefined') return false;
-    try {
-      return localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY) === '1';
-    } catch (error) {
-      console.warn('Failed to read automatic gear backup visibility from storage', error);
-      return false;
-    }
-  }
-  function persistAutoGearBackupVisibility(flag) {
-    var enabled = !!flag;
-    if (typeof saveAutoGearBackupVisibility === 'function') {
-      try {
-        saveAutoGearBackupVisibility(enabled);
-        return;
-      } catch (error) {
-        console.warn('Failed to save automatic gear backup visibility', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') return;
-    try {
-      if (enabled) {
-        localStorage.setItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY, '1');
-      } else {
-        localStorage.removeItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY);
-      }
-    } catch (error) {
-      console.warn('Failed to persist automatic gear backup visibility', error);
-    }
-  }
-  function clampAutoGearBackupRetentionLimit(value) {
-    var numeric = Number(value);
-    if (!Number.isFinite(numeric)) {
-      return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    }
-    var rounded = Math.round(numeric);
-    if (!Number.isFinite(rounded)) {
-      return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    }
-    if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE) {
-      return AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE;
-    }
-    if (rounded > AUTO_GEAR_BACKUP_RETENTION_MAX) {
-      return AUTO_GEAR_BACKUP_RETENTION_MAX;
-    }
-    return rounded;
-  }
-  function readAutoGearBackupRetentionFromStorage() {
-    if (typeof loadAutoGearBackupRetention === 'function') {
-      try {
-        return clampAutoGearBackupRetentionLimit(loadAutoGearBackupRetention());
-      } catch (error) {
-        console.warn('Failed to load automatic gear backup retention', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') {
-      return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    }
-    try {
-      var raw = localStorage.getItem(AUTO_GEAR_BACKUP_RETENTION_KEY);
-      if (raw === null || raw === undefined) {
-        return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-      }
-      try {
-        var parsed = JSON.parse(raw);
-        return clampAutoGearBackupRetentionLimit(parsed);
-      } catch (parseError) {
-        var numeric = Number(raw);
-        if (Number.isFinite(numeric)) {
-          return clampAutoGearBackupRetentionLimit(numeric);
-        }
-        throw parseError;
-      }
-    } catch (error) {
-      console.warn('Failed to read automatic gear backup retention from storage', error);
-      return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    }
-  }
-  function persistAutoGearBackupRetention(retention) {
-    var normalized = clampAutoGearBackupRetentionLimit(retention);
-    if (typeof saveAutoGearBackupRetention === 'function') {
-      try {
-        saveAutoGearBackupRetention(normalized);
-        return true;
-      } catch (error) {
-        console.warn('Failed to save automatic gear backup retention', error);
-      }
-    }
-    if (typeof localStorage === 'undefined') {
-      return false;
-    }
-    try {
-      localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(normalized));
-      return true;
-    } catch (error) {
-      console.warn('Failed to persist automatic gear backup retention', error);
-      return false;
-    }
-  }
-  function persistAutoGearBackups(backups) {
-    var payload = Array.isArray(backups) ? backups.map(function (entry) {
-      return {
-        id: entry.id,
-        createdAt: entry.createdAt,
-        rules: Array.isArray(entry.rules) ? entry.rules : [],
-        monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
-        note: typeof entry.note === 'string' ? entry.note : undefined
-      };
-    }) : [];
-    if (typeof saveAutoGearBackups === 'function') {
-      var storedPayload = saveAutoGearBackups(payload);
-      return Array.isArray(storedPayload) ? storedPayload : payload;
-    }
-    if (typeof localStorage === 'undefined') {
-      throw new Error('Storage unavailable');
-    }
-    localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
-    return payload;
-  }
-  function enforceAutoGearBackupRetentionLimit(limit) {
-    var normalized = clampAutoGearBackupRetentionLimit(limit);
-    var previousLimit = autoGearBackupRetention;
-    if (normalized === previousLimit) {
-      callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
-        defer: true
-      });
-      return {
-        success: true,
-        trimmed: [],
-        previousLimit: previousLimit
-      };
-    }
-    var previousBackups = autoGearBackups.slice();
-    var trimmedEntries = [];
-    var retentionPersisted = persistAutoGearBackupRetention(normalized);
-    if (!retentionPersisted) {
-      autoGearBackupRetentionInput && (autoGearBackupRetentionInput.value = String(autoGearBackupRetention));
-      callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
-        defer: true
-      });
-      return {
-        success: false,
-        error: new Error('retention-persist-failed'),
-        previousLimit: previousLimit
-      };
-    }
-    autoGearBackupRetention = normalized;
-    if (autoGearBackups.length > normalized) {
-      var updatedBackups = autoGearBackups.slice(0, normalized);
-      trimmedEntries.push.apply(trimmedEntries, _toConsumableArray(autoGearBackups.slice(normalized)));
-      try {
-        var persistedBackups = persistAutoGearBackups(updatedBackups) || [];
-        var finalBackups = Array.isArray(persistedBackups) ? persistedBackups : [];
-        if (finalBackups.length < updatedBackups.length) {
-          trimmedEntries.push.apply(trimmedEntries, _toConsumableArray(updatedBackups.slice(finalBackups.length)));
-        }
-        autoGearBackups = finalBackups;
-      } catch (error) {
-        console.warn('Failed to trim automatic gear backups to retention limit', error);
-        autoGearBackupRetention = previousLimit;
-        persistAutoGearBackupRetention(previousLimit);
-        try {
-          persistAutoGearBackups(previousBackups);
-        } catch (restoreError) {
-          console.warn('Failed to restore automatic gear backups after trim error', restoreError);
-        }
-        autoGearBackups = readAutoGearBackupsFromStorage(previousLimit);
-        callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], {
-          defer: true
-        });
-        callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
-          defer: true
-        });
-        return {
-          success: false,
-          error: error,
-          previousLimit: previousLimit
-        };
-      }
-    }
-    callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], {
-      defer: true
-    });
-    callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], {
-      defer: true
-    });
-    return {
-      success: true,
-      trimmed: trimmedEntries,
-      previousLimit: previousLimit
-    };
-  }
-  function readAutoGearRulesFromStorage() {
-    var stored = [];
-    if (typeof loadAutoGearRules !== 'undefined' && typeof loadAutoGearRules === 'function') {
-      try {
-        stored = loadAutoGearRules();
-      } catch (error) {
-        console.warn('Failed to load automatic gear rules', error);
-        stored = [];
-      }
-    } else if (typeof localStorage !== 'undefined') {
-      try {
-        var raw = localStorage.getItem(AUTO_GEAR_RULES_KEY);
-        stored = raw ? JSON.parse(raw) : [];
-      } catch (error) {
-        console.warn('Failed to load automatic gear rules', error);
-        stored = [];
-      }
-    }
-    if (!Array.isArray(stored)) return [];
-    return stored.map(normalizeAutoGearRule).filter(Boolean);
   }
   var autoGearRules = readAutoGearRulesFromStorage();
   var baseAutoGearRulesState = autoGearRules.slice();
@@ -3746,11 +2725,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return _objectSpread({}, autoGearMonitorDefaults);
   }
   function setAutoGearMonitorDefaults(defaults) {
-    var _ref12 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref12$skipRender = _ref12.skipRender,
-      skipRender = _ref12$skipRender === void 0 ? false : _ref12$skipRender,
-      _ref12$skipRefresh = _ref12.skipRefresh,
-      skipRefresh = _ref12$skipRefresh === void 0 ? false : _ref12$skipRefresh;
+    var _ref9 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref9$skipRender = _ref9.skipRender,
+      skipRender = _ref9$skipRender === void 0 ? false : _ref9$skipRender,
+      _ref9$skipRefresh = _ref9.skipRefresh,
+      skipRefresh = _ref9$skipRefresh === void 0 ? false : _ref9$skipRefresh;
     var normalized = normalizeAutoGearMonitorDefaults(defaults);
     var changed = false;
     Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(function (key) {
@@ -3828,6 +2807,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function getAutoGearRules() {
     return autoGearRules.slice();
+  }
+  function getEnabledAutoGearRules() {
+    return autoGearRules.filter(function (rule) {
+      return !rule || rule.enabled !== false;
+    });
   }
   function syncAutoGearRulesFromStorage(rules) {
     if (Array.isArray(rules)) {
@@ -4055,10 +3039,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (seen.has(obj)) return;
         seen.add(obj);
       }
-      Object.entries(obj).forEach(function (_ref13) {
-        var _ref14 = _slicedToArray(_ref13, 2),
-          key = _ref14[0],
-          value = _ref14[1];
+      Object.entries(obj).forEach(function (_ref0) {
+        var _ref1 = _slicedToArray(_ref0, 2),
+          key = _ref1[0],
+          value = _ref1[1];
         if (!value || _typeof(value) !== 'object' || Array.isArray(value)) return;
         addName(key);
         _visit(value);
@@ -4798,7 +3782,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     menu.classList.remove('open');
     menu.scrollTop = 0;
     menu.setAttribute('hidden', '');
-    overlay.classList.add('hidden');
     var menuLabel = ((_toggle$dataset = toggle.dataset) === null || _toggle$dataset === void 0 ? void 0 : _toggle$dataset.menuLabel) || 'Menu';
     var menuHelp = ((_toggle$dataset2 = toggle.dataset) === null || _toggle$dataset2 === void 0 ? void 0 : _toggle$dataset2.menuHelp) || menuLabel;
     toggle.setAttribute('aria-expanded', 'false');
@@ -4818,7 +3801,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (menu.classList.contains('open')) return;
     menu.classList.add('open');
     menu.removeAttribute('hidden');
-    overlay.classList.remove('hidden');
     toggle.setAttribute('aria-expanded', 'true');
     var closeLabel = ((_toggle$dataset3 = toggle.dataset) === null || _toggle$dataset3 === void 0 ? void 0 : _toggle$dataset3.closeLabel) || (closeButton === null || closeButton === void 0 ? void 0 : closeButton.getAttribute('aria-label')) || 'Close menu';
     var closeHelp = ((_toggle$dataset4 = toggle.dataset) === null || _toggle$dataset4 === void 0 ? void 0 : _toggle$dataset4.closeHelp) || (closeButton === null || closeButton === void 0 ? void 0 : closeButton.getAttribute('data-help')) || closeLabel;
@@ -4915,41 +3897,170 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     mql.addEventListener('change', relocate);
     relocate();
   }
-  var ownGearItems = [];
-  var ownGearEditingId = null;
-  var ownGearDialog = null;
-  var ownGearForm = null;
-  var ownGearListElem = null;
-  var ownGearEmptyState = null;
-  var ownGearListSummary = null;
-  var ownGearNameInput = null;
-  var ownGearQuantityInput = null;
-  var ownGearNotesInput = null;
-  var ownGearSaveButton = null;
-  var ownGearResetButton = null;
-  var ownGearCloseButton = null;
-  var ownGearSuggestionsList = null;
-  var ownGearAddHelp = null;
   var OWN_GEAR_SOURCE_CATALOG = 'catalog';
   var OWN_GEAR_SOURCE_CUSTOM = 'custom';
-  var ownGearSuggestionCache = {
-    lang: null,
-    list: [],
-    lookup: new Set()
-  };
-  var autoGearOwnGearCache = {
+  var ownGearStoreModuleCache = null;
+  var ownGearStoreInstance = null;
+  var ownGearViewModuleCache = null;
+  var ownGearViewInstance = null;
+  var fallbackAutoGearCache = {
     items: [],
     map: new Map()
   };
+  function detectOwnGearGlobalScope() {
+    if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE) {
+      return CORE_GLOBAL_SCOPE;
+    }
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return null;
+  }
+  function resolveOwnGearStoreModule() {
+    if (ownGearStoreModuleCache) {
+      return ownGearStoreModuleCache;
+    }
+    if (typeof require === 'function') {
+      try {
+        var required = require('./own-gear/store.js');
+        if (required && typeof required.createOwnGearStore === 'function') {
+          ownGearStoreModuleCache = required;
+          return ownGearStoreModuleCache;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var scope = detectOwnGearGlobalScope();
+    if (scope && _typeof(scope.cineOwnGearStore) === 'object' && scope.cineOwnGearStore) {
+      ownGearStoreModuleCache = scope.cineOwnGearStore;
+      return ownGearStoreModuleCache;
+    }
+    if ((typeof cineOwnGearStore === "undefined" ? "undefined" : _typeof(cineOwnGearStore)) === 'object' && cineOwnGearStore) {
+      ownGearStoreModuleCache = cineOwnGearStore;
+      return ownGearStoreModuleCache;
+    }
+    return null;
+  }
+  function getOwnGearStore() {
+    if (ownGearStoreInstance) {
+      return ownGearStoreInstance;
+    }
+    var storeModule = resolveOwnGearStoreModule();
+    if (storeModule && typeof storeModule.createOwnGearStore === 'function') {
+      try {
+        ownGearStoreInstance = storeModule.createOwnGearStore();
+        return ownGearStoreInstance;
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
+  function resolveOwnGearViewModule() {
+    if (ownGearViewModuleCache) {
+      return ownGearViewModuleCache;
+    }
+    if (typeof require === 'function') {
+      try {
+        var required = require('./own-gear/view.js');
+        if (required && typeof required.createOwnGearView === 'function') {
+          ownGearViewModuleCache = required;
+          return ownGearViewModuleCache;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var scope = detectOwnGearGlobalScope();
+    if (scope && _typeof(scope.cineOwnGearView) === 'object' && scope.cineOwnGearView) {
+      ownGearViewModuleCache = scope.cineOwnGearView;
+      return ownGearViewModuleCache;
+    }
+    if ((typeof cineOwnGearView === "undefined" ? "undefined" : _typeof(cineOwnGearView)) === 'object' && cineOwnGearView) {
+      ownGearViewModuleCache = cineOwnGearView;
+      return ownGearViewModuleCache;
+    }
+    return null;
+  }
+  function resolveOwnGearViewOptions() {
+    var scope = detectOwnGearGlobalScope() || {};
+    return {
+      scope: scope,
+      document: typeof document !== 'undefined' ? document : null,
+      getLanguageTexts: getLanguageTexts,
+      defaultLanguage: DEFAULT_LANGUAGE_SAFE,
+      getCurrentLanguage: function getCurrentLanguage() {
+        return currentLang;
+      },
+      formatWithPlaceholders: formatWithPlaceholdersSafe,
+      setButtonLabelWithIconBinding: setButtonLabelWithIconBinding,
+      iconMarkup: iconMarkup,
+      iconGlyphs: ICON_GLYPHS,
+      openDialog: openDialog,
+      closeDialog: closeDialog,
+      formatQuantityText: formatOwnGearQuantityText,
+      devices: devices,
+      gearItemTranslations: gearItemTranslations,
+      looksLikeGearName: looksLikeGearName
+    };
+  }
+  function getOwnGearView() {
+    if (ownGearViewInstance) {
+      return ownGearViewInstance;
+    }
+    var viewModule = resolveOwnGearViewModule();
+    var store = getOwnGearStore();
+    if (!viewModule || typeof viewModule.createOwnGearView !== 'function' || !store) {
+      return null;
+    }
+    try {
+      ownGearViewInstance = viewModule.createOwnGearView(store, resolveOwnGearViewOptions());
+      return ownGearViewInstance;
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
   function invalidateAutoGearOwnGearCache() {
-    autoGearOwnGearCache = {
+    var store = getOwnGearStore();
+    if (store && typeof store.invalidateCache === 'function') {
+      try {
+        store.invalidateCache();
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+    fallbackAutoGearCache = {
       items: [],
       map: new Map()
     };
   }
   function refreshAutoGearOwnGearCache() {
-    var items = [];
+    var store = getOwnGearStore();
+    if (store && typeof store.refreshCache === 'function') {
+      try {
+        var snapshot = store.refreshCache();
+        return {
+          items: Array.isArray(snapshot.items) ? snapshot.items.slice() : [],
+          map: snapshot.map instanceof Map ? snapshot.map : new Map()
+        };
+      } catch (error) {
+        void error;
+      }
+    }
     var moduleApi = resolveOwnGearModule();
+    var items = [];
     if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
       try {
         items = moduleApi.loadStoredOwnGearItems();
@@ -4958,11 +4069,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (!Array.isArray(items) || !items.length) {
-      if (Array.isArray(ownGearItems) && ownGearItems.length) {
-        items = ownGearItems.slice();
-      } else {
-        items = loadStoredOwnGearItems();
-      }
+      items = loadStoredOwnGearItems();
     }
     var normalized = Array.isArray(items) ? items.map(normalizeOwnGearRecord).filter(Boolean) : [];
     var map = new Map();
@@ -4970,15 +4077,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (!item || !item.id) return;
       map.set(item.id, item);
     });
-    autoGearOwnGearCache = {
+    fallbackAutoGearCache = {
       items: normalized,
       map: map
     };
-    return autoGearOwnGearCache;
+    return fallbackAutoGearCache;
   }
   function getAutoGearOwnGearCache() {
-    if (autoGearOwnGearCache && Array.isArray(autoGearOwnGearCache.items) && autoGearOwnGearCache.items.length) {
-      return autoGearOwnGearCache;
+    var store = getOwnGearStore();
+    if (store && typeof store.getCacheSnapshot === 'function') {
+      try {
+        var snapshot = store.getCacheSnapshot();
+        return {
+          items: Array.isArray(snapshot.items) ? snapshot.items.slice() : [],
+          map: snapshot.map instanceof Map ? snapshot.map : new Map()
+        };
+      } catch (error) {
+        void error;
+      }
+    }
+    if (fallbackAutoGearCache && Array.isArray(fallbackAutoGearCache.items) && fallbackAutoGearCache.items.length) {
+      return fallbackAutoGearCache;
     }
     return refreshAutoGearOwnGearCache();
   }
@@ -4987,10 +4106,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function findAutoGearOwnGearById(id) {
     if (!id) return null;
+    var store = getOwnGearStore();
+    if (store && typeof store.findCachedById === 'function') {
+      try {
+        return store.findCachedById(id);
+      } catch (error) {
+        void error;
+      }
+    }
     var cache = getAutoGearOwnGearCache();
     return cache.map.get(id) || null;
   }
   function generateOwnGearId() {
+    var store = getOwnGearStore();
+    if (store && typeof store.generateOwnGearId === 'function') {
+      try {
+        return store.generateOwnGearId();
+      } catch (error) {
+        void error;
+      }
+    }
     var moduleApi = resolveOwnGearModule();
     if (moduleApi && typeof moduleApi.generateOwnGearId === 'function') {
       try {
@@ -5011,6 +4146,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return "own-".concat(timePart, "-").concat(randomPart);
   }
   function normalizeOwnGearRecord(entry) {
+    var store = getOwnGearStore();
+    if (store && typeof store.normalizeOwnGearRecord === 'function') {
+      try {
+        return store.normalizeOwnGearRecord(entry);
+      } catch (error) {
+        void error;
+      }
+    }
     var moduleApi = resolveOwnGearModule();
     if (moduleApi && typeof moduleApi.normalizeOwnGearRecord === 'function') {
       try {
@@ -5044,6 +4187,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return normalized;
   }
   function loadStoredOwnGearItems() {
+    var store = getOwnGearStore();
+    if (store && typeof store.loadStoredOwnGearItems === 'function') {
+      try {
+        return store.loadStoredOwnGearItems();
+      } catch (error) {
+        void error;
+      }
+    }
     var moduleApi = resolveOwnGearModule();
     if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
       try {
@@ -5075,168 +4226,53 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function persistOwnGearItems() {
+    var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var store = getOwnGearStore();
+    if (store && typeof store.persistOwnGearItems === 'function') {
+      try {
+        return store.persistOwnGearItems(items);
+      } catch (error) {
+        void error;
+      }
+    }
     var moduleApi = resolveOwnGearModule();
     if (moduleApi && typeof moduleApi.persistOwnGearItems === 'function') {
       try {
-        moduleApi.persistOwnGearItems(ownGearItems);
-        return;
+        moduleApi.persistOwnGearItems(items);
+        return true;
       } catch (error) {
         console.warn('Unable to persist own gear items via module.', error);
       }
     }
     if (typeof saveOwnGear !== 'function') {
-      return;
+      return false;
     }
-    try {
-      var payload = ownGearItems.map(function (item) {
-        var entry = {
-          id: item.id,
-          name: item.name
-        };
-        if (item.quantity) {
-          entry.quantity = item.quantity;
-        }
-        if (item.notes) {
-          entry.notes = item.notes;
-        }
-        if (item.source) {
-          entry.source = item.source;
-        }
-        return entry;
-      });
-      saveOwnGear(payload);
-      if (typeof document !== 'undefined') {
-        try {
-          document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
-        } catch (error) {
-          void error;
-        }
+    var payload = items.map(function (item) {
+      var entry = {
+        id: item.id,
+        name: item.name
+      };
+      if (item.quantity) {
+        entry.quantity = item.quantity;
       }
+      if (item.notes) {
+        entry.notes = item.notes;
+      }
+      if (item.source) {
+        entry.source = item.source;
+      }
+      return entry;
+    });
+    try {
+      saveOwnGear(payload);
+      if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+        document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+      }
+      return true;
     } catch (error) {
       console.warn('Failed to save own gear items', error);
     }
-  }
-  function invalidateOwnGearSuggestionCache() {
-    ownGearSuggestionCache = {
-      lang: null,
-      list: [],
-      lookup: new Set()
-    };
-  }
-  function collectOwnGearSuggestionInfo() {
-    var lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE_SAFE;
-    if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
-      return ownGearSuggestionCache;
-    }
-    var uniqueNames = new Map();
-    var addName = function addName(name) {
-      if (typeof name !== 'string') {
-        return;
-      }
-      var trimmed = name.trim();
-      if (!trimmed) {
-        return;
-      }
-      var key = trimmed.toLowerCase();
-      if (uniqueNames.has(key)) {
-        return;
-      }
-      uniqueNames.set(key, trimmed);
-    };
-    var _traverseDevices = function traverseDevices(value, seen) {
-      if (!value || _typeof(value) !== 'object') {
-        return;
-      }
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-      if (typeof value.name === 'string') {
-        addName(value.name);
-      }
-      if (typeof value.label === 'string') {
-        addName(value.label);
-      }
-      if (typeof value.brand === 'string' && typeof value.model === 'string') {
-        addName("".concat(value.brand, " ").concat(value.model));
-      }
-      if (Array.isArray(value)) {
-        value.forEach(function (entry) {
-          return _traverseDevices(entry, seen);
-        });
-        return;
-      }
-      Object.keys(value).forEach(function (key) {
-        if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
-          return;
-        }
-        if (key.includes(' ') && looksLikeGearName(key)) {
-          addName(key);
-        }
-        _traverseDevices(value[key], seen);
-      });
-    };
-    try {
-      if ((typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' && devices) {
-        _traverseDevices(devices, new WeakSet());
-      }
-    } catch (error) {
-      console.warn('Unable to collect device catalog names for own gear suggestions', error);
-    }
-    try {
-      var langItems = gearItemTranslations && _typeof(gearItemTranslations) === 'object' ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE_SAFE] || null : null;
-      if (langItems && _typeof(langItems) === 'object') {
-        Object.keys(langItems).forEach(function (key) {
-          addName(key);
-          var translated = langItems[key];
-          if (typeof translated === 'string') {
-            addName(translated);
-          }
-        });
-      }
-    } catch (error) {
-      console.warn('Unable to include custom gear translations in suggestions', error);
-    }
-    ownGearItems.forEach(function (item) {
-      if (item && typeof item.name === 'string') {
-        addName(item.name);
-      }
-    });
-    var collator = typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(lang || DEFAULT_LANGUAGE_SAFE, {
-      sensitivity: 'base'
-    }) : null;
-    var list = Array.from(uniqueNames.values()).sort(function (a, b) {
-      if (collator) {
-        try {
-          return collator.compare(a, b);
-        } catch (error) {
-          void error;
-        }
-      }
-      return a.localeCompare(b);
-    });
-    var lookup = new Set(uniqueNames.keys());
-    ownGearSuggestionCache = {
-      lang: lang,
-      list: list,
-      lookup: lookup
-    };
-    return ownGearSuggestionCache;
-  }
-  function refreshOwnGearSuggestions() {
-    if (!ownGearSuggestionsList) {
-      return;
-    }
-    var _collectOwnGearSugges = collectOwnGearSuggestionInfo(),
-      list = _collectOwnGearSugges.list;
-    ownGearSuggestionsList.innerHTML = '';
-    var fragment = document.createDocumentFragment();
-    list.forEach(function (name) {
-      var option = document.createElement('option');
-      option.value = name;
-      fragment.appendChild(option);
-    });
-    ownGearSuggestionsList.appendChild(fragment);
+    return false;
   }
   function formatOwnGearQuantityText(quantity) {
     if (typeof quantity !== 'string') {
@@ -5253,796 +4289,49 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return trimmed;
   }
-  function formatOwnGearCountText(count, langTexts) {
-    var fallbackTexts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    var templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
-    var template = langTexts && langTexts[templateKey] || fallbackTexts && fallbackTexts[templateKey] || '';
-    if (!template) {
-      return count > 0 ? String(count) : '';
-    }
-    if (template.includes('%s')) {
-      return formatWithPlaceholdersSafe(template, String(count));
-    }
-    return "".concat(template, " ").concat(count).trim();
-  }
-  function updateOwnGearSummary() {
-    if (!ownGearListSummary) {
-      return;
-    }
-    var langTexts = getLanguageTexts(currentLang);
-    var summary = formatOwnGearCountText(ownGearItems.length, langTexts);
-    if (summary) {
-      ownGearListSummary.textContent = summary;
-      ownGearListSummary.removeAttribute('hidden');
-    } else {
-      ownGearListSummary.textContent = '';
-      ownGearListSummary.setAttribute('hidden', '');
-    }
-  }
-  function createOwnGearActionButton(label, icon, onClick) {
-    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.className = options.className || 'own-gear-item-action';
-    var iconHtml = typeof iconMarkup === 'function' && icon ? iconMarkup(icon, 'btn-icon') : '';
-    button.innerHTML = "".concat(iconHtml).concat(escapeHtml(label));
-    button.setAttribute('aria-label', options.ariaLabel || label);
-    button.addEventListener('click', onClick);
-    return button;
-  }
-  var ICON_FONT_KEYS = Object.freeze({
-    ESSENTIAL: 'essential',
-    FILM: 'film',
-    GADGET: 'gadget',
-    UICONS: 'uicons',
-    TEXT: 'text'
-  });
-  var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
-  function toCodePointChar(value, radix) {
-    var codePoint = parseInt(value, radix);
-    if (!Number.isFinite(codePoint) || codePoint < 0) {
-      return null;
-    }
-    try {
-      if (typeof String.fromCodePoint === 'function') {
-        return String.fromCodePoint(codePoint);
-      }
-    } catch (rangeError) {
-      void rangeError;
-    }
-    if (codePoint <= 0xffff) {
-      return String.fromCharCode(codePoint);
-    }
-    return null;
-  }
-  function normalizeGlyphChar(char) {
-    if (typeof char !== 'string') {
-      return '';
-    }
-    var trimmed = char.trim();
-    if (!trimmed) {
-      return '';
-    }
-    var unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
-    if (unicodeMatch) {
-      var decoded = toCodePointChar(unicodeMatch[1], 16);
-      if (decoded) {
-        return decoded;
-      }
-    }
-    var unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
-    if (unicodeBraceMatch) {
-      var _decoded = toCodePointChar(unicodeBraceMatch[1], 16);
-      if (_decoded) {
-        return _decoded;
-      }
-    }
-    var hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
-    if (hexEntityMatch) {
-      var _decoded2 = toCodePointChar(hexEntityMatch[1], 16);
-      if (_decoded2) {
-        return _decoded2;
-      }
-    }
-    var decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
-    if (decimalEntityMatch) {
-      var _decoded3 = toCodePointChar(decimalEntityMatch[1], 10);
-      if (_decoded3) {
-        return _decoded3;
-      }
-    }
-    return trimmed;
-  }
-  function iconGlyph(char) {
-    var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
-    var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-    var normalizedChar = normalizeGlyphChar(char);
-    return Object.freeze({
-      char: normalizedChar,
-      font: normalizedFont
-    });
-  }
-  function resolveIconGlyph(glyph) {
-    if (!glyph) {
-      return {
-        char: '',
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (glyph.markup) {
-      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      return {
-        markup: glyph.markup,
-        className: glyph.className || '',
-        font: ICON_FONT_KEYS.UICONS,
-        size: size
-      };
-    }
-    if (typeof glyph === 'string') {
-      return {
-        char: normalizeGlyphChar(glyph),
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (_typeof(glyph) === 'object') {
-      var char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
-      var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
-      var className = typeof glyph.className === 'string' ? glyph.className : '';
-      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      if (glyph.markup) {
-        return {
-          markup: glyph.markup,
-          className: className,
-          font: fontKey,
-          size: _size
-        };
-      }
-      return {
-        char: char,
-        font: fontKey,
-        className: className,
-        size: _size
-      };
-    }
-    return {
-      char: '',
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  function applyIconGlyph(element, glyph) {
-    if (!element) return;
-    var resolved = resolveIconGlyph(glyph);
-    if (resolved.markup) {
-      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-      element.setAttribute('aria-hidden', 'true');
-      if (resolved.className) {
-        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
-          return element.classList.add(cls);
-        });
-      }
-      element.removeAttribute('data-icon-font');
-      return;
-    }
-    var char = resolved.char || '';
-    element.textContent = char;
-    if (char) {
-      element.setAttribute('data-icon-font', resolved.font);
-    } else {
-      element.removeAttribute('data-icon-font');
-    }
-  }
-  function formatSvgCoordinate(value) {
-    if (!Number.isFinite(value)) return '0';
-    var rounded = Math.round(value * 100) / 100;
-    if (Number.isInteger(rounded)) return String(rounded);
-    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-  }
-  function positionSvgMarkup(markup, centerX, centerY) {
-    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
-    if (typeof markup !== 'string') {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var trimmed = markup.trim();
-    if (!trimmed) {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var half = size / 2;
-    var x = formatSvgCoordinate(centerX);
-    var y = formatSvgCoordinate(centerY);
-    var width = formatSvgCoordinate(size);
-    var height = formatSvgCoordinate(size);
-    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
-      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
-      var additions = [];
-      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
-      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
-      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
-      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
-      additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
-      additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
-      attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
-      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
-    });
-    return {
-      markup: cleaned,
-      x: x,
-      y: y
-    };
-  }
-  function glyphText(glyph) {
-    var resolved = resolveIconGlyph(glyph);
-    return resolved.char || '';
-  }
-  var PRODUCTION_COMPANY_ICON = iconGlyph("\\uE2D5", ICON_FONT_KEYS.UICONS);
-  var RENTAL_HOUSE_ICON = iconGlyph("\\uEA09", ICON_FONT_KEYS.UICONS);
-  var ASPECT_RATIO_ICON = iconGlyph("\\uE86E", ICON_FONT_KEYS.UICONS);
-  var REQUIRED_SCENARIOS_ICON = iconGlyph("\\uF4D4", ICON_FONT_KEYS.UICONS);
-  var MONITORING_SUPPORT_ICON = iconGlyph("\\uEFFC", ICON_FONT_KEYS.UICONS);
-  var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
-  var ICON_GLYPHS = Object.freeze({
-    batteryBolt: iconGlyph("\\uE1A6", ICON_FONT_KEYS.UICONS),
-    batteryFull: iconGlyph("\\uE1A9", ICON_FONT_KEYS.UICONS),
-    bolt: iconGlyph("\\uF1F8", ICON_FONT_KEYS.ESSENTIAL),
-    plug: iconGlyph("\\uEE75", ICON_FONT_KEYS.UICONS),
-    sliders: iconGlyph("\\uF143", ICON_FONT_KEYS.ESSENTIAL),
-    screen: iconGlyph("\\uF11D", ICON_FONT_KEYS.GADGET),
-    brightness: iconGlyph("\\uE2B3", ICON_FONT_KEYS.UICONS),
-    wifi: iconGlyph("\\uF4AC", ICON_FONT_KEYS.UICONS),
-    gears: iconGlyph("\\uE8AF", ICON_FONT_KEYS.UICONS),
-    controller: iconGlyph("\\uF117", ICON_FONT_KEYS.GADGET),
-    distance: iconGlyph("\\uEFB9", ICON_FONT_KEYS.UICONS),
-    sensor: iconGlyph("\\uEC2B", ICON_FONT_KEYS.UICONS),
-    viewfinder: iconGlyph("\\uF114", ICON_FONT_KEYS.FILM),
-    camera: iconGlyph("\\uE333", ICON_FONT_KEYS.UICONS),
-    trash: iconGlyph("\\uF254", ICON_FONT_KEYS.ESSENTIAL),
-    reload: iconGlyph("\\uF202", ICON_FONT_KEYS.ESSENTIAL),
-    load: iconGlyph("\\uE0E0", ICON_FONT_KEYS.UICONS),
-    installApp: iconGlyph("\\uE9D4", ICON_FONT_KEYS.UICONS),
-    add: Object.freeze({
-      char: '+',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    minus: Object.freeze({
-      char: '−',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    arrowLeft: Object.freeze({
-      char: '←',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    check: iconGlyph("\\uE3D8", ICON_FONT_KEYS.UICONS),
-    fileExport: iconGlyph("\\uE7AB", ICON_FONT_KEYS.UICONS),
-    fileImport: iconGlyph("\\uE7C7", ICON_FONT_KEYS.UICONS),
-    save: iconGlyph("\\uF207", ICON_FONT_KEYS.ESSENTIAL),
-    share: iconGlyph("\\uF219", ICON_FONT_KEYS.ESSENTIAL),
-    paperPlane: iconGlyph("\\uED67", ICON_FONT_KEYS.UICONS),
-    magnet: iconGlyph("\\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
-    codec: iconGlyph("\\uE4CD", ICON_FONT_KEYS.UICONS),
-    timecode: iconGlyph("\\uF10E", ICON_FONT_KEYS.FILM),
-    audioIn: iconGlyph("\\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
-    audioOut: iconGlyph("\\uF22F", ICON_FONT_KEYS.ESSENTIAL),
-    note: iconGlyph("\\uF13E", ICON_FONT_KEYS.ESSENTIAL),
-    overview: iconGlyph("\\uF1F5", ICON_FONT_KEYS.UICONS),
-    gearList: iconGlyph("\\uE467", ICON_FONT_KEYS.UICONS),
-    contacts: iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS),
-    feedback: iconGlyph("\\uE791", ICON_FONT_KEYS.UICONS),
-    resetView: iconGlyph("\\uEB6D", ICON_FONT_KEYS.UICONS),
-    pin: iconGlyph("\\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
-    sun: iconGlyph("\\uF1FE", ICON_FONT_KEYS.UICONS),
-    moon: iconGlyph("\\uEC7E", ICON_FONT_KEYS.UICONS),
-    circleX: iconGlyph("\\uF131", ICON_FONT_KEYS.ESSENTIAL),
-    settingsGeneral: iconGlyph("\\uE5A3", ICON_FONT_KEYS.UICONS),
-    settingsAutoGear: iconGlyph("\\uE8AF", ICON_FONT_KEYS.UICONS),
-    settingsAccessibility: iconGlyph("\\uF392", ICON_FONT_KEYS.UICONS),
-    settingsBackup: iconGlyph("\\uE5BD", ICON_FONT_KEYS.UICONS),
-    settingsData: iconGlyph("\\uE5C7", ICON_FONT_KEYS.UICONS),
-    settingsAbout: iconGlyph("\\uEA4F", ICON_FONT_KEYS.UICONS),
-    star: Object.freeze({
-      markup: STAR_ICON_SVG,
-      className: 'icon-svg favorite-star-icon'
-    }),
-    warning: iconGlyph("\\uF26F", ICON_FONT_KEYS.ESSENTIAL)
-  });
-  function iconMarkup(glyph) {
-    var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    if (!glyph) return '';
-    var opts = {};
-    var resolvedClassName = 'info-icon';
-    if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
-      resolvedClassName = classNameOrOptions || '';
-      if (options && _typeof(options) === 'object') {
-        opts = options;
-      }
-    } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
-      opts = classNameOrOptions;
-      resolvedClassName = classNameOrOptions.className || 'info-icon';
-    }
-    if (typeof opts.className === 'string') {
-      resolvedClassName = opts.className;
-    }
-    var styleParts = [];
-    if (typeof opts.size === 'string' && opts.size.trim()) {
-      styleParts.push("--icon-size: ".concat(opts.size.trim()));
-    }
-    if (typeof opts.scale === 'string' && opts.scale.trim()) {
-      styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
-    }
-    if (typeof opts.style === 'string' && opts.style.trim()) {
-      styleParts.push(opts.style.trim());
-    }
-    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
-    var resolved = resolveIconGlyph(glyph);
-    var classes = ['icon-glyph'];
-    if (resolvedClassName) classes.unshift(resolvedClassName);
-    if (resolved.markup) {
-      if (resolved.className) classes.push(resolved.className);
-      var markup = ensureSvgHasAriaHidden(resolved.markup);
-      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
-    }
-    var char = resolved.char || '';
-    if (!char) return '';
-    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
-  }
-  function renderOwnGearList() {
-    if (!ownGearListElem) {
-      return;
-    }
-    ownGearListElem.innerHTML = '';
-    var langTexts = getLanguageTexts(currentLang);
-    if (!ownGearItems.length) {
-      if (ownGearEmptyState) {
-        ownGearEmptyState.removeAttribute('hidden');
-      }
-      updateOwnGearSummary();
-      return;
-    }
-    if (ownGearEmptyState) {
-      ownGearEmptyState.setAttribute('hidden', '');
-    }
-    var fragment = document.createDocumentFragment();
-    ownGearItems.forEach(function (item) {
-      if (!item || typeof item.id !== 'string') {
-        return;
-      }
-      var listItem = document.createElement('li');
-      listItem.className = 'own-gear-item';
-      listItem.dataset.ownGearId = item.id;
-      var body = document.createElement('div');
-      body.className = 'own-gear-item-body';
-      var title = document.createElement('p');
-      title.className = 'own-gear-item-title';
-      var quantityText = formatOwnGearQuantityText(item.quantity || '');
-      title.textContent = quantityText ? "".concat(quantityText, " \xD7 ").concat(item.name) : item.name;
-      body.appendChild(title);
-      if (item.notes) {
-        var note = document.createElement('p');
-        note.className = 'own-gear-item-note';
-        note.textContent = item.notes;
-        body.appendChild(note);
-      }
-      listItem.appendChild(body);
-      var actions = document.createElement('div');
-      actions.className = 'own-gear-item-actions';
-      var editLabel = langTexts.ownGearEditButton || 'Edit';
-      var editAria = langTexts.ownGearEditButtonAria ? formatWithPlaceholdersSafe(langTexts.ownGearEditButtonAria, item.name) : editLabel;
-      var editButton = createOwnGearActionButton(editLabel, ICON_GLYPHS.sliders, function () {
-        startEditingOwnGearItem(item.id);
-      }, {
-        ariaLabel: editAria
-      });
-      actions.appendChild(editButton);
-      var deleteLabel = langTexts.ownGearDeleteButton || 'Remove';
-      var deleteAria = langTexts.ownGearDeleteButtonAria ? formatWithPlaceholdersSafe(langTexts.ownGearDeleteButtonAria, item.name) : deleteLabel;
-      var deleteButton = createOwnGearActionButton(deleteLabel, ICON_GLYPHS.trash, function () {
-        removeOwnGearItem(item.id);
-      }, {
-        ariaLabel: deleteAria,
-        className: 'own-gear-item-action own-gear-item-action-danger'
-      });
-      actions.appendChild(deleteButton);
-      listItem.appendChild(actions);
-      fragment.appendChild(listItem);
-    });
-    ownGearListElem.appendChild(fragment);
-    updateOwnGearSummary();
-  }
-  function resetOwnGearForm() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    if (ownGearNameInput) {
-      ownGearNameInput.value = '';
-      ownGearNameInput.setCustomValidity('');
-    }
-    if (ownGearQuantityInput) {
-      ownGearQuantityInput.value = '';
-      ownGearQuantityInput.setCustomValidity('');
-    }
-    if (ownGearNotesInput) {
-      ownGearNotesInput.value = '';
-    }
-    ownGearEditingId = null;
-    updateOwnGearSaveButtonState();
-    if (options.focusName && ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
-      ownGearNameInput.focus();
-    }
-  }
-  function updateOwnGearSaveButtonState() {
-    if (!ownGearSaveButton) {
-      return;
-    }
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    if (ownGearEditingId) {
-      var label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
-      setButtonLabelWithIconBinding(ownGearSaveButton, label, ICON_GLYPHS.save);
-    } else {
-      var _label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
-      setButtonLabelWithIconBinding(ownGearSaveButton, _label, ICON_GLYPHS.add);
-    }
-  }
-  function normalizeOwnGearQuantityInput(raw) {
-    if (typeof raw !== 'string') {
-      return {
-        value: '',
-        valid: true
-      };
-    }
-    var trimmed = raw.trim();
-    if (!trimmed) {
-      return {
-        value: '',
-        valid: true
-      };
-    }
-    var normalized = trimmed.replace(',', '.');
-    var parsed = Number(normalized);
-    if (!Number.isFinite(parsed) || parsed < 0) {
-      return {
-        value: '',
-        valid: false
-      };
-    }
-    var formatted = formatOwnGearQuantityText(String(parsed));
-    return {
-      value: formatted,
-      valid: true
-    };
-  }
-  function handleOwnGearSubmit(event) {
-    if (event && typeof event.preventDefault === 'function') {
-      event.preventDefault();
-    }
-    if (!ownGearNameInput) {
-      return;
-    }
-    var langTexts = getLanguageTexts(currentLang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    var rawName = ownGearNameInput.value || '';
-    var trimmedName = rawName.trim();
-    if (!trimmedName) {
-      var message = langTexts.ownGearNameRequired || fallbackTexts.ownGearNameRequired || 'Enter an item name to continue.';
-      ownGearNameInput.setCustomValidity(message);
-      ownGearNameInput.reportValidity();
-      return;
-    }
-    ownGearNameInput.setCustomValidity('');
-    var quantityResult = normalizeOwnGearQuantityInput(ownGearQuantityInput ? ownGearQuantityInput.value : '');
-    if (!quantityResult.valid) {
-      if (ownGearQuantityInput) {
-        var _message = langTexts.ownGearQuantityInvalid || fallbackTexts.ownGearQuantityInvalid || 'Enter a non-negative quantity.';
-        ownGearQuantityInput.setCustomValidity(_message);
-        ownGearQuantityInput.reportValidity();
-      }
-      return;
-    }
-    if (ownGearQuantityInput) {
-      ownGearQuantityInput.setCustomValidity('');
-      ownGearQuantityInput.value = quantityResult.value;
-    }
-    var notes = ownGearNotesInput ? ownGearNotesInput.value.trim() : '';
-    var _collectOwnGearSugges2 = collectOwnGearSuggestionInfo(),
-      lookup = _collectOwnGearSugges2.lookup;
-    var fromCatalog = lookup.has(trimmedName.toLowerCase());
-    var source = fromCatalog ? OWN_GEAR_SOURCE_CATALOG : OWN_GEAR_SOURCE_CUSTOM;
-    if (ownGearEditingId) {
-      var index = ownGearItems.findIndex(function (item) {
-        return item && item.id === ownGearEditingId;
-      });
-      if (index !== -1) {
-        var updated = _objectSpread(_objectSpread({}, ownGearItems[index]), {}, {
-          name: trimmedName,
-          source: source
-        });
-        if (quantityResult.value) {
-          updated.quantity = quantityResult.value;
-        } else {
-          delete updated.quantity;
-        }
-        if (notes) {
-          updated.notes = notes;
-        } else {
-          delete updated.notes;
-        }
-        ownGearItems[index] = updated;
-      }
-    } else {
-      var entry = {
-        id: generateOwnGearId(),
-        name: trimmedName,
-        source: source
-      };
-      if (quantityResult.value) {
-        entry.quantity = quantityResult.value;
-      }
-      if (notes) {
-        entry.notes = notes;
-      }
-      ownGearItems.push(entry);
-    }
-    persistOwnGearItems();
-    invalidateOwnGearSuggestionCache();
-    renderOwnGearList();
-    refreshOwnGearSuggestions();
-    resetOwnGearForm({
-      focusName: true
-    });
-  }
-  function startEditingOwnGearItem(id) {
-    var item = ownGearItems.find(function (entry) {
-      return entry && entry.id === id;
-    });
-    if (!item) {
-      return;
-    }
-    ownGearEditingId = id;
-    if (ownGearNameInput) {
-      ownGearNameInput.value = item.name;
-      ownGearNameInput.setCustomValidity('');
-    }
-    if (ownGearQuantityInput) {
-      ownGearQuantityInput.value = item.quantity || '';
-      ownGearQuantityInput.setCustomValidity('');
-    }
-    if (ownGearNotesInput) {
-      ownGearNotesInput.value = item.notes || '';
-    }
-    updateOwnGearSaveButtonState();
-    if (ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
-      ownGearNameInput.focus();
-    }
-  }
-  function removeOwnGearItem(id) {
-    var index = ownGearItems.findIndex(function (entry) {
-      return entry && entry.id === id;
-    });
-    if (index === -1) {
-      return;
-    }
-    var item = ownGearItems[index];
-    var langTexts = getLanguageTexts(currentLang);
-    var confirmTemplate = langTexts.ownGearDeleteConfirm || 'Remove “%s” from your gear list?';
-    var confirmMessage = confirmTemplate;
-    if (confirmTemplate.includes('%s')) {
-      confirmMessage = formatWithPlaceholdersSafe(confirmTemplate, item.name);
-    }
-    var confirmed = true;
-    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-      confirmed = window.confirm(confirmMessage);
-    }
-    if (!confirmed) {
-      return;
-    }
-    ownGearItems.splice(index, 1);
-    if (ownGearEditingId === id) {
-      resetOwnGearForm();
-    }
-    persistOwnGearItems();
-    invalidateOwnGearSuggestionCache();
-    renderOwnGearList();
-    refreshOwnGearSuggestions();
-  }
   function openOwnGearDialog() {
-    if (!ownGearDialog) {
-      return;
-    }
-    resetOwnGearForm();
-    refreshOwnGearSuggestions();
-    openDialog(ownGearDialog);
-    if (ownGearNameInput && typeof requestAnimationFrame === 'function') {
-      requestAnimationFrame(function () {
-        if (typeof ownGearNameInput.focus === 'function') {
-          ownGearNameInput.focus();
-        }
-      });
+    var view = getOwnGearView();
+    if (view && typeof view.openDialog === 'function') {
+      try {
+        view.openDialog();
+      } catch (error) {
+        void error;
+      }
     }
   }
   function applyOwnGearLocalization(lang) {
-    var langTexts = getLanguageTexts(lang);
-    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE_SAFE);
-    if (ownGearDialog) {
-      var title = document.getElementById('ownGearDialogHeading');
-      if (title) {
-        title.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
-      }
-      var description = document.getElementById('ownGearDialogDescription');
-      if (description) {
-        var text = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
-        description.textContent = text;
-        if (text) {
-          description.setAttribute('data-help', text);
-        } else {
-          description.removeAttribute('data-help');
-        }
-      }
-    }
-    var addHeading = document.getElementById('ownGearAddHeading');
-    if (addHeading) {
-      addHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
-    }
-    if (ownGearAddHelp) {
-      var helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHelp', '');
-      ownGearAddHelp.textContent = helpText;
-      if (helpText) {
-        ownGearAddHelp.removeAttribute('hidden');
-        ownGearAddHelp.setAttribute('data-help', helpText);
-      } else {
-        ownGearAddHelp.setAttribute('hidden', '');
-        ownGearAddHelp.removeAttribute('data-help');
-      }
-    }
-    var nameLabel = document.getElementById('ownGearNameLabel');
-    if (nameLabel) {
-      nameLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
-    }
-    if (ownGearNameInput) {
-      var placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
-      if (placeholder) {
-        ownGearNameInput.setAttribute('placeholder', placeholder);
-      } else {
-        ownGearNameInput.removeAttribute('placeholder');
-      }
-      var _helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameHelp', '');
-      if (_helpText) {
-        ownGearNameInput.setAttribute('data-help', _helpText);
-      } else {
-        ownGearNameInput.removeAttribute('data-help');
-      }
-    }
-    var quantityLabel = document.getElementById('ownGearQuantityLabel');
-    if (quantityLabel) {
-      quantityLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
-    }
-    if (ownGearQuantityInput) {
-      var _placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
-      if (_placeholder) {
-        ownGearQuantityInput.setAttribute('placeholder', _placeholder);
-      } else {
-        ownGearQuantityInput.removeAttribute('placeholder');
-      }
-      var _helpText2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
-      if (_helpText2) {
-        ownGearQuantityInput.setAttribute('data-help', _helpText2);
-      } else {
-        ownGearQuantityInput.removeAttribute('data-help');
-      }
-    }
-    var notesLabel = document.getElementById('ownGearNotesLabel');
-    if (notesLabel) {
-      notesLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
-    }
-    if (ownGearNotesInput) {
-      var _placeholder2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
-      if (_placeholder2) {
-        ownGearNotesInput.setAttribute('placeholder', _placeholder2);
-      } else {
-        ownGearNotesInput.removeAttribute('placeholder');
-      }
-      var _helpText3 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
-      if (_helpText3) {
-        ownGearNotesInput.setAttribute('data-help', _helpText3);
-      } else {
-        ownGearNotesInput.removeAttribute('data-help');
-      }
-    }
-    if (ownGearResetButton) {
-      var label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
-      setButtonLabelWithIconBinding(ownGearResetButton, label, ICON_GLYPHS.reload);
-    }
-    if (ownGearCloseButton) {
-      var _label2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
-      setButtonLabelWithIconBinding(ownGearCloseButton, _label2, ICON_GLYPHS.circleX);
-    }
-    var listHeading = document.getElementById('ownGearListHeading');
-    if (listHeading) {
-      listHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
-    }
-    if (ownGearEmptyState) {
-      ownGearEmptyState.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
-    }
-    updateOwnGearSaveButtonState();
-    renderOwnGearList();
-    refreshOwnGearSuggestions();
-  }
-  function initializeOwnGearManager() {
-    if (typeof document === 'undefined') {
-      return;
-    }
-    ownGearDialog = document.getElementById('ownGearDialog');
-    if (!ownGearDialog) {
-      return;
-    }
-    ownGearForm = document.getElementById('ownGearForm');
-    ownGearListElem = document.getElementById('ownGearList');
-    ownGearEmptyState = document.getElementById('ownGearEmptyState');
-    ownGearListSummary = document.getElementById('ownGearListSummary');
-    ownGearNameInput = document.getElementById('ownGearName');
-    ownGearQuantityInput = document.getElementById('ownGearQuantity');
-    ownGearNotesInput = document.getElementById('ownGearNotes');
-    ownGearSaveButton = document.getElementById('ownGearSaveButton');
-    ownGearResetButton = document.getElementById('ownGearResetButton');
-    ownGearCloseButton = document.getElementById('ownGearCloseButton');
-    ownGearSuggestionsList = document.getElementById('ownGearSuggestions');
-    ownGearAddHelp = document.getElementById('ownGearAddHelp');
-    ownGearItems = loadStoredOwnGearItems();
-    applyOwnGearLocalization(currentLang);
-    if (ownGearForm) {
-      ownGearForm.addEventListener('submit', handleOwnGearSubmit);
-    }
-    if (ownGearResetButton) {
-      ownGearResetButton.addEventListener('click', function () {
-        resetOwnGearForm({
-          focusName: true
-        });
-      });
-    }
-    if (ownGearCloseButton) {
-      ownGearCloseButton.addEventListener('click', function () {
-        closeDialog(ownGearDialog);
-        resetOwnGearForm();
-      });
-    }
-    if (ownGearDialog && typeof ownGearDialog.addEventListener === 'function') {
-      ownGearDialog.addEventListener('cancel', function (event) {
-        if (event && typeof event.preventDefault === 'function') {
-          event.preventDefault();
-        }
-        closeDialog(ownGearDialog);
-        resetOwnGearForm();
-      });
-      ownGearDialog.addEventListener('close', function () {
-        resetOwnGearForm();
-      });
-    }
-    try {
-      exposeCoreRuntimeConstant('openOwnGearDialog', openOwnGearDialog);
-    } catch (error) {
-      void error;
-      if (typeof globalThis !== 'undefined') {
-        globalThis.openOwnGearDialog = openOwnGearDialog;
+    var view = getOwnGearView();
+    if (view && typeof view.applyLocalization === 'function') {
+      try {
+        view.applyLocalization(lang);
+      } catch (error) {
+        void error;
       }
     }
   }
   function initializeLayoutControls() {
     setupSideMenu();
     setupResponsiveControls();
+  }
+  function initializeOwnGearManager() {
+    var view = getOwnGearView();
+    if (!view) {
+      return;
+    }
+    try {
+      view.initialize();
+    } catch (error) {
+      void error;
+    }
+    try {
+      exposeCoreRuntimeConstant('openOwnGearDialog', openOwnGearDialog);
+    } catch (error) {
+      void error;
+      var scope = detectOwnGearGlobalScope();
+      if (scope) {
+        scope.openOwnGearDialog = openOwnGearDialog;
+      }
+    }
   }
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     var runLayoutInitialization = function runLayoutInitialization() {
@@ -6283,8 +4572,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     value: 'DisplayPort'
   }];
   var normalizeVideoType = memoizeNormalization(function (_, key) {
-    var match = VIDEO_TYPE_PATTERNS.find(function (_ref15) {
-      var needles = _ref15.needles;
+    var match = VIDEO_TYPE_PATTERNS.find(function (_ref10) {
+      var needles = _ref10.needles;
       return needles.every(function (n) {
         return key.includes(n);
       });
@@ -6358,6 +4647,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
     'lemo 8-pin': 'Bat LEMO 8-pin',
     '2-pin dc-input': '2-pin DC-IN',
+    'dc-': 'DC IN',
+    'dc': 'DC IN',
     '2-pin xlr': 'XLR 2-pin',
     '2-pin locking connector': 'LEMO 2-pin',
     '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
@@ -6372,16 +4663,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     'usb type-c': 'USB-C',
     'usb-c pd': 'USB-C PD',
     'usb-c (power delivery)': 'USB-C PD',
+    'usb-c pd,dc coupler': 'USB-C PD / DC Coupler',
+    'dc coupler': 'DC Coupler',
+    'dc coupler (dr-e6c)': 'DC Coupler',
     'dc input': 'DC IN',
+    'dc barrel': 'DC Barrel',
+    'dc (barrel)': 'DC Barrel',
+    'locking dc barrel': 'DC Barrel',
+    'dc 24v terminal': 'DC Barrel',
     'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
-    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
+    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN',
+    '6-pin 1b dc-,tb50': '6-pin 1B DC-IN'
   };
   var mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP);
   function normalizePowerPortType(type) {
     if (!type) return [];
     var toArray = function toArray(val) {
-      return mapPowerPortOne(val).split('/').map(function (p) {
-        return mapPowerPortOne(p);
+      var normalized = mapPowerPortOne(val);
+      if (!normalized) return [];
+      return normalized.split(/[/,]/).map(function (piece) {
+        return mapPowerPortOne(piece.trim());
+      }).map(function (piece) {
+        return piece && piece.trim() || '';
       }).filter(Boolean);
     };
     return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
@@ -6503,9 +4806,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).flatMap(function (vo) {
-        var _ref16 = vo || {},
-          count = _ref16.count,
-          rest = _objectWithoutProperties(_ref16, _excluded2);
+        var _ref11 = vo || {},
+          count = _ref11.count,
+          rest = _objectWithoutProperties(_ref11, _excluded2);
         var norm = normalizeVideoType(rest.type);
         if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
         var parsedCount = parseInt(count, 10);
@@ -6524,9 +4827,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).map(function (fc) {
-        var _ref17 = fc || {},
-          type = _ref17.type,
-          rest = _objectWithoutProperties(_ref17, _excluded3);
+        var _ref12 = fc || {},
+          type = _ref12.type,
+          rest = _objectWithoutProperties(_ref12, _excluded3);
         return _objectSpread(_objectSpread({}, rest), {}, {
           type: normalizeFizConnectorType(type)
         });
@@ -6537,9 +4840,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         connector: '',
         notes: ''
       }).map(function (vf) {
-        var _ref18 = vf || {},
-          type = _ref18.type,
-          rest = _objectWithoutProperties(_ref18, _excluded4);
+        var _ref13 = vf || {},
+          type = _ref13.type,
+          rest = _objectWithoutProperties(_ref13, _excluded4);
         return _objectSpread(_objectSpread({}, rest), {}, {
           type: normalizeViewfinderType(type)
         });
@@ -6548,11 +4851,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).map(function (m) {
-        var _ref19 = m || {},
-          _ref19$type = _ref19.type,
-          type = _ref19$type === void 0 ? '' : _ref19$type,
-          _ref19$notes = _ref19.notes,
-          notes = _ref19$notes === void 0 ? '' : _ref19$notes;
+        var _ref14 = m || {},
+          _ref14$type = _ref14.type,
+          type = _ref14$type === void 0 ? '' : _ref14$type,
+          _ref14$notes = _ref14.notes,
+          notes = _ref14$notes === void 0 ? '' : _ref14$notes;
         var match = type.match(/^(.*?)(?:\((.*)\))?$/);
         if (match) {
           type = match[1].trim();
@@ -6907,6 +5210,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var mount = info && typeof info.mount_type === 'string' ? info.mount_type : '';
     return mount || '';
   }
+  var batteryPlateRow;
+  var batteryPlateSelect;
   function normalizeBatteryPlateValue(plateValue, batteryName) {
     var normalizedPlate = typeof plateValue === 'string' ? plateValue.trim() : '';
     var derivedMount = getBatteryMountType(batteryName);
@@ -7310,48 +5615,48 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } else {
       var bats = devices.batteries;
       if (!supportsB) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref20) {
-          var _ref21 = _slicedToArray(_ref20, 2),
-            b = _ref21[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref15) {
+          var _ref16 = _slicedToArray(_ref15, 2),
+            b = _ref16[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref22) {
-          var _ref23 = _slicedToArray(_ref22, 2),
-            b = _ref23[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref17) {
+          var _ref18 = _slicedToArray(_ref17, 2),
+            b = _ref18[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
       populateSelect(batterySelect, bats, true);
       swaps = devices.batteryHotswaps || {};
       if (!supportsB) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref24) {
-          var _ref25 = _slicedToArray(_ref24, 2),
-            b = _ref25[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref19) {
+          var _ref20 = _slicedToArray(_ref19, 2),
+            b = _ref20[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref26) {
-          var _ref27 = _slicedToArray(_ref26, 2),
-            b = _ref27[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref21) {
+          var _ref22 = _slicedToArray(_ref21, 2),
+            b = _ref22[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
     }
     if (!/FXLion Nano/i.test(current)) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref28) {
-        var _ref29 = _slicedToArray(_ref28, 1),
-          name = _ref29[0];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref23) {
+        var _ref24 = _slicedToArray(_ref23, 1),
+          name = _ref24[0];
         return name !== 'FX-Lion NANO Dual V-Mount Hot-Swap Plate';
       }));
     }
-    var totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    var totalCurrentLow = totalCurrent12Elem && typeof totalCurrent12Elem.textContent === 'string' ? parseFloat(totalCurrent12Elem.textContent) : 0;
     if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref30) {
-        var _ref31 = _slicedToArray(_ref30, 2),
-          info = _ref31[1];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref25) {
+        var _ref26 = _slicedToArray(_ref25, 2),
+          info = _ref26[1];
         var pinLimit = parseBatteryCurrentLimit(info && info.pinA);
         return !Number.isFinite(pinLimit) || pinLimit >= totalCurrentLow;
       }));
@@ -8351,8 +6656,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function _setLanguage() {
     _setLanguage = _asyncToGenerator(_regenerator().m(function _callee2(lang) {
-      var _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en74, _texts$en75, _texts$en76, _texts$en78, _texts$en183, _texts$en184, _texts$lang, _texts$en185, _texts$lang2, _texts$en186, _texts$lang3, _texts$en187, _texts$lang4, _texts$en188, _texts$en250;
-      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en30, extraLabel, _texts$en31, heading, _texts$en32, filenameLabel, _texts$en33, confirmLabel, _texts$en34, cancelLabel, _texts$en35, _texts$en36, label, help, _texts$en37, _texts$en38, _label5, _help2, sharedImportLegendText, _texts$en39, title, _texts$en40, message, _texts$en41, _label6, _texts$en42, _label7, _texts$en43, legend, _texts$en44, _texts$en45, _label8, _help3, _texts$en46, _texts$en47, _label9, _help4, _texts$en48, _texts$en49, _label0, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label1, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en50, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en51, _texts$en52, generalLabel, generalHelp, _texts$en53, sectionHeading, _texts$en54, _sectionHeading, _texts$en55, _sectionHeading2, _texts$en56, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en77, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en80, _texts$en81, headingHelp, _texts$en82, _texts$en83, _heading, _texts$en84, _description, _texts$en86, _texts$en87, _texts$en88, _label10, _help6, _texts$en89, _label11, _texts$en90, _label12, _texts$en91, _texts$en92, _label13, _help7, _texts$en93, _texts$en94, _label14, _help8, _texts$en95, _texts$en96, _label15, _help9, _texts$en97, _texts$en98, _label16, _help0, _texts$en99, _texts$en100, _label17, _help1, _texts$en101, placeholder, _texts$en102, _texts$en103, _label18, _help10, _texts$en104, _label19, _texts$en105, _texts$en106, _description2, _texts$en107, _texts$en108, _label20, _help11, _texts$en109, hiddenText, _texts$en110, _texts$en111, _label21, _help12, _texts$en112, _label22, _texts$en113, _label23, _texts$en114, emptyText, _texts$en115, _texts$en116, _label24, _help13, _texts$en117, _texts$en118, _label25, _help14, _texts$en119, _label26, _texts$en120, _texts$en121, _label27, _help15, _texts$en122, _texts$en123, _label28, _help16, _texts$en124, _texts$en125, modeLabel, modeHelp, _texts$en126, _texts$en127, baseLabel, baseHelp, _texts$en128, _texts$en129, factorLabel, factorHelp, _texts$en130, _texts$en131, _texts$en132, _texts$en133, _texts$en134, _texts$en135, _label29, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en136, _texts$en137, _label30, _help18, _texts$en138, _texts$en139, _label31, _help19, _texts$en140, _texts$en141, _label32, _help20, _texts$en142, _texts$en143, _label33, _help21, _texts$en144, _texts$en145, _label34, _help22, _texts$en146, _texts$en147, _label35, _help23, _texts$en148, _texts$en149, _texts$en150, _texts$en151, _label36, _help24, _texts$en152, _texts$en153, _label37, _help25, _texts$en154, _label38, _texts$en155, _texts$en156, _texts$en157, greaterLabel, lessLabel, equalLabel, _texts$en158, _texts$en159, _label39, _help26, _texts$en160, _help27, _texts$en161, _texts$en162, _label40, _help28, _texts$en163, _texts$en164, _label41, _help29, _texts$en165, _texts$en166, _label42, _help30, _texts$en167, _texts$en168, _label43, _help31, _texts$en169, _texts$en170, _label44, _help32, _texts$en171, _texts$en172, _label45, _help33, _texts$en173, _texts$en174, _label46, _help34, _texts$en175, _texts$en176, _label47, _help35, _texts$en177, _texts$en178, _label48, _help36, _texts$en179, _texts$en180, _label49, _help37, _texts$en181, _texts$en182, _label50, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en189, _texts$en190, _texts$en191, _texts$en192, _label51, _help39, _placeholder3, _texts$en193, _texts$en194, _label52, hint, helpText, _texts$en195, _label53, _texts$en196, _label54, _texts$en197, _label55, _texts$en198, _label56, _texts$en199, _texts$en200, _texts$en201, _texts$en202, _texts$en203, _texts$en204, _texts$en205, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en206, _label57, _texts$en207, _label58, _texts$en208, _texts$en209, _texts$en210, _texts$en211, _label59, _help40, _placeholder4, _texts$en212, _texts$en213, _label60, _hint, _helpText4, _texts$en214, _label61, _texts$en215, _label62, _texts$en216, _label63, _texts$en217, _label64, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _texts$en222, _texts$en223, _texts$en224, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en225, _label65, _texts$en226, _label66, _texts$en227, _heading2, _texts$en228, _description3, _texts$en229, _heading3, _texts$en230, _label67, _texts$en231, _label68, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en232, _texts$en233, _headingText, _headingHelp, _texts$en234, _texts$en235, _texts$en236, requestLabel, requestHelp, _texts$en237, idleText, _texts$en238, _texts$en239, _headingText2, _headingHelp2, _texts$en240, _texts$en241, _texts$en242, backupLabel, backupHelp, _texts$en243, _texts$en244, openLabel, openHelp, _texts$en245, _texts$en246, statusHeading, statusHelp, _texts$en247, _texts$en248, _texts$en249, statusDefaultText, _texts$en251, sectionHelp, _texts$en252, _texts$en253, _headingText3, _headingHelp3, _texts$en254, _texts$en255, _filterLabel, _texts$en256, _texts$en257, _texts$en258, _texts$en259, _texts$en260, optionTexts, filterHelp, _texts$en261, namespaceLabel, _texts$en262, _texts$en263, _placeholder5, namespaceHelp, _texts$en264, historyLabel, _texts$en265, historyHelp, _texts$en266, _texts$en267, limitHelp, limitAria, _texts$en268, consoleLabel, _texts$en269, consoleHelp, _texts$en270, consoleCaptureLabel, _texts$en271, consoleCaptureHelp, _texts$en272, captureLabel, _texts$en273, captureHelp, _texts$en274, persistLabel, _texts$en275, persistHelp, _texts$en276, exportLabel, _texts$en277, exportHelp, _texts$en278, statusText, _texts$en279, _emptyText, _texts$en280, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder6, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en281, _texts$en282, _texts$en283, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en284, _texts$en285, proceedLabel, proceedHelp, _texts$en286, _texts$en287, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en288, _label69, saveHelp, _texts$en289, _cancelLabel, cancelHelp, menuToggle, _texts$en290, _texts$en291, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en292, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en293, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en294, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, _userProfileState2, stripTrailingPunctuation, addEntryLabel, crewLabel, _label70, prepLabel, _label71, shootLabel, _label72, returnLabel, _label73, storageLabelText, _label74, closeText, _t;
+      var _texts$en54, _texts$en55, _texts$en56, _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en68, _texts$en69, _texts$en70, _texts$en71, _texts$en72, _texts$en73, _texts$en75, _texts$en180, _texts$en181, _texts$lang, _texts$en182, _texts$lang2, _texts$en183, _texts$lang3, _texts$en184, _texts$lang4, _texts$en185, _texts$en247;
+      var requested, resolved, normalizedLang, loadResult, translationSource, previousLang, shouldDispatchLanguageChange, dispatchLanguageChange, doc, runtimeScope, attemptRefreshDeviceLists, retryRefresh, fallbackLocale, normalizeTemperatureUnitSafe, FALLBACK_NORMALIZE_FOCUS_SCALE, ensureNormalizeFocusScaleHelper, normalizeFocusScaleSafe, resolveFocusScalePreference, resolveLocaleString, applyTextContent, createHelpLink, applySuggestionTemplate, applySuggestionText, resolveRuntimeValue, registerResolvedElement, resolveElement, settingsShowAutoBackupsEl, backupSettingsButton, backupDiffToggleButtonEl, backupDiffHeadingEl, backupDiffIntroEl, backupDiffPrimaryLabelEl, backupDiffPrimarySelectEl, backupDiffSecondaryLabelEl, backupDiffSecondarySelectEl, backupDiffEmptyStateEl, backupDiffNotesLabelEl, backupDiffNotesEl, backupDiffExportButtonEl, backupDiffCloseButtonEl, restoreRehearsalButton, restoreRehearsalHeading, restoreRehearsalIntro, restoreRehearsalModeLabel, restoreRehearsalModeBackupText, restoreRehearsalModeProjectText, restoreRehearsalFileLabel, restoreRehearsalBrowse, restoreRehearsalFileName, restoreRehearsalStatus, restoreRehearsalRuleHeading, restoreRehearsalRuleIntro, restoreRehearsalRuleEmpty, restoreRehearsalTableCaption, restoreRehearsalMetricHeader, restoreRehearsalLiveHeader, restoreRehearsalSandboxHeader, restoreRehearsalDifferenceHeader, restoreRehearsalCloseButton, restoreRehearsalProceedButton, restoreRehearsalAbortButton, offlineElem, offlineLabel, offlineNotice, offlineHelp, isExplicitlyOffline, legalLinks, impressumElem, privacyElem, setupManageHeadingElem, deviceSelectionHeadingElem, resultsHeadingElem, deviceManagerHeadingElem, batteryComparisonHeadingElem, batteryComparisonDescriptionElem, batteryTableElem, setupDiagramHeadingElem, sideMenuLinks, savedSetupsLabelElem, setupNameLabelElem, sharedLinkLabelElem, deleteGearListHelp, editProjectBtnElem, addExtraGearBtnElem, _texts$en27, extraLabel, _texts$en28, heading, _texts$en29, filenameLabel, _texts$en30, confirmLabel, _texts$en31, cancelLabel, _texts$en32, _texts$en33, label, help, _texts$en34, _texts$en35, _label3, _help2, sharedImportLegendText, _texts$en36, title, _texts$en37, message, _texts$en38, _label4, _texts$en39, _label5, _texts$en40, legend, _texts$en41, _texts$en42, _label6, _help3, _texts$en43, _texts$en44, _label7, _help4, _texts$en45, _texts$en46, _label8, _help5, cameraLabelElem, monitorLabelElem, videoLabelElem, cageLabelElem, distanceLabelElem, batteryPlateLabelElem, batteryHotswapLabelElem, fizLegendElem, fizMotorsLabelElem, fizControllersLabelElem, cineResultsModule, resultsLocalizationApplied, batteryComparisonLocalized, resultsPlainSummaryElem, resultsPlainSummaryTitleElem, resultsPlainSummaryTextElem, resultsPlainSummaryNoteElem, breakdownListTarget, totalPowerLabelElem, batteryCountLabelElem, unitElem, fb, _label9, userNote, idx, tempNoteElem, lensDeviceMountHeadingElem, lensDeviceMountLabelElem, lensFocusScaleLabelElem, focusScaleLabel, focusScaleHelp, monitorLatencyLabelElem, monitorLatencyHelpText, viewfinderLatencyLabelElem, viewfinderLatencyHelpText, videoPowerHeadingElem, videoPowerLabelElem, powerHelp, addDeviceLabel, updateDeviceLabel, noneMap, existingDevicesHeading, settingsTitleElem, _texts$en47, sectionsLabel, getSettingsTabLabelText, summarizeSettingsTabHelp, applySettingsTabLabel, _texts$en48, _texts$en49, generalLabel, generalHelp, _texts$en50, sectionHeading, _texts$en51, _sectionHeading, _texts$en52, _sectionHeading2, _texts$en53, _sectionHeading3, settingsLanguageLabel, languageHelp, settingsDarkLabel, darkModeHelp, settingsPinkLabel, pinkModeHelp, accentLabel, accentHelp, _texts$en74, description, cameraColorHelpTemplate, cameraColorLabelEntries, accentResetLabel, accentResetHelp, settingsTemperatureUnitLabel, tempUnitHelp, settingsFocusScaleLabel, _focusScaleHelp, fontSizeLabel, sizeHelp, fontFamilyLabel, familyHelp, localFontsHelp, builtInLabel, localLabel, localFontsLabel, statusKey, arg, template, settingsLogoLabel, logoHelp, _texts$en77, _texts$en78, headingHelp, _texts$en79, _texts$en80, _heading, _texts$en81, _description, _texts$en83, _texts$en84, _texts$en85, _label0, _help6, _texts$en86, _label1, _texts$en87, _label10, _texts$en88, _texts$en89, _label11, _help7, _texts$en90, _texts$en91, _label12, _help8, _texts$en92, _texts$en93, _label13, _help9, _texts$en94, _texts$en95, _label14, _help0, _texts$en96, _texts$en97, _label15, _help1, _texts$en98, placeholder, _texts$en99, _texts$en100, _label16, _help10, _texts$en101, _label17, _texts$en102, _texts$en103, _description2, _texts$en104, _texts$en105, _label18, _help11, _texts$en106, hiddenText, _texts$en107, _texts$en108, _label19, _help12, _texts$en109, _label20, _texts$en110, _label21, _texts$en111, emptyText, _texts$en112, _texts$en113, _label22, _help13, _texts$en114, _texts$en115, _label23, _help14, _texts$en116, _label24, _texts$en117, _texts$en118, _label25, _help15, _texts$en119, _texts$en120, _label26, _help16, _texts$en121, _texts$en122, modeLabel, modeHelp, _texts$en123, _texts$en124, baseLabel, baseHelp, _texts$en125, _texts$en126, factorLabel, factorHelp, _texts$en127, _texts$en128, _texts$en129, _texts$en130, _texts$en131, _texts$en132, _label27, _help17, minimumLabel, maximumLabel, everyLabel, valueLabel, _texts$en133, _texts$en134, _label28, _help18, _texts$en135, _texts$en136, _label29, _help19, _texts$en137, _texts$en138, _label30, _help20, _texts$en139, _texts$en140, _label31, _help21, _texts$en141, _texts$en142, _label32, _help22, _texts$en143, _texts$en144, _label33, _help23, _texts$en145, _texts$en146, _texts$en147, _texts$en148, _label34, _help24, _texts$en149, _texts$en150, _label35, _help25, _texts$en151, _label36, _texts$en152, _texts$en153, _texts$en154, greaterLabel, lessLabel, equalLabel, _texts$en155, _texts$en156, _label37, _help26, _texts$en157, _help27, _texts$en158, _texts$en159, _label38, _help28, _texts$en160, _texts$en161, _label39, _help29, _texts$en162, _texts$en163, _label40, _help30, _texts$en164, _texts$en165, _label41, _help31, _texts$en166, _texts$en167, _label42, _help32, _texts$en168, _texts$en169, _label43, _help33, _texts$en170, _texts$en171, _label44, _help34, _texts$en172, _texts$en173, _label45, _help35, _texts$en174, _texts$en175, _label46, _help36, _texts$en176, _texts$en177, _label47, _help37, _texts$en178, _texts$en179, _label48, _help38, logicLabelText, logicHelpText, logicOptionTexts, _texts$en186, _texts$en187, _texts$en188, _texts$en189, _label49, _help39, _placeholder, _texts$en190, _texts$en191, _label50, hint, helpText, _texts$en192, _label51, _texts$en193, _label52, _texts$en194, _label53, _texts$en195, _label54, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201, _texts$en202, noneLabel, monitorLabel, directorLabel, tripodHeadLabel, _tripodBowlLabel, _tripodTypesLabel, _tripodSpreaderLabel, selectorLabels, _texts$en203, _label55, _texts$en204, _label56, _texts$en205, _texts$en206, _texts$en207, _texts$en208, _label57, _help40, _placeholder2, _texts$en209, _texts$en210, _label58, _hint, _helpText, _texts$en211, _label59, _texts$en212, _label60, _texts$en213, _label61, _texts$en214, _label62, _texts$en215, _texts$en216, _texts$en217, _texts$en218, _texts$en219, _texts$en220, _texts$en221, _noneLabel, _monitorLabel, _directorLabel, _tripodHeadLabel, _tripodBowlLabel2, _tripodTypesLabel2, _tripodSpreaderLabel2, _selectorLabels, _texts$en222, _label63, _texts$en223, _label64, _texts$en224, _heading2, _texts$en225, _description3, _texts$en226, _heading3, _texts$en227, _label65, _texts$en228, _label66, contrastLabel, contrastHelp, accessibilityHeading, backupHeading, projectBackupsHeading, headingText, descriptionText, projectBackupsDescription, _descriptionText, dataHelp, _texts$en229, _texts$en230, _headingText, _headingHelp, _texts$en231, _texts$en232, _texts$en233, requestLabel, requestHelp, _texts$en234, idleText, _texts$en235, _texts$en236, _headingText2, _headingHelp2, _texts$en237, _texts$en238, _texts$en239, backupLabel, backupHelp, _texts$en240, _texts$en241, openLabel, openHelp, _texts$en242, _texts$en243, statusHeading, statusHelp, _texts$en244, _texts$en245, _texts$en246, statusDefaultText, _texts$en248, sectionHelp, _texts$en249, _texts$en250, _headingText3, _headingHelp3, _texts$en251, _texts$en252, _filterLabel, _texts$en253, _texts$en254, _texts$en255, _texts$en256, _texts$en257, optionTexts, filterHelp, _texts$en258, namespaceLabel, _texts$en259, _texts$en260, _placeholder3, namespaceHelp, _texts$en261, historyLabel, _texts$en262, historyHelp, _texts$en263, _texts$en264, limitHelp, limitAria, _texts$en265, consoleLabel, _texts$en266, consoleHelp, _texts$en267, consoleCaptureLabel, _texts$en268, consoleCaptureHelp, _texts$en269, captureLabel, _texts$en270, captureHelp, _texts$en271, persistLabel, _texts$en272, persistHelp, _texts$en273, exportLabel, _texts$en274, exportHelp, _texts$en275, statusText, _texts$en276, _emptyText, _texts$en277, showAutoBackupsLabel, autoBackupsHelp, compareLabel, compareHelp, primaryLabel, compareLabelText, _placeholder4, _exportLabel, _exportHelp, closeLabel, _backupLabel, _backupHelp, restoreLabel, restoreHelp, rehearsalLabel, rehearsalHelp, browseLabel, _texts$en278, _texts$en279, _texts$en280, resolvedRestoreRehearsalCloseButton, _closeLabel, _texts$en281, _texts$en282, proceedLabel, proceedHelp, _texts$en283, _texts$en284, abortLabel, abortHelp, resetLabel, resetHelp, aboutHeading, aboutVersionElem, supportLinkConfigs, langTexts, fallbackTexts, _texts$en285, _label67, saveHelp, _texts$en286, _cancelLabel, cancelHelp, menuToggle, _texts$en287, _texts$en288, menuLabel, _closeLabel2, closeHelp, menuHelp, sideMenu, sideMenuHelp, sideMenuTitle, _texts$en289, titleLabel, titleHelp, closeMenuButton, closeMenuLabel, _texts$en290, _closeLabel3, _closeHelp, reloadLabel, reloadHelp, _offlineNotice, helpShortcutList, helpAriaShortcuts, quickStartHeading, fallback, onboardingCopyElement, fallbackCopy, dataSafetyHeading, _fallback, restoreDrillHeading, _fallback2, restoreDrillNote, _fallback3, _fallback4, _fallback5, exportRevert, downloadDiagramButton, snapActive, resetViewBtn, zoomInBtn, zoomOutBtn, diagramHint, fallbackProjectForm, projectFormTexts, _texts$en291, _texts$lang5, setLabelText, setPlaceholder, setOptionText, crewLabelText, rangeTemplate, defaultHint, legendText, slowRangeTemplate, slowDefaultHint, seriesEmptyText, optionsEmptyText, removeTemplate, mountLabelText, _noneLabel2, yesLabel, projectCancelButton, cancelText, submitText, crewPlaceholders, crewRoleLabels, fallbackContacts, contactsTexts, profileSnapshot, stripTrailingPunctuation, addEntryLabel, crewLabel, _label68, prepLabel, _label69, shootLabel, _label70, returnLabel, _label71, closeText, _t;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -8475,7 +6780,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             fallbackLocale = translationSource[DEFAULT_LANGUAGE_SAFE] || {};
             normalizeTemperatureUnitSafe = function normalizeTemperatureUnitSafe(unit) {
-              var _TEMPERATURE_UNITS5;
               if (typeof normalizeTemperatureUnit === "function") {
                 try {
                   return normalizeTemperatureUnit(unit);
@@ -8484,18 +6788,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 }
               }
               if (typeof unit === "string") {
-                var _TEMPERATURE_UNITS, _TEMPERATURE_UNITS3;
                 var trimmed = unit.trim().toLowerCase();
-                if (trimmed === ((_TEMPERATURE_UNITS = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS === void 0 ? void 0 : _TEMPERATURE_UNITS.fahrenheit) || trimmed === "fahrenheit" || trimmed === "f") {
-                  var _TEMPERATURE_UNITS2;
-                  return ((_TEMPERATURE_UNITS2 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS2 === void 0 ? void 0 : _TEMPERATURE_UNITS2.fahrenheit) || "fahrenheit";
+                if (trimmed === (CORE_TEMPERATURE_UNITS === null || CORE_TEMPERATURE_UNITS === void 0 ? void 0 : CORE_TEMPERATURE_UNITS.fahrenheit) || trimmed === "fahrenheit" || trimmed === "f") {
+                  return (CORE_TEMPERATURE_UNITS === null || CORE_TEMPERATURE_UNITS === void 0 ? void 0 : CORE_TEMPERATURE_UNITS.fahrenheit) || "fahrenheit";
                 }
-                if (trimmed === ((_TEMPERATURE_UNITS3 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS3 === void 0 ? void 0 : _TEMPERATURE_UNITS3.celsius) || trimmed === "celsius" || trimmed === "c") {
-                  var _TEMPERATURE_UNITS4;
-                  return ((_TEMPERATURE_UNITS4 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS4 === void 0 ? void 0 : _TEMPERATURE_UNITS4.celsius) || "celsius";
+                if (trimmed === (CORE_TEMPERATURE_UNITS === null || CORE_TEMPERATURE_UNITS === void 0 ? void 0 : CORE_TEMPERATURE_UNITS.celsius) || trimmed === "celsius" || trimmed === "c") {
+                  return (CORE_TEMPERATURE_UNITS === null || CORE_TEMPERATURE_UNITS === void 0 ? void 0 : CORE_TEMPERATURE_UNITS.celsius) || "celsius";
                 }
               }
-              return ((_TEMPERATURE_UNITS5 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS5 === void 0 ? void 0 : _TEMPERATURE_UNITS5.celsius) || "celsius";
+              return (CORE_TEMPERATURE_UNITS === null || CORE_TEMPERATURE_UNITS === void 0 ? void 0 : CORE_TEMPERATURE_UNITS.celsius) || "celsius";
             };
             FALLBACK_NORMALIZE_FOCUS_SCALE = function FALLBACK_NORMALIZE_FOCUS_SCALE(value) {
               if (typeof value === "string") {
@@ -8592,11 +6893,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               element.textContent = text;
             };
             createHelpLink = function createHelpLink(href, text) {
-              var _ref77 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-                target = _ref77.target,
-                highlight = _ref77.highlight,
-                _ref77$isButton = _ref77.isButton,
-                isButton = _ref77$isButton === void 0 ? true : _ref77$isButton;
+              var _ref73 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+                target = _ref73.target,
+                highlight = _ref73.highlight,
+                _ref73$isButton = _ref73.isButton,
+                isButton = _ref73$isButton === void 0 ? true : _ref73$isButton;
               if (!doc) {
                 return null;
               }
@@ -8874,7 +7175,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
             if (addExtraGearBtnElem) {
-              extraLabel = texts[lang].addExtraGearBtn || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.addExtraGearBtn) || "Add temporary extra gear";
+              extraLabel = texts[lang].addExtraGearBtn || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.addExtraGearBtn) || "Add temporary extra gear";
               addExtraGearBtnElem.textContent = extraLabel;
               addExtraGearBtnElem.setAttribute("title", extraLabel);
               addExtraGearBtnElem.setAttribute("data-help", extraLabel);
@@ -8882,30 +7183,30 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
             shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
             if (shareDialogHeadingElem) {
-              heading = texts[lang].shareDialogTitle || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.shareDialogTitle) || shareDialogHeadingElem.textContent;
+              heading = texts[lang].shareDialogTitle || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.shareDialogTitle) || shareDialogHeadingElem.textContent;
               shareDialogHeadingElem.textContent = heading;
             }
             if (shareFilenameLabelElem) {
-              filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.shareFilenameLabel) || shareFilenameLabelElem.textContent;
+              filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.shareFilenameLabel) || shareFilenameLabelElem.textContent;
               shareFilenameLabelElem.textContent = filenameLabel;
             }
             if (shareConfirmBtn) {
-              confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.shareDialogConfirm) || shareConfirmBtn.textContent;
+              confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.shareDialogConfirm) || shareConfirmBtn.textContent;
               setButtonLabelWithIconBinding(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
               shareConfirmBtn.setAttribute('title', confirmLabel);
               shareConfirmBtn.setAttribute('aria-label', confirmLabel);
               shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
             }
             if (shareCancelBtn) {
-              cancelLabel = texts[lang].shareDialogCancel || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.shareDialogCancel) || shareCancelBtn.textContent;
+              cancelLabel = texts[lang].shareDialogCancel || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.shareDialogCancel) || shareCancelBtn.textContent;
               setButtonLabelWithIconBinding(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
               shareCancelBtn.setAttribute('title', cancelLabel);
               shareCancelBtn.setAttribute('aria-label', cancelLabel);
             }
             if (shareIncludeAutoGearText) {
-              label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
+              label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
               shareIncludeAutoGearText.textContent = label;
-              help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.shareIncludeAutoGearHelp) || label;
+              help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.shareIncludeAutoGearHelp) || label;
               if (shareIncludeAutoGearLabelElem) {
                 shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
               }
@@ -8914,38 +7215,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (shareIncludeOwnedGearText) {
-              _label5 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
-              shareIncludeOwnedGearText.textContent = _label5;
-              _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.shareIncludeOwnedGearHelp) || _label5;
+              _label3 = texts[lang].shareIncludeOwnedGearLabel || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.shareIncludeOwnedGearLabel) || shareIncludeOwnedGearText.textContent;
+              shareIncludeOwnedGearText.textContent = _label3;
+              _help2 = texts[lang].shareIncludeOwnedGearHelp || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.shareIncludeOwnedGearHelp) || _label3;
               if (shareIncludeOwnedGearLabelElem) {
                 shareIncludeOwnedGearLabelElem.setAttribute('data-help', _help2);
               }
               if (shareIncludeOwnedGearCheckbox) {
-                shareIncludeOwnedGearCheckbox.setAttribute('aria-label', _label5);
+                shareIncludeOwnedGearCheckbox.setAttribute('aria-label', _label3);
               }
             }
             sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
             if (sharedImportDialogHeading) {
-              title = texts[lang].sharedImportDialogTitle || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
+              title = texts[lang].sharedImportDialogTitle || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
               sharedImportDialogHeading.textContent = title;
             }
             if (sharedImportDialogMessage) {
-              message = texts[lang].sharedImportDialogMessage || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
+              message = texts[lang].sharedImportDialogMessage || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
               sharedImportDialogMessage.textContent = message;
               sharedImportDialogMessage.setAttribute('data-help', message);
             }
             if (sharedImportConfirmBtn) {
-              _label6 = texts[lang].sharedImportDialogConfirm || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
-              setButtonLabelWithIconBinding(sharedImportConfirmBtn, _label6, ICON_GLYPHS.check);
-              sharedImportConfirmBtn.setAttribute('data-help', _label6);
+              _label4 = texts[lang].sharedImportDialogConfirm || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
+              setButtonLabelWithIconBinding(sharedImportConfirmBtn, _label4, ICON_GLYPHS.check);
+              sharedImportConfirmBtn.setAttribute('data-help', _label4);
             }
             if (sharedImportCancelBtn) {
-              _label7 = texts[lang].sharedImportDialogCancel || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
-              setButtonLabelWithIconBinding(sharedImportCancelBtn, _label7, ICON_GLYPHS.circleX);
-              sharedImportCancelBtn.setAttribute('data-help', _label7);
+              _label5 = texts[lang].sharedImportDialogCancel || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
+              setButtonLabelWithIconBinding(sharedImportCancelBtn, _label5, ICON_GLYPHS.circleX);
+              sharedImportCancelBtn.setAttribute('data-help', _label5);
             }
             if (sharedImportLegend) {
-              legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
+              legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
               sharedImportLegend.textContent = legend;
               sharedImportLegendText = legend;
               if (sharedImportOptions) {
@@ -8957,28 +7258,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
             }
             if (sharedImportModeNoneOption) {
-              _label8 = texts[lang].sharedImportAutoGearNone || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
-              sharedImportModeNoneOption.textContent = _label8;
-              _help3 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.sharedImportAutoGearNoneHelp) || _label8;
+              _label6 = texts[lang].sharedImportAutoGearNone || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
+              sharedImportModeNoneOption.textContent = _label6;
+              _help3 = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.sharedImportAutoGearNoneHelp) || _label6;
               sharedImportModeNoneOption.setAttribute('data-help', _help3);
               sharedImportModeNoneOption.setAttribute('title', _help3);
-              sharedImportModeNoneOption.setAttribute('aria-label', _label8);
+              sharedImportModeNoneOption.setAttribute('aria-label', _label6);
             }
             if (sharedImportModeProjectOption) {
-              _label9 = texts[lang].sharedImportAutoGearProject || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
-              sharedImportModeProjectOption.textContent = _label9;
-              _help4 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.sharedImportAutoGearProjectHelp) || _label9;
+              _label7 = texts[lang].sharedImportAutoGearProject || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
+              sharedImportModeProjectOption.textContent = _label7;
+              _help4 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.sharedImportAutoGearProjectHelp) || _label7;
               sharedImportModeProjectOption.setAttribute('data-help', _help4);
               sharedImportModeProjectOption.setAttribute('title', _help4);
-              sharedImportModeProjectOption.setAttribute('aria-label', _label9);
+              sharedImportModeProjectOption.setAttribute('aria-label', _label7);
             }
             if (sharedImportModeGlobalOption) {
-              _label0 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
-              sharedImportModeGlobalOption.textContent = _label0;
-              _help5 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.sharedImportAutoGearGlobalHelp) || _label0;
+              _label8 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
+              sharedImportModeGlobalOption.textContent = _label8;
+              _help5 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.sharedImportAutoGearGlobalHelp) || _label8;
               sharedImportModeGlobalOption.setAttribute('data-help', _help5);
               sharedImportModeGlobalOption.setAttribute('title', _help5);
-              sharedImportModeGlobalOption.setAttribute('aria-label', _label0);
+              sharedImportModeGlobalOption.setAttribute('aria-label', _label8);
             }
             applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
             applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
@@ -9135,13 +7436,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
               }
               totalPowerLabelElem = document.getElementById("totalPowerLabel");
-              totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
-              totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
-              refreshTotalCurrentLabels(lang);
+              if (totalPowerLabelElem && texts[lang]) {
+                totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
+                totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+              }
+              if (typeof refreshTotalCurrentLabels === 'function') {
+                refreshTotalCurrentLabels(lang);
+              }
               updateMountVoltageSettingLabels(lang);
               batteryCountLabelElem = document.getElementById("batteryCountLabel");
-              batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
-              batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
+              if (batteryCountLabelElem) {
+                batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
+                batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
+              }
               if (pinWarnElem) pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
               if (dtapWarnElem) dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
               if (hotswapWarnElem) hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
@@ -9153,22 +7460,24 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
               fb = renderFeedbackTable(getCurrentSetupKey());
               if (batteryLifeLabelElem) {
-                _label1 = texts[lang].batteryLifeLabel;
+                _label9 = texts[lang].batteryLifeLabel;
                 if (fb) {
                   userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
-                  idx = _label1.indexOf(')');
+                  idx = _label9.indexOf(')');
                   if (idx !== -1) {
-                    _label1 = "".concat(_label1.slice(0, idx), ", ").concat(userNote).concat(_label1.slice(idx));
+                    _label9 = "".concat(_label9.slice(0, idx), ", ").concat(userNote).concat(_label9.slice(idx));
                   }
                 }
-                batteryLifeLabelElem.textContent = _label1;
+                batteryLifeLabelElem.textContent = _label9;
                 batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
               }
               if (runtimeAverageNoteElem) {
                 runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
               }
               dispatchTemperatureNoteRender(lastRuntimeHours);
-              refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+              if (typeof refreshFeedbackTemperatureLabel === 'function') {
+                refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+              }
               updateFeedbackTemperatureOptions(lang, temperatureUnit);
               tempNoteElem = document.getElementById("temperatureNote");
               if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
@@ -9231,7 +7540,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
             document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
             document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
-            document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
+            monitorLatencyLabelElem = document.getElementById("monitorLatencyLabel");
+            if (monitorLatencyLabelElem) {
+              monitorLatencyLabelElem.textContent = texts[lang].monitorLatencyLabel;
+              monitorLatencyHelpText = texts[lang].monitorLatencyHelp;
+              if (monitorLatencyHelpText) {
+                monitorLatencyLabelElem.setAttribute('data-help', monitorLatencyHelpText);
+                monitorLatencyLabelElem.setAttribute('title', monitorLatencyHelpText);
+                if (monitorLatencyInput) {
+                  monitorLatencyInput.setAttribute('data-help', monitorLatencyHelpText);
+                  monitorLatencyInput.setAttribute('title', monitorLatencyHelpText);
+                }
+              } else {
+                monitorLatencyLabelElem.removeAttribute('data-help');
+                monitorLatencyLabelElem.removeAttribute('title');
+                if (monitorLatencyInput) {
+                  monitorLatencyInput.removeAttribute('data-help');
+                  monitorLatencyInput.removeAttribute('title');
+                }
+              }
+            }
             document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
             document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
             document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
@@ -9244,7 +7572,42 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
             document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
             document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
-            document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
+            viewfinderLatencyLabelElem = document.getElementById("viewfinderLatencyLabel");
+            if (viewfinderLatencyLabelElem) {
+              viewfinderLatencyLabelElem.textContent = texts[lang].viewfinderLatencyLabel;
+              viewfinderLatencyHelpText = texts[lang].viewfinderLatencyHelp;
+              if (viewfinderLatencyHelpText) {
+                viewfinderLatencyLabelElem.setAttribute('data-help', viewfinderLatencyHelpText);
+                viewfinderLatencyLabelElem.setAttribute('title', viewfinderLatencyHelpText);
+                if (viewfinderLatencyInput) {
+                  viewfinderLatencyInput.setAttribute('data-help', viewfinderLatencyHelpText);
+                  viewfinderLatencyInput.setAttribute('title', viewfinderLatencyHelpText);
+                }
+              } else {
+                viewfinderLatencyLabelElem.removeAttribute('data-help');
+                viewfinderLatencyLabelElem.removeAttribute('title');
+                if (viewfinderLatencyInput) {
+                  viewfinderLatencyInput.removeAttribute('data-help');
+                  viewfinderLatencyInput.removeAttribute('title');
+                }
+              }
+            }
+            videoPowerHeadingElem = document.getElementById("videoPowerInputsHeading");
+            if (videoPowerHeadingElem) {
+              videoPowerHeadingElem.textContent = texts[lang].videoPowerInputsHeading || texts[lang].powerInputsHeading || 'Power Inputs';
+            }
+            videoPowerLabelElem = document.getElementById("videoPowerInputLabel");
+            if (videoPowerLabelElem) {
+              videoPowerLabelElem.textContent = texts[lang].videoPowerInputLabel || texts[lang].powerInputsHeading;
+              powerHelp = texts[lang].videoPowerInputHelp || '';
+              if (powerHelp) {
+                videoPowerLabelElem.setAttribute('data-help', powerHelp);
+                videoPowerLabelElem.setAttribute('title', powerHelp);
+              } else {
+                videoPowerLabelElem.removeAttribute('data-help');
+                videoPowerLabelElem.removeAttribute('title');
+              }
+            }
             document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
             document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
             document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
@@ -9302,7 +7665,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             } catch (e) {
               console.warn("Could not save language to localStorage", e);
             }
-            refreshDeviceLists();
+            if (typeof refreshDeviceLists === 'function') {
+              refreshDeviceLists();
+            } else if (typeof window !== 'undefined' && typeof window.refreshDeviceLists === 'function') {
+              window.refreshDeviceLists();
+            }
             applyFilters();
             updateCalculations();
             existingDevicesHeading = typeof document !== 'undefined' ? document.getElementById('existingDevicesHeading') : null;
@@ -9330,7 +7697,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
             }
             if (settingsTablist) {
-              sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
+              sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
               settingsTablist.setAttribute('aria-label', sectionsLabel);
             }
             getSettingsTabLabelText = function getSettingsTabLabelText(button) {
@@ -9404,27 +7771,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             };
             if (settingsTabGeneral) {
-              generalLabel = texts[lang].settingsTabGeneral || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
-              generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
+              generalLabel = texts[lang].settingsTabGeneral || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
+              generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
               applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
               if (generalSettingsHeading) {
                 generalSettingsHeading.textContent = generalLabel;
                 generalSettingsHeading.setAttribute('data-help', generalHelp);
               }
               if (generalLanguageHeading) {
-                sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
+                sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
                 generalLanguageHeading.textContent = sectionHeading;
               }
               if (generalAppearanceHeading) {
-                _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
+                _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
                 generalAppearanceHeading.textContent = _sectionHeading;
               }
               if (generalTypographyHeading) {
-                _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
+                _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
                 generalTypographyHeading.textContent = _sectionHeading2;
               }
               if (generalBrandingHeading) {
-                _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
+                _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
                 generalBrandingHeading.textContent = _sectionHeading3;
               }
               documentationTrackerController.updateLocalization({
@@ -9436,11 +7803,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 documentationTrackerController.render();
               }
             }
-            applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearHeadingHelp));
-            applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.accessibilityHeadingHelp));
-            applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.backupHeadingHelp));
-            applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.settingsTabData) || texts[lang].dataHeading || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.dataHeadingHelp));
-            applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.aboutHeadingHelp));
+            applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.autoGearHeadingHelp));
+            applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.accessibilityHeadingHelp));
+            applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.backupHeadingHelp));
+            applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.settingsTabData) || texts[lang].dataHeading || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.dataHeadingHelp));
+            applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.aboutHeadingHelp));
             settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
             if (settingsLanguageLabel) {
               settingsLanguageLabel.textContent = texts[lang].languageSetting;
@@ -9482,22 +7849,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
             }
             if (cameraColorsDescription) {
-              description = texts[lang].cameraColorSettingDescription || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.cameraColorSettingDescription) || cameraColorsDescription.textContent;
+              description = texts[lang].cameraColorSettingDescription || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.cameraColorSettingDescription) || cameraColorsDescription.textContent;
               cameraColorsDescription.textContent = description;
             }
-            cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.cameraColorInputHelp) || '';
+            cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.cameraColorInputHelp) || '';
             cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
-            cameraColorLabelEntries.forEach(function (_ref78) {
-              var _texts$en79;
-              var _ref79 = _slicedToArray(_ref78, 3),
-                letter = _ref79[0],
-                labelElement = _ref79[1],
-                inputElement = _ref79[2];
+            cameraColorLabelEntries.forEach(function (_ref74) {
+              var _texts$en76;
+              var _ref75 = _slicedToArray(_ref74, 3),
+                letter = _ref75[0],
+                labelElement = _ref75[1],
+                inputElement = _ref75[2];
               if (!labelElement) {
                 return;
               }
               var key = "cameraColor".concat(letter, "Label");
-              var labelText = texts[lang][key] || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79[key]) || labelElement.textContent;
+              var labelText = texts[lang][key] || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76[key]) || labelElement.textContent;
               labelElement.textContent = labelText;
               var helpText = cameraColorHelpTemplate ? cameraColorHelpTemplate.replace('%s', letter) : '';
               if (helpText) {
@@ -9619,26 +7986,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearHeadingElem) {
-              autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearHeading) || 'Automatic Gear Rules';
-              headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearHeadingHelp);
+              autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearHeading) || 'Automatic Gear Rules';
+              headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearHeadingHelp);
               if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
             }
             if (autoGearDescriptionElem) {
-              autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearDescription) || '';
+              autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearDescription) || '';
             }
             if (autoGearMonitorDefaultsHeading) {
-              _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
+              _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
               autoGearMonitorDefaultsHeading.textContent = _heading;
             }
             if (autoGearMonitorDefaultsDescription) {
-              _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
+              _description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
               autoGearMonitorDefaultsDescription.textContent = _description;
             }
             autoGearMonitorDefaultControls.forEach(function (control) {
-              var _texts$en85, _control$label, _control$label2;
+              var _texts$en82, _control$label, _control$label2;
               if (!control) return;
               var labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
-              var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
+              var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
               if (control.label && labelText) {
                 control.label.textContent = labelText;
                 control.label.setAttribute('data-help', labelText);
@@ -9655,121 +8022,121 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               defer: true
             });
             if (autoGearPresetDescription) {
-              autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearPresetDescription) || '';
+              autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearPresetDescription) || '';
             }
             if (autoGearPresetLabel) {
-              _label10 = texts[lang].autoGearPresetLabel || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearPresetLabel) || autoGearPresetLabel.textContent;
-              _help6 = texts[lang].autoGearPresetDescription || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearPresetDescription) || _label10;
-              autoGearPresetLabel.textContent = _label10;
+              _label0 = texts[lang].autoGearPresetLabel || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearPresetLabel) || autoGearPresetLabel.textContent;
+              _help6 = texts[lang].autoGearPresetDescription || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.autoGearPresetDescription) || _label0;
+              autoGearPresetLabel.textContent = _label0;
               autoGearPresetLabel.setAttribute('data-help', _help6);
               if (autoGearPresetSelect) {
-                autoGearPresetSelect.setAttribute('aria-label', _label10);
+                autoGearPresetSelect.setAttribute('aria-label', _label0);
                 autoGearPresetSelect.setAttribute('data-help', _help6);
               }
             }
             if (autoGearSavePresetButton) {
-              _label11 = texts[lang].autoGearSavePresetButton || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
-              setButtonLabelWithIconBinding(autoGearSavePresetButton, _label11, ICON_GLYPHS.save);
-              autoGearSavePresetButton.setAttribute('data-help', _label11);
-              autoGearSavePresetButton.setAttribute('aria-label', _label11);
+              _label1 = texts[lang].autoGearSavePresetButton || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
+              setButtonLabelWithIconBinding(autoGearSavePresetButton, _label1, ICON_GLYPHS.save);
+              autoGearSavePresetButton.setAttribute('data-help', _label1);
+              autoGearSavePresetButton.setAttribute('aria-label', _label1);
             }
             if (autoGearDeletePresetButton) {
-              _label12 = texts[lang].autoGearDeletePresetButton || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
-              setButtonLabelWithIconBinding(autoGearDeletePresetButton, _label12, ICON_GLYPHS.trash);
-              autoGearDeletePresetButton.setAttribute('data-help', _label12);
-              autoGearDeletePresetButton.setAttribute('aria-label', _label12);
+              _label10 = texts[lang].autoGearDeletePresetButton || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
+              setButtonLabelWithIconBinding(autoGearDeletePresetButton, _label10, ICON_GLYPHS.trash);
+              autoGearDeletePresetButton.setAttribute('data-help', _label10);
+              autoGearDeletePresetButton.setAttribute('aria-label', _label10);
             }
             if (autoGearAddRuleBtn) {
-              _label13 = texts[lang].autoGearAddRule || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearAddRule) || autoGearAddRuleBtn.textContent;
-              setButtonLabelWithIconBinding(autoGearAddRuleBtn, _label13, ICON_GLYPHS.add);
-              _help7 = texts[lang].autoGearHeadingHelp || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearHeadingHelp) || _label13;
+              _label11 = texts[lang].autoGearAddRule || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearAddRule) || autoGearAddRuleBtn.textContent;
+              setButtonLabelWithIconBinding(autoGearAddRuleBtn, _label11, ICON_GLYPHS.add);
+              _help7 = texts[lang].autoGearHeadingHelp || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearHeadingHelp) || _label11;
               autoGearAddRuleBtn.setAttribute('data-help', _help7);
             }
             if (autoGearResetFactoryButton) {
-              _label14 = texts[lang].autoGearResetFactoryButton || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
-              _help8 = texts[lang].autoGearResetFactoryHelp || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearResetFactoryHelp) || _label14;
-              setButtonLabelWithIconBinding(autoGearResetFactoryButton, _label14, ICON_GLYPHS.reload);
+              _label12 = texts[lang].autoGearResetFactoryButton || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
+              _help8 = texts[lang].autoGearResetFactoryHelp || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearResetFactoryHelp) || _label12;
+              setButtonLabelWithIconBinding(autoGearResetFactoryButton, _label12, ICON_GLYPHS.reload);
               autoGearResetFactoryButton.setAttribute('data-help', _help8);
               autoGearResetFactoryButton.setAttribute('title', _help8);
-              autoGearResetFactoryButton.setAttribute('aria-label', _label14);
+              autoGearResetFactoryButton.setAttribute('aria-label', _label12);
             }
             if (autoGearExportButton) {
-              _label15 = texts[lang].autoGearExportButton || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearExportButton) || autoGearExportButton.textContent;
-              _help9 = texts[lang].autoGearExportHelp || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearExportHelp) || _label15;
-              setButtonLabelWithIconBinding(autoGearExportButton, _label15, ICON_GLYPHS.fileExport);
+              _label13 = texts[lang].autoGearExportButton || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearExportButton) || autoGearExportButton.textContent;
+              _help9 = texts[lang].autoGearExportHelp || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearExportHelp) || _label13;
+              setButtonLabelWithIconBinding(autoGearExportButton, _label13, ICON_GLYPHS.fileExport);
               autoGearExportButton.setAttribute('data-help', _help9);
               autoGearExportButton.setAttribute('title', _help9);
-              autoGearExportButton.setAttribute('aria-label', _label15);
+              autoGearExportButton.setAttribute('aria-label', _label13);
             }
             if (autoGearImportButton) {
-              _label16 = texts[lang].autoGearImportButton || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearImportButton) || autoGearImportButton.textContent;
-              _help0 = texts[lang].autoGearImportHelp || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearImportHelp) || _label16;
-              setButtonLabelWithIconBinding(autoGearImportButton, _label16, ICON_GLYPHS.fileImport);
+              _label14 = texts[lang].autoGearImportButton || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearImportButton) || autoGearImportButton.textContent;
+              _help0 = texts[lang].autoGearImportHelp || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearImportHelp) || _label14;
+              setButtonLabelWithIconBinding(autoGearImportButton, _label14, ICON_GLYPHS.fileImport);
               autoGearImportButton.setAttribute('data-help', _help0);
               autoGearImportButton.setAttribute('title', _help0);
-              autoGearImportButton.setAttribute('aria-label', _label16);
+              autoGearImportButton.setAttribute('aria-label', _label14);
             }
             if (autoGearSearchLabel) {
-              _label17 = texts[lang].autoGearSearchLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearSearchLabel) || autoGearSearchLabel.textContent;
-              _help1 = texts[lang].autoGearSearchHelp || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearSearchHelp) || _label17;
-              autoGearSearchLabel.textContent = _label17;
+              _label15 = texts[lang].autoGearSearchLabel || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearSearchLabel) || autoGearSearchLabel.textContent;
+              _help1 = texts[lang].autoGearSearchHelp || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearSearchHelp) || _label15;
+              autoGearSearchLabel.textContent = _label15;
               autoGearSearchLabel.setAttribute('data-help', _help1);
               if (autoGearSearchInput) {
-                placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
+                placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
                 autoGearSearchInput.setAttribute('placeholder', placeholder);
-                autoGearSearchInput.setAttribute('aria-label', _label17);
+                autoGearSearchInput.setAttribute('aria-label', _label15);
                 autoGearSearchInput.setAttribute('data-help', _help1);
               }
             }
             if (autoGearFilterScenarioLabel) {
-              _label18 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
-              _help10 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearFilterScenarioHelp) || _label18;
-              autoGearFilterScenarioLabel.textContent = _label18;
+              _label16 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
+              _help10 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearFilterScenarioHelp) || _label16;
+              autoGearFilterScenarioLabel.textContent = _label16;
               autoGearFilterScenarioLabel.setAttribute('data-help', _help10);
               if (autoGearFilterScenarioSelect) {
-                autoGearFilterScenarioSelect.setAttribute('aria-label', _label18);
+                autoGearFilterScenarioSelect.setAttribute('aria-label', _label16);
                 autoGearFilterScenarioSelect.setAttribute('data-help', _help10);
               }
             }
             if (autoGearFilterClearButton) {
-              _label19 = texts[lang].autoGearFilterClear || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearFilterClear) || autoGearFilterClearButton.textContent;
-              setButtonLabelWithIconBinding(autoGearFilterClearButton, _label19, ICON_GLYPHS.circleX);
-              autoGearFilterClearButton.setAttribute('data-help', _label19);
-              autoGearFilterClearButton.setAttribute('aria-label', _label19);
+              _label17 = texts[lang].autoGearFilterClear || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearFilterClear) || autoGearFilterClearButton.textContent;
+              setButtonLabelWithIconBinding(autoGearFilterClearButton, _label17, ICON_GLYPHS.circleX);
+              autoGearFilterClearButton.setAttribute('data-help', _label17);
+              autoGearFilterClearButton.setAttribute('aria-label', _label17);
             }
             refreshAutoGearScenarioFilterOptions(getAutoGearRules());
             if (autoGearBackupsHeading) {
-              autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
+              autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
             }
             if (autoGearBackupsDescription) {
-              _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearBackupsDescription) || '';
+              _description2 = texts[lang].autoGearBackupsDescription || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearBackupsDescription) || '';
               autoGearBackupsDescription.textContent = _description2;
               if (_description2) {
                 autoGearBackupsDescription.setAttribute('data-help', _description2);
               }
             }
             if (autoGearShowBackupsLabel) {
-              _label20 = texts[lang].autoGearShowBackupsLabel || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
-              _help11 = texts[lang].autoGearShowBackupsHelp || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearShowBackupsHelp) || _label20;
-              autoGearShowBackupsLabel.textContent = _label20;
+              _label18 = texts[lang].autoGearShowBackupsLabel || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
+              _help11 = texts[lang].autoGearShowBackupsHelp || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearShowBackupsHelp) || _label18;
+              autoGearShowBackupsLabel.textContent = _label18;
               autoGearShowBackupsLabel.setAttribute('data-help', _help11);
               if (autoGearShowBackupsCheckbox) {
-                autoGearShowBackupsCheckbox.setAttribute('aria-label', _label20);
+                autoGearShowBackupsCheckbox.setAttribute('aria-label', _label18);
                 autoGearShowBackupsCheckbox.setAttribute('data-help', _help11);
               }
             }
             if (autoGearBackupsHiddenNotice) {
-              hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
+              hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
               autoGearBackupsHiddenNotice.textContent = hiddenText;
             }
             if (autoGearBackupRetentionLabel) {
-              _label21 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
-              _help12 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearBackupRetentionHelp) || _label21;
-              autoGearBackupRetentionLabel.textContent = _label21;
+              _label19 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
+              _help12 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearBackupRetentionHelp) || _label19;
+              autoGearBackupRetentionLabel.textContent = _label19;
               autoGearBackupRetentionLabel.setAttribute('data-help', _help12);
               if (autoGearBackupRetentionInput) {
-                autoGearBackupRetentionInput.setAttribute('aria-label', _label21);
-                autoGearBackupRetentionInput.setAttribute('title', _label21);
+                autoGearBackupRetentionInput.setAttribute('aria-label', _label19);
+                autoGearBackupRetentionInput.setAttribute('title', _label19);
               }
             }
             if (autoGearBackupRetentionSummary) {
@@ -9778,21 +8145,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               });
             }
             if (autoGearBackupSelectLabel) {
-              _label22 = texts[lang].autoGearBackupSelectLabel || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
-              autoGearBackupSelectLabel.textContent = _label22;
+              _label20 = texts[lang].autoGearBackupSelectLabel || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
+              autoGearBackupSelectLabel.textContent = _label20;
               if (autoGearBackupSelect) {
-                autoGearBackupSelect.setAttribute('aria-label', _label22);
-                autoGearBackupSelect.setAttribute('title', _label22);
+                autoGearBackupSelect.setAttribute('aria-label', _label20);
+                autoGearBackupSelect.setAttribute('title', _label20);
               }
             }
             if (autoGearBackupRestoreButton) {
-              _label23 = texts[lang].autoGearBackupRestore || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
-              setButtonLabelWithIconBinding(autoGearBackupRestoreButton, _label23, ICON_GLYPHS.fileImport);
-              autoGearBackupRestoreButton.setAttribute('aria-label', _label23);
-              autoGearBackupRestoreButton.setAttribute('title', _label23);
+              _label21 = texts[lang].autoGearBackupRestore || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
+              setButtonLabelWithIconBinding(autoGearBackupRestoreButton, _label21, ICON_GLYPHS.fileImport);
+              autoGearBackupRestoreButton.setAttribute('aria-label', _label21);
+              autoGearBackupRestoreButton.setAttribute('title', _label21);
             }
             if (autoGearBackupEmptyMessage) {
-              emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
+              emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
               autoGearBackupEmptyMessage.textContent = emptyText;
             }
             if (autoGearBackupSelect) {
@@ -9801,35 +8168,35 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               });
             }
             if (autoGearRuleNameLabel) {
-              _label24 = texts[lang].autoGearRuleNameLabel || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
-              autoGearRuleNameLabel.textContent = _label24;
-              _help13 = texts[lang].autoGearRuleNameHelp || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearRuleNameHelp) || _label24;
+              _label22 = texts[lang].autoGearRuleNameLabel || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
+              autoGearRuleNameLabel.textContent = _label22;
+              _help13 = texts[lang].autoGearRuleNameHelp || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearRuleNameHelp) || _label22;
               autoGearRuleNameLabel.setAttribute('data-help', _help13);
               if (autoGearRuleNameInput) {
                 autoGearRuleNameInput.setAttribute('data-help', _help13);
-                autoGearRuleNameInput.setAttribute('aria-label', _label24);
+                autoGearRuleNameInput.setAttribute('aria-label', _label22);
               }
             }
             if (autoGearConditionSelectLabel) {
-              _label25 = texts[lang].autoGearConditionSelectLabel || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
-              _help14 = texts[lang].autoGearConditionSelectHelp || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearConditionSelectHelp) || _label25;
-              autoGearConditionSelectLabel.textContent = _label25;
+              _label23 = texts[lang].autoGearConditionSelectLabel || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
+              _help14 = texts[lang].autoGearConditionSelectHelp || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearConditionSelectHelp) || _label23;
+              autoGearConditionSelectLabel.textContent = _label23;
               autoGearConditionSelectLabel.setAttribute('data-help', _help14);
               if (autoGearConditionSelect) {
-                autoGearConditionSelect.setAttribute('aria-label', _label25);
+                autoGearConditionSelect.setAttribute('aria-label', _label23);
                 autoGearConditionSelect.setAttribute('data-help', _help14);
               }
             }
             if (autoGearConditionAddButton) {
-              _label26 = texts[lang].autoGearAddCondition || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
-              setButtonLabelWithIconBinding(autoGearConditionAddButton, _label26, ICON_GLYPHS.add);
-              autoGearConditionAddButton.setAttribute('aria-label', _label26);
-              autoGearConditionAddButton.setAttribute('data-help', _label26);
+              _label24 = texts[lang].autoGearAddCondition || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
+              setButtonLabelWithIconBinding(autoGearConditionAddButton, _label24, ICON_GLYPHS.add);
+              autoGearConditionAddButton.setAttribute('aria-label', _label24);
+              autoGearConditionAddButton.setAttribute('data-help', _label24);
             }
             if (autoGearAlwaysLabel) {
-              _label27 = texts[lang].autoGearAlwaysLabel || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
-              _help15 = texts[lang].autoGearAlwaysHelp || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearAlwaysHelp) || _label27;
-              autoGearAlwaysLabel.textContent = _label27;
+              _label25 = texts[lang].autoGearAlwaysLabel || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
+              _help15 = texts[lang].autoGearAlwaysHelp || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearAlwaysHelp) || _label25;
+              autoGearAlwaysLabel.textContent = _label25;
               autoGearAlwaysLabel.setAttribute('data-help', _help15);
               if (autoGearAlwaysHelp) {
                 autoGearAlwaysHelp.textContent = _help15;
@@ -9840,17 +8207,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             refreshAutoGearConditionPicker();
             updateAutoGearConditionAddButtonState();
             if (autoGearScenariosLabel) {
-              _label28 = texts[lang].autoGearScenariosLabel || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
-              autoGearScenariosLabel.textContent = _label28;
-              _help16 = texts[lang].autoGearScenariosHelp || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearScenariosHelp) || _label28;
+              _label26 = texts[lang].autoGearScenariosLabel || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
+              autoGearScenariosLabel.textContent = _label26;
+              _help16 = texts[lang].autoGearScenariosHelp || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearScenariosHelp) || _label26;
               autoGearScenariosLabel.setAttribute('data-help', _help16);
               if (autoGearScenariosSelect) {
                 autoGearScenariosSelect.setAttribute('data-help', _help16);
-                autoGearScenariosSelect.setAttribute('aria-label', _label28);
+                autoGearScenariosSelect.setAttribute('aria-label', _label26);
               }
               if (autoGearScenarioModeLabel) {
-                modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
-                modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearScenarioModeHelp) || modeLabel;
+                modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
+                modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearScenarioModeHelp) || modeLabel;
                 autoGearScenarioModeLabel.textContent = modeLabel;
                 autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
                 if (autoGearScenarioModeSelectElement) {
@@ -9859,8 +8226,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 }
               }
               if (autoGearScenarioBaseLabel) {
-                baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
-                baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearScenarioBaseHelp) || baseLabel;
+                baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
+                baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearScenarioBaseHelp) || baseLabel;
                 autoGearScenarioBaseLabel.textContent = baseLabel;
                 autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
                 if (autoGearScenarioBaseSelect) {
@@ -9869,8 +8236,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 }
               }
               if (autoGearScenarioFactorLabel) {
-                factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
-                factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearScenarioFactorHelp) || factorLabel;
+                factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
+                factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearScenarioFactorHelp) || factorLabel;
                 autoGearScenarioFactorLabel.textContent = factorLabel;
                 autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
                 if (autoGearScenarioFactorInput) {
@@ -9880,17 +8247,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearShootingDaysLabel) {
-              _label29 = texts[lang].autoGearShootingDaysLabel || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
-              _help17 = texts[lang].autoGearShootingDaysHelp || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearShootingDaysHelp) || _label29;
-              minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearShootingDaysModeMinimum) || 'Minimum';
-              maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearShootingDaysModeMaximum) || 'Maximum';
-              everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearShootingDaysModeEvery) || 'Every';
-              valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearShootingDaysValueLabel) || 'Shooting days value';
-              autoGearShootingDaysLabel.textContent = _label29;
+              _label27 = texts[lang].autoGearShootingDaysLabel || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
+              _help17 = texts[lang].autoGearShootingDaysHelp || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearShootingDaysHelp) || _label27;
+              minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearShootingDaysModeMinimum) || 'Minimum';
+              maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearShootingDaysModeMaximum) || 'Maximum';
+              everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearShootingDaysModeEvery) || 'Every';
+              valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearShootingDaysValueLabel) || 'Shooting days value';
+              autoGearShootingDaysLabel.textContent = _label27;
               autoGearShootingDaysLabel.setAttribute('data-help', _help17);
               if (autoGearShootingDaysMode) {
                 autoGearShootingDaysMode.setAttribute('data-help', _help17);
-                autoGearShootingDaysMode.setAttribute('aria-label', _label29);
+                autoGearShootingDaysMode.setAttribute('aria-label', _label27);
                 Array.from(autoGearShootingDaysMode.options || []).forEach(function (option) {
                   if (!option || typeof option.value !== 'string') return;
                   if (option.value === 'minimum') {
@@ -9908,7 +8275,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
               if (autoGearShootingDaysInput) {
                 autoGearShootingDaysInput.setAttribute('data-help', _help17);
-                autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label29);
+                autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label27);
               }
               if (autoGearShootingDaysHelp) {
                 autoGearShootingDaysHelp.textContent = _help17;
@@ -9916,91 +8283,91 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearMatteboxLabel) {
-              _label30 = texts[lang].autoGearMatteboxLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
-              autoGearMatteboxLabel.textContent = _label30;
-              _help18 = texts[lang].autoGearMatteboxHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearMatteboxHelp) || _label30;
+              _label28 = texts[lang].autoGearMatteboxLabel || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
+              autoGearMatteboxLabel.textContent = _label28;
+              _help18 = texts[lang].autoGearMatteboxHelp || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearMatteboxHelp) || _label28;
               autoGearMatteboxLabel.setAttribute('data-help', _help18);
               if (autoGearMatteboxSelect) {
                 autoGearMatteboxSelect.setAttribute('data-help', _help18);
-                autoGearMatteboxSelect.setAttribute('aria-label', _label30);
+                autoGearMatteboxSelect.setAttribute('aria-label', _label28);
               }
             }
             if (autoGearCameraHandleLabel) {
-              _label31 = texts[lang].autoGearCameraHandleLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
-              autoGearCameraHandleLabel.textContent = _label31;
-              _help19 = texts[lang].autoGearCameraHandleHelp || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearCameraHandleHelp) || _label31;
+              _label29 = texts[lang].autoGearCameraHandleLabel || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
+              autoGearCameraHandleLabel.textContent = _label29;
+              _help19 = texts[lang].autoGearCameraHandleHelp || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearCameraHandleHelp) || _label29;
               autoGearCameraHandleLabel.setAttribute('data-help', _help19);
               if (autoGearCameraHandleSelect) {
                 autoGearCameraHandleSelect.setAttribute('data-help', _help19);
-                autoGearCameraHandleSelect.setAttribute('aria-label', _label31);
+                autoGearCameraHandleSelect.setAttribute('aria-label', _label29);
               }
             }
             if (autoGearViewfinderExtensionLabel) {
-              _label32 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
-              autoGearViewfinderExtensionLabel.textContent = _label32;
-              _help20 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearViewfinderExtensionHelp) || _label32;
+              _label30 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
+              autoGearViewfinderExtensionLabel.textContent = _label30;
+              _help20 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearViewfinderExtensionHelp) || _label30;
               autoGearViewfinderExtensionLabel.setAttribute('data-help', _help20);
               if (autoGearViewfinderExtensionSelect) {
                 autoGearViewfinderExtensionSelect.setAttribute('data-help', _help20);
-                autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label32);
+                autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label30);
               }
             }
             if (autoGearDeliveryResolutionLabel) {
-              _label33 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
-              autoGearDeliveryResolutionLabel.textContent = _label33;
-              _help21 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearDeliveryResolutionHelp) || _label33;
+              _label31 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
+              autoGearDeliveryResolutionLabel.textContent = _label31;
+              _help21 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearDeliveryResolutionHelp) || _label31;
               autoGearDeliveryResolutionLabel.setAttribute('data-help', _help21);
               if (autoGearDeliveryResolutionSelect) {
                 autoGearDeliveryResolutionSelect.setAttribute('data-help', _help21);
-                autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label33);
+                autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label31);
               }
             }
             if (autoGearVideoDistributionLabel) {
-              _label34 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
-              autoGearVideoDistributionLabel.textContent = _label34;
-              _help22 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearVideoDistributionHelp) || _label34;
+              _label32 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
+              autoGearVideoDistributionLabel.textContent = _label32;
+              _help22 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearVideoDistributionHelp) || _label32;
               autoGearVideoDistributionLabel.setAttribute('data-help', _help22);
               if (autoGearVideoDistributionSelect) {
                 autoGearVideoDistributionSelect.setAttribute('data-help', _help22);
-                autoGearVideoDistributionSelect.setAttribute('aria-label', _label34);
+                autoGearVideoDistributionSelect.setAttribute('aria-label', _label32);
               }
             }
             if (autoGearCameraLabel) {
-              _label35 = texts[lang].autoGearCameraLabel || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearCameraLabel) || autoGearCameraLabel.textContent;
-              autoGearCameraLabel.textContent = _label35;
-              _help23 = texts[lang].autoGearCameraHelp || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearCameraHelp) || _label35;
+              _label33 = texts[lang].autoGearCameraLabel || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearCameraLabel) || autoGearCameraLabel.textContent;
+              autoGearCameraLabel.textContent = _label33;
+              _help23 = texts[lang].autoGearCameraHelp || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearCameraHelp) || _label33;
               autoGearCameraLabel.setAttribute('data-help', _help23);
               if (autoGearCameraSelect) {
                 autoGearCameraSelect.setAttribute('data-help', _help23);
-                autoGearCameraSelect.setAttribute('aria-label', _label35);
+                autoGearCameraSelect.setAttribute('aria-label', _label33);
               }
             }
             if (autoGearOwnGearLabel) {
-              _label36 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearConditionOwnGearLabel) || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
-              _help24 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearOwnGearHelp) || _label36;
-              autoGearOwnGearLabel.textContent = _label36;
+              _label34 = texts[lang].autoGearConditionOwnGearLabel || texts[lang].autoGearOwnGearLabel || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearConditionOwnGearLabel) || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearOwnGearLabel) || autoGearOwnGearLabel.textContent;
+              _help24 = texts[lang].autoGearConditionOwnGearHelp || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearConditionOwnGearHelp) || texts[lang].autoGearOwnGearHelp || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearOwnGearHelp) || _label34;
+              autoGearOwnGearLabel.textContent = _label34;
               autoGearOwnGearLabel.setAttribute('data-help', _help24);
               if (autoGearOwnGearSelect) {
                 autoGearOwnGearSelect.setAttribute('data-help', _help24);
-                autoGearOwnGearSelect.setAttribute('aria-label', _label36);
+                autoGearOwnGearSelect.setAttribute('aria-label', _label34);
               }
             }
             if (autoGearCameraWeightLabel) {
-              _label37 = texts[lang].autoGearCameraWeightLabel || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
-              _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearCameraWeightHelp) || _label37;
-              autoGearCameraWeightLabel.textContent = _label37;
+              _label35 = texts[lang].autoGearCameraWeightLabel || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
+              _help25 = texts[lang].autoGearCameraWeightHelp || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearCameraWeightHelp) || _label35;
+              autoGearCameraWeightLabel.textContent = _label35;
               autoGearCameraWeightLabel.setAttribute('data-help', _help25);
             }
             if (autoGearCameraWeightOperatorLabel) {
-              _label38 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
-              autoGearCameraWeightOperatorLabel.textContent = _label38;
-              autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label38);
+              _label36 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
+              autoGearCameraWeightOperatorLabel.textContent = _label36;
+              autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label36);
               if (autoGearCameraWeightOperator) {
-                autoGearCameraWeightOperator.setAttribute('data-help', _label38);
-                autoGearCameraWeightOperator.setAttribute('aria-label', _label38);
-                greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearCameraWeightOperatorGreater) || 'Heavier than';
-                lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearCameraWeightOperatorLess) || 'Lighter than';
-                equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearCameraWeightOperatorEqual) || 'Exactly';
+                autoGearCameraWeightOperator.setAttribute('data-help', _label36);
+                autoGearCameraWeightOperator.setAttribute('aria-label', _label36);
+                greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearCameraWeightOperatorGreater) || 'Heavier than';
+                lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearCameraWeightOperatorLess) || 'Lighter than';
+                equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearCameraWeightOperatorEqual) || 'Exactly';
                 Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
                   if (!option) return;
                   if (option.value === 'greater') {
@@ -10014,144 +8381,144 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearCameraWeightValueLabel) {
-              _label39 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
-              _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearCameraWeightHelp) || _label39;
-              autoGearCameraWeightValueLabel.textContent = _label39;
+              _label37 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
+              _help26 = texts[lang].autoGearCameraWeightHelp || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearCameraWeightHelp) || _label37;
+              autoGearCameraWeightValueLabel.textContent = _label37;
               autoGearCameraWeightValueLabel.setAttribute('data-help', _help26);
               if (autoGearCameraWeightValueInput) {
                 autoGearCameraWeightValueInput.setAttribute('data-help', _help26);
-                autoGearCameraWeightValueInput.setAttribute('aria-label', _label39);
+                autoGearCameraWeightValueInput.setAttribute('aria-label', _label37);
               }
             }
             if (autoGearCameraWeightHelp) {
-              _help27 = texts[lang].autoGearCameraWeightHelp || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
+              _help27 = texts[lang].autoGearCameraWeightHelp || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
               autoGearCameraWeightHelp.textContent = _help27;
               if (_help27) {
                 autoGearCameraWeightHelp.setAttribute('data-help', _help27);
               }
             }
             if (autoGearMonitorLabel) {
-              _label40 = texts[lang].autoGearMonitorLabel || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
-              autoGearMonitorLabel.textContent = _label40;
-              _help28 = texts[lang].autoGearMonitorHelp || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearMonitorHelp) || _label40;
+              _label38 = texts[lang].autoGearMonitorLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
+              autoGearMonitorLabel.textContent = _label38;
+              _help28 = texts[lang].autoGearMonitorHelp || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearMonitorHelp) || _label38;
               autoGearMonitorLabel.setAttribute('data-help', _help28);
               if (autoGearMonitorSelect) {
                 autoGearMonitorSelect.setAttribute('data-help', _help28);
-                autoGearMonitorSelect.setAttribute('aria-label', _label40);
+                autoGearMonitorSelect.setAttribute('aria-label', _label38);
               }
             }
             if (autoGearTripodHeadBrandLabel) {
-              _label41 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
-              autoGearTripodHeadBrandLabel.textContent = _label41;
-              _help29 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearTripodHeadBrandHelp) || _label41;
+              _label39 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
+              autoGearTripodHeadBrandLabel.textContent = _label39;
+              _help29 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearTripodHeadBrandHelp) || _label39;
               autoGearTripodHeadBrandLabel.setAttribute('data-help', _help29);
               if (autoGearTripodHeadBrandSelect) {
                 autoGearTripodHeadBrandSelect.setAttribute('data-help', _help29);
-                autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label41);
+                autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label39);
               }
             }
             if (autoGearTripodBowlLabel) {
-              _label42 = texts[lang].autoGearTripodBowlLabel || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
-              autoGearTripodBowlLabel.textContent = _label42;
-              _help30 = texts[lang].autoGearTripodBowlHelp || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearTripodBowlHelp) || _label42;
+              _label40 = texts[lang].autoGearTripodBowlLabel || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
+              autoGearTripodBowlLabel.textContent = _label40;
+              _help30 = texts[lang].autoGearTripodBowlHelp || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearTripodBowlHelp) || _label40;
               autoGearTripodBowlLabel.setAttribute('data-help', _help30);
               if (autoGearTripodBowlSelect) {
                 autoGearTripodBowlSelect.setAttribute('data-help', _help30);
-                autoGearTripodBowlSelect.setAttribute('aria-label', _label42);
+                autoGearTripodBowlSelect.setAttribute('aria-label', _label40);
               }
             }
             if (autoGearTripodTypesLabel) {
-              _label43 = texts[lang].autoGearTripodTypesLabel || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
-              autoGearTripodTypesLabel.textContent = _label43;
-              _help31 = texts[lang].autoGearTripodTypesHelp || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearTripodTypesHelp) || _label43;
+              _label41 = texts[lang].autoGearTripodTypesLabel || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
+              autoGearTripodTypesLabel.textContent = _label41;
+              _help31 = texts[lang].autoGearTripodTypesHelp || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearTripodTypesHelp) || _label41;
               autoGearTripodTypesLabel.setAttribute('data-help', _help31);
               if (autoGearTripodTypesSelect) {
                 autoGearTripodTypesSelect.setAttribute('data-help', _help31);
-                autoGearTripodTypesSelect.setAttribute('aria-label', _label43);
+                autoGearTripodTypesSelect.setAttribute('aria-label', _label41);
               }
             }
             if (autoGearTripodSpreaderLabel) {
-              _label44 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
-              autoGearTripodSpreaderLabel.textContent = _label44;
-              _help32 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearTripodSpreaderHelp) || _label44;
+              _label42 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
+              autoGearTripodSpreaderLabel.textContent = _label42;
+              _help32 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearTripodSpreaderHelp) || _label42;
               autoGearTripodSpreaderLabel.setAttribute('data-help', _help32);
               if (autoGearTripodSpreaderSelect) {
                 autoGearTripodSpreaderSelect.setAttribute('data-help', _help32);
-                autoGearTripodSpreaderSelect.setAttribute('aria-label', _label44);
+                autoGearTripodSpreaderSelect.setAttribute('aria-label', _label42);
               }
             }
             if (autoGearCrewPresentLabel) {
-              _label45 = texts[lang].autoGearCrewPresentLabel || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
-              autoGearCrewPresentLabel.textContent = _label45;
-              _help33 = texts[lang].autoGearCrewPresentHelp || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearCrewPresentHelp) || _label45;
+              _label43 = texts[lang].autoGearCrewPresentLabel || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
+              autoGearCrewPresentLabel.textContent = _label43;
+              _help33 = texts[lang].autoGearCrewPresentHelp || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearCrewPresentHelp) || _label43;
               autoGearCrewPresentLabel.setAttribute('data-help', _help33);
               if (autoGearCrewPresentSelect) {
                 autoGearCrewPresentSelect.setAttribute('data-help', _help33);
-                autoGearCrewPresentSelect.setAttribute('aria-label', _label45);
+                autoGearCrewPresentSelect.setAttribute('aria-label', _label43);
               }
             }
             if (autoGearCrewAbsentLabel) {
-              _label46 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
-              autoGearCrewAbsentLabel.textContent = _label46;
-              _help34 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearCrewAbsentHelp) || _label46;
+              _label44 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
+              autoGearCrewAbsentLabel.textContent = _label44;
+              _help34 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearCrewAbsentHelp) || _label44;
               autoGearCrewAbsentLabel.setAttribute('data-help', _help34);
               if (autoGearCrewAbsentSelect) {
                 autoGearCrewAbsentSelect.setAttribute('data-help', _help34);
-                autoGearCrewAbsentSelect.setAttribute('aria-label', _label46);
+                autoGearCrewAbsentSelect.setAttribute('aria-label', _label44);
               }
             }
             if (autoGearWirelessLabel) {
-              _label47 = texts[lang].autoGearWirelessLabel || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
-              autoGearWirelessLabel.textContent = _label47;
-              _help35 = texts[lang].autoGearWirelessHelp || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearWirelessHelp) || _label47;
+              _label45 = texts[lang].autoGearWirelessLabel || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
+              autoGearWirelessLabel.textContent = _label45;
+              _help35 = texts[lang].autoGearWirelessHelp || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearWirelessHelp) || _label45;
               autoGearWirelessLabel.setAttribute('data-help', _help35);
               if (autoGearWirelessSelect) {
                 autoGearWirelessSelect.setAttribute('data-help', _help35);
-                autoGearWirelessSelect.setAttribute('aria-label', _label47);
+                autoGearWirelessSelect.setAttribute('aria-label', _label45);
               }
             }
             if (autoGearMotorsLabel) {
-              _label48 = texts[lang].autoGearMotorsLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
-              autoGearMotorsLabel.textContent = _label48;
-              _help36 = texts[lang].autoGearMotorsHelp || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearMotorsHelp) || _label48;
+              _label46 = texts[lang].autoGearMotorsLabel || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
+              autoGearMotorsLabel.textContent = _label46;
+              _help36 = texts[lang].autoGearMotorsHelp || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearMotorsHelp) || _label46;
               autoGearMotorsLabel.setAttribute('data-help', _help36);
               if (autoGearMotorsSelect) {
                 autoGearMotorsSelect.setAttribute('data-help', _help36);
-                autoGearMotorsSelect.setAttribute('aria-label', _label48);
+                autoGearMotorsSelect.setAttribute('aria-label', _label46);
               }
             }
             if (autoGearControllersLabel) {
-              _label49 = texts[lang].autoGearControllersLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearControllersLabel) || autoGearControllersLabel.textContent;
-              autoGearControllersLabel.textContent = _label49;
-              _help37 = texts[lang].autoGearControllersHelp || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearControllersHelp) || _label49;
+              _label47 = texts[lang].autoGearControllersLabel || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearControllersLabel) || autoGearControllersLabel.textContent;
+              autoGearControllersLabel.textContent = _label47;
+              _help37 = texts[lang].autoGearControllersHelp || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearControllersHelp) || _label47;
               autoGearControllersLabel.setAttribute('data-help', _help37);
               if (autoGearControllersSelect) {
                 autoGearControllersSelect.setAttribute('data-help', _help37);
-                autoGearControllersSelect.setAttribute('aria-label', _label49);
+                autoGearControllersSelect.setAttribute('aria-label', _label47);
               }
             }
             if (autoGearDistanceLabel) {
-              _label50 = texts[lang].autoGearDistanceLabel || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
-              autoGearDistanceLabel.textContent = _label50;
-              _help38 = texts[lang].autoGearDistanceHelp || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearDistanceHelp) || _label50;
+              _label48 = texts[lang].autoGearDistanceLabel || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
+              autoGearDistanceLabel.textContent = _label48;
+              _help38 = texts[lang].autoGearDistanceHelp || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearDistanceHelp) || _label48;
               autoGearDistanceLabel.setAttribute('data-help', _help38);
               if (autoGearDistanceSelect) {
                 autoGearDistanceSelect.setAttribute('data-help', _help38);
-                autoGearDistanceSelect.setAttribute('aria-label', _label50);
+                autoGearDistanceSelect.setAttribute('aria-label', _label48);
               }
             }
-            logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearConditionLogicLabel) || 'Match behavior';
-            logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearConditionLogicHelp) || logicLabelText;
+            logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearConditionLogicLabel) || 'Match behavior';
+            logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearConditionLogicHelp) || logicLabelText;
             logicOptionTexts = {
-              all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearConditionLogicAll) || 'Require every selected value',
-              any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearConditionLogicAny) || 'Match any selected value',
-              none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearConditionLogicNone) || 'Require none of the selected values',
-              multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
+              all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearConditionLogicAll) || 'Require every selected value',
+              any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearConditionLogicAny) || 'Match any selected value',
+              none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearConditionLogicNone) || 'Require none of the selected values',
+              multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
             };
-            Object.entries(autoGearConditionLogicSelects).forEach(function (_ref80) {
-              var _ref81 = _slicedToArray(_ref80, 2),
-                key = _ref81[0],
-                select = _ref81[1];
+            Object.entries(autoGearConditionLogicSelects).forEach(function (_ref76) {
+              var _ref77 = _slicedToArray(_ref76, 2),
+                key = _ref77[0],
+                select = _ref77[1];
               var label = autoGearConditionLogicLabels[key];
               if (label) {
                 label.textContent = logicLabelText;
@@ -10169,32 +8536,32 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             });
             if (autoGearAddItemsHeading) {
-              autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
+              autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
             }
             if (autoGearAddOwnGearLabel) {
-              _label51 = texts[lang].autoGearOwnGearLabel || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
-              _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearOwnGearHelp) || _label51;
-              _placeholder3 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearOwnGearPlaceholder) || '';
-              autoGearAddOwnGearLabel.textContent = _label51;
+              _label49 = texts[lang].autoGearOwnGearLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearOwnGearLabel) || autoGearAddOwnGearLabel.textContent;
+              _help39 = texts[lang].autoGearOwnGearHelp || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearOwnGearHelp) || _label49;
+              _placeholder = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearOwnGearPlaceholder) || '';
+              autoGearAddOwnGearLabel.textContent = _label49;
               autoGearAddOwnGearLabel.setAttribute('data-help', _help39);
               if (autoGearAddOwnGearSelect) {
-                autoGearAddOwnGearSelect.setAttribute('aria-label', _label51);
+                autoGearAddOwnGearSelect.setAttribute('aria-label', _label49);
                 autoGearAddOwnGearSelect.setAttribute('data-help', _help39);
-                if (_placeholder3) {
-                  autoGearAddOwnGearSelect.setAttribute('data-placeholder', _placeholder3);
+                if (_placeholder) {
+                  autoGearAddOwnGearSelect.setAttribute('data-placeholder', _placeholder);
                 } else {
                   autoGearAddOwnGearSelect.removeAttribute('data-placeholder');
                 }
               }
             }
             if (autoGearAddItemLabel) {
-              _label52 = texts[lang].autoGearAddItemLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
-              hint = texts[lang].autoGearAddMultipleHint || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearAddMultipleHint) || '';
-              helpText = hint ? "".concat(_label52, " \u2013 ").concat(hint) : _label52;
-              autoGearAddItemLabel.textContent = _label52;
+              _label50 = texts[lang].autoGearAddItemLabel || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
+              hint = texts[lang].autoGearAddMultipleHint || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearAddMultipleHint) || '';
+              helpText = hint ? "".concat(_label50, " \u2013 ").concat(hint) : _label50;
+              autoGearAddItemLabel.textContent = _label50;
               autoGearAddItemLabel.setAttribute('data-help', helpText);
               if (autoGearAddNameInput) {
-                autoGearAddNameInput.setAttribute('aria-label', _label52);
+                autoGearAddNameInput.setAttribute('aria-label', _label50);
                 autoGearAddNameInput.setAttribute('data-help', helpText);
                 if (hint) {
                   autoGearAddNameInput.setAttribute('placeholder', hint);
@@ -10204,38 +8571,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearAddCategoryLabel) {
-              _label53 = texts[lang].autoGearAddCategoryLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
-              autoGearAddCategoryLabel.textContent = _label53;
+              _label51 = texts[lang].autoGearAddCategoryLabel || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
+              autoGearAddCategoryLabel.textContent = _label51;
               if (autoGearAddCategorySelect) {
-                autoGearAddCategorySelect.setAttribute('aria-label', _label53);
+                autoGearAddCategorySelect.setAttribute('aria-label', _label51);
               }
             }
             if (autoGearAddQuantityLabel) {
-              _label54 = texts[lang].autoGearAddQuantityLabel || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
-              autoGearAddQuantityLabel.textContent = _label54;
+              _label52 = texts[lang].autoGearAddQuantityLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
+              autoGearAddQuantityLabel.textContent = _label52;
               if (autoGearAddQuantityInput) {
-                autoGearAddQuantityInput.setAttribute('aria-label', _label54);
+                autoGearAddQuantityInput.setAttribute('aria-label', _label52);
               }
             }
             if (autoGearAddScreenSizeLabel) {
-              _label55 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
-              autoGearAddScreenSizeLabel.textContent = _label55;
+              _label53 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
+              autoGearAddScreenSizeLabel.textContent = _label53;
               if (autoGearAddScreenSizeInput) {
-                autoGearAddScreenSizeInput.setAttribute('aria-label', _label55);
+                autoGearAddScreenSizeInput.setAttribute('aria-label', _label53);
               }
             }
             if (autoGearAddSelectorTypeLabel) {
-              _label56 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
-              autoGearAddSelectorTypeLabel.textContent = _label56;
+              _label54 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
+              autoGearAddSelectorTypeLabel.textContent = _label54;
               if (autoGearAddSelectorTypeSelect) {
-                autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label56);
-                noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearSelectorNoneOption) || 'No selector';
-                monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearSelectorMonitorOption) || 'Monitor selector';
-                directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearSelectorDirectorOption) || 'Director monitor selector';
-                tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-                _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-                _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-                _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label54);
+                noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearSelectorNoneOption) || 'No selector';
+                monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearSelectorMonitorOption) || 'Monitor selector';
+                directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
                 selectorLabels = new Map([['none', noneLabel], ['monitor', monitorLabel], ['directorMonitor', directorLabel], ['tripodHeadBrand', tripodHeadLabel], ['tripodBowl', _tripodBowlLabel], ['tripodTypes', _tripodTypesLabel], ['tripodSpreader', _tripodSpreaderLabel]]);
                 Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
                   var text = selectorLabels.get(opt.value);
@@ -10244,17 +8611,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearAddSelectorDefaultLabel) {
-              _label57 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
-              autoGearAddSelectorDefaultLabel.textContent = _label57;
+              _label55 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
+              autoGearAddSelectorDefaultLabel.textContent = _label55;
               if (autoGearAddSelectorDefaultInput) {
-                autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label57);
+                autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label55);
               }
             }
             if (autoGearAddNotesLabel) {
-              _label58 = texts[lang].autoGearAddNotesLabel || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
-              autoGearAddNotesLabel.textContent = _label58;
+              _label56 = texts[lang].autoGearAddNotesLabel || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
+              autoGearAddNotesLabel.textContent = _label56;
               if (autoGearAddNotesInput) {
-                autoGearAddNotesInput.setAttribute('aria-label', _label58);
+                autoGearAddNotesInput.setAttribute('aria-label', _label56);
               }
             }
             if (autoGearAddItemButton) {
@@ -10263,33 +8630,33 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveItemsHeading) {
-              autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
+              autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
             }
             if (autoGearRemoveOwnGearLabel) {
-              _label59 = texts[lang].autoGearOwnGearLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
-              _help40 = texts[lang].autoGearOwnGearHelp || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.autoGearOwnGearHelp) || _label59;
-              _placeholder4 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.autoGearOwnGearPlaceholder) || '';
-              autoGearRemoveOwnGearLabel.textContent = _label59;
+              _label57 = texts[lang].autoGearOwnGearLabel || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearOwnGearLabel) || autoGearRemoveOwnGearLabel.textContent;
+              _help40 = texts[lang].autoGearOwnGearHelp || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearOwnGearHelp) || _label57;
+              _placeholder2 = texts[lang].autoGearOwnGearPlaceholder || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearOwnGearPlaceholder) || '';
+              autoGearRemoveOwnGearLabel.textContent = _label57;
               autoGearRemoveOwnGearLabel.setAttribute('data-help', _help40);
               if (autoGearRemoveOwnGearSelect) {
-                autoGearRemoveOwnGearSelect.setAttribute('aria-label', _label59);
+                autoGearRemoveOwnGearSelect.setAttribute('aria-label', _label57);
                 autoGearRemoveOwnGearSelect.setAttribute('data-help', _help40);
-                if (_placeholder4) {
-                  autoGearRemoveOwnGearSelect.setAttribute('data-placeholder', _placeholder4);
+                if (_placeholder2) {
+                  autoGearRemoveOwnGearSelect.setAttribute('data-placeholder', _placeholder2);
                 } else {
                   autoGearRemoveOwnGearSelect.removeAttribute('data-placeholder');
                 }
               }
             }
             if (autoGearRemoveItemLabel) {
-              _label60 = texts[lang].autoGearRemoveItemLabel || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
-              _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.autoGearRemoveMultipleHint) || '';
-              _helpText4 = _hint ? "".concat(_label60, " \u2013 ").concat(_hint) : _label60;
-              autoGearRemoveItemLabel.textContent = _label60;
-              autoGearRemoveItemLabel.setAttribute('data-help', _helpText4);
+              _label58 = texts[lang].autoGearRemoveItemLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
+              _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.autoGearRemoveMultipleHint) || '';
+              _helpText = _hint ? "".concat(_label58, " \u2013 ").concat(_hint) : _label58;
+              autoGearRemoveItemLabel.textContent = _label58;
+              autoGearRemoveItemLabel.setAttribute('data-help', _helpText);
               if (autoGearRemoveNameInput) {
-                autoGearRemoveNameInput.setAttribute('aria-label', _label60);
-                autoGearRemoveNameInput.setAttribute('data-help', _helpText4);
+                autoGearRemoveNameInput.setAttribute('aria-label', _label58);
+                autoGearRemoveNameInput.setAttribute('data-help', _helpText);
                 if (_hint) {
                   autoGearRemoveNameInput.setAttribute('placeholder', _hint);
                 } else {
@@ -10298,38 +8665,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveCategoryLabel) {
-              _label61 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
-              autoGearRemoveCategoryLabel.textContent = _label61;
+              _label59 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
+              autoGearRemoveCategoryLabel.textContent = _label59;
               if (autoGearRemoveCategorySelect) {
-                autoGearRemoveCategorySelect.setAttribute('aria-label', _label61);
+                autoGearRemoveCategorySelect.setAttribute('aria-label', _label59);
               }
             }
             if (autoGearRemoveQuantityLabel) {
-              _label62 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
-              autoGearRemoveQuantityLabel.textContent = _label62;
+              _label60 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
+              autoGearRemoveQuantityLabel.textContent = _label60;
               if (autoGearRemoveQuantityInput) {
-                autoGearRemoveQuantityInput.setAttribute('aria-label', _label62);
+                autoGearRemoveQuantityInput.setAttribute('aria-label', _label60);
               }
             }
             if (autoGearRemoveScreenSizeLabel) {
-              _label63 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
-              autoGearRemoveScreenSizeLabel.textContent = _label63;
+              _label61 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
+              autoGearRemoveScreenSizeLabel.textContent = _label61;
               if (autoGearRemoveScreenSizeInput) {
-                autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label63);
+                autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label61);
               }
             }
             if (autoGearRemoveSelectorTypeLabel) {
-              _label64 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
-              autoGearRemoveSelectorTypeLabel.textContent = _label64;
+              _label62 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
+              autoGearRemoveSelectorTypeLabel.textContent = _label62;
               if (autoGearRemoveSelectorTypeSelect) {
-                autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label64);
-                _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.autoGearSelectorNoneOption) || 'No selector';
-                _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.autoGearSelectorMonitorOption) || 'Monitor selector';
-                _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.autoGearSelectorDirectorOption) || 'Director monitor selector';
-                _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-                _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-                _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-                _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+                autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label62);
+                _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.autoGearSelectorNoneOption) || 'No selector';
+                _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.autoGearSelectorMonitorOption) || 'Monitor selector';
+                _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.autoGearSelectorDirectorOption) || 'Director monitor selector';
+                _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+                _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+                _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+                _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
                 _selectorLabels = new Map([['none', _noneLabel], ['monitor', _monitorLabel], ['directorMonitor', _directorLabel], ['tripodHeadBrand', _tripodHeadLabel], ['tripodBowl', _tripodBowlLabel2], ['tripodTypes', _tripodTypesLabel2], ['tripodSpreader', _tripodSpreaderLabel2]]);
                 Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
                   var text = _selectorLabels.get(opt.value);
@@ -10338,26 +8705,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearRemoveSelectorDefaultLabel) {
-              _label65 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
-              autoGearRemoveSelectorDefaultLabel.textContent = _label65;
+              _label63 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
+              autoGearRemoveSelectorDefaultLabel.textContent = _label63;
               if (autoGearRemoveSelectorDefaultInput) {
-                autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label65);
+                autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label63);
               }
             }
             if (autoGearRemoveNotesLabel) {
-              _label66 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
-              autoGearRemoveNotesLabel.textContent = _label66;
+              _label64 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
+              autoGearRemoveNotesLabel.textContent = _label64;
               if (autoGearRemoveNotesInput) {
-                autoGearRemoveNotesInput.setAttribute('aria-label', _label66);
+                autoGearRemoveNotesInput.setAttribute('aria-label', _label64);
               }
             }
             updateAutoGearOwnGearOptions();
             if (autoGearDraftImpactHeading) {
-              _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
+              _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
               autoGearDraftImpactHeading.textContent = _heading2;
             }
             if (autoGearDraftImpactDescription) {
-              _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
+              _description3 = texts[lang].autoGearDraftImpactDescription || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
               autoGearDraftImpactDescription.textContent = _description3;
               if (autoGearDraftImpactHeading) {
                 autoGearDraftImpactHeading.setAttribute('data-help', _description3);
@@ -10367,7 +8734,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearDraftWarningHeading) {
-              _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
+              _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
               autoGearDraftWarningHeading.textContent = _heading3;
             }
             if (autoGearRemoveItemButton) {
@@ -10376,14 +8743,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (autoGearSaveRuleButton) {
-              _label67 = texts[lang].autoGearSaveRule || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
-              setButtonLabelWithIconBinding(autoGearSaveRuleButton, _label67);
-              autoGearSaveRuleButton.setAttribute('data-help', _label67);
+              _label65 = texts[lang].autoGearSaveRule || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
+              setButtonLabelWithIconBinding(autoGearSaveRuleButton, _label65);
+              autoGearSaveRuleButton.setAttribute('data-help', _label65);
             }
             if (autoGearCancelEditButton) {
-              _label68 = texts[lang].autoGearCancelEdit || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
-              setButtonLabelWithIconBinding(autoGearCancelEditButton, _label68, ICON_GLYPHS.circleX);
-              autoGearCancelEditButton.setAttribute('data-help', _label68);
+              _label66 = texts[lang].autoGearCancelEdit || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
+              setButtonLabelWithIconBinding(autoGearCancelEditButton, _label66, ICON_GLYPHS.circleX);
+              autoGearCancelEditButton.setAttribute('data-help', _label66);
             }
             if (autoGearAddCategorySelect) {
               populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
@@ -10485,25 +8852,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
             }
             if (storagePersistenceHeading) {
-              _headingText = texts[lang].storagePersistenceHeading || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.storagePersistenceHeading) || storagePersistenceHeading.textContent;
+              _headingText = texts[lang].storagePersistenceHeading || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.storagePersistenceHeading) || storagePersistenceHeading.textContent;
               storagePersistenceHeading.textContent = _headingText;
-              _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.storagePersistenceHeadingHelp) || _headingText;
+              _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.storagePersistenceHeadingHelp) || _headingText;
               storagePersistenceHeading.setAttribute('data-help', _headingHelp);
             }
             if (storagePersistenceIntro) {
-              storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.storagePersistenceIntro) || storagePersistenceIntro.textContent;
+              storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.storagePersistenceIntro) || storagePersistenceIntro.textContent;
             }
             if (storagePersistenceRequestButton) {
-              requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
+              requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
               setButtonLabelWithIconBinding(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
               storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
-              requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.storagePersistenceRequestHelp) || requestLabel;
+              requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.storagePersistenceRequestHelp) || requestLabel;
               storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
               storagePersistenceRequestButton.setAttribute('title', requestHelp);
               storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
             }
             if (storagePersistenceStatus) {
-              idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
+              idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
               storagePersistenceStatus.textContent = idleText;
               storagePersistenceStatus.setAttribute('data-help', idleText);
             }
@@ -10511,44 +8878,44 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               defer: true
             });
             if (storageActionsHeading) {
-              _headingText2 = texts[lang].storageActionsHeading || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.storageActionsHeading) || storageActionsHeading.textContent;
+              _headingText2 = texts[lang].storageActionsHeading || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.storageActionsHeading) || storageActionsHeading.textContent;
               storageActionsHeading.textContent = _headingText2;
-              _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.storageActionsHeadingHelp) || _headingText2;
+              _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.storageActionsHeadingHelp) || _headingText2;
               storageActionsHeading.setAttribute('data-help', _headingHelp2);
             }
             if (storageActionsIntro) {
-              storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.storageActionsIntro) || storageActionsIntro.textContent;
+              storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.storageActionsIntro) || storageActionsIntro.textContent;
             }
             if (storageBackupNowButton) {
-              backupLabel = texts[lang].storageBackupNow || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.storageBackupNow) || storageBackupNowButton.textContent;
+              backupLabel = texts[lang].storageBackupNow || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.storageBackupNow) || storageBackupNowButton.textContent;
               setButtonLabelWithIconBinding(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
-              backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.storageBackupNowHelp) || backupLabel;
+              backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.storageBackupNowHelp) || backupLabel;
               storageBackupNowButton.setAttribute('data-help', backupHelp);
               storageBackupNowButton.setAttribute('title', backupHelp);
             }
             if (storageOpenBackupTabButton) {
-              openLabel = texts[lang].storageOpenBackupTab || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
+              openLabel = texts[lang].storageOpenBackupTab || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
               setButtonLabelWithIconBinding(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
-              openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.storageOpenBackupTabHelp) || openLabel;
+              openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.storageOpenBackupTabHelp) || openLabel;
               storageOpenBackupTabButton.setAttribute('data-help', openHelp);
               storageOpenBackupTabButton.setAttribute('title', openHelp);
             }
             if (storageStatusHeading) {
-              statusHeading = texts[lang].storageStatusHeading || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.storageStatusHeading) || storageStatusHeading.textContent;
+              statusHeading = texts[lang].storageStatusHeading || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.storageStatusHeading) || storageStatusHeading.textContent;
               storageStatusHeading.textContent = statusHeading;
-              statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.storageStatusHeadingHelp) || statusHeading;
+              statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.storageStatusHeadingHelp) || statusHeading;
               storageStatusHeading.setAttribute('data-help', statusHelp);
             }
             if (storageStatusLastProjectLabel) {
-              storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
+              storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
             }
             if (storageStatusLastAutoBackupLabel) {
-              storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
+              storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
             }
             if (storageStatusLastFullBackupLabel) {
-              storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
+              storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
             }
-            statusDefaultText = texts[lang].storageStatusNever || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
+            statusDefaultText = texts[lang].storageStatusNever || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
             if (storageStatusLastProjectValue) {
               storageStatusLastProjectValue.textContent = statusDefaultText;
             }
@@ -10565,7 +8932,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               storageStatusReminder.removeAttribute('data-help');
             }
             if (loggingSection) {
-              sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.loggingHeadingHelp) || '';
+              sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.loggingHeadingHelp) || '';
               if (sectionHelp) {
                 loggingSection.setAttribute('data-help', sectionHelp);
               } else {
@@ -10573,25 +8940,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingHeading) {
-              _headingText3 = texts[lang].loggingHeading || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
+              _headingText3 = texts[lang].loggingHeading || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
               loggingHeading.textContent = _headingText3;
-              _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.loggingHeadingHelp) || _headingText3;
+              _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.loggingHeadingHelp) || _headingText3;
               loggingHeading.setAttribute('data-help', _headingHelp3);
             }
             if (loggingIntro) {
-              loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.loggingIntro) || loggingIntro.textContent;
+              loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.loggingIntro) || loggingIntro.textContent;
             }
             if (loggingLevelFilterLabel) {
-              _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
+              _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
               loggingLevelFilterLabel.textContent = _filterLabel;
               loggingLevelFilterLabel.setAttribute('data-help', _filterLabel);
             }
             if (loggingLevelFilter) {
               optionTexts = {
-                all: texts[lang].loggingLevelFilterAll || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.loggingLevelFilterAll) || 'All levels',
-                info: texts[lang].loggingLevelFilterInfo || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.loggingLevelFilterInfo) || 'Info and above',
-                warn: texts[lang].loggingLevelFilterWarn || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.loggingLevelFilterWarn) || 'Warnings and errors',
-                error: texts[lang].loggingLevelFilterError || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.loggingLevelFilterError) || 'Errors only'
+                all: texts[lang].loggingLevelFilterAll || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.loggingLevelFilterAll) || 'All levels',
+                info: texts[lang].loggingLevelFilterInfo || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.loggingLevelFilterInfo) || 'Info and above',
+                warn: texts[lang].loggingLevelFilterWarn || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.loggingLevelFilterWarn) || 'Warnings and errors',
+                error: texts[lang].loggingLevelFilterError || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.loggingLevelFilterError) || 'Errors only'
               };
               Array.from(loggingLevelFilter.options || []).forEach(function (option) {
                 if (!option || typeof option.value !== 'string') return;
@@ -10600,7 +8967,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                   option.textContent = optionTexts[key];
                 }
               });
-              filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.loggingLevelFilterHelp) || '';
+              filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.loggingLevelFilterHelp) || '';
               if (filterHelp) {
                 loggingLevelFilter.setAttribute('data-help', filterHelp);
               } else {
@@ -10608,15 +8975,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingNamespaceFilterLabel) {
-              namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
+              namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
               loggingNamespaceFilterLabel.textContent = namespaceLabel;
             }
             if (loggingNamespaceFilter) {
-              _placeholder5 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.loggingNamespaceFilterPlaceholder) || '';
-              if (_placeholder5) {
-                loggingNamespaceFilter.setAttribute('placeholder', _placeholder5);
+              _placeholder3 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.loggingNamespaceFilterPlaceholder) || '';
+              if (_placeholder3) {
+                loggingNamespaceFilter.setAttribute('placeholder', _placeholder3);
               }
-              namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.loggingNamespaceFilterHelp) || _placeholder5;
+              namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.loggingNamespaceFilterHelp) || _placeholder3;
               if (namespaceHelp) {
                 loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
                 if (loggingNamespaceFilterLabel) {
@@ -10633,85 +9000,85 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               }
             }
             if (loggingHistoryLimitLabel) {
-              historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
+              historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
               loggingHistoryLimitLabel.textContent = historyLabel;
             }
             if (loggingHistoryLimitHelp) {
-              historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
+              historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
               loggingHistoryLimitHelp.textContent = historyHelp;
             }
             if (loggingHistoryLimit) {
-              limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.loggingHistoryLimitHelp) || '';
+              limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.loggingHistoryLimitHelp) || '';
               if (limitHelp) {
                 loggingHistoryLimit.setAttribute('data-help', limitHelp);
               } else {
                 loggingHistoryLimit.removeAttribute('data-help');
               }
-              limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.loggingHistoryLimitAria) || '';
+              limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.loggingHistoryLimitAria) || '';
               if (limitAria) {
                 loggingHistoryLimit.setAttribute('aria-label', limitAria);
               }
             }
             if (loggingConsoleOutputLabel) {
-              consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
+              consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
               loggingConsoleOutputLabel.textContent = consoleLabel;
             }
             if (loggingConsoleOutputHelp) {
-              consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
+              consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
               loggingConsoleOutputHelp.textContent = consoleHelp;
             }
             if (loggingCaptureConsoleLabel) {
-              consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
+              consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
               loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
             }
             if (loggingCaptureConsoleHelp) {
-              consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
+              consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
               loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
             }
             if (loggingCaptureErrorsLabel) {
-              captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
+              captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
               loggingCaptureErrorsLabel.textContent = captureLabel;
             }
             if (loggingCaptureErrorsHelp) {
-              captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
+              captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
               loggingCaptureErrorsHelp.textContent = captureHelp;
             }
             if (loggingPersistSessionLabel) {
-              persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
+              persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
               loggingPersistSessionLabel.textContent = persistLabel;
             }
             if (loggingPersistSessionHelp) {
-              persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
+              persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
               loggingPersistSessionHelp.textContent = persistHelp;
             }
             if (loggingExportButton) {
-              exportLabel = texts[lang].loggingExportButton || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.loggingExportButton) || loggingExportButton.textContent;
+              exportLabel = texts[lang].loggingExportButton || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.loggingExportButton) || loggingExportButton.textContent;
               setButtonLabelWithIconBinding(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
               loggingExportButton.setAttribute('data-help', exportLabel);
               loggingExportButton.setAttribute('title', exportLabel);
               loggingExportButton.setAttribute('aria-label', exportLabel);
             }
             if (loggingExportHelp) {
-              exportHelp = texts[lang].loggingExportHelp || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.loggingExportHelp) || loggingExportHelp.textContent;
+              exportHelp = texts[lang].loggingExportHelp || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.loggingExportHelp) || loggingExportHelp.textContent;
               loggingExportHelp.textContent = exportHelp;
               loggingExportHelp.setAttribute('data-help', exportHelp);
             }
             if (loggingStatus) {
-              statusText = texts[lang].loggingStatusIdle || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.loggingStatusIdle) || '';
+              statusText = texts[lang].loggingStatusIdle || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.loggingStatusIdle) || '';
               loggingStatus.textContent = statusText;
               if (statusText) {
                 loggingStatus.setAttribute('data-help', statusText);
               }
             }
             if (loggingEmpty) {
-              _emptyText = texts[lang].loggingEmptyState || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.loggingEmptyState) || loggingEmpty.textContent;
+              _emptyText = texts[lang].loggingEmptyState || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.loggingEmptyState) || loggingEmpty.textContent;
               loggingEmpty.textContent = _emptyText;
               if (_emptyText) {
                 loggingEmpty.setAttribute('data-help', _emptyText);
               }
             }
             if (loggingUnavailable) {
-              loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.loggingUnavailable) || loggingUnavailable.textContent;
+              loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.loggingUnavailable) || loggingUnavailable.textContent;
             }
             showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
             if (showAutoBackupsLabel) {
@@ -10757,8 +9124,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
             }
             if (backupDiffNotesEl) {
-              _placeholder6 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
-              backupDiffNotesEl.placeholder = _placeholder6;
+              _placeholder4 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
+              backupDiffNotesEl.placeholder = _placeholder4;
             }
             if (backupDiffExportButtonEl) {
               _exportLabel = texts[lang].versionCompareExport || 'Export log';
@@ -10827,13 +9194,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
             }
             if (restoreRehearsalRuleHeading) {
-              restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
+              restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
             }
             if (restoreRehearsalRuleIntro) {
-              restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
+              restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
             }
             if (restoreRehearsalRuleEmpty) {
-              restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
+              restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
             }
             if (restoreRehearsalTableCaption) {
               restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
@@ -10858,16 +9225,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
             }
             if (restoreRehearsalProceedButton) {
-              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.restoreRehearsalProceed) || 'Resume restore rehearsal';
-              proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.restoreRehearsalProceedHelp) || proceedLabel;
+              proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.restoreRehearsalProceed) || 'Resume restore rehearsal';
+              proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.restoreRehearsalProceedHelp) || proceedLabel;
               setButtonLabelWithIconBinding(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
               restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
               restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
               restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
             }
             if (restoreRehearsalAbortButton) {
-              abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.restoreRehearsalAbort) || 'Abort rehearsal';
-              abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.restoreRehearsalAbortHelp) || abortLabel;
+              abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.restoreRehearsalAbort) || 'Abort rehearsal';
+              abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.restoreRehearsalAbortHelp) || abortLabel;
               setButtonLabelWithIconBinding(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
               restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
               restoreRehearsalAbortButton.setAttribute('title', abortHelp);
@@ -10916,15 +9283,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               link.setAttribute('aria-label', help);
             });
             if (settingsSave) {
-              _label69 = texts[lang].saveSettings || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.saveSettings) || settingsSave.textContent;
-              setButtonLabelWithIconBinding(settingsSave, _label69);
-              saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label69;
+              _label67 = texts[lang].saveSettings || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.saveSettings) || settingsSave.textContent;
+              setButtonLabelWithIconBinding(settingsSave, _label67);
+              saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label67;
               settingsSave.setAttribute("data-help", saveHelp);
               settingsSave.setAttribute("title", saveHelp);
               settingsSave.setAttribute("aria-label", saveHelp);
             }
             if (settingsCancel) {
-              _cancelLabel = texts[lang].cancelSettings || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.cancelSettings) || settingsCancel.textContent;
+              _cancelLabel = texts[lang].cancelSettings || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.cancelSettings) || settingsCancel.textContent;
               setButtonLabelWithIconBinding(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
               cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
               settingsCancel.setAttribute("data-help", cancelHelp);
@@ -10933,8 +9300,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             menuToggle = document.getElementById("menuToggle");
             if (menuToggle) {
-              menuLabel = texts[lang].menuToggleLabel || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
-              _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
+              menuLabel = texts[lang].menuToggleLabel || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
+              _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
               closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel2;
               menuToggle.setAttribute("title", menuLabel);
               menuToggle.setAttribute("aria-label", menuLabel);
@@ -10956,7 +9323,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             sideMenuTitle = document.getElementById("sideMenuTitle");
             if (sideMenuTitle) {
-              titleLabel = texts[lang].sideMenuTitle || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.sideMenuTitle) || sideMenuTitle.textContent;
+              titleLabel = texts[lang].sideMenuTitle || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.sideMenuTitle) || sideMenuTitle.textContent;
               sideMenuTitle.textContent = titleLabel;
               titleHelp = texts[lang].sideMenuTitleHelp || texts[lang].sideMenuHelp || titleLabel;
               sideMenuTitle.setAttribute("data-help", titleHelp);
@@ -10964,7 +9331,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             closeMenuButton = document.getElementById("closeMenuButton");
             closeMenuLabel = document.getElementById("closeMenuLabel");
             if (closeMenuButton) {
-              _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
+              _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
               _closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel3;
               closeMenuButton.setAttribute("aria-label", _closeLabel3);
               closeMenuButton.setAttribute("title", _closeHelp);
@@ -11289,7 +9656,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                   recordingFrameRateHintElem.hidden = true;
                 }
               }
-              var legendText;
               if (slowMotionLegendElem) {
                 legendText = projectFormTexts.slowMotionHeading || fallbackProjectForm.slowMotionHeading;
                 if (legendText) slowMotionLegendElem.textContent = legendText;
@@ -11300,8 +9666,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               setLabelText(slowMotionBaseFrameRateLabel, 'slowMotionBaseFrameRate');
               setLabelText(slowMotionRecordingFrameRateLabel, 'slowMotionRecordingFrameRate');
               if (slowMotionRecordingFrameRateHintElem) {
-                var slowRangeTemplate = projectFormTexts.slowMotionRecordingFrameRateRangeHint || fallbackProjectForm.slowMotionRecordingFrameRateRangeHint || '';
-                var slowDefaultHint = projectFormTexts.slowMotionRecordingFrameRateDefaultHint || fallbackProjectForm.slowMotionRecordingFrameRateDefaultHint || '';
+                slowRangeTemplate = projectFormTexts.slowMotionRecordingFrameRateRangeHint || fallbackProjectForm.slowMotionRecordingFrameRateRangeHint || '';
+                slowDefaultHint = projectFormTexts.slowMotionRecordingFrameRateDefaultHint || fallbackProjectForm.slowMotionRecordingFrameRateDefaultHint || '';
                 if (slowRangeTemplate) {
                   slowMotionRecordingFrameRateHintElem.setAttribute('data-range-template', slowRangeTemplate);
                 } else {
@@ -11406,7 +9772,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
               };
               crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
-              fallbackContacts = ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.contacts) || {};
+              fallbackContacts = ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.contacts) || {};
               contactsTexts = ((_texts$lang5 = texts[lang]) === null || _texts$lang5 === void 0 ? void 0 : _texts$lang5.contacts) || fallbackContacts;
               if (contactsDialogHeading && contactsTexts.heading) {
                 contactsDialogHeading.textContent = contactsTexts.heading;
@@ -11450,8 +9816,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
               }
               if (userProfileRoleInput) {
+                profileSnapshot = profileController !== null && profileController !== void 0 && profileController.getUserProfileSnapshot ? profileController.getUserProfileSnapshot() : {
+                  role: ''
+                };
                 populateUserProfileRoleSelect({
-                  selected: typeof ((_userProfileState2 = userProfileState) === null || _userProfileState2 === void 0 ? void 0 : _userProfileState2.role) === 'string' ? userProfileState.role : ''
+                  selected: profileSnapshot.role || ''
                 });
               }
               if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
@@ -11576,38 +9945,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
               if (addPersonBtn) {
                 crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
-                _label70 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
-                setButtonLabelWithIconBinding(addPersonBtn, _label70, ICON_GLYPHS.add);
-                addPersonBtn.setAttribute('aria-label', _label70);
-                addPersonBtn.setAttribute('data-help', _label70);
+                _label68 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
+                setButtonLabelWithIconBinding(addPersonBtn, _label68, ICON_GLYPHS.add);
+                addPersonBtn.setAttribute('aria-label', _label68);
+                addPersonBtn.setAttribute('data-help', _label68);
               }
               if (addPrepBtn) {
                 prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
-                _label71 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
-                setButtonLabelWithIconBinding(addPrepBtn, _label71, ICON_GLYPHS.add);
-                addPrepBtn.setAttribute('aria-label', _label71);
-                addPrepBtn.setAttribute('data-help', _label71);
+                _label69 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
+                setButtonLabelWithIconBinding(addPrepBtn, _label69, ICON_GLYPHS.add);
+                addPrepBtn.setAttribute('aria-label', _label69);
+                addPrepBtn.setAttribute('data-help', _label69);
               }
               if (addShootBtn) {
                 shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
-                _label72 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
-                setButtonLabelWithIconBinding(addShootBtn, _label72, ICON_GLYPHS.add);
-                addShootBtn.setAttribute('aria-label', _label72);
-                addShootBtn.setAttribute('data-help', _label72);
+                _label70 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
+                setButtonLabelWithIconBinding(addShootBtn, _label70, ICON_GLYPHS.add);
+                addShootBtn.setAttribute('aria-label', _label70);
+                addShootBtn.setAttribute('data-help', _label70);
               }
               if (addReturnBtn) {
                 returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
-                _label73 = "".concat(addEntryLabel, " ").concat(returnLabel).trim();
-                setButtonLabelWithIconBinding(addReturnBtn, _label73, ICON_GLYPHS.add);
-                addReturnBtn.setAttribute('aria-label', _label73);
-                addReturnBtn.setAttribute('data-help', _label73);
-              }
-              if (addStorageNeedBtn) {
-                storageLabelText = stripTrailingPunctuation(projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs');
-                _label74 = "".concat(addEntryLabel, " ").concat(storageLabelText).trim();
-                setButtonLabelWithIconBinding(addStorageNeedBtn, _label74, ICON_GLYPHS.add);
-                addStorageNeedBtn.setAttribute('aria-label', _label74);
-                addStorageNeedBtn.setAttribute('data-help', _label74);
+                _label71 = "".concat(addEntryLabel, " ").concat(returnLabel).trim();
+                setButtonLabelWithIconBinding(addReturnBtn, _label71, ICON_GLYPHS.add);
+                addReturnBtn.setAttribute('aria-label', _label71);
+                addReturnBtn.setAttribute('data-help', _label71);
               }
             }
             if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
@@ -11747,7 +10109,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var returnContainer = document.getElementById("returnContainer");
   var addReturnBtn = document.getElementById("addReturnBtn");
   var storageNeedsContainer = document.getElementById("storageNeedsContainer");
-  var addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
   var contactsDialog = null;
   var contactsForm = null;
   var contactsDialogHeading = null;
@@ -11859,12 +10220,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var monitoringConfigurationUserChanged = false;
   var crewRoles = ['DoP', 'Steadicam Operator', 'Camera Operator', 'B-Camera Operator', 'Drone Operator', 'DIT', '1st AC', '2nd AC', 'Video Operator', 'Key Grip', 'Dolly Grip', 'Best Boy Grip', 'Rigging Grip', 'Grip', 'Key Gaffer', 'Gaffer', 'Rigging Gaffer', 'Best Boy Electric', 'Electrician', 'Director', 'Assistant Director', 'Producer', 'Production Manager', 'Production Assistant'];
   function getCrewRoleLabels() {
-    var _texts3, _texts4;
+    var _texts, _texts2;
     var lang = typeof currentLang === 'string' ? currentLang : 'en';
-    return ((_texts3 = texts) === null || _texts3 === void 0 || (_texts3 = _texts3[lang]) === null || _texts3 === void 0 ? void 0 : _texts3.crewRoles) || ((_texts4 = texts) === null || _texts4 === void 0 || (_texts4 = _texts4.en) === null || _texts4 === void 0 ? void 0 : _texts4.crewRoles) || {};
+    return ((_texts = texts) === null || _texts === void 0 || (_texts = _texts[lang]) === null || _texts === void 0 ? void 0 : _texts.crewRoles) || ((_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2.en) === null || _texts2 === void 0 ? void 0 : _texts2.crewRoles) || {};
   }
   function populateUserProfileRoleSelect() {
-    var _userProfileState;
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     resolveContactsDomRefs();
     if (!userProfileRoleInput) return;
@@ -11873,7 +10233,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var roleLabels = getCrewRoleLabels();
     var placeholderDefault = getContactsText('rolePlaceholder', 'Select role');
     var placeholderText = getContactsText('userProfileRolePlaceholder', placeholderDefault) || placeholderDefault;
-    var selectedValue = options && typeof options.selected === 'string' ? options.selected : typeof ((_userProfileState = userProfileState) === null || _userProfileState === void 0 ? void 0 : _userProfileState.role) === 'string' ? userProfileState.role : '';
+    var selectedValue = options && typeof options.selected === 'string' ? options.selected : profileController !== null && profileController !== void 0 && profileController.getUserProfileSnapshot ? profileController.getUserProfileSnapshot().role : '';
     var previousScrollTop = userProfileRoleInput.scrollTop;
     userProfileRoleInput.textContent = '';
     var placeholderOption = doc.createElement('option');
@@ -12017,13 +10377,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function configureIconOnlyButton(button, glyph) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!button) return;
-    var _ref32 = options || {},
-      _ref32$contextPaths = _ref32.contextPaths,
-      contextPaths = _ref32$contextPaths === void 0 ? [] : _ref32$contextPaths,
-      _ref32$fallbackContex = _ref32.fallbackContext,
-      fallbackContext = _ref32$fallbackContex === void 0 ? '' : _ref32$fallbackContex,
-      _ref32$actionKey = _ref32.actionKey,
-      actionKey = _ref32$actionKey === void 0 ? 'addEntry' : _ref32$actionKey;
+    var _ref27 = options || {},
+      _ref27$contextPaths = _ref27.contextPaths,
+      contextPaths = _ref27$contextPaths === void 0 ? [] : _ref27$contextPaths,
+      _ref27$fallbackContex = _ref27.fallbackContext,
+      fallbackContext = _ref27$fallbackContex === void 0 ? '' : _ref27$fallbackContex,
+      _ref27$actionKey = _ref27.actionKey,
+      actionKey = _ref27$actionKey === void 0 ? 'addEntry' : _ref27$actionKey;
     setButtonLabelWithIconBinding(button, '', glyph || ICON_GLYPHS.add);
     var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
     var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
@@ -12096,10 +10456,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     console.warn('Failed to expose accessibility helpers globally', globalAssignError);
   }
   function getProjectFormText(key) {
-    var _texts5, _texts6;
+    var _texts3, _texts4;
     var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var fallbackProjectForm = ((_texts5 = texts) === null || _texts5 === void 0 || (_texts5 = _texts5.en) === null || _texts5 === void 0 ? void 0 : _texts5.projectForm) || {};
-    var projectFormTexts = ((_texts6 = texts) === null || _texts6 === void 0 || (_texts6 = _texts6[currentLang]) === null || _texts6 === void 0 ? void 0 : _texts6.projectForm) || fallbackProjectForm;
+    var fallbackProjectForm = ((_texts3 = texts) === null || _texts3 === void 0 || (_texts3 = _texts3.en) === null || _texts3 === void 0 ? void 0 : _texts3.projectForm) || {};
+    var projectFormTexts = ((_texts4 = texts) === null || _texts4 === void 0 || (_texts4 = _texts4[currentLang]) === null || _texts4 === void 0 ? void 0 : _texts4.projectForm) || fallbackProjectForm;
     var localized = projectFormTexts && typeof projectFormTexts[key] === 'string' ? projectFormTexts[key].trim() : '';
     if (localized) return localized;
     var fallback = fallbackProjectForm && typeof fallbackProjectForm[key] === 'string' ? fallbackProjectForm[key].trim() : '';
@@ -12117,27 +10477,39 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return CONTACTS_STORAGE_KEY_DEFAULT;
   }
-  var CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
-  var CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
-  var CONTACT_AVATAR_MAX_DIMENSION = 256;
-  var CONTACT_AVATAR_JPEG_QUALITY = 0.85;
-  var CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
   var contactsCache = [];
   var contactsInitialized = false;
-  var userProfileState = {
-    name: '',
-    role: '',
-    avatar: '',
-    phone: '',
-    email: ''
-  };
-  var userProfileDirty = false;
-  var userProfilePendingAnnouncement = false;
+  var profileController = createProfileController({
+    loadProfile: function loadProfile() {
+      try {
+        return typeof loadUserProfile === 'function' ? loadUserProfile() : null;
+      } catch (loadError) {
+        console.warn('Failed to resolve stored user profile', loadError);
+        return null;
+      }
+    },
+    saveProfile: function saveProfile(profile) {
+      if (typeof saveUserProfile === 'function') {
+        try {
+          saveUserProfile(profile);
+        } catch (saveError) {
+          console.warn('Failed to persist user profile', saveError);
+        }
+      }
+    },
+    announce: function announce(message) {
+      return announceContactsMessage(message);
+    },
+    getText: getContactsText,
+    dispatchChange: function dispatchChange() {
+      return dispatchGearProviderDataChanged('user-profile');
+    }
+  });
   function getContactsText(key) {
-    var _texts7, _texts8;
+    var _texts5, _texts6;
     var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var fallbackContacts = ((_texts7 = texts) === null || _texts7 === void 0 || (_texts7 = _texts7.en) === null || _texts7 === void 0 ? void 0 : _texts7.contacts) || {};
-    var contactsTexts = ((_texts8 = texts) === null || _texts8 === void 0 || (_texts8 = _texts8[currentLang]) === null || _texts8 === void 0 ? void 0 : _texts8.contacts) || fallbackContacts;
+    var fallbackContacts = ((_texts5 = texts) === null || _texts5 === void 0 || (_texts5 = _texts5.en) === null || _texts5 === void 0 ? void 0 : _texts5.contacts) || {};
+    var contactsTexts = ((_texts6 = texts) === null || _texts6 === void 0 || (_texts6 = _texts6[currentLang]) === null || _texts6 === void 0 ? void 0 : _texts6.contacts) || fallbackContacts;
     var localized = contactsTexts && typeof contactsTexts[key] === 'string' ? contactsTexts[key].trim() : '';
     if (localized) return localized;
     var fallback = fallbackContacts && typeof fallbackContacts[key] === 'string' ? fallbackContacts[key].trim() : '';
@@ -12155,72 +10527,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return "contact-".concat(Date.now().toString(36), "-").concat(Math.random().toString(36).slice(2, 8));
   }
   function sanitizeContactValue(value) {
-    var moduleApi = resolveContactsModule();
-    if (moduleApi && typeof moduleApi.sanitizeContactValue === 'function') {
-      try {
-        return moduleApi.sanitizeContactValue(value);
-      } catch (error) {
-        console.warn('Unable to sanitize contact value via module.', error);
-      }
-    }
-    if (typeof value !== 'string') return '';
-    return value.trim();
+    return sanitizeContactValueHelper(value);
   }
   function normalizeContactEntry(entry) {
-    var moduleApi = resolveContactsModule();
-    if (moduleApi && typeof moduleApi.normalizeContactEntry === 'function') {
-      try {
-        return moduleApi.normalizeContactEntry(entry);
-      } catch (error) {
-        console.warn('Unable to normalize contact via module.', error);
-      }
-    }
-    if (!entry || _typeof(entry) !== 'object') return null;
-    var id = sanitizeContactValue(entry.id) || generateContactId();
-    var name = sanitizeContactValue(entry.name);
-    var role = sanitizeContactValue(entry.role);
-    var phone = sanitizeContactValue(entry.phone);
-    var email = sanitizeContactValue(entry.email);
-    var website = sanitizeContactValue(entry.website);
-    var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
-    var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
-    var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
-    var normalized = {
-      id: id,
-      name: name,
-      role: role,
-      phone: phone,
-      email: email,
-      website: website,
-      createdAt: createdAt,
-      updatedAt: updatedAt
-    };
-    if (avatar) normalized.avatar = avatar;
-    return normalized;
+    return normalizeContactEntryHelper(entry);
   }
   function sortContacts(list) {
-    var moduleApi = resolveContactsModule();
-    if (moduleApi && typeof moduleApi.sortContacts === 'function') {
-      try {
-        return moduleApi.sortContacts(list);
-      } catch (error) {
-        console.warn('Unable to sort contacts via module.', error);
-      }
-    }
-    return (Array.isArray(list) ? list.filter(Boolean) : []).map(normalizeContactEntry).filter(Boolean).sort(function (a, b) {
-      var nameA = ((a === null || a === void 0 ? void 0 : a.name) || '').toLowerCase();
-      var nameB = ((b === null || b === void 0 ? void 0 : b.name) || '').toLowerCase();
-      if (nameA && nameB && nameA !== nameB) {
-        try {
-          return nameA.localeCompare(nameB);
-        } catch (error) {
-          void error;
-        }
-      }
-      if (nameA && !nameB) return -1;
-      if (!nameA && nameB) return 1;
-      return ((a === null || a === void 0 ? void 0 : a.createdAt) || 0) - ((b === null || b === void 0 ? void 0 : b.createdAt) || 0);
-    });
+    return sortContactsHelper(list);
   }
   function loadStoredContacts() {
     var moduleApi = resolveContactsModule();
@@ -12269,9 +10582,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }) || null;
   }
   function getContactDisplayLabel(contact) {
-    var _texts9, _texts0;
+    var _texts7, _texts8;
     if (!contact) return '';
-    var roleLabels = ((_texts9 = texts) === null || _texts9 === void 0 || (_texts9 = _texts9[currentLang]) === null || _texts9 === void 0 ? void 0 : _texts9.crewRoles) || ((_texts0 = texts) === null || _texts0 === void 0 || (_texts0 = _texts0.en) === null || _texts0 === void 0 ? void 0 : _texts0.crewRoles) || {};
+    var roleLabels = ((_texts7 = texts) === null || _texts7 === void 0 || (_texts7 = _texts7[currentLang]) === null || _texts7 === void 0 ? void 0 : _texts7.crewRoles) || ((_texts8 = texts) === null || _texts8 === void 0 || (_texts8 = _texts8.en) === null || _texts8 === void 0 ? void 0 : _texts8.crewRoles) || {};
     var base = contact.name || contact.email || contact.phone || contact.website || contact.role || contact.id;
     var roleLabel = contact.role ? roleLabels[contact.role] || contact.role : '';
     if (base && roleLabel && roleLabel !== base) {
@@ -12311,10 +10624,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }) || null;
     }
     if (existing) {
-      var _label3 = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(existing) || baseName : existing.name || baseName;
+      var _label = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(existing) || baseName : existing.name || baseName;
       return {
         value: "contact:".concat(existing.id),
-        label: _label3,
+        label: _label,
         contact: existing
       };
     }
@@ -12401,25 +10714,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return '•';
   }
-  function isSafeImageUrl(url) {
-    if (typeof url !== 'string') return false;
-    if (url.startsWith('data:')) {
-      var allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
-      try {
-        var mimeTypeEnd = url.indexOf(';', 5);
-        var type = mimeTypeEnd >= 0 ? url.substring(5, mimeTypeEnd) : '';
-        if (allowedTypes.includes(type)) return true;
-      } catch (e) {}
-      return false;
-    }
-    if (/^\s*(javascript:|https?:|\/\/)/i.test(url)) {
-      return false;
-    }
-    if (/^[a-zA-Z0-9._-]+$/.test(url)) {
-      return true;
-    }
-    return false;
-  }
   function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
     if (!container) return;
     var visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
@@ -12479,9 +10773,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function stopAvatarEditing() {
     var _avatarOptionsContext2, _avatarOptionsContext3;
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref33 = options || {},
-      _ref33$restoreFocus = _ref33.restoreFocus,
-      restoreFocus = _ref33$restoreFocus === void 0 ? false : _ref33$restoreFocus;
+    var _ref28 = options || {},
+      _ref28$restoreFocus = _ref28.restoreFocus,
+      restoreFocus = _ref28$restoreFocus === void 0 ? false : _ref28$restoreFocus;
     if (avatarEditSection) {
       avatarEditSection.classList.add('hidden');
     }
@@ -12893,28 +11187,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function assignUserProfileState() {
     var updates = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var nextState = {
-      name: typeof updates.name === 'string' ? updates.name : userProfileState.name || '',
-      role: typeof updates.role === 'string' ? updates.role : userProfileState.role || '',
-      avatar: typeof updates.avatar === 'string' ? updates.avatar : userProfileState.avatar || '',
-      phone: typeof updates.phone === 'string' ? updates.phone : userProfileState.phone || '',
-      email: typeof updates.email === 'string' ? updates.email : userProfileState.email || ''
-    };
-    userProfileState = nextState;
+    if (!profileController || typeof profileController.assignUserProfileState !== 'function') return;
+    profileController.assignUserProfileState(updates);
   }
   function getUserProfileSnapshot() {
-    var name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
-    var role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
-    var avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-    var phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
-    var email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
-    return {
-      name: name,
-      role: role,
-      avatar: avatar,
-      phone: phone,
-      email: email
-    };
+    if (!profileController || typeof profileController.getUserProfileSnapshot !== 'function') {
+      return {
+        name: '',
+        role: '',
+        avatar: '',
+        phone: '',
+        email: ''
+      };
+    }
+    return profileController.getUserProfileSnapshot();
   }
   function applyUserProfileToDom() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -12979,131 +11265,101 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function loadUserProfileState() {
-    try {
-      if (typeof loadUserProfile === 'function') {
-        var loaded = loadUserProfile();
-        if (loaded && _typeof(loaded) === 'object') {
-          userProfileState = {
-            name: typeof loaded.name === 'string' ? loaded.name : '',
-            role: typeof loaded.role === 'string' ? loaded.role : '',
-            avatar: typeof loaded.avatar === 'string' ? loaded.avatar : '',
-            phone: typeof loaded.phone === 'string' ? loaded.phone : '',
-            email: typeof loaded.email === 'string' ? loaded.email : ''
-          };
-        } else {
-          userProfileState = {
-            name: '',
-            role: '',
-            avatar: '',
-            phone: '',
-            email: ''
-          };
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load user profile', error);
-      userProfileState = {
-        name: '',
-        role: '',
-        avatar: '',
-        phone: '',
-        email: ''
-      };
+    if (!profileController || typeof profileController.load !== 'function') {
+      applyUserProfileToDom();
+      return;
     }
-    userProfileDirty = false;
-    userProfilePendingAnnouncement = false;
+    profileController.load();
     applyUserProfileToDom();
-    dispatchGearProviderDataChanged('user-profile');
   }
   function persistUserProfileState() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var profile = getUserProfileSnapshot();
-    userProfileState = profile;
-    if (typeof saveUserProfile === 'function') {
-      try {
-        saveUserProfile(profile);
-      } catch (error) {
-        console.warn('Failed to save user profile', error);
-      }
+    if (!profileController || typeof profileController.schedulePersist !== 'function') {
+      return;
     }
-    userProfileDirty = false;
     var activeElement = typeof document !== 'undefined' ? document.activeElement : null;
     var preserveTarget = activeElement === userProfileNameInput || activeElement === userProfileRoleInput || activeElement === userProfilePhoneInput || activeElement === userProfileEmailInput ? activeElement : null;
+    profileController.schedulePersist({
+      announce: Boolean(options && options.announce)
+    });
     applyUserProfileToDom({
       preserveSelectionTarget: preserveTarget
     });
-    if (options && options.announce) {
-      announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
-      userProfilePendingAnnouncement = false;
-    }
-    dispatchGearProviderDataChanged('user-profile');
   }
   function handleUserProfileNameInput() {
     if (!userProfileNameInput) return;
     var rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
-    if (rawValue.trim() === userProfileState.name.trim()) {
+    var profile = getUserProfileSnapshot();
+    if (rawValue.trim() === profile.name.trim()) {
       return;
     }
-    assignUserProfileState({
-      name: rawValue
-    });
-    userProfileDirty = true;
-    userProfilePendingAnnouncement = true;
+    if (profileController && typeof profileController.handleFieldInput === 'function') {
+      profileController.handleFieldInput('name', rawValue);
+    } else {
+      assignUserProfileState({
+        name: rawValue
+      });
+    }
     persistUserProfileState();
   }
   function handleUserProfileRoleInput() {
     if (!userProfileRoleInput) return;
     var rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
     var normalizedValue = rawValue.trim();
-    if (normalizedValue === userProfileState.role.trim()) {
+    var profile = getUserProfileSnapshot();
+    if (normalizedValue === profile.role.trim()) {
       return;
     }
     ensureUserProfileRoleOption(normalizedValue);
-    assignUserProfileState({
-      role: normalizedValue
-    });
-    userProfileDirty = true;
-    userProfilePendingAnnouncement = true;
+    if (profileController && typeof profileController.handleFieldInput === 'function') {
+      profileController.handleFieldInput('role', normalizedValue);
+    } else {
+      assignUserProfileState({
+        role: normalizedValue
+      });
+    }
     persistUserProfileState();
   }
   function handleUserProfilePhoneInput() {
     if (!userProfilePhoneInput) return;
     var rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
-    if (rawValue.trim() === userProfileState.phone.trim()) {
+    var profile = getUserProfileSnapshot();
+    if (rawValue.trim() === profile.phone.trim()) {
       return;
     }
-    assignUserProfileState({
-      phone: rawValue
-    });
-    userProfileDirty = true;
-    userProfilePendingAnnouncement = true;
+    if (profileController && typeof profileController.handleFieldInput === 'function') {
+      profileController.handleFieldInput('phone', rawValue);
+    } else {
+      assignUserProfileState({
+        phone: rawValue
+      });
+    }
     persistUserProfileState();
   }
   function handleUserProfileEmailInput() {
     if (!userProfileEmailInput) return;
     var rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
-    if (rawValue.trim() === userProfileState.email.trim()) {
+    var profile = getUserProfileSnapshot();
+    if (rawValue.trim() === profile.email.trim()) {
       return;
     }
-    assignUserProfileState({
-      email: rawValue
-    });
-    userProfileDirty = true;
-    userProfilePendingAnnouncement = true;
+    if (profileController && typeof profileController.handleFieldInput === 'function') {
+      profileController.handleFieldInput('email', rawValue);
+    } else {
+      assignUserProfileState({
+        email: rawValue
+      });
+    }
     persistUserProfileState();
   }
   function handleUserProfileFieldBlur() {
-    if (!userProfileDirty && !userProfilePendingAnnouncement) {
-      return;
-    }
-    userProfileDirty = false;
-    if (userProfilePendingAnnouncement) {
-      userProfilePendingAnnouncement = false;
-      announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
+    if (profileController && typeof profileController.handleFieldBlur === 'function') {
+      profileController.handleFieldBlur();
     }
   }
   function handleUserProfileAvatarCleared() {
-    if (!userProfileState.avatar) {
+    var profile = getUserProfileSnapshot();
+    if (!profile.avatar) {
       return;
     }
     assignUserProfileState({
@@ -13116,7 +11372,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function handleUserProfileAvatarButtonClick() {
-    var hasAvatar = Boolean(userProfileState && userProfileState.avatar);
+    var profile = getUserProfileSnapshot();
+    var hasAvatar = Boolean(profile && profile.avatar);
     if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
       try {
         userProfileAvatarInput.click();
@@ -13127,11 +11384,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     openAvatarOptionsDialog({
       getAvatar: function getAvatar() {
-        return userProfileState.avatar || '';
+        return getUserProfileSnapshot().avatar || '';
       },
       getName: function getName() {
         var _userProfileNameInput;
-        return userProfileState.name || ((_userProfileNameInput = userProfileNameInput) === null || _userProfileNameInput === void 0 ? void 0 : _userProfileNameInput.value) || '';
+        return getUserProfileSnapshot().name || ((_userProfileNameInput = userProfileNameInput) === null || _userProfileNameInput === void 0 ? void 0 : _userProfileNameInput.value) || '';
       },
       onDelete: function onDelete() {
         handleUserProfileAvatarCleared();
@@ -13149,7 +11406,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var _userProfileNameInput2;
         if (!dataUrl) return;
         assignUserProfileState({
-          name: userProfileState.name || ((_userProfileNameInput2 = userProfileNameInput) === null || _userProfileNameInput2 === void 0 ? void 0 : _userProfileNameInput2.value) || '',
+          name: getUserProfileSnapshot().name || ((_userProfileNameInput2 = userProfileNameInput) === null || _userProfileNameInput2 === void 0 ? void 0 : _userProfileNameInput2.value) || '',
           avatar: dataUrl
         });
         persistUserProfileState();
@@ -13160,15 +11417,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function handleUserProfileAvatarInputChange() {
     if (!userProfileAvatarInput) return;
-    var _ref34 = userProfileAvatarInput.files || [],
-      _ref35 = _slicedToArray(_ref34, 1),
-      file = _ref35[0];
+    var _ref29 = userProfileAvatarInput.files || [],
+      _ref30 = _slicedToArray(_ref29, 1),
+      file = _ref30[0];
     if (!file) {
       return;
     }
     readAvatarFile(file, function (dataUrl) {
+      var profile = getUserProfileSnapshot();
       assignUserProfileState({
-        name: userProfileState.name || '',
+        name: profile.name || '',
         avatar: dataUrl
       });
       persistUserProfileState();
@@ -13196,9 +11454,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function detachCrewRowContact(row) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!row) return;
-    var _ref36 = options || {},
-      _ref36$preserveSelect = _ref36.preserveSelect,
-      preserveSelect = _ref36$preserveSelect === void 0 ? false : _ref36$preserveSelect;
+    var _ref31 = options || {},
+      _ref31$preserveSelect = _ref31.preserveSelect,
+      preserveSelect = _ref31$preserveSelect === void 0 ? false : _ref31$preserveSelect;
     delete row.dataset.contactId;
     if (!preserveSelect) {
       var contactSelect = row.querySelector('.person-contact-select');
@@ -13244,139 +11502,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     scheduleProjectAutoSave(true);
   }
-  function estimateDataUrlSize(dataUrl) {
-    if (typeof dataUrl !== 'string' || !dataUrl) return 0;
-    var marker = 'base64,';
-    var base64Index = dataUrl.indexOf(marker);
-    if (base64Index === -1) return dataUrl.length;
-    var base64 = dataUrl.slice(base64Index + marker.length).trim();
-    if (!base64) return 0;
-    var padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
-    return Math.max(0, Math.floor(base64.length / 4) * 3 - padding);
-  }
-  function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
-    if (!dataUrl || typeof document === 'undefined') {
-      if (typeof onError === 'function') onError();
-      return;
-    }
-    try {
-      var image = new Image();
-      var handleFailure = function handleFailure() {
-        image.onload = null;
-        image.onerror = null;
-        if (typeof onError === 'function') onError();
-      };
-      image.onload = function () {
-        image.onload = null;
-        image.onerror = null;
-        try {
-          var width = image.naturalWidth || image.width || 0;
-          var height = image.naturalHeight || image.height || 0;
-          if (!width || !height) {
-            handleFailure();
-            return;
-          }
-          var scale = Math.min(1, CONTACT_AVATAR_MAX_DIMENSION / Math.max(width, height));
-          var targetWidth = Math.max(1, Math.round(width * scale));
-          var targetHeight = Math.max(1, Math.round(height * scale));
-          var canvas = document.createElement('canvas');
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-          var ctx = canvas.getContext('2d');
-          if (!ctx) {
-            handleFailure();
-            return;
-          }
-          ctx.clearRect(0, 0, targetWidth, targetHeight);
-          ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
-          var preferPng = typeof mimeType === 'string' && /image\/(png|gif|webp)/i.test(mimeType);
-          var exportOrder = preferPng ? ['image/png', 'image/jpeg'] : ['image/jpeg', 'image/png'];
-          var tryCandidate = function tryCandidate(candidate) {
-            var size = estimateDataUrlSize(candidate);
-            if (size && size <= CONTACT_AVATAR_MAX_BYTES) {
-              if (typeof onSuccess === 'function') onSuccess(candidate);
-              return true;
-            }
-            return false;
-          };
-          for (var index = 0; index < exportOrder.length; index += 1) {
-            var type = exportOrder[index];
-            if (type === 'image/jpeg') {
-              var quality = CONTACT_AVATAR_JPEG_QUALITY;
-              while (quality + 0.0001 >= CONTACT_AVATAR_JPEG_MIN_QUALITY) {
-                var bounded = Math.max(CONTACT_AVATAR_JPEG_MIN_QUALITY, Math.min(0.95, Number(quality.toFixed(2))));
-                var candidate = canvas.toDataURL('image/jpeg', bounded);
-                if (tryCandidate(candidate)) return;
-                if (bounded === CONTACT_AVATAR_JPEG_MIN_QUALITY) break;
-                quality -= 0.1;
-              }
-            } else {
-              var _candidate = canvas.toDataURL(type);
-              if (tryCandidate(_candidate)) return;
-            }
-          }
-          handleFailure();
-        } catch (canvasError) {
-          void canvasError;
-          handleFailure();
-        }
-      };
-      image.onerror = handleFailure;
-      image.decoding = 'async';
-      image.src = dataUrl;
-    } catch (error) {
-      void error;
-      if (typeof onError === 'function') onError();
-    }
-  }
-  function readAvatarFile(file, onSuccess, onError) {
-    if (!file) return;
-    if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
-      if (typeof onError === 'function') onError('tooLarge');
-      return;
-    }
-    var reader = new FileReader();
-    var handleError = function handleError(reason) {
-      if (typeof onError === 'function') onError(reason);
-    };
-    reader.addEventListener('error', function () {
-      return handleError('readError');
-    });
-    reader.addEventListener('load', function () {
-      var result = typeof reader.result === 'string' ? reader.result : '';
-      if (!result) {
-        handleError('readError');
-        return;
-      }
-      var initialSize = estimateDataUrlSize(result);
-      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-        if (typeof onSuccess === 'function') onSuccess(result);
-        return;
-      }
-      optimiseAvatarDataUrl(result, typeof file.type === 'string' ? file.type : '', function (optimised) {
-        if (optimised && estimateDataUrlSize(optimised) <= CONTACT_AVATAR_MAX_BYTES) {
-          if (typeof onSuccess === 'function') onSuccess(optimised);
-          return;
-        }
-        if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-          if (typeof onSuccess === 'function') onSuccess(result);
-          return;
-        }
-        handleError('tooLarge');
-      }, function () {
-        if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
-          if (typeof onSuccess === 'function') onSuccess(result);
-          return;
-        }
-        handleError('readError');
-      });
-    });
-    try {
-      reader.readAsDataURL(file);
-    } catch (error) {
-      handleError('readError');
-    }
-  }
   function handleAvatarFileSelection(row, file) {
     readAvatarFile(file, function (dataUrl) {
       setRowAvatar(row, dataUrl);
@@ -13407,44 +11532,54 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function applyContactToCrewRow(row, contact) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!row || !contact) return;
-    var _ref37 = options || {},
-      _ref37$skipDirty = _ref37.skipDirty,
-      skipDirty = _ref37$skipDirty === void 0 ? false : _ref37$skipDirty,
-      _ref37$skipAnnounceme = _ref37.skipAnnouncement,
-      skipAnnouncement = _ref37$skipAnnounceme === void 0 ? false : _ref37$skipAnnounceme;
+    var _ref32 = options || {},
+      _ref32$skipDirty = _ref32.skipDirty,
+      skipDirty = _ref32$skipDirty === void 0 ? false : _ref32$skipDirty,
+      _ref32$skipAnnounceme = _ref32.skipAnnouncement,
+      skipAnnouncement = _ref32$skipAnnounceme === void 0 ? false : _ref32$skipAnnounceme;
+    var snapshot = getCrewRowSnapshot(row) || {};
+    var merged = typeof createCrewRowSync === 'function' ? createCrewRowSync(snapshot, contact) : {
+      role: contact.role || '',
+      name: contact.name || '',
+      phone: contact.phone || '',
+      email: contact.email || '',
+      website: contact.website || '',
+      avatar: contact.avatar || '',
+      contactId: contact.id || ''
+    };
     row.dataset.syncingContact = '1';
     try {
       var roleSel = row.querySelector('select[name="crewRole"]');
       if (roleSel) {
-        if (contact.role && !Array.from(roleSel.options).some(function (opt) {
-          return opt.value === contact.role;
+        if (merged.role && !Array.from(roleSel.options).some(function (opt) {
+          return opt.value === merged.role;
         })) {
-          var _texts1, _texts10;
+          var _texts9, _texts0;
           var opt = document.createElement('option');
-          opt.value = contact.role;
-          var roleLabels = ((_texts1 = texts) === null || _texts1 === void 0 || (_texts1 = _texts1[currentLang]) === null || _texts1 === void 0 ? void 0 : _texts1.crewRoles) || ((_texts10 = texts) === null || _texts10 === void 0 || (_texts10 = _texts10.en) === null || _texts10 === void 0 ? void 0 : _texts10.crewRoles) || {};
-          opt.textContent = roleLabels[contact.role] || contact.role;
+          opt.value = merged.role;
+          var roleLabels = ((_texts9 = texts) === null || _texts9 === void 0 || (_texts9 = _texts9[currentLang]) === null || _texts9 === void 0 ? void 0 : _texts9.crewRoles) || ((_texts0 = texts) === null || _texts0 === void 0 || (_texts0 = _texts0.en) === null || _texts0 === void 0 ? void 0 : _texts0.crewRoles) || {};
+          opt.textContent = roleLabels[merged.role] || merged.role;
           roleSel.appendChild(opt);
         }
-        if (contact.role) {
-          roleSel.value = contact.role;
+        if (merged.role) {
+          roleSel.value = merged.role;
         }
       }
       var nameInput = row.querySelector('.person-name');
-      if (nameInput) nameInput.value = contact.name || '';
+      if (nameInput) nameInput.value = merged.name || '';
       var phoneInput = row.querySelector('.person-phone');
-      if (phoneInput) phoneInput.value = contact.phone || '';
+      if (phoneInput) phoneInput.value = merged.phone || '';
       var emailInput = row.querySelector('.person-email');
-      if (emailInput) emailInput.value = contact.email || '';
+      if (emailInput) emailInput.value = merged.email || '';
       var websiteInput = row.querySelector('.person-website');
-      if (websiteInput) websiteInput.value = contact.website || '';
-      setRowAvatar(row, contact.avatar || '', {
-        name: contact.name
+      if (websiteInput) websiteInput.value = merged.website || '';
+      setRowAvatar(row, merged.avatar || '', {
+        name: merged.name
       });
-      row.dataset.contactId = contact.id;
+      row.dataset.contactId = merged.contactId || contact.id;
       var contactSelect = row.querySelector('.person-contact-select');
       if (contactSelect) {
-        setContactSelectOptions(contactSelect, contact.id);
+        setContactSelectOptions(contactSelect, merged.contactId || contact.id);
       }
     } finally {
       delete row.dataset.syncingContact;
@@ -13567,118 +11702,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     announceContactsMessage(getContactsText('contactSaved', 'Contact saved for future projects.'));
   }
   function parseVCard(text) {
-    if (typeof text !== 'string') return [];
-    var normalized = text.replace(/\r\n?/g, '\n');
-    var folded = [];
-    normalized.split('\n').forEach(function (line) {
-      if (/^[ \t]/.test(line) && folded.length) {
-        folded[folded.length - 1] += line.replace(/^[ \t]/, '');
-      } else {
-        folded.push(line);
-      }
-    });
-    var contacts = [];
-    var current = null;
-    folded.forEach(function (line) {
-      var _keySegments$;
-      if (/^BEGIN:VCARD/i.test(line)) {
-        current = {
-          name: '',
-          role: '',
-          phone: '',
-          email: '',
-          website: '',
-          avatar: ''
-        };
-        return;
-      }
-      if (/^END:VCARD/i.test(line)) {
-        if (current && (current.name || current.email || current.phone || current.website)) {
-          contacts.push(_objectSpread({}, current));
-        }
-        current = null;
-        return;
-      }
-      if (!current) return;
-      var _line$split = line.split(':'),
-        _line$split2 = _toArray(_line$split),
-        rawKey = _line$split2[0],
-        rawValueParts = _line$split2.slice(1);
-      if (!rawValueParts.length) return;
-      var keySegments = rawKey.split(';');
-      var baseKey = (_keySegments$ = keySegments[0]) === null || _keySegments$ === void 0 ? void 0 : _keySegments$.toUpperCase();
-      var value = rawValueParts.join(':').trim();
-      if (!baseKey) return;
-      if (baseKey === 'FN') {
-        current.name = sanitizeContactValue(value);
-        return;
-      }
-      if (baseKey === 'N' && !current.name) {
-        current.name = value.split(';').filter(Boolean).join(' ').trim();
-        return;
-      }
-      if (baseKey === 'TEL') {
-        if (!current.phone) current.phone = sanitizeContactValue(value);
-        return;
-      }
-      if (baseKey === 'EMAIL') {
-        if (!current.email) current.email = sanitizeContactValue(value);
-        return;
-      }
-      if (baseKey === 'URL' || /\.URL$/.test(baseKey)) {
-        if (!current.website) current.website = sanitizeContactValue(value);
-        return;
-      }
-      if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
-        current.role = sanitizeContactValue(value);
-        return;
-      }
-      if (baseKey === 'ORG' && !current.role) {
-        current.role = sanitizeContactValue(value);
-        return;
-      }
-      if (baseKey === 'PHOTO') {
-        var dataValue = value;
-        if (!dataValue) return;
-        if (/^data:/i.test(dataValue)) {
-          current.avatar = dataValue;
-          return;
-        }
-        var params = keySegments.slice(1);
-        var mime = 'image/jpeg';
-        params.forEach(function (param) {
-          var _param$split = param.split('='),
-            _param$split2 = _slicedToArray(_param$split, 2),
-            paramKey = _param$split2[0],
-            paramValue = _param$split2[1];
-          if (!paramValue) return;
-          var normalizedKey = paramKey.trim().toUpperCase();
-          var normalizedValue = paramValue.trim();
-          if (normalizedKey === 'MEDIATYPE') {
-            mime = normalizedValue;
-          } else if (normalizedKey === 'TYPE') {
-            var lowered = normalizedValue.toLowerCase();
-            if (lowered.includes('/')) {
-              mime = lowered;
-            } else {
-              mime = "image/".concat(lowered);
-            }
-          }
-        });
-        current.avatar = "data:".concat(mime, ";base64,").concat(dataValue);
-      }
-    });
-    return contacts.map(function (entry) {
-      return {
-        name: sanitizeContactValue(entry.name),
-        role: sanitizeContactValue(entry.role),
-        phone: sanitizeContactValue(entry.phone),
-        email: sanitizeContactValue(entry.email),
-        website: sanitizeContactValue(entry.website),
-        avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
-      };
-    }).filter(function (entry) {
-      return entry.name || entry.email || entry.phone || entry.website;
+    return parseVCardEntries(text, {
+      sanitize: sanitizeContactValue
     });
   }
   function mergeImportedContacts(imported) {
@@ -13689,58 +11714,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         updated: 0
       };
     }
-    var added = 0;
-    var updated = 0;
-    imported.forEach(function (entry) {
-      var candidate = {
-        name: sanitizeContactValue(entry.name || ''),
-        role: sanitizeContactValue(entry.role || ''),
-        phone: sanitizeContactValue(entry.phone || ''),
-        email: sanitizeContactValue(entry.email || ''),
-        website: sanitizeContactValue(entry.website || entry.url || ''),
-        avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
-      };
-      var existing = contactsCache.find(function (contact) {
-        if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
-        if (candidate.phone && contact.phone) {
-          var normalizedCandidate = candidate.phone.replace(/\D+/g, '');
-          var normalizedExisting = contact.phone.replace(/\D+/g, '');
-          if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
-        }
-        if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
-        if (candidate.website && contact.website && candidate.website.toLowerCase() === contact.website.toLowerCase()) return true;
-        return false;
-      });
-      if (existing) {
-        if (candidate.name) existing.name = candidate.name;
-        if (candidate.role) existing.role = candidate.role;
-        if (candidate.phone) existing.phone = candidate.phone;
-        if (candidate.email) existing.email = candidate.email;
-        if (candidate.website) existing.website = candidate.website;
-        if (candidate.avatar) existing.avatar = candidate.avatar;
-        existing.updatedAt = Date.now();
-        updated += 1;
-        updateCrewRowsForContact(existing);
-      } else {
-        var contact = normalizeContactEntry({
-          id: generateContactId(),
-          name: candidate.name,
-          role: candidate.role,
-          phone: candidate.phone,
-          email: candidate.email,
-          website: candidate.website,
-          avatar: candidate.avatar,
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        });
-        contactsCache.push(contact);
-        added += 1;
-      }
+    var result = mergeImportedContactEntries({
+      existing: contactsCache,
+      imported: imported,
+      now: function now() {
+        return Date.now();
+      },
+      generateContactId: generateContactId
     });
-    contactsCache = sortContacts(contactsCache);
+    var contacts = result.contacts,
+      _result$added = result.added,
+      added = _result$added === void 0 ? 0 : _result$added,
+      _result$updated = result.updated,
+      updated = _result$updated === void 0 ? 0 : _result$updated;
+    contactsCache = Array.isArray(contacts) ? contacts : contactsCache;
     saveContactsToStorage(contactsCache);
     renderContactsList();
     updateContactPickers();
+    if (Array.isArray(contacts)) {
+      contacts.forEach(function (contact) {
+        return updateCrewRowsForContact(contact);
+      });
+    }
     if (added || updated) {
       var template = getContactsText('importSummary', '{added} added, {updated} updated.');
       announceContactsMessage(template.replace('{added}', added).replace('{updated}', updated));
@@ -13753,7 +11748,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
   }
   function createContactCard(contact) {
-    var _texts11, _texts12;
+    var _texts1, _texts10;
     var card = document.createElement('article');
     card.className = 'contact-card';
     card.setAttribute('role', 'listitem');
@@ -13787,7 +11782,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     card.appendChild(header);
     var fields = document.createElement('div');
     fields.className = 'contact-card-fields';
-    var roleLabels = ((_texts11 = texts) === null || _texts11 === void 0 || (_texts11 = _texts11[currentLang]) === null || _texts11 === void 0 ? void 0 : _texts11.crewRoles) || ((_texts12 = texts) === null || _texts12 === void 0 || (_texts12 = _texts12.en) === null || _texts12 === void 0 ? void 0 : _texts12.crewRoles) || {};
+    var roleLabels = ((_texts1 = texts) === null || _texts1 === void 0 || (_texts1 = _texts1[currentLang]) === null || _texts1 === void 0 ? void 0 : _texts1.crewRoles) || ((_texts10 = texts) === null || _texts10 === void 0 || (_texts10 = _texts10.en) === null || _texts10 === void 0 ? void 0 : _texts10.crewRoles) || {};
     var nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.value = contact.name || '';
@@ -13970,9 +11965,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarInput.addEventListener('change', function () {
-      var _ref38 = avatarInput.files || [],
-        _ref39 = _slicedToArray(_ref38, 1),
-        file = _ref39[0];
+      var _ref33 = avatarInput.files || [],
+        _ref34 = _slicedToArray(_ref33, 1),
+        file = _ref34[0];
       if (!file) return;
       readAvatarFile(file, function (dataUrl) {
         contact.avatar = dataUrl;
@@ -14000,9 +11995,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     resolveContactsDomRefs();
     if (!contactsList) return;
-    var _ref40 = options || {},
-      _ref40$focusContactId = _ref40.focusContactId,
-      focusContactId = _ref40$focusContactId === void 0 ? null : _ref40$focusContactId;
+    var _ref35 = options || {},
+      _ref35$focusContactId = _ref35.focusContactId,
+      focusContactId = _ref35$focusContactId === void 0 ? null : _ref35$focusContactId;
     while (contactsList.firstChild) {
       contactsList.removeChild(contactsList.firstChild);
     }
@@ -14026,6 +12021,32 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return focusTarget.focus();
       });
     }
+  }
+  function enableAvatarDragAndDrop(container, onFile) {
+    if (!container) return;
+    var handleDragOver = function handleDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.add('avatar-drag-over');
+    };
+    var handleDragLeave = function handleDragLeave(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.remove('avatar-drag-over');
+    };
+    var handleDrop = function handleDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      container.classList.remove('avatar-drag-over');
+      var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file) {
+        onFile(file);
+      }
+    };
+    container.addEventListener('dragenter', handleDragOver);
+    container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('dragleave', handleDragLeave);
+    container.addEventListener('drop', handleDrop);
   }
   function initializeContactsModule() {
     var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDeleteB, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
@@ -14064,6 +12085,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (userProfileAvatarInput) {
       userProfileAvatarInput.addEventListener('change', handleUserProfileAvatarInputChange);
     }
+    if (userProfileAvatarContainer) {
+      enableAvatarDragAndDrop(userProfileAvatarContainer, function (file) {
+        readAvatarFile(file, function (dataUrl) {
+          var profile = getUserProfileSnapshot();
+          assignUserProfileState({
+            name: profile.name || '',
+            avatar: dataUrl
+          });
+          persistUserProfileState();
+          announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+          if (isDialogOpen(avatarOptionsDialog)) {
+            closeAvatarOptionsDialog();
+          }
+        }, function (reason) {
+          if (reason === 'tooLarge') {
+            announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+          } else {
+            announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+          }
+        });
+      });
+    }
     if (contactsAddButton) {
       contactsAddButton.addEventListener('click', function () {
         var newContact = normalizeContactEntry({
@@ -14090,9 +12133,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return contactsImportInput.click();
       });
       contactsImportInput.addEventListener('change', function () {
-        var _ref41 = contactsImportInput.files || [],
-          _ref42 = _slicedToArray(_ref41, 1),
-          file = _ref42[0];
+        var _ref36 = contactsImportInput.files || [],
+          _ref37 = _slicedToArray(_ref36, 1),
+          file = _ref37[0];
         if (!file) return;
         file.text().then(function (text) {
           return mergeImportedContacts(parseVCard(text));
@@ -14144,7 +12187,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function createCrewRow() {
-    var _texts$en2, _texts$currentLang2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4, _texts$currentLang5, _texts$en5;
+    var _texts$en, _texts$currentLang, _texts$currentLang2, _texts$en2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!crewContainer) return;
     var row = document.createElement('div');
@@ -14159,9 +12202,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE_SAFE;
     var rowDirection = resolveDocumentDirection(rowLanguage);
     applyLocaleMetadata(row, rowLanguage, rowDirection);
-    var fallbackProjectForm = ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.projectForm) || {};
-    var projectFormTexts = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.projectForm) || fallbackProjectForm;
-    var roleLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.crewRoles) || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.crewRoles) || {};
+    var fallbackProjectForm = ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.projectForm) || {};
+    var projectFormTexts = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.projectForm) || fallbackProjectForm;
+    var roleLabels = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.crewRoles) || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.crewRoles) || {};
     var crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
     var crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
     var crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
@@ -14192,6 +12235,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarFileInput.className = 'visually-hidden';
     avatarFileInput.tabIndex = -1;
     avatarContainer.appendChild(avatarFileInput);
+    enableAvatarDragAndDrop(avatarContainer, function (file) {
+      handleAvatarFileSelection(row, file);
+    });
     var roleSel = document.createElement('select');
     roleSel.name = 'crewRole';
     roleSel.className = 'person-role-select';
@@ -14277,8 +12323,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'person-remove-btn';
-    var removeBase = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.removeEntry) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 || (_texts$en4 = _texts$en4.projectForm) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.removeEntry) || 'Remove';
-    var crewHeading = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.crewHeading) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 || (_texts$en5 = _texts$en5.projectForm) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.crewHeading) || 'Crew';
+    var removeBase = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 || (_texts$currentLang3 = _texts$currentLang3.projectForm) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.removeEntry) || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 || (_texts$en3 = _texts$en3.projectForm) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.removeEntry) || 'Remove';
+    var crewHeading = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewHeading) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 || (_texts$en4 = _texts$en4.projectForm) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.crewHeading) || 'Crew';
     var removeCrewLabel = "".concat(removeBase, " ").concat(crewHeading).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeCrewLabel);
@@ -14358,9 +12404,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarFileInput.addEventListener('change', function () {
-      var _ref43 = avatarFileInput.files || [],
-        _ref44 = _slicedToArray(_ref43, 1),
-        file = _ref44[0];
+      var _ref38 = avatarFileInput.files || [],
+        _ref39 = _slicedToArray(_ref38, 1),
+        file = _ref39[0];
       if (file) {
         handleAvatarFileSelection(row, file);
       }
@@ -14407,7 +12453,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createPrepRow() {
-    var _texts$currentLang6, _texts$en6, _texts$currentLang7, _texts$en7;
+    var _texts$currentLang5, _texts$en5, _texts$currentLang6, _texts$en6;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!prepContainer) return;
     var row = document.createElement('div');
@@ -14428,8 +12474,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'prepLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.removeEntry) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 || (_texts$en6 = _texts$en6.projectForm) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.removeEntry) || 'Remove';
-    var prepLabelText = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.prepLabel) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 || (_texts$en7 = _texts$en7.projectForm) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.prepLabel) || 'Prep';
+    var removeBase = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.removeEntry) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 || (_texts$en5 = _texts$en5.projectForm) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.removeEntry) || 'Remove';
+    var prepLabelText = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.prepLabel) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 || (_texts$en6 = _texts$en6.projectForm) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.prepLabel) || 'Prep';
     var removePrepLabel = "".concat(removeBase, " ").concat(prepLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removePrepLabel);
@@ -14449,7 +12495,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createShootRow() {
-    var _texts$currentLang8, _texts$en8, _texts$currentLang9, _texts$en9;
+    var _texts$currentLang7, _texts$en7, _texts$currentLang8, _texts$en8;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!shootContainer) return;
     var row = document.createElement('div');
@@ -14470,8 +12516,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'shootLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.removeEntry) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 || (_texts$en8 = _texts$en8.projectForm) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.removeEntry) || 'Remove';
-    var shootLabelText = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 || (_texts$currentLang9 = _texts$currentLang9.projectForm) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.shootLabel) || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 || (_texts$en9 = _texts$en9.projectForm) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.shootLabel) || 'Shoot';
+    var removeBase = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.removeEntry) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 || (_texts$en7 = _texts$en7.projectForm) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.removeEntry) || 'Remove';
+    var shootLabelText = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.shootLabel) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 || (_texts$en8 = _texts$en8.projectForm) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.shootLabel) || 'Shoot';
     var removeShootLabel = "".concat(removeBase, " ").concat(shootLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeShootLabel);
@@ -14491,7 +12537,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function createReturnRow() {
-    var _texts$currentLang0, _texts$en0, _texts$currentLang1, _texts$en1;
+    var _texts$currentLang9, _texts$en9, _texts$currentLang0, _texts$en0;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!returnContainer) return;
     var row = document.createElement('div');
@@ -14512,8 +12558,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     end.setAttribute('aria-labelledby', 'returnLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.projectForm) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.removeEntry) || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 || (_texts$en0 = _texts$en0.projectForm) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.removeEntry) || 'Remove';
-    var returnLabelText = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 || (_texts$currentLang1 = _texts$currentLang1.projectForm) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.returnLabel) || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 || (_texts$en1 = _texts$en1.projectForm) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.returnLabel) || 'Return Day';
+    var removeBase = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 || (_texts$currentLang9 = _texts$currentLang9.projectForm) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.removeEntry) || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 || (_texts$en9 = _texts$en9.projectForm) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.removeEntry) || 'Remove';
+    var returnLabelText = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.projectForm) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.returnLabel) || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 || (_texts$en0 = _texts$en0.projectForm) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.returnLabel) || 'Return Day';
     var removeReturnLabel = "".concat(removeBase, " ").concat(returnLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeReturnLabel);
@@ -14591,10 +12637,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (selectedName && cameraDb[selectedName]) {
       addCameraTypes(cameraDb[selectedName]);
     }
-    Object.entries(cameraDb).forEach(function (_ref45) {
-      var _ref46 = _slicedToArray(_ref45, 2),
-        name = _ref46[0],
-        cam = _ref46[1];
+    Object.entries(cameraDb).forEach(function (_ref40) {
+      var _ref41 = _slicedToArray(_ref40, 2),
+        name = _ref41[0],
+        cam = _ref41[1];
       if (name === selectedName) return;
       addCameraTypes(cam);
     });
@@ -14635,10 +12681,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
       seen.add(value);
     };
-    Object.entries(mediaDb).forEach(function (_ref47) {
-      var _ref48 = _slicedToArray(_ref47, 2),
-        name = _ref48[0],
-        info = _ref48[1];
+    Object.entries(mediaDb).forEach(function (_ref42) {
+      var _ref43 = _slicedToArray(_ref42, 2),
+        name = _ref43[0],
+        info = _ref43[1];
       if (!name) return;
       var fields = [name, info === null || info === void 0 ? void 0 : info.model, info === null || info === void 0 ? void 0 : info.interface];
       var matches = fields.some(function (field) {
@@ -14651,7 +12697,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (model && (!info.brand || model.toLowerCase() !== info.brand.toLowerCase())) {
         parts.push(model);
       }
-      var capacityLabel = (info === null || info === void 0 ? void 0 : info.capacityTb) != null ? formatCapacity(info.capacityTb, 'TB') : (info === null || info === void 0 ? void 0 : info.capacityGb) != null ? formatCapacity(info.capacityGb, 'GB') : '';
+      var capacityGb = Number(info === null || info === void 0 ? void 0 : info.capacityGb);
+      var capacityTb = Number(info === null || info === void 0 ? void 0 : info.capacityTb);
+      var capacityLabel = '';
+      if (Number.isFinite(capacityGb) && capacityGb > 0) {
+        if (capacityGb >= 1000 && Number.isFinite(capacityTb) && capacityTb > 0) {
+          capacityLabel = formatCapacity(capacityTb, 'TB');
+        } else {
+          capacityLabel = formatCapacity(capacityGb, 'GB');
+        }
+      } else if (Number.isFinite(capacityTb) && capacityTb > 0) {
+        capacityLabel = formatCapacity(capacityTb, 'TB');
+      }
       if (capacityLabel) parts.push(capacityLabel);
       addVariant(name, parts.length ? parts.join(' • ') : name);
     });
@@ -14931,12 +12988,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return createReturnRow();
     });
   }
-  if (addStorageNeedBtn) {
-    addStorageNeedBtn.addEventListener('click', function () {
-      createStorageRequirementRow();
-      scheduleProjectAutoSave(true);
-    });
-  }
   function updateTripodOptions() {
     var headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
     var bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
@@ -14977,13 +13028,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (tripodHeadBrandSelect.value === 'Sachtler') tripodHeadBrandSelect.value = '';
     }
   }
-  var totalPowerElem = document.getElementById("totalPower");
-  var totalCurrent144Elem = document.getElementById("totalCurrent144");
-  var totalCurrent12Elem = document.getElementById("totalCurrent12");
-  var batteryLifeElem = document.getElementById("batteryLife");
+  var totalPowerElem = document.getElementById("totalPower") || document.getElementById("heroTotalDraw");
+  var totalCurrent144Elem = document.getElementById("totalCurrent144") || document.getElementById("heroCurrent144");
+  var totalCurrent12Elem = document.getElementById("totalCurrent12") || document.getElementById("heroCurrent12");
+  var batteryLifeElem = document.getElementById("batteryLife") || document.getElementById("heroRuntime");
   var batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
   var runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
-  var batteryCountElem = document.getElementById("batteryCount");
+  var batteryCountElem = document.getElementById("batteryCount") || document.getElementById("heroBatteryCount");
   var pinWarnElem = document.getElementById("pinWarning");
   var dtapWarnElem = document.getElementById("dtapWarning");
   var hotswapWarnElem = document.getElementById("hotswapWarning");
@@ -14995,6 +13046,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var powerWarningDtapDetailElem = document.getElementById("powerWarningDtapDetail");
   var powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
   var powerWarningCloseBtn = document.getElementById("powerWarningCloseBtn");
+  var heroCard = document.getElementById("heroCard");
+  var heroTotalDraw = document.getElementById("heroTotalDraw");
+  var heroAvailablePower = document.getElementById("heroAvailablePower");
+  var heroBatteryLabel = document.getElementById("heroBatteryLabel");
+  var heroRuntime = document.getElementById("heroRuntime");
+  var heroCurrent144 = document.getElementById("heroCurrent144");
+  var heroCurrent12 = document.getElementById("heroCurrent12");
+  var heroBatteryCount = document.getElementById("heroBatteryCount");
   var powerDiagramElem = document.getElementById("powerDiagram");
   var powerDiagramBarElem = document.getElementById("powerDiagramBar");
   var maxPowerTextElem = document.getElementById("maxPowerText");
@@ -15024,38 +13083,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function showPowerWarningDialog(context) {
-    var _texts$en10, _texts$en11, _texts$en12;
+    var _texts$en1, _texts$en10, _texts$en11;
     if (!powerWarningDialog) return;
-    var _ref49 = context || {},
-      batteryName = _ref49.batteryName,
-      current = _ref49.current,
-      hasPinLimit = _ref49.hasPinLimit,
-      pinLimit = _ref49.pinLimit,
-      hasDtapRating = _ref49.hasDtapRating,
-      dtapLimit = _ref49.dtapLimit,
-      dtapAllowed = _ref49.dtapAllowed;
+    var _ref44 = context || {},
+      batteryName = _ref44.batteryName,
+      current = _ref44.current,
+      hasPinLimit = _ref44.hasPinLimit,
+      pinLimit = _ref44.pinLimit,
+      hasDtapRating = _ref44.hasDtapRating,
+      dtapLimit = _ref44.dtapLimit,
+      dtapAllowed = _ref44.dtapAllowed;
     var safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect === null || batterySelect === void 0 ? void 0 : batterySelect.value) || '';
     var formattedCurrent = formatCurrentValue(Number(current) || 0);
     var langTexts = texts[currentLang] || texts.en || {};
-    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.powerWarningMessage) || '';
+    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.powerWarningMessage) || '';
     var message = messageTemplate ? messageTemplate.replace(/\{battery\}/g, safeBatteryName).replace(/\{current\}/g, formattedCurrent) : "".concat(safeBatteryName, " exceeds every available output (").concat(formattedCurrent, "A).");
     if (powerWarningMessageElem) {
       powerWarningMessageElem.textContent = message;
     }
-    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
+    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
     if (powerWarningPinsDetailElem) {
       powerWarningPinsDetailElem.textContent = pinsDetail;
     }
     var dtapDetail = '';
     if (hasDtapRating && dtapAllowed) {
-      var _texts$en13;
-      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
+      var _texts$en12;
+      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
     } else if (hasDtapRating && !dtapAllowed) {
-      var _texts$en14;
-      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
+      var _texts$en13;
+      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
     } else {
-      var _texts$en15;
-      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
+      var _texts$en14;
+      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
     }
     if (powerWarningDtapDetailElem) {
       powerWarningDtapDetailElem.textContent = dtapDetail;
@@ -15083,58 +13142,91 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function drawPowerDiagram(availableWatt, segments, maxPinA) {
-    if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem || !powerDiagramLegendElem) return;
+    if (!heroCard) return;
     if (!availableWatt || availableWatt <= 0) {
-      powerDiagramElem.classList.add("hidden");
-      powerDiagramBarElem.innerHTML = "";
-      powerDiagramLegendElem.innerHTML = "";
-      maxPowerTextElem.textContent = "";
-      setStatusLevel(maxPowerTextElem, null);
+      heroCard.classList.add("hidden");
+      if (powerDiagramElem) powerDiagramElem.classList.add("hidden");
+      if (powerDiagramBarElem) powerDiagramBarElem.innerHTML = "";
+      if (powerDiagramLegendElem) powerDiagramLegendElem.innerHTML = "";
+      if (maxPowerTextElem) {
+        maxPowerTextElem.textContent = "";
+        setStatusLevel(maxPowerTextElem, null);
+      }
       return;
     }
-    powerDiagramElem.classList.remove("hidden");
-    powerDiagramBarElem.innerHTML = "";
-    powerDiagramLegendElem.innerHTML = "";
-    var MAX_WIDTH = 300;
+    heroCard.classList.remove("hidden");
+    if (powerDiagramElem) powerDiagramElem.classList.remove("hidden");
+    if (powerDiagramBarElem) powerDiagramBarElem.innerHTML = "";
+    if (powerDiagramLegendElem) powerDiagramLegendElem.innerHTML = "";
     var total = segments.reduce(function (sum, s) {
       return sum + s.power;
     }, 0);
-    var scale = MAX_WIDTH / Math.max(availableWatt, total);
-    var limitPos = availableWatt * scale;
-    segments.forEach(function (seg) {
-      var width = seg.power * scale;
-      if (width <= 0) return;
-      var div = document.createElement("div");
-      div.className = "segment ".concat(seg.className);
-      div.style.width = "".concat(width, "px");
-      div.setAttribute("title", "".concat(seg.label, " ").concat(seg.power.toFixed(1), " W"));
-      powerDiagramBarElem.appendChild(div);
-      var legendItem = document.createElement("span");
-      var swatch = document.createElement("span");
-      swatch.className = "swatch ".concat(seg.className);
-      legendItem.appendChild(swatch);
-      legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
-      powerDiagramLegendElem.appendChild(legendItem);
-    });
-    if (total > availableWatt) {
-      var over = document.createElement("div");
-      over.className = "over-usage";
-      over.style.left = "".concat(limitPos, "px");
-      powerDiagramBarElem.appendChild(over);
+    var ratio = total / availableWatt;
+    if (heroTotalDraw) {
+      heroTotalDraw.textContent = "".concat(total.toFixed(0), " W");
+      heroTotalDraw.classList.remove('glow-safe', 'glow-warning', 'glow-danger');
+      if (ratio > 1.0) {
+        heroTotalDraw.classList.add('glow-danger');
+      } else if (ratio >= 0.8) {
+        heroTotalDraw.classList.add('glow-warning');
+      } else {
+        heroTotalDraw.classList.add('glow-safe');
+      }
     }
-    var limit = document.createElement("div");
-    limit.className = "limit-line";
-    limit.style.left = "".concat(limitPos, "px");
-    if (typeof maxPinA === 'number' && maxPinA > 0) {
-      var label = document.createElement("span");
-      label.className = "limit-label";
-      label.textContent = "".concat(texts[currentLang].pinLabel, " ").concat(maxPinA, " A");
-      limit.appendChild(label);
+    if (heroAvailablePower) {
+      heroAvailablePower.textContent = "".concat(availableWatt.toFixed(0), " W");
     }
-    powerDiagramBarElem.appendChild(limit);
-    powerDiagramElem.classList.toggle("over", total > availableWatt);
-    maxPowerTextElem.textContent = "".concat(texts[currentLang].availablePowerLabel, " ").concat(availableWatt.toFixed(0), " W");
-    setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
+    if (heroBatteryLabel && batterySelect) {
+      var selectedOption = batterySelect.options[batterySelect.selectedIndex];
+      var batteryName = selectedOption ? selectedOption.text : '';
+      heroBatteryLabel.textContent = "Camera Setup draws ".concat(total.toFixed(0), "W from the ").concat(availableWatt.toFixed(0), "W available on the ").concat(batteryName);
+    }
+    if (powerDiagramBarElem && powerDiagramLegendElem) {
+      var MAX_WIDTH = 100;
+      var scale = 100 / Math.max(availableWatt, total);
+      var limitPos = availableWatt * scale;
+      var barInner = document.createElement("div");
+      barInner.className = "power-bar-inner";
+      powerDiagramBarElem.appendChild(barInner);
+      segments.forEach(function (seg) {
+        var widthPercent = seg.power * scale;
+        if (widthPercent <= 0) return;
+        var div = document.createElement("div");
+        div.className = "segment ".concat(seg.className);
+        div.style.width = "".concat(widthPercent, "%");
+        div.setAttribute("title", "".concat(seg.label, " ").concat(seg.power.toFixed(1), " W"));
+        barInner.appendChild(div);
+        var legendItem = document.createElement("span");
+        var swatch = document.createElement("span");
+        swatch.className = "swatch ".concat(seg.className);
+        legendItem.appendChild(swatch);
+        legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
+        powerDiagramLegendElem.appendChild(legendItem);
+      });
+      if (total > availableWatt) {
+        var over = document.createElement("div");
+        over.className = "over-usage";
+        over.style.left = "".concat(limitPos, "%");
+        over.style.right = '0';
+        barInner.appendChild(over);
+      }
+      var limit = document.createElement("div");
+      limit.className = "limit-line";
+      limit.style.left = "".concat(limitPos, "%");
+      if (typeof maxPinA === 'number' && maxPinA > 0) {
+        var label = document.createElement("span");
+        label.className = "limit-label";
+        label.textContent = "".concat(texts[currentLang].pinLabel, " ").concat(maxPinA, " A");
+        limit.appendChild(label);
+      }
+      powerDiagramBarElem.appendChild(limit);
+      if (powerDiagramElem) {
+        powerDiagramElem.classList.toggle("over", total > availableWatt);
+      }
+    }
+    if (maxPowerTextElem) {
+      maxPowerTextElem.textContent = "";
+    }
   }
   var setupSelect = document.getElementById("setupSelect");
   var setupNameInput = document.getElementById("setupName");
@@ -15426,21 +13518,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return '';
   }
   function getSharedImportPresetLabel(sharedData) {
-    var _texts$en16, _texts$en17;
+    var _texts$en15, _texts$en16;
     var langTexts = texts[currentLang] || texts.en || {};
-    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     var projectName = getSharedImportProjectName(sharedData);
     if (!projectName) {
       return fallback;
     }
-    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.sharedImportAutoGearPresetName) || '%s';
+    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.sharedImportAutoGearPresetName) || '%s';
     if (template.includes('%s')) {
       return formatWithPlaceholdersSafe(template, projectName);
     }
     return "".concat(template, " ").concat(projectName).trim();
   }
   function ensureSharedAutoGearPreset(rules, sharedData) {
-    var _texts$currentLang10, _texts$en18;
+    var _texts$currentLang1, _texts$en17;
     var normalizedRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
     if (!normalizedRules.length) return null;
     var label = getSharedImportPresetLabel(sharedData);
@@ -15448,7 +13540,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var preset = autoGearPresets.find(function (entry) {
       return entry.fingerprint === fingerprint;
     }) || null;
-    var fallback = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.sharedImportAutoGearPresetFallback) || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.sharedImportAutoGearPresetFallback) || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     if (preset) {
       if (label && preset.label !== label && preset.label === fallback) {
         preset = _objectSpread(_objectSpread({}, preset), {}, {
@@ -15663,9 +13755,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (_key3 === 'gearList' || _key3 === 'projectHtml') {
         continue;
       }
-      var _value3 = setup[_key3];
-      if (_value3 != null) {
-        out[sharedKeyMap[_key3]] = _value3;
+      var _value = setup[_key3];
+      if (_value != null) {
+        out[sharedKeyMap[_key3]] = _value;
       }
     }
     return out;
@@ -15698,9 +13790,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       for (var _index6 = 0; _index6 < sharedKeyMapKeys.length; _index6 += 1) {
         var _key5 = sharedKeyMapKeys[_index6];
         var _short = sharedKeyMap[_key5];
-        var _value4 = setup[_short];
-        if (_value4 != null) {
-          expanded[_key5] = _value4;
+        var _value2 = setup[_short];
+        if (_value2 != null) {
+          expanded[_key5] = _value2;
         }
       }
       return expanded;
@@ -15713,9 +13805,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var _key6 = pendingKeys[_index7];
       if (!sharedHasOwn.call(merged, _key6)) {
         var _short2 = sharedKeyMap[_key6];
-        var _value5 = setup[_short2];
-        if (_value5 != null) {
-          merged[_key6] = _value5;
+        var _value3 = setup[_short2];
+        if (_value3 != null) {
+          merged[_key6] = _value3;
         }
       }
     }
@@ -15876,7 +13968,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     });
   }
-  var deviceManagerPreferredOrder = ["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.cardReaders", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"];
+  var DEVICE_MANAGER_DEFAULT_ORDER = Object.freeze(["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.cardReaders", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"]);
+  function getDeviceManagerPreferredOrder() {
+    var scopeCandidate = filterHelperScope;
+    var scopedOrder = scopeCandidate && Array.isArray(scopeCandidate.deviceManagerPreferredOrder) ? scopeCandidate.deviceManagerPreferredOrder : null;
+    if (scopedOrder && scopedOrder.every(function (entry) {
+      return typeof entry === 'string' && entry;
+    })) {
+      return scopedOrder;
+    }
+    return DEVICE_MANAGER_DEFAULT_ORDER;
+  }
   function normalizeCategoryKey(key) {
     var _devices9, _devices0, _devices1;
     if (!key) return null;
@@ -15920,15 +14022,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
     var _traverseSchema = function traverseSchema(node) {
       var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      if (!node || _typeof(node) !== 'object') return;
-      if (Array.isArray(node.attributes)) {
-        addCategory(path.join('.'));
+      if (!node || _typeof(node) !== 'object') {
+        return;
       }
-      Object.entries(node).forEach(function (_ref50) {
-        var _ref51 = _slicedToArray(_ref50, 2),
-          childKey = _ref51[0],
-          value = _ref51[1];
-        if (childKey === 'attributes') return;
+      if (Array.isArray(node.attributes)) {
+        var depth = path.length;
+        var topLevelKey = path[0];
+        if (depth === 1 || depth > 1 && (topLevelKey === 'accessories' || topLevelKey === 'fiz')) {
+          addCategory(path.join('.'));
+        }
+      }
+      Object.entries(node).forEach(function (_ref45) {
+        var _ref46 = _slicedToArray(_ref45, 2),
+          childKey = _ref46[0],
+          value = _ref46[1];
+        if (childKey === 'attributes') {
+          return;
+        }
         if (value && _typeof(value) === 'object') {
           _traverseSchema(value, path.concat(childKey));
         }
@@ -15939,16 +14049,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var addFromData = function addFromData(data) {
       if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-      Object.entries(data).forEach(function (_ref52) {
-        var _ref53 = _slicedToArray(_ref52, 2),
-          key = _ref53[0],
-          value = _ref53[1];
+      Object.entries(data).forEach(function (_ref47) {
+        var _ref48 = _slicedToArray(_ref47, 2),
+          key = _ref48[0],
+          value = _ref48[1];
         if (key === 'accessories') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref54) {
-              var _ref55 = _slicedToArray(_ref54, 2),
-                subKey = _ref55[0],
-                subValue = _ref55[1];
+            Object.entries(value).forEach(function (_ref49) {
+              var _ref50 = _slicedToArray(_ref49, 2),
+                subKey = _ref50[0],
+                subValue = _ref50[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("accessories.".concat(subKey));
               }
@@ -15956,10 +14066,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         } else if (key === 'fiz') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref56) {
-              var _ref57 = _slicedToArray(_ref56, 2),
-                subKey = _ref57[0],
-                subValue = _ref57[1];
+            Object.entries(value).forEach(function (_ref51) {
+              var _ref52 = _slicedToArray(_ref51, 2),
+                subKey = _ref52[0],
+                subValue = _ref52[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("fiz.".concat(subKey));
               }
@@ -15972,12 +14082,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
     addFromData(devices);
     var sorted = Array.from(categories);
-    var orderMap = new Map(deviceManagerPreferredOrder.map(function (key, index) {
+    var preferredOrder = getDeviceManagerPreferredOrder();
+    var orderMap = new Map(preferredOrder.map(function (key, index) {
       return [key, index];
     }));
     sorted.sort(function (a, b) {
-      var idxA = orderMap.has(a) ? orderMap.get(a) : deviceManagerPreferredOrder.length;
-      var idxB = orderMap.has(b) ? orderMap.get(b) : deviceManagerPreferredOrder.length;
+      var idxA = orderMap.has(a) ? orderMap.get(a) : preferredOrder.length;
+      var idxB = orderMap.has(b) ? orderMap.get(b) : preferredOrder.length;
       if (idxA !== idxB) return idxA - idxB;
       return a.localeCompare(b);
     });
@@ -16050,6 +14161,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!deviceManagerLists.size) return;
     var placeholderTemplate = texts[lang] && texts[lang].placeholder_filter || 'Filter {item}...';
     var clearLabel = texts[lang] && texts[lang].clearFilter || 'Clear filter';
+    var librarySearchInput = document.getElementById('deviceLibrarySearch');
+    var librarySearchLabel = document.getElementById('deviceLibrarySearchLabel');
+    var librarySearchHelp = texts[lang] && texts[lang].deviceLibrarySearchHelp || 'Filter all categories and press Enter to jump to the best match.';
+    var librarySearchPlaceholder = texts[lang] && texts[lang].deviceLibrarySearchPlaceholder || 'Search all device categories…';
+    var librarySearchLabelText = texts[lang] && texts[lang].deviceLibrarySearchLabel || 'Search entire library';
+    if (librarySearchLabel) {
+      librarySearchLabel.textContent = librarySearchLabelText;
+    }
+    if (librarySearchInput) {
+      librarySearchInput.placeholder = librarySearchPlaceholder;
+      librarySearchInput.setAttribute('aria-label', librarySearchPlaceholder);
+      librarySearchInput.setAttribute('data-help', librarySearchHelp);
+      librarySearchInput.setAttribute('autocomplete', 'off');
+      librarySearchInput.setAttribute('autocorrect', 'off');
+      librarySearchInput.setAttribute('autocapitalize', 'off');
+      librarySearchInput.setAttribute('spellcheck', 'false');
+    }
     deviceManagerLists.forEach(function (entry, categoryKey) {
       var label = getCategoryLabel(categoryKey, lang);
       if (entry.heading) {
@@ -16075,6 +14203,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
     });
+    var applyLibraryLocalization = filterHelperScope && typeof filterHelperScope.updateDeviceLibrarySearchLocalization === 'function' ? filterHelperScope.updateDeviceLibrarySearchLocalization : null;
+    if (applyLibraryLocalization) {
+      applyLibraryLocalization();
+    }
   }
   function syncDeviceManagerCategories() {
     var container = resolveDeviceListContainer();
@@ -16123,13 +14255,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var rawSelected = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
     var typedName = normalizeSetupName(rawTyped);
     var selectedName = normalizeSetupName(rawSelected);
+    var typedNameHasTrailingWhitespace = Boolean(typedName && typeof rawTyped === 'string' && /\s$/.test(rawTyped));
     var renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
     var storageKey = selectedName || typedName || '';
     return {
       typedName: typedName,
       selectedName: selectedName,
       renameInProgress: renameInProgress,
-      storageKey: storageKey
+      storageKey: storageKey,
+      typedNameHasTrailingWhitespace: typedNameHasTrailingWhitespace
     };
   }
   function createProjectInfoSnapshotForStorage(baseInfo) {
@@ -16262,9 +14396,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   _populateCategoryOptions();
   function getCategoryContainer(categoryKey, subcategory) {
-    var _ref58 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref58$create = _ref58.create,
-      create = _ref58$create === void 0 ? false : _ref58$create;
+    var _ref53 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref53$create = _ref53.create,
+      create = _ref53$create === void 0 ? false : _ref53$create;
     if (!categoryKey) {
       return null;
     }
@@ -16325,9 +14459,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     delete container[originalName];
-    if (originalCategory === 'accessories.cables' && (_devices$accessories = devices.accessories) !== null && _devices$accessories !== void 0 && _devices$accessories.cables && originalSubcategory) {
+    if (originalCategory === 'accessories.cables' && originalSubcategory && (_devices$accessories = devices.accessories) !== null && _devices$accessories !== void 0 && _devices$accessories.cables) {
       var existing = devices.accessories.cables[originalSubcategory];
-      if (!existing || typeof existing !== 'object') {
+      if (!existing || _typeof(existing) !== 'object') {
         devices.accessories.cables[originalSubcategory] = {};
       }
     }
@@ -16347,7 +14481,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
   var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
   var videoFieldsDiv = document.getElementById("videoFields");
-  var videoPowerInput = document.getElementById("videoPower");
+  var videoPowerInputsContainer = document.getElementById("videoPowerInputsContainer");
   var videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
   var videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
   var videoFrequencyInput = document.getElementById("videoFrequency");
@@ -16355,17 +14489,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function normalizeTemperatureUnit(unit) {
     if (typeof unit === 'string') {
       var normalized = unit.trim().toLowerCase();
-      if (normalized === TEMPERATURE_UNITS.fahrenheit) {
-        return TEMPERATURE_UNITS.fahrenheit;
+      if (normalized === CORE_TEMPERATURE_UNITS.fahrenheit) {
+        return CORE_TEMPERATURE_UNITS.fahrenheit;
       }
-      if (normalized === TEMPERATURE_UNITS.celsius) {
-        return TEMPERATURE_UNITS.celsius;
+      if (normalized === CORE_TEMPERATURE_UNITS.celsius) {
+        return CORE_TEMPERATURE_UNITS.celsius;
       }
     }
-    if (unit === TEMPERATURE_UNITS.fahrenheit) {
-      return TEMPERATURE_UNITS.fahrenheit;
+    if (unit === CORE_TEMPERATURE_UNITS.fahrenheit) {
+      return CORE_TEMPERATURE_UNITS.fahrenheit;
     }
-    return TEMPERATURE_UNITS.celsius;
+    return CORE_TEMPERATURE_UNITS.celsius;
   }
   function getRuntimeTemperatureUnit() {
     var fallbackUnitCandidates = [];
@@ -16393,7 +14527,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return candidate;
       }
     }
-    return TEMPERATURE_UNITS.celsius;
+    return CORE_TEMPERATURE_UNITS.celsius;
   }
   function convertCelsiusToUnit(value, unit) {
     var numeric = Number(value);
@@ -16401,7 +14535,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return Number.NaN;
     }
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
-    if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
+    if (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit) {
       return numeric * 9 / 5 + 32;
     }
     return numeric;
@@ -16412,8 +14546,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
     var textsForLang = getLanguageTexts(lang);
     var fallbackTexts = getLanguageTexts('en');
-    var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
-    return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C');
+    var key = resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
+    return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C');
   }
   function getTemperatureUnitLabelForLang() {
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
@@ -16421,8 +14555,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
     var textsForLang = getLanguageTexts(lang);
     var fallbackTexts = getLanguageTexts('en');
-    var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitFahrenheit' : 'temperatureUnitCelsius';
-    return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)');
+    var key = resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitFahrenheit' : 'temperatureUnitCelsius';
+    return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)');
   }
   function getTemperatureColumnLabelForLang() {
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
@@ -16435,12 +14569,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function formatTemperatureForDisplay(celsius) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref59 = options || {},
-      unit = _ref59.unit,
-      _ref59$lang = _ref59.lang,
-      lang = _ref59$lang === void 0 ? currentLang : _ref59$lang,
-      _ref59$includeSign = _ref59.includeSign,
-      includeSign = _ref59$includeSign === void 0 ? true : _ref59$includeSign;
+    var _ref54 = options || {},
+      unit = _ref54.unit,
+      _ref54$lang = _ref54.lang,
+      lang = _ref54$lang === void 0 ? currentLang : _ref54$lang,
+      _ref54$includeSign = _ref54.includeSign,
+      includeSign = _ref54$includeSign === void 0 ? true : _ref54$includeSign;
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
     var converted = convertCelsiusToUnit(celsius, resolvedUnit);
     if (!Number.isFinite(converted)) {
@@ -16448,7 +14582,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var textsForLang = getLanguageTexts(lang);
     var fallbackTexts = getLanguageTexts('en');
-    var formatter = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? textsForLang.temperatureFormatterFahrenheit || fallbackTexts.temperatureFormatterFahrenheit : textsForLang.temperatureFormatterCelsius || fallbackTexts.temperatureFormatterCelsius;
+    var formatter = resolvedUnit === CORE_TEMPERATURE_UNITS.fahrenheit ? textsForLang.temperatureFormatterFahrenheit || fallbackTexts.temperatureFormatterFahrenheit : textsForLang.temperatureFormatterCelsius || fallbackTexts.temperatureFormatterCelsius;
     if (typeof formatter === 'function') {
       return formatter(converted, {
         includeSign: includeSign
@@ -16627,10 +14761,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var viewfinderInputsContainerEl = resolveContainer('viewfinderVideoInputsContainer');
     var viewfinderOutputsContainerEl = resolveContainer('viewfinderVideoOutputsContainer');
     var ensureContainers = [['setViewfinders', viewfinderContainerEl], ['getViewfinders', viewfinderContainerEl], ['clearViewfinders', viewfinderContainerEl]];
-    var missingRequiredContainer = ensureContainers.some(function (_ref60) {
-      var _ref61 = _slicedToArray(_ref60, 2),
-        name = _ref61[0],
-        container = _ref61[1];
+    var missingRequiredContainer = ensureContainers.some(function (_ref55) {
+      var _ref56 = _slicedToArray(_ref55, 2),
+        name = _ref56[0],
+        container = _ref56[1];
       if (container) {
         return false;
       }
@@ -16985,13 +15119,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
   function placeWattField(category, data) {
     if (!wattFieldDiv || !addDeviceForm) return;
-    var isVideoLike = category === "video" || category === "wirelessReceivers" || category === "iosVideo" || data && (data.videoInputs || data.videoOutputs || data.frequency);
+    var isVideoLike = category === "video" || category === "wirelessReceivers" || category === "iosVideo" || data && (data.videoInputs || data.videoOutputs || data.frequency || data.video && (data.video.inputs || data.video.outputs));
     if (isVideoLike) {
       videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
     } else {
       addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
     }
   }
+  exposeCoreRuntimeConstant('placeWattField', placeWattField);
   var motorFieldsDiv = document.getElementById("motorFields");
   var motorConnectorInput = document.getElementById("motorConnector");
   var motorInternalInput = document.getElementById("motorInternal");
@@ -17021,8 +15156,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var viewfinderContainer = document.getElementById("viewfinderContainer");
   var timecodeContainer = document.getElementById("timecodeContainer");
   var batteryFieldsDiv = document.getElementById("batteryFields");
-  var batteryPlateRow;
-  var batteryPlateSelect;
   var newCapacityInput = document.getElementById("newCapacity");
   var newPinAInput = document.getElementById("newPinA");
   var newDtapAInput = document.getElementById("newDtapA");
@@ -17051,13 +15184,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
     return normalized === 'imperial' ? 'imperial' : 'metric';
   }
+  var monitorExcludedAttributes = ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"];
   var categoryExcludedAttrs = {
     batteries: ["capacity", "pinA", "dtapA"],
     batteryHotswaps: ["capacity", "pinA"],
     "accessories.batteries": ["capacity", "pinA"],
     cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
     lenses: ["mount", "mountOptions", "focusScale"],
-    monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
+    monitors: monitorExcludedAttributes,
+    directorMonitors: monitorExcludedAttributes,
     viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
     video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
     wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
@@ -17067,17 +15202,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
   };
   function updateLensFocusScaleSelectOptions() {
-    var _texts13;
+    var _texts11;
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-    var _ref62 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref62$preserveValue = _ref62.preserveValue,
-      preserveValue = _ref62$preserveValue === void 0 ? true : _ref62$preserveValue;
+    var _ref57 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref57$preserveValue = _ref57.preserveValue,
+      preserveValue = _ref57$preserveValue === void 0 ? true : _ref57$preserveValue;
     if (!lensFocusScaleSelect) {
       return;
     }
     var previousValue = preserveValue ? lensFocusScaleSelect.value : '';
     var language = typeof lang === 'string' ? lang : currentLang;
-    var languageTexts = texts && language && texts[language] ? texts[language] : ((_texts13 = texts) === null || _texts13 === void 0 ? void 0 : _texts13.en) || {};
+    var languageTexts = texts && language && texts[language] ? texts[language] : ((_texts11 = texts) === null || _texts11 === void 0 ? void 0 : _texts11.en) || {};
     var defaultLabelBase = languageTexts.lensFocusScaleDefault || languageTexts.focusScaleSetting || 'Use global focus scale';
     var metricLabel = languageTexts.focusScaleMetric || 'Metric';
     var imperialLabel = languageTexts.focusScaleImperial || 'Imperial';
@@ -17222,6 +15357,37 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: 'boolean'
       }
     },
+    directorMonitors: {
+      audioInput: {
+        type: 'text',
+        placeholder: '3.5mm stereo'
+      },
+      audioIo: {
+        type: 'text',
+        placeholder: 'SDI / HDMI'
+      },
+      audioOutput: {
+        type: 'text',
+        placeholder: '3.5mm stereo'
+      },
+      bluetooth: {
+        type: 'boolean'
+      },
+      latencyMs: {
+        type: 'text',
+        placeholder: '< 1ms'
+      },
+      wireless: {
+        type: 'text',
+        placeholder: 'Bolt 6'
+      },
+      wirelessRX: {
+        type: 'boolean'
+      },
+      wirelessTx: {
+        type: 'boolean'
+      }
+    },
     video: {
       frequency: {
         type: 'text',
@@ -17301,6 +15467,136 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var lines = text.split('\n').length + 1;
     return Math.max(min, Math.min(max, lines));
   }
+  function normalizeSchemaListValues(value) {
+    if (Array.isArray(value)) {
+      return value.map(function (item) {
+        return item === null || item === undefined ? '' : String(item).trim();
+      }).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+      return value.split(/\r?\n/).map(function (item) {
+        return item.trim();
+      }).filter(Boolean);
+    }
+    return [];
+  }
+  function createSchemaListControl(options) {
+    var _ref58 = options || {},
+      attrId = _ref58.attrId,
+      labelText = _ref58.labelText,
+      _ref58$values = _ref58.values,
+      values = _ref58$values === void 0 ? [] : _ref58$values,
+      _ref58$placeholder = _ref58.placeholder,
+      placeholder = _ref58$placeholder === void 0 ? '' : _ref58$placeholder;
+    var ensureId = typeof ensureElementId === 'function' ? ensureElementId : function (element, baseText) {
+      if (!element) return '';
+      if (element.id) return element.id;
+      var base = (baseText || 'field').toString().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field';
+      var counter = 0;
+      var candidate = '';
+      do {
+        counter += 1;
+        candidate = "".concat(base, "-").concat(counter);
+      } while (typeof document !== 'undefined' && document.getElementById(candidate));
+      try {
+        element.id = candidate;
+      } catch (assignError) {
+        void assignError;
+      }
+      return element.id || candidate;
+    };
+    var createLabel = typeof createHiddenLabel === 'function' ? createHiddenLabel : function (forId, text) {
+      var label = document.createElement('label');
+      label.className = 'visually-hidden';
+      if (forId) label.setAttribute('for', forId);
+      label.textContent = typeof text === 'string' ? text : '';
+      return label;
+    };
+    var container = document.createElement('div');
+    container.className = 'schema-list-control';
+    container.id = attrId;
+    container.dataset.attrType = 'list';
+    var listBody = document.createElement('div');
+    listBody.className = 'schema-list-body';
+    var normalizedValues = normalizeSchemaListValues(values);
+    var normalizedPlaceholder = typeof placeholder === 'string' ? placeholder : '';
+    var fallbackContext = typeof labelText === 'string' && labelText ? labelText : attrId || '';
+    var _createRow = function createRow() {
+      var initialValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var row = document.createElement('div');
+      row.className = 'schema-list-row';
+      var inputWrapper = document.createElement('div');
+      inputWrapper.className = 'schema-list-row-input';
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'schema-input schema-list-input';
+      input.dataset.listItem = 'true';
+      if (normalizedPlaceholder) {
+        input.placeholder = normalizedPlaceholder;
+      }
+      input.value = initialValue === null || initialValue === undefined ? '' : String(initialValue);
+      var inputId = ensureId(input, "".concat(attrId || 'list', "-item"));
+      inputWrapper.appendChild(createLabel(inputId, labelText));
+      inputWrapper.appendChild(input);
+      var actions = document.createElement('div');
+      actions.className = 'schema-list-row-actions';
+      var addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+        configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+          fallbackContext: fallbackContext,
+          actionKey: 'addEntry'
+        });
+      } else {
+        addBtn.textContent = '+';
+        addBtn.setAttribute('aria-label', 'Add');
+      }
+      addBtn.addEventListener('click', function () {
+        var newRow = _createRow('');
+        row.after(newRow);
+        var nextInput = newRow.querySelector('[data-list-item="true"]');
+        if (nextInput && typeof nextInput.focus === 'function') {
+          nextInput.focus();
+        }
+      });
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+        configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+          fallbackContext: fallbackContext,
+          actionKey: 'removeEntry'
+        });
+      } else {
+        removeBtn.textContent = '−';
+        removeBtn.setAttribute('aria-label', 'Remove');
+      }
+      removeBtn.addEventListener('click', function () {
+        var rows = Array.from(listBody.querySelectorAll('.schema-list-row'));
+        if (rows.length > 1) {
+          row.remove();
+          return;
+        }
+        input.value = '';
+        if (typeof input.focus === 'function') {
+          input.focus();
+        }
+      });
+      actions.appendChild(addBtn);
+      actions.appendChild(removeBtn);
+      row.appendChild(inputWrapper);
+      row.appendChild(actions);
+      return row;
+    };
+    if (normalizedValues.length) {
+      normalizedValues.forEach(function (val) {
+        listBody.appendChild(_createRow(val));
+      });
+    } else {
+      listBody.appendChild(_createRow(''));
+    }
+    container.appendChild(listBody);
+    return container;
+  }
   function createSchemaField(category, attr, value) {
     var config = resolveSchemaFieldConfig(category, attr) || {};
     var attrId = "attr-".concat(attr);
@@ -17324,10 +15620,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (inputType === 'boolean') {
       var _row = document.createElement('div');
       _row.className = 'form-row schema-form-row';
-      var _label4 = document.createElement('label');
-      _label4.setAttribute('for', attrId);
-      _label4.textContent = labelText;
-      _row.appendChild(_label4);
+      var _label2 = document.createElement('label');
+      _label2.setAttribute('for', attrId);
+      _label2.textContent = labelText;
+      _row.appendChild(_label2);
       var _controlContainer = document.createElement('div');
       _controlContainer.className = 'schema-control schema-control--checkbox';
       var _inlineWrap = document.createElement('div');
@@ -17356,7 +15652,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     label.textContent = labelText;
     row.appendChild(label);
     var control;
-    if (inputType === 'list' || inputType === 'json' || inputType === 'textarea') {
+    if (inputType === 'list') {
+      control = createSchemaListControl({
+        attrId: attrId,
+        labelText: labelText,
+        values: value,
+        placeholder: config.placeholder
+      });
+    } else if (inputType === 'json' || inputType === 'textarea') {
       control = document.createElement('textarea');
       control.className = 'schema-input schema-input--textarea';
       control.id = attrId;
@@ -17375,7 +15678,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         control.value = value;
       }
     }
-    control.dataset.attrType = inputType;
+    if (control && control.dataset) {
+      control.dataset.attrType = inputType;
+    }
     if (config.placeholder && !control.value) {
       control.placeholder = config.placeholder;
     }
@@ -17483,8 +15788,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     try {
       for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
         var attr = _step6.value;
-        var _value6 = data && data[attr] !== undefined ? data[attr] : undefined;
-        list.appendChild(createSchemaField(category, attr, _value6));
+        var _value4 = data && data[attr] !== undefined ? data[attr] : undefined;
+        list.appendChild(createSchemaField(category, attr, _value4));
       }
     } catch (err) {
       _iterator6.e(err);
@@ -17571,9 +15876,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           continue;
         }
         if (type === 'list') {
-          var list = el.value.split('\n').map(function (item) {
-            return item.trim();
-          }).filter(Boolean);
+          var listInputs = Array.from(el.querySelectorAll('[data-list-item="true"]'));
+          var list = [];
+          if (listInputs.length) {
+            list = listInputs.map(function (input) {
+              return typeof input.value === 'string' ? input.value.trim() : '';
+            }).filter(Boolean);
+          } else if (typeof el.value === 'string') {
+            list = el.value.split('\n').map(function (item) {
+              return item.trim();
+            }).filter(Boolean);
+          }
           if (list.length) {
             result[attr] = list;
           }
@@ -17800,12 +16113,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     iosPwaHelpStep1 = document.getElementById('iosPwaHelpStep1');
     installPromptElementsInitialized = true;
   }
+  var syncResetButtonGlobal = (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.syncMountVoltageResetButtonGlobal === 'function' ? globalThis.syncMountVoltageResetButtonGlobal : null) || (typeof syncMountVoltageResetButtonGlobal === 'function' ? syncMountVoltageResetButtonGlobal : function noopSyncMountVoltageResetButtonGlobal() {});
   var mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
   var mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
   var mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
   var mountVoltageNoteElem = document.getElementById('mountVoltageNote');
   var mountVoltageResetButton = document.getElementById('mountVoltageReset');
-  syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
+  syncResetButtonGlobal(mountVoltageResetButton);
   var mountVoltageTitleElems = {
     V: document.getElementById('mountVoltageVTitle'),
     Gold: document.getElementById('mountVoltageGoldTitle'),
@@ -18542,11 +16856,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var settingsTabData = document.getElementById('settingsTab-data');
   var settingsTabAbout = document.getElementById('settingsTab-about');
   var settingsTabIconAssignments = [[settingsTabGeneral, ICON_GLYPHS.settingsGeneral], [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear], [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility], [settingsTabBackup, ICON_GLYPHS.settingsBackup], [settingsTabData, ICON_GLYPHS.settingsData], [settingsTabAbout, ICON_GLYPHS.settingsAbout]];
-  settingsTabIconAssignments.forEach(function (_ref63) {
+  settingsTabIconAssignments.forEach(function (_ref59) {
     var _button$querySelector;
-    var _ref64 = _slicedToArray(_ref63, 2),
-      button = _ref64[0],
-      glyph = _ref64[1];
+    var _ref60 = _slicedToArray(_ref59, 2),
+      button = _ref60[0],
+      glyph = _ref60[1];
     if (!button || !glyph) return;
     var iconElement = (_button$querySelector = button.querySelector) === null || _button$querySelector === void 0 ? void 0 : _button$querySelector.call(button, '.settings-tab-icon');
     if (!iconElement) return;
@@ -18660,9 +16974,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function activateSettingsTab(tabId) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!settingsTabButtons.length) return;
-    var _ref65 = options || {},
-      _ref65$focusTab = _ref65.focusTab,
-      focusTab = _ref65$focusTab === void 0 ? false : _ref65$focusTab;
+    var _ref61 = options || {},
+      _ref61$focusTab = _ref61.focusTab,
+      focusTab = _ref61$focusTab === void 0 ? false : _ref61$focusTab;
     var target = settingsTabButtons.find(function (button) {
       return button.id === tabId;
     });
@@ -18785,13 +17099,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return acc;
   }, {});
-  var createDeferredAutoGearRefresher = function createDeferredAutoGearRefresher(functionName) {
-    return function (selected) {
-      return callCoreFunctionIfAvailable(functionName, [selected], {
-        defer: true
-      });
-    };
-  };
   var refreshAutoGearShootingDaysValue = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue : function refreshAutoGearShootingDaysValue() {};
   var refreshAutoGearScenarioOptions = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions : function refreshAutoGearScenarioOptions() {};
   var refreshAutoGearScenarioBaseSelect = typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function' ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect : function refreshAutoGearScenarioBaseSelect() {};
@@ -18864,10 +17171,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return autoGearActiveConditions.has(key);
   }
   function refreshAutoGearConditionPicker() {
-    var _texts$currentLang11, _texts$en19;
+    var _texts$currentLang10, _texts$en18;
     if (!autoGearConditionSelect) return;
     var previousValue = autoGearConditionSelect.value || '';
-    var placeholderLabel = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionPlaceholder) || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.autoGearConditionPlaceholder) || 'Choose a condition';
+    var placeholderLabel = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearConditionPlaceholder) || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.autoGearConditionPlaceholder) || 'Choose a condition';
     autoGearConditionSelect.innerHTML = '';
     var placeholder = document.createElement('option');
     placeholder.value = '';
@@ -18911,17 +17218,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     });
   }
-  function focusAutoGearConditionPicker() {
-    if (autoGearConditionSelect) {
-      try {
-        autoGearConditionSelect.focus({
-          preventScroll: true
-        });
-      } catch (_unused11) {
-        autoGearConditionSelect.focus();
-      }
-    }
-  }
   function focusAutoGearConditionSection(key) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var config = getAutoGearConditionConfig(key);
@@ -18930,9 +17226,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var section = config.section,
       select = config.select;
-    var _ref66 = options || {},
-      _ref66$flash = _ref66.flash,
-      flash = _ref66$flash === void 0 ? false : _ref66$flash;
+    var _ref62 = options || {},
+      _ref62$flash = _ref62.flash,
+      flash = _ref62$flash === void 0 ? false : _ref62$flash;
     if (section.hidden) {
       section.hidden = false;
       section.setAttribute('aria-hidden', 'false');
@@ -18950,16 +17246,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       target.focus({
         preventScroll: true
       });
-    } catch (_unused12) {
+    } catch (_unused11) {
       target.focus();
     }
   }
   function notifyAutoGearConditionRepeat(key) {
-    var _texts$currentLang12, _texts$en20;
+    var _texts$currentLang11, _texts$en19;
     if (typeof showNotification !== 'function') {
       return;
     }
-    var template = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearConditionRepeatHint) || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.autoGearConditionRepeatHint) || '';
+    var template = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionRepeatHint) || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.autoGearConditionRepeatHint) || '';
     if (!template) return;
     var label = getAutoGearConditionLabel(key);
     var message;
@@ -18993,27 +17289,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     focusAutoGearConditionPicker();
   }
-  function configureAutoGearConditionButtons() {
-    var _texts$currentLang13, _texts$en21, _texts$currentLang14, _texts$en22;
-    var addLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearConditionAddShortcut) || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.autoGearConditionAddShortcut) || 'Add another condition';
-    var removeLabel = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearConditionRemove) || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.autoGearConditionRemove) || 'Remove this condition';
-    AUTO_GEAR_CONDITION_KEYS.forEach(function (key) {
-      var config = getAutoGearConditionConfig(key);
-      if (!config) return;
-      if (config.addShortcut) {
-        setButtonLabelWithIconBinding(config.addShortcut, '', ICON_GLYPHS.add);
-        config.addShortcut.setAttribute('aria-label', addLabel);
-        config.addShortcut.setAttribute('title', addLabel);
-        config.addShortcut.setAttribute('data-help', addLabel);
-      }
-      if (config.removeButton) {
-        setButtonLabelWithIconBinding(config.removeButton, '', ICON_GLYPHS.minus);
-        config.removeButton.setAttribute('aria-label', removeLabel);
-        config.removeButton.setAttribute('title', removeLabel);
-        config.removeButton.setAttribute('data-help', removeLabel);
-      }
-    });
-  }
   function addAutoGearCondition(key) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var config = getAutoGearConditionConfig(key);
@@ -19031,7 +17306,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           config.select.focus({
             preventScroll: true
           });
-        } catch (_unused13) {
+        } catch (_unused12) {
           config.select.focus();
         }
       }
@@ -19087,7 +17362,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         config.select.focus({
           preventScroll: true
         });
-      } catch (_unused14) {
+      } catch (_unused13) {
         config.select.focus();
       }
     }
@@ -19180,9 +17455,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function clearAllAutoGearConditions() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref67 = options || {},
-      _ref67$preserveDraft = _ref67.preserveDraft,
-      preserveDraft = _ref67$preserveDraft === void 0 ? false : _ref67$preserveDraft;
+    var _ref63 = options || {},
+      _ref63$preserveDraft = _ref63.preserveDraft,
+      preserveDraft = _ref63$preserveDraft === void 0 ? false : _ref63$preserveDraft;
     Array.from(autoGearActiveConditions).forEach(function (key) {
       removeAutoGearCondition(key, {
         preserveDraft: preserveDraft,
@@ -19358,10 +17633,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
     autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
   }
-  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref68) {
-    var _ref69 = _slicedToArray(_ref68, 2),
-      key = _ref69[0],
-      select = _ref69[1];
+  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref64) {
+    var _ref65 = _slicedToArray(_ref64, 2),
+      key = _ref65[0],
+      select = _ref65[1];
     if (!select) return;
     var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
     var handleLogicChange = function handleLogicChange() {
@@ -19488,7 +17763,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             bubbles: true
           });
           select.dispatchEvent(evt);
-        } catch (_unused15) {
+        } catch (_unused14) {
           var _evt = document.createEvent('Event');
           _evt.initEvent(type, true, true);
           select.dispatchEvent(_evt);
@@ -19501,7 +17776,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           select.focus({
             preventScroll: true
           });
-        } catch (_unused16) {
+        } catch (_unused15) {
           select.focus();
         }
       }
@@ -19636,12 +17911,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function computeAutoGearMultiSelectSize(optionCount) {
-    var _ref70 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      fallback = _ref70.fallback,
-      _ref70$minRows = _ref70.minRows,
-      minRows = _ref70$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref70$minRows,
-      _ref70$maxRows = _ref70.maxRows,
-      maxRows = _ref70$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref70$maxRows;
+    var _ref66 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      fallback = _ref66.fallback,
+      _ref66$minRows = _ref66.minRows,
+      minRows = _ref66$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref66$minRows,
+      _ref66$maxRows = _ref66.maxRows,
+      maxRows = _ref66$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref66$maxRows;
     var effectiveFallback = Number.isFinite(fallback) && fallback >= minRows ? fallback : minRows;
     if (!Number.isFinite(optionCount) || optionCount <= 0) {
       return effectiveFallback;
@@ -19683,7 +17958,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         autoGearSearchInput.focus({
           preventScroll: true
         });
-      } catch (_unused17) {
+      } catch (_unused16) {
         autoGearSearchInput.focus();
       }
     }
@@ -19711,9 +17986,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       haystack.push(rule.label);
     }
     if (rule && rule.always) {
-      var _texts$currentLang15, _texts$en23;
+      var _texts$currentLang12, _texts$en20;
       haystack.push('always');
-      var alwaysText = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearAlwaysMeta) || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.autoGearAlwaysMeta) || 'Always active';
+      var alwaysText = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearAlwaysMeta) || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.autoGearAlwaysMeta) || 'Always active';
       if (alwaysText) {
         haystack.push(alwaysText);
       }
@@ -19734,11 +18009,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     pushValues(rule === null || rule === void 0 ? void 0 : rule.distance);
     var shootingCondition = normalizeAutoGearShootingDaysCondition(rule === null || rule === void 0 ? void 0 : rule.shootingDays);
     if (shootingCondition) {
-      var _texts$currentLang16, _texts$en24, _texts$currentLang17, _texts$en25, _texts$currentLang18, _texts$en26, _texts$currentLang19, _texts$en27;
-      var shootingLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysLabel) || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.autoGearShootingDaysLabel) || 'Shooting days condition';
-      var minimumLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearShootingDaysModeMinimum) || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.autoGearShootingDaysModeMinimum) || 'Minimum';
-      var maximumLabel = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearShootingDaysModeMaximum) || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.autoGearShootingDaysModeMaximum) || 'Maximum';
-      var everyLabel = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearShootingDaysModeEvery) || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.autoGearShootingDaysModeEvery) || 'Every';
+      var _texts$currentLang13, _texts$en21, _texts$currentLang14, _texts$en22, _texts$currentLang15, _texts$en23, _texts$currentLang16, _texts$en24;
+      var shootingLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearShootingDaysLabel) || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.autoGearShootingDaysLabel) || 'Shooting days condition';
+      var minimumLabel = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearShootingDaysModeMinimum) || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.autoGearShootingDaysModeMinimum) || 'Minimum';
+      var maximumLabel = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearShootingDaysModeMaximum) || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.autoGearShootingDaysModeMaximum) || 'Maximum';
+      var everyLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysModeEvery) || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.autoGearShootingDaysModeEvery) || 'Every';
       if (shootingLabel) {
         haystack.push(shootingLabel);
       }
@@ -19874,18 +18149,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!options.size) {
-      getAutoGearScenarioFallbackOptions().forEach(function (_ref71) {
-        var value = _ref71.value,
-          label = _ref71.label;
+      getAutoGearScenarioFallbackOptions().forEach(function (_ref67) {
+        var value = _ref67.value,
+          label = _ref67.label;
         if (!options.has(value)) {
           options.set(value, label);
         }
       });
     }
-    return Array.from(options.entries()).map(function (_ref72) {
-      var _ref73 = _slicedToArray(_ref72, 2),
-        value = _ref73[0],
-        label = _ref73[1];
+    return Array.from(options.entries()).map(function (_ref68) {
+      var _ref69 = _slicedToArray(_ref68, 2),
+        value = _ref69[0],
+        label = _ref69[1];
       return {
         value: value,
         label: label
@@ -19895,18 +18170,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function refreshAutoGearScenarioFilterOptions(rules) {
-    var _texts$currentLang20, _texts$en28;
+    var _texts$currentLang17, _texts$en25;
     if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
     var options = collectAutoGearScenarioFilterOptions(rules);
-    var anyLabel = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearFilterScenarioAny) || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.autoGearFilterScenarioAny) || 'All scenarios';
+    var anyLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearFilterScenarioAny) || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.autoGearFilterScenarioAny) || 'All scenarios';
     autoGearFilterScenarioSelect.innerHTML = '';
     var anyOption = document.createElement('option');
     anyOption.value = 'all';
     anyOption.textContent = anyLabel;
     autoGearFilterScenarioSelect.appendChild(anyOption);
-    options.forEach(function (_ref74) {
-      var value = _ref74.value,
-        label = _ref74.label;
+    options.forEach(function (_ref70) {
+      var value = _ref70.value,
+        label = _ref70.label;
       var option = document.createElement('option');
       option.value = value;
       option.textContent = label;
@@ -20064,15 +18339,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
   }
   function getCrewRoleEntries() {
-    var _texts$en29;
+    var _texts$en26;
     var langTexts = texts[currentLang] || texts.en || {};
-    var crewRoleMap = langTexts.crewRoles || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.crewRoles) || {};
+    var crewRoleMap = langTexts.crewRoles || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.crewRoles) || {};
     var seen = new Set();
     var entries = [];
-    Object.entries(crewRoleMap).forEach(function (_ref75) {
-      var _ref76 = _slicedToArray(_ref75, 2),
-        value = _ref76[0],
-        label = _ref76[1];
+    Object.entries(crewRoleMap).forEach(function (_ref71) {
+      var _ref72 = _slicedToArray(_ref71, 2),
+        value = _ref72[0],
+        label = _ref72[1];
       if (typeof value !== 'string') return;
       var trimmedValue = value.trim();
       if (!trimmedValue) return;
@@ -20099,6 +18374,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
   exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
   exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
+  exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
+  exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
+  exposeCoreRuntimeConstant('iconGlyph', iconGlyph);
+  exposeCoreRuntimeConstant('resolveIconGlyph', resolveIconGlyph);
+  exposeCoreRuntimeConstant('applyIconGlyph', applyIconGlyph);
+  exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
+  exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
   var CORE_RUNTIME_CONSTANTS = {
     CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,
@@ -20112,12 +18394,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
     GEAR_LIST_CATEGORIES: GEAR_LIST_CATEGORIES,
     TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
-    TEMPERATURE_UNITS: TEMPERATURE_UNITS,
+    TEMPERATURE_UNITS: CORE_TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY: FOCUS_SCALE_STORAGE_KEY,
-    FOCUS_SCALE_VALUES: FOCUS_SCALE_VALUES,
-    FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
-    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
+    FOCUS_SCALE_VALUES: focusScaleValues,
+    FEEDBACK_TEMPERATURE_MIN: globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE,
+    FEEDBACK_TEMPERATURE_MAX: globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE
   };
   Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
   Object.assign(CORE_RUNTIME_CONSTANTS, {
@@ -20134,6 +18416,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   });
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
   exposeCoreRuntimeBindings({
+    updatePowerSummary: updatePowerSummary,
+    updateBatteryComparison: updateBatteryComparison,
+    drawPowerDiagram: drawPowerDiagram,
+    pinkModeIcons: pinkModeIcons,
+    snapToGrid: snapToGrid,
     safeGenerateConnectorSummary: {
       get: function get() {
         return sessionSafeGenerateConnectorSummary;

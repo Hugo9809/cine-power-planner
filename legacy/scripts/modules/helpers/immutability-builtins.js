@@ -64,7 +64,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var BUILTIN_VALUES = collectBuiltinCandidates();
   function isImmutableBuiltin(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     return BUILTIN_VALUES.indexOf(value) !== -1;

@@ -105,6 +105,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "downloadDiagramBtn": "Diagramm herunterladen",
       "gridSnapToggle": "Am Raster ausrichten",
       "existingDevicesHeading": "Vorhandene Geräte",
+      "deviceLibrarySearchLabel": "Gesamte Bibliothek durchsuchen",
+      "deviceLibrarySearchPlaceholder": "Alle Gerätekategorien durchsuchen…",
+      "deviceLibrarySearchHelp": "Filtere kategorienübergreifend. Drücke Enter, um direkt zum besten Treffer zu springen.",
+      "deviceLibrarySearchStatusDefault": "Alle {total} Geräte werden angezeigt.",
+      "deviceLibrarySearchResultOne": "Zeige {visible} von {total} Geräten.",
+      "deviceLibrarySearchResultOther": "Zeige {visible} von {total} Geräten.",
+      "deviceLibrarySearchNoResults": "Keine Geräte passen zu „{query}“.",
       "darkModeLabel": "Dunkelmodus umschalten",
       "pinkModeLabel": "Pinkmodus umschalten",
       "menuToggleLabel": "Menü",
@@ -119,7 +126,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "description": "Speichere Crew-Mitglieder einmal, bewahre sie offline auf und nutze sie in jedem Projekt erneut.",
         "addContactButton": "Kontakt hinzufügen",
         "importButton": "vCard importieren",
-        "importHint": "Importiere .vcf-Dateien, um Kontakte sofort zu übernehmen.",
+        "importHint": "Importiere .vcf-Dateien, um Kontakte sofort zu übernehmen. Bereits gespeicherte Details bleiben automatisch erhalten.",
         "emptyState": "Noch keine Kontakte gespeichert. Füge deine Crew hinzu, um sie später erneut zu nutzen.",
         "close": "Schließen",
         "selectLabel": "Gespeicherte Kontakte",
@@ -398,6 +405,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "monitorVideoOutputsLabel": "Ausgänge:",
       "monitorWirelessTxLabel": "Kabelloser TX:",
       "monitorLatencyLabel": "Latenz:",
+      "monitorLatencyHelp": "Die Latenz wird auch dann gespeichert, wenn Wireless TX deaktiviert ist. Leeren Sie dieses Feld, um den gespeicherten Wert zu entfernen.",
       "monitorAudioOutputLabel": "Audioausgang:",
       "viewfinderDetailsHeading": "Sucher-Details",
       "viewfinderScreenSizeLabel": "Bildschirmgröße (Zoll):",
@@ -412,11 +420,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "viewfinderVideoOutputsLabel": "Ausgänge:",
       "viewfinderWirelessTxLabel": "Kabelloser TX:",
       "viewfinderLatencyLabel": "Latenz:",
+      "viewfinderLatencyHelp": "Die Latenz wird auch dann gespeichert, wenn Wireless TX deaktiviert ist. Leeren Sie dieses Feld, um den gespeicherten Wert zu entfernen.",
+      "videoPowerInputsHeading": "Stromanschlüsse",
       "videoVideoInputsHeading": "Videoeingänge",
       "videoVideoInputsLabel": "Eingänge:",
       "videoVideoOutputsHeading": "Videoausgänge",
       "videoVideoOutputsLabel": "Ausgänge:",
-      "videoPowerInputLabel": "Stromversorgung:",
+      "videoPowerInputLabel": "Anschlüsse:",
+      "videoPowerInputHelp": "Fügen Sie alle unterstützten Stromanschlüsse hinzu, einschließlich Batteriemounts. Verwenden Sie die Notizen für Adapter oder weitere Hinweise.",
+      "videoPowerTypeLabel": "Anschluss",
+      "videoPowerVoltageLabel": "Spannungsbereich",
+      "videoPowerNotesLabel": "Notizen",
+      "videoPowerVoltagePlaceholder": "Spannungsbereich (z. B. 6-28V)",
+      "videoPowerNotesPlaceholder": "Notizen (Mount, Adapter usw.)",
       "videoFrequencyLabel": "Frequenz:",
       "videoLatencyLabel": "Latenz:",
       "motorConnectorLabel": "Anschluss:",
@@ -722,6 +738,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCustomItemNameAria": "Name des benutzerdefinierten Eintrags in {category}",
       "gearListCustomItemNamePlaceholder": "Benutzerdefinierter Eintrag",
       "gearListCustomItemPreviewFallback": "Benutzerdefinierter Eintrag",
+      "gearListCartSelectorLabel": "Kamerawagen",
+      "gearListCartConfigurationLabel": "Wagen-Konfiguration",
+      "gearListCartAccessoriesLabel": "Wagen-Zubehör",
       "gearListExcludeRentalToggle": "Für das Rentalhaus ausblenden",
       "gearListIncludeRentalToggle": "Für das Rentalhaus einblenden",
       "gearListRentalNote": "Das Rentalhaus stellt diesen Artikel bereit",
@@ -1219,6 +1238,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearBackupRetentionUpdateFailed": "Neuer Aufbewahrungsgrenzwert konnte nicht übernommen werden. Bitte erneut versuchen.",
       "autoGearRulesCountOne": "%s Regel",
       "autoGearRulesCountOther": "%s Regeln",
+      "autoGearRuleToggleEnable": "Regel aktivieren",
+      "autoGearRuleToggleDisable": "Regel deaktivieren",
+      "autoGearRuleEnabledLabel": "Aktiv",
+      "autoGearRuleDisabledLabel": "Deaktiviert",
+      "autoGearSummaryAllDisabled": "Alle automatischen Ausrüstungsregeln sind deaktiviert.",
+      "autoGearSummaryDisabledSuffix": "{count} deaktivierte Regeln werden in der Auswertung ignoriert.",
+      "autoGearSummaryDisabledNote": "Deaktivierte Regeln sind unten sichtbar, werden aber ignoriert, bis sie wieder aktiviert werden.",
       "autoGearBackupClearsRules": "Löscht alle Regeln",
       "autoGearBackupMeta": "%s · %s",
       "autoGearAddsCountOne": "%s Ergänzung",
@@ -1391,6 +1417,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storagePersistenceStatusRequesting": "Persistenter Speicher wird beim Browser angefragt…",
       "storagePersistenceStatusGranted": "Persistenter Speicher gewährt. Planner-Daten sind vor automatischen Bereinigungen geschützt.",
       "storagePersistenceStatusDenied": "Der Browser konnte keinen persistenten Speicher gewähren. Exportieren Sie weiterhin regelmäßig Sicherungen.",
+      "storagePersistenceStatusSafariIncompatible": "Safari blockiert derzeit Anfragen für persistenten Speicher. Dies ist eine Browser-Einschränkung.",
       "storagePersistenceStatusError": "Anfrage nach persistentem Speicher fehlgeschlagen. Versuchen Sie es nach Freigabe von Speicherplatz erneut oder prüfen Sie die Browser-Einstellungen.",
       "storagePersistenceStatusUnsupported": "Dieser Browser kann keinen persistenten Speicher automatisch gewähren. Bewahren Sie weiterhin externe Sicherungen auf.",
       "storagePersistenceUsage": "Ungefähre Nutzung: {used} von {quota}.",
@@ -1769,6 +1796,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Erstes eigenes Gerät hinzufügen",
             "body": "Trage Bezeichnung, optionale Menge und Notizen ein und speichere. Eigenes Equipment wird offline abgelegt, in Backups aufgenommen und in Exporten markiert, damit das Team sofort erkennt, was verfügbar ist – ohne doppelte Anfragen."
           },
+          "projectRequirementsBrief": {
+            "title": "Projekt-Steckbrief erfassen",
+            "body": "Öffne den Dialog Gear-Liste und Projektanforderungen, protokolliere Produktionsfirma, Adresse, Verleihpräferenzen, Deliverables und Terminhinweise. Die Angaben füllen PDF-Pakete automatisch, bleiben offline im Cache und bereiten die nächsten Abschnitte vor."
+          },
+          "projectRequirementsCrew": {
+            "title": "Crew-Abdeckung und Kontakte planen",
+            "body": "Befülle die Bereiche Crew, Prep, Dreh und Rückgabe mit Namen, Rollen und Hinweisen. Verknüpfe gespeicherte Kontakte, ergänze Notfallinfos und dupliziere Zeilen für identische Einsätze, damit Exporte zeigen, wer wann am Set ist."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Optiken, Rigging und Monitoring festhalten",
+            "body": "Arbeite die übrigen Sektionen durch – Kameraspezifikationen, Linsen-Workflow, Rigging-Szenarien, Speicher-/Medienmengen, Mattebox- und Monitoring-Präferenzen. Jede Eingabe speist automatische Gear-Regeln, Speicherberechnung und die finale Checkliste."
+          },
           "generateGearAndRequirements": {
             "title": "Anforderungen und Gear-Liste erzeugen",
             "body": "Nutze Gear-Liste und Projektanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden."
@@ -1784,18 +1823,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "autoGearRulesCreate": {
             "title": "Neue automatische Regel hinzufügen",
             "body": "Klicke auf Regel hinzufügen, um eine eigene Automatisierung zu erstellen. Vergib einen Namen, ergänze Bedingungen und benötigtes Equipment und speichere. Der Planner führt die neue Regel offline bei jedem Neuaufbau des Kits aus und nimmt sie in Exporte, Freigaben und Sicherungen auf."
-          },
-          "projectRequirementsBrief": {
-            "title": "Projekt-Steckbrief erfassen",
-            "body": "Öffne den Dialog Gear-Liste und Projektanforderungen, protokolliere Produktionsfirma, Adresse, Verleihpräferenzen, Deliverables und Terminhinweise. Die Angaben füllen PDF-Pakete automatisch, bleiben offline im Cache und bereiten die nächsten Abschnitte vor."
-          },
-          "projectRequirementsCrew": {
-            "title": "Crew-Abdeckung und Kontakte planen",
-            "body": "Befülle die Bereiche Crew, Prep, Dreh und Rückgabe mit Namen, Rollen und Hinweisen. Verknüpfe gespeicherte Kontakte, ergänze Notfallinfos und dupliziere Zeilen für identische Einsätze, damit Exporte zeigen, wer wann am Set ist."
-          },
-          "projectRequirementsLogistics": {
-            "title": "Optiken, Rigging und Monitoring festhalten",
-            "body": "Arbeite die übrigen Sektionen durch – Kameraspezifikationen, Linsen-Workflow, Rigging-Szenarien, Speicher-/Medienmengen, Mattebox- und Monitoring-Präferenzen. Jede Eingabe speist automatische Gear-Regeln, Speicherberechnung und die finale Checkliste."
           },
           "gearList": {
             "title": "Generierte Gear-Liste prüfen",

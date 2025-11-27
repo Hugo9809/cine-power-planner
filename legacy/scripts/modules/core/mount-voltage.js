@@ -378,6 +378,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     highLabelElem.setAttribute('data-help', renderVoltageTemplate(highHelpTemplate, config.high, effectiveLang, TOTAL_CURRENT_HELP_HIGH_FALLBACK));
     lowLabelElem.setAttribute('data-help', renderVoltageTemplate(lowHelpTemplate, config.low, effectiveLang, TOTAL_CURRENT_HELP_LOW_FALLBACK));
   }
+  if (typeof console !== 'undefined') {
+    console.log('mount-voltage.js: refreshTotalCurrentLabels defined');
+  }
+  if (CORE_SCOPE && _typeof(CORE_SCOPE) === 'object') {
+    CORE_SCOPE.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    globalThis.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+    globalThis.updateMountVoltageSettingLabels = updateMountVoltageSettingLabels;
+  } else if (typeof window !== 'undefined' && window) {
+    window.refreshTotalCurrentLabels = refreshTotalCurrentLabels;
+    window.updateMountVoltageSettingLabels = updateMountVoltageSettingLabels;
+  }
   function updateMountVoltageSettingLabels(lang) {
     var fallbackLang = typeof DEFAULT_LANGUAGE === 'string' ? DEFAULT_LANGUAGE : 'en';
     var effectiveLang = typeof lang === 'string' ? lang : typeof currentLang === 'string' ? currentLang : 'en';

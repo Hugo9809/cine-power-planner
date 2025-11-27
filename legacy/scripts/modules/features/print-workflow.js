@@ -194,13 +194,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var success = false;
-    if (preferFallback && !isExportReason) {
-      success = attemptFallback();
-      if (!success) {
+    if (!success && GLOBAL_SCOPE.cineFeaturePrintPreview && typeof GLOBAL_SCOPE.cineFeaturePrintPreview.open === 'function') {
+      try {
+        GLOBAL_SCOPE.cineFeaturePrintPreview.open();
+        success = true;
+      } catch (previewError) {
+        log(logger, 'warn', "".concat(logPrefix, ": preview failed to open."), previewError);
+      }
+    }
+    if (!success) {
+      if (preferFallback && !isExportReason) {
+        success = attemptFallback();
+        if (!success) {
+          success = attemptNativePrint();
+        }
+      } else {
         success = attemptNativePrint();
       }
-    } else {
-      success = attemptNativePrint();
     }
     if (!success && fallbackAttempts === 0) {
       success = attemptFallback();

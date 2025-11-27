@@ -3562,11 +3562,13 @@ function setProjectAutoSaveOverrides(overrides) {
     var selectedName = typeof state.selectedName === 'string' ? state.selectedName : '';
     var storageKey = typeof state.storageKey === 'string' ? state.storageKey : '';
     var renameInProgress = typeof state.renameInProgress === 'boolean' ? state.renameInProgress : Boolean(selectedName && typedName && typedName !== selectedName);
+    var typedNameHasTrailingWhitespace = Boolean(typedName && state && typeof state.typedNameHasTrailingWhitespace === 'boolean' && state.typedNameHasTrailingWhitespace);
     context.setupNameState = {
       typedName: typedName,
       selectedName: selectedName,
       storageKey: storageKey,
-      renameInProgress: renameInProgress
+      renameInProgress: renameInProgress,
+      typedNameHasTrailingWhitespace: typedNameHasTrailingWhitespace
     };
   }
   projectAutoSaveOverrides = context.setupNameState ? context : null;
@@ -4536,6 +4538,58 @@ function mergeSharedContactsIntoCache(sharedContacts) {
     updated: updated
   };
 }
+function resolveProjectNameCollisionForImport(baseName) {
+  var trimmed = typeof baseName === 'string' ? baseName.trim() : '';
+  if (!trimmed) {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  if (typeof loadProject !== 'function') {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var existingProjects;
+  try {
+    existingProjects = loadProject();
+  } catch (projectReadError) {
+    console.warn('Unable to inspect existing projects during shared import', projectReadError);
+    existingProjects = null;
+  }
+  if (!existingProjects || _typeof(existingProjects) !== 'object') {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var normalizedExisting = new Set(Object.keys(existingProjects).map(function (key) {
+    return typeof key === 'string' ? key.trim().toLowerCase() : '';
+  }).filter(function (key) {
+    return key;
+  }));
+  var normalizedCandidate = trimmed.toLowerCase();
+  if (!normalizedExisting.has(normalizedCandidate)) {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var suffix = 2;
+  var candidate = "".concat(trimmed, " (").concat(suffix, ")");
+  var normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+    suffix += 1;
+    candidate = "".concat(trimmed, " (").concat(suffix, ")");
+    normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  }
+  return {
+    name: candidate,
+    changed: true
+  };
+}
 function applySharedSetup(shared) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   try {
@@ -4720,6 +4774,21 @@ function applySharedSetup(shared) {
       var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '';
       var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
       var storageKey = selectedName || typedName;
+      if (!selectedName && storageKey) {
+        var resolved = resolveProjectNameCollisionForImport(storageKey);
+        if (resolved.changed && resolved.name) {
+          storageKey = resolved.name;
+          typedName = resolved.name;
+          if (setupNameInput && setupNameInput.value !== resolved.name) {
+            setupNameInput.value = resolved.name;
+            try {
+              setupNameInput.dispatchEvent(new Event('input'));
+            } catch (dispatchError) {
+              void dispatchError;
+            }
+          }
+        }
+      }
       var hasSelectors = Object.prototype.hasOwnProperty.call(payload, 'gearSelectors');
       var hasAutoRules = payload.autoGearRules && payload.autoGearRules.length;
       if (typeof storageKey === 'string' && (payload.projectInfo || hasSelectors || payload.gearListAndProjectRequirementsGenerated || hasAutoRules || payload.diagramPositions)) {
@@ -5143,8 +5212,6 @@ if (typeof window !== 'undefined') {
     window.addEventListener(eventName, flushProjectAutoSaveOnExit);
   });
 }
-// Enable Save button only when a setup name is entered. Enter saves only after
-// the input is finalized (no active composition), aligning with the IME guard.
 if (setupNameInput && saveSetupBtn) {
   var toggleSaveSetupBtn = function toggleSaveSetupBtn() {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
@@ -6901,6 +6968,15 @@ if (settingsButton && settingsDialog) {
         var _ruleIndex = button.dataset.ruleIndex;
         var args = _ruleIndex !== undefined ? [_ruleId2, _ruleIndex] : [_ruleId2];
         callSessionCoreFunction('deleteAutoGearRule', args);
+      }
+    });
+    autoGearRulesList.addEventListener('change', function (event) {
+      var targetElement = event.target;
+      if (!targetElement || !(targetElement instanceof HTMLElement)) return;
+      if (targetElement.classList.contains('auto-gear-enabled-toggle')) {
+        var ruleId = targetElement.dataset.ruleId || '';
+        var ruleIndex = targetElement.dataset.ruleIndex;
+        callSessionCoreFunction('setAutoGearRuleEnabled', [ruleId, targetElement.checked, ruleIndex]);
       }
     });
   }
@@ -10287,6 +10363,12 @@ function renderStoragePersistenceStatus() {
     message = langTexts.storagePersistenceStatusIdle || fallbackTexts.storagePersistenceStatusIdle || '';
   }
   var parts = [message];
+  if (state === 'denied' && isSafariPersistenceIncompatibility()) {
+    var safariWarning = langTexts.storagePersistenceStatusSafariIncompatible || fallbackTexts.storagePersistenceStatusSafariIncompatible || '';
+    if (safariWarning) {
+      parts.push(safariWarning);
+    }
+  }
   if (typeof storagePersistenceState.usage === 'number') {
     var usedText = formatStoragePersistenceBytes(storagePersistenceState.usage, lang);
     if (usedText) {
@@ -10355,6 +10437,46 @@ function renderStoragePersistenceStatus() {
       console.warn('Unable to broadcast storage persistence status change', eventError);
     }
   }
+}
+function isSafariPersistenceIncompatibility() {
+  if (typeof navigator === 'undefined' || !navigator) {
+    return false;
+  }
+  var nav = navigator;
+  if (_typeof(nav) !== 'object' || nav === null) {
+    return false;
+  }
+  if (typeof window !== 'undefined' && window && _typeof(window.safari) === 'object' && window.safari) {
+    if (_typeof(window.safari.pushNotification) === 'object') {
+      return true;
+    }
+  }
+  var vendor = typeof nav.vendor === 'string' ? nav.vendor : '';
+  var userAgent = typeof nav.userAgent === 'string' ? nav.userAgent : '';
+  if (!vendor && !userAgent) {
+    return false;
+  }
+  var normalisedVendor = vendor.toLowerCase().trim();
+  var normalisedUserAgent = userAgent.toLowerCase();
+  var exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
+  for (var _index13 = 0; _index13 < exclusionTokens.length; _index13 += 1) {
+    if (normalisedUserAgent.includes(exclusionTokens[_index13])) {
+      return false;
+    }
+  }
+  var vendorIndicatesSafariFamily = normalisedVendor.includes('apple');
+  var userAgentHasSafariToken = normalisedUserAgent.includes('safari');
+  var userAgentHasAppleWebkitToken = normalisedUserAgent.includes('applewebkit');
+  var userAgentHasVersionToken = normalisedUserAgent.includes('version/');
+  var userAgentHasMobileToken = normalisedUserAgent.includes('mobile/');
+  var userAgentHasPlatformToken = normalisedUserAgent.includes('macintosh') || normalisedUserAgent.includes('iphone') || normalisedUserAgent.includes('ipad') || normalisedUserAgent.includes('ipod') || normalisedUserAgent.includes('watch') || normalisedUserAgent.includes('apple tv');
+  var vendorIsEffectivelyEmpty = normalisedVendor.length === 0;
+  var userAgentSignalsSafariFamily = userAgentHasSafariToken || userAgentHasAppleWebkitToken && (userAgentHasVersionToken || userAgentHasMobileToken || userAgentHasPlatformToken);
+  var fallbackSafariMatch = vendorIsEffectivelyEmpty && userAgentHasAppleWebkitToken && userAgentSignalsSafariFamily;
+  if (!vendorIndicatesSafariFamily && !fallbackSafariMatch) {
+    return false;
+  }
+  return vendorIndicatesSafariFamily ? userAgentSignalsSafariFamily : fallbackSafariMatch;
 }
 function refreshStoragePersistenceStatus() {
   return _refreshStoragePersistenceStatus.apply(this, arguments);
@@ -11207,299 +11329,358 @@ function resetPlannerStateAfterFactoryReset() {
     }
   }
 }
+window.cineShowConfirmDialog = function (options) {
+  var _ref15 = options || {},
+    title = _ref15.title,
+    message = _ref15.message,
+    confirmLabel = _ref15.confirmLabel,
+    cancelLabel = _ref15.cancelLabel,
+    onConfirm = _ref15.onConfirm,
+    onCancel = _ref15.onCancel,
+    _ref15$danger = _ref15.danger,
+    danger = _ref15$danger === void 0 ? false : _ref15$danger;
+  var dialog = document.getElementById('appConfirmDialog');
+  var titleEl = document.getElementById('appConfirmTitle');
+  var messageEl = document.getElementById('appConfirmMessage');
+  var confirmBtn = document.getElementById('appConfirmBtn');
+  var cancelBtn = document.getElementById('appConfirmCancelBtn');
+  if (!dialog || !confirmBtn || !cancelBtn) {
+    console.warn('Confirmation dialog elements missing');
+    return;
+  }
+  if (titleEl) titleEl.textContent = title || 'Confirm';
+  if (messageEl) messageEl.textContent = message || 'Are you sure?';
+  confirmBtn.textContent = confirmLabel || 'Confirm';
+  cancelBtn.textContent = cancelLabel || 'Cancel';
+  if (danger) {
+    confirmBtn.classList.add('danger');
+  } else {
+    confirmBtn.classList.remove('danger');
+  }
+  var newConfirmBtn = confirmBtn.cloneNode(true);
+  var newCancelBtn = cancelBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+  var close = function close() {
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    }
+    dialog.setAttribute('hidden', '');
+  };
+  newConfirmBtn.addEventListener('click', function () {
+    close();
+    if (typeof onConfirm === 'function') {
+      onConfirm();
+    }
+  });
+  newCancelBtn.addEventListener('click', function () {
+    close();
+    if (typeof onCancel === 'function') {
+      onCancel();
+    }
+  });
+  dialog.removeAttribute('hidden');
+  if (typeof dialog.showModal === 'function') {
+    dialog.showModal();
+  }
+};
 if (factoryResetButton) {
-  factoryResetButton.addEventListener('click', _asyncToGenerator(_regenerator().m(function _callee() {
-    var langTexts, confirmReset, confirmResetAgain, errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2;
-    return _regenerator().w(function (_context) {
-      while (1) switch (_context.p = _context.n) {
-        case 0:
-          langTexts = texts[currentLang] || texts.en || {};
-          confirmReset = langTexts.confirmFactoryReset || 'Create a backup and wipe all planner data?';
-          if (confirm(confirmReset)) {
-            _context.n = 1;
-            break;
-          }
-          return _context.a(2);
-        case 1:
-          confirmResetAgain = langTexts.confirmFactoryResetAgain || 'This will permanently delete all saved planner data. Continue?';
-          if (confirm(confirmResetAgain)) {
-            _context.n = 2;
-            break;
-          }
-          return _context.a(2);
-        case 2:
-          if (!(typeof performSettingsBackup !== 'function')) {
-            _context.n = 3;
-            break;
-          }
-          errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-          showNotification('error', errorMsg);
-          return _context.a(2);
-        case 3:
-          backupResult = null;
-          try {
-            backupResult = performSettingsBackup(false, new Date());
-          } catch (error) {
-            console.error('Backup before factory reset failed', error);
-          }
-          if (!(!backupResult || !backupResult.fileName)) {
-            _context.n = 4;
-            break;
-          }
-          backupFailedMsg = langTexts.factoryResetBackupFailed || 'Backup failed. Data was not deleted.';
-          showNotification('error', backupFailedMsg);
-          return _context.a(2);
-        case 4:
-          downloadPermissionState = 'unknown';
-          finalDownloadPermissionState = 'unknown';
-          downloadResult = backupResult.downloadResult;
-          permissionMonitor = downloadResult && downloadResult.permission ? downloadResult.permission : null;
-          if (!(permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function')) {
-            _context.n = 8;
-            break;
-          }
-          _context.p = 5;
-          _context.n = 6;
-          return permissionMonitor.initial;
-        case 6:
-          downloadPermissionState = _context.v;
-          _context.n = 8;
-          break;
-        case 7:
-          _context.p = 7;
-          _t = _context.v;
-          console.warn('Failed to inspect automatic download permission before factory reset', _t);
-          downloadPermissionState = 'unknown';
-        case 8:
-          if (!(downloadPermissionState === 'denied')) {
-            _context.n = 9;
-            break;
-          }
-          deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
-          showNotification('error', deniedMsg);
-          if (typeof alert === 'function') {
-            alert(deniedMsg);
-          }
-          return _context.a(2);
-        case 9:
-          if (downloadPermissionState === 'prompt') {
-            waitMsg = langTexts.factoryResetAwaitDownload || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
-            showNotification('info', waitMsg);
-            if (typeof alert === 'function') {
-              alert(waitMsg);
-            }
-          }
-          if (!(permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function')) {
-            _context.n = 14;
-            break;
-          }
-          _context.p = 10;
-          _context.n = 11;
-          return permissionMonitor.ready;
-        case 11:
-          finalDownloadPermissionState = _context.v;
-          _context.n = 13;
-          break;
-        case 12:
-          _context.p = 12;
-          _t2 = _context.v;
-          console.warn('Failed to await automatic download permission before factory reset', _t2);
-          finalDownloadPermissionState = 'unknown';
-        case 13:
-          _context.n = 15;
-          break;
-        case 14:
-          finalDownloadPermissionState = downloadPermissionState;
-        case 15:
-          if (!(downloadPermissionState === 'prompt')) {
-            _context.n = 17;
-            break;
-          }
-          if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
-            finalDownloadPermissionState = 'unknown';
-          }
-          if (!(finalDownloadPermissionState !== 'granted')) {
-            _context.n = 16;
-            break;
-          }
-          _deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
-          showNotification('error', _deniedMsg);
-          if (typeof alert === 'function') {
-            alert(_deniedMsg);
-          }
-          return _context.a(2);
-        case 16:
-          _context.n = 18;
-          break;
-        case 17:
-          if (!(finalDownloadPermissionState === 'denied')) {
-            _context.n = 18;
-            break;
-          }
-          _deniedMsg2 = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
-          showNotification('error', _deniedMsg2);
-          if (typeof alert === 'function') {
-            alert(_deniedMsg2);
-          }
-          return _context.a(2);
-        case 18:
-          if (!(typeof clearAllData !== 'function')) {
-            _context.n = 19;
-            break;
-          }
-          _errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-          showNotification('error', _errorMsg);
-          return _context.a(2);
-        case 19:
-          try {
-            factoryResetInProgress = true;
-            if (typeof globalThis !== 'undefined') {
-              try {
-                globalThis.__cameraPowerPlannerFactoryResetting = true;
-              } catch (flagError) {
-                console.warn('Unable to flag factory reset on global scope', flagError);
-              }
-            }
-            if (projectAutoSaveTimer) {
-              clearTimeout(projectAutoSaveTimer);
-              projectAutoSaveTimer = null;
-            }
-            try {
-              stopPinkModeIconRotation();
-              stopPinkModeAnimatedIcons();
-            } catch (animationError) {
-              console.warn('Failed to stop pink mode animations during factory reset', animationError);
-            }
-            clearAllData();
-            try {
-              if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-                eventName = 'cameraPowerPlannerFactoryReset';
-                eventInstance = null;
-                if (typeof window.CustomEvent === 'function') {
-                  eventInstance = new window.CustomEvent(eventName);
-                } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
-                  eventInstance = document.createEvent('Event');
-                  eventInstance.initEvent(eventName, false, false);
+  factoryResetButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    var langTexts = texts[currentLang] || texts.en || {};
+    window.cineShowConfirmDialog({
+      title: langTexts.factoryResetTitle || 'Factory Reset',
+      message: langTexts.confirmFactoryReset || 'Create a backup and wipe all planner data? This action cannot be undone.',
+      confirmLabel: langTexts.factoryResetConfirm || 'Reset Everything',
+      cancelLabel: langTexts.cancel || 'Cancel',
+      danger: true,
+      onConfirm: function () {
+        var _onConfirm = _asyncToGenerator(_regenerator().m(function _callee() {
+          var errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2;
+          return _regenerator().w(function (_context) {
+            while (1) switch (_context.p = _context.n) {
+              case 0:
+                if (!(typeof performSettingsBackup !== 'function')) {
+                  _context.n = 1;
+                  break;
                 }
-                if (eventInstance) {
-                  window.dispatchEvent(eventInstance);
+                errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+                showNotification('error', errorMsg);
+                return _context.a(2);
+              case 1:
+                backupResult = null;
+                try {
+                  backupResult = performSettingsBackup(false, new Date());
+                } catch (error) {
+                  console.error('Backup before factory reset failed', error);
                 }
-              }
-            } catch (factoryResetEventError) {
-              console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+                if (!(!backupResult || !backupResult.fileName)) {
+                  _context.n = 2;
+                  break;
+                }
+                backupFailedMsg = langTexts.factoryResetBackupFailed || 'Backup failed. Data was not deleted.';
+                showNotification('error', backupFailedMsg);
+                return _context.a(2);
+              case 2:
+                downloadPermissionState = 'unknown';
+                finalDownloadPermissionState = 'unknown';
+                downloadResult = backupResult.downloadResult;
+                permissionMonitor = downloadResult && downloadResult.permission ? downloadResult.permission : null;
+                if (!(permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function')) {
+                  _context.n = 6;
+                  break;
+                }
+                _context.p = 3;
+                _context.n = 4;
+                return permissionMonitor.initial;
+              case 4:
+                downloadPermissionState = _context.v;
+                _context.n = 6;
+                break;
+              case 5:
+                _context.p = 5;
+                _t = _context.v;
+                console.warn('Failed to inspect automatic download permission before factory reset', _t);
+                downloadPermissionState = 'unknown';
+              case 6:
+                if (!(downloadPermissionState === 'denied')) {
+                  _context.n = 7;
+                  break;
+                }
+                deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+                showNotification('error', deniedMsg);
+                if (typeof alert === 'function') {
+                  alert(deniedMsg);
+                }
+                return _context.a(2);
+              case 7:
+                if (downloadPermissionState === 'prompt') {
+                  waitMsg = langTexts.factoryResetAwaitDownload || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
+                  showNotification('info', waitMsg);
+                  if (typeof alert === 'function') {
+                    alert(waitMsg);
+                  }
+                }
+                if (!(permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function')) {
+                  _context.n = 12;
+                  break;
+                }
+                _context.p = 8;
+                _context.n = 9;
+                return permissionMonitor.ready;
+              case 9:
+                finalDownloadPermissionState = _context.v;
+                _context.n = 11;
+                break;
+              case 10:
+                _context.p = 10;
+                _t2 = _context.v;
+                console.warn('Failed to await automatic download permission before factory reset', _t2);
+                finalDownloadPermissionState = 'unknown';
+              case 11:
+                _context.n = 13;
+                break;
+              case 12:
+                finalDownloadPermissionState = downloadPermissionState;
+              case 13:
+                if (!(downloadPermissionState === 'prompt')) {
+                  _context.n = 15;
+                  break;
+                }
+                if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
+                  finalDownloadPermissionState = 'unknown';
+                }
+                if (!(finalDownloadPermissionState !== 'granted')) {
+                  _context.n = 14;
+                  break;
+                }
+                _deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+                showNotification('error', _deniedMsg);
+                if (typeof alert === 'function') {
+                  alert(_deniedMsg);
+                }
+                return _context.a(2);
+              case 14:
+                _context.n = 16;
+                break;
+              case 15:
+                if (!(finalDownloadPermissionState === 'denied')) {
+                  _context.n = 16;
+                  break;
+                }
+                _deniedMsg2 = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+                showNotification('error', _deniedMsg2);
+                if (typeof alert === 'function') {
+                  alert(_deniedMsg2);
+                }
+                return _context.a(2);
+              case 16:
+                if (!(typeof clearAllData !== 'function')) {
+                  _context.n = 17;
+                  break;
+                }
+                _errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+                showNotification('error', _errorMsg);
+                return _context.a(2);
+              case 17:
+                try {
+                  factoryResetInProgress = true;
+                  if (typeof globalThis !== 'undefined') {
+                    try {
+                      globalThis.__cameraPowerPlannerFactoryResetting = true;
+                    } catch (flagError) {
+                      console.warn('Unable to flag factory reset on global scope', flagError);
+                    }
+                  }
+                  if (projectAutoSaveTimer) {
+                    clearTimeout(projectAutoSaveTimer);
+                    projectAutoSaveTimer = null;
+                  }
+                  try {
+                    stopPinkModeIconRotation();
+                    stopPinkModeAnimatedIcons();
+                  } catch (animationError) {
+                    console.warn('Failed to stop pink mode animations during factory reset', animationError);
+                  }
+                  clearAllData();
+                  try {
+                    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                      eventName = 'cameraPowerPlannerFactoryReset';
+                      eventInstance = null;
+                      if (typeof window.CustomEvent === 'function') {
+                        eventInstance = new window.CustomEvent(eventName);
+                      } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+                        eventInstance = document.createEvent('Event');
+                        eventInstance.initEvent(eventName, false, false);
+                      }
+                      if (eventInstance) {
+                        window.dispatchEvent(eventInstance);
+                      }
+                    }
+                  } catch (factoryResetEventError) {
+                    console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+                  }
+                  try {
+                    resetPlannerStateAfterFactoryReset();
+                  } catch (resetError) {
+                    console.warn('Failed to reset planner state after factory reset', resetError);
+                  }
+                  try {
+                    setThemePreference(false, {
+                      persist: true
+                    });
+                  } catch (darkError) {
+                    console.warn('Failed to reset dark mode during factory reset', darkError);
+                  }
+                  try {
+                    highContrastEnabled = false;
+                    applyHighContrast(false);
+                    if (settingsHighContrast) {
+                      settingsHighContrast.checked = false;
+                    }
+                  } catch (contrastError) {
+                    console.warn('Failed to reset high contrast during factory reset', contrastError);
+                  }
+                  try {
+                    pinkModeEnabled = false;
+                    applyPinkMode(false);
+                    rememberSettingsPinkModeBaseline();
+                  } catch (pinkError) {
+                    console.warn('Failed to reset pink mode during factory reset', pinkError);
+                  }
+                  showAutoBackups = false;
+                  if (settingsShowAutoBackups) {
+                    settingsShowAutoBackups.checked = false;
+                  }
+                  try {
+                    accentColor = DEFAULT_ACCENT_COLOR;
+                    prevAccentColor = DEFAULT_ACCENT_COLOR;
+                    clearAccentColorOverrides();
+                    applyAccentColor(accentColor);
+                    if (accentColorInput) {
+                      accentColorInput.value = DEFAULT_ACCENT_COLOR;
+                    }
+                    if (typeof updateAccentColorResetButtonState === 'function') {
+                      updateAccentColorResetButtonState();
+                    }
+                  } catch (accentError) {
+                    console.warn('Failed to reset accent color during factory reset', accentError);
+                  }
+                  try {
+                    resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+                    if (resetMountVoltagePreferencesFn) {
+                      resetMountVoltagePreferencesFn({
+                        persist: true,
+                        triggerUpdate: true
+                      });
+                    } else {
+                      warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+                    }
+                    updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+                    if (updateMountVoltageInputsFromStateFn) {
+                      updateMountVoltageInputsFromStateFn();
+                    } else {
+                      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+                    }
+                    rememberSettingsMountVoltagesBaseline();
+                  } catch (voltageResetError) {
+                    console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
+                  }
+                  try {
+                    fontSize = '16';
+                    applyFontSizeSafe(fontSize);
+                    if (settingsFontSize) {
+                      settingsFontSize.value = fontSize;
+                    }
+                  } catch (fontSizeError) {
+                    console.warn('Failed to reset font size during factory reset', fontSizeError);
+                  }
+                  try {
+                    fontFamily = "'Ubuntu', sans-serif";
+                    applyFontFamilySafe(fontFamily);
+                    if (settingsFontFamily) {
+                      settingsFontFamily.value = fontFamily;
+                    }
+                  } catch (fontFamilyError) {
+                    console.warn('Failed to reset font family during factory reset', fontFamilyError);
+                  }
+                  if (settingsDialog) {
+                    settingsDialog.setAttribute('hidden', '');
+                  }
+                  successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
+                  showNotification('success', successMsg);
+                  setTimeout(function () {
+                    if (typeof window !== 'undefined' && window.location && window.location.reload) {
+                      window.location.reload();
+                    }
+                  }, 600);
+                } catch (error) {
+                  console.error('Factory reset failed', error);
+                  factoryResetInProgress = false;
+                  if (typeof globalThis !== 'undefined') {
+                    try {
+                      delete globalThis.__cameraPowerPlannerFactoryResetting;
+                    } catch (cleanupError) {
+                      console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+                    }
+                  }
+                  _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+                  showNotification('error', _errorMsg2);
+                }
+              case 18:
+                return _context.a(2);
             }
-            try {
-              resetPlannerStateAfterFactoryReset();
-            } catch (resetError) {
-              console.warn('Failed to reset planner state after factory reset', resetError);
-            }
-            try {
-              setThemePreference(false, {
-                persist: true
-              });
-            } catch (darkError) {
-              console.warn('Failed to reset dark mode during factory reset', darkError);
-            }
-            try {
-              highContrastEnabled = false;
-              applyHighContrast(false);
-              if (settingsHighContrast) {
-                settingsHighContrast.checked = false;
-              }
-            } catch (contrastError) {
-              console.warn('Failed to reset high contrast during factory reset', contrastError);
-            }
-            try {
-              pinkModeEnabled = false;
-              applyPinkMode(false);
-              rememberSettingsPinkModeBaseline();
-            } catch (pinkError) {
-              console.warn('Failed to reset pink mode during factory reset', pinkError);
-            }
-            showAutoBackups = false;
-            if (settingsShowAutoBackups) {
-              settingsShowAutoBackups.checked = false;
-            }
-            try {
-              accentColor = DEFAULT_ACCENT_COLOR;
-              prevAccentColor = DEFAULT_ACCENT_COLOR;
-              clearAccentColorOverrides();
-              applyAccentColor(accentColor);
-              if (accentColorInput) {
-                accentColorInput.value = DEFAULT_ACCENT_COLOR;
-              }
-              if (typeof updateAccentColorResetButtonState === 'function') {
-                updateAccentColorResetButtonState();
-              }
-            } catch (accentError) {
-              console.warn('Failed to reset accent color during factory reset', accentError);
-            }
-            try {
-              resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-              if (resetMountVoltagePreferencesFn) {
-                resetMountVoltagePreferencesFn({
-                  persist: true,
-                  triggerUpdate: true
-                });
-              } else {
-                warnMissingMountVoltageHelper('resetMountVoltagePreferences');
-              }
-              updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-              if (updateMountVoltageInputsFromStateFn) {
-                updateMountVoltageInputsFromStateFn();
-              } else {
-                warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
-              }
-              rememberSettingsMountVoltagesBaseline();
-            } catch (voltageResetError) {
-              console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
-            }
-            try {
-              fontSize = '16';
-              applyFontSizeSafe(fontSize);
-              if (settingsFontSize) {
-                settingsFontSize.value = fontSize;
-              }
-            } catch (fontSizeError) {
-              console.warn('Failed to reset font size during factory reset', fontSizeError);
-            }
-            try {
-              fontFamily = "'Ubuntu', sans-serif";
-              applyFontFamilySafe(fontFamily);
-              if (settingsFontFamily) {
-                settingsFontFamily.value = fontFamily;
-              }
-            } catch (fontFamilyError) {
-              console.warn('Failed to reset font family during factory reset', fontFamilyError);
-            }
-            if (settingsDialog) {
-              settingsDialog.setAttribute('hidden', '');
-            }
-            successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
-            showNotification('success', successMsg);
-            setTimeout(function () {
-              if (typeof window !== 'undefined' && window.location && window.location.reload) {
-                window.location.reload();
-              }
-            }, 600);
-          } catch (error) {
-            console.error('Factory reset failed', error);
-            factoryResetInProgress = false;
-            if (typeof globalThis !== 'undefined') {
-              try {
-                delete globalThis.__cameraPowerPlannerFactoryResetting;
-              } catch (cleanupError) {
-                console.warn('Unable to clear factory reset flag from global scope', cleanupError);
-              }
-            }
-            _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-            showNotification('error', _errorMsg2);
-          }
-        case 20:
-          return _context.a(2);
-      }
-    }, _callee, null, [[10, 12], [5, 7]]);
-  })));
+          }, _callee, null, [[8, 10], [3, 5]]);
+        }));
+        function onConfirm() {
+          return _onConfirm.apply(this, arguments);
+        }
+        return onConfirm;
+      }()
+    });
+  });
 }
 var UI_CACHE_STORAGE_KEYS_FOR_RELOAD = ['cameraPowerPlanner_schemaCache', 'cinePowerPlanner_schemaCache'];
 var UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = ['', '__backup', '__legacyMigrationBackup'];
@@ -11629,8 +11810,8 @@ function clearUiCacheEntriesFallback() {
 var CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
 function resolveCineCacheNameForReload() {
   var scopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var _index13 = 0; _index13 < scopes.length; _index13 += 1) {
-    var _scope3 = scopes[_index13];
+  for (var _index14 = 0; _index14 < scopes.length; _index14 += 1) {
+    var _scope3 = scopes[_index14];
     if (!_scope3 || _typeof(_scope3) !== 'object' && typeof _scope3 !== 'function') {
       continue;
     }
@@ -11653,8 +11834,8 @@ function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
     return true;
   }
   var lowerKey = key.toLowerCase();
-  for (var _index14 = 0; _index14 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index14 += 1) {
-    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index14])) {
+  for (var _index15 = 0; _index15 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index15 += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index15])) {
       return true;
     }
   }
@@ -11786,10 +11967,10 @@ function buildForceReloadHref(locationLike, paramName) {
   }
   if (typeof URL === 'function') {
     var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
-    for (var _index15 = 0; _index15 < urlCandidates.length; _index15 += 1) {
-      var candidate = urlCandidates[_index15];
+    for (var _index16 = 0; _index16 < urlCandidates.length; _index16 += 1) {
+      var candidate = urlCandidates[_index16];
       try {
-        var url = _index15 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index16 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -11819,8 +12000,8 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var _index16 = 0; _index16 < baseCandidates.length; _index16 += 1) {
-      var _candidate = baseCandidates[_index16];
+    for (var _index17 = 0; _index17 < baseCandidates.length; _index17 += 1) {
+      var _candidate = baseCandidates[_index17];
       try {
         var absolute = new URL(href + hash, _candidate).toString();
         return {
@@ -12354,9 +12535,6 @@ function createReloadFallback(win) {
     }
   };
 }
-// Slower machines routinely need ~4s to finish the offline module's reload gate.
-// Give it extra headroom so we do not fall back to the manual cache purge unless
-// the service worker truly stalled.
 var OFFLINE_RELOAD_TIMEOUT_MS = 5000;
 var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
@@ -12888,7 +13066,11 @@ function exportDiagramSvg() {
     }
   });
   var style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-  style.textContent = getDiagramCss(false);
+  var getDiagramCssFn = typeof getDiagramCss === 'function' ? getDiagramCss : null;
+  if (!getDiagramCssFn && (typeof cineFeaturesConnectionDiagram === "undefined" ? "undefined" : _typeof(cineFeaturesConnectionDiagram)) === 'object' && typeof cineFeaturesConnectionDiagram.getDiagramCss === 'function') {
+    getDiagramCssFn = cineFeaturesConnectionDiagram.getDiagramCss;
+  }
+  style.textContent = getDiagramCssFn ? getDiagramCssFn(false) : '';
   clone.insertBefore(style, clone.firstChild);
   var serializer = new XMLSerializer();
   return serializer.serializeToString(clone);
@@ -13067,7 +13249,9 @@ if (helpButton && helpDialog) {
     return Array.from(labels);
   };
   var ensureFeatureSearchVisibility = function ensureFeatureSearchVisibility(element) {
-    if (!element || _typeof(element) !== 'object' || typeof element.nodeType !== 'number') return;
+    if (!element || _typeof(element) !== 'object' || typeof element.nodeType !== 'number') {
+      return;
+    }
     if (backupDiffSectionEl && backupDiffSectionEl.contains(element) && backupDiffSectionEl.hasAttribute('hidden')) {
       if (typeof showBackupDiffSection === 'function') {
         try {
@@ -14741,6 +14925,28 @@ if (helpButton && helpDialog) {
           highlightFeatureSearchTargets(highlightTargets);
           return;
         }
+        if (device && device.entryType === 'deviceLibrary' && (device.element || device.rawElement)) {
+          var _deviceLabel = device.label || clean;
+          if (_deviceLabel) {
+            updateFeatureSearchValue(_deviceLabel, originalNormalized);
+          }
+          if (typeof recordFeatureSearchUsage === 'function') {
+            recordFeatureSearchUsage(deviceMatch.key, 'device', _deviceLabel);
+          }
+          if (typeof device.focusLibraryEntry === 'function') {
+            device.focusLibraryEntry();
+          }
+          var focusTarget = device.element || device.rawElement;
+          if (focusTarget) {
+            focusFeatureElement(focusTarget);
+            var _highlightTargets = [focusTarget].concat(_toConsumableArray(findAssociatedLabelElements(focusTarget)));
+            highlightFeatureSearchTargets(_highlightTargets);
+          }
+          if (typeof device.highlightLibraryEntry === 'function') {
+            device.highlightLibraryEntry();
+          }
+          return;
+        }
       }
       if (normalizedFeatureMatch) {
         var feature = normalizedFeatureMatch.entry;
@@ -14758,8 +14964,8 @@ if (helpButton && helpDialog) {
             recordFeatureSearchUsage(usageKey, type, label);
           }
           focusFeatureElement(featureEl);
-          var _highlightTargets = [featureEl].concat(_toConsumableArray(findAssociatedLabelElements(featureEl)));
-          highlightFeatureSearchTargets(_highlightTargets);
+          var _highlightTargets2 = [featureEl].concat(_toConsumableArray(findAssociatedLabelElements(featureEl)));
+          highlightFeatureSearchTargets(_highlightTargets2);
           return;
         }
       }
@@ -14820,6 +15026,139 @@ if (helpButton && helpDialog) {
   };
   if (featureSearch) {
     var featureSearchDropdown = document.getElementById('featureSearchDropdown');
+    var resolveFeatureSearchOptionEntry = function resolveFeatureSearchOptionEntry(option) {
+      if (!option || !featureSearchDropdown) return null;
+      var dropdown = option.closest('#featureSearchDropdown') || featureSearchDropdown;
+      var map = dropdown && dropdown.__optionEntries instanceof Map ? dropdown.__optionEntries : null;
+      if (!map) return null;
+      if (option.id && map.has(option.id)) {
+        return map.get(option.id) || null;
+      }
+      var entryKey = option.getAttribute('data-entry-key');
+      if (entryKey) {
+        var _iterator3 = _createForOfIteratorHelper(map.values()),
+          _step3;
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var value = _step3.value;
+            if (value && value.key === entryKey) {
+              return value;
+            }
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+      }
+      return null;
+    };
+    var openFeatureSearchEntry = function openFeatureSearchEntry(entry, queryValue) {
+      if (!entry) return false;
+      var entryType = entry.type || entry.entryType || 'feature';
+      var normalizedQuery = normalizeSearchValue(queryValue || '');
+      var label = entry.label || entry.display || entry.optionLabel || normalizedQuery || '';
+      var usageKey = entry.key || null;
+      var recordUsage = function recordUsage() {
+        if (typeof recordFeatureSearchUsage === 'function' && usageKey) {
+          var type = entryType === 'deviceLibrary' ? 'device' : entryType;
+          recordFeatureSearchUsage(usageKey, type, label);
+        }
+      };
+      if (entryType === 'device') {
+        if (entry.select) {
+          entry.select.value = entry.value;
+          entry.select.dispatchEvent(new Event('change', {
+            bubbles: true
+          }));
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          focusFeatureElement(entry.select);
+          var highlightTargets = [entry.select].concat(_toConsumableArray(findAssociatedLabelElements(entry.select)));
+          highlightFeatureSearchTargets(highlightTargets);
+          return true;
+        }
+        if (entry.entryType === 'deviceLibrary' && (entry.element || entry.rawElement)) {
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          if (typeof entry.focusLibraryEntry === 'function') {
+            entry.focusLibraryEntry();
+          }
+          var focusTarget = entry.element || entry.rawElement;
+          if (focusTarget) {
+            focusFeatureElement(focusTarget);
+            var _highlightTargets3 = [focusTarget].concat(_toConsumableArray(findAssociatedLabelElements(focusTarget)));
+            highlightFeatureSearchTargets(_highlightTargets3);
+          }
+          if (typeof entry.highlightLibraryEntry === 'function') {
+            entry.highlightLibraryEntry();
+          }
+          return true;
+        }
+      }
+      if (entryType === 'feature') {
+        var featureEl = entry.element || entry;
+        if (featureEl) {
+          if (label) {
+            updateFeatureSearchValue(label, normalizedQuery);
+          }
+          recordUsage();
+          focusFeatureElement(featureEl);
+          var _highlightTargets4 = [featureEl].concat(_toConsumableArray(findAssociatedLabelElements(featureEl)));
+          highlightFeatureSearchTargets(_highlightTargets4);
+          return true;
+        }
+      }
+      if (entryType === 'help') {
+        recordUsage();
+        openHelp();
+        if (helpSearch) {
+          helpSearch.value = label || normalizedQuery;
+          filterHelp();
+        }
+        var section = entry.section;
+        if (section) {
+          if (section.hasAttribute('hidden')) {
+            section.removeAttribute('hidden');
+            if (helpNoResults) {
+              helpNoResults.setAttribute('hidden', '');
+            }
+            if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+              helpNoResultsSuggestions.setAttribute('hidden', '');
+            }
+            syncHelpQuickLinksVisibility();
+          }
+          if (typeof section.scrollIntoView === 'function') {
+            section.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+          highlightHelpSection(section);
+          var sectionHeading = section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') || section.querySelector('button, a');
+          if (sectionHeading) {
+            highlightFeatureSearchTargets([sectionHeading]);
+          } else {
+            highlightFeatureSearchTargets([section]);
+          }
+          var quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
+          if (helpQuickLinksList) {
+            helpQuickLinksList.querySelectorAll('.help-quick-link.active').forEach(function (btn) {
+              return btn.classList.remove('active');
+            });
+          }
+          if (quickLink && quickLink.button) {
+            quickLink.button.classList.add('active');
+          }
+          return true;
+        }
+      }
+      return false;
+    };
     var getDropdownOptions = function getDropdownOptions() {
       if (!featureSearchDropdown) return [];
       return Array.from(featureSearchDropdown.querySelectorAll('[role="option"]') || []);
@@ -14915,9 +15254,10 @@ if (helpButton && helpDialog) {
         });
       }
     };
-    var applyFeatureSearchSuggestion = function applyFeatureSearchSuggestion(value) {
+    var applyFeatureSearchSuggestion = function applyFeatureSearchSuggestion(value, option) {
       var _featureSearch$setSel, _featureSearch2;
       if (!featureSearch || !value) return;
+      var entry = option ? resolveFeatureSearchOptionEntry(option) : null;
       featureSearch.value = value;
       try {
         featureSearch.focus({
@@ -14927,6 +15267,11 @@ if (helpButton && helpDialog) {
         featureSearch.focus();
       }
       (_featureSearch$setSel = (_featureSearch2 = featureSearch).setSelectionRange) === null || _featureSearch$setSel === void 0 || _featureSearch$setSel.call(_featureSearch2, value.length, value.length);
+      if (entry && openFeatureSearchEntry(entry, value)) {
+        updateFeatureSearchSuggestions(value);
+        closeFeatureSearchDropdown();
+        return;
+      }
       updateFeatureSearchSuggestions(value);
       runFeatureSearch(value);
       closeFeatureSearchDropdown();
@@ -15006,7 +15351,7 @@ if (helpButton && helpDialog) {
         if (!option) return;
         var value = option.getAttribute('data-value') || '';
         if (!value) return;
-        applyFeatureSearchSuggestion(value);
+        applyFeatureSearchSuggestion(value, option);
       });
       featureSearchDropdown.addEventListener('keydown', function (e) {
         var options = getDropdownOptions();
@@ -15040,7 +15385,7 @@ if (helpButton && helpDialog) {
           if (currentIndex >= 0 && options[currentIndex]) {
             var value = options[currentIndex].getAttribute('data-value') || '';
             if (value) {
-              applyFeatureSearchSuggestion(value);
+              applyFeatureSearchSuggestion(value, options[currentIndex]);
             }
           }
         } else if (e.key === 'Escape') {
@@ -15176,8 +15521,8 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index17 = 0; _index17 < scopes.length; _index17 += 1) {
-    var _scope4 = scopes[_index17];
+  for (var _index18 = 0; _index18 < scopes.length; _index18 += 1) {
+    var _scope4 = scopes[_index18];
     if (!_scope4 || _typeof(_scope4) !== 'object') {
       continue;
     }
@@ -15366,7 +15711,11 @@ function initApp() {
     }
   });
   resetDeviceForm();
-  ensureDefaultProjectInfoSnapshot();
+  if (typeof ensureDefaultProjectInfoSnapshot === 'function') {
+    ensureDefaultProjectInfoSnapshot();
+  } else if (typeof window !== 'undefined' && typeof window.ensureDefaultProjectInfoSnapshot === 'function') {
+    window.ensureDefaultProjectInfoSnapshot();
+  }
   restoreSessionState();
   applySharedSetupFromUrl();
   if (requiredScenariosSelect) {
@@ -15391,7 +15740,7 @@ function ensureFeedbackTemperatureOptionsSafe(select) {
     return;
   }
   var minTemp = typeof FEEDBACK_TEMPERATURE_MIN === 'number' ? FEEDBACK_TEMPERATURE_MIN : -20;
-  var maxTemp = typeof FEEDBACK_TEMPERATURE_MAX === 'number' ? FEEDBACK_TEMPERATURE_MAX : 50;
+  var maxTemp = typeof FEEDBACK_TEMPERATURE_MAX_LIMIT === 'number' ? FEEDBACK_TEMPERATURE_MAX_LIMIT : 50;
   var expectedOptions = maxTemp - minTemp + 2;
   if (select.options.length === expectedOptions) {
     return;
@@ -15629,9 +15978,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index18 = 0; _index18 < lensNames.length; _index18 += 1) {
+  for (var _index19 = 0; _index19 < lensNames.length; _index19 += 1) {
     var _ref26, _lens$minFocusMeters;
-    var name = lensNames[_index18];
+    var name = lensNames[_index19];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -15724,11 +16073,59 @@ function formatFrameRateValue(value) {
 }
 function tokenizeFrameRateContext(value) {
   if (typeof value !== 'string' || !value) return [];
-  return value.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/[()]/g, ' ').replace(/[[\]]/g, ' ').split(/[\s,/]+/).map(function (token) {
+  var normalizedValue = value.toLowerCase();
+  var baseTokens = normalizedValue.replace(/[\u2013\u2014]/g, '-').replace(/[()]/g, ' ').replace(/[[\]]/g, ' ').split(/[\s,/]+/).map(function (token) {
     return token.replace(/[^a-z0-9:.+-]/g, '').replace(/^[:.+-]+|[:.+-]+$/g, '');
   }).filter(function (token) {
     return token && token !== 'fps';
   });
+  var tokens = new Set(baseTokens);
+  var addAliasToken = function addAliasToken(alias) {
+    if (!alias) return;
+    var normalizedAlias = alias.replace(/[^a-z0-9]/g, '');
+    if (normalizedAlias) {
+      tokens.add(normalizedAlias);
+    }
+  };
+  var resolutionValue = normalizedValue.replace(/\u00d7/g, 'x');
+  var compactValue = resolutionValue.replace(/\s+/g, '');
+  var includes = function includes(text) {
+    return resolutionValue.includes(text);
+  };
+  var compactIncludes = function compactIncludes(text) {
+    return compactValue.includes(text);
+  };
+  if (includes('uhd') || includes('ultra hd') || compactIncludes('ultrahd') || /3840\s*x\s*2160/.test(resolutionValue)) {
+    addAliasToken('uhd');
+    addAliasToken('4k');
+  }
+  if (includes('dci') || /4096\s*x\s*2160/.test(resolutionValue)) {
+    addAliasToken('dci');
+    addAliasToken('4k');
+  }
+  if (compactIncludes('2048x1080') || /2048\s*x\s*1080/.test(resolutionValue) || /(?:^|[^a-z0-9])2k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('2k');
+    addAliasToken('dci');
+  }
+  if (compactIncludes('fullhd') || includes('full hd') || includes('full-hd') || includes('fhd') || includes('1080p') || /1920\s*x\s*1080/.test(resolutionValue)) {
+    addAliasToken('hd');
+    addAliasToken('fhd');
+    addAliasToken('1080p');
+  }
+  if (includes('720p') || /1280\s*x\s*720/.test(resolutionValue)) {
+    addAliasToken('hd');
+    addAliasToken('720p');
+  }
+  if (/(?:^|[^a-z0-9])6k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('6k');
+  }
+  if (/(?:^|[^a-z0-9])8k(?:[^a-z0-9]|$)/.test(resolutionValue)) {
+    addAliasToken('8k');
+  }
+  if (/(?:^|[^a-z0-9])4k(?:[^a-z0-9]|$)/.test(resolutionValue) || includes('4k')) {
+    addAliasToken('4k');
+  }
+  return Array.from(tokens);
 }
 function normalizeMatchTarget(value) {
   if (typeof value !== 'string' || !value) {
@@ -15928,20 +16325,20 @@ function findMaxFrameRateForSensor(entries, sensorTokens) {
         matchScore += 2;
         return;
       }
-      var _iterator3 = _createForOfIteratorHelper(normalizedSensorTokens),
-        _step3;
+      var _iterator4 = _createForOfIteratorHelper(normalizedSensorTokens),
+        _step4;
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var sensorToken = _step3.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var sensorToken = _step4.value;
           if (sensorToken && entryToken.includes(sensorToken)) {
             matchScore += 1;
             break;
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator3.f();
+        _iterator4.f();
       }
     });
     if (normalizedSensorLabel && normalizedEntryLabel && normalizedEntryLabel.includes(normalizedSensorLabel)) {
@@ -15974,27 +16371,25 @@ function collectFrameRateContextTokens(select) {
     return [];
   }
   if (select.multiple) {
-    var combined = [];
-    Array.prototype.slice.call(select.selectedOptions || []).forEach(function (option) {
-      var tokens = tokenizeFrameRateContext(option && option.value);
-      if (tokens && tokens.length) {
-        combined = combined.concat(tokens);
-      }
-    });
-    return combined;
+    return Array.from(select.selectedOptions || []).map(function (option) {
+      return tokenizeFrameRateContext(option && option.value);
+    }).reduce(function (acc, tokens) {
+      return tokens && tokens.length ? acc.concat(tokens) : acc;
+    }, []);
   }
   var value = typeof select.value === 'string' ? select.value : '';
   return tokenizeFrameRateContext(value);
 }
-function populateFrameRateDropdownFor(config) {
-  var options = typeof config === 'object' && config ? config : {};
-  var selected = typeof options.selected === 'string' ? options.selected : options.selected || '';
-  var recordingInput = options.recordingInput;
-  var optionsList = options.optionsList;
-  var sensorSelect = options.sensorSelect;
-  var resolutionSelect = options.resolutionSelect;
-  var aspectSelect = options.aspectSelect;
-  var hintElement = options.hintElement;
+function populateFrameRateDropdownFor() {
+  var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var _config$selected = config.selected,
+    selected = _config$selected === void 0 ? '' : _config$selected,
+    recordingInput = config.recordingInput,
+    optionsList = config.optionsList,
+    sensorSelect = config.sensorSelect,
+    resolutionSelect = config.resolutionSelect,
+    aspectSelect = config.aspectSelect,
+    hintElement = config.hintElement;
   if (!recordingInput || !optionsList) {
     return;
   }
@@ -16008,13 +16403,21 @@ function populateFrameRateDropdownFor(config) {
   var resolutionTokens = tokenizeFrameRateContext(resolutionValue);
   var aspectTokens = collectFrameRateContextTokens(aspectSelect);
   var sensorModeMaxFrameRate = findMaxFrameRateForSensor(Array.isArray(frameRateEntries) ? frameRateEntries : [], sensorTokens, sensorValue);
-  var suggestionResult = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens, aspectTokens]);
-  var suggestions = suggestionResult.values;
+  var resolutionMaxFrameRate = findMaxFrameRateForSensor(Array.isArray(frameRateEntries) ? frameRateEntries : [], resolutionTokens, recordingResolutionDropdown && recordingResolutionDropdown.value);
+  var _buildFrameRateSugges = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens, aspectTokens]),
+    suggestions = _buildFrameRateSugges.values;
   optionsList.innerHTML = '';
   var uniqueValues = new Set();
   var filteredSuggestions = [];
   var numericCandidates = [];
-  var allowedMaxFrameRate = Number.isFinite(sensorModeMaxFrameRate) ? sensorModeMaxFrameRate : null;
+  var allowedMaxCandidates = [];
+  if (Number.isFinite(sensorModeMaxFrameRate)) {
+    allowedMaxCandidates.push(sensorModeMaxFrameRate);
+  }
+  if (Number.isFinite(resolutionMaxFrameRate)) {
+    allowedMaxCandidates.push(resolutionMaxFrameRate);
+  }
+  var allowedMaxFrameRate = allowedMaxCandidates.length ? Math.min.apply(Math, allowedMaxCandidates) : null;
   suggestions.forEach(function (originalValue) {
     if (!originalValue) return;
     var value = originalValue;
@@ -16045,9 +16448,9 @@ function populateFrameRateDropdownFor(config) {
   if (currentValue && !uniqueValues.has(currentValue)) {
     var numericForList = Number.parseFloat(currentValue);
     if (!Number.isFinite(numericForList) || numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE) {
-      var existingOpt = document.createElement('option');
-      existingOpt.value = currentValue;
-      optionsList.appendChild(existingOpt);
+      var opt = document.createElement('option');
+      opt.value = currentValue;
+      optionsList.appendChild(opt);
     }
   }
   var maxCandidate = numericCandidates.reduce(function (best, entry) {
@@ -16163,8 +16566,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index19 = 0; _index19 < devices.filterOptions.length; _index19 += 1) {
-      var value = devices.filterOptions[_index19];
+    for (var _index20 = 0; _index20 < devices.filterOptions.length; _index20 += 1) {
+      var value = devices.filterOptions[_index20];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -16259,8 +16662,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index20 = 0; _index20 < opts.length; _index20 += 1) {
-    var value = opts[_index20];
+  for (var _index21 = 0; _index21 < opts.length; _index21 += 1) {
+    var value = opts[_index21];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -16277,7 +16680,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index21];
+    var value = opts[_index22];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -16298,7 +16701,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index21 = 0; _index21 < opts.length; _index21 += 1) {
+  for (var _index22 = 0; _index22 < opts.length; _index22 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -17116,8 +17519,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index22 = 0; _index22 < items.length; _index22 += 1) {
-      var _items$_index = items[_index22],
+    for (var _index23 = 0; _index23 < items.length; _index23 += 1) {
+      var _items$_index = items[_index23],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {
@@ -17274,7 +17677,7 @@ if (typeof module !== "undefined" && module.exports) {
       featureSearchEntries: featureSearchEntries,
       featureSearchDefaultOptions: featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
-      featureListElement: featureList,
+      featureSearchDropdownElement: typeof globalThis !== 'undefined' && globalThis.featureSearchDropdown ? globalThis.featureSearchDropdown : null,
       restoreFeatureSearchDefaults: restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions: updateFeatureSearchSuggestions
     },

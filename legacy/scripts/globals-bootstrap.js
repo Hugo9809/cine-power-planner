@@ -315,6 +315,31 @@ function __cineCommitGlobalValue(name, value) {
   }
   return value;
 }
+function __cineCommitGlobalNumericBinding(name, fallback) {
+  var resolved = fallback;
+  try {
+    var current = __cineResolveGlobalValue(name, fallback);
+    if (typeof current === 'number' && Number.isFinite(current)) {
+      resolved = current;
+    }
+  } catch (resolveError) {
+    void resolveError;
+    resolved = fallback;
+  }
+  try {
+    __cineCommitGlobalValue(name, resolved);
+  } catch (commitError) {
+    void commitError;
+  }
+  try {
+    if (typeof Function === 'function') {
+      Function('value', "try { if (typeof " + name + " === 'undefined') { " + name + " = value; } } catch (e) { void e; } return value;")(resolved);
+    }
+  } catch (bindError) {
+    void bindError;
+  }
+  return resolved;
+}
 var autoGearAutoPresetId = typeof autoGearAutoPresetId !== 'undefined' && typeof autoGearAutoPresetId === 'string' ? autoGearAutoPresetId : function resolveAutoGearAutoPresetId() {
   var value = __cineResolveGlobalValue('autoGearAutoPresetId', '');
   var normalized = typeof value === 'string' ? value : '';
@@ -615,7 +640,6 @@ function __cineNormalizeTemperatureUnits(candidate) {
 }
 (function ensureTemperatureUnitsBinding() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-
   var existing = null;
   try {
     existing = scope && _typeof(scope.TEMPERATURE_UNITS) === 'object' ? scope.TEMPERATURE_UNITS : null;
@@ -623,18 +647,15 @@ function __cineNormalizeTemperatureUnits(candidate) {
     void readError;
     existing = null;
   }
-
   var normalized = existing ? __cineNormalizeTemperatureUnits(existing) : __cineNormalizeTemperatureUnits({
     celsius: 'celsius',
     fahrenheit: 'fahrenheit'
   });
-
   try {
     __cineCommitGlobalValue('TEMPERATURE_UNITS', normalized);
   } catch (commitError) {
     void commitError;
   }
-
   try {
     if (typeof Function === 'function') {
       Function('value', "try { TEMPERATURE_UNITS = value; } catch (error) { try { this.TEMPERATURE_UNITS = value; } catch (assignError) { void assignError; } } return (typeof TEMPERATURE_UNITS !== 'undefined' ? TEMPERATURE_UNITS : this && this.TEMPERATURE_UNITS);").call(scope || null, normalized);
@@ -669,13 +690,8 @@ function __cineNormalizeTemperatureScenarios(candidate) {
   }
   return entries;
 }
-// Avoid redeclaring TEMPERATURE_SCENARIOS when the host marks it as
-// non-configurable. Commit the normalized value directly to the global scope so
-// later scripts can read the scenarios without triggering a duplicate binding
-// SyntaxError during startup.
 (function ensureTemperatureScenariosBinding() {
   var resolved = [];
-
   try {
     var existing = __cineResolveGlobalValue('TEMPERATURE_SCENARIOS', []);
     if (Array.isArray(existing)) {
@@ -684,33 +700,21 @@ function __cineNormalizeTemperatureScenarios(candidate) {
   } catch (resolveError) {
     void resolveError;
   }
-
   try {
     __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', resolved);
   } catch (commitError) {
     void commitError;
   }
-
   try {
     if (typeof Function === 'function') {
-      Function(
-        'value',
-        "try { this.TEMPERATURE_SCENARIOS = value; } catch (assignError) { void assignError; } return this && this.TEMPERATURE_SCENARIOS;",
-      ).call(
-        typeof globalThis !== 'undefined' && globalThis ||
-          typeof window !== 'undefined' && window ||
-          typeof self !== 'undefined' && self ||
-          typeof global !== 'undefined' && global ||
-          null,
-        resolved,
-      );
+      Function('value', "try { this.TEMPERATURE_SCENARIOS = value; } catch (assignError) { void assignError; } return this && this.TEMPERATURE_SCENARIOS;").call(typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null, resolved);
     }
   } catch (bindingError) {
     void bindingError;
   }
 })();
-var FEEDBACK_TEMPERATURE_MIN = typeof FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MIN) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', FEEDBACK_TEMPERATURE_MIN) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', -20);
-var FEEDBACK_TEMPERATURE_MAX = typeof FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MAX) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', FEEDBACK_TEMPERATURE_MAX) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', 50);
+__cineCommitGlobalNumericBinding('FEEDBACK_TEMPERATURE_MIN', -20);
+__cineCommitGlobalNumericBinding('FEEDBACK_TEMPERATURE_MAX_LIMIT', 50);
 var FOCUS_SCALE_STORAGE_KEY = typeof FOCUS_SCALE_STORAGE_KEY === 'string' && FOCUS_SCALE_STORAGE_KEY ? FOCUS_SCALE_STORAGE_KEY : __cineCommitGlobalValue('FOCUS_SCALE_STORAGE_KEY', 'cameraPowerPlanner_focusScale');
 var FOCUS_SCALE_VALUES = typeof FOCUS_SCALE_VALUES !== 'undefined' && Array.isArray(FOCUS_SCALE_VALUES) ? __cineCommitGlobalValue('FOCUS_SCALE_VALUES', FOCUS_SCALE_VALUES.slice()) : __cineCommitGlobalValue('FOCUS_SCALE_VALUES', ['metric', 'imperial']);
 var SUPPORTED_MOUNT_VOLTAGE_TYPES = typeof SUPPORTED_MOUNT_VOLTAGE_TYPES !== 'undefined' && Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) ? __cineCommitGlobalValue('SUPPORTED_MOUNT_VOLTAGE_TYPES', SUPPORTED_MOUNT_VOLTAGE_TYPES.slice()) : __cineCommitGlobalValue('SUPPORTED_MOUNT_VOLTAGE_TYPES', ['V-Mount', 'Gold-Mount', 'B-Mount']);

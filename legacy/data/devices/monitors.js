@@ -4,6 +4,7 @@
       "screenSizeInches": 7,
       "brightnessNits": 2300,
       "powerDrawWatts": 25,
+      "weight_g": 900,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -73,6 +74,7 @@
       "screenSizeInches": 7,
       "brightnessNits": 1800,
       "powerDrawWatts": 30,
+      "weight_g": 556,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -142,10 +144,11 @@
       "screenSizeInches": 7,
       "brightnessNits": 1000,
       "powerDrawWatts": 17.3,
+      "weight_g": 530,
       "power": {
         "input": {
           "voltageRange": "10-34",
-          "type": ["LEMO 2-pin"]
+          "type": ["LEMO 2-pin", "Dual Sony L-Series"]
         }
       },
       "wirelessTx": false,
@@ -158,6 +161,29 @@
         "portType": "HDMI"
       }, {
         "portType": "3G-SDI"
+      }]
+    },
+    "Atomos Sumo 19SE": {
+      "screenSizeInches": 19,
+      "brightnessNits": 1200,
+      "powerDrawWatts": 75,
+      "weight_g": 5450,
+      "power": {
+        "input": {
+          "voltageRange": "12-16.8",
+          "type": ["4-pin XLR (Dual)", "V-Mount/Gold Mount (Optional Plate)"]
+        }
+      },
+      "wirelessTx": false,
+      "videoInputs": [{
+        "portType": "HDMI 2.0"
+      }, {
+        "portType": "12G-SDI (x4)"
+      }],
+      "videoOutputs": [{
+        "portType": "HDMI 2.0"
+      }, {
+        "portType": "12G-SDI"
       }]
     },
     "SmallHD Indie 7 Bolt 4K TX": {
@@ -230,6 +256,7 @@
       "screenSizeInches": 5,
       "brightnessNits": 3000,
       "powerDrawWatts": 31.5,
+      "weight_g": 505,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -321,6 +348,7 @@
       "screenSizeInches": 5,
       "brightnessNits": 2000,
       "powerDrawWatts": 24,
+      "weight_g": 503,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -390,6 +418,7 @@
       "screenSizeInches": 5,
       "brightnessNits": 1000,
       "powerDrawWatts": 17.3,
+      "weight_g": 408,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -477,6 +506,7 @@
       "screenSizeInches": 5.5,
       "brightnessNits": 1000,
       "powerDrawWatts": 16,
+      "weight_g": 400,
       "power": {
         "input": {
           "voltageRange": "7-16",
@@ -502,6 +532,7 @@
       "screenSizeInches": 5.5,
       "brightnessNits": 2200,
       "powerDrawWatts": 16,
+      "weight_g": 351,
       "power": {
         "input": {
           "voltageRange": "7-24",
@@ -597,9 +628,10 @@
       "screenSizeInches": 5,
       "brightnessNits": 1000,
       "powerDrawWatts": 22,
+      "weight_g": 320,
       "power": {
         "input": {
-          "voltageRange": "6-16",
+          "voltageRange": "6.2-16.8",
           "type": ["DC Barrel", "NP-F"]
         }
       },
@@ -666,6 +698,7 @@
       "screenSizeInches": 7,
       "brightnessNits": 2200,
       "powerDrawWatts": 7,
+      "weight_g": 577,
       "power": {
         "input": {
           "voltageRange": "6-16",
@@ -690,7 +723,7 @@
       "powerDrawWatts": 33,
       "power": {
         "input": {
-          "voltageRange": "6-16",
+          "voltageRange": "6.2-16.8",
           "type": ["DC Barrel", "NP-F"]
         }
       },
@@ -711,6 +744,7 @@
       "screenSizeInches": 6,
       "brightnessNits": 450,
       "powerDrawWatts": 11,
+      "weight_g": 175,
       "power": {
         "input": {
           "voltageRange": "7-18",
@@ -736,6 +770,7 @@
       "screenSizeInches": 6,
       "brightnessNits": 450,
       "powerDrawWatts": 9,
+      "weight_g": 235,
       "power": {
         "input": {
           "voltageRange": "7-18",
@@ -757,6 +792,7 @@
       "screenSizeInches": 5.5,
       "brightnessNits": 500,
       "powerDrawWatts": 9,
+      "weight_g": 245,
       "power": {
         "input": {
           "voltageRange": "7-18",
@@ -778,6 +814,7 @@
       "screenSizeInches": 7,
       "brightnessNits": 500,
       "powerDrawWatts": 12,
+      "weight_g": 320,
       "power": {
         "input": {
           "voltageRange": "7-18",
@@ -799,9 +836,10 @@
       "screenSizeInches": 5,
       "brightnessNits": 500,
       "powerDrawWatts": 12,
+      "weight_g": 420,
       "power": {
         "input": {
-          "voltageRange": "12",
+          "voltageRange": "12-34",
           "type": ["Mini XLR 3-pin"]
         }
       },
@@ -819,6 +857,7 @@
       "screenSizeInches": 5.5,
       "brightnessNits": 450,
       "powerDrawWatts": 9,
+      "weight_g": 340,
       "power": {
         "input": {
           "voltageRange": "6.8-12",
@@ -841,6 +880,7 @@
       "screenSizeInches": 7,
       "brightnessNits": 2200,
       "powerDrawWatts": 13,
+      "weight_g": 748,
       "power": {
         "input": {
           "voltageRange": "10-34",
@@ -881,9 +921,10 @@
       "screenSizeInches": 7,
       "brightnessNits": 3600,
       "powerDrawWatts": 34,
+      "weight_g": 800,
       "power": {
         "input": {
-          "voltageRange": "6-17",
+          "voltageRange": "6-34",
           "type": ["LEMO 2-pin"]
         }
       },
@@ -909,6 +950,29 @@
       "wirelessTx": false,
       "videoInputs": [],
       "videoOutputs": []
+    },
+    "Atomos Shogun Connect": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2000,
+      "powerDrawWatts": 25,
+      "weight_g": 730,
+      "power": {
+        "input": {
+          "voltageRange": "6.2-16.8",
+          "type": ["DC Barrel", "NP-F"]
+        }
+      },
+      "wirelessTx": false,
+      "videoInputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "12G-SDI"
+      }],
+      "videoOutputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "12G-SDI"
+      }]
     }
   };
   if (typeof registerDevice === 'function') {

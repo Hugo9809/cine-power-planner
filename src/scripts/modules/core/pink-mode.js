@@ -1461,9 +1461,32 @@
             .then(templates => {
               pinkModeAnimatedIconTemplates = templates;
               updatePinkModeAnimatedIconTemplateRotation(templates);
+              console.log('[PinkMode] Loaded', templates.length, 'icon templates in background');
               return templates;
             });
           return pinkModeAnimatedIconTemplatesPromise;
+        }
+
+        // Start loading icons in the background immediately, but don't block anything
+        function startPinkModeIconPreload() {
+          if (typeof window === 'undefined') {
+            return;
+          }
+          // Wait for the page to be interactive before starting the preload
+          const startLoad = () => {
+            // Use setTimeout to ensure this happens after current execution
+            setTimeout(() => {
+              loadPinkModeAnimatedIconTemplates().catch(error => {
+                console.warn('[PinkMode] Background icon preload failed', error);
+              });
+            }, 100);
+          };
+
+          if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            startLoad();
+          } else {
+            document.addEventListener('DOMContentLoaded', startLoad, { once: true });
+          }
         }
 
         function selectPinkModeAnimatedIconTemplate(availableTemplates) {
@@ -2990,6 +3013,7 @@
           startPinkModeAnimatedIcons: support.startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons: support.stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain: support.triggerPinkModeIconRain,
+          startPinkModeIconPreload,
           getPinkModeIconRotationTimer: support.getPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: support.setPinkModeIconRotationTimer,
           getPinkModeIconIndex: support.getPinkModeIconIndex,
@@ -3090,6 +3114,16 @@
       globalScope[targetName] = existing;
     } catch (assignError) {
       void assignError;
+    }
+
+    // Start preloading icons in the background (non-blocking)
+    if (exportsMap['modules/core/pink-mode'] &&
+      exportsMap['modules/core/pink-mode'].startPinkModeIconPreload) {
+      try {
+        exportsMap['modules/core/pink-mode'].startPinkModeIconPreload();
+      } catch (preloadError) {
+        console.warn('[PinkMode] Could not start icon preload', preloadError);
+      }
     }
   }
 })();

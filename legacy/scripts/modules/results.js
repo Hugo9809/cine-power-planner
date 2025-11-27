@@ -2503,6 +2503,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var batteryComparisonSection = resolveElementFromOptions(opts, 'batteryComparisonSection', 'batteryComparison', 'batteryComparisonSection');
     var batteryTableElem = resolveElementFromOptions(opts, 'batteryTableElem', 'batteryTable', 'batteryTableElem');
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
+    var heroRuntimeTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroRuntime') : null;
+    var heroAvailablePowerTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroAvailablePower') : null;
+    var heroBatteryLabelTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroBatteryLabel') : null;
+    var heroCurrent144Target = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroCurrent144') : null;
+    var heroCurrent12Target = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroCurrent12') : null;
+    var heroBatteryCountTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroBatteryCount') : null;
     runtimeFeedbackState.elements.cameraSelect = cameraSelect;
     runtimeFeedbackState.elements.monitorSelect = monitorSelect;
     runtimeFeedbackState.elements.videoSelect = videoSelect;
@@ -2928,6 +2934,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void error;
         }
       }
+      if (heroRuntimeTarget) {
+        heroRuntimeTarget.textContent = '–';
+      }
       if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
         try {
           batteryCountTarget.textContent = '–';
@@ -3001,12 +3010,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void error;
         }
       }
+      if (heroCurrent144Target) {
+        heroCurrent144Target.textContent = "".concat(totalCurrentHigh.toFixed(2), " A");
+      }
       if (totalCurrent12Target && typeof totalCurrent12Target.textContent !== 'undefined') {
         try {
           totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
         } catch (error) {
           void error;
         }
+      }
+      if (heroCurrent12Target) {
+        heroCurrent12Target.textContent = "".concat(totalCurrentLow.toFixed(2), " A");
       }
       if (totalWatt === 0) {
         hours = Infinity;
@@ -3017,6 +3032,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void error;
           }
         }
+        if (heroRuntimeTarget) {
+          heroRuntimeTarget.textContent = '∞';
+        }
       } else {
         hours = capacityWh / totalWatt;
         if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
@@ -3025,6 +3043,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           } catch (error) {
             void error;
           }
+        }
+        if (heroRuntimeTarget) {
+          var h = Math.floor(hours);
+          var m = Math.round((hours - h) * 60);
+          heroRuntimeTarget.textContent = "".concat(h, "h ").concat(m, " m");
         }
       }
       setLastRuntimeHoursFn(hours);
@@ -3041,98 +3064,101 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void error;
         }
       }
-      setStatusMessageFn(pinWarnTarget, '');
-      setStatusMessageFn(dtapWarnTarget, '');
-      var pinSeverity = '';
-      var dtapSeverity = '';
-      if (hasPinLimit && totalCurrentLow > maxPinA) {
-        var pinExceeded = resolveText('warnPinExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
-        setStatusMessageFn(pinWarnTarget, pinExceeded);
-        pinSeverity = 'danger';
-      } else if (hasPinLimit && totalCurrentLow > maxPinA * 0.8) {
-        var pinNear = resolveText('warnPinNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
-        setStatusMessageFn(pinWarnTarget, pinNear);
-        pinSeverity = 'note';
-      }
-      if (!bMountCam) {
-        if (hasDtapRating && totalCurrentLow > maxDtapA) {
-          var dtapExceeded = resolveText('warnDTapExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
-          setStatusMessageFn(dtapWarnTarget, dtapExceeded);
-          dtapSeverity = 'danger';
-        } else if (hasDtapRating && totalCurrentLow > maxDtapA * 0.8) {
-          var dtapNear = resolveText('warnDTapNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
-          setStatusMessageFn(dtapWarnTarget, dtapNear);
-          dtapSeverity = 'note';
-        }
-      }
-      var pinsInsufficient = hasPinLimit && totalCurrentLow > maxPinA;
-      var dtapAllowed = !bMountCam && hasDtapRating;
-      var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
-      var batteryValue = typeof battery === 'string' ? battery.trim() : '';
-      var hasBatterySelection = batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
-      if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
-        var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
-        var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
-        if (showPowerWarningDialogFn) {
-          try {
-            showPowerWarningDialogFn({
-              batteryName: labelText,
-              current: totalCurrentLow,
-              hasPinLimit: hasPinLimit,
-              pinLimit: hasPinLimit ? maxPinA : null,
-              hasDtapRating: hasDtapRating,
-              dtapLimit: hasDtapRating ? maxDtapA : null,
-              dtapAllowed: dtapAllowed
-            });
-          } catch (error) {
-            safeWarn('cineResults.updateCalculations could not show power warning dialog.', error);
-          }
-        }
-      } else if (closePowerWarningDialogFn) {
-        try {
-          closePowerWarningDialogFn();
-        } catch (error) {
-          safeWarn('cineResults.updateCalculations could not close power warning dialog.', error);
-        }
-      }
-      if (hasPinLimit && pinWarnTarget && pinWarnTarget.textContent === '') {
-        var pinOk = resolveText('pinOk').replace('{max}', String(maxPinA));
-        setStatusMessageFn(pinWarnTarget, pinOk);
-        setStatusLevelFn(pinWarnTarget, 'success');
-      } else if (hasPinLimit) {
-        setStatusLevelFn(pinWarnTarget, pinSeverity || 'warning');
-      } else {
-        setStatusLevelFn(pinWarnTarget, null);
-      }
-      if (!bMountCam) {
-        if (hasDtapRating && dtapWarnTarget && dtapWarnTarget.textContent === '') {
-          var dtapOk = resolveText('dtapOk').replace('{max}', String(maxDtapA));
-          setStatusMessageFn(dtapWarnTarget, dtapOk);
-          setStatusLevelFn(dtapWarnTarget, 'success');
-        } else {
-          setStatusLevelFn(dtapWarnTarget, dtapSeverity || 'warning');
-        }
-      } else {
-        setStatusMessageFn(dtapWarnTarget, '');
-        setStatusLevelFn(dtapWarnTarget, null);
-      }
-      var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {
-        current: totalCurrentLow,
-        pinLimit: maxPinA,
-        dtapLimit: maxDtapA,
-        hasDtapRating: hasDtapRating,
-        dtapAllowed: dtapAllowed,
-        bMountCam: bMountCam
-      });
-      if (resultsPlainSummaryNoteTarget) {
-        try {
-          resultsPlainSummaryNoteTarget.textContent = outputsSummaryText;
-        } catch (error) {
-          void error;
-        }
+      if (heroBatteryCountTarget) {
+        heroBatteryCountTarget.textContent = String(batteriesNeeded);
       }
     }
-    if (batteryComparisonSection && batteryComparisonSection.style) {
+    setStatusMessageFn(pinWarnTarget, '');
+    setStatusMessageFn(dtapWarnTarget, '');
+    var pinSeverity = '';
+    var dtapSeverity = '';
+    if (hasPinLimit && totalCurrentLow > maxPinA) {
+      var pinExceeded = resolveText('warnPinExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
+      setStatusMessageFn(pinWarnTarget, pinExceeded);
+      pinSeverity = 'danger';
+    } else if (hasPinLimit && totalCurrentLow > maxPinA * 0.8) {
+      var pinNear = resolveText('warnPinNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
+      setStatusMessageFn(pinWarnTarget, pinNear);
+      pinSeverity = 'note';
+    }
+    if (!bMountCam) {
+      if (hasDtapRating && totalCurrentLow > maxDtapA) {
+        var dtapExceeded = resolveText('warnDTapExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
+        setStatusMessageFn(dtapWarnTarget, dtapExceeded);
+        dtapSeverity = 'danger';
+      } else if (hasDtapRating && totalCurrentLow > maxDtapA * 0.8) {
+        var dtapNear = resolveText('warnDTapNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
+        setStatusMessageFn(dtapWarnTarget, dtapNear);
+        dtapSeverity = 'note';
+      }
+    }
+    var pinsInsufficient = hasPinLimit && totalCurrentLow > maxPinA;
+    var dtapAllowed = !bMountCam && hasDtapRating;
+    var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
+    var batteryValue = typeof battery === 'string' ? battery.trim() : '';
+    var hasBatterySelection = batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
+    if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
+      var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
+      var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
+      if (showPowerWarningDialogFn) {
+        try {
+          showPowerWarningDialogFn({
+            batteryName: labelText,
+            current: totalCurrentLow,
+            hasPinLimit: hasPinLimit,
+            pinLimit: hasPinLimit ? maxPinA : null,
+            hasDtapRating: hasDtapRating,
+            dtapLimit: hasDtapRating ? maxDtapA : null,
+            dtapAllowed: dtapAllowed
+          });
+        } catch (error) {
+          safeWarn('cineResults.updateCalculations could not show power warning dialog.', error);
+        }
+      }
+    } else if (closePowerWarningDialogFn) {
+      try {
+        closePowerWarningDialogFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not close power warning dialog.', error);
+      }
+    }
+    if (hasPinLimit && pinWarnTarget && pinWarnTarget.textContent === '') {
+      var pinOk = resolveText('pinOk').replace('{max}', String(maxPinA));
+      setStatusMessageFn(pinWarnTarget, pinOk);
+      setStatusLevelFn(pinWarnTarget, 'success');
+    } else if (hasPinLimit) {
+      setStatusLevelFn(pinWarnTarget, pinSeverity || 'warning');
+    } else {
+      setStatusLevelFn(pinWarnTarget, null);
+    }
+    if (!bMountCam) {
+      if (hasDtapRating && dtapWarnTarget && dtapWarnTarget.textContent === '') {
+        var dtapOk = resolveText('dtapOk').replace('{max}', String(maxDtapA));
+        setStatusMessageFn(dtapWarnTarget, dtapOk);
+        setStatusLevelFn(dtapWarnTarget, 'success');
+      } else {
+        setStatusLevelFn(dtapWarnTarget, dtapSeverity || 'warning');
+      }
+    } else {
+      setStatusMessageFn(dtapWarnTarget, '');
+      setStatusLevelFn(dtapWarnTarget, null);
+    }
+    var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {
+      current: totalCurrentLow,
+      pinLimit: maxPinA,
+      dtapLimit: maxDtapA,
+      hasDtapRating: hasDtapRating,
+      dtapAllowed: dtapAllowed,
+      bMountCam: bMountCam
+    });
+    if (resultsPlainSummaryNoteTarget) {
+      try {
+        resultsPlainSummaryNoteTarget.textContent = outputsSummaryText;
+      } catch (error) {
+        void error;
+      }
+    }
+    if (typeof batteryComparisonSection !== 'undefined' && batteryComparisonSection && batteryComparisonSection.style) {
       batteryComparisonSection.style.display = totalWatt > 0 ? 'block' : 'none';
     }
     if (batteryTableElem && totalWatt > 0 && devices.batteries) {
@@ -3463,15 +3489,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
       }
     }
-    if (refreshGearListIfVisibleFn) {
-      try {
-        refreshGearListIfVisibleFn();
-      } catch (error) {
-        safeWarn('cineResults.updateCalculations could not refresh gear list.', error);
-      }
-    }
   }
-  runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
   function setupRuntimeFeedback(options) {
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
@@ -3977,6 +3995,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     setupRuntimeFeedback: setupRuntimeFeedback,
     renderTemperatureNote: renderTemperatureNote
   };
+  if (typeof runtimeFeedbackState !== 'undefined' && runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+    runtimeFeedbackState.dependencies.updateCalculations = updateCalculations;
+  }
   freezeDeep(resultsAPI);
   if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
     runtimeFeedbackState.dependencies.renderTemperatureNote = renderTemperatureNote;

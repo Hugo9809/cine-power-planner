@@ -593,11 +593,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var pinkModeIconRotationTimer = null;
     var pinkModeIconIndex = 0;
     var pinkModeIconPressCount = 0;
+    var pinkModeIconPressTimestamps = [];
     var pinkModeIconPressResetTimer = null;
     var PINK_MODE_ICON_ANIMATION_RESET_DELAY = context.pinkModeIconAnimationResetDelay || 400;
     var PINK_MODE_ICON_ANIMATION_CLASS = context.pinkModeIconAnimationClass || 'pink-mode-icon-animate';
     var PINK_MODE_ICON_INTERVAL_MS = context.pinkModeIconIntervalMs || 1500;
     var PINK_MODE_ICON_PRESS_RESET_MS = typeof context.pinkModeIconPressResetMs === 'number' && context.pinkModeIconPressResetMs >= 0 ? context.pinkModeIconPressResetMs : 0;
+    var PINK_MODE_ICON_PRESS_BURST_WINDOW_MS = typeof context.pinkModeIconPressBurstWindowMs === 'number' && context.pinkModeIconPressBurstWindowMs >= 0 ? context.pinkModeIconPressBurstWindowMs : 1200;
     var pinkModeEnabled = false;
     var settingsInitialPinkMode = false;
     var settingsInitialTemperatureUnit = 'celsius';
@@ -1258,6 +1260,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         pinkModeIconPressResetTimer = setTimeout(function () {
           pinkModeIconPressResetTimer = null;
           pinkModeIconPressCount = 0;
+          pinkModeIconPressTimestamps.length = 0;
         }, PINK_MODE_ICON_PRESS_RESET_MS);
         if (pinkModeIconPressResetTimer && typeof pinkModeIconPressResetTimer.unref === 'function') {
           pinkModeIconPressResetTimer.unref();
@@ -1270,6 +1273,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function resetPinkModeIconPressCount() {
       pinkModeIconPressCount = 0;
       clearPinkModeIconPressResetTimer();
+      pinkModeIconPressTimestamps.length = 0;
+    }
+    function recordPinkModeIconPressTimestamp() {
+      var now = Date.now();
+      pinkModeIconPressTimestamps.push(now);
+      var burstWindow = Math.max(PINK_MODE_ICON_PRESS_BURST_WINDOW_MS, 0);
+      if (burstWindow > 0) {
+        var cutoff = now - burstWindow;
+        while (pinkModeIconPressTimestamps.length && pinkModeIconPressTimestamps[0] < cutoff) {
+          pinkModeIconPressTimestamps.shift();
+        }
+      }
+      return pinkModeIconPressTimestamps.length;
     }
     function triggerPinkModeIconRain() {
       if (typeof icons.triggerPinkModeIconRain === 'function') {
@@ -1281,7 +1297,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     function handlePinkModeIconPress() {
-      pinkModeIconPressCount += 1;
+      pinkModeIconPressCount = recordPinkModeIconPressTimestamp();
       if (PINK_MODE_ICON_PRESS_RESET_MS > 0) {
         schedulePinkModeIconPressReset();
       }

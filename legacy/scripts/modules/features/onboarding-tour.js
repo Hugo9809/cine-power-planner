@@ -117,6 +117,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var PRIMARY_STORAGE_KEY = 'cinePowerPlanner_onboardingTutorial';
   var LEGACY_STORAGE_KEYS = ['cameraPowerPlanner_onboardingTutorial'];
   var STORAGE_KEYS = [PRIMARY_STORAGE_KEY].concat(LEGACY_STORAGE_KEYS);
+  var SKIP_STATUS_KEY = "".concat(PRIMARY_STORAGE_KEY, ":skip");
+  var WINDOW_NAME_SKIP_TOKEN = "".concat(SKIP_STATUS_KEY, "=true");
   var STORAGE_VERSION = 2;
   var OVERLAY_ID = 'onboardingTutorialOverlay';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
@@ -383,6 +385,102 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return storages;
   }
+  function readWindowNameSkipFlag() {
+    try {
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.name === 'string') {
+        return GLOBAL_SCOPE.name.indexOf(WINDOW_NAME_SKIP_TOKEN) !== -1;
+      }
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
+  function writeWindowNameSkipFlag(skipped) {
+    try {
+      if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE.name === 'undefined') {
+        return false;
+      }
+      var rawName = typeof GLOBAL_SCOPE.name === 'string' ? GLOBAL_SCOPE.name : '';
+      var tokens = rawName.split(';').map(function (token) {
+        return token.trim();
+      }).filter(Boolean).filter(function (token) {
+        return token.indexOf("".concat(SKIP_STATUS_KEY, "=")) !== 0;
+      });
+      if (skipped) {
+        tokens.push(WINDOW_NAME_SKIP_TOKEN);
+      }
+      var nextName = tokens.join('; ');
+      GLOBAL_SCOPE.name = nextName;
+      return true;
+    } catch (error) {
+      void error;
+      return false;
+    }
+  }
+  function readSkipStatusPreference() {
+    var storages = collectStorageCandidates();
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage || typeof storage.getItem !== 'function') {
+        continue;
+      }
+      try {
+        var value = storage.getItem(SKIP_STATUS_KEY);
+        if (value === null || typeof value === 'undefined') {
+          continue;
+        }
+        if (value === true || value === 'true') {
+          return true;
+        }
+        if (value === false || value === 'false') {
+          return false;
+        }
+        try {
+          var parsed = JSON.parse(value);
+          if (parsed === true || parsed === false) {
+            return parsed;
+          }
+        } catch (parseError) {
+          void parseError;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (readWindowNameSkipFlag()) {
+      return true;
+    }
+    return null;
+  }
+  function persistSkipStatus(skipped) {
+    var storages = collectStorageCandidates();
+    var wrote = false;
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      if (skipped === false && typeof storage.removeItem === 'function') {
+        try {
+          storage.removeItem(SKIP_STATUS_KEY);
+          wrote = true;
+          continue;
+        } catch (removeError) {
+          void removeError;
+        }
+      }
+      if (typeof storage.setItem === 'function') {
+        try {
+          storage.setItem(SKIP_STATUS_KEY, skipped ? 'true' : 'false');
+          wrote = true;
+        } catch (setError) {
+          void setError;
+        }
+      }
+    }
+    var updatedWindowName = writeWindowNameSkipFlag(Boolean(skipped));
+    return wrote || updatedWindowName;
+  }
   var storedStateCache = null;
   var storedStateCacheRaw = null;
   var storedStateCacheSource = null;
@@ -489,7 +587,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'projectRequirementsBrief', 'projectRequirementsCrew', 'projectRequirementsLogistics', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'projectRequirementsAccess', 'projectRequirementsBrief', 'projectRequirementsCrew', 'projectRequirementsLogistics', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   function resolveOwnGearAccessHighlightSelectors() {
     if (!DOCUMENT) {
       return [];
@@ -533,10 +631,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         selectors.push(selector);
       }
     };
-    if (ownGearDialogRef) {
+    if (ownGearDialogRef && typeof isOwnGearDialogVisible === 'function') {
       var dialogVisible = false;
       try {
-        dialogVisible = evaluateOwnGearOpenState();
+        dialogVisible = isOwnGearDialogVisible();
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not determine Own Gear dialog highlight state.', error);
       }
@@ -664,21 +762,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       title: 'Add your first owned device',
       body: 'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.'
     },
+    projectRequirementsAccess: {
+      title: 'Open Project Requirements from Generate',
+      body: 'Close the Own Gear dialog with its footer button, then press Generate Gear List and Project Requirements to open the requirements form yourself. This keeps the workflow clear and confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.'
+    },
     projectRequirementsBrief: {
       title: 'Capture the project brief',
-      body: 'Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and prepare the next sections.'
+      body: 'Open the Project Requirements dialog from Generate Gear List and Project Requirements, then document production company, address, rental preferences, deliverables and schedule notes. These entries auto-fill rental-ready PDFs, stay cached offline and seed the next sections.'
     },
     projectRequirementsCrew: {
       title: 'Map crew coverage and contacts',
-      body: 'Populate Crew, Prep, Shooting and Return rows with names, roles and coverage notes. Link saved Contacts, add emergency details and duplicate rows when multiple days share assignments so exports show who is on set and when.'
+      body: 'Populate Crew, Prep, Shooting and Return rows with names, roles and coverage notes. Link saved Contacts, flag emergency details and duplicate rows when multiple days share the same assignments. Everything syncs to the saved project so exports list who is on set and when.'
     },
     projectRequirementsLogistics: {
       title: 'Log lenses, rigging and monitoring plans',
-      body: 'Work through camera specs, the lens workflow, rigging scenarios, storage/media counts, matte box preferences and monitoring layouts. These entries feed automatic gear rules and storage math so the generated checklist reflects the full shoot plan.'
+      body: 'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.'
     },
     generateGearAndRequirements: {
       title: 'Save and rebuild the outputs',
-      body: 'Press OK inside the Project Requirements dialog to store every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current.'
+      body: 'Press OK inside the Project Requirements dialog to save every entry, regenerate the requirements summary and rebuild the categorized gear list. The planner snapshots the result with the active project so exports, backups and shares stay current.'
     },
     autoGearRulesAccess: {
       title: 'Open Automatic Gear Rules',
@@ -691,10 +793,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     autoGearRulesCreate: {
       title: 'Add a new automatic gear rule',
       body: 'Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups.'
-    },
-    projectRequirements: {
-      title: 'Refine project requirements boxes',
-      body: 'Review the regenerated Project Requirements summary beside the gear list. Confirm the brief, crew coverage and logistics boxes mirror the data you just saved, then rerun exports or backups so downstream teams get the updated context with every share.'
     },
     gearList: {
       title: 'Audit the generated gear list',
@@ -1045,7 +1143,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
-
   function createProjectDialogSubmitRequirement() {
     var selector = '#projectForm';
     return {
@@ -1055,21 +1152,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       attach: function attach(context) {
         var form = getElement(selector);
         if (!form) {
-          if (context && typeof context.complete === 'function') {
+          if (typeof context.complete === 'function') {
             context.complete();
           }
           return null;
         }
-        if (context && typeof context.incomplete === 'function') {
+        if (typeof context.incomplete === 'function') {
           context.incomplete();
         }
         var handler = function handler() {
-          if (context && typeof context.complete === 'function') {
+          if (typeof context.complete === 'function') {
             context.complete();
           }
         };
         form.addEventListener('submit', handler);
-        return function detachSubmitRequirement() {
+        return function () {
           try {
             form.removeEventListener('submit', handler);
           } catch (error) {
@@ -1218,6 +1315,101 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
+  function createProjectRequirementsAccessRequirement() {
+    return {
+      check: function check() {
+        return !evaluateOwnGearOpenState() && isProjectDialogVisible();
+      },
+      attach: function attach(_ref2) {
+        var complete = _ref2.complete,
+          incomplete = _ref2.incomplete;
+        var removers = [];
+        var evaluate = function evaluate() {
+          if (!evaluateOwnGearOpenState() && isProjectDialogVisible()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+        var ownGearDialog = getElement('#ownGearDialog');
+        if (ownGearDialog) {
+          var handleOwnGearEvent = function handleOwnGearEvent() {
+            setTimeout(evaluate, 75);
+          };
+          ownGearDialog.addEventListener('close', handleOwnGearEvent);
+          ownGearDialog.addEventListener('cancel', handleOwnGearEvent);
+          removers.push(function () {
+            ownGearDialog.removeEventListener('close', handleOwnGearEvent);
+            ownGearDialog.removeEventListener('cancel', handleOwnGearEvent);
+          });
+          if (typeof MutationObserver === 'function') {
+            try {
+              var observer = new MutationObserver(function () {
+                evaluate();
+              });
+              observer.observe(ownGearDialog, {
+                attributes: true,
+                attributeFilter: ['open', 'hidden', 'aria-hidden']
+              });
+              removers.push(function () {
+                observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe Own Gear dialog state for project requirements access.', error);
+            }
+          }
+        }
+        var projectDialog = getElement('#projectDialog');
+        if (projectDialog) {
+          var handleProjectDialogEvent = function handleProjectDialogEvent() {
+            setTimeout(evaluate, 75);
+          };
+          projectDialog.addEventListener('close', handleProjectDialogEvent);
+          projectDialog.addEventListener('cancel', handleProjectDialogEvent);
+          removers.push(function () {
+            projectDialog.removeEventListener('close', handleProjectDialogEvent);
+            projectDialog.removeEventListener('cancel', handleProjectDialogEvent);
+          });
+          if (typeof MutationObserver === 'function') {
+            try {
+              var _observer = new MutationObserver(function () {
+                evaluate();
+              });
+              _observer.observe(projectDialog, {
+                attributes: true,
+                attributeFilter: ['open', 'hidden', 'aria-hidden']
+              });
+              removers.push(function () {
+                _observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe project dialog state for requirements access.', error);
+            }
+          }
+        }
+        var generateButton = getElement('#generateGearListBtn');
+        if (generateButton) {
+          var handleGenerateClick = function handleGenerateClick() {
+            setTimeout(evaluate, 150);
+          };
+          generateButton.addEventListener('click', handleGenerateClick);
+          removers.push(function () {
+            generateButton.removeEventListener('click', handleGenerateClick);
+          });
+        }
+        evaluate();
+        return function () {
+          for (var index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach project requirements access requirement.', error);
+            }
+          }
+        };
+      }
+    };
+  }
   function hasOwnGearListEntries() {
     var list = getElement('#ownGearList');
     if (list && typeof list.querySelector === 'function') {
@@ -1237,9 +1429,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       check: function check() {
         return hasOwnGearListEntries();
       },
-      attach: function attach(_ref2) {
-        var complete = _ref2.complete,
-          incomplete = _ref2.incomplete;
+      attach: function attach(_ref3) {
+        var complete = _ref3.complete,
+          incomplete = _ref3.incomplete;
         var list = getElement('#ownGearList');
         var emptyState = getElement('#ownGearEmptyState');
         var evaluate = function evaluate() {
@@ -1321,6 +1513,213 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               emptyObserver.disconnect();
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not disconnect Own Gear empty state observer.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  function hasProjectCrewRows() {
+    var crewSelectors = ['#crewContainer .person-row', '#prepContainer .period-row', '#shootContainer .period-row', '#returnContainer .period-row'];
+    for (var index = 0; index < crewSelectors.length; index += 1) {
+      var selector = crewSelectors[index];
+      if (!selector) {
+        continue;
+      }
+      try {
+        if (DOCUMENT.querySelector(selector)) {
+          return true;
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not query crew selector.', error);
+      }
+    }
+    return false;
+  }
+  function createProjectCrewRequirement() {
+    var evaluate = function evaluate() {
+      return hasProjectCrewRows();
+    };
+    return {
+      check: function check() {
+        return evaluate();
+      },
+      attach: function attach(context) {
+        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () {};
+        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () {};
+        var projectForm = getElement('#projectForm');
+        if (!projectForm) {
+          complete();
+          return null;
+        }
+        var evaluateAndDispatch = function evaluateAndDispatch() {
+          if (evaluate()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+        var containers = ['#crewContainer', '#prepContainer', '#shootContainer', '#returnContainer'];
+        var addButtons = ['#addPersonBtn', '#addPrepBtn', '#addShootBtn', '#addReturnBtn'];
+        var removers = [];
+        var _loop4 = function _loop4() {
+          var container = getElement(containers[index]);
+          if (!container) {
+            return 1;
+          }
+          var handleInput = function handleInput() {
+            evaluateAndDispatch();
+          };
+          container.addEventListener('input', handleInput);
+          container.addEventListener('change', handleInput);
+          removers.push(function () {
+            container.removeEventListener('input', handleInput);
+          });
+          removers.push(function () {
+            container.removeEventListener('change', handleInput);
+          });
+          if (typeof MutationObserver === 'function') {
+            try {
+              var observer = new MutationObserver(function () {
+                evaluateAndDispatch();
+              });
+              observer.observe(container, {
+                childList: true,
+                subtree: true
+              });
+              removers.push(function () {
+                observer.disconnect();
+              });
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not observe crew container.', error);
+            }
+          }
+        };
+        for (var index = 0; index < containers.length; index += 1) {
+          if (_loop4()) continue;
+        }
+        var _loop5 = function _loop5() {
+          var button = getElement(addButtons[_index4]);
+          if (!button) {
+            return 1;
+          }
+          var handleClick = function handleClick() {
+            setTimeout(evaluateAndDispatch, 120);
+          };
+          button.addEventListener('click', handleClick);
+          removers.push(function () {
+            button.removeEventListener('click', handleClick);
+          });
+        };
+        for (var _index4 = 0; _index4 < addButtons.length; _index4 += 1) {
+          if (_loop5()) continue;
+        }
+        evaluateAndDispatch();
+        return function () {
+          for (var _index5 = 0; _index5 < removers.length; _index5 += 1) {
+            try {
+              removers[_index5]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach crew requirement listener.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  function hasProjectLogisticsEntry() {
+    var selectors = ['#deliveryResolution', '#recordingResolution', '#sensorMode', '#codec', '#recordingFrameRate', '#lensManufacturer', '#lensSeries', '#cameraHandle', '#mattebox', '#filter', '#monitoringConfiguration', '#frameGuides', '#videoDistribution', '#storageNeedsContainer .storage-quantity', '#storageNeedsContainer .storage-type', '#storageNeedsContainer .storage-variant', '#storageNeedsContainer .storage-notes'];
+    for (var index = 0; index < selectors.length; index += 1) {
+      var selector = selectors[index];
+      if (!selector) {
+        continue;
+      }
+      var nodes = [];
+      try {
+        nodes = DOCUMENT.querySelectorAll(selector);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not query logistics selector.', error);
+        nodes = [];
+      }
+      if (!nodes || nodes.length === 0) {
+        continue;
+      }
+      for (var nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
+        var node = nodes[nodeIndex];
+        if (!node) {
+          continue;
+        }
+        if (node.multiple) {
+          if (node.selectedOptions && node.selectedOptions.length > 0) {
+            return true;
+          }
+          continue;
+        }
+        if (node.type === 'number') {
+          var numericValue = Number(node.value);
+          if (!Number.isNaN(numericValue) && node.value !== '') {
+            return true;
+          }
+          continue;
+        }
+        var value = getFieldValue(node);
+        if (typeof value === 'string' && value.trim().length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  function createProjectLogisticsRequirement() {
+    return {
+      check: function check() {
+        return hasProjectLogisticsEntry();
+      },
+      attach: function attach(context) {
+        var complete = typeof (context === null || context === void 0 ? void 0 : context.complete) === 'function' ? context.complete : function () {};
+        var incomplete = typeof (context === null || context === void 0 ? void 0 : context.incomplete) === 'function' ? context.incomplete : function () {};
+        var projectForm = getElement('#projectForm');
+        if (!projectForm) {
+          complete();
+          return null;
+        }
+        var evaluateAndDispatch = function evaluateAndDispatch() {
+          if (hasProjectLogisticsEntry()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+        var handleFieldEvent = function handleFieldEvent() {
+          evaluateAndDispatch();
+        };
+        projectForm.addEventListener('input', handleFieldEvent);
+        projectForm.addEventListener('change', handleFieldEvent);
+        var storageObserver = null;
+        var storageContainer = getElement('#storageNeedsContainer');
+        if (storageContainer && typeof MutationObserver === 'function') {
+          try {
+            storageObserver = new MutationObserver(function () {
+              evaluateAndDispatch();
+            });
+            storageObserver.observe(storageContainer, {
+              childList: true,
+              subtree: true
+            });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe storage rows.', error);
+            storageObserver = null;
+          }
+        }
+        evaluateAndDispatch();
+        return function () {
+          projectForm.removeEventListener('input', handleFieldEvent);
+          projectForm.removeEventListener('change', handleFieldEvent);
+          if (storageObserver) {
+            try {
+              storageObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach storage observer.', error);
             }
           }
         };
@@ -1415,18 +1814,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     addCamera: createFieldCompletionRequirement('#cameraSelect', function (value) {
       return value && value !== 'None';
     }, ['change']),
-    addMonitoring: createAnyFieldCompletionRequirement(['#monitorSelect', '#videoSelect', '#motor1Select', '#controller1Select'], function (value, element) {
-      if (!value) {
-        return false;
-      }
-      if (value === 'None' || value === '__none__') {
-        return false;
-      }
-      if (element && element.multiple) {
-        return element.selectedOptions && element.selectedOptions.length > 0;
-      }
-      return true;
-    }, ['change']),
     selectBattery: createFieldCompletionRequirement('#batterySelect', function (value) {
       return value && value !== 'None';
     }, ['change']),
@@ -1435,6 +1822,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
+    projectRequirementsAccess: createProjectRequirementsAccessRequirement(),
+    projectRequirementsBrief: createFieldCompletionRequirement('#productionCompany', function (value) {
+      return typeof value === 'string' && value.trim().length > 0;
+    }, ['input', 'change']),
+    projectRequirementsCrew: createProjectCrewRequirement(),
+    projectRequirementsLogistics: createProjectLogisticsRequirement(),
     generateGearAndRequirements: createProjectDialogSubmitRequirement(),
     exportImport: createClickCompletionRequirement(['#shareSetupBtn', '#applySharedLinkBtn']),
     overviewAndPrint: createClickCompletionRequirement('#generateOverviewBtn')
@@ -1752,8 +2145,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var storedState = null;
   function refreshStoredState() {
     var nextState = loadStoredState();
-    storedState = nextState;
-    return nextState;
+    var skipPreference = readSkipStatusPreference();
+    var mergedState = skipPreference === true && nextState ? normalizeStateSnapshot(_objectSpread(_objectSpread({}, nextState), {}, {
+      skipped: true,
+      activeStep: null,
+      completed: false
+    })) : nextState;
+    storedState = mergedState;
+    return mergedState;
   }
   refreshStoredState();
   function normalizeLanguageCandidate(rawValue, availableTexts) {
@@ -1833,8 +2232,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       void error;
     }
-    for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
-      var candidate = candidates[_index4];
+    for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
+      var candidate = candidates[_index6];
       if (candidate && Object.prototype.hasOwnProperty.call(availableTexts, candidate)) {
         return candidate;
       }
@@ -1943,8 +2342,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: 'editDeviceDataAdd',
       highlight: ['#toggleDeviceManager', '#addDeviceHeading', '#addDeviceBtn'],
-      focus: '#newName',
-      ensureDeviceManager: true
+      focus: '#newName'
     }, {
       key: 'editDeviceDataReview',
       highlight: '#deviceListContainer',
@@ -1966,6 +2364,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: '#ownGearDialog',
       ensureOwnGear: true,
       focus: '#ownGearName'
+    }, {
+      key: 'projectRequirementsAccess',
+      highlight: ['#ownGearCloseButton', '#generateGearListBtn'],
+      ensureOwnGear: true
     }, {
       key: 'projectRequirementsBrief',
       highlight: '#projectRequirementsBriefSection',
@@ -2002,9 +2404,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         tabId: 'settingsTab-autoGear'
       },
       focus: '#autoGearAddRule'
-    }, {
-      key: 'projectRequirements',
-      highlight: '#projectRequirementsOutput'
     }, {
       key: 'gearList',
       highlight: '#gearListOutput'
@@ -2105,6 +2504,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var autoOpenedProjectDialog = false;
   var projectDialogRef = null;
   var projectDialogTriggerRef = null;
+  var _projectDialogVisibilityCleanup = null;
   var autoOpenedDeviceManager = false;
   var deviceManagerSectionRef = null;
   var deviceManagerToggleRef = null;
@@ -2113,6 +2513,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var activeRequirementCleanup = null;
   var activeRequirementCompleted = false;
   var activeInteractionCleanup = null;
+  var activeStepAutomationCleanup = null;
   var lastCardPlacement = 'floating';
   var proxyControlId = 0;
   var baselineViewportHeight = null;
@@ -2219,6 +2620,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       interactionContainerEl.hidden = true;
     }
   }
+  function teardownStepAutomation() {
+    if (typeof activeStepAutomationCleanup === 'function') {
+      try {
+        activeStepAutomationCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach step automation.', error);
+      }
+    }
+    activeStepAutomationCleanup = null;
+  }
   function applyStepRequirement(step) {
     if (!nextButton) {
       return;
@@ -2257,6 +2668,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
     activeRequirementCleanup = typeof cleanup === 'function' ? cleanup : null;
+  }
+  function applyStepAutomation(step) {
+    teardownStepAutomation();
+    if (!step) {
+      return;
+    }
+    if (step.key === 'editDeviceDataAdd') {
+      activeStepAutomationCleanup = attachDeviceManagerNameAutofill();
+    }
   }
   function clearFrame() {
     if (pendingFrame === null) {
@@ -2808,6 +3228,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return filtered;
+  }
+  function findUsableElement(candidates) {
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      return null;
+    }
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (!candidate) {
+        continue;
+      }
+      if (isHighlightElementUsable(candidate)) {
+        return candidate;
+      }
+    }
+    return candidates[0] || null;
   }
   function getHighlightElements(step) {
     if (!step) {
@@ -3521,6 +3956,65 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     projectDialogRef.setAttribute('open', '');
   }
+  function attachProjectDialogVisibilityMonitor() {
+    if (_projectDialogVisibilityCleanup) {
+      return;
+    }
+    if (!projectDialogRef) {
+      projectDialogRef = DOCUMENT.getElementById('projectDialog');
+    }
+    if (!projectDialogRef) {
+      return;
+    }
+    var handleVisibilityChange = function handleVisibilityChange() {
+      if (!active || !currentStep || !currentStep.ensureProjectDialog) {
+        return;
+      }
+      setTimeout(function () {
+        if (!isProjectDialogVisible()) {
+          ensureProjectDialogForStep(currentStep);
+        }
+      }, 50);
+    };
+    projectDialogRef.addEventListener('close', handleVisibilityChange);
+    projectDialogRef.addEventListener('cancel', handleVisibilityChange);
+    var observer = null;
+    if (typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(handleVisibilityChange);
+        observer.observe(projectDialogRef, {
+          attributes: true,
+          attributeFilter: ['open', 'hidden', 'aria-hidden']
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe project dialog visibility.', error);
+        observer = null;
+      }
+    }
+    _projectDialogVisibilityCleanup = function projectDialogVisibilityCleanup() {
+      projectDialogRef.removeEventListener('close', handleVisibilityChange);
+      projectDialogRef.removeEventListener('cancel', handleVisibilityChange);
+      if (observer) {
+        try {
+          observer.disconnect();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not detach project dialog observer.', error);
+        }
+      }
+      observer = null;
+      _projectDialogVisibilityCleanup = null;
+    };
+  }
+  function detachProjectDialogVisibilityMonitor() {
+    if (typeof _projectDialogVisibilityCleanup === 'function') {
+      try {
+        _projectDialogVisibilityCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach project dialog visibility monitor.', error);
+      }
+    }
+    _projectDialogVisibilityCleanup = null;
+  }
   function closeProjectDialogIfNeeded() {
     if (!projectDialogRef || !autoOpenedProjectDialog) {
       autoOpenedProjectDialog = false;
@@ -3643,6 +4137,112 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     autoOpenedDeviceManager = false;
+  }
+  function focusDeviceManagerNameField() {
+    if (!DOCUMENT) {
+      return false;
+    }
+    var nameField = null;
+    try {
+      nameField = DOCUMENT.getElementById('newName');
+    } catch (error) {
+      void error;
+      nameField = null;
+    }
+    if (!nameField || !isHighlightElementUsable(nameField)) {
+      return false;
+    }
+    var focused = false;
+    if (typeof nameField.focus === 'function') {
+      try {
+        nameField.focus({
+          preventScroll: true
+        });
+        focused = true;
+      } catch (error) {
+        void error;
+        try {
+          nameField.focus();
+          focused = true;
+        } catch (focusError) {
+          void focusError;
+        }
+      }
+    }
+    if (!focused) {
+      return false;
+    }
+    if (typeof nameField.select === 'function') {
+      try {
+        nameField.select();
+        return true;
+      } catch (selectError) {
+        void selectError;
+      }
+    }
+    if (typeof nameField.setSelectionRange === 'function') {
+      try {
+        var length = typeof nameField.value === 'string' ? nameField.value.length : 0;
+        nameField.setSelectionRange(0, length);
+        return true;
+      } catch (rangeError) {
+        void rangeError;
+      }
+    }
+    return true;
+  }
+  function attachDeviceManagerNameAutofill() {
+    if (!DOCUMENT) {
+      return null;
+    }
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    var scheduleFocusIfVisible = function scheduleFocusIfVisible() {
+      if (!isDeviceManagerVisible()) {
+        return;
+      }
+      focusDeviceManagerNameField();
+    };
+    var handleToggleClick = function handleToggleClick() {
+      if (typeof setTimeout === 'function') {
+        setTimeout(scheduleFocusIfVisible, 50);
+      } else {
+        scheduleFocusIfVisible();
+      }
+    };
+    var toggleListenerAttached = false;
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.addEventListener === 'function') {
+      deviceManagerToggleRef.addEventListener('click', handleToggleClick);
+      toggleListenerAttached = true;
+    }
+    var observer = null;
+    if (deviceManagerSectionRef && typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(function () {
+          scheduleFocusIfVisible();
+        });
+        observer.observe(deviceManagerSectionRef, {
+          attributes: true,
+          attributeFilter: ['class', 'hidden']
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe device manager visibility.', error);
+        observer = null;
+      }
+    }
+    scheduleFocusIfVisible();
+    return function () {
+      if (toggleListenerAttached && deviceManagerToggleRef && typeof deviceManagerToggleRef.removeEventListener === 'function') {
+        deviceManagerToggleRef.removeEventListener('click', handleToggleClick);
+      }
+      if (observer) {
+        observer.disconnect();
+      }
+    };
   }
   function isSettingsDialogVisible() {
     if (!settingsDialogRef) {
@@ -3800,22 +4400,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var highlightSelectors = toSelectorArray(step.highlight);
-    for (var _index5 = 0; _index5 < highlightSelectors.length; _index5 += 1) {
-      var _selector = highlightSelectors[_index5];
+    for (var _index7 = 0; _index7 < highlightSelectors.length; _index7 += 1) {
+      var _selector = highlightSelectors[_index7];
       if (selectors.indexOf(_selector) === -1) {
         selectors.push(_selector);
       }
     }
     var alternateSelectors = toSelectorArray(step.alternateHighlight);
-    for (var _index6 = 0; _index6 < alternateSelectors.length; _index6 += 1) {
-      var _selector2 = alternateSelectors[_index6];
+    for (var _index8 = 0; _index8 < alternateSelectors.length; _index8 += 1) {
+      var _selector2 = alternateSelectors[_index8];
       if (selectors.indexOf(_selector2) === -1) {
         selectors.push(_selector2);
       }
     }
     var target = null;
-    for (var _index7 = 0; _index7 < selectors.length; _index7 += 1) {
-      var _selector3 = selectors[_index7];
+    for (var _index9 = 0; _index9 < selectors.length; _index9 += 1) {
+      var _selector3 = selectors[_index9];
       if (!_selector3) {
         continue;
       }
@@ -3823,7 +4423,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!element) {
         continue;
       }
-      if (typeof element.focus === 'function') {
+      if (typeof element.focus === 'function' && isHighlightElementUsable(element)) {
         target = element;
         break;
       }
@@ -4047,8 +4647,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sourceOptions = source && source.options ? Array.from(source.options) : [];
       if (sourceOptions.length) {
-        for (var _index8 = 0; _index8 < sourceOptions.length; _index8 += 1) {
-          languageProxy.appendChild(sourceOptions[_index8].cloneNode(true));
+        for (var _index0 = 0; _index0 < sourceOptions.length; _index0 += 1) {
+          languageProxy.appendChild(sourceOptions[_index0].cloneNode(true));
         }
       } else if (typeof source.value === 'string') {
         var option = DOCUMENT.createElement('option');
@@ -4061,8 +4661,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var getActiveLanguageValue = function getActiveLanguageValue() {
-      for (var _index9 = 0; _index9 < languageTargets.length; _index9 += 1) {
-        var target = languageTargets[_index9];
+      for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
+        var target = languageTargets[_index1];
         if (target && typeof target.value === 'string' && target.value) {
           return target.value;
         }
@@ -4120,10 +4720,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var preserveValue = languageProxy.value;
       languageProxy.textContent = '';
       var options = resolveFallbackLanguageOptions();
-      for (var _index0 = 0; _index0 < options.length; _index0 += 1) {
+      for (var _index10 = 0; _index10 < options.length; _index10 += 1) {
         var option = DOCUMENT.createElement('option');
-        option.value = options[_index0].value;
-        option.textContent = options[_index0].label;
+        option.value = options[_index10].value;
+        option.textContent = options[_index10].label;
         languageProxy.appendChild(option);
       }
       var active = preserveValue || resolveLanguage();
@@ -4134,8 +4734,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var handleLanguageProxyChange = function handleLanguageProxyChange() {
       var value = languageProxy.value;
       var applied = applyLanguagePreference(value);
-      for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
-        var target = languageTargets[_index1];
+      for (var _index11 = 0; _index11 < languageTargets.length; _index11 += 1) {
+        var target = languageTargets[_index11];
         if (!target) {
           continue;
         }
@@ -4318,7 +4918,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       hintEl.textContent = languageHint;
       languageGroup.appendChild(hintEl);
     }
-    hero.appendChild(languageGroup);
+    hero.insertBefore(languageGroup, hero.firstChild || null);
     if (offlineSummary) {
       var offlineEl = DOCUMENT.createElement('p');
       offlineEl.className = 'onboarding-hero-offline';
@@ -4416,9 +5016,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }();
     var normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
     var matchesAvatarChangeLabel = function matchesAvatarChangeLabel(value) {
-      if (!value) {
-        return false;
-      }
+      if (!value) {}
       return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
     };
     var resolveAvatarActionLabel = function resolveAvatarActionLabel(hasPhoto) {
@@ -4427,16 +5025,76 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return normalizedAvatarAction;
     };
-    var avatarAction = DOCUMENT.createElement('button');
-    avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
-    applyAvatarActionLabel = function applyAvatarActionLabel(hasPhoto) {
-      var label = resolveAvatarActionLabel(hasPhoto);
-      if (avatarAction.textContent !== label) {
-        avatarAction.textContent = label;
+    var updateAvatarButton = function updateAvatarButton() {
+      if (avatarButton) {
+        var hasPhoto = avatarPreview.querySelector('img') !== null;
+        avatarButton.textContent = resolveAvatarActionLabel(hasPhoto);
       }
     };
-    applyAvatarActionLabel(false);
+    if (avatarButton) {
+      avatarButton.addEventListener('click', updateAvatarPreview);
+      registerCleanup(function () {
+        avatarButton.removeEventListener('click', updateAvatarPreview);
+      });
+    }
+    var hiddenFileInput = DOCUMENT.createElement('input');
+    hiddenFileInput.type = 'file';
+    hiddenFileInput.id = 'userProfileAvatarUploadProxy';
+    hiddenFileInput.style.opacity = '0';
+    hiddenFileInput.style.position = 'absolute';
+    hiddenFileInput.style.width = '1px';
+    hiddenFileInput.style.height = '1px';
+    hiddenFileInput.style.pointerEvents = 'none';
+    hiddenFileInput.tabIndex = -1;
+    hiddenFileInput.setAttribute('aria-hidden', 'true');
+    hiddenFileInput.addEventListener('change', function (event) {
+      var file = event.target.files && event.target.files[0];
+      if (file && typeof readAvatarFile === 'function') {
+        readAvatarFile(file, function (result) {
+          if (typeof setAvatar === 'function') {
+            setAvatar(result);
+            updateAvatarPreview();
+            updateAvatarButton();
+          }
+        });
+      }
+    });
+    var handleDragOver = function handleDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.add('onboarding-avatar-group--drag-over');
+    };
+    var handleDragLeave = function handleDragLeave(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.remove('onboarding-avatar-group--drag-over');
+    };
+    var handleDrop = function handleDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      avatarGroup.classList.remove('onboarding-avatar-group--drag-over');
+      var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file && typeof readAvatarFile === 'function') {
+        readAvatarFile(file, function (result) {
+          if (typeof setAvatar === 'function') {
+            setAvatar(result);
+            updateAvatarPreview();
+            updateAvatarButton();
+          }
+        });
+      }
+    };
+    avatarGroup.addEventListener('dragenter', handleDragOver);
+    avatarGroup.addEventListener('dragover', handleDragOver);
+    avatarGroup.addEventListener('dragleave', handleDragLeave);
+    avatarGroup.addEventListener('drop', handleDrop);
+    registerCleanup(function () {
+      avatarGroup.removeEventListener('dragenter', handleDragOver);
+      avatarGroup.removeEventListener('dragover', handleDragOver);
+      avatarGroup.removeEventListener('dragleave', handleDragLeave);
+      avatarGroup.removeEventListener('drop', handleDrop);
+    });
+    fragment.appendChild(hiddenFileInput);
     updateAvatarPreview();
     var avatarObserver = null;
     if (GLOBAL_SCOPE.MutationObserver && avatarContainer) {
@@ -4477,14 +5135,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     fragment.appendChild(avatarGroup);
     var firstProxyField = null;
     var createProxyField = function createProxyField(options) {
-      var _ref3 = options || {},
-        fieldKey = _ref3.fieldKey,
-        labelText = _ref3.labelText,
-        placeholder = _ref3.placeholder,
-        target = _ref3.target,
-        type = _ref3.type,
-        autocomplete = _ref3.autocomplete,
-        onAfterSync = _ref3.onAfterSync;
+      var _ref4 = options || {},
+        fieldKey = _ref4.fieldKey,
+        labelText = _ref4.labelText,
+        placeholder = _ref4.placeholder,
+        target = _ref4.target,
+        type = _ref4.type,
+        autocomplete = _ref4.autocomplete,
+        onAfterSync = _ref4.onAfterSync;
       var group = DOCUMENT.createElement('div');
       group.className = 'onboarding-field-group';
       var proxyId = getProxyControlId(fieldKey);
@@ -4855,23 +5513,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       pinkSelect.id = pinkId;
       pinkSelect.className = 'onboarding-field-select';
       var pinkOff = DOCUMENT.createElement('option');
-      pinkOff.value = 'off';
+      pinkOff.value = 'disabled';
       pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
       var pinkOn = DOCUMENT.createElement('option');
-      pinkOn.value = 'on';
+      pinkOn.value = 'enabled';
       pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
-      pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
+      pinkSelect.value = pinkToggle.checked ? 'enabled' : 'disabled';
       var syncPinkToTarget = function syncPinkToTarget() {
-        var shouldEnable = pinkSelect.value === 'on';
+        var shouldEnable = pinkSelect.value === 'enabled';
         if (pinkToggle.checked !== shouldEnable) {
           pinkToggle.checked = shouldEnable;
           dispatchSyntheticEvent(pinkToggle, 'change');
         }
       };
       var syncPinkFromTarget = function syncPinkFromTarget() {
-        var expected = pinkToggle.checked ? 'on' : 'off';
+        var expected = pinkToggle.checked ? 'enabled' : 'disabled';
         if (pinkSelect.value !== expected) {
           pinkSelect.value = expected;
         }
@@ -4908,8 +5566,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         _option2.textContent = focusScaleSelect.value || 'Metric';
         proxyFocus.appendChild(_option2);
       } else {
-        for (var _index10 = 0; _index10 < focusOptions.length; _index10 += 1) {
-          var _source = focusOptions[_index10];
+        for (var _index12 = 0; _index12 < focusOptions.length; _index12 += 1) {
+          var _source = focusOptions[_index12];
           var _option3 = DOCUMENT.createElement('option');
           _option3.value = _source.value;
           _option3.textContent = _source.textContent || _source.value;
@@ -4955,12 +5613,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var unitOptions = Array.from(tempUnitSelect.options || []);
       if (unitOptions.length === 0) {
         var _option4 = DOCUMENT.createElement('option');
-        _option4.value = tempUnitSelect.value || 'celsius';
+        _option4.value = tempUnitSelect.value || 'Celsius';
         _option4.textContent = tempUnitSelect.value || 'Celsius';
         proxyUnits.appendChild(_option4);
       } else {
-        for (var _index11 = 0; _index11 < unitOptions.length; _index11 += 1) {
-          var _source2 = unitOptions[_index11];
+        for (var _index13 = 0; _index13 < unitOptions.length; _index13 += 1) {
+          var _source2 = unitOptions[_index13];
           var _option5 = DOCUMENT.createElement('option');
           _option5.value = _source2.value;
           _option5.textContent = _source2.textContent || _source2.value;
@@ -5140,6 +5798,500 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     interactionContainerEl.hidden = false;
     return true;
   }
+  function resolveCrewRowForProxy() {
+    var container = getElement('#crewContainer');
+    if (!container) {
+      return null;
+    }
+    var row = container.querySelector('.person-row');
+    if (row) {
+      return row;
+    }
+    var addButton = getElement('#addPersonBtn');
+    if (addButton && typeof addButton.click === 'function') {
+      try {
+        addButton.click();
+        row = container.querySelector('.person-row');
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not auto-create crew row for proxy.', error);
+      }
+    }
+    return row || null;
+  }
+  function resolvePeriodRowField(containerSelector, addButtonSelector, fieldSelector) {
+    var container = getElement(containerSelector);
+    if (!container) {
+      return null;
+    }
+    var row = container.querySelector('.period-row');
+    if (!row) {
+      var addButton = getElement(addButtonSelector);
+      if (addButton && typeof addButton.click === 'function') {
+        try {
+          addButton.click();
+          row = container.querySelector('.period-row');
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not auto-create schedule row.', error);
+        }
+      }
+    }
+    if (!row) {
+      return null;
+    }
+    try {
+      return row.querySelector(fieldSelector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not resolve schedule field.', error);
+      return null;
+    }
+  }
+  function resolveStorageFieldForProxy(selector) {
+    var container = getElement('#storageNeedsContainer');
+    if (!container) {
+      return null;
+    }
+    var primaryRow = container.querySelector('.storage-row');
+    if (primaryRow) {
+      var field = primaryRow.querySelector(selector);
+      if (field) {
+        return field;
+      }
+    }
+    try {
+      return container.querySelector(selector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not resolve storage proxy field.', error);
+    }
+    return null;
+  }
+  var PROJECT_REQUIREMENTS_FLOW = [{
+    key: 'projectRequirementsBrief',
+    fields: [{
+      fieldKey: 'project-brief-company',
+      targetSelector: '#productionCompany',
+      labelSelector: '#productionCompanyLabel'
+    }, {
+      fieldKey: 'project-brief-street',
+      targetSelector: '#productionCompanyStreet',
+      labelSelector: '#productionCompanyStreetLabel'
+    }, {
+      fieldKey: 'project-brief-city',
+      targetSelector: '#productionCompanyCity',
+      labelSelector: '#productionCompanyCityLabel'
+    }, {
+      fieldKey: 'project-brief-rental',
+      targetSelector: '#rentalHouse',
+      labelSelector: '#rentalHouseLabel'
+    }]
+  }, {
+    key: 'projectRequirementsCrew',
+    fields: [{
+      fieldKey: 'project-crew-role',
+      resolveTarget: function resolveTarget() {
+        var row = resolveCrewRowForProxy();
+        return row ? row.querySelector('.person-role-select') : null;
+      },
+      fallbackLabel: 'Crew role',
+      type: 'select'
+    }, {
+      fieldKey: 'project-crew-name',
+      resolveTarget: function resolveTarget() {
+        var row = resolveCrewRowForProxy();
+        return row ? row.querySelector('.person-name') : null;
+      },
+      fallbackLabel: 'Crew member name'
+    }, {
+      fieldKey: 'project-crew-phone',
+      resolveTarget: function resolveTarget() {
+        var row = resolveCrewRowForProxy();
+        return row ? row.querySelector('.person-phone') : null;
+      },
+      fallbackLabel: 'Crew phone'
+    }, {
+      fieldKey: 'project-crew-prep',
+      resolveTarget: function resolveTarget() {
+        return resolvePeriodRowField('#prepContainer', '#addPrepBtn', '.prep-start');
+      },
+      labelSelector: '#prepLabel',
+      inputType: 'date'
+    }, {
+      fieldKey: 'project-crew-shoot',
+      resolveTarget: function resolveTarget() {
+        return resolvePeriodRowField('#shootContainer', '#addShootBtn', '.shoot-start');
+      },
+      labelSelector: '#shootLabel',
+      inputType: 'date'
+    }, {
+      fieldKey: 'project-crew-return',
+      resolveTarget: function resolveTarget() {
+        return resolvePeriodRowField('#returnContainer', '#addReturnBtn', '.return-start');
+      },
+      labelSelector: '#returnLabel',
+      inputType: 'date'
+    }]
+  }, {
+    key: 'projectRequirementsLogistics',
+    fields: [{
+      fieldKey: 'project-logistics-delivery',
+      targetSelector: '#deliveryResolution',
+      labelSelector: '#deliveryResolutionLabel',
+      type: 'select'
+    }, {
+      fieldKey: 'project-logistics-recording-rate',
+      targetSelector: '#recordingFrameRate',
+      labelSelector: '#recordingFrameRateLabel',
+      inputType: 'number'
+    }, {
+      fieldKey: 'project-logistics-lens',
+      targetSelector: '#lensManufacturer',
+      labelSelector: '#lensManufacturerLabel',
+      type: 'select'
+    }, {
+      fieldKey: 'project-logistics-storage',
+      resolveTarget: function resolveTarget() {
+        return resolveStorageFieldForProxy('.storage-quantity');
+      },
+      labelSelector: '#storageNeedsLabel',
+      inputType: 'number'
+    }, {
+      fieldKey: 'project-logistics-mattebox',
+      targetSelector: '#mattebox',
+      labelSelector: '#matteboxLabel',
+      type: 'select'
+    }, {
+      fieldKey: 'project-logistics-monitoring',
+      targetSelector: '#monitoringConfiguration',
+      labelSelector: '#monitoringConfigurationLabel',
+      type: 'select'
+    }]
+  }];
+  var PROJECT_REQUIREMENTS_STEP_KEYS = PROJECT_REQUIREMENTS_FLOW.map(function (entry) {
+    return entry.key;
+  });
+  function updateProjectDialogLayoutState(step) {
+    var root = DOCUMENT && DOCUMENT.documentElement;
+    if (!root) {
+      return;
+    }
+    var stepKey = step && step.key;
+    if (stepKey && PROJECT_REQUIREMENTS_STEP_KEYS.indexOf(stepKey) !== -1) {
+      root.setAttribute('data-onboarding-project-dialog', 'project-requirements');
+    } else {
+      root.removeAttribute('data-onboarding-project-dialog');
+    }
+  }
+  function renderProjectRequirementsInteraction(registerCleanup, step) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+    var stepKey = step && step.key;
+    var stepIndex = PROJECT_REQUIREMENTS_FLOW.findIndex(function (entry) {
+      return entry.key === stepKey;
+    });
+    if (stepIndex === -1) {
+      return false;
+    }
+    var stepConfig = PROJECT_REQUIREMENTS_FLOW[stepIndex];
+    var fragment = DOCUMENT.createDocumentFragment();
+    var indicatorTemplate = tourTexts && typeof tourTexts.stepIndicator === 'string' ? tourTexts.stepIndicator : 'Step {current} of {total}';
+    var indicator = DOCUMENT.createElement('p');
+    indicator.className = 'onboarding-resume-hint onboarding-step-indicator';
+    indicator.textContent = indicatorTemplate.replace('{current}', String(stepIndex + 1)).replace('{total}', String(PROJECT_REQUIREMENTS_FLOW.length));
+    fragment.appendChild(indicator);
+    var intro = DOCUMENT.createElement('p');
+    intro.className = 'onboarding-resume-hint';
+    intro.textContent = tourTexts && typeof tourTexts.projectRequirementsMiniIntro === 'string' ? tourTexts.projectRequirementsMiniIntro : 'Fill these proxy fields while the Project Requirements dialog stays open.';
+    fragment.appendChild(intro);
+    var stepBodyText = tourTexts && tourTexts.steps && tourTexts.steps[stepKey] && typeof tourTexts.steps[stepKey].body === 'string' ? tourTexts.steps[stepKey].body.trim() : '';
+    if (stepBodyText) {
+      var description = DOCUMENT.createElement('p');
+      description.className = 'onboarding-resume-hint';
+      description.textContent = stepBodyText;
+      fragment.appendChild(description);
+    }
+    var resolveLabelText = function resolveLabelText(options, target) {
+      if (options && typeof options.labelSelector === 'string' && options.labelSelector) {
+        var labelElement = getElement(options.labelSelector);
+        if (labelElement && typeof labelElement.textContent === 'string') {
+          var labelText = labelElement.textContent.trim();
+          if (labelText) {
+            return labelText;
+          }
+        }
+      }
+      if (options && typeof options.labelText === 'string' && options.labelText) {
+        return options.labelText;
+      }
+      if (target) {
+        var ariaLabel = typeof target.getAttribute === 'function' ? target.getAttribute('aria-label') : null;
+        if (ariaLabel && ariaLabel.trim()) {
+          return ariaLabel.trim();
+        }
+        if (target.id) {
+          try {
+            var selector = "label[for=\"".concat(target.id, "\"]");
+            var explicitLabel = DOCUMENT.querySelector(selector);
+            if (explicitLabel && typeof explicitLabel.textContent === 'string') {
+              var explicitText = explicitLabel.textContent.trim();
+              if (explicitText) {
+                return explicitText;
+              }
+            }
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not resolve proxy label.', error);
+          }
+        }
+        if (typeof target.placeholder === 'string' && target.placeholder.trim()) {
+          return target.placeholder.trim();
+        }
+      }
+      if (options && typeof options.fallbackLabel === 'string' && options.fallbackLabel) {
+        return options.fallbackLabel;
+      }
+      return 'Field';
+    };
+    var resolvePlaceholderText = function resolvePlaceholderText(options, target) {
+      if (options && typeof options.placeholder === 'string') {
+        return options.placeholder;
+      }
+      if (target && typeof target.placeholder === 'string' && target.placeholder) {
+        return target.placeholder;
+      }
+      return '';
+    };
+    var copySelectOptions = function copySelectOptions(source, destination) {
+      if (!destination) {
+        return;
+      }
+      destination.innerHTML = '';
+      if (!source) {
+        return;
+      }
+      var options = source.options || [];
+      for (var index = 0; index < options.length; index += 1) {
+        var option = options[index];
+        if (!option) {
+          continue;
+        }
+        var _clone = DOCUMENT.createElement('option');
+        _clone.value = option.value;
+        _clone.textContent = option.textContent || option.value;
+        if (source.multiple) {
+          _clone.selected = option.selected;
+        }
+        destination.appendChild(_clone);
+      }
+      if (!source.multiple) {
+        destination.value = source.value || '';
+      }
+    };
+    var firstProxyField = null;
+    var createProxyField = function createProxyField(options) {
+      var group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      var controlId = getProxyControlId((options === null || options === void 0 ? void 0 : options.fieldKey) || 'project-field');
+      var label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', controlId);
+      var target = typeof (options === null || options === void 0 ? void 0 : options.resolveTarget) === 'function' ? options.resolveTarget() : typeof (options === null || options === void 0 ? void 0 : options.targetSelector) === 'string' ? getElement(options.targetSelector) : null;
+      label.textContent = resolveLabelText(options, target);
+      group.appendChild(label);
+      var proxyControl = null;
+      var targetNodeName = target && typeof target.nodeName === 'string' ? target.nodeName.toLowerCase() : null;
+      if (options && options.type === 'select' || targetNodeName === 'select') {
+        proxyControl = DOCUMENT.createElement('select');
+        proxyControl.multiple = Boolean(target && target.multiple);
+        if (proxyControl.multiple && target && target.size) {
+          proxyControl.size = target.size;
+        }
+        copySelectOptions(target, proxyControl);
+      } else if (options && options.multiline || targetNodeName === 'textarea') {
+        proxyControl = DOCUMENT.createElement('textarea');
+        proxyControl.rows = options && options.rows ? options.rows : 3;
+      } else {
+        proxyControl = DOCUMENT.createElement('input');
+        var inputType = options && options.inputType ? options.inputType : target && target.type ? target.type : 'text';
+        try {
+          proxyControl.type = inputType;
+        } catch (error) {
+          void error;
+          proxyControl.type = 'text';
+        }
+      }
+      proxyControl.id = controlId;
+      proxyControl.className = 'onboarding-field-input';
+      var placeholderText = resolvePlaceholderText(options, target);
+      if (placeholderText) {
+        proxyControl.placeholder = placeholderText;
+      }
+      group.appendChild(proxyControl);
+      fragment.appendChild(group);
+      if (!firstProxyField) {
+        firstProxyField = proxyControl;
+      }
+      if (!target) {
+        proxyControl.disabled = true;
+        proxyControl.setAttribute('aria-disabled', 'true');
+        return proxyControl;
+      }
+      var syncFromTarget = function syncFromTarget() {
+        if (!target) {
+          return;
+        }
+        if (proxyControl.tagName === 'SELECT') {
+          copySelectOptions(target, proxyControl);
+          if (target.multiple) {
+            var selectedValues = Array.from(target.selectedOptions || []).map(function (option) {
+              return option.value;
+            });
+            for (var index = 0; index < proxyControl.options.length; index += 1) {
+              var proxyOption = proxyControl.options[index];
+              proxyOption.selected = selectedValues.indexOf(proxyOption.value) !== -1;
+            }
+          } else if (proxyControl.value !== target.value) {
+            proxyControl.value = target.value || '';
+          }
+        } else if (proxyControl.tagName === 'TEXTAREA') {
+          if (proxyControl.value !== target.value) {
+            proxyControl.value = target.value || '';
+          }
+        } else if (proxyControl.type === 'number') {
+          proxyControl.value = target.value || '';
+        } else {
+          proxyControl.value = target.value || '';
+        }
+        proxyControl.disabled = target.disabled;
+        proxyControl.setAttribute('aria-disabled', target.disabled ? 'true' : 'false');
+      };
+      var syncToTarget = function syncToTarget() {
+        if (!target) {
+          return;
+        }
+        if (proxyControl.tagName === 'SELECT') {
+          if (target.multiple) {
+            var selections = Array.from(proxyControl.selectedOptions || []).map(function (option) {
+              return option.value;
+            });
+            var targetOptions = target.options || [];
+            for (var index = 0; index < targetOptions.length; index += 1) {
+              var option = targetOptions[index];
+              option.selected = selections.indexOf(option.value) !== -1;
+            }
+          } else if (target.value !== proxyControl.value) {
+            target.value = proxyControl.value;
+          }
+        } else if (target.value !== proxyControl.value) {
+          target.value = proxyControl.value;
+        }
+        dispatchSyntheticEvent(target, 'input');
+        dispatchSyntheticEvent(target, 'change');
+      };
+      proxyControl.addEventListener('input', syncToTarget);
+      proxyControl.addEventListener('change', syncToTarget);
+      target.addEventListener('input', syncFromTarget);
+      target.addEventListener('change', syncFromTarget);
+      registerCleanup(function () {
+        proxyControl.removeEventListener('input', syncToTarget);
+        proxyControl.removeEventListener('change', syncToTarget);
+        target.removeEventListener('input', syncFromTarget);
+        target.removeEventListener('change', syncFromTarget);
+      });
+      if (target.tagName && target.tagName.toLowerCase() === 'select' && typeof MutationObserver === 'function') {
+        try {
+          var observer = new MutationObserver(function () {
+            syncFromTarget();
+          });
+          observer.observe(target, {
+            childList: true,
+            subtree: true
+          });
+          registerCleanup(function () {
+            observer.disconnect();
+          });
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not observe select options.', error);
+        }
+      }
+      syncFromTarget();
+      return proxyControl;
+    };
+    for (var index = 0; index < stepConfig.fields.length; index += 1) {
+      try {
+        createProxyField(stepConfig.fields[index]);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not render project requirements proxy.', error);
+      }
+    }
+    var offlineHint = DOCUMENT.createElement('p');
+    offlineHint.className = 'onboarding-resume-hint';
+    offlineHint.textContent = tourTexts && typeof tourTexts.projectRequirementsMiniOfflineHint === 'string' ? tourTexts.projectRequirementsMiniOfflineHint : 'All entries save offline immediately. Use Back or Next here without losing work.';
+    fragment.appendChild(offlineHint);
+    var nav = DOCUMENT.createElement('div');
+    nav.className = 'onboarding-inline-nav';
+    var inlineBack = DOCUMENT.createElement('button');
+    inlineBack.type = 'button';
+    inlineBack.className = 'button onboarding-inline-button';
+    inlineBack.textContent = tourTexts && typeof tourTexts.backLabel === 'string' ? tourTexts.backLabel : 'Back';
+    inlineBack.disabled = stepIndex === 0;
+    var handleInlineBack = function handleInlineBack(event) {
+      event.preventDefault();
+      if (!inlineBack.disabled) {
+        goToPreviousStep();
+      }
+    };
+    inlineBack.addEventListener('click', handleInlineBack);
+    registerCleanup(function () {
+      inlineBack.removeEventListener('click', handleInlineBack);
+    });
+    nav.appendChild(inlineBack);
+    var inlineNext = DOCUMENT.createElement('button');
+    inlineNext.type = 'button';
+    inlineNext.className = 'button onboarding-inline-button onboarding-inline-button--primary';
+    inlineNext.textContent = tourTexts && typeof tourTexts.nextLabel === 'string' ? tourTexts.nextLabel : 'Next';
+    var handleInlineNext = function handleInlineNext(event) {
+      event.preventDefault();
+      goToNextStep();
+    };
+    inlineNext.addEventListener('click', handleInlineNext);
+    registerCleanup(function () {
+      inlineNext.removeEventListener('click', handleInlineNext);
+    });
+    nav.appendChild(inlineNext);
+    fragment.appendChild(nav);
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+    if (firstProxyField && typeof firstProxyField.focus === 'function') {
+      var focusField = firstProxyField;
+      var focusRunner = function focusRunner() {
+        try {
+          focusField.focus({
+            preventScroll: true
+          });
+        } catch (error) {
+          void error;
+          try {
+            focusField.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(focusRunner);
+      } else {
+        setTimeout(focusRunner, 0);
+      }
+    }
+    registerCleanup(function () {
+      while (interactionContainerEl.firstChild) {
+        interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+      }
+    });
+    return true;
+  }
   function renderStepInteraction(step) {
     if (!interactionContainerEl) {
       return;
@@ -5163,6 +6315,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (key === 'unitsPreferences') {
         return renderUnitsPreferencesInteraction(registerCleanup, step);
+      }
+      if (key && PROJECT_REQUIREMENTS_STEP_KEYS.indexOf(key) !== -1) {
+        return renderProjectRequirementsInteraction(registerCleanup, step);
       }
       return false;
     }();
@@ -5347,6 +6502,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var previousStep = currentStep;
     teardownStepRequirement();
     teardownStepInteraction();
+    teardownStepAutomation();
     var step = stepConfig[index];
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
       closeSettingsIfNeeded();
@@ -5363,6 +6519,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (previousStep && previousStep.ensureProjectDialog && !step.ensureProjectDialog) {
       closeProjectDialogIfNeeded();
     }
+    updateProjectDialogLayoutState(step);
     currentStep = step;
     currentIndex = index;
     autoOpenedSettings = false;
@@ -5394,14 +6551,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (step.ensureProjectDialog) {
       ensureProjectDialogForStep(step);
+      attachProjectDialogVisibilityMonitor();
     } else if (previousStep && previousStep.ensureProjectDialog) {
       closeProjectDialogIfNeeded();
+      detachProjectDialogVisibilityMonitor();
     } else {
       autoOpenedProjectDialog = false;
+      detachProjectDialogVisibilityMonitor();
     }
     var focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
-    var focusTarget = focusCandidates.length > 0 ? focusCandidates[0] : null;
-    if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
+    var focusTarget = findUsableElement(focusCandidates);
+    if (focusTarget && isHighlightElementUsable(focusTarget) && typeof focusTarget.scrollIntoView === 'function') {
       try {
         focusTarget.scrollIntoView({
           behavior: 'smooth',
@@ -5426,6 +6586,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     updateCardForStep(step, index);
     applyStepRequirement(step);
+    applyStepAutomation(step);
     if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
       resumeHintVisible = false;
       updateResumeHint(index);
@@ -5497,14 +6658,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       skipTutorial();
       return;
     }
-    if (!GLOBAL_SCOPE.confirm) {
-      skipTutorial();
-      return;
-    }
     var title = tourTexts.skipConfirmationTitle || '';
     var message = tourTexts.skipConfirmationBody || '';
     var accept = tourTexts.skipConfirmationAccept || '';
     var cancel = tourTexts.skipConfirmationCancel || '';
+    if (GLOBAL_SCOPE.cineShowConfirmDialog) {
+      GLOBAL_SCOPE.cineShowConfirmDialog({
+        title: title,
+        message: message,
+        confirmLabel: accept,
+        cancelLabel: cancel,
+        onConfirm: function onConfirm() {
+          skipTutorial();
+        }
+      });
+      return;
+    }
+    if (!GLOBAL_SCOPE.confirm) {
+      skipTutorial();
+      return;
+    }
     var promptMessage = "".concat(title, "\n\n").concat(message).trim();
     var confirmed = false;
     try {
@@ -5523,6 +6696,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     closeOwnGearIfNeeded();
     closeDeviceManagerIfNeeded();
     endTutorial();
+    persistSkipStatus(true);
     var nextState = _objectSpread(_objectSpread({}, storedState), {}, {
       skipped: true,
       completed: false,
@@ -5538,6 +6712,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     closeOwnGearIfNeeded();
     closeDeviceManagerIfNeeded();
     endTutorial();
+    persistSkipStatus(false);
     var allStepKeys = stepConfig.map(function (step) {
       return step.key;
     });
@@ -5594,15 +6769,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focusableElements.push(element);
     };
     var cardFocusable = collectFocusableElements(cardEl);
-    for (var _index12 = 0; _index12 < cardFocusable.length; _index12 += 1) {
-      pushUnique(cardFocusable[_index12]);
+    for (var _index14 = 0; _index14 < cardFocusable.length; _index14 += 1) {
+      pushUnique(cardFocusable[_index14]);
     }
     if (Array.isArray(activeTargetElements)) {
       for (var targetIndex = 0; targetIndex < activeTargetElements.length; targetIndex += 1) {
         var _target = activeTargetElements[targetIndex];
         var targetFocusable = collectFocusableElements(_target, true);
-        for (var _index13 = 0; _index13 < targetFocusable.length; _index13 += 1) {
-          pushUnique(targetFocusable[_index13]);
+        for (var _index15 = 0; _index15 < targetFocusable.length; _index15 += 1) {
+          pushUnique(targetFocusable[_index15]);
         }
       }
     }
@@ -5658,14 +6833,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function startTutorial() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref4 = options || {},
-      _ref4$resume = _ref4.resume,
-      resume = _ref4$resume === void 0 ? false : _ref4$resume,
-      _ref4$focusStart = _ref4.focusStart,
-      focusStart = _ref4$focusStart === void 0 ? true : _ref4$focusStart;
+    var _ref5 = options || {},
+      _ref5$resume = _ref5.resume,
+      resume = _ref5$resume === void 0 ? false : _ref5$resume,
+      _ref5$focusStart = _ref5.focusStart,
+      focusStart = _ref5$focusStart === void 0 ? true : _ref5$focusStart,
+      _ref5$allowSkipOverri = _ref5.allowSkipOverride,
+      allowSkipOverride = _ref5$allowSkipOverri === void 0 ? false : _ref5$allowSkipOverri;
     ensureOverlayElements();
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
+    storedState = refreshStoredState();
+    if (storedState && storedState.skipped && !allowSkipOverride) {
+      applyHelpStatus(storedState, stepConfig);
+      return;
+    }
+    persistSkipStatus(false);
+    if (storedState && storedState.skipped) {
+      storedState = normalizeStateSnapshot(_objectSpread(_objectSpread({}, storedState), {}, {
+        skipped: false
+      }));
+    }
     var completedSet = new Set(storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : []);
     var startIndex = resume && storedState && storedState.activeStep ? stepConfig.findIndex(function (step) {
       return step.key === storedState.activeStep;
@@ -5686,7 +6874,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
-    storedState = refreshStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
     attachGlobalListeners();
@@ -5700,6 +6887,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     active = false;
     clearFrame();
     teardownStepRequirement();
+    updateProjectDialogLayoutState(null);
+    detachProjectDialogVisibilityMonitor();
     detachGlobalListeners();
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
@@ -5849,8 +7038,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var seen = new Set();
     if (DOCUMENT && typeof DOCUMENT.querySelectorAll === 'function') {
       var candidates = DOCUMENT.querySelectorAll(HELP_TRIGGER_SELECTOR);
-      for (var _index14 = 0; _index14 < candidates.length; _index14 += 1) {
-        var _button = candidates[_index14];
+      for (var _index16 = 0; _index16 < candidates.length; _index16 += 1) {
+        var _button = candidates[_index16];
         if (!_button || typeof _button.addEventListener !== 'function') {
           continue;
         }
@@ -6017,8 +7206,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var message = template;
     var tokens = Object.keys(replacements);
-    for (var _index15 = 0; _index15 < tokens.length; _index15 += 1) {
-      var token = tokens[_index15];
+    for (var _index17 = 0; _index17 < tokens.length; _index17 += 1) {
+      var token = tokens[_index17];
       message = message.split(token).join(replacements[token]);
     }
     var progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);
@@ -6088,7 +7277,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var hasProgress = Boolean(storedState && Array.isArray(storedState.completedSteps) && storedState.completedSteps.length > 0);
       var resume = hasProgress && Boolean(storedState && storedState.activeStep);
       startTutorial({
-        resume: resume
+        resume: resume,
+        allowSkipOverride: true
       });
     };
     var helpDialog = DOCUMENT && typeof DOCUMENT.getElementById === 'function' ? DOCUMENT.getElementById('helpDialog') : null;
@@ -6141,6 +7331,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function shouldAutoStart() {
     if (!storedState) {
+      var _skipPreference = readSkipStatusPreference();
+      if (_skipPreference === true) {
+        return false;
+      }
       return true;
     }
     if (storedState.completed) {
@@ -6156,6 +7350,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (storedState.skipped) {
       return false;
     }
+    var skipPreference = readSkipStatusPreference();
+    if (skipPreference === true) {
+      return false;
+    }
     return true;
   }
   function scheduleAutoStart() {
@@ -6163,10 +7361,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     setTimeout(function () {
+      storedState = refreshStoredState();
+      if (!shouldAutoStart()) {
+        return;
+      }
       var resume = storedState && storedState.activeStep;
       startTutorial({
         resume: resume,
-        focusStart: true
+        focusStart: true,
+        allowSkipOverride: true
       });
     }, 600);
   }
@@ -6186,6 +7389,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     init();
   }
   function handleFactoryReset() {
+    persistSkipStatus(false);
     var persisted = saveState({
       version: STORAGE_VERSION
     });
@@ -6229,6 +7433,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     start: startTutorial,
     skip: skipTutorial,
     reset: function reset() {
+      persistSkipStatus(false);
       var persisted = saveState({
         version: STORAGE_VERSION
       });

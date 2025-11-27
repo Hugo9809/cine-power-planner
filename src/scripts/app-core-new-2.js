@@ -18856,12 +18856,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       globalThis.projectDialog = projectDialog;
       globalThis.projectDialogCloseBtn = projectDialogCloseBtn;
       globalThis.projectCancelBtn = projectCancelBtn;
+      globalThis.renderSetupDiagram = renderSetupDiagram;
     } else if (typeof window !== 'undefined') {
       window.checkSetupChanged = checkSetupChanged;
       window.updateCalculations = updateCalculations;
       window.projectDialog = projectDialog;
       window.projectDialogCloseBtn = projectDialogCloseBtn;
       window.projectCancelBtn = projectCancelBtn;
+      window.renderSetupDiagram = renderSetupDiagram;
     }
   }
 

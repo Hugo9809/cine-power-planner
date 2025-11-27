@@ -1,12 +1,12 @@
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
@@ -16,6 +16,10 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function escapeHtmlFallback(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+var escapeHtml = escapeHtmlFallback;
 var normalizeVideoDistributionOptionValueForSetups = function resolveNormalizeVideoDistributionOptionValue() {
   if (typeof require === 'function') {
     try {
@@ -195,9 +199,7 @@ if (TRANSLATIONS_RUNTIME_FOR_SETUPS && typeof TRANSLATIONS_RUNTIME_FOR_SETUPS.lo
     console.warn('Could not prepare translations runtime for setups module', runtimeLoadError);
   }
 }
-var escapeHtml = typeof SETUPS_UI_HELPERS.escapeHtml === 'function' ? SETUPS_UI_HELPERS.escapeHtml : function escapeHtmlFallback(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-};
+escapeHtml = typeof SETUPS_UI_HELPERS.escapeHtml === 'function' ? SETUPS_UI_HELPERS.escapeHtml : escapeHtmlFallback;
 var setButtonLabelWithIconForSetups = function resolveSetButtonLabelWithIconForSetups() {
   if (typeof SETUPS_UI_HELPERS.setButtonLabelWithIcon === 'function') {
     return SETUPS_UI_HELPERS.setButtonLabelWithIcon;
@@ -525,11 +527,7 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     }
     if (regionPostalParts.length) {
       var combinedRegionPostal = regionPostalParts.join(', ');
-      if (cityValue) {
-        locationParts.push(combinedRegionPostal);
-      } else {
-        locationParts.push(combinedRegionPostal);
-      }
+      locationParts.push(combinedRegionPostal);
     }
     var combinedLocationLine = locationParts.join(', ').trim();
     if (combinedLocationLine) {
@@ -714,6 +712,101 @@ var PROJECT_FORM_FREEZE = typeof Object.freeze === 'function' ? Object.freeze : 
 };
 var projectFormDataCache = null;
 var projectFormDataCacheDirty = true;
+function lensEscapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+function lensStripPrefix(text, prefix) {
+  if (!text || !prefix) return text;
+  var pattern = new RegExp("^".concat(lensEscapeRegExp(prefix), "\\s+"), 'i');
+  return text.replace(pattern, '').trim();
+}
+function lensIsSpecToken(token) {
+  if (!token) return false;
+  var value = token.trim();
+  if (!value) return false;
+  if (/^T\d+/i.test(value)) return true;
+  if (/^f\//i.test(value)) return true;
+  if (/\d/.test(value)) {
+    if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
+    if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
+    if (/^\d+-\d+/.test(value)) return true;
+  }
+  return false;
+}
+function resolveLensManufacturer(lensData, lensName) {
+  if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
+    return lensData.brand.trim();
+  }
+  var firstToken = typeof lensName === 'string' ? lensName.trim().split(/\s+/)[0] : '';
+  return firstToken || 'Other';
+}
+function resolveLensSeries(lensName, manufacturer) {
+  if (typeof lensName !== 'string' || !lensName.trim()) {
+    return 'General';
+  }
+  var remainder = lensName.trim();
+  if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+    remainder = remainder.slice(manufacturer.length).trim();
+  }
+  if (!remainder) return 'General';
+  var tokens = remainder.split(/\s+/);
+  var seriesTokens = [];
+  for (var index = 0; index < tokens.length; index += 1) {
+    var token = tokens[index];
+    if (lensIsSpecToken(token)) {
+      break;
+    }
+    seriesTokens.push(token);
+  }
+  var series = seriesTokens.join(' ').trim();
+  return series || 'General';
+}
+function resolveLensFocalLabel(lensName, manufacturer, series) {
+  var withoutManufacturer = lensStripPrefix(lensName || '', manufacturer || '');
+  var withoutSeries = lensStripPrefix(withoutManufacturer, series || '');
+  return withoutSeries.trim();
+}
+function computeLensFocalSortKeyFromTexts() {
+  for (var i = 0; i < arguments.length; i += 1) {
+    var source = i < 0 || arguments.length <= i ? undefined : arguments[i];
+    if (typeof source !== 'string') continue;
+    var lower = source.toLowerCase();
+    var mmIndex = lower.indexOf('mm');
+    var beforeMm = mmIndex === -1 ? source : source.slice(0, mmIndex);
+    var matches = beforeMm.match(/\d+(?:\.\d+)?/g);
+    if (matches && matches.length) {
+      var values = matches.map(function (part) {
+        return Number(part);
+      }).filter(Number.isFinite);
+      if (values.length) {
+        return Math.min.apply(Math, _toConsumableArray(values));
+      }
+    }
+  }
+  return Number.POSITIVE_INFINITY;
+}
+function buildLensSortMeta(lensName, lensData) {
+  var manufacturer = resolveLensManufacturer(lensData, lensName);
+  var series = resolveLensSeries(lensName, manufacturer);
+  var focalLabel = resolveLensFocalLabel(lensName, manufacturer, series);
+  var focalSortKey = computeLensFocalSortKeyFromTexts(focalLabel, lensName);
+  return {
+    manufacturer: manufacturer,
+    series: series,
+    focalLabel: focalLabel,
+    focalSortKey: focalSortKey
+  };
+}
+function compareStringsCaseInsensitive(a, b) {
+  var stringA = typeof a === 'string' ? a : '';
+  var stringB = typeof b === 'string' ? b : '';
+  if (typeof localeSort === 'function') {
+    return localeSort(stringA, stringB);
+  }
+  return stringA.localeCompare(stringB, undefined, {
+    sensitivity: 'base'
+  });
+}
 var lensSelectionManager = function () {
   var doc = typeof document !== 'undefined' ? document : null;
   var stub = {
@@ -765,8 +858,80 @@ var lensSelectionManager = function () {
     manufacturers: new Map(),
     lensIndex: new Map()
   };
-  var mountOptions = [];
   var optionInputs = new Map();
+  var getLensMountEntries = function getLensMountEntries(lensName) {
+    var _lensRecord$data;
+    var lensRecord = catalog.lensIndex.get(lensName);
+    if (!lensRecord || _typeof(lensRecord) !== 'object') {
+      return [];
+    }
+    var entryMap = new Map();
+    var entryOrder = [];
+    var pushEntry = function pushEntry(type) {
+      var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'native';
+      var normalizedType = typeof type === 'string' ? type.trim() : '';
+      if (!normalizedType) {
+        return;
+      }
+      var normalizedStatus = typeof status === 'string' && status.trim().toLowerCase() === 'adapted' ? 'adapted' : 'native';
+      if (entryMap.has(normalizedType)) {
+        var existing = entryMap.get(normalizedType);
+        if (existing && existing.status !== 'native' && normalizedStatus === 'native') {
+          existing.status = 'native';
+        }
+        return;
+      }
+      var entry = {
+        type: normalizedType,
+        status: normalizedStatus
+      };
+      entryMap.set(normalizedType, entry);
+      entryOrder.push(normalizedType);
+    };
+    var addFromRawValue = function addFromRawValue(rawValue) {
+      var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'native';
+      if (!rawValue) {
+        return;
+      }
+      var labels = extractMountLabels(rawValue);
+      if (Array.isArray(labels) && labels.length) {
+        labels.forEach(function (label) {
+          return pushEntry(label, status);
+        });
+        return;
+      }
+      pushEntry(rawValue, status);
+    };
+    var rawMountOptions = lensRecord === null || lensRecord === void 0 || (_lensRecord$data = lensRecord.data) === null || _lensRecord$data === void 0 ? void 0 : _lensRecord$data.mountOptions;
+    if (Array.isArray(rawMountOptions) && rawMountOptions.length) {
+      rawMountOptions.forEach(function (option) {
+        if (!option) {
+          return;
+        }
+        var optionStatus = typeof option.mount === 'string' && option.mount.trim().toLowerCase() === 'adapted' ? 'adapted' : 'native';
+        addFromRawValue(option.type, optionStatus);
+      });
+    }
+    if (!entryOrder.length && Array.isArray(lensRecord.mountLabels) && lensRecord.mountLabels.length) {
+      lensRecord.mountLabels.forEach(function (label) {
+        return pushEntry(label, 'native');
+      });
+    }
+    if (!entryOrder.length) {
+      var _lensRecord$data2;
+      addFromRawValue(lensRecord === null || lensRecord === void 0 || (_lensRecord$data2 = lensRecord.data) === null || _lensRecord$data2 === void 0 ? void 0 : _lensRecord$data2.mount, 'native');
+    }
+    return entryOrder.map(function (key) {
+      return entryMap.get(key);
+    }).filter(function (entry) {
+      return entry && entry.type;
+    });
+  };
+  var getLensMountLabels = function getLensMountLabels(lensName) {
+    return getLensMountEntries(lensName).map(function (entry) {
+      return entry.type;
+    });
+  };
   var placeholderToggle = function placeholderToggle(select, isEmpty) {
     if (!select) return;
     if (isEmpty) {
@@ -774,55 +939,6 @@ var lensSelectionManager = function () {
     } else {
       select.classList.remove('select-placeholder');
     }
-  };
-  var escapeRegExp = function escapeRegExp(value) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  };
-  var stripPrefix = function stripPrefix(text, prefix) {
-    if (!text || !prefix) return text;
-    var pattern = new RegExp("^".concat(escapeRegExp(prefix), "\\s+"), 'i');
-    return text.replace(pattern, '').trim();
-  };
-  var isSpecToken = function isSpecToken(token) {
-    if (!token) return false;
-    var value = token.trim();
-    if (!value) return false;
-    if (/^T\d+/i.test(value)) return true;
-    if (/^f\//i.test(value)) return true;
-    if (/\d/.test(value)) {
-      if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
-      if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
-      if (/^\d+-\d+/.test(value)) return true;
-    }
-    return false;
-  };
-  var deriveManufacturer = function deriveManufacturer(lensData, lensName) {
-    if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
-      return lensData.brand.trim();
-    }
-    var firstToken = typeof lensName === 'string' ? lensName.trim().split(/\s+/)[0] : '';
-    return firstToken || 'Other';
-  };
-  var deriveSeriesName = function deriveSeriesName(lensName, manufacturer) {
-    if (typeof lensName !== 'string' || !lensName.trim()) {
-      return 'General';
-    }
-    var remainder = lensName.trim();
-    if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
-      remainder = remainder.slice(manufacturer.length).trim();
-    }
-    if (!remainder) return 'General';
-    var tokens = remainder.split(/\s+/);
-    var seriesTokens = [];
-    for (var index = 0; index < tokens.length; index += 1) {
-      var token = tokens[index];
-      if (isSpecToken(token)) {
-        break;
-      }
-      seriesTokens.push(token);
-    }
-    var series = seriesTokens.join(' ').trim();
-    return series || 'General';
   };
   var extractMountLabels = function extractMountLabels(rawValue) {
     var labels = [];
@@ -867,7 +983,6 @@ var lensSelectionManager = function () {
     var lensDb = resolveLensDataset();
     var manufacturerMap = new Map();
     var lensIndex = new Map();
-    var mountSet = new Set();
     var lensNames = Object.keys(lensDb || {});
     if (lensNames.length && sortComparator) {
       lensNames.sort(sortComparator);
@@ -876,13 +991,12 @@ var lensSelectionManager = function () {
     }
     lensNames.forEach(function (name) {
       var lensData = lensDb[name] || {};
-      var manufacturer = deriveManufacturer(lensData, name);
-      var series = deriveSeriesName(name, manufacturer);
-      var focalLabel = stripPrefix(stripPrefix(name, manufacturer), series);
+      var sortMeta = buildLensSortMeta(name, lensData);
+      var manufacturer = sortMeta.manufacturer,
+        series = sortMeta.series,
+        focalLabel = sortMeta.focalLabel,
+        focalSortKey = sortMeta.focalSortKey;
       var mountLabels = extractMountLabels(lensData.mount);
-      mountLabels.forEach(function (label) {
-        return mountSet.add(label);
-      });
       var record = {
         name: name,
         data: lensData,
@@ -890,6 +1004,7 @@ var lensSelectionManager = function () {
         series: series,
         displayName: name,
         focalLabel: focalLabel,
+        focalSortKey: focalSortKey,
         mountLabels: mountLabels,
         optionMeta: mountLabels[0] ? "Mount: ".concat(mountLabels[0]) : ''
       };
@@ -905,33 +1020,25 @@ var lensSelectionManager = function () {
     });
     manufacturerMap.forEach(function (seriesMap) {
       seriesMap.forEach(function (list) {
-        if (list.length && sortComparator) {
-          list.sort(function (a, b) {
-            return sortComparator(a.displayName, b.displayName);
-          });
-        } else {
-          list.sort(function (a, b) {
-            return a.displayName.localeCompare(b.displayName);
-          });
+        if (!Array.isArray(list) || !list.length) {
+          return;
         }
+        list.sort(function (a, b) {
+          var hasA = Number.isFinite(a.focalSortKey);
+          var hasB = Number.isFinite(b.focalSortKey);
+          if (hasA && hasB && a.focalSortKey !== b.focalSortKey) {
+            return a.focalSortKey - b.focalSortKey;
+          }
+          if (hasA !== hasB) {
+            return hasA ? -1 : 1;
+          }
+          if (a.focalLabel && b.focalLabel && a.focalLabel !== b.focalLabel) {
+            return compareStringsCaseInsensitive(a.focalLabel, b.focalLabel);
+          }
+          return compareStringsCaseInsensitive(a.displayName, b.displayName);
+        });
       });
     });
-    var ensuredMounts = new Set(mountSet);
-    ['PL', 'EF', 'LPL', 'E-mount'].forEach(function (label) {
-      return ensuredMounts.add(label);
-    });
-    var sortedMounts = Array.from(ensuredMounts);
-    var mountPriority = new Map([['PL', 0], ['EF', 1], ['LPL', 2], ['E-mount', 3]]);
-    sortedMounts.sort(function (a, b) {
-      var rankA = mountPriority.has(a) ? mountPriority.get(a) : 100;
-      var rankB = mountPriority.has(b) ? mountPriority.get(b) : 100;
-      if (rankA !== rankB) return rankA - rankB;
-      if (sortComparator) {
-        return sortComparator(a, b);
-      }
-      return a.localeCompare(b);
-    });
-    mountOptions = sortedMounts;
     return {
       manufacturers: manufacturerMap,
       lensIndex: lensIndex
@@ -942,28 +1049,58 @@ var lensSelectionManager = function () {
     var labels = extractMountLabels(entry.type);
     return labels[0] || '';
   };
-  var getCameraNativeMount = function getCameraNativeMount() {
+  var getCameraLensMountEntries = function getCameraLensMountEntries() {
     var cameraElement = doc.getElementById('cameraSelect');
     var cameraName = cameraElement && typeof cameraElement.value === 'string' ? cameraElement.value : '';
     if (!cameraName || (typeof devices === "undefined" ? "undefined" : _typeof(devices)) !== 'object' || !devices || !devices.cameras) {
-      return '';
+      return [];
     }
     var camera = devices.cameras[cameraName];
-    if (!camera || !Array.isArray(camera.lensMount)) return '';
-    for (var index = 0; index < camera.lensMount.length; index += 1) {
-      var entry = camera.lensMount[index];
-      if (!entry) continue;
-      var normalizedType = getMountLabelFromCameraEntry(entry);
-      if (normalizedType && String(entry.mount || '').toLowerCase() === 'native') {
-        return normalizedType;
+    if (!camera || !Array.isArray(camera.lensMount)) return [];
+    var entryMap = new Map();
+    var entryOrder = [];
+    camera.lensMount.forEach(function (rawEntry) {
+      if (!rawEntry) {
+        return;
       }
+      var normalizedType = getMountLabelFromCameraEntry(rawEntry);
+      if (!normalizedType) {
+        return;
+      }
+      var status = typeof rawEntry.mount === 'string' && rawEntry.mount.trim().toLowerCase() === 'adapted' ? 'adapted' : 'native';
+      if (entryMap.has(normalizedType)) {
+        var existing = entryMap.get(normalizedType);
+        if (existing && existing.status !== 'native' && status === 'native') {
+          existing.status = 'native';
+        }
+        return;
+      }
+      var entry = {
+        type: normalizedType,
+        status: status
+      };
+      entryMap.set(normalizedType, entry);
+      entryOrder.push(normalizedType);
+    });
+    return entryOrder.map(function (key) {
+      return entryMap.get(key);
+    }).filter(function (entry) {
+      return entry && entry.type;
+    });
+  };
+  var getCameraNativeMount = function getCameraNativeMount() {
+    var _entries$;
+    var entries = getCameraLensMountEntries();
+    if (!entries.length) {
+      return '';
     }
-    for (var _index = 0; _index < camera.lensMount.length; _index += 1) {
-      var _entry = camera.lensMount[_index];
-      var _normalizedType = getMountLabelFromCameraEntry(_entry);
-      if (_normalizedType) return _normalizedType;
+    var nativeEntry = entries.find(function (entry) {
+      return entry.status === 'native';
+    });
+    if (nativeEntry) {
+      return nativeEntry.type;
     }
-    return '';
+    return ((_entries$ = entries[0]) === null || _entries$ === void 0 ? void 0 : _entries$.type) || '';
   };
   var buildMountOptionsForSelection = function buildMountOptionsForSelection(currentMount, lensName) {
     var options = [];
@@ -975,12 +1112,8 @@ var lensSelectionManager = function () {
       seen.add(normalized);
       options.push(normalized);
     };
-    var lensRecord = catalog.lensIndex.get(lensName);
-    if (lensRecord && Array.isArray(lensRecord.mountLabels) && lensRecord.mountLabels.length) {
-      lensRecord.mountLabels.forEach(addOption);
-    } else {
-      mountOptions.forEach(addOption);
-    }
+    var lensMountLabels = getLensMountLabels(lensName);
+    lensMountLabels.forEach(addOption);
     var normalizedCurrent = typeof currentMount === 'string' ? currentMount.trim() : '';
     var hasCurrent = normalizedCurrent && seen.has(normalizedCurrent);
     return {
@@ -988,19 +1121,77 @@ var lensSelectionManager = function () {
       hiddenValue: hasCurrent ? '' : normalizedCurrent
     };
   };
-  var resolveDefaultMount = function resolveDefaultMount(lensName) {
-    var cameraMount = getCameraNativeMount();
-    if (cameraMount) {
-      return cameraMount;
+  var determineLensMountSelection = function determineLensMountSelection(lensName) {
+    var preferredMount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var lensEntries = getLensMountEntries(lensName);
+    var lensTypes = lensEntries.map(function (entry) {
+      return entry.type;
+    });
+    var cameraEntries = getCameraLensMountEntries();
+    var resolveStatusForType = function resolveStatusForType(type) {
+      if (!type) {
+        return '';
+      }
+      var cameraMatch = cameraEntries.find(function (entry) {
+        return entry.type === type && entry.status === 'native';
+      }) || cameraEntries.find(function (entry) {
+        return entry.type === type;
+      });
+      if (cameraMatch) {
+        return cameraMatch.status;
+      }
+      var lensMatch = lensEntries.find(function (entry) {
+        return entry.type === type;
+      });
+      return lensMatch ? lensMatch.status : '';
+    };
+    var normalizedPreferred = typeof preferredMount === 'string' ? preferredMount.trim() : '';
+    if (normalizedPreferred && lensTypes.includes(normalizedPreferred)) {
+      return {
+        mount: normalizedPreferred,
+        status: resolveStatusForType(normalizedPreferred)
+      };
     }
-    var lensRecord = catalog.lensIndex.get(lensName);
-    if (lensRecord && lensRecord.mountLabels && lensRecord.mountLabels.length) {
-      return lensRecord.mountLabels[0];
+    var nativeMatch = cameraEntries.find(function (entry) {
+      return entry.status === 'native' && lensTypes.includes(entry.type);
+    });
+    if (nativeMatch) {
+      return {
+        mount: nativeMatch.type,
+        status: resolveStatusForType(nativeMatch.type)
+      };
     }
-    if (mountOptions.includes('PL')) return 'PL';
-    if (mountOptions.includes('EF')) return 'EF';
-    if (mountOptions.includes('LPL')) return 'LPL';
-    return mountOptions[0] || '';
+    var adaptedMatch = cameraEntries.find(function (entry) {
+      return entry.status === 'adapted' && lensTypes.includes(entry.type);
+    });
+    if (adaptedMatch) {
+      return {
+        mount: adaptedMatch.type,
+        status: resolveStatusForType(adaptedMatch.type)
+      };
+    }
+    if (lensEntries.length) {
+      var fallbackType = lensEntries[0].type;
+      var fallbackStatus = resolveStatusForType(fallbackType);
+      var hasCameraEntries = cameraEntries.length > 0;
+      var cameraMatchesFallback = cameraEntries.some(function (entry) {
+        return entry.type === fallbackType;
+      });
+      var inferredStatus = fallbackStatus;
+      if (!cameraMatchesFallback && hasCameraEntries) {
+        inferredStatus = 'adapted';
+      } else if (!inferredStatus && hasCameraEntries) {
+        inferredStatus = 'adapted';
+      }
+      return {
+        mount: fallbackType,
+        status: inferredStatus
+      };
+    }
+    return {
+      mount: '',
+      status: ''
+    };
   };
   var normalizeSelectionName = function normalizeSelectionName(value) {
     if (typeof value !== 'string') return '';
@@ -1044,10 +1235,14 @@ var lensSelectionManager = function () {
     });
     var legacyValue = names.join(', ');
     var detailedValue = JSON.stringify(state.selections.map(function (selection) {
-      return {
+      var record = {
         name: selection.name,
         mount: selection.mount || ''
       };
+      if (selection.mountState) {
+        record.mountState = selection.mountState;
+      }
+      return record;
     }));
     var legacyChanged = hiddenLegacyValue.value !== legacyValue;
     var detailedChanged = hiddenDetailedValue.value !== detailedValue;
@@ -1121,8 +1316,14 @@ var lensSelectionManager = function () {
       mountSelect.id = mountId;
       mountSelect.dataset.lensName = selection.name;
       var storedMount = typeof selection.mount === 'string' ? selection.mount.trim() : '';
-      if (selection.mount !== storedMount) {
-        selection.mount = storedMount;
+      var mountResolution = determineLensMountSelection(selection.name, storedMount);
+      if (selection.mount !== mountResolution.mount) {
+        selection.mount = mountResolution.mount;
+      }
+      if (mountResolution.status) {
+        selection.mountState = mountResolution.status;
+      } else if (selection.mountState) {
+        delete selection.mountState;
       }
       var _buildMountOptionsFor = buildMountOptionsForSelection(storedMount, selection.name),
         mountOptionsForSelect = _buildMountOptionsFor.options,
@@ -1130,8 +1331,13 @@ var lensSelectionManager = function () {
       mountOptionsForSelect.forEach(function (label) {
         var option = doc.createElement('option');
         option.value = label;
-        option.textContent = label;
-        if (storedMount === label) {
+        var optionResolution = determineLensMountSelection(selection.name, label);
+        var optionStatus = optionResolution.status;
+        option.textContent = optionStatus === 'adapted' ? "".concat(label, " (adapted)") : label;
+        if (optionStatus) {
+          option.dataset.mountState = optionStatus;
+        }
+        if (selection.mount === label) {
           option.selected = true;
         }
         mountSelect.appendChild(option);
@@ -1144,12 +1350,18 @@ var lensSelectionManager = function () {
         storedOption.disabled = true;
         mountSelect.appendChild(storedOption);
       }
-      if (storedMount) {
-        mountSelect.value = storedMount;
+      if (selection.mount) {
+        mountSelect.value = selection.mount;
       }
-      if (!storedMount && mountOptionsForSelect.length) {
+      if (!selection.mount && mountOptionsForSelect.length) {
         mountSelect.value = mountOptionsForSelect[0];
         selection.mount = mountSelect.value;
+        var fallbackResolution = determineLensMountSelection(selection.name, selection.mount);
+        if (fallbackResolution.status) {
+          selection.mountState = fallbackResolution.status;
+        } else if (selection.mountState) {
+          delete selection.mountState;
+        }
       }
       mountSelect.setAttribute('aria-label', "".concat(mountLabel, ": ").concat(displayName));
       mountSelect.addEventListener('change', function (event) {
@@ -1158,10 +1370,26 @@ var lensSelectionManager = function () {
         var record = state.selections.find(function (sel) {
           return sel.name === lensName;
         });
-        if (!record || record.mount === newMount) {
+        if (!record) {
           return;
         }
-        record.mount = newMount;
+        var resolution = determineLensMountSelection(lensName, newMount);
+        var resolvedMount = resolution.mount;
+        var resolvedStatus = resolution.status;
+        var previousStatus = record.mountState || '';
+        var statusChanged = (resolvedStatus || '') !== previousStatus;
+        if (record.mount === resolvedMount && !statusChanged) {
+          return;
+        }
+        record.mount = resolvedMount;
+        if (resolvedStatus) {
+          record.mountState = resolvedStatus;
+        } else if (record.mountState) {
+          delete record.mountState;
+        }
+        if (event.target.value !== resolvedMount) {
+          event.target.value = resolvedMount || '';
+        }
         updateHiddenInputs();
       });
       mountWrapper.appendChild(mountSelect);
@@ -1318,10 +1546,14 @@ var lensSelectionManager = function () {
       })) {
         return;
       }
+      var defaultMount = determineLensMountSelection(lensName);
       var selection = {
         name: lensName,
-        mount: resolveDefaultMount(lensName)
+        mount: defaultMount.mount
       };
+      if (defaultMount.status) {
+        selection.mountState = defaultMount.status;
+      }
       state.selections.push(selection);
       renderSelectionChips();
     } else {
@@ -1385,9 +1617,11 @@ var lensSelectionManager = function () {
         var name = normalizeSelectionName(entry.name);
         if (!name || seen.has(name) || !validNames.has(name)) return;
         var mount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+        var mountState = typeof entry.mountState === 'string' ? entry.mountState.trim() : '';
         prepared.push({
           name: name,
-          mount: mount
+          mount: mount,
+          mountState: mountState
         });
         seen.add(name);
       });
@@ -1404,10 +1638,17 @@ var lensSelectionManager = function () {
       });
     }
     state.selections = prepared.map(function (entry) {
-      return {
+      var preferredMount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+      var resolution = determineLensMountSelection(entry.name, preferredMount);
+      var selection = {
         name: entry.name,
-        mount: entry.mount || resolveDefaultMount(entry.name)
+        mount: resolution.mount
       };
+      var resolvedState = resolution.status || (typeof entry.mountState === 'string' ? entry.mountState.trim() : '');
+      if (resolvedState) {
+        selection.mountState = resolvedState;
+      }
+      return selection;
     });
     if (state.selections.length) {
       var firstRecord = catalog.lensIndex.get(state.selections[0].name);
@@ -1431,10 +1672,12 @@ var lensSelectionManager = function () {
         return selection.name;
       }),
       lensSelections: state.selections.map(function (selection) {
-        return {
+        return _objectSpread({
           name: selection.name,
           mount: selection.mount || ''
-        };
+        }, selection.mountState ? {
+          mountState: selection.mountState
+        } : {});
       }),
       legacyValue: state.selections.map(function (selection) {
         return selection.name;
@@ -5179,7 +5422,8 @@ function collectProjectFormData() {
   var lensSelectionsDetailed = Array.isArray(lensSnapshot.lensSelections) ? lensSnapshot.lensSelections.map(function (entry) {
     return {
       name: typeof (entry === null || entry === void 0 ? void 0 : entry.name) === 'string' ? entry.name.trim() : '',
-      mount: typeof (entry === null || entry === void 0 ? void 0 : entry.mount) === 'string' ? entry.mount.trim() : ''
+      mount: typeof (entry === null || entry === void 0 ? void 0 : entry.mount) === 'string' ? entry.mount.trim() : '',
+      mountState: typeof (entry === null || entry === void 0 ? void 0 : entry.mountState) === 'string' ? entry.mountState.trim() : ''
     };
   }).filter(function (entry) {
     return entry.name;
@@ -6706,7 +6950,10 @@ function mergeAutoGearAdditions(baseAdditions, extraAdditions) {
   return result;
 }
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
-  if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
+  var activeRules = typeof getEnabledAutoGearRules === 'function' ? getEnabledAutoGearRules() : autoGearRules.filter(function (rule) {
+    return !rule || rule.enabled !== false;
+  });
+  if (!tableHtml || !activeRules.length || typeof document === 'undefined') return tableHtml;
   var scenarios = info && info.requiredScenarios ? info.requiredScenarios.split(',').map(function (s) {
     return s.trim();
   }).filter(Boolean) : [];
@@ -6862,7 +7109,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var rawDistanceSelection = info && typeof info.distanceSelection === 'string' ? info.distanceSelection.trim() : '';
   var normalizedDistanceSelection = normalizeAutoGearTriggerValue(rawDistanceSelection);
   if (!scenarios.length) {
-    var hasRuleWithoutScenario = autoGearRules.some(function (rule) {
+    var hasRuleWithoutScenario = activeRules.some(function (rule) {
       var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
       return scenarioList.length === 0;
     });
@@ -6882,7 +7129,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     });
   };
   var triggeredEntries = [];
-  autoGearRules.forEach(function (rule) {
+  activeRules.forEach(function (rule) {
     if (!rule) return;
     var multiplier = 1;
     if (rule.always) {
@@ -10769,19 +11016,25 @@ function gearListGenerateHtmlImpl() {
     });
     var rentalTexts = rentalToggleTexts;
     var noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalTexts.noteLabel), "\"") : '';
-    return Object.entries(entries).sort(function (_ref31, _ref32) {
-      var _ref33 = _slicedToArray(_ref31, 1),
-        a = _ref33[0];
-      var _ref34 = _slicedToArray(_ref32, 1),
-        b = _ref34[0];
-      return a.localeCompare(b, undefined, {
-        sensitivity: 'base'
-      });
-    }).map(function (_ref35) {
+    var entryList = Object.entries(entries);
+    var baseSorter = typeof options.sorter === 'function' ? options.sorter : function (left, right) {
+      return compareStringsCaseInsensitive(left[0], right[0]);
+    };
+    entryList.sort(function (left, right) {
+      try {
+        return baseSorter(left, right);
+      } catch (sortError) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('formatItems sorter failed, falling back to default', sortError);
+        }
+        return compareStringsCaseInsensitive(left[0], right[0]);
+      }
+    });
+    return entryList.map(function (_ref31) {
       var _gearItemTranslations;
-      var _ref36 = _slicedToArray(_ref35, 2),
-        base = _ref36[0],
-        entry = _ref36[1];
+      var _ref32 = _slicedToArray(_ref31, 2),
+        base = _ref32[0],
+        entry = _ref32[1];
       var total = entry.total;
       var ctxCounts = entry.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
@@ -10791,41 +11044,39 @@ function gearListGenerateHtmlImpl() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 1),
-              c = _ref38[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref33) {
+            var _ref34 = _slicedToArray(_ref33, 1),
+              c = _ref34[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref39, _ref40) {
-            var _ref41 = _slicedToArray(_ref39, 1),
-              a = _ref41[0];
-            var _ref42 = _slicedToArray(_ref40, 1),
-              b = _ref42[0];
-            return a.localeCompare(b, undefined, {
-              sensitivity: 'base'
-            });
+          }).sort(function (_ref35, _ref36) {
+            var _ref37 = _slicedToArray(_ref35, 1),
+              a = _ref37[0];
+            var _ref38 = _slicedToArray(_ref36, 1),
+              b = _ref38[0];
+            return compareStringsCaseInsensitive(a, b);
           });
-          var usedCount = realEntries.reduce(function (sum, _ref43) {
-            var _ref44 = _slicedToArray(_ref43, 2),
-              count = _ref44[1];
+          var usedCount = realEntries.reduce(function (sum, _ref39) {
+            var _ref40 = _slicedToArray(_ref39, 2),
+              count = _ref40[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref45) {
-            var _ref46 = _slicedToArray(_ref45, 2),
-              c = _ref46[0],
-              count = _ref46[1];
+          ctxParts = realEntries.map(function (_ref41) {
+            var _ref42 = _slicedToArray(_ref41, 2),
+              c = _ref42[0],
+              count = _ref42[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref47) {
-            var _ref48 = _slicedToArray(_ref47, 1),
-              c = _ref48[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref43) {
+            var _ref44 = _slicedToArray(_ref43, 1),
+              c = _ref44[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref49) {
-            var _ref50 = _slicedToArray(_ref49, 2),
-              c = _ref50[0],
-              count = _ref50[1];
+          }).map(function (_ref45) {
+            var _ref46 = _slicedToArray(_ref45, 2),
+              c = _ref46[0],
+              count = _ref46[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -10837,72 +11088,68 @@ function gearListGenerateHtmlImpl() {
               }
             }
             return [c, count];
-          }).sort(function (_ref51, _ref52) {
-            var _ref53 = _slicedToArray(_ref51, 1),
-              a = _ref53[0];
-            var _ref54 = _slicedToArray(_ref52, 1),
-              b = _ref54[0];
-            return a.localeCompare(b, undefined, {
-              sensitivity: 'base'
-            });
+          }).sort(function (_ref47, _ref48) {
+            var _ref49 = _slicedToArray(_ref47, 1),
+              a = _ref49[0];
+            var _ref50 = _slicedToArray(_ref48, 1),
+              b = _ref50[0];
+            return compareStringsCaseInsensitive(a, b);
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref55) {
-            var _ref56 = _slicedToArray(_ref55, 2),
-              count = _ref56[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref51) {
+            var _ref52 = _slicedToArray(_ref51, 2),
+              count = _ref52[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref57) {
-            var _ref58 = _slicedToArray(_ref57, 2),
-              c = _ref58[0],
-              count = _ref58[1];
+          ctxParts = _realEntries.map(function (_ref53) {
+            var _ref54 = _slicedToArray(_ref53, 2),
+              c = _ref54[0],
+              count = _ref54[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref59) {
-            var _ref60 = _slicedToArray(_ref59, 1),
-              c = _ref60[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref55) {
+            var _ref56 = _slicedToArray(_ref55, 1),
+              c = _ref56[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref61, _ref62) {
-            var _ref63 = _slicedToArray(_ref61, 1),
-              a = _ref63[0];
-            var _ref64 = _slicedToArray(_ref62, 1),
-              b = _ref64[0];
-            return a.localeCompare(b, undefined, {
-              sensitivity: 'base'
-            });
+          }).sort(function (_ref57, _ref58) {
+            var _ref59 = _slicedToArray(_ref57, 1),
+              a = _ref59[0];
+            var _ref60 = _slicedToArray(_ref58, 1),
+              b = _ref60[0];
+            return compareStringsCaseInsensitive(a, b);
           });
-          var _usedCount2 = _realEntries2.reduce(function (sum, _ref65) {
+          var _usedCount2 = _realEntries2.reduce(function (sum, _ref61) {
+            var _ref62 = _slicedToArray(_ref61, 2),
+              count = _ref62[1];
+            return sum + count;
+          }, 0);
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref63) {
+            var _ref64 = _slicedToArray(_ref63, 1),
+              c = _ref64[0];
+            return c && c.toLowerCase() === 'spare';
+          }).reduce(function (sum, _ref65) {
             var _ref66 = _slicedToArray(_ref65, 2),
               count = _ref66[1];
             return sum + count;
           }, 0);
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref67) {
-            var _ref68 = _slicedToArray(_ref67, 1),
-              c = _ref68[0];
-            return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref69) {
-            var _ref70 = _slicedToArray(_ref69, 2),
-              count = _ref70[1];
-            return sum + count;
-          }, 0);
-          var countsUniform = _realEntries2.length > 0 && _realEntries2.every(function (_ref71) {
-            var _ref72 = _slicedToArray(_ref71, 2),
-              count = _ref72[1];
+          var countsUniform = _realEntries2.length > 0 && _realEntries2.every(function (_ref67) {
+            var _ref68 = _slicedToArray(_ref67, 2),
+              count = _ref68[1];
             return count === _realEntries2[0][1];
           });
           if (countsUniform && _spareCount2 === 0) {
-            ctxParts = _realEntries2.map(function (_ref73) {
-              var _ref74 = _slicedToArray(_ref73, 1),
-                c = _ref74[0];
+            ctxParts = _realEntries2.map(function (_ref69) {
+              var _ref70 = _slicedToArray(_ref69, 1),
+                c = _ref70[0];
               return c;
             });
           } else {
-            ctxParts = _realEntries2.map(function (_ref75) {
-              var _ref76 = _slicedToArray(_ref75, 2),
-                c = _ref76[0],
-                count = _ref76[1];
+            ctxParts = _realEntries2.map(function (_ref71) {
+              var _ref72 = _slicedToArray(_ref71, 2),
+                c = _ref72[0],
+                count = _ref72[1];
               return "".concat(count, "x ").concat(c);
             });
           }
@@ -11234,10 +11481,18 @@ function gearListGenerateHtmlImpl() {
     });
     return formatted ? "".concat(formatted, " cm") : '';
   };
+  var lensSortMetaLookup = new Map();
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref77, _lens$minFocusMeters, _lens$imageCircleMm;
+    var _ref73, _lens$minFocusMeters, _lens$imageCircleMm;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
+    var sortMeta = buildLensSortMeta(name, lens);
+    lensSortMetaLookup.set(base, {
+      manufacturer: sortMeta.manufacturer,
+      series: sortMeta.series,
+      focalLabel: sortMeta.focalLabel,
+      focalSortKey: sortMeta.focalSortKey
+    });
     if (!lens) return base;
     var lensFocusScaleMode = resolveLensFocusScaleMode(lens);
     var attrs = [];
@@ -11251,7 +11506,7 @@ function gearListGenerateHtmlImpl() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref77 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref77 !== void 0 ? _ref77 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref73 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref73 !== void 0 ? _ref73 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
@@ -11265,7 +11520,38 @@ function gearListGenerateHtmlImpl() {
     }
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
-  addRow('Lens', formatItems(lensDisplayNames));
+  var lensSorter = function lensSorter(_ref74, _ref75) {
+    var _ref76 = _slicedToArray(_ref74, 1),
+      baseA = _ref76[0];
+    var _ref77 = _slicedToArray(_ref75, 1),
+      baseB = _ref77[0];
+    var metaA = lensSortMetaLookup.get(baseA);
+    var metaB = lensSortMetaLookup.get(baseB);
+    if (metaA && metaB) {
+      var manufacturerCompare = compareStringsCaseInsensitive(metaA.manufacturer, metaB.manufacturer);
+      if (manufacturerCompare !== 0) return manufacturerCompare;
+      var seriesCompare = compareStringsCaseInsensitive(metaA.series, metaB.series);
+      if (seriesCompare !== 0) return seriesCompare;
+      var hasA = Number.isFinite(metaA.focalSortKey);
+      var hasB = Number.isFinite(metaB.focalSortKey);
+      if (hasA && hasB && metaA.focalSortKey !== metaB.focalSortKey) {
+        return metaA.focalSortKey - metaB.focalSortKey;
+      }
+      if (hasA !== hasB) {
+        return hasA ? -1 : 1;
+      }
+      var focalLabelCompare = compareStringsCaseInsensitive(metaA.focalLabel, metaB.focalLabel);
+      if (focalLabelCompare !== 0) return focalLabelCompare;
+    } else if (metaA && !metaB) {
+      return -1;
+    } else if (!metaA && metaB) {
+      return 1;
+    }
+    return compareStringsCaseInsensitive(baseA, baseB);
+  };
+  addRow('Lens', formatItems(lensDisplayNames, {
+    sorter: lensSorter
+  }));
   var parseRodTypes = function parseRodTypes(raw) {
     if (!raw && raw !== 0) return [];
     var values = Array.isArray(raw) ? raw : [raw];
@@ -11908,6 +12194,260 @@ function gearListGenerateHtmlImpl() {
   var monitoringSupportHardware = formatItems(monitoringSupportAcc);
   var monitoringSupportItems = monitoringSupportHardware;
   addRow('Monitoring support', monitoringSupportItems);
+  var cartDatabase = devices && (typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' && devices.carts && _typeof(devices.carts) === 'object' ? devices.carts : {};
+  var cartDatabaseNames = Object.keys(cartDatabase).filter(function (name) {
+    return name && name !== 'None';
+  }).sort(localeSort);
+  var DEFAULT_CART_NAME = cartDatabaseNames.includes('Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)') ? 'Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)' : cartDatabaseNames[0] || '';
+  var CART_LEGACY_HINTS = [{
+    pattern: /magliner\s+senior/,
+    value: 'Backstage Magliner Senior 24" Film Cart (8" Conversion Kit)'
+  }, {
+    pattern: /magliner\s+junior/,
+    value: 'Backstage Magliner Junior 24" Film Cart (8" Conversion Kit)'
+  }, {
+    pattern: /voyager\s*30/,
+    value: 'Inovativ Voyager 30 EVO X'
+  }, {
+    pattern: /voyager\s*36/,
+    value: 'Inovativ Voyager 36 EVO X'
+  }, {
+    pattern: /voyager\s*42/,
+    value: 'Inovativ Voyager 42 EVO X'
+  }, {
+    pattern: /apollo\s*40/,
+    value: 'Inovativ Apollo 40 EVO'
+  }, {
+    pattern: /apollo\s*52/,
+    value: 'Inovativ Apollo 52 EVO'
+  }, {
+    pattern: /echo\s*36/,
+    value: 'Inovativ Echo 36 Workstation Cart'
+  }, {
+    pattern: /echo\s*48/,
+    value: 'Inovativ Echo 48 Workstation Cart'
+  }, {
+    pattern: /adicam\s+mini/,
+    value: 'Adicam MINI Camera Cart'
+  }, {
+    pattern: /adicam\s+standard\+/,
+    value: 'Adicam STANDARD+ Camera Cart'
+  }, {
+    pattern: /adicam\s+standard/,
+    value: 'Adicam STANDARD Camera Cart'
+  }, {
+    pattern: /adicam\s+max/,
+    value: 'Adicam MAX Camera Cart'
+  }, {
+    pattern: /tilta\s+boulder/,
+    value: 'Tilta Boulder 36" Camera Cart'
+  }, {
+    pattern: /smallrig/,
+    value: 'SmallRig MD4573 36" Lightweight Video Production Camera Cart'
+  }];
+  function normalizeCartName(value) {
+    return value ? value.replace(/["'”“]/g, '').replace(/\(.*?\)/g, '').replace(/[^a-z0-9]+/gi, ' ').trim().toLowerCase() : '';
+  }
+  function resolveCartDatasetName(rawName) {
+    if (!cartDatabaseNames.length) {
+      return '';
+    }
+    var trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+    if (trimmed && Object.prototype.hasOwnProperty.call(cartDatabase, trimmed)) {
+      return trimmed;
+    }
+    var normalized = normalizeCartName(trimmed);
+    if (normalized) {
+      var direct = cartDatabaseNames.find(function (name) {
+        return normalizeCartName(name) === normalized;
+      });
+      if (direct) {
+        return direct;
+      }
+      var hinted = CART_LEGACY_HINTS.find(function (entry) {
+        return entry.pattern.test(normalized) && cartDatabaseNames.includes(entry.value);
+      });
+      if (hinted) {
+        return hinted.value;
+      }
+    }
+    return '';
+  }
+  function formatCartFeatureLabel(value) {
+    if (!value) return '';
+    return value.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').replace(/\b\w/g, function (char) {
+      return char.toUpperCase();
+    });
+  }
+  function formatWheelOptionLabel(option, prefix) {
+    if (!option || _typeof(option) !== 'object') {
+      return '';
+    }
+    var parts = [];
+    if (prefix) {
+      parts.push(prefix);
+    }
+    if (typeof option.diameterIn !== 'undefined') {
+      parts.push("".concat(option.diameterIn, "\""));
+    } else if (typeof option.diameterMainMm !== 'undefined') {
+      parts.push("".concat(option.diameterMainMm, " mm"));
+    }
+    if (option.tireType) {
+      parts.push(option.tireType);
+    }
+    var base = parts.filter(Boolean).join(' ');
+    if (option.notes) {
+      return base ? "".concat(base, " (").concat(option.notes, ")") : option.notes;
+    }
+    if (option.name && base) {
+      return "".concat(option.name, " - ").concat(base);
+    }
+    return option.name || base;
+  }
+  function buildCartConfigurationOptions(cartEntry) {
+    if (!cartEntry || _typeof(cartEntry) !== 'object') {
+      return [];
+    }
+    var options = [];
+    var seen = new Set();
+    var addOption = function addOption(value, label, selected, title) {
+      if (!value || !label || seen.has(value)) {
+        return;
+      }
+      var optionLabel = addArriKNumber(label) || label;
+      options.push({
+        value: value,
+        label: optionLabel,
+        selected: Boolean(selected),
+        title: title
+      });
+      seen.add(value);
+    };
+    if (cartEntry.config && _typeof(cartEntry.config) === 'object') {
+      Object.entries(cartEntry.config).forEach(function (_ref82) {
+        var _ref83 = _slicedToArray(_ref82, 2),
+          key = _ref83[0],
+          value = _ref83[1];
+        if (!value) return;
+        var label = formatCartFeatureLabel(key);
+        if (label) {
+          addOption("feature:".concat(key), label, true);
+        }
+      });
+    }
+    var wheelConfig = cartEntry.wheelConfig && _typeof(cartEntry.wheelConfig) === 'object' ? cartEntry.wheelConfig : null;
+    if (wheelConfig && wheelConfig.standard) {
+      var wheelLabel = formatWheelOptionLabel(wheelConfig.standard, 'Standard wheel') || 'Standard wheel';
+      addOption('wheel:standard', wheelLabel, true, wheelConfig.standard.notes);
+    }
+    if (wheelConfig && Array.isArray(wheelConfig.options)) {
+      wheelConfig.options.forEach(function (option, idx) {
+        var label = formatWheelOptionLabel(option, option && option.name ? option.name : 'Wheel option') || "Wheel option ".concat(idx + 1);
+        addOption("wheel:option:".concat(idx), label, false, option && option.notes);
+      });
+    }
+    if (Array.isArray(cartEntry.kits)) {
+      cartEntry.kits.forEach(function (kit, idx) {
+        var label = kit && kit.name ? kit.name : "Kit ".concat(idx + 1);
+        addOption("kit:".concat(idx), label, false, kit && kit.notes);
+      });
+    }
+    return options;
+  }
+  function buildCartAccessoriesOptions(cartEntry) {
+    if (!cartEntry || _typeof(cartEntry) !== 'object') {
+      return [];
+    }
+    var options = [];
+    var seen = new Set();
+    var addOption = function addOption(value, label, selected, title) {
+      if (!value || !label || seen.has(value)) {
+        return;
+      }
+      var optionLabel = addArriKNumber(label) || label;
+      options.push({
+        value: value,
+        label: optionLabel,
+        selected: Boolean(selected),
+        title: title
+      });
+      seen.add(value);
+    };
+    if (Array.isArray(cartEntry.accessories)) {
+      cartEntry.accessories.forEach(function (name, idx) {
+        if (!name) return;
+        addOption("accessory:".concat(idx), name, true);
+      });
+    }
+    if (Array.isArray(cartEntry.brandAccessories)) {
+      cartEntry.brandAccessories.forEach(function (accessory, idx) {
+        if (!accessory || !accessory.name) return;
+        var kindLabel = accessory.accessoryKind ? formatCartFeatureLabel(accessory.accessoryKind) : '';
+        var label = kindLabel ? "[".concat(kindLabel, "] ").concat(accessory.name) : accessory.name;
+        addOption("brand:".concat(idx), label, true, accessory.notes);
+      });
+    }
+    return options;
+  }
+  function buildCartOptionBlock(id, label, options) {
+    if (!options.length) {
+      return '';
+    }
+    var safeLabel = label || 'Options';
+    var selectSize = Math.min(6, Math.max(2, options.length));
+    var optionsHtml = options.map(function (option) {
+      var attrs = ["value=\"".concat(escapeHtml(option.value), "\"")];
+      if (option.selected) {
+        attrs.push('selected');
+      }
+      if (option.title) {
+        attrs.push("title=\"".concat(escapeHtml(option.title), "\""));
+      }
+      return "<option ".concat(attrs.join(' '), ">").concat(escapeHtml(option.label), "</option>");
+    }).join('');
+    return "\n        <span class=\"gear-cart-option\">\n          <span class=\"gear-cart-option-label\">".concat(escapeHtml(safeLabel), "</span>\n          <select id=\"").concat(escapeHtml(id), "\" multiple size=\"").concat(selectSize, "\" aria-label=\"").concat(escapeHtml(safeLabel), "\">\n            ").concat(optionsHtml, "\n          </select>\n        </span>\n      ").replace(/\s+/g, ' ').trim();
+  }
+  function buildCartItemHtml(rawName, index) {
+    if (!cartDatabaseNames.length) {
+      return '';
+    }
+    var resolved = resolveCartDatasetName(rawName) || DEFAULT_CART_NAME || '';
+    if (!resolved && !rawName) {
+      return '';
+    }
+    var cartName = resolved || rawName;
+    var optionsHtml = cartDatabaseNames.length ? cartDatabaseNames.map(function (name) {
+      return "<option value=\"".concat(escapeHtml(name), "\"").concat(name === resolved ? ' selected' : '', ">").concat(escapeHtml(addArriKNumber(name) || name), "</option>");
+    }).join('') : "<option value=\"".concat(escapeHtml(cartName), "\" selected>").concat(escapeHtml(addArriKNumber(cartName) || cartName), "</option>");
+    var selectId = "gearListCartSelect".concat(index);
+    var cartLabel = resolveGearListCustomText('gearListCartSelectorLabel', 'Camera cart');
+    var selectHtml = "<select id=\"".concat(selectId, "\" aria-label=\"").concat(escapeHtml(cartLabel), "\">").concat(optionsHtml, "</select>");
+    var cartEntry = cartDatabase[resolved] || cartDatabase[cartName] || null;
+    var configOptions = buildCartConfigurationOptions(cartEntry);
+    var accessoriesOptions = buildCartAccessoriesOptions(cartEntry);
+    var configBlock = configOptions.length ? buildCartOptionBlock("gearListCartConfig".concat(index), resolveGearListCustomText('gearListCartConfigurationLabel', 'Cart configuration'), configOptions) : '';
+    var accessoriesBlock = accessoriesOptions.length ? buildCartOptionBlock("gearListCartAccessories".concat(index), resolveGearListCustomText('gearListCartAccessoriesLabel', 'Cart accessories'), accessoriesOptions) : '';
+    var detailBlocks = [configBlock, accessoriesBlock].filter(Boolean).join('');
+    var detailHtml = detailBlocks ? "<div class=\"gear-cart-detail\">".concat(detailBlocks, "</div>") : '';
+    var rowLabel = cartLabel || 'Camera cart';
+    var contentHtml = "1x <strong>".concat(escapeHtml(rowLabel), "</strong> - ").concat(selectHtml).concat(detailHtml);
+    var attributeText = cartName ? addArriKNumber(cartName) || cartName : '';
+    return wrapGearItemHtml(contentHtml, {
+      name: attributeText ? "".concat(rowLabel, " (").concat(attributeText, ")") : rowLabel,
+      label: rowLabel,
+      attributes: attributeText,
+      extraAttributes: ' data-gear-cart-entry="true"'
+    });
+  }
+  function buildCartRowsHtml(items) {
+    if (!Array.isArray(items) || !items.length) {
+      return '';
+    }
+    var rows = items.map(function (item, index) {
+      return buildCartItemHtml(item, index);
+    }).filter(Boolean);
+    return rows.join('<br>');
+  }
   var cartsTransportationItems = [];
   ensureItems(cartsTransportationItems, 'accessories.carts');
   var gripItems = [];
@@ -12062,7 +12602,8 @@ function gearListGenerateHtmlImpl() {
     onItem: applyCameraLinkFromTargets
   });
   addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join('<br>'));
-  addRow('Carts and Transportation', formatItems(cartsTransportationItems));
+  var cartRowHtml = buildCartRowsHtml(cartsTransportationItems);
+  addRow('Carts and Transportation', cartRowHtml || formatItems(cartsTransportationItems));
   var miscExcluded = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable', 'BNC SDI Cable', 'Ultraslim BNC Cable 0.5 m']);
   var miscItems = _toConsumableArray(miscAcc).filter(function (item) {
     return !miscExcluded.has(item);
@@ -12182,14 +12723,14 @@ function gearListGenerateHtmlImpl() {
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref82) {
-    var id = _ref82.id,
-      color = _ref82.color,
-      width = _ref82.width;
-    var colorOpts = gaffColors.map(function (_ref83) {
-      var _ref84 = _slicedToArray(_ref83, 2),
-        val = _ref84[0],
-        label = _ref84[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref84) {
+    var id = _ref84.id,
+      color = _ref84.color,
+      width = _ref84.width;
+    var colorOpts = gaffColors.map(function (_ref85) {
+      var _ref86 = _slicedToArray(_ref85, 2),
+        val = _ref86[0],
+        label = _ref86[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -12203,10 +12744,10 @@ function gearListGenerateHtmlImpl() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref85) {
-      var _ref86 = _slicedToArray(_ref85, 2),
-        val = _ref86[0],
-        label = _ref86[1];
+    var _options3 = colors.map(function (_ref87) {
+      var _ref88 = _slicedToArray(_ref87, 2),
+        val = _ref88[0],
+        label = _ref88[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var quantityAttr = " data-gear-quantity=\"".concat(escapeHtml(String(eyeLeatherCount)), "\"");
@@ -12416,8 +12957,18 @@ function getGearListSelectors() {
       selectors[sel.id] = sel.value;
     }
   };
-  if (gearListOutput) {
-    gearListOutput.querySelectorAll('select[id]').forEach(function (sel) {
+  var gearListElement = function resolveGearListElement() {
+    if (gearListOutput && typeof gearListOutput.querySelectorAll === 'function') {
+      return gearListOutput;
+    }
+    if (typeof document !== 'undefined' && document) {
+      var resolved = document.getElementById('gearListOutput');
+      if (resolved && typeof resolved.querySelectorAll === 'function') return resolved;
+    }
+    return null;
+  }();
+  if (gearListElement) {
+    gearListElement.querySelectorAll('select[id]').forEach(function (sel) {
       collectSelectValue(sel);
     });
   }
@@ -12432,9 +12983,9 @@ function getGearListSelectors() {
   if (customState && Object.keys(customState).length) {
     selectors.__customItems = customState;
   }
-  if (gearListOutput) {
+  if (gearListElement) {
     var rentalState = {};
-    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
+    gearListElement.querySelectorAll('.gear-item[data-gear-name]').forEach(function (span) {
       var name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
       if (span.getAttribute('data-rental-excluded') === 'true') {
@@ -12457,10 +13008,10 @@ function cloneGearListSelectors(selectors) {
     }
     if (value && _typeof(value) === 'object') {
       var nested = {};
-      Object.entries(value).forEach(function (_ref87) {
-        var _ref88 = _slicedToArray(_ref87, 2),
-          key = _ref88[0],
-          nestedValue = _ref88[1];
+      Object.entries(value).forEach(function (_ref89) {
+        var _ref90 = _slicedToArray(_ref89, 2),
+          key = _ref90[0],
+          nestedValue = _ref90[1];
         nested[key] = _cloneValue(nestedValue);
       });
       return nested;
@@ -12471,10 +13022,10 @@ function cloneGearListSelectors(selectors) {
     return typeof value === 'string' ? value : String(value);
   };
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref89) {
-    var _ref90 = _slicedToArray(_ref89, 2),
-      id = _ref90[0],
-      value = _ref90[1];
+  Object.entries(selectors).forEach(function (_ref91) {
+    var _ref92 = _slicedToArray(_ref91, 2),
+      id = _ref92[0],
+      value = _ref92[1];
     if (!id || typeof id !== 'string') return;
     clone[id] = _cloneValue(value);
   });
@@ -12514,10 +13065,10 @@ function applyGearListSelectors(selectors) {
       void dispatchError;
     }
   };
-  Object.entries(selectors).forEach(function (_ref91) {
-    var _ref92 = _slicedToArray(_ref91, 2),
-      id = _ref92[0],
-      value = _ref92[1];
+  Object.entries(selectors).forEach(function (_ref93) {
+    var _ref94 = _slicedToArray(_ref93, 2),
+      id = _ref94[0],
+      value = _ref94[1];
     if (id === '__customItems' || id === '__rentalExclusions') return;
     setSelectValue(id, value);
   });
@@ -12559,9 +13110,9 @@ function convertCustomItemsForStaticOutput(root) {
       parent.insertBefore(standardContainer, section);
     }
     if (entriesWithValues.length) {
-      entriesWithValues.forEach(function (_ref93) {
-        var value = _ref93.value,
-          preview = _ref93.preview;
+      entriesWithValues.forEach(function (_ref95) {
+        var value = _ref95.value,
+          preview = _ref95.preview;
         if (standardContainer.childNodes.length) {
           var last = standardContainer.lastChild;
           var isBreak = last && last.nodeType === 1 && last.tagName === 'BR';
@@ -12749,10 +13300,10 @@ function collectProjectInfoFromRequirementsGrid() {
       }
       var expanded = expandCombinedProductionCompanyInfo(text, projectLabels, metadata);
       if (expanded && _typeof(expanded) === 'object') {
-        Object.entries(expanded).forEach(function (_ref94) {
-          var _ref95 = _slicedToArray(_ref94, 2),
-            expandedField = _ref95[0],
-            expandedValue = _ref95[1];
+        Object.entries(expanded).forEach(function (_ref96) {
+          var _ref97 = _slicedToArray(_ref96, 2),
+            expandedField = _ref97[0],
+            expandedValue = _ref97[1];
           if (expandedField === 'productionCompany') {
             info.productionCompany = expandedValue;
             return;
@@ -12765,6 +13316,153 @@ function collectProjectInfoFromRequirementsGrid() {
     }
   });
   return Object.keys(info).length ? info : null;
+}
+function normalizeProjectStorageNameForCollision(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  return name.trim().toLowerCase();
+}
+var pendingProjectNameCollisionResolution = null;
+function clearPendingProjectNameCollisionResolution(baseName) {
+  if (!pendingProjectNameCollisionResolution) {
+    return;
+  }
+  if (!baseName) {
+    pendingProjectNameCollisionResolution = null;
+    return;
+  }
+  var normalized = normalizeProjectStorageNameForCollision(baseName);
+  if (!normalized || pendingProjectNameCollisionResolution.base === normalized) {
+    pendingProjectNameCollisionResolution = null;
+  }
+}
+function getPendingProjectNameCollisionResolution(baseName) {
+  if (!pendingProjectNameCollisionResolution) {
+    return null;
+  }
+  var normalized = normalizeProjectStorageNameForCollision(baseName);
+  if (!normalized) {
+    return null;
+  }
+  if (pendingProjectNameCollisionResolution.base === normalized) {
+    return pendingProjectNameCollisionResolution.resolved;
+  }
+  return null;
+}
+function rememberPendingProjectNameCollisionResolution(baseName, resolvedName) {
+  var normalizedBase = normalizeProjectStorageNameForCollision(baseName);
+  var normalizedResolved = normalizeProjectStorageNameForCollision(resolvedName);
+  if (!normalizedBase || !normalizedResolved) {
+    pendingProjectNameCollisionResolution = null;
+    return;
+  }
+  pendingProjectNameCollisionResolution = {
+    base: normalizedBase,
+    resolved: resolvedName,
+    resolvedNormalized: normalizedResolved
+  };
+}
+function applyPendingProjectNameCollisionResolution() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (!pendingProjectNameCollisionResolution) {
+    return false;
+  }
+  var _ref98 = options || {},
+    _ref98$syncInput = _ref98.syncInput,
+    syncInput = _ref98$syncInput === void 0 ? true : _ref98$syncInput;
+  var currentValue = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
+  var normalizedInput = normalizeProjectStorageNameForCollision(currentValue);
+  if (normalizedInput !== pendingProjectNameCollisionResolution.base) {
+    if (!options || options.preservePending !== true) {
+      pendingProjectNameCollisionResolution = null;
+    }
+    return false;
+  }
+  if (syncInput && setupNameInput) {
+    setupNameInput.value = pendingProjectNameCollisionResolution.resolved;
+    try {
+      setupNameInput.dispatchEvent(new Event('input'));
+    } catch (dispatchError) {
+      void dispatchError;
+    }
+  }
+  pendingProjectNameCollisionResolution = null;
+  return true;
+}
+function resolveProjectStorageNameCollision(baseName) {
+  var trimmed = typeof baseName === 'string' ? baseName.trim() : '';
+  if (!trimmed) {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  if (typeof loadProject !== 'function') {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var existingProjects;
+  try {
+    existingProjects = loadProject();
+  } catch (projectReadError) {
+    console.warn('Unable to inspect existing projects while resolving name collision', projectReadError);
+    existingProjects = null;
+  }
+  if (!existingProjects || _typeof(existingProjects) !== 'object') {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var normalizedExisting = new Set(Object.keys(existingProjects).map(function (key) {
+    return typeof key === 'string' ? key.trim().toLowerCase() : '';
+  }).filter(function (key) {
+    return key;
+  }));
+  var normalizedCandidate = trimmed.toLowerCase();
+  if (!normalizedExisting.has(normalizedCandidate)) {
+    return {
+      name: trimmed,
+      changed: false
+    };
+  }
+  var suffix = 2;
+  var candidate = "".concat(trimmed, " (").concat(suffix, ")");
+  var normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
+    suffix += 1;
+    candidate = "".concat(trimmed, " (").concat(suffix, ")");
+    normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+  }
+  return {
+    name: candidate,
+    changed: true
+  };
+}
+function doesProjectNameExist(name) {
+  if (typeof loadProject !== 'function') {
+    return false;
+  }
+  var normalizedTarget = normalizeProjectStorageNameForCollision(name);
+  if (!normalizedTarget) {
+    return false;
+  }
+  var existingProjects = null;
+  try {
+    existingProjects = loadProject();
+  } catch (error) {
+    console.warn('Unable to inspect project names while deferring collision resolution', error);
+    return false;
+  }
+  if (!existingProjects || _typeof(existingProjects) !== 'object') {
+    return false;
+  }
+  return Object.keys(existingProjects).some(function (key) {
+    return normalizeProjectStorageNameForCollision(key) === normalizedTarget;
+  });
 }
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
@@ -12798,7 +13496,8 @@ function saveCurrentGearList() {
         typedName: overrideTyped,
         selectedName: overrideSelected,
         storageKey: overrideStorage,
-        renameInProgress: renameOverride
+        renameInProgress: renameOverride,
+        typedNameHasTrailingWhitespace: Boolean(overrideTyped && rawOverride && typeof rawOverride.typedNameHasTrailingWhitespace === 'boolean' && rawOverride.typedNameHasTrailingWhitespace)
       };
     }
   }
@@ -12806,11 +13505,35 @@ function saveCurrentGearList() {
     if (typeof value !== 'string') return '';
     return value.trim();
   };
+  var fallbackRawTypedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
+  var fallbackTypedTrailingWhitespace = Boolean(fallbackRawTypedName && fallbackRawTypedName.trim() && /\s$/.test(fallbackRawTypedName));
   var selectedStorageKey = nameState ? nameState.selectedName : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
   var typedStorageKey = nameState ? nameState.typedName : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
   var projectStorageKey = nameState ? nameState.storageKey : selectedStorageKey || typedStorageKey;
   var renameInProgress = nameState ? nameState.renameInProgress : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+  var typedNameHasTrailingWhitespace = nameState && _typeof(nameState) === 'object' ? Boolean(nameState.typedNameHasTrailingWhitespace && nameState.typedName) : fallbackTypedTrailingWhitespace;
   var effectiveStorageKey = renameInProgress ? selectedStorageKey || projectStorageKey : projectStorageKey;
+  var shouldDelayCollisionResolution = Boolean(typedNameHasTrailingWhitespace && !renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey && doesProjectNameExist(effectiveStorageKey));
+  if (shouldDelayCollisionResolution) {
+    clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+    return;
+  }
+  if (!renameInProgress && !selectedStorageKey && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
+    var pendingResolved = getPendingProjectNameCollisionResolution(effectiveStorageKey);
+    if (pendingResolved && pendingResolved !== effectiveStorageKey) {
+      effectiveStorageKey = pendingResolved;
+    } else if (!pendingResolved) {
+      var resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
+      if (resolved.changed && resolved.name && resolved.name !== effectiveStorageKey) {
+        rememberPendingProjectNameCollisionResolution(effectiveStorageKey, resolved.name);
+        effectiveStorageKey = resolved.name;
+      } else if (!resolved.changed) {
+        clearPendingProjectNameCollisionResolution(effectiveStorageKey);
+      }
+    }
+  } else {
+    clearPendingProjectNameCollisionResolution();
+  }
   if (!pendingProjectInfo && requirementsVisible) {
     if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
       pendingProjectInfo = previousProjectInfo;

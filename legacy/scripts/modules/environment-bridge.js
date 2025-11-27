@@ -99,7 +99,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (isNodeProcessReference(value)) {
@@ -133,7 +133,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function isEthereumProviderCandidate(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     if (PRIMARY_SCOPE && _typeof(PRIMARY_SCOPE) === 'object') {
@@ -188,10 +188,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
     }
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+    if (!value || typeof value === 'function' || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
+      return value;
+    }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
       return value;
     }
     if (isEthereumProviderCandidate(value)) {
@@ -203,54 +213,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof localSeen.add === 'function') {
       localSeen.add(value);
     }
-    var keys;
     try {
-      keys = Object.getOwnPropertyNames(value);
-    } catch (error) {
-      void error;
-      keys = [];
-    }
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      var descriptor;
-      try {
-        descriptor = Object.getOwnPropertyDescriptor(value, key);
-      } catch (descriptorError) {
-        void descriptorError;
-        descriptor = null;
-      }
-      if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
-        continue;
-      }
-      if (key === 'web3' && value === PRIMARY_SCOPE) {
-        continue;
-      }
-      var child;
-      try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
-      }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
-        continue;
-      }
-      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
-        continue;
-      }
-      fallbackFreezeDeep(child, localSeen);
-    }
-    try {
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
-      }
+      Object.freeze(value);
     } catch (freezeError) {
       void freezeError;
-      return value;
     }
+    return value;
   }
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {

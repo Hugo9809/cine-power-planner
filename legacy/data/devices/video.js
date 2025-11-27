@@ -2,6 +2,7 @@
   var videoData = {
     "Teradek Bolt 6 LT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 212,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -21,6 +22,7 @@
     },
     "Teradek Bolt 6 XT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 342,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -46,6 +48,7 @@
     },
     "Teradek Bolt 6 MAX TX": {
       "powerDrawWatts": 20,
+      "weight_g": 342,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -69,8 +72,9 @@
         }]
       }
     },
-    "Teradek Bolt 4K LT TX": {
+    "Teradek Bolt 4K LT": {
       "powerDrawWatts": 9,
+      "weight_g": 206,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -90,6 +94,7 @@
     },
     "Teradek Bolt 4K XT TX": {
       "powerDrawWatts": 20,
+      "weight_g": 360,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -115,6 +120,7 @@
     },
     "Teradek Bolt Pro 300 TX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 226,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -134,6 +140,7 @@
     },
     "Teradek Bolt Pro 600 TX": {
       "powerDrawWatts": 8,
+      "weight_g": 226,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -153,6 +160,7 @@
     },
     "Teradek Bolt Pro 2000 TX": {
       "powerDrawWatts": 7.7,
+      "weight_g": 226,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -172,6 +180,7 @@
     },
     "Teradek Bolt Pro 500 TX": {
       "powerDrawWatts": 7.3,
+      "weight_g": 217,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -191,6 +200,7 @@
     },
     "Teradek Bolt Pro 750 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 217,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -210,6 +220,7 @@
     },
     "Teradek Bolt Pro 1000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 217,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -229,6 +240,7 @@
     },
     "Teradek Bolt 3000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 226,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -248,6 +260,7 @@
     },
     "Teradek Bolt 10000 TX": {
       "powerDrawWatts": 7.5,
+      "weight_g": 600,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -267,6 +280,7 @@
     },
     "Hollyland Pyro S TX": {
       "powerDrawWatts": 11,
+      "weight_g": 207,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -293,6 +307,7 @@
     },
     "Hollyland Mars 300 Pro TX": {
       "powerDrawWatts": 11,
+      "weight_g": 136,
       "videoInputs": [{
         "type": "HDMI"
       }],
@@ -312,6 +327,7 @@
     },
     "Hollyland Mars 400S Pro TX": {
       "powerDrawWatts": 11,
+      "weight_g": 206,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -338,6 +354,7 @@
     },
     "DJI Transmission (TX)": {
       "powerDrawWatts": 11,
+      "weight_g": 350,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -363,6 +380,7 @@
     },
     "Vaxis Storm 800 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 260,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -384,6 +402,7 @@
     },
     "Vaxis Storm 1000 TX": {
       "powerDrawWatts": 6.5,
+      "weight_g": 260,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -405,6 +424,7 @@
     },
     "Vaxis Storm 3000 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 260,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -426,6 +446,7 @@
     },
     "Dwarf Connection LR1 TX": {
       "powerDrawWatts": 6,
+      "weight_g": 250,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -447,6 +468,7 @@
     },
     "Accsoon CineEye 2S Pro TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 225,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -468,6 +490,7 @@
     },
     "Accsoon CineEye II TX": {
       "powerDrawWatts": 3.5,
+      "weight_g": 200,
       "videoInputs": [{
         "type": "HDMI"
       }],
@@ -487,6 +510,7 @@
     },
     "Accsoon CineView HE TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 200,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -510,6 +534,7 @@
     },
     "Accsoon CineView SE TX": {
       "powerDrawWatts": 4.5,
+      "weight_g": 210,
       "videoInputs": [{
         "type": "HDMI"
       }, {
@@ -533,6 +558,7 @@
     },
     "Accsoon CineView Nano TX": {
       "powerDrawWatts": 2.5,
+      "weight_g": 72,
       "videoInputs": [{
         "type": "HDMI"
       }],
@@ -626,6 +652,145 @@
       "videoOutputs": [],
       "frequency": "5 GHz",
       "latencyMs": null
+    },
+    "Hollyland Mars 4K TX": {
+      "powerDrawWatts": 8.5,
+      "videoInputs": [{
+        "type": "HDMI"
+      }],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }],
+      "frequency": "5 GHz",
+      "latencyMs": "60ms",
+      "power": {
+        "input": [{
+          "notes": "6-16V",
+          "type": ["DC Barrel"]
+        }, {
+          "notes": "5V",
+          "type": ["USB-C"]
+        }, {
+          "type": ["NP-F"]
+        }]
+      },
+      "weight_g": 223
+    },
+    "Vaxis Atom 500 SDI TX": {
+      "powerDrawWatts": 6.5,
+      "videoInputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "5 GHz",
+      "latencyMs": "< 80ms",
+      "power": {
+        "input": [{
+          "notes": "5V",
+          "type": ["USB-C"]
+        }, {
+          "type": ["NP-F"]
+        }]
+      },
+      "weight_g": 134
+    },
+    "Teradek Bolt 6 LT HDMI TX": {
+      "powerDrawWatts": 9,
+      "videoInputs": [{
+        "type": "HDMI"
+      }],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [{
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
+        }]
+      },
+      "weight_g": 206
+    },
+    "Accsoon CineView Master 4K TX": {
+      "powerDrawWatts": 6.5,
+      "videoInputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "videoOutputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "frequency": "2.4 GHz / 5 GHz / 6 GHz",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": [{
+          "notes": "7.4-16.8V",
+          "type": ["DC Barrel"]
+        }, {
+          "notes": "5V",
+          "type": ["USB-C"]
+        }, {
+          "type": ["NP-F"]
+        }]
+      },
+      "weight_g": 322
+    },
+    "Teradek Bolt 6 LT 750 TX": {
+      "powerDrawWatts": 9,
+      "videoInputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "videoOutputs": [{
+        "type": "3G-SDI",
+        "notes": "Loop-out"
+      }],
+      "frequency": "5/6 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [{
+          "notes": "6-28V",
+          "type": ["LEMO 2-pin"]
+        }]
+      },
+      "weight_g": 212
+    },
+    "DJI Video Transmitter": {
+      "powerDrawWatts": 11,
+      "videoInputs": [{
+        "type": "HDMI"
+      }, {
+        "type": "3G-SDI"
+      }],
+      "videoOutputs": [{
+        "type": "3G-SDI",
+        "notes": "Loop-out"
+      }],
+      "frequency": "2.4/5.8 GHz",
+      "latencyMs": "Ultra-low",
+      "power": {
+        "input": [{
+          "notes": "6-18V",
+          "type": ["DC Barrel"]
+        }, {
+          "type": ["WB37"]
+        }, {
+          "type": ["NP-F"],
+          "notes": "Optional adapter"
+        }]
+      },
+      "weight_g": 350
     }
   };
   if (typeof registerDevice === 'function') {

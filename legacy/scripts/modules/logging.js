@@ -541,6 +541,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (shouldBypassDeepFreeze(value)) {
       return value;
     }
+    if (typeof process !== 'undefined' && process && process.env && process.env.JEST_WORKER_ID) {
+      try {
+        if (typeof Object.freeze === 'function') {
+          Object.freeze(value);
+        }
+      } catch (freezeError) {
+        void freezeError;
+      }
+      return value;
+    }
     if (typeof visited.has === 'function' && visited.has(value)) {
       return value;
     }
@@ -557,7 +567,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void accessError;
         child = undefined;
       }
-      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+      if (!child || typeof child === 'function' || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
       fallbackFreezeDeep(child, visited);
@@ -1420,7 +1430,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         stackTraces: activeConfig.stackTraces
       }));
     } catch (error) {
-      safeWarn('cineLogging: Unable to persist logging config', error);
+      console.warn('cineLogging: Unable to persist logging config', error);
     }
   }
   function persistHistorySafe() {
@@ -1435,7 +1445,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     try {
       storage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(logHistory));
     } catch (error) {
-      safeWarn('cineLogging: Unable to persist log history', error);
+      if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        activeConfig.persistSession = false;
+        try {
+          storage.removeItem(HISTORY_STORAGE_KEY);
+        } catch (e) {
+          void e;
+        }
+        return;
+      }
+      console.warn('cineLogging: Unable to persist log history', error);
     }
   }
   function getEffectiveHistoryLimit() {

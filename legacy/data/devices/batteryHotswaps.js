@@ -8,7 +8,8 @@
     "bebob ML-120V/V-HL": {
       "capacity": 0,
       "pinA": 20,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 520
     },
     "bebob ML-120V/V": {
       "capacity": 0,
@@ -23,12 +24,14 @@
     "BlueShape MVQUICK Hot-Swap System": {
       "capacity": 21,
       "pinA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 490
     },
     "FX-Lion NANO Dual V-Mount Hot-Swap Plate": {
       "capacity": 0,
       "pinA": 8,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 274
     },
     "bebob B90cineML": {
       "capacity": 86,
@@ -84,6 +87,55 @@
       "capacity": 32,
       "pinA": 7.14,
       "mount_type": "B-Mount"
+    },
+    "Core SWX GP-TSMicro Micro Hot Swap": {
+      "capacity": 0,
+      "pinA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 317,
+      "notes": "Unregulated D-Tap output"
+    },
+    "Core SWX GP-TS-SFF Sharkfin": {
+      "capacity": 0,
+      "pinA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 544,
+      "notes": "4x D-Tap outputs (7.2A max)"
+    },
+    "IDX A-Vmicro2": {
+      "capacity": 0,
+      "pinA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 280,
+      "notes": "Sequential discharge, 2x D-Tap, 1x USB-C"
+    },
+    "Anton Bauer QR-HOTSWAP-GM": {
+      "capacity": 0,
+      "pinA": 10,
+      "mount_type": "Gold-Mount",
+      "weight_g": 360,
+      "notes": "10A max load combined"
+    },
+    "Hawk-Woods VL-MCF1": {
+      "capacity": 0,
+      "pinA": 10,
+      "mount_type": "V-Mount",
+      "weight_g": 264,
+      "notes": "Mini V-Lok Hotswap"
+    },
+    "FXLion FX-VS40": {
+      "capacity": 43,
+      "pinA": 20,
+      "mount_type": "V-Mount",
+      "weight_g": 600,
+      "notes": "Internal battery, 200W max power"
+    },
+    "FXLion NANOL2S-C": {
+      "capacity": 0,
+      "pinA": 8,
+      "mount_type": "V-Mount",
+      "weight_g": 274,
+      "notes": "Nano Dual V-Mount Hotswap"
     }
   };
   if (typeof registerDevice === 'function') {

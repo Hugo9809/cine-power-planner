@@ -147,6 +147,22 @@
         "weight_g"
       ]
     },
+    "carts": {
+      "attributes": [
+        "brand",
+        "series",
+        "model",
+        "dimensionsCm",
+        "weightKg",
+        "payloadCapacityKg",
+        "wheelConfig",
+        "config",
+        "notes",
+        "accessories",
+        "kits",
+        "brandAccessories"
+      ]
+    },
     "matteboxes": {
       "attributes": [
         "brand",

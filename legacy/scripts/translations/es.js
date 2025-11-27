@@ -105,6 +105,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "downloadDiagramBtn": "Descargar el diagrama",
       "gridSnapToggle": "Ajustar a la cuadrícula",
       "existingDevicesHeading": "Dispositivos existentes",
+      "deviceLibrarySearchLabel": "Buscar en toda la biblioteca",
+      "deviceLibrarySearchPlaceholder": "Buscar en todas las categorías de dispositivos…",
+      "deviceLibrarySearchHelp": "Filtra todas las categorías a la vez. Pulsa Enter para saltar al mejor resultado.",
+      "deviceLibrarySearchStatusDefault": "Mostrando los {total} dispositivos.",
+      "deviceLibrarySearchResultOne": "Mostrando {visible} de {total} dispositivos.",
+      "deviceLibrarySearchResultOther": "Mostrando {visible} de {total} dispositivos.",
+      "deviceLibrarySearchNoResults": "Ningún dispositivo coincide con “{query}”.",
       "darkModeLabel": "Alternar modo oscuro",
       "pinkModeLabel": "Alternar modo rosa",
       "menuToggleLabel": "Menú",
@@ -119,7 +126,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "description": "Guarda a los miembros del equipo de rodaje una vez, consérvalos sin conexión y reutilízalos en cada proyecto.",
         "addContactButton": "Agregar contacto",
         "importButton": "Importar vCard",
-        "importHint": "Importa archivos .vcf para añadir contactos al instante.",
+        "importHint": "Importa archivos .vcf para añadir contactos al instante. Los datos guardados se conservan automáticamente.",
         "emptyState": "Todavía no hay contactos guardados. Añade a tu equipo de rodaje ahora para reutilizarlo más tarde.",
         "close": "Cerrar",
         "selectLabel": "Contactos guardados",
@@ -178,9 +185,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "importError": "No se pudo importar el archivo seleccionado.",
         "rolePlaceholder": "Selecciona un rol"
       },
-      "featureSearchPlaceholder": "Buscar funciones, dispositivos o ayuda...",
+      "featureSearchPlaceholder": "Buscar funciones, dispositivos o ayuda…",
       "featureSearchLabel": "Buscar funciones, dispositivos y ayuda",
-      "featureSearchHelp": "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias priorizan controles y dispositivos antes que los artículos de ayuda para que llegues primero a las acciones. Cada resultado indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda e incluye una breve descripción para que confirmes el destino antes de pulsar Enter. Las coincidencias exactas y lo que usaste recientemente suben automáticamente a la parte superior, así tus controles habituales aparecen primero. La búsqueda también recorre los mismos textos de ayuda y descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" siguen llevando al botón correcto aunque la etiqueta cambie. Se toleran los errores tipográficos pequeños, así que \"bakcup\" sigue encontrando Copia de seguridad o Guardar. Las abreviaturas de conectores y soportes como \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" se asocian automáticamente con su nombre completo, así que escribe la versión que recuerdes. Los términos de exposición y color también están enlazados: ISO, EI, ASA, índice de exposición, ND o densidad neutra y WB, balance de blancos o temperatura de color llevan al mismo control sin importar cómo lo escribas. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar, usa Esc o × para limpiar el campo y, al vaciarlo, las coincidencias usadas recientemente vuelven a aparecer primero para repetir tareas habituales con rapidez. Antepon \"feature\", \"action\", \"device\" o \"help\" (por ejemplo, \"help: battery\") para limitar los resultados a ese tipo. Empieza con \"recent\" o \"history\" (por ejemplo, \"recent iso\") para concentrarte en los elementos usados recientemente antes de repasar todo el catálogo. Las frases exactas entre comillas, como \"battery health\", ahora se sitúan en la parte superior para superar coincidencias más amplias. La búsqueda omite automáticamente las palabras de relleno habituales, de modo que preguntas conversacionales como \"cómo hago la copia de seguridad\" siguen destacando las palabras clave importantes.",
+      "featureSearchHelp": "Escribe para localizar funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad y temas de ayuda relacionados sin depender de la conexión. Las sugerencias priorizan controles y dispositivos antes que los artículos de ayuda para que llegues primero a las acciones. Cada resultado indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda e incluye una breve descripción para que confirmes el destino antes de pulsar Enter. Las coincidencias exactas y lo que usaste recientemente suben automáticamente a la parte superior, así tus controles habituales aparecen primero. La búsqueda también recorre los mismos textos de ayuda y descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" siguen llevando al botón correcto aunque la etiqueta cambie, incluso sin conexión. Se toleran los errores tipográficos pequeños, así que \"bakcup\" sigue encontrando Copia de seguridad o Guardar. Las abreviaturas de conectores y soportes como \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" se asocian automáticamente con su nombre completo, así que escribe la versión que recuerdes. Los términos de exposición y color también están enlazados: ISO, EI, ASA, índice de exposición, ND o densidad neutra y WB, balance de blancos o temperatura de color llevan al mismo control sin importar cómo lo escribas. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar, usa Esc o × para limpiar el campo y, al vaciarlo, las coincidencias usadas recientemente vuelven a aparecer primero para repetir tareas habituales con rapidez. Antepon \"feature\", \"action\", \"device\" o \"help\" (por ejemplo, \"help: battery\") para limitar los resultados a ese tipo. Empieza con \"recent\" o \"history\" (por ejemplo, \"recent iso\") para concentrarte en los elementos usados recientemente antes de repasar todo el catálogo. Las frases exactas entre comillas, como \"battery health\", ahora se sitúan en la parte superior para superar coincidencias más amplias. La búsqueda omite automáticamente las palabras de relleno habituales, de modo que preguntas conversacionales como \"cómo hago la copia de seguridad\" siguen destacando las palabras clave importantes.",
       "featureSearchClear": "Borrar búsqueda",
       "featureSearchClearHelp": "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
       "featureSearchTypeFeature": "Función",
@@ -398,6 +405,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "monitorVideoOutputsLabel": "Salidas:",
       "monitorWirelessTxLabel": "Transmisor inalámbrico:",
       "monitorLatencyLabel": "Latencia:",
+      "monitorLatencyHelp": "La latencia se guarda incluso si el transmisor inalámbrico está desactivado. Vacía este campo para eliminar el valor guardado.",
       "monitorAudioOutputLabel": "Salida de Audio:",
       "viewfinderDetailsHeading": "Detalles del Visor",
       "viewfinderScreenSizeLabel": "Tamaño de pantalla (pulg):",
@@ -412,11 +420,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "viewfinderVideoOutputsLabel": "Salidas:",
       "viewfinderWirelessTxLabel": "Transmisor inalámbrico:",
       "viewfinderLatencyLabel": "Latencia:",
+      "viewfinderLatencyHelp": "La latencia se guarda incluso si el transmisor inalámbrico está desactivado. Vacía este campo para eliminar el valor guardado.",
+      "videoPowerInputsHeading": "Entradas de energía",
       "videoVideoInputsHeading": "Entradas de Vídeo",
       "videoVideoInputsLabel": "Entradas:",
       "videoVideoOutputsHeading": "Salidas de Vídeo",
       "videoVideoOutputsLabel": "Salidas:",
-      "videoPowerInputLabel": "Entrada de Energía:",
+      "videoPowerInputLabel": "Conectores:",
+      "videoPowerInputHelp": "Añade todos los conectores de energía compatibles, incluidos los soportes de batería. Usa las notas para adaptadores u otros detalles.",
+      "videoPowerTypeLabel": "Conector",
+      "videoPowerVoltageLabel": "Rango de voltaje",
+      "videoPowerNotesLabel": "Notas",
+      "videoPowerVoltagePlaceholder": "Rango de voltaje (p. ej. 6-28V)",
+      "videoPowerNotesPlaceholder": "Notas (soporte, adaptador, etc.)",
       "videoFrequencyLabel": "Frecuencia:",
       "videoLatencyLabel": "Latencia:",
       "motorConnectorLabel": "Conector:",
@@ -722,6 +738,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCustomItemNameAria": "Nombre del elemento personalizado en {category}",
       "gearListCustomItemNamePlaceholder": "Elemento personalizado",
       "gearListCustomItemPreviewFallback": "Elemento personalizado",
+      "gearListCartSelectorLabel": "Carro de cámara",
+      "gearListCartConfigurationLabel": "Configuración del carro",
+      "gearListCartAccessoriesLabel": "Accesorios del carro",
       "gearListExcludeRentalToggle": "Excluir para rental",
       "gearListIncludeRentalToggle": "Incluir para rental",
       "gearListRentalNote": "La casa de alquiler aporta este elemento",
@@ -1186,6 +1205,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearBackupRetentionUpdateFailed": "No se pudo aplicar el nuevo límite de retención. Inténtalo de nuevo.",
       "autoGearRulesCountOne": "%s regla",
       "autoGearRulesCountOther": "%s reglas",
+      "autoGearRuleToggleEnable": "Activar regla",
+      "autoGearRuleToggleDisable": "Desactivar regla",
+      "autoGearRuleEnabledLabel": "Activa",
+      "autoGearRuleDisabledLabel": "Desactivada",
+      "autoGearSummaryAllDisabled": "Todas las reglas automáticas de equipo están desactivadas.",
+      "autoGearSummaryDisabledSuffix": "{count} reglas desactivadas se ignoran en el análisis.",
+      "autoGearSummaryDisabledNote": "Las reglas desactivadas se muestran abajo pero se ignoran hasta que se activen.",
       "autoGearBackupClearsRules": "Elimina todas las reglas",
       "autoGearBackupMeta": "%s · %s",
       "autoGearAddsCountOne": "%s adición",
@@ -1391,6 +1417,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storagePersistenceStatusRequesting": "Solicitando almacenamiento persistente al navegador…",
       "storagePersistenceStatusGranted": "Almacenamiento persistente concedido. Los datos del planner están protegidos frente a limpiezas automáticas.",
       "storagePersistenceStatusDenied": "El navegador no pudo conceder almacenamiento persistente. Sigue exportando copias de seguridad con regularidad y verifica que las copias locales estén listas para usar sin conexión.",
+      "storagePersistenceStatusSafariIncompatible": "Safari bloquea actualmente las solicitudes de almacenamiento persistente. Trátalo como una limitación del navegador.",
       "storagePersistenceStatusError": "La solicitud de almacenamiento persistente falló. Libera espacio, revisa la configuración del navegador y confirma tus copias de seguridad antes de volver a intentarlo.",
       "storagePersistenceStatusUnsupported": "Este navegador no puede conceder almacenamiento persistente automáticamente. Continúa manteniendo copias de seguridad externas.",
       "storagePersistenceUsage": "Uso aproximado: {used} de {quota}.",
@@ -1769,6 +1796,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Añade tu primer equipo propio",
             "body": "Introduce el nombre del artículo, la cantidad opcional y las notas, luego guarda. El equipo propio se almacena sin conexión, se incluye en los respaldos y se marca en las exportaciones para que el equipo vea al instante qué está disponible sin duplicar pedidos."
           },
+          "projectRequirementsBrief": {
+            "title": "Registrar el brief del proyecto",
+            "body": "Abre Generar lista de equipo y Requisitos del proyecto y documenta la productora, la dirección completa, las preferencias del rental, los entregables y las notas de agenda. Estos datos rellenan los PDF de alquiler, permanecen en caché sin conexión y preparan las siguientes secciones."
+          },
+          "projectRequirementsCrew": {
+            "title": "Mapear la cobertura del equipo y contactos",
+            "body": "Completa las filas de Crew, Prep, Rodaje y Devolución con nombres, roles y notas. Vincula contactos guardados, añade detalles de emergencia y duplica filas cuando varios días comparten el mismo plan para que los exportes indiquen quién está en set y cuándo."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Registrar lentes, rigging y monitorización",
+            "body": "Recorre el resto de secciones: especificaciones de cámara, flujo de lentes, escenarios de rigging, cantidades de almacenamiento/medios, preferencias de mattebox y monitorización. Cada campo alimenta las reglas automáticas, el cálculo de almacenamiento y la lista final."
+          },
           "generateGearAndRequirements": {
             "title": "Genera requisitos y lista de equipo",
             "body": "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes."
@@ -1784,18 +1823,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "autoGearRulesCreate": {
             "title": "Añade una nueva regla automática",
             "body": "Pulsa Añadir regla para crear una automatización personalizada. Ponle nombre, agrega condiciones y el equipo necesario y guarda. El planificador ejecuta la nueva regla sin conexión cada vez que regeneras el kit y la incluye en exportaciones, compartidos y copias de seguridad."
-          },
-          "projectRequirementsBrief": {
-            "title": "Registrar el brief del proyecto",
-            "body": "Abre Generar lista de equipo y Requisitos del proyecto y documenta la productora, la dirección completa, las preferencias del rental, los entregables y las notas de agenda. Estos datos rellenan los PDF de alquiler, permanecen en caché sin conexión y preparan las siguientes secciones."
-          },
-          "projectRequirementsCrew": {
-            "title": "Mapear la cobertura del equipo y contactos",
-            "body": "Completa las filas de Crew, Prep, Rodaje y Devolución con nombres, roles y notas. Vincula contactos guardados, añade detalles de emergencia y duplica filas cuando varios días comparten el mismo plan para que los exportes indiquen quién está en set y cuándo."
-          },
-          "projectRequirementsLogistics": {
-            "title": "Registrar lentes, rigging y monitorización",
-            "body": "Recorre el resto de secciones: especificaciones de cámara, flujo de lentes, escenarios de rigging, cantidades de almacenamiento/medios, preferencias de mattebox y monitorización. Cada campo alimenta las reglas automáticas, el cálculo de almacenamiento y la lista final."
           },
           "gearList": {
             "title": "Audita la lista de equipo generada",

@@ -14,7 +14,7 @@
         "torqueNm": 2.5,
         "weight_g": 221,
         "gearTypes": ["0.8 mod", "0.4 mod", "0.5 mod", "0.6 mod", "0.8 mod 29mm wide"],
-        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera’s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "notes": "Rated 2.5 N·m at 14.8V. Operating voltage range 7.2-24V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera’s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
         "fizConnectors": [{
           "type": "LEMO 7-pin"
         }]
@@ -44,7 +44,7 @@
         "internalController": true,
         "torqueNm": null,
         "gearTypes": ["0.8 mod"],
-        "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Ships with Tilta's fixed 0.8 mod gear ring and does not support swapping to other gear rings.",
+        "notes": "Enhanced version of the Nano. Operating voltage 3-17V (7.4-16.8V via USB-C). Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Ships with Tilta's fixed 0.8 mod gear ring and does not support swapping to other gear rings.",
         "fizConnectors": [{
           "type": "USB-C"
         }]
@@ -129,7 +129,7 @@
         "torqueNm": null,
         "weight_g": 465,
         "gearTypes": ["0.8 mod", "0.5 mod", "0.6 mod"],
-        "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
+        "notes": "Very high torque, often used for focus. Operating voltage 12-36V. Max current 2.7A. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
         "fizConnectors": [{
           "type": "LEMO 4-pin"
         }]
@@ -253,6 +253,17 @@
         "notes": "High torque motor. Max current draw can be up to 5A at 12V. Requires a MicroRemote Basestation. Compatible with standard 0.8 mod lens gears of various diameters.",
         "fizConnectors": [{
           "type": "4-pin proprietary"
+        }]
+      },
+      "PD Movie Live Air 3 Smart Motor": {
+        "powerDrawWatts": 10,
+        "internalController": true,
+        "torqueNm": 0.75,
+        "weight_g": 132,
+        "gearTypes": ["0.8 mod"],
+        "notes": "Motor with integrated LiDAR autofocus. 6.4-8.4V input. Uses LI42Bx2 battery.",
+        "fizConnectors": [{
+          "type": "USB-C"
         }]
       }
     },
@@ -513,6 +524,95 @@
         "batteryType": "Integrated Li-ion (1400 mAh)",
         "connectivity": "Wireless (2.4 GHz MagicFIZ link) or Wired (USB-C for tethered control)",
         "notes": "Lightweight handgrip controller for SmallRig MagicFIZ motors featuring OLED status display, start/stop trigger, configurable A/B points and gimbal mounting brackets."
+      },
+      "Preston HU3 Hand Unit": {
+        "powerDrawWatts": 1.6,
+        "fizConnectors": [{
+          "type": "Command (LEMO 5-pin)"
+        }],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-FM50) or External (Command)",
+        "batteryType": "Sony NP-FM50",
+        "connectivity": "Wireless (2.4 GHz G4) or Wired (Command)",
+        "weight_g": 1140,
+        "notes": "Industry standard 3-channel hand unit. 0.2A at 8V."
+      },
+      "PD Movie Live Air 3 Smart Controller": {
+        "powerDrawWatts": 0.5,
+        "fizConnectors": [],
+        "internalController": false,
+        "powerSource": "Internal Battery (LIR2477)",
+        "batteryType": "LIR2477",
+        "connectivity": "Bluetooth 5.3",
+        "weight_g": 28,
+        "notes": "Tiny thumbwheel controller for Live Air 3 Smart system."
+      },
+      "Arri ZMU-4 (body only, wired)": {
+        "powerDrawWatts": 1,
+        "fizConnectors": [{
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "for motors"
+        }, {
+          "type": "CAM (LEMO 7-pin)",
+          "notes": "for camera control"
+        }],
+        "internalController": false,
+        "powerSource": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
+        "batteryType": "Sony NP-F550/750 compatible, ARRI LBP-3500",
+        "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
+        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control. Connect after the main motor controller for correct priority."
+      },
+      "Teradek RT CTRL.1": {
+        "powerDrawWatts": 2,
+        "fizConnectors": [{
+          "type": "USB-C",
+          "notes": "Charging and configuration"
+        }, {
+          "type": "LEMO 4-pin",
+          "notes": "Wired link to MDR"
+        }],
+        "internalController": false,
+        "powerSource": "Internal Battery (Canon LP-E6) or External USB-C",
+        "batteryType": "Canon LP-E6",
+        "connectivity": "Wireless (Teradek RT FHSS) or Wired (LEMO 4-pin)",
+        "weight_g": 482,
+        "notes": "Single-axis wireless lens controller. 17 oz."
+      },
+      "Cmotion cPRO ONE": {
+        "powerDrawWatts": 3,
+        "fizConnectors": [{
+          "type": "LBUS (LEMO 4-pin)"
+        }, {
+          "type": "USB-C"
+        }],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-FM500H) or External LBUS",
+        "batteryType": "Sony NP-FM500H",
+        "connectivity": "Wireless (cPRO RF) or Wired (LBUS)",
+        "weight_g": 870,
+        "notes": "1-axis wireless hand unit (optional 2nd axis). ~0.87 kg."
+      },
+      "Heden Carat Hand Unit": {
+        "powerDrawWatts": 1,
+        "fizConnectors": [],
+        "internalController": false,
+        "powerSource": "Internal Battery (9V)",
+        "batteryType": "9V Block",
+        "connectivity": "Wireless (Bluetooth)",
+        "weight_g": 456,
+        "notes": "Wireless focus/iris transmitter. 16 oz."
+      },
+      "Tilta Nucleus M II Hand Unit": {
+        "powerDrawWatts": 2,
+        "fizConnectors": [{
+          "type": "USB-C"
+        }],
+        "internalController": false,
+        "powerSource": "Internal Battery (Sony NP-F550)",
+        "batteryType": "Sony NP-F550",
+        "connectivity": "Wireless (2.4GHz)",
+        "weight_g": 441,
+        "notes": "3-axis hand unit, improved over Nucleus M. Est weight."
       }
     },
     "controllers": {
@@ -538,21 +638,6 @@
         "batteryType": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
         "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis. Should be connected after the main motor controller for correct priority."
-      },
-      "Arri ZMU-4 (body only, wired)": {
-        "powerDrawWatts": 1,
-        "fizConnectors": [{
-          "type": "LBUS (LEMO 4-pin)",
-          "notes": "for motors"
-        }, {
-          "type": "CAM (LEMO 7-pin)",
-          "notes": "for camera control"
-        }],
-        "internalController": false,
-        "powerSource": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
-        "batteryType": "Sony NP-F550/750 compatible, ARRI LBP-3500",
-        "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
-        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control. Connect after the main motor controller for correct priority."
       },
       "Arri UMC-4": {
         "powerDrawWatts": 4,
@@ -582,6 +667,72 @@
         "batteryType": "N/A (no internal battery)",
         "connectivity": "Wireless (2.4 GHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
         "notes": "3‑axis motor controller providing lens data and timecode. Works with CLM-3/4/5 motors and, via LCS‑to‑LBUS cable, with cforce motors."
+      },
+      "Preston MDR-3": {
+        "powerDrawWatts": 96,
+        "fizConnectors": [{
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Power (LEMO 4-pin)"
+        }, {
+          "type": "Serial (LEMO 4-pin)"
+        }, {
+          "type": "Serial (LEMO 4-pin)"
+        }, {
+          "type": "Camera (LEMO 8-pin)"
+        }],
+        "internalController": true,
+        "powerSource": "External DC (12-36V)",
+        "batteryType": "N/A",
+        "connectivity": "Wireless (2.4 GHz G4) or Wired",
+        "weight_g": 500,
+        "notes": "4-channel motor driver. Max 4A at 24V."
+      },
+      "Preston MDR-4": {
+        "powerDrawWatts": 48,
+        "fizConnectors": [{
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Power (LEMO 4-pin)"
+        }, {
+          "type": "Serial (LEMO 4-pin)"
+        }, {
+          "type": "Camera (LEMO 8-pin)"
+        }],
+        "internalController": true,
+        "powerSource": "External DC (12-36V)",
+        "batteryType": "N/A",
+        "connectivity": "Wireless (2.4 GHz G4) or Wired",
+        "weight_g": 300,
+        "notes": "2-channel motor driver. Max 2A at 24V."
+      },
+      "Teradek RT MDR.X": {
+        "powerDrawWatts": 10,
+        "fizConnectors": [{
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Motor (LEMO 4-pin)"
+        }, {
+          "type": "Power (LEMO 2-pin)"
+        }, {
+          "type": "Camera (LEMO 4-pin)"
+        }],
+        "internalController": true,
+        "powerSource": "External DC (7-17V)",
+        "batteryType": "N/A",
+        "connectivity": "Wireless (FHSS)",
+        "weight_g": 140,
+        "notes": "3-channel receiver/driver. Ultra lightweight."
       },
       "Arri RIA-1": {
         "powerDrawWatts": 2.5,

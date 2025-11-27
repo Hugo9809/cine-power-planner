@@ -39,9 +39,9 @@
       "chargingSpeedAmps": 2.5,
       "totalPowerW": 165,
       "dimensions_mm": [145, 225, 270],
-      "weight_g": 1900,
       "outputs": ["XLR-4 DC 16.5V / 10A"],
-      "notes": "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function"
+      "notes": "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function",
+      "weight_g": 1900
     },
     "SWIT SC-304S": {
       "mount": "V-Mount",
@@ -61,8 +61,8 @@
       "chargeModes": ["Simultaneous"],
       "perBayCurrentA": 6,
       "chargingSpeedAmps": 6,
-      "weight_g": 2430,
-      "notes": "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display"
+      "notes": "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display",
+      "weight_g": 2430
     },
     "SWIT PC-U130S": {
       "mount": "V-Mount",
@@ -116,6 +116,7 @@
       "chargeModes": ["Simultaneous"],
       "inputVoltageV": "100-240",
       "outputs": ["XLR 16.7V DC / 4.5A"],
+      "weight_g": 1000,
       "notes": "Compact dual-bay charger with LED indicators"
     },
     "SWIT S-3822S": {
@@ -155,8 +156,8 @@
       "slots": 4,
       "inputVoltageV": "100-240",
       "inputConnector": "AC IEC",
-      "perBayCurrentA": 4,
-      "chargingSpeedAmps": 4,
+      "perBayCurrentA": 3,
+      "chargingSpeedAmps": 3,
       "totalPowerW": null,
       "chargeModes": ["Simultaneous"],
       "dimensions_mm": [292, 216, 118],
@@ -399,6 +400,132 @@
         "url": "https://www.globalbroadcastindustry.news/bebob-launches-4-or-8-channel-wall-chargers-for-complete-battery-portfolio-gn4-8",
         "access_date": "2025-09-14"
       }]
+    },
+    "FXLion FX-PD65": {
+      "mount": "USB-C",
+      "slots": 1,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "totalPowerW": 65,
+      "weight_g": 46,
+      "dimensions_mm": [63, 40, 22],
+      "notes": "USB-C PD Charger"
+    },
+    "FXLion PL-Q480B": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4,
+      "dimensions_mm": [281, 145, 191],
+      "weight_g": 2500,
+      "notes": "4-Channel Fast Charger"
+    },
+    "Hawk-Woods VL-MX2": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 600,
+      "dimensions_mm": [180, 100, 58],
+      "notes": "Dual Mini V-Lok Charger"
+    },
+    "Shape Full Play Dual V-Mount Charger": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "dimensions_mm": [178, 127, 102],
+      "weight_g": 1060,
+      "notes": "Dual Channel, 60W XLR output"
+    },
+    "SmallRig Dual V-Mount Battery Charger": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 1050,
+      "dimensions_mm": [224, 141, 100],
+      "notes": "Dual Channel, 3A (single) / 2A (dual)"
+    },
+    "Bebob VS2micro": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "90-264",
+      "chargingSpeedAmps": 2.5,
+      "weight_g": 530,
+      "dimensions_mm": [66, 92, 45],
+      "notes": "2-Channel V-Mount Micro"
+    },
+    "SWIT S-3812S": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 6,
+      "weight_g": 1850,
+      "dimensions_mm": [272, 246, 97],
+      "notes": "2-Channel Fast Charger (6A), DC Output"
+    },
+    "Anton Bauer GM2": {
+      "mount": "Gold-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4.5,
+      "weight_g": 1000,
+      "dimensions_mm": [235, 140, 57],
+      "notes": "Dual Gold Mount Charger"
+    },
+    "Core SWX Mach4 (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 4,
+      "dimensions_mm": [315, 226, 80],
+      "weight_g": 2300,
+      "notes": "4-position simultaneous fast charger"
+    },
+    "Core SWX Mach4 (Gold-Mount)": {
+      "mount": "Gold-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 4,
+      "weight_g": 2300,
+      "dimensions_mm": [315, 226, 80],
+      "notes": "4-position simultaneous fast charger"
+    },
+    "Core SWX Fleet Q4A (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 2300,
+      "dimensions_mm": [315, 226, 86],
+      "notes": "4-position simultaneous charger"
+    },
+    "Core SWX Fleet Q4A (Gold-Mount)": {
+      "mount": "Gold-Mount",
+      "slots": 4,
+      "inputVoltageV": "90-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 2300,
+      "dimensions_mm": [315, 226, 86],
+      "notes": "4-position simultaneous charger"
+    },
+    "IDX VL-2000S (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 2,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 4,
+      "notes": "2-channel simultaneous charger, 4A (1 batt) / 3A (2 batts), 100W DC output",
+      "weight_g": 1200
+    },
+    "IDX VL-4S (V-Mount)": {
+      "mount": "V-Mount",
+      "slots": 4,
+      "inputVoltageV": "100-240",
+      "chargingSpeedAmps": 3,
+      "weight_g": 3100,
+      "dimensions_mm": [156, 153, 288],
+      "notes": "4-channel simultaneous charger, 3A (1-3 batts) / 2.3A (4 batts)"
     }
   };
   if (typeof registerDevice === 'function') {

@@ -105,6 +105,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "downloadDiagramBtn": "Télécharger le diagramme",
       "gridSnapToggle": "Aligner sur la grille",
       "existingDevicesHeading": "Appareils existants",
+      "deviceLibrarySearchLabel": "Rechercher dans toute la bibliothèque",
+      "deviceLibrarySearchPlaceholder": "Rechercher dans toutes les catégories d’appareils…",
+      "deviceLibrarySearchHelp": "Filtre toutes les catégories en même temps. Appuyez sur Entrée pour atteindre le meilleur résultat.",
+      "deviceLibrarySearchStatusDefault": "Affichage des {total} appareils.",
+      "deviceLibrarySearchResultOne": "Affichage de {visible} sur {total} appareils.",
+      "deviceLibrarySearchResultOther": "Affichage de {visible} sur {total} appareils.",
+      "deviceLibrarySearchNoResults": "Aucun appareil ne correspond à « {query} ».",
       "darkModeLabel": "Basculer en mode sombre",
       "pinkModeLabel": "Basculer en mode rose",
       "menuToggleLabel": "Menu",
@@ -119,7 +126,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "description": "Enregistrez les membres de l’équipe une fois, conservez-les hors ligne et réutilisez-les dans chaque projet.",
         "addContactButton": "Ajouter un contact",
         "importButton": "Importer une vCard",
-        "importHint": "Importez des fichiers .vcf pour ajouter des contacts instantanément.",
+        "importHint": "Importez des fichiers .vcf pour ajouter des contacts instantanément. Les détails déjà enregistrés sont conservés automatiquement.",
         "emptyState": "Aucun contact enregistré pour le moment. Ajoutez votre équipe pour la réutiliser plus tard.",
         "close": "Fermer",
         "selectLabel": "Contacts enregistrés",
@@ -398,6 +405,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "monitorVideoOutputsLabel": "Sorties:",
       "monitorWirelessTxLabel": "TX sans fil:",
       "monitorLatencyLabel": "Latence:",
+      "monitorLatencyHelp": "La latence est enregistrée même si le TX sans fil est désactivé. Effacez ce champ pour supprimer la valeur enregistrée.",
       "monitorAudioOutputLabel": "Sortie Audio:",
       "viewfinderDetailsHeading": "Détails du Viseur",
       "viewfinderScreenSizeLabel": "Taille d'écran (po):",
@@ -412,11 +420,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "viewfinderVideoOutputsLabel": "Sorties:",
       "viewfinderWirelessTxLabel": "TX sans fil:",
       "viewfinderLatencyLabel": "Latence:",
+      "viewfinderLatencyHelp": "La latence est enregistrée même si le TX sans fil est désactivé. Effacez ce champ pour supprimer la valeur enregistrée.",
+      "videoPowerInputsHeading": "Entrées d'alimentation",
       "videoVideoInputsHeading": "Entrées Vidéo",
       "videoVideoInputsLabel": "Entrées:",
       "videoVideoOutputsHeading": "Sorties Vidéo",
       "videoVideoOutputsLabel": "Sorties:",
-      "videoPowerInputLabel": "Entrée d'Alimentation:",
+      "videoPowerInputLabel": "Connecteurs:",
+      "videoPowerInputHelp": "Ajoutez chaque connecteur d'alimentation pris en charge, y compris les plaques batterie. Utilisez les notes pour les adaptateurs ou autres précisions.",
+      "videoPowerTypeLabel": "Connecteur",
+      "videoPowerVoltageLabel": "Plage de tension",
+      "videoPowerNotesLabel": "Notes",
+      "videoPowerVoltagePlaceholder": "Plage de tension (ex. 6-28V)",
+      "videoPowerNotesPlaceholder": "Notes (monture, adaptateur, etc.)",
       "videoFrequencyLabel": "Fréquence:",
       "videoLatencyLabel": "Latence:",
       "motorConnectorLabel": "Connecteur:",
@@ -722,6 +738,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCustomItemNameAria": "Nom de l'élément personnalisé dans {category}",
       "gearListCustomItemNamePlaceholder": "Élément personnalisé",
       "gearListCustomItemPreviewFallback": "Élément personnalisé",
+      "gearListCartSelectorLabel": "Chariot caméra",
+      "gearListCartConfigurationLabel": "Configuration du chariot",
+      "gearListCartAccessoriesLabel": "Accessoires du chariot",
       "gearListExcludeRentalToggle": "Exclure pour la location",
       "gearListIncludeRentalToggle": "Inclure pour la location",
       "gearListRentalNote": "La maison de location fournit cet élément",
@@ -1219,6 +1238,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "autoGearBackupRetentionUpdateFailed": "Impossible d’appliquer le nouveau seuil de conservation. Réessayez.",
       "autoGearRulesCountOne": "%s règle",
       "autoGearRulesCountOther": "%s règles",
+      "autoGearRuleToggleEnable": "Activer la règle",
+      "autoGearRuleToggleDisable": "Désactiver la règle",
+      "autoGearRuleEnabledLabel": "Activée",
+      "autoGearRuleDisabledLabel": "Désactivée",
+      "autoGearSummaryAllDisabled": "Toutes les règles automatiques sont désactivées.",
+      "autoGearSummaryDisabledSuffix": "{count} règles désactivées sont ignorées dans l'analyse.",
+      "autoGearSummaryDisabledNote": "Les règles désactivées apparaissent ci-dessous mais sont ignorées tant qu'elles restent désactivées.",
       "autoGearBackupClearsRules": "Supprime toutes les règles",
       "autoGearBackupMeta": "%s · %s",
       "autoGearAddsCountOne": "%s ajout",
@@ -1391,6 +1417,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "storagePersistenceStatusRequesting": "Demande de stockage persistant au navigateur…",
       "storagePersistenceStatusGranted": "Stockage persistant accordé. Les données du planner sont protégées contre les nettoyages automatiques.",
       "storagePersistenceStatusDenied": "Le navigateur n'a pas pu accorder le stockage persistant. Continuez à exporter des sauvegardes régulièrement.",
+      "storagePersistenceStatusSafariIncompatible": "Safari bloque actuellement les demandes de stockage persistant. Considérez cela comme une limitation du navigateur.",
       "storagePersistenceStatusError": "La demande de stockage persistant a échoué. Réessayez après avoir libéré de l'espace ou vérifiez les paramètres du navigateur.",
       "storagePersistenceStatusUnsupported": "Ce navigateur ne peut pas accorder automatiquement le stockage persistant. Continuez à conserver des sauvegardes externes.",
       "storagePersistenceUsage": "Utilisation approximative : {used} sur {quota}.",
@@ -1769,6 +1796,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             "title": "Ajoutez votre premier matériel possédé",
             "body": "Saisissez le nom de l’élément, la quantité optionnelle et les notes, puis enregistrez. Le matériel possédé est stocké hors ligne, inclus dans les sauvegardes et signalé dans les exports pour que l’équipe voie immédiatement ce qui est disponible sans doublons."
           },
+          "projectRequirementsBrief": {
+            "title": "Capturer le brief du projet",
+            "body": "Ouvrez Générer la liste et les exigences du projet, consignez la société de production, l'adresse complète, les préférences du loueur, les livrables et les notes de planning. Ces données alimentent les PDF prêts pour la location, restent en cache hors ligne et préparent les sections suivantes."
+          },
+          "projectRequirementsCrew": {
+            "title": "Cartographier la couverture équipe et les contacts",
+            "body": "Renseignez les sections Équipe, Préparation, Tournage et Retour avec noms, rôles et remarques. Liez les contacts enregistrés, ajoutez les informations d'urgence et dupliquez les lignes lorsque plusieurs jours partagent le même plan afin que les exports indiquent qui est présent et quand."
+          },
+          "projectRequirementsLogistics": {
+            "title": "Consigner optiques, rigging et monitoring",
+            "body": "Parcourez les autres sections : spécifications caméra, workflow optiques, scénarios de rigging, quantités de stockage/médias, préférences de mattebox et de monitoring. Chaque champ alimente les règles automatiques, le calcul de stockage et la checklist générée."
+          },
           "generateGearAndRequirements": {
             "title": "Générez exigences et liste du matériel",
             "body": "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections."
@@ -1784,18 +1823,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           "autoGearRulesCreate": {
             "title": "Ajouter une nouvelle règle automatique",
             "body": "Cliquez sur Ajouter une règle pour créer une automatisation personnalisée. Nommez-la, ajoutez des conditions et le matériel requis, puis enregistrez. Le planificateur applique la nouvelle règle hors ligne à chaque régénération du kit et l’inclut dans les exports, partages et sauvegardes."
-          },
-          "projectRequirementsBrief": {
-            "title": "Capturer le brief du projet",
-            "body": "Ouvrez Générer la liste et les exigences du projet, consignez la société de production, l'adresse complète, les préférences du loueur, les livrables et les notes de planning. Ces données alimentent les PDF prêts pour la location, restent en cache hors ligne et préparent les sections suivantes."
-          },
-          "projectRequirementsCrew": {
-            "title": "Cartographier la couverture équipe et les contacts",
-            "body": "Renseignez les sections Équipe, Préparation, Tournage et Retour avec noms, rôles et remarques. Liez les contacts enregistrés, ajoutez les informations d'urgence et dupliquez les lignes lorsque plusieurs jours partagent le même plan afin que les exports indiquent qui est présent et quand."
-          },
-          "projectRequirementsLogistics": {
-            "title": "Consigner optiques, rigging et monitoring",
-            "body": "Parcourez les autres sections : spécifications caméra, workflow optiques, scénarios de rigging, quantités de stockage/médias, préférences de mattebox et de monitoring. Chaque champ alimente les règles automatiques, le calcul de stockage et la checklist générée."
           },
           "gearList": {
             "title": "Auditez la liste du matériel générée",

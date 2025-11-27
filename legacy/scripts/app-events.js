@@ -63,6 +63,197 @@ var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
   return {};
 }();
 var DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+var STORAGE_HELPERS_FOR_EVENTS = function resolveStorageHelpersForEvents() {
+  var resolved = {};
+  var assignHelper = function assignHelper(source, key) {
+    if (!source || typeof resolved[key] === 'function') {
+      return;
+    }
+    var value = source[key];
+    if (typeof value === 'function') {
+      resolved[key] = value;
+    }
+  };
+  if (typeof require === 'function') {
+    try {
+      var storageModule = require('./storage.js');
+      if (storageModule && _typeof(storageModule) === 'object') {
+        assignHelper(storageModule, 'getSafeLocalStorage');
+        assignHelper(storageModule, 'saveDeviceData');
+        assignHelper(storageModule, 'clearUiCacheStorageEntries');
+      }
+    } catch (storageRequireError) {
+      void storageRequireError;
+    }
+  }
+  var scopeCandidates = [];
+  try {
+    if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE) {
+      scopeCandidates.push(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+  if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis) {
+    scopeCandidates.push(globalThis);
+  }
+  if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window) {
+    scopeCandidates.push(window);
+  }
+  if ((typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' && self) {
+    scopeCandidates.push(self);
+  }
+  if ((typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' && global) {
+    scopeCandidates.push(global);
+  }
+  for (var index = 0; index < scopeCandidates.length; index += 1) {
+    var scope = scopeCandidates[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    assignHelper(scope, 'getSafeLocalStorage');
+    assignHelper(scope, 'saveDeviceData');
+    assignHelper(scope, 'clearUiCacheStorageEntries');
+    if (typeof resolved.getSafeLocalStorage === 'function' && typeof resolved.saveDeviceData === 'function' && typeof resolved.clearUiCacheStorageEntries === 'function') {
+      break;
+    }
+  }
+  return resolved;
+}();
+var STORAGE_BACKUP_SUFFIX_FOR_EVENTS = '__backup';
+var STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS = '__legacyMigrationBackup';
+function clearDeviceStorageVariantForEvents(keyVariant, options) {
+  if (typeof keyVariant !== 'string' || !keyVariant) {
+    return false;
+  }
+  var settings = options && _typeof(options) === 'object' ? options : {};
+  var removalKeys = new Set();
+  removalKeys.add(keyVariant);
+  if (typeof STORAGE_BACKUP_SUFFIX_FOR_EVENTS === 'string' && STORAGE_BACKUP_SUFFIX_FOR_EVENTS) {
+    removalKeys.add("".concat(keyVariant).concat(STORAGE_BACKUP_SUFFIX_FOR_EVENTS));
+  }
+  if (typeof STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS === 'string' && STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS) {
+    removalKeys.add("".concat(keyVariant).concat(STORAGE_MIGRATION_BACKUP_SUFFIX_FOR_EVENTS));
+  }
+  var removed = false;
+  var logPrefix = settings.logPrefix || 'Failed to clear device storage variant';
+  var storageCandidates = new Set();
+  if (typeof STORAGE_HELPERS_FOR_EVENTS.getSafeLocalStorage === 'function') {
+    try {
+      var safeStorage = STORAGE_HELPERS_FOR_EVENTS.getSafeLocalStorage();
+      if (safeStorage) {
+        storageCandidates.add(safeStorage);
+      }
+    } catch (safeStorageError) {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn("".concat(logPrefix, ": safe storage lookup failed"), safeStorageError);
+        }
+      } catch (logError) {
+        void logError;
+      }
+    }
+  }
+  try {
+    if (typeof SAFE_LOCAL_STORAGE !== 'undefined' && SAFE_LOCAL_STORAGE) {
+      storageCandidates.add(SAFE_LOCAL_STORAGE);
+    }
+  } catch (safeLocalStorageLookupError) {
+    void safeLocalStorageLookupError;
+  }
+  try {
+    if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis && globalThis.localStorage) {
+      storageCandidates.add(globalThis.localStorage);
+    }
+  } catch (globalThisLookupError) {
+    void globalThisLookupError;
+  }
+  try {
+    if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window && window.localStorage) {
+      storageCandidates.add(window.localStorage);
+    }
+  } catch (windowLookupError) {
+    void windowLookupError;
+  }
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      storageCandidates.add(localStorage);
+    }
+  } catch (localStorageLookupError) {
+    void localStorageLookupError;
+  }
+  var removalTargets = Array.from(removalKeys);
+  storageCandidates.forEach(function (storage) {
+    if (!storage || typeof storage.removeItem !== 'function') {
+      return;
+    }
+    for (var index = 0; index < removalTargets.length; index += 1) {
+      var removalKey = removalTargets[index];
+      if (typeof removalKey !== 'string' || !removalKey) {
+        continue;
+      }
+      try {
+        storage.removeItem(removalKey);
+        removed = true;
+      } catch (removeError) {
+        try {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn("".concat(logPrefix, " \"").concat(removalKey, "\""), removeError);
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+  });
+  if (typeof STORAGE_HELPERS_FOR_EVENTS.clearUiCacheStorageEntries === 'function') {
+    try {
+      STORAGE_HELPERS_FOR_EVENTS.clearUiCacheStorageEntries(removalTargets);
+    } catch (cacheClearError) {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to clear UI cache entries for device storage reset', cacheClearError);
+        }
+      } catch (logError) {
+        void logError;
+      }
+    }
+  }
+  return removed;
+}
+function clearAllDeviceStorageVariantsForEvents() {
+  var variants = getDeviceStorageKeyVariantsForEvents();
+  if (!variants || typeof variants.forEach !== 'function') {
+    return false;
+  }
+  var clearedAny = false;
+  variants.forEach(function (keyVariant) {
+    if (typeof keyVariant !== 'string' || !keyVariant) {
+      return;
+    }
+    if (typeof DEVICE_STORAGE_KEY_FOR_EVENTS === 'string' && keyVariant === DEVICE_STORAGE_KEY_FOR_EVENTS && typeof STORAGE_HELPERS_FOR_EVENTS.saveDeviceData === 'function') {
+      try {
+        STORAGE_HELPERS_FOR_EVENTS.saveDeviceData(null);
+        clearedAny = true;
+      } catch (storeError) {
+        try {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Failed to clear primary device storage via saveDeviceData', storeError);
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+    var removedVariant = clearDeviceStorageVariantForEvents(keyVariant, {
+      logPrefix: 'Failed to clear device storage variant'
+    });
+    if (removedVariant) {
+      clearedAny = true;
+    }
+  });
+  return clearedAny;
+}
 var CABLE_SUBCATEGORY_FALLBACK_KEYS = Object.freeze(['power', 'video', 'fiz', 'cables']);
 function getCableSubcategoryKeysForUi(preferredKeys) {
   var values = [];
@@ -88,9 +279,10 @@ function getCableSubcategoryKeysForUi(preferredKeys) {
   }
   if (schemaSubcategories && _typeof(schemaSubcategories) === 'object') {
     try {
-      Object.keys(schemaSubcategories).forEach(function (key) {
+      for (var _i = 0, _Object$keys = Object.keys(schemaSubcategories); _i < _Object$keys.length; _i++) {
+        var key = _Object$keys[_i];
         pushKey(key);
-      });
+      }
     } catch (schemaIterationError) {
       void schemaIterationError;
     }
@@ -108,9 +300,10 @@ function getCableSubcategoryKeysForUi(preferredKeys) {
   }
   if (existingSubcategories && _typeof(existingSubcategories) === 'object') {
     try {
-      Object.keys(existingSubcategories).forEach(function (key) {
-        pushKey(key);
-      });
+      for (var _i2 = 0, _Object$keys2 = Object.keys(existingSubcategories); _i2 < _Object$keys2.length; _i2++) {
+        var _key = _Object$keys2[_i2];
+        pushKey(_key);
+      }
     } catch (existingIterationError) {
       void existingIterationError;
     }
@@ -1013,6 +1206,19 @@ function callEventsCoreFunction(functionName) {
 var CORE_FUNCTION_MISSING_SENTINEL = Object.freeze({
   missing: true
 });
+var VIDEO_POWER_INPUT_HELPERS = function resolveVideoPowerInputHelpers() {
+  if (typeof require === 'function') {
+    try {
+      var helpers = require('./modules/video-power-inputs.js');
+      if (helpers && _typeof(helpers) === 'object') {
+        return helpers;
+      }
+    } catch (helperError) {
+      void helperError;
+    }
+  }
+  return {};
+}();
 function invokeCoreFunctionStrict(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var result = callEventsCoreFunction(functionName, args, {
@@ -1154,6 +1360,27 @@ function readCoreDeviceSelectionHelper() {
     return global.hasAnyDeviceSelection;
   }
   return null;
+}
+function refreshDeviceListsSafe() {
+  if (typeof refreshDeviceLists === 'function') {
+    try {
+      refreshDeviceLists();
+      return;
+    } catch (refreshError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('refreshDeviceLists failed, retrying via core bridge.', refreshError);
+      }
+    }
+  }
+  if (typeof callEventsCoreFunction === 'function') {
+    try {
+      callEventsCoreFunction('refreshDeviceLists');
+    } catch (bridgeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not refresh device lists via core bridge.', bridgeError);
+      }
+    }
+  }
 }
 function hasAnyDeviceSelectionSafe(state) {
   var coreHelper = readCoreDeviceSelectionHelper();
@@ -1334,6 +1561,13 @@ addSafeEventListener(skipLink, "click", function () {
   if (main) main.focus();
 });
 function handleSaveSetupClick() {
+  if (typeof applyPendingProjectNameCollisionResolution === 'function') {
+    try {
+      applyPendingProjectNameCollisionResolution();
+    } catch (pendingError) {
+      console.warn('Failed to finalize pending project name collision before saving setup', pendingError);
+    }
+  }
   var typedName = setupNameInput.value.trim();
   if (!typedName) {
     alert(texts[currentLang].alertSetupName);
@@ -1668,7 +1902,8 @@ function finalizeSetupSelection(nextSetupName) {
 var setupSelectTarget = getSetupSelectElement();
 addSafeEventListener(setupSelectTarget, "change", function (event) {
   var setupName = event.target.value;
-  var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
+  var rawTypedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
+  var typedName = rawTypedName.trim();
   var previousKey = (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '') || typedName || '';
   if (typeof setActiveProjectCompressionHold === 'function') {
     setActiveProjectCompressionHold(previousKey);
@@ -1691,7 +1926,8 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
           typedName: typedName,
           selectedName: previousSelection,
           storageKey: storageKeyOverride,
-          renameInProgress: Boolean(previousSelection && typedName && typedName !== previousSelection)
+          renameInProgress: Boolean(previousSelection && typedName && typedName !== previousSelection),
+          typedNameHasTrailingWhitespace: Boolean(typedName && typeof rawTypedName === 'string' && /\s$/.test(rawTypedName))
         }
       };
       scheduleProjectAutoSave({
@@ -2088,9 +2324,9 @@ function createStableValueSignature(value) {
   if (valueType === 'object') {
     var keys = Object.keys(value).sort();
     var _signature = '{';
-    for (var _index = 0; _index < keys.length; _index += 1) {
-      var key = keys[_index];
-      if (_index > 0) {
+    for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
+      var key = keys[_index2];
+      if (_index2 > 0) {
         _signature += ',';
       }
       _signature += "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
@@ -3128,7 +3364,7 @@ function showDeviceManagerSection() {
   toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'true');
-  refreshDeviceLists();
+  refreshDeviceListsSafe();
   updateCalculations();
 }
 function hideDeviceManagerSection() {
@@ -3460,12 +3696,13 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   hideFormSection(lensFieldsDiv);
   clearDynamicFields();
   if (type === "batteries") {
+    var _deviceData$capacity, _deviceData$pinA, _deviceData$dtapA;
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(batteryFieldsDiv);
-    newCapacityInput.value = deviceData.capacity || '';
-    newPinAInput.value = deviceData.pinA || '';
+    newCapacityInput.value = (_deviceData$capacity = deviceData.capacity) !== null && _deviceData$capacity !== void 0 ? _deviceData$capacity : '';
+    newPinAInput.value = (_deviceData$pinA = deviceData.pinA) !== null && _deviceData$pinA !== void 0 ? _deviceData$pinA : '';
     if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
-    newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : deviceData.dtapA || '';
+    newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (_deviceData$dtapA = deviceData.dtapA) !== null && _deviceData$dtapA !== void 0 ? _deviceData$dtapA : '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "cameras") {
     var _deviceData$power, _deviceData$power2, _deviceData$power3;
@@ -3509,7 +3746,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
-    var _deviceData$power4, _deviceData$video, _deviceData$video2, _deviceData$audioOutp, _deviceData$audioOutp2;
+    var _deviceData$power4, _deviceData$video, _deviceData$video2, _deviceData$latencyMs, _deviceData$audioOutp, _deviceData$audioOutp2;
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
@@ -3520,11 +3758,12 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setMonitorVideoInputs(deviceData.videoInputs || ((_deviceData$video = deviceData.video) === null || _deviceData$video === void 0 ? void 0 : _deviceData$video.inputs) || []);
     setMonitorVideoOutputs(deviceData.videoOutputs || ((_deviceData$video2 = deviceData.video) === null || _deviceData$video2 === void 0 ? void 0 : _deviceData$video2.outputs) || []);
     monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
-    monitorLatencyInput.value = deviceData.latencyMs || '';
+    monitorLatencyInput.value = (_deviceData$latencyMs = deviceData.latencyMs) !== null && _deviceData$latencyMs !== void 0 ? _deviceData$latencyMs : '';
     monitorAudioOutputInput.value = ((_deviceData$audioOutp = deviceData.audioOutput) === null || _deviceData$audioOutp === void 0 ? void 0 : _deviceData$audioOutp.portType) || ((_deviceData$audioOutp2 = deviceData.audioOutput) === null || _deviceData$audioOutp2 === void 0 ? void 0 : _deviceData$audioOutp2.type) || deviceData.audioOutput || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
-    var _deviceData$power5, _deviceData$video3, _deviceData$video4;
+    var _deviceData$power5, _deviceData$video3, _deviceData$video4, _deviceData$latencyMs2;
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(viewfinderFieldsDiv);
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
@@ -3535,17 +3774,17 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setViewfinderVideoInputs(deviceData.videoInputs || ((_deviceData$video3 = deviceData.video) === null || _deviceData$video3 === void 0 ? void 0 : _deviceData$video3.inputs) || []);
     setViewfinderVideoOutputs(deviceData.videoOutputs || ((_deviceData$video4 = deviceData.video) === null || _deviceData$video4 === void 0 ? void 0 : _deviceData$video4.outputs) || []);
     viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
-    viewfinderLatencyInput.value = deviceData.latencyMs || '';
+    viewfinderLatencyInput.value = (_deviceData$latencyMs2 = deviceData.latencyMs) !== null && _deviceData$latencyMs2 !== void 0 ? _deviceData$latencyMs2 : '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "video") {
-    var _deviceData$video5, _deviceData$video6;
+    var _deviceData$power6, _deviceData$video5, _deviceData$video6, _deviceData$latencyMs3;
     showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = resolveFirstPowerInputType(deviceData);
+    callEventsCoreFunction('setVideoPowerInputs', [((_deviceData$power6 = deviceData.power) === null || _deviceData$power6 === void 0 ? void 0 : _deviceData$power6.input) || deviceData.powerInput || null]);
     setVideoInputs(deviceData.videoInputs || ((_deviceData$video5 = deviceData.video) === null || _deviceData$video5 === void 0 ? void 0 : _deviceData$video5.inputs) || []);
     setVideoOutputsIO(deviceData.videoOutputs || ((_deviceData$video6 = deviceData.video) === null || _deviceData$video6 === void 0 ? void 0 : _deviceData$video6.outputs) || []);
     videoFrequencyInput.value = deviceData.frequency || '';
-    videoLatencyInput.value = deviceData.latencyMs || '';
+    videoLatencyInput.value = (_deviceData$latencyMs3 = deviceData.latencyMs) !== null && _deviceData$latencyMs3 !== void 0 ? _deviceData$latencyMs3 : '';
     motorConnectorInput.value = '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
@@ -3588,14 +3827,14 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     var subcategoryKeys = getCableSubcategoryKeysForUi(subcategory ? [subcategory] : []);
     newSubcategorySelect.innerHTML = '';
-    for (var _index2 = 0; _index2 < subcategoryKeys.length; _index2 += 1) {
-      var sc = subcategoryKeys[_index2];
+    for (var index = 0; index < subcategoryKeys.length; index += 1) {
+      var sc = subcategoryKeys[index];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
       newSubcategorySelect.appendChild(opt);
     }
-    var effectiveSubcategory = subcategory && subcategoryKeys.indexOf(subcategory) !== -1 ? subcategory : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
+    var effectiveSubcategory = subcategory && subcategoryKeys.includes(subcategory) ? subcategory : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
     newSubcategorySelect.value = effectiveSubcategory || '';
     newSubcategorySelect.disabled = false;
     if (effectiveSubcategory) {
@@ -3682,10 +3921,13 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
       } else {
         delete devices[_categoryKey][_name];
       }
+      if (typeof updateGlobalDevicesReference === 'function') {
+        updateGlobalDevicesReference(devices);
+      }
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-      refreshDeviceLists();
+      refreshDeviceListsSafe();
       callCoreFunctionIfAvailable('updateMountTypeOptions', [], {
         defer: true
       });
@@ -3780,14 +4022,14 @@ if (newCategorySelectElement) {
       if (wattFieldDiv) wattFieldDiv.style.display = "none";
       if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
       var subcategoryKeys = getCableSubcategoryKeysForUi(previousSubcategoryValue ? [previousSubcategoryValue] : []);
-      for (var _i2 = 0; _i2 < subcategoryKeys.length; _i2++) {
-        var sc = subcategoryKeys[_i2];
+      for (var index = 0; index < subcategoryKeys.length; index += 1) {
+        var sc = subcategoryKeys[index];
         var opt = document.createElement('option');
         opt.value = sc;
         opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
         newSubcategorySelect.appendChild(opt);
       }
-      var effectiveSubcategory = previousSubcategoryValue && subcategoryKeys.indexOf(previousSubcategoryValue) !== -1 ? previousSubcategoryValue : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
+      var effectiveSubcategory = previousSubcategoryValue && subcategoryKeys.includes(previousSubcategoryValue) ? previousSubcategoryValue : newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '';
       newSubcategorySelect.value = effectiveSubcategory || '';
       if (effectiveSubcategory) {
         buildDynamicFields("accessories.cables.".concat(effectiveSubcategory), {}, categoryExcludedAttrs["accessories.cables.".concat(effectiveSubcategory)] || []);
@@ -3810,7 +4052,11 @@ if (newCategorySelectElement) {
     monitorWirelessTxInput.checked = false;
     monitorLatencyInput.value = "";
     monitorAudioOutputInput.value = "";
-    clearMonitorVideoInputs();
+    if (typeof clearMonitorVideoInputs === 'function') {
+      clearMonitorVideoInputs();
+    } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
+      window.clearMonitorVideoInputs();
+    }
     clearMonitorVideoOutputs();
     viewfinderScreenSizeInput.value = "";
     viewfinderBrightnessInput.value = "";
@@ -3835,7 +4081,7 @@ if (newCategorySelectElement) {
     clearFizConnectors();
     clearViewfinders();
     clearTimecodes();
-    videoPowerInput.value = "";
+    callEventsCoreFunction('clearVideoPowerInputs');
     clearVideoInputs();
     clearVideoOutputsIO();
     videoFrequencyInput.value = "";
@@ -3915,6 +4161,41 @@ function resetDeviceForm() {
     }
   }
 }
+function clearDeviceManagerFilterForCategory(categoryKey, deviceName) {
+  if (!categoryKey || typeof document === 'undefined' || !document) {
+    return;
+  }
+  var normalizedCategory = String(categoryKey);
+  var filterInput = document.querySelector("input.list-filter[data-category-key=\"".concat(normalizedCategory, "\"]")) || document.getElementById("".concat(normalizedCategory.replace(/[^a-z0-9]+/gi, '_'), "ListFilter"));
+  if (!filterInput) {
+    return;
+  }
+  var rawFilter = typeof filterInput.value === 'string' ? filterInput.value : '';
+  var trimmedFilter = rawFilter.trim();
+  if (!trimmedFilter) {
+    return;
+  }
+  var normalizedFilter = trimmedFilter.toLowerCase();
+  var normalizedName = typeof deviceName === 'string' && deviceName ? deviceName.trim().toLowerCase() : '';
+  if (normalizedName && normalizedName.includes(normalizedFilter)) {
+    return;
+  }
+  filterInput.value = '';
+  try {
+    filterInput.dispatchEvent(new Event('input', {
+      bubbles: true
+    }));
+  } catch (inputError) {
+    void inputError;
+  }
+  try {
+    filterInput.dispatchEvent(new Event('change', {
+      bubbles: true
+    }));
+  } catch (changeError) {
+    void changeError;
+  }
+}
 function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttributes) {
   if (!container || _typeof(container) !== 'object' || !key) {
     applyDynamicFieldValues(undefined, categoryKey, excludedAttributes);
@@ -3926,7 +4207,14 @@ function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttribu
     container[key] = updatedEntry;
   }
 }
-addSafeEventListener(addDeviceBtn, "click", function () {
+addSafeEventListener(addDeviceBtn, "click", function (event) {
+  if (event && typeof event.preventDefault === 'function') {
+    try {
+      event.preventDefault();
+    } catch (preventDefaultError) {
+      void preventDefaultError;
+    }
+  }
   var name = newNameInput.value.trim();
   var categorySelect = resolveNewCategorySelect();
   var category = categorySelect ? categorySelect.value : '';
@@ -3958,7 +4246,10 @@ addSafeEventListener(addDeviceBtn, "click", function () {
   var originalDeviceData = isEditing && originalCollection ? originalCollection[originalName] : undefined;
   var editingSameCategory = isEditing && storedOriginalCategory === category;
   var editingSamePath = editingSameCategory && (category !== "accessories.cables" || storedOriginalSubcategory === subcategory);
-  if (!isEditing && targetCategory[name] !== undefined || isEditing && (name !== originalName || category === "accessories.cables" && subcategory !== originalSubcategory) && targetCategory[name] !== undefined) {
+  var categoryChanged = isEditing && storedOriginalCategory !== category;
+  var cablePathChanged = isEditing && (category === "accessories.cables" && subcategory !== storedOriginalSubcategory || storedOriginalCategory === "accessories.cables" && storedOriginalSubcategory !== subcategory);
+  var nameChanged = isEditing && name !== originalName;
+  if (!isEditing && targetCategory[name] !== undefined || isEditing && targetCategory[name] !== undefined && (nameChanged || categoryChanged || cablePathChanged)) {
     alert(texts[currentLang].alertDeviceExists);
     return;
   }
@@ -3966,7 +4257,7 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     var capacity = parseFloat(newCapacityInput.value);
     var pinA = parseFloat(newPinAInput.value);
     var dtapA = category === "batteryHotswaps" ? undefined : parseFloat(newDtapAInput.value);
-    if (isNaN(capacity) || isNaN(pinA) || capacity <= 0 || pinA <= 0 || category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0)) {
+    if (isNaN(capacity) || isNaN(pinA) || capacity < 0 || pinA < 0 || category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0)) {
       alert(texts[currentLang].alertDeviceFields);
       return;
     }
@@ -4059,7 +4350,9 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     }
     var screenSize = parseFloat(monitorScreenSizeInput.value);
     var brightness = parseFloat(monitorBrightnessInput.value);
-    targetCategory[name] = {
+    var monitorLatencyRaw = typeof monitorLatencyInput.value === 'string' ? monitorLatencyInput.value.trim() : '';
+    var monitorLatencyValue = monitorLatencyRaw !== '' ? monitorLatencyRaw : undefined;
+    var monitorData = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
       powerDrawWatts: _watt,
@@ -4075,11 +4368,14 @@ addSafeEventListener(addDeviceBtn, "click", function () {
         outputs: getMonitorVideoOutputs()
       },
       wirelessTx: monitorWirelessTxInput.checked,
-      latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? {
         portType: monitorAudioOutputInput.value
       } : undefined
     };
+    if (typeof monitorLatencyValue !== 'undefined') {
+      monitorData.latencyMs = monitorLatencyValue;
+    }
+    targetCategory[name] = monitorData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     var _watt2 = parseFloat(viewfinderWattInput.value);
@@ -4089,7 +4385,9 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     }
     var _screenSize = parseFloat(viewfinderScreenSizeInput.value);
     var _brightness = parseFloat(viewfinderBrightnessInput.value);
-    targetCategory[name] = {
+    var viewfinderLatencyRaw = typeof viewfinderLatencyInput.value === 'string' ? viewfinderLatencyInput.value.trim() : '';
+    var viewfinderLatencyValue = viewfinderLatencyRaw !== '' ? viewfinderLatencyRaw : undefined;
+    var viewfinderData = {
       screenSizeInches: isNaN(_screenSize) ? undefined : _screenSize,
       brightnessNits: isNaN(_brightness) ? undefined : _brightness,
       powerDrawWatts: _watt2,
@@ -4104,9 +4402,12 @@ addSafeEventListener(addDeviceBtn, "click", function () {
         inputs: getViewfinderVideoInputs(),
         outputs: getViewfinderVideoOutputs()
       },
-      wirelessTx: viewfinderWirelessTxInput.checked,
-      latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
+      wirelessTx: viewfinderWirelessTxInput.checked
     };
+    if (typeof viewfinderLatencyValue !== 'undefined') {
+      viewfinderData.latencyMs = viewfinderLatencyValue;
+    }
+    targetCategory[name] = viewfinderData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     var _watt3 = parseFloat(newWattInput.value);
@@ -4114,18 +4415,75 @@ addSafeEventListener(addDeviceBtn, "click", function () {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    targetCategory[name] = {
-      powerDrawWatts: _watt3,
-      power: {
-        input: {
-          type: videoPowerInput.value
+    var videoLatencyRaw = typeof videoLatencyInput.value === 'string' ? videoLatencyInput.value.trim() : '';
+    var videoLatencyValue = videoLatencyRaw !== '' ? videoLatencyRaw : undefined;
+    var videoPowerInputs;
+    try {
+      videoPowerInputs = invokeCoreFunctionStrict('getVideoPowerInputs', []);
+    } catch (powerInputError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        try {
+          eventsLogger.error('Failed to collect video power inputs', powerInputError, {
+            namespace: 'device-editor'
+          });
+        } catch (logError) {
+          void logError;
         }
-      },
-      videoInputs: getVideoInputs(),
-      videoOutputs: getVideoOutputsIO(),
-      frequency: videoFrequencyInput.value,
-      latencyMs: videoLatencyInput.value
-    };
+      }
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to collect video power inputs', powerInputError);
+      }
+      videoPowerInputs = undefined;
+    }
+    var existingVideoDevice = isEditing && originalDeviceData && _typeof(originalDeviceData) === 'object' ? function () {
+      try {
+        return JSON.parse(JSON.stringify(originalDeviceData));
+      } catch (cloneError) {
+        void cloneError;
+        return _objectSpread({}, originalDeviceData);
+      }
+    }() : {};
+    var videoDeviceData = existingVideoDevice && _typeof(existingVideoDevice) === 'object' ? existingVideoDevice : {};
+    videoDeviceData.powerDrawWatts = _watt3;
+    var normalizedInputs = getVideoInputs();
+    if (Array.isArray(normalizedInputs) && normalizedInputs.length) {
+      videoDeviceData.videoInputs = normalizedInputs;
+    } else {
+      delete videoDeviceData.videoInputs;
+    }
+    var normalizedOutputs = getVideoOutputsIO();
+    if (Array.isArray(normalizedOutputs) && normalizedOutputs.length) {
+      videoDeviceData.videoOutputs = normalizedOutputs;
+    } else {
+      delete videoDeviceData.videoOutputs;
+    }
+    var rawFrequency = typeof videoFrequencyInput.value === 'string' ? videoFrequencyInput.value.trim() : '';
+    if (rawFrequency) {
+      videoDeviceData.frequency = rawFrequency;
+    } else {
+      delete videoDeviceData.frequency;
+    }
+    if (typeof videoPowerInputs !== 'undefined') {
+      var mergePowerInput = typeof VIDEO_POWER_INPUT_HELPERS.mergePowerInput === 'function' ? VIDEO_POWER_INPUT_HELPERS.mergePowerInput : function (power, input) {
+        var base = power && _typeof(power) === 'object' ? _objectSpread({}, power) : {};
+        base.input = input;
+        return base;
+      };
+      var mergedPower = mergePowerInput(videoDeviceData.power, videoPowerInputs);
+      if (mergedPower && Object.keys(mergedPower).length) {
+        videoDeviceData.power = mergedPower;
+      } else {
+        delete videoDeviceData.power;
+      }
+    } else {
+      delete videoDeviceData.power;
+    }
+    if (typeof videoLatencyValue !== 'undefined') {
+      videoDeviceData.latencyMs = videoLatencyValue;
+    } else {
+      delete videoDeviceData.latencyMs;
+    }
+    targetCategory[name] = videoDeviceData;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     var _watt4 = parseFloat(newWattInput.value);
@@ -4197,7 +4555,11 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     }
     addDeviceBtn.dataset.originalName = name;
   }
+  clearDeviceManagerFilterForCategory(category, name);
   resetDeviceForm();
+  if (typeof updateGlobalDevicesReference === 'function') {
+    updateGlobalDevicesReference(devices);
+  }
   storeDevices(devices);
   viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
   viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
@@ -4208,7 +4570,7 @@ addSafeEventListener(addDeviceBtn, "click", function () {
   callEventsCoreFunction('updatePowerDistCurrentOptions');
   callEventsCoreFunction('updateRecordingMediaOptions');
   callEventsCoreFunction('updateTimecodeTypeOptions');
-  refreshDeviceLists();
+  refreshDeviceListsSafe();
   populateSelect(cameraSelect, devices.cameras, true);
   populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
@@ -4311,27 +4673,15 @@ if (exportAndRevertBtn) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       var revertTimer = setTimeout(function () {
-        var variants = getDeviceStorageKeyVariantsForEvents();
-        if (variants && typeof variants.forEach === 'function') {
-          variants.forEach(function (keyVariant) {
-            if (typeof keyVariant !== 'string' || !keyVariant) {
-              return;
+        var clearedVariants = clearAllDeviceStorageVariantsForEvents();
+        if (!clearedVariants) {
+          try {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Unable to confirm device storage reset during export & revert');
             }
-            try {
-              var canRemoveDeviceStorage = typeof localStorage !== 'undefined' && localStorage && typeof localStorage.removeItem === 'function';
-              if (canRemoveDeviceStorage) {
-                localStorage.removeItem(keyVariant);
-              }
-            } catch (removeError) {
-              try {
-                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                  console.warn("Failed to remove device storage key variant \"".concat(keyVariant, "\""), removeError);
-                }
-              } catch (logError) {
-                void logError;
-              }
-            }
-          });
+          } catch (logError) {
+            void logError;
+          }
         }
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
@@ -4399,7 +4749,7 @@ addSafeEventListener(importFileInput, "change", function (event) {
       storeDevices(devices);
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-      refreshDeviceLists();
+      refreshDeviceListsSafe();
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video, true);
