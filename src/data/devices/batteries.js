@@ -556,21 +556,21 @@
       "pinA": 8,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 330
+      "weight_g": 340
     },
     "SmallRig VB99 mini (V-Mount)": {
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 540
+      "weight_g": 550
     },
     "SmallRig VB155 mini (V-Mount)": {
       "capacity": 155,
       "pinA": 12,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 760
+      "weight_g": 780
     },
     "SmallRig VB210 mini (V-Mount)": {
       "capacity": 210,
@@ -656,7 +656,8 @@
       "capacity": 98,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 500
     },
     "Hawk-Woods X-Lok 150Wh (XL-150) (V-Mount)": {
       "capacity": 150,
@@ -803,8 +804,8 @@
       "pinA": 12,
       "dtapA": 10,
       "mount_type": "Gold-Mount",
-      "weight_g": 800,
-      "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g"
+      "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g",
+      "weight_g": 800
     },
     "SWIT PB-S98S (V-Mount)": {
       "capacity": 98,
@@ -818,7 +819,7 @@
       "capacity": 220,
       "pinA": null,
       "mount_type": "Gold-Mount",
-      "weight_g": 1435
+      "weight_g": 1440
     },
     "SWIT PB-S220S (V-Mount)": {
       "capacity": 220,
@@ -830,7 +831,8 @@
       "capacity": 290,
       "pinA": 18,
       "dtapA": 10,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 1580
     },
     "BLUESHAPE BG095HDmini (Gold-Mount)": {
       "capacity": 95,

@@ -330,6 +330,106 @@
             "powerOptions": ["AC", "48V DC"],
             "notes": "High power 1x1 IP65 panel. Weight includes yoke.",
             "verified_source": "https://creamsource.com/product/vortex4/"
+        },
+        "ARRI SkyPanel S360-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 1600,
+            "weight_g": 41000,
+            "type": "LED Soft Light",
+            "mount": "Junior Pin (28mm)",
+            "powerOptions": ["AC (Integrated)", "54V DC"],
+            "notes": "Massive output soft light. Weight is manual version.",
+            "verified_source": "https://www.arri.com/en/lighting/led/skypanel/s360-c"
+        },
+        "Aputure Amaran 300c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 360,
+            "weight_g": 2630,
+            "type": "COB LED (RGBWW)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "300W RGBWW. Weight is lamp head only.",
+            "verified_source": "https://www.aputure.com/products/amaran-300c/"
+        },
+        "Godox KNOWLED MG1200Bi": {
+            "brand": "Godox",
+            "powerDrawWatts": 1400,
+            "weight_g": 16000,
+            "type": "COB LED (Bi-Color)",
+            "mount": "Godox G-Mount",
+            "powerOptions": ["AC"],
+            "notes": "1200W Bi-Color. Weight is light body only.",
+            "verified_source": "https://www.godox.com/product-d/MG1200Bi.html"
+        },
+        "Godox KNOWLED M600D": {
+            "brand": "Godox",
+            "powerDrawWatts": 740,
+            "weight_g": 4500,
+            "type": "COB LED (Daylight)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "V-Mount (x2)"],
+            "notes": "600W Daylight. Weight is light body only.",
+            "verified_source": "https://www.godox.com/product-d/M600D.html"
+        },
+        "Godox VL300": {
+            "brand": "Godox",
+            "powerDrawWatts": 300,
+            "weight_g": 2640,
+            "type": "COB LED (Daylight)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "V-Mount"],
+            "notes": "300W Daylight. Weight is light body only.",
+            "verified_source": "https://www.godox.com/product-d/VL300.html"
+        },
+        "Aputure Amaran 150c": {
+            "brand": "Aputure",
+            "powerDrawWatts": 180,
+            "weight_g": 2660,
+            "type": "COB LED (RGBWW)",
+            "mount": "Bowens",
+            "powerOptions": ["AC", "48V DC"],
+            "notes": "150W RGBWW. Weight is lamp head only.",
+            "verified_source": "https://www.aputure.com/products/amaran-150c/"
+        },
+        "Aputure Electro Storm CS15": {
+            "brand": "Aputure",
+            "powerDrawWatts": 1800,
+            "weight_g": 18000,
+            "type": "COB LED (RGB)",
+            "mount": "Aputure Mount (Electronic)",
+            "powerOptions": ["AC"],
+            "notes": "1500W High Output RGB. Weight is lamp head only.",
+            "verified_source": "https://www.aputure.com/products/electro-storm-cs15/"
+        },
+        "Godox KNOWLED TP2R": {
+            "brand": "Godox",
+            "powerDrawWatts": 33,
+            "weight_g": 840,
+            "type": "LED Pixel Tube (RGBWW)",
+            "length": "2ft",
+            "powerOptions": ["Internal Battery", "20V DC"],
+            "notes": "2ft Pixel Tube. Weight is fixture only.",
+            "verified_source": "https://www.godox.com/product-d/TP2R.html"
+        },
+        "Godox KNOWLED TP4R": {
+            "brand": "Godox",
+            "powerDrawWatts": 64,
+            "weight_g": 1500,
+            "type": "LED Pixel Tube (RGBWW)",
+            "length": "4ft",
+            "powerOptions": ["Internal Battery", "20V DC"],
+            "notes": "4ft Pixel Tube. Weight is fixture only.",
+            "verified_source": "https://www.godox.com/product-d/TP4R.html"
+        },
+        "ARRI L10-C": {
+            "brand": "ARRI",
+            "powerDrawWatts": 510,
+            "weight_g": 19700,
+            "type": "LED Fresnel (Tunable)",
+            "mount": "Junior Pin",
+            "powerOptions": ["AC"],
+            "notes": "High power Tunable LED Fresnel. Weight is manual version.",
+            "verified_source": "https://www.arri.com/en/lighting/led/l-series/l10-c"
         }
     };
 

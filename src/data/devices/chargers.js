@@ -54,11 +54,11 @@
         225,
         270
       ],
-      "weight_g": 1900,
       "outputs": [
         "XLR-4 DC 16.5V / 10A"
       ],
-      "notes": "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function"
+      "notes": "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function",
+      "weight_g": 1900
     },
     "SWIT SC-304S": {
       "mount": "V-Mount",
@@ -86,8 +86,8 @@
       ],
       "perBayCurrentA": 6,
       "chargingSpeedAmps": 6,
-      "weight_g": 2430,
-      "notes": "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display"
+      "notes": "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display",
+      "weight_g": 2430
     },
     "SWIT PC-U130S": {
       "mount": "V-Mount",
@@ -170,6 +170,7 @@
       "outputs": [
         "XLR 16.7V DC / 4.5A"
       ],
+      "weight_g": 1000,
       "notes": "Compact dual-bay charger with LED indicators"
     },
     "SWIT S-3822S": {
@@ -569,12 +570,12 @@
       "slots": 4,
       "inputVoltageV": "100-240",
       "chargingSpeedAmps": 4,
-      "weight_g": 2500,
       "dimensions_mm": [
         281,
         145,
         191
       ],
+      "weight_g": 2500,
       "notes": "4-Channel Fast Charger"
     },
     "Hawk-Woods VL-MX2": {
@@ -582,7 +583,7 @@
       "slots": 2,
       "inputVoltageV": "100-240",
       "chargingSpeedAmps": 3,
-      "weight_g": 597,
+      "weight_g": 600,
       "dimensions_mm": [
         180,
         100,
@@ -595,12 +596,12 @@
       "slots": 2,
       "inputVoltageV": "100-240",
       "chargingSpeedAmps": 3,
-      "weight_g": 1100,
       "dimensions_mm": [
         178,
         127,
         102
       ],
+      "weight_g": 1060,
       "notes": "Dual Channel, 60W XLR output"
     },
     "SmallRig Dual V-Mount Battery Charger": {
@@ -660,12 +661,12 @@
       "slots": 4,
       "inputVoltageV": "90-240",
       "chargingSpeedAmps": 4,
-      "weight_g": 2300,
       "dimensions_mm": [
         315,
         226,
         80
       ],
+      "weight_g": 2300,
       "notes": "4-position simultaneous fast charger"
     },
     "Core SWX Mach4 (Gold-Mount)": {
@@ -712,8 +713,8 @@
       "slots": 2,
       "inputVoltageV": "100-240",
       "chargingSpeedAmps": 4,
-      "weight_g": 1240,
-      "notes": "2-channel simultaneous charger, 4A (1 batt) / 3A (2 batts), 100W DC output"
+      "notes": "2-channel simultaneous charger, 4A (1 batt) / 3A (2 batts), 100W DC output",
+      "weight_g": 1200
     },
     "IDX VL-4S (V-Mount)": {
       "mount": "V-Mount",

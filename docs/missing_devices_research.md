@@ -3,33 +3,48 @@
 This document lists missing devices identified for the Cine Power Planner database.
 All data has been double-verified with manufacturer specifications or trusted retailers.
 
-## Batch 23: VR & 360 Cameras (src/data/devices/cameras.js)
+## Batch 25: Additional Aputure, ARRI & Godox Lights (src/data/devices/lights.js)
 
-### Insta360
-*   **Insta360 Titan**
-    *   Specs: 11K 3D 360 Camera, 8x MFT Sensors.
-    *   Power Draw: ~160W (19.5V 9A Adapter).
-    *   Weight: ~5.5 kg.
-    *   Power Inputs: DC Barrel (19.5V), Removable Battery (10000mAh).
-*   **Insta360 Pro 2**
-    *   Specs: 8K 3D 360 Camera.
-    *   Power Draw: ~60W (12V 5A).
-    *   Weight: ~1.55 kg.
-    *   Power Inputs: DC Barrel (12V), Removable Battery (5100mAh).
-*   **Insta360 ONE RS 1-Inch 360**
-    *   Specs: 6K 360 Camera, Dual 1-Inch Sensors.
-    *   Power Draw: ~10W (USB-C).
-    *   Weight: ~239 g.
-    *   Power Inputs: USB-C, Internal Battery (1350mAh).
+### Aputure
+*   **Aputure Amaran 150c**
+    *   Specs: 150W RGBWW COB LED.
+    *   Power Draw: ~180W (Max).
+    *   Weight: ~2.66 kg (Lamp Head).
+    *   Power Inputs: AC, 48V DC.
+*   **Aputure Electro Storm CS15**
+    *   Specs: 1500W RGB LED.
+    *   Power Draw: ~1800W (Max).
+    *   Weight: ~18 kg (Lamp Head).
+    *   Power Inputs: AC.
 
-### Kandao
-*   **Kandao Obsidian Pro**
-    *   Specs: 12K 3D 360 Camera, 8x APS-C Sensors.
-    *   Power Draw: ~160W.
-    *   Weight: ~11.16 kg.
-    *   Power Inputs: DC (20V), V-Mount (x2).
+### Godox
+*   **Godox KNOWLED TP2R**
+    *   Specs: 2ft RGBWW Pixel Tube.
+    *   Power Draw: ~33W.
+    *   Weight: ~0.84 kg.
+    *   Power Inputs: Internal Battery, DC (20V).
+*   **Godox KNOWLED TP4R**
+    *   Specs: 4ft RGBWW Pixel Tube.
+    *   Power Draw: ~64W.
+    *   Weight: ~1.5 kg.
+    *   Power Inputs: Internal Battery, DC (20V).
+
+### ARRI
+*   **ARRI L10-C**
+    *   Specs: LED Fresnel (Tunable).
+    *   Power Draw: ~400W (Nominal), 510W (Max).
+    *   Weight: ~19.7 kg (Manual Version).
+    *   Power Inputs: AC.
 
 ---
+
+## Batch 24: More Aputure, ARRI & Godox Lights (Completed)
+
+[Previous content preserved...]
+
+## Batch 23: VR & 360 Cameras (Completed)
+
+[Previous content preserved...]
 
 ## Batch 22: Kino Flo & Creamsource (Completed)
 

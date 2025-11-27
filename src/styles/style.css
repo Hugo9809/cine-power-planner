@@ -9422,6 +9422,97 @@ body.light-mode #topBar select:focus-visible {
 
 /* --- HERO SECTION STYLES --- */
 .power-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  background: var(--panel-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--panel-shadow);
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.hero-main-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.power-draw-container {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  font-family: var(--font-family);
+  line-height: 1;
+  justify-content: center;
+}
+
+.hero-power-value {
+  font-size: calc(var(--font-size-base) * 3.5);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color);
+}
+
+.hero-power-divider {
+  font-size: calc(var(--font-size-base) * 2.5);
+  color: var(--muted-text-color);
+  font-weight: var(--font-weight-light);
+}
+
+.hero-power-limit {
+  font-size: calc(var(--font-size-base) * 2.5);
+  color: var(--muted-text-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.hero-battery-label {
+  font-size: calc(var(--font-size-base) * 1.1);
+  color: var(--accent-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.hero-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--divider-color);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: calc(var(--font-size-base) * 0.85);
+  color: var(--muted-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-value {
+  font-size: calc(var(--font-size-base) * 1.25);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color);
+}
+
+@media (max-width: 600px) {
+  .hero-power-value {
+    font-size: calc(var(--font-size-base) * 2.5);
+  }
+
+  .hero-power-limit {
+    font-size: calc(var(--font-size-base) * 1.8);
+  }
+}
+
+.power-hero {
 
   .glow-safe {
     text-shadow: 0 0 10px var(--success-color), 0 0 20px var(--success-color);
