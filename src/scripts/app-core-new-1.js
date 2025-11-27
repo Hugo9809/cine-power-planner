@@ -15488,7 +15488,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     // Battery Label
     if (heroBatteryLabel && batterySelect) {
       const selectedOption = batterySelect.options[batterySelect.selectedIndex];
-      heroBatteryLabel.textContent = selectedOption ? selectedOption.text : '';
+      const batteryName = selectedOption ? selectedOption.text : '';
+      heroBatteryLabel.textContent = `Camera Setup draws ${total.toFixed(0)}W from the ${availableWatt.toFixed(0)}W available on the ${batteryName}`;
     }
 
     // Currents & Battery Count (Calculated in results.js, but we can update DOM here if passed or access global/scope)

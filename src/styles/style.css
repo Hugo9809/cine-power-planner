@@ -9515,17 +9515,14 @@ body.light-mode #topBar select:focus-visible {
 .power-hero {
 
   .glow-safe {
-    text-shadow: 0 0 10px var(--success-color), 0 0 20px var(--success-color);
     color: var(--success-color);
   }
 
   .glow-warning {
-    text-shadow: 0 0 10px var(--warning-color), 0 0 20px var(--warning-color);
     color: var(--warning-color);
   }
 
   .glow-danger {
-    text-shadow: 0 0 10px var(--danger-color), 0 0 20px var(--danger-color);
     color: var(--danger-color);
   }
 
