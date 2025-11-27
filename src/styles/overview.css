@@ -572,3 +572,7 @@ th {
     color: var(--accent-color);
   }
 }
+
+#heroBatteryLabel {
+  color: #000000;
+}
