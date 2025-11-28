@@ -15,6 +15,7 @@ const CONNECTIVITY_PROBE_QUERY_PARAM = '__cineReloadProbe__';
 const CONNECTIVITY_PROBE_RESULT_HEADER = 'x-cine-connectivity-probe-result';
 const CONNECTIVITY_PROBE_RESULT_NETWORK = 'network';
 const CONNECTIVITY_PROBE_RESULT_FALLBACK = 'fallback';
+const NETWORK_TIMEOUT_MS = 3000;
 const IS_NODE_ENVIRONMENT =
   typeof process !== 'undefined' &&
   process &&
@@ -415,7 +416,7 @@ function recordLogEntry(level, message, detail) {
   if (diagnostics && diagnostics.history) {
     diagnostics.history.push(entry);
     while (diagnostics.history.length > LOG_HISTORY_LIMIT) {
-    diagnostics.history.shift();
+      diagnostics.history.shift();
     }
     diagnostics.lastEntry = entry;
   }
@@ -548,9 +549,9 @@ cachedCacheVersion = CACHE_VERSION;
 cachedCacheName = CACHE_NAME;
 
 try {
-if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
-  SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
-}
+  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
+    SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
+  }
 } catch (cacheExposeError) {
   serviceWorkerLog.warn('Unable to expose computed cache name for diagnostics.', cacheExposeError);
 }
@@ -662,7 +663,7 @@ function scheduleCachePut(event, request, response, errorMessage, cachePromiseOv
     }
   }
 
-  cachePutTask.catch(() => {});
+  cachePutTask.catch(() => { });
 }
 
 function isConnectivityProbeRequest(request, requestUrl) {
@@ -1012,9 +1013,9 @@ if (typeof self !== 'undefined') {
     const preloadResponsePromise =
       isNavigationRequest && event.preloadResponse && typeof event.preloadResponse.then === 'function'
         ? event.preloadResponse.catch(error => {
-            serviceWorkerLog.warn('Navigation preload promise rejected.', error);
-            return null;
-          })
+          serviceWorkerLog.warn('Navigation preload promise rejected.', error);
+          return null;
+        })
         : null;
     let preloadResponseResolved = false;
     let preloadResponseValue = null;
@@ -1052,78 +1053,8 @@ if (typeof self !== 'undefined') {
       const cacheMatchOptions =
         shouldIgnoreSearch || isConnectivityProbe ? CACHE_MATCH_IGNORE_SEARCH_OPTIONS : undefined;
 
-      if (bypassCache) {
-        if (preloadResponsePromise) {
-          const preloadResponse = await resolvePreloadResponse();
-          if (preloadResponse) {
-            if (preloadResponse.ok && isSameOrigin) {
-              scheduleCachePut(
-                event,
-                event.request,
-                preloadResponse,
-                'Unable to store navigation preload response in cache',
-              );
-            }
-            return preloadResponse;
-          }
-        }
-        try {
-          const freshResponse = await fetch(event.request, { cache: 'no-store' });
-          if (freshResponse && freshResponse.ok && isSameOrigin && !isConnectivityProbe) {
-            scheduleCachePut(event, event.request, freshResponse, 'Unable to store fresh response in cache');
-          }
-          if (freshResponse) {
-            if (isConnectivityProbe) {
-              return annotateConnectivityProbeResponse(freshResponse, CONNECTIVITY_PROBE_RESULT_NETWORK);
-            }
-            return freshResponse;
-          }
-        } catch (networkError) {
-          const cachedFallback = await caches.match(event.request, cacheMatchOptions);
-          if (cachedFallback) {
-            serviceWorkerLog.warn('Network error during cache bypass. Serving cached fallback.', {
-              url: event.request && event.request.url ? event.request.url : null,
-              cacheName: CACHE_NAME,
-              error: networkError,
-            });
-            if (isConnectivityProbe) {
-              return annotateConnectivityProbeResponse(
-                cachedFallback,
-                CONNECTIVITY_PROBE_RESULT_FALLBACK,
-              );
-            }
-            return cachedFallback;
-          }
-
-          if (isNavigationRequest) {
-            const cache = await caches.open(CACHE_NAME);
-            const fallback = await cache.match('./index.html') || await cache.match('./');
-            if (fallback) {
-              serviceWorkerLog.warn('Network error during navigation bypass. Serving offline shell.', {
-                url: event.request && event.request.url ? event.request.url : null,
-                cacheName: CACHE_NAME,
-                error: networkError,
-              });
-              if (isConnectivityProbe) {
-                return annotateConnectivityProbeResponse(fallback, CONNECTIVITY_PROBE_RESULT_FALLBACK);
-              }
-              return fallback;
-            }
-          }
-
-          serviceWorkerLog.error('Network error during cache bypass without fallback.', networkError);
-          throw networkError;
-        }
-      }
-
-      const cachedResponse = await caches.match(event.request, cacheMatchOptions);
-      if (cachedResponse) {
-        if (isConnectivityProbe) {
-          return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
-        }
-        return cachedResponse;
-      }
-
+      // Network First Strategy
+      // 1. Check Navigation Preload
       if (preloadResponsePromise) {
         const preloadResponse = await resolvePreloadResponse();
         if (preloadResponse) {
@@ -1139,30 +1070,92 @@ if (typeof self !== 'undefined') {
         }
       }
 
-      try {
-        return await fetch(event.request);
-      } catch (error) {
-        if (!isNavigationRequest) {
+      // 2. Try Network with Timeout
+      const networkPromise = (async () => {
+        try {
+          const fetchOptions = bypassCache ? { cache: 'no-store' } : undefined;
+          const response = await fetch(event.request, fetchOptions);
+          if (response && response.ok && isSameOrigin && !isConnectivityProbe) {
+            scheduleCachePut(
+              event,
+              event.request,
+              response,
+              'Unable to store network response in cache'
+            );
+          }
+          return response;
+        } catch (error) {
           throw error;
         }
+      })();
 
+      const timeoutPromise = new Promise(resolve =>
+        setTimeout(() => resolve('TIMEOUT'), NETWORK_TIMEOUT_MS)
+      );
+
+      let response;
+      try {
+        response = await Promise.race([networkPromise, timeoutPromise]);
+
+        if (response === 'TIMEOUT') {
+          const cachedResponse = await caches.match(event.request, cacheMatchOptions);
+          if (cachedResponse) {
+            serviceWorkerLog.warn('Network request timed out. Serving cached fallback.');
+            // Ensure network request completes in background to update cache
+            networkPromise.catch(() => { });
+
+            if (isConnectivityProbe) {
+              return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+            }
+            return cachedResponse;
+          }
+          // No cache available, must wait for network
+          response = await networkPromise;
+        }
+      } catch (networkError) {
+        // Network failed, proceed to fallback logic
+        response = null;
+      }
+
+      if (response) {
+        if (isConnectivityProbe) {
+          return annotateConnectivityProbeResponse(response, CONNECTIVITY_PROBE_RESULT_NETWORK);
+        }
+        return response;
+      }
+
+      // 3. Network Failed - Fallback to Cache
+      // Note: We already tried to get a response above. If we are here, it means
+      // network failed (or timed out and failed later) AND we haven't returned cache yet.
+      // We can try cache one last time or fall through to offline shell.
+
+      const cachedResponse = await caches.match(event.request, cacheMatchOptions);
+      if (cachedResponse) {
+        if (isConnectivityProbe) {
+          return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+        }
+        return cachedResponse;
+      }
+
+      // 4. Offline Shell (for navigation requests)
+      if (isNavigationRequest) {
         const cache = await caches.open(CACHE_NAME);
         const offlineShell = await cache.match('./index.html') || await cache.match('./');
         if (offlineShell) {
           serviceWorkerLog.info('Served offline shell after navigation request failed.', {
             url: event.request && event.request.url ? event.request.url : null,
             cacheName: CACHE_NAME,
-            error,
+            error: networkError,
           });
           if (isConnectivityProbe) {
             return annotateConnectivityProbeResponse(offlineShell, CONNECTIVITY_PROBE_RESULT_FALLBACK);
           }
           return offlineShell;
         }
-
-        serviceWorkerLog.error('Navigation request failed without offline shell available.', error);
-        throw error;
       }
+
+      serviceWorkerLog.error('Network request failed and no cache available.', networkError);
+      throw networkError;
     })());
   });
 }

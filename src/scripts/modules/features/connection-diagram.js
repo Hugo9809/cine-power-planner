@@ -1039,8 +1039,10 @@
 
       const EDGE_LABEL_WRAP = 18;
 
+      const css = getDiagramCss();
       const defs = `
         <defs>
+          <style>${css}</style>
           <linearGradient id="firstFizGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#fff" stop-opacity="0.9"></stop>
             <stop offset="100%" stop-color="#fff" stop-opacity="0"></stop>
