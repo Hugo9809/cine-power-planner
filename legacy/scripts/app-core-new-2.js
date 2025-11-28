@@ -12795,8 +12795,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var _splitGearListHtml = splitGearListHtml(html),
         projectHtml = _splitGearListHtml.projectHtml,
         gearHtml = _splitGearListHtml.gearHtml;
+      console.log('[DEBUG] gearHtml before sanitization:', gearHtml.substring(0, 500));
       var safeProjectHtml = sanitizeSharedHtml(projectHtml);
       var safeGearHtml = sanitizeSharedHtml(gearHtml);
+      console.log('[DEBUG] safeGearHtml after sanitization:', safeGearHtml.substring(0, 500));
       if (projectRequirementsOutput) {
         if (safeProjectHtml) {
           projectRequirementsOutput.innerHTML = safeProjectHtml;

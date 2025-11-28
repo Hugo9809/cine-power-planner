@@ -6653,17 +6653,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     updateProgressMeter(currentStep, currentIndex);
     applyHelpButtonLabel();
   }
-  function confirmSkip() {
-    if (!tourTexts.skipConfirmationTitle || !tourTexts.skipConfirmationAccept) {
-      skipTutorial();
-      return;
+  function handleSkipTutorial(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
     }
-    var title = tourTexts.skipConfirmationTitle || '';
-    var message = tourTexts.skipConfirmationBody || '';
-    var accept = tourTexts.skipConfirmationAccept || '';
-    var cancel = tourTexts.skipConfirmationCancel || '';
-    if (GLOBAL_SCOPE.cineShowConfirmDialog) {
-      GLOBAL_SCOPE.cineShowConfirmDialog({
+    var title = resolveText('tutorialSkipTitle', 'Skip Tutorial');
+    var message = resolveText('tutorialSkipMessage', 'Are you sure you want to skip the tutorial? You can restart it later from the Help menu.');
+    var accept = resolveText('tutorialSkipConfirm', 'Skip');
+    var cancel = resolveText('tutorialSkipCancel', 'Cancel');
+    var showConfirm = GLOBAL_SCOPE.cineShowConfirmDialog || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+    if (typeof showConfirm === 'function') {
+      showConfirm({
         title: title,
         message: message,
         confirmLabel: accept,

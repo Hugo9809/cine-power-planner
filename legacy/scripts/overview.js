@@ -893,6 +893,7 @@ function createOverviewLoggerProxy(baseMeta) {
   return Object.freeze(proxy);
 }
 function generatePrintableOverview() {
+  var _this = this;
   var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var safeConfig = config && _typeof(config) === 'object' ? config : {};
   var _safeConfig$autoPrint = safeConfig.autoPrint,
@@ -1772,6 +1773,11 @@ function generatePrintableOverview() {
   var openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
   if (openOptionsBtn) {
     openOptionsBtn.addEventListener('click', function () {
+      var globalScope = typeof window !== 'undefined' ? window : _this;
+      if (globalScope.cineFeaturePrintPreview && typeof globalScope.cineFeaturePrintPreview.open === 'function') {
+        globalScope.cineFeaturePrintPreview.open();
+        return;
+      }
       var storedPreferences = loadPrintPreferences() || {
         sections: {},
         layout: 'standard'

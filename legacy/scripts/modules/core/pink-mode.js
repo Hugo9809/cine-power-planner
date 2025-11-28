@@ -726,8 +726,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }, _callee, null, [[9, 14, 15, 16], [1, 6, 7, 8]]);
           }))().catch(function (error) {
-            console.warn('Could not load pink mode asset', error);
+            console.warn('Could not load pink mode asset', normalized, error);
             return null;
+          }).then(function (result) {
+            console.log("[PinkMode] Asset loaded: ".concat(normalized, " -> ").concat(result ? 'Success' : 'Failed'));
+            if (!result) console.log("[PinkMode] Failed asset url was: ".concat(fallbackUrl));
+            return result;
           }).finally(function () {
             pinkModeAssetTextPromiseCache.delete(normalized);
           });
@@ -1320,6 +1324,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     console.warn('Could not load pink mode animated icons', error);
                     return Object.freeze([]);
                   }).then(function (templates) {
+                    console.log('[PinkMode] Loaded Templates:', templates.map(function (t) {
+                      return t ? t.name : 'null';
+                    }));
                     pinkModeAnimatedIconTemplates = templates;
                     updatePinkModeAnimatedIconTemplateRotation(templates);
                     console.log('[PinkMode] Loaded', templates.length, 'icon templates in background');
@@ -1352,6 +1359,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         function selectPinkModeAnimatedIconTemplate(availableTemplates) {
           if (!Array.isArray(availableTemplates) || !availableTemplates.length) {
+            console.log('[PinkMode] No available templates to select from.');
             return null;
           }
           var sanitized = availableTemplates.filter(Boolean);

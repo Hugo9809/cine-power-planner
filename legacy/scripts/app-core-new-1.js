@@ -18402,18 +18402,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     FEEDBACK_TEMPERATURE_MAX: globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE
   };
   Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
-  Object.assign(CORE_RUNTIME_CONSTANTS, {
-    startPinkModeAnimatedIcons: startPinkModeAnimatedIcons,
-    stopPinkModeAnimatedIcons: stopPinkModeAnimatedIcons,
-    pinkModeIcons: pinkModeIcons,
-    ensureSvgHasAriaHidden: ensureSvgHasAriaHidden,
-    triggerPinkModeIconRain: triggerPinkModeIconRain,
-    PINK_MODE_ICON_INTERVAL_MS: PINK_MODE_ICON_INTERVAL_MS,
-    PINK_MODE_ICON_ANIMATION_CLASS: PINK_MODE_ICON_ANIMATION_CLASS,
-    PINK_MODE_ICON_ANIMATION_RESET_DELAY: PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-    getGridSnapState: getGridSnapState,
-    setGridSnapState: setGridSnapState
-  });
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
   exposeCoreRuntimeBindings({
     updatePowerSummary: updatePowerSummary,

@@ -2821,12 +2821,17 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     var completed = false;
     var settings = options || {};
     var totalCount = Array.isArray(items) ? items.length : 0;
+    console.log('loadScriptsSequentially', items);
     function finalize() {
+      console.log('finalize called', {
+        completed: completed
+      });
       if (completed) {
         return;
       }
       completed = true;
       flushAllScriptRetryState();
+      console.log('Dispatching cine-loader-complete');
       dispatchLoaderEvent('cine-loader-complete');
       if (typeof settings.onComplete === 'function') {
         try {
@@ -2844,6 +2849,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         finalize();
         return;
       }
+      console.log('loadScriptAtIndex', currentIndex, items[currentIndex]);
       var currentItem = items[currentIndex];
       if (currentItem && _typeof(currentItem) === 'object' && !Array.isArray(currentItem)) {
         if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
@@ -3179,6 +3185,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return state.promise;
   }
   function loadScriptBundle(bundle, options) {
+    console.log('loadScriptBundle', bundle);
     if (!bundle || !bundle.core || bundle.core.length === 0) {
       if (bundle && bundle.deferred) {
         scheduleDeferredScripts(bundle.deferred);

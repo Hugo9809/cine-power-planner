@@ -13770,8 +13770,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function displayGearAndRequirements(html) {
       const { projectHtml, gearHtml } = splitGearListHtml(html);
+      console.log('[DEBUG] gearHtml before sanitization:', gearHtml.substring(0, 500));
       const safeProjectHtml = sanitizeSharedHtml(projectHtml);
       const safeGearHtml = sanitizeSharedHtml(gearHtml);
+      console.log('[DEBUG] safeGearHtml after sanitization:', safeGearHtml.substring(0, 500));
       if (projectRequirementsOutput) {
         if (safeProjectHtml) {
           projectRequirementsOutput.innerHTML = safeProjectHtml;

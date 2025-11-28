@@ -56,6 +56,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function bindEvents() {
     if (!state.elements.modal) return;
+    var newCloseBtn = state.elements.closeBtn.cloneNode(true);
+    state.elements.closeBtn.parentNode.replaceChild(newCloseBtn, state.elements.closeBtn);
+    state.elements.closeBtn = newCloseBtn;
     state.elements.closeBtn.addEventListener('click', closePreview);
     if (state.elements.layoutToggle) {
       state.elements.layoutToggle.addEventListener('change', function (e) {
@@ -75,101 +78,133 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
     if (state.elements.printBtn) {
+      var newPrintBtn = state.elements.printBtn.cloneNode(true);
+      state.elements.printBtn.parentNode.replaceChild(newPrintBtn, state.elements.printBtn);
+      state.elements.printBtn = newPrintBtn;
       state.elements.printBtn.addEventListener('click', function () {
         triggerNativePrint();
       });
     }
     if (state.elements.exportBtn) {
+      var newExportBtn = state.elements.exportBtn.cloneNode(true);
+      state.elements.exportBtn.parentNode.replaceChild(newExportBtn, state.elements.exportBtn);
+      state.elements.exportBtn = newExportBtn;
       state.elements.exportBtn.addEventListener('click', function () {
         triggerNativePrint();
       });
     }
   }
+  function generateRentalDeviceGrid() {
+    var sourceDevs = document.getElementById('overviewDeviceSection');
+    if (!sourceDevs) return '<p>No devices selected.</p>';
+    var container = document.createElement('div');
+    container.className = 'device-category-container';
+    var children = Array.from(sourceDevs.children);
+    var currentCategoryDiv = null;
+    children.forEach(function (child) {
+      if (child.tagName === 'H3') {
+        currentCategoryDiv = document.createElement('div');
+        currentCategoryDiv.className = 'device-category';
+        var title = document.createElement('h3');
+        title.innerHTML = child.innerHTML;
+        currentCategoryDiv.appendChild(title);
+        container.appendChild(currentCategoryDiv);
+      } else if (child.classList.contains('device-block')) {
+        if (!currentCategoryDiv) {
+          currentCategoryDiv = document.createElement('div');
+          currentCategoryDiv.className = 'device-category';
+          var _title = document.createElement('h3');
+          _title.textContent = 'Other';
+          currentCategoryDiv.appendChild(_title);
+          container.appendChild(currentCategoryDiv);
+        }
+        var clone = child.cloneNode(true);
+        currentCategoryDiv.appendChild(clone);
+      }
+    });
+    return container.outerHTML;
+  }
+  function generatePowerSummary() {
+    var _document$getElementB, _document$getElementB2, _document$getElementB3, _document$getElementB4, _document$getElementB5;
+    var totalWatt = ((_document$getElementB = document.getElementById('totalPower')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.textContent) || '0 W';
+    var runtime = ((_document$getElementB2 = document.getElementById('batteryLife')) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.textContent) || '—';
+    var batteryCount = ((_document$getElementB3 = document.getElementById('batteryCount')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.textContent) || '0';
+    var batteryName = ((_document$getElementB4 = document.getElementById('batterySelect')) === null || _document$getElementB4 === void 0 || (_document$getElementB4 = _document$getElementB4.selectedOptions[0]) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.text) || 'Battery';
+    var peakLoad = ((_document$getElementB5 = document.getElementById('totalCurrent144Elem')) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.textContent) || '';
+    return "\n            <div style=\"display: flex; gap: 15px;\">\n                <div style=\"flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;\">\n                    <div style=\"font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;\">Total Load</div>\n                    <div style=\"font-size: 1.5em; font-weight: bold; color: #14532d;\">".concat(totalWatt, "</div>\n                    <div style=\"font-size: 0.8em; color: #166534;\">").concat(peakLoad ? 'Peak: ' + peakLoad : '', "</div>\n                </div>\n                <div style=\"flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;\">\n                    <div style=\"font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;\">Est. Runtime</div>\n                    <div style=\"font-size: 1.5em; font-weight: bold; color: #1e3a8a;\">").concat(runtime, "</div>\n                    <div style=\"font-size: 0.8em; color: #1e40af;\">w/ ").concat(batteryName, "</div>\n                </div>\n                <div style=\"flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;\">\n                    <div style=\"font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;\">Daily Needs</div>\n                    <div style=\"font-size: 1.5em; font-weight: bold; color: #7c2d12;\">").concat(batteryCount, " Batts</div>\n                    <div style=\"font-size: 0.8em; color: #9a3412;\">for 12h day</div>\n                </div>\n            </div>\n        ");
+  }
   function renderPreviewContent() {
-    var _document$getElementB, _document$getElementB2;
+    var _document$getElementB6, _document$getElementB7;
     var paper = state.elements.paper;
     if (!paper) return;
     paper.innerHTML = '';
     var header = document.createElement('div');
     header.className = 'preview-header';
-    var projectName = ((_document$getElementB = document.getElementById('setupName')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value) || 'Untitled Project';
-    var production = ((_document$getElementB2 = document.getElementById('productionInput')) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.value) || '';
+    var projectName = ((_document$getElementB6 = document.getElementById('setupName')) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.value) || 'Untitled Project';
+    var production = ((_document$getElementB7 = document.getElementById('productionInput')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) || '';
     var dateStr = new Date().toLocaleDateString();
     header.innerHTML = "\n            <h1>Overview</h1>\n            <p><strong>Project Name:</strong> ".concat(projectName, "</p>\n            <p><strong>Production:</strong> ").concat(production, " | <strong>Date:</strong> ").concat(dateStr, "</p>\n        ");
     paper.appendChild(header);
-    if (state.preferences.sections.project) {
-      var reqSection = document.createElement('section');
-      reqSection.id = 'preview-section-project';
-      reqSection.className = 'print-section';
-      var sourceReq = document.getElementById('projectRequirementsOutput');
-      if (sourceReq) {
-        reqSection.innerHTML = sourceReq.innerHTML;
+    var reqSection = document.createElement('section');
+    reqSection.id = 'preview-section-project';
+    reqSection.className = 'print-section project-requirements-section';
+    var sourceReq = document.getElementById('projectRequirementsOutput');
+    if (sourceReq) {
+      reqSection.innerHTML = sourceReq.innerHTML;
+    } else {
+      reqSection.innerHTML = '<p><em>No project requirements data.</em></p>';
+    }
+    paper.appendChild(reqSection);
+    var devSection = document.createElement('section');
+    devSection.id = 'preview-section-devices';
+    devSection.className = 'print-section';
+    devSection.innerHTML = '<h2>Device Selection</h2>';
+    if (state.preferences.layout === 'rental') {
+      devSection.innerHTML += generateRentalDeviceGrid();
+    } else {
+      var sourceDevs = document.getElementById('overviewDeviceSection');
+      if (sourceDevs) {
+        devSection.innerHTML += sourceDevs.innerHTML;
+      }
+    }
+    paper.appendChild(devSection);
+    var diagSection = document.createElement('section');
+    diagSection.id = 'preview-section-diagram';
+    diagSection.className = 'print-section';
+    diagSection.innerHTML = '<h2>Power Diagram</h2>';
+    var sourceDiag = document.getElementById('setupDiagram');
+    if (sourceDiag) {
+      var svg = sourceDiag.querySelector('svg');
+      if (svg) {
+        diagSection.appendChild(svg.cloneNode(true));
       } else {
-        reqSection.innerHTML = '<p><em>No project requirements data.</em></p>';
+        diagSection.innerHTML += sourceDiag.innerHTML;
       }
-      paper.appendChild(reqSection);
     }
-    if (state.preferences.sections.devices) {
-      var devSection = document.createElement('section');
-      devSection.id = 'preview-section-devices';
-      devSection.className = 'print-section';
-      devSection.innerHTML = '<h2>Device Selection</h2>';
-      if (state.preferences.layout === 'rental') {
-        var grid = document.createElement('div');
-        grid.className = 'device-category-container';
-        var sourceDevs = document.getElementById('overviewDeviceSection');
-        if (sourceDevs) {
-          grid.innerHTML = sourceDevs.innerHTML;
-        }
-        devSection.appendChild(grid);
-      } else {
-        var _sourceDevs = document.getElementById('overviewDeviceSection');
-        if (_sourceDevs) {
-          devSection.innerHTML += _sourceDevs.innerHTML;
-        }
-      }
-      paper.appendChild(devSection);
+    paper.appendChild(diagSection);
+    var powerSection = document.createElement('section');
+    powerSection.id = 'preview-section-battery';
+    powerSection.className = 'print-section';
+    powerSection.style.marginTop = '20px';
+    powerSection.innerHTML = '<h2>Power Summary</h2>';
+    powerSection.innerHTML += generatePowerSummary();
+    var sourceBatteryTable = document.getElementById('batteryComparison');
+    if (sourceBatteryTable) {
+      var batteryClone = sourceBatteryTable.cloneNode(true);
+      var heading = batteryClone.querySelector('h2');
+      if (heading) heading.remove();
+      powerSection.appendChild(batteryClone);
     }
-    if (state.preferences.sections.diagram) {
-      var diagSection = document.createElement('section');
-      diagSection.id = 'preview-section-diagram';
-      diagSection.className = 'print-section';
-      diagSection.innerHTML = '<h2>Power Diagram</h2>';
-      var sourceDiag = document.getElementById('setupDiagram');
-      if (sourceDiag) {
-        var canvas = sourceDiag.querySelector('canvas');
-        if (canvas) {
-          var img = document.createElement('img');
-          img.src = canvas.toDataURL();
-          img.style.maxWidth = '100%';
-          diagSection.appendChild(img);
-        } else {
-          diagSection.innerHTML += sourceDiag.innerHTML;
-        }
-      }
-      paper.appendChild(diagSection);
+    paper.appendChild(powerSection);
+    var gearSection = document.createElement('section');
+    gearSection.id = 'preview-section-gearList';
+    gearSection.className = 'print-section gear-list-section';
+    gearSection.innerHTML = '<h2>Gear List</h2>';
+    var sourceGear = document.getElementById('gearListOutput');
+    if (sourceGear) {
+      gearSection.innerHTML += sourceGear.innerHTML;
     }
-    if (state.preferences.sections.battery) {
-      var powerSection = document.createElement('section');
-      powerSection.className = 'print-section';
-      powerSection.innerHTML = '<h2>Power Summary</h2>';
-      var sourceResults = document.getElementById('resultsSection');
-      if (sourceResults) {
-        powerSection.innerHTML += sourceResults.innerHTML;
-      }
-      paper.appendChild(powerSection);
-    }
-    if (state.preferences.sections.gearList) {
-      var gearSection = document.createElement('section');
-      gearSection.id = 'preview-section-gearList';
-      gearSection.className = 'print-section';
-      gearSection.innerHTML = '<h2>Gear List</h2>';
-      var sourceGear = document.getElementById('gearListOutput');
-      if (sourceGear) {
-        gearSection.innerHTML += sourceGear.innerHTML;
-      }
-      paper.appendChild(gearSection);
-    }
+    paper.appendChild(gearSection);
     updateSectionVisibility();
   }
   function updateSectionVisibility() {
@@ -177,7 +212,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       project: 'preview-section-project',
       devices: 'preview-section-devices',
       diagram: 'preview-section-diagram',
-      gearList: 'preview-section-gearList'
+      gearList: 'preview-section-gearList',
+      battery: 'preview-section-battery'
     };
     Object.entries(map).forEach(function (_ref3) {
       var _ref4 = _slicedToArray(_ref3, 2),
