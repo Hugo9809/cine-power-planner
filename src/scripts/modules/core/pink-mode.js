@@ -2771,6 +2771,7 @@
           startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain,
+          startPinkModeIconPreload,
           getPinkModeIconRotationTimer: readPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: writePinkModeIconRotationTimer,
           getPinkModeIconIndex: readPinkModeIconIndex,

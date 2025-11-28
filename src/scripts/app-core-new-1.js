@@ -21099,11 +21099,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
 
   exposeCoreRuntimeBindings({
-    updatePowerSummary: updatePowerSummary,
-    updateBatteryComparison: updateBatteryComparison,
     drawPowerDiagram: drawPowerDiagram,
-    pinkModeIcons: pinkModeIcons,
-    snapToGrid: snapToGrid,
     safeGenerateConnectorSummary: {
       get: () => sessionSafeGenerateConnectorSummary,
       set: value => {
