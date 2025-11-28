@@ -289,6 +289,12 @@
     const popupClassForCategory = category => {
       if (!category) return '';
       if (category === 'cameras') return 'diagram-popup--camera';
+      if (category === 'batteries') return 'diagram-popup--battery';
+      if (category === 'monitors') return 'diagram-popup--monitor';
+      if (category === 'video') return 'diagram-popup--video';
+      if (category === 'fiz.motors') return 'diagram-popup--motor';
+      if (category === 'fiz.controllers') return 'diagram-popup--controller';
+      if (category === 'fiz.distance') return 'diagram-popup--distance';
       return '';
     };
 
@@ -437,45 +443,31 @@
     }
 
     const diagramCssLight = `
-    .node-box{fill:#f0f0f0;stroke:none;}
+    .node-box{fill:var(--diagram-node-fill, #f0f0f0);stroke:none;}
     .node-box.first-fiz{stroke:none;}
     .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
     .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
     .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
     .conn{stroke:none;}
-    .conn.red{fill:#d33;}
-    .conn.blue{fill:#369;}
-    .conn.green{fill:#090;}
-    text{font-family:system-ui,sans-serif;}
-    .edge-label{font-size:var(--font-size-diagram-label, 11px);}
-    line{stroke:#333;stroke-width:2px;}
-    path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
-    path.power{stroke:#d33;}
-    path.video{stroke:#369;}
-    path.fiz{stroke:#090;}
+    .conn.red{fill:var(--diagram-power-stroke, #d33);}
+    .conn.blue{fill:var(--diagram-video-stroke, #369);}
+    .conn.green{fill:var(--diagram-fiz-stroke, #090);}
+    text{font-family:system-ui,sans-serif;fill:var(--diagram-text-fill, #000);}
+    .edge-label{font-size:var(--font-size-diagram-label, 11px);fill:var(--diagram-text-fill, #000);}
+    line{stroke:var(--diagram-stroke, #333);stroke-width:2px;}
+    path.edge-path{stroke:var(--diagram-stroke, #333);stroke-width:2px;fill:none;}
+    path.power{stroke:var(--diagram-power-stroke, #d33);}
+    path.video{stroke:var(--diagram-video-stroke, #369);}
+    path.fiz{stroke:var(--diagram-fiz-stroke, #090);}
     .diagram-placeholder{font-style:italic;color:#666;margin:0;}
     `;
-    const diagramCssDark = `
-    .node-box{fill:#444;stroke:none;}
-    .node-box.first-fiz{stroke:none;}
-    .first-fiz-highlight{stroke:url(#firstFizGrad);}
-    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
-    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
-    text{fill:#fff;font-family:system-ui,sans-serif;}
-    .edge-label{font-size:var(--font-size-diagram-label, 11px);}
-    line{stroke:#fff;}
-    path.edge-path{stroke:#fff;}
-    path.power{stroke:#ff6666;}
-    path.video{stroke:#7ec8ff;}
-    path.fiz{stroke:#6f6;}
-    .conn.red{fill:#ff6666;}
-    .conn.blue{fill:#7ec8ff;}
-    .conn.green{fill:#6f6;}
-    .diagram-placeholder{color:#bbb;}
-    `;
+    // Dark mode is now handled via CSS variables in style.css, so this can be minimal or empty
+    // but we keep the media query for system preference fallback if needed, though variables are preferred.
+    const diagramCssDark = ``;
 
     function getDiagramCss(includeDark = true) {
-      return diagramCssLight + (includeDark ? `@media (prefers-color-scheme: dark){${diagramCssDark}}` : '');
+      // We rely on CSS variables cascading from the body/container
+      return diagramCssLight;
     }
 
     const safeIconGlyph = (char, font) => {
@@ -1250,7 +1242,7 @@
       const currentLang = resolveCurrentLang();
       const hoverNoticeText = texts[currentLang]?.diagramHoverNotice
         || texts.en?.diagramHoverNotice
-        || 'Click me for more information!';
+        || 'Double click for more information';
       detailDialogDefaultHeading = texts[currentLang]?.diagramDetailDefaultHeading
         || texts.en?.diagramDetailDefaultHeading
         || detailDialogDefaultHeading;
@@ -1629,78 +1621,57 @@
         if (!popup || !nodeEl) return;
         const rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
         if (!rect) return;
+
+        const margin = 12;
+        popup.style.visibility = 'hidden';
+        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
+        popup.removeAttribute('hidden');
+
         const viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth)
           ? windowObj.innerWidth
           : (document?.documentElement?.clientWidth || 0);
         const viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight)
           ? windowObj.innerHeight
           : (document?.documentElement?.clientHeight || 0);
-        const margin = 12;
-        popup.style.visibility = 'hidden';
-        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
-        popup.removeAttribute('hidden');
+
         adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+
         const popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
-        let left = rect.right + margin;
-        let top = rect.top;
-        if (popupRect) {
-          const pointer = lastPointerPosition;
-          const usePointerPosition = !entry
-            && pointer
-            && Number.isFinite(pointer.x)
-            && Number.isFinite(pointer.y);
-          if (usePointerPosition) {
-            let preferredLeft = pointer.x + margin;
-            if (viewportWidth && preferredLeft + popupRect.width > viewportWidth - margin) {
-              preferredLeft = pointer.x - popupRect.width - margin;
-            }
-            if (viewportWidth) {
-              if (preferredLeft + popupRect.width > viewportWidth - margin) {
-                preferredLeft = viewportWidth - popupRect.width - margin;
-              }
-              if (preferredLeft < margin) {
-                const alternativeLeft = pointer.x + margin;
-                const clampedAlternative = Math.min(alternativeLeft, viewportWidth - popupRect.width - margin);
-                preferredLeft = Math.max(margin, clampedAlternative);
-              }
-            }
-            left = preferredLeft;
-            top = pointer.y - popupRect.height * 0.5;
-          } else {
-            const pointerOnRightSide = pointer
-              && viewportWidth
-              && Number.isFinite(pointer.x)
-              && pointer.x >= viewportWidth * 0.55;
-            if (pointerOnRightSide) {
-              const preferredLeft = rect.left - popupRect.width - margin;
-              if (preferredLeft >= margin) {
-                left = preferredLeft;
-              } else if (viewportWidth) {
-                left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
-              } else {
-                left = Math.max(margin, preferredLeft);
-              }
-            } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
-              left = Math.max(margin, rect.left - popupRect.width - margin);
-            }
-          }
+        if (!popupRect) return;
+
+        let left = 0;
+        let top = 0;
+        const pointer = lastPointerPosition;
+
+        if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
+          // Position above the mouse cursor
+          left = pointer.x - (popupRect.width / 2);
+          top = pointer.y - popupRect.height - margin * 2;
+
+          // Keep within viewport bounds
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
-              left = Math.max(margin, viewportWidth - popupRect.width - margin);
+              left = viewportWidth - popupRect.width - margin;
             }
             if (left < margin) {
               left = margin;
             }
           }
           if (viewportHeight) {
+            if (top < margin) {
+              // If not enough space above, flip to below
+              top = pointer.y + margin * 2;
+            }
             if (top + popupRect.height > viewportHeight - margin) {
               top = viewportHeight - popupRect.height - margin;
             }
-            if (top < margin) {
-              top = margin;
-            }
           }
+        } else {
+          // Fallback to node position if no pointer
+          left = rect.left + (rect.width / 2) - (popupRect.width / 2);
+          top = rect.top - popupRect.height - margin;
         }
+
         popup.style.left = `${Math.round(left)}px`;
         popup.style.top = `${Math.round(top)}px`;
         popup.style.visibility = 'visible';

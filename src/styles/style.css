@@ -127,6 +127,11 @@
   --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-diagram-label));
   --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-diagram-text));
   --diagram-node-fill: #f0f0f0;
+  --diagram-text-fill: #000000;
+  --diagram-stroke: #333333;
+  --diagram-power-stroke: #d33;
+  --diagram-video-stroke: #369;
+  --diagram-fiz-stroke: #090;
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
@@ -339,6 +344,12 @@ body.pink-mode {
 }
 
 body.dark-mode {
+  --diagram-node-fill: #444444;
+  --diagram-text-fill: #ffffff;
+  --diagram-stroke: #ffffff;
+  --diagram-power-stroke: #ff6666;
+  --diagram-video-stroke: #7ec8ff;
+  --diagram-fiz-stroke: #6f6;
   --notification-bg: color-mix(in srgb, var(--accent-color) 52%, rgba(12, 12, 14, 0.6));
   --notification-border: color-mix(in srgb, var(--accent-color) 45%, transparent);
   --notification-text: var(--inverse-text-color);
@@ -9898,6 +9909,58 @@ body.light-mode #topBar select:focus-visible {
   .diagram-detail-dialog {
     padding: 0;
   }
+
+  /* Popup Category Colors */
+  .diagram-popup--battery {
+    --popup-accent: var(--power-color);
+  }
+
+  .diagram-popup--camera {
+    --popup-accent: var(--camera-color);
+  }
+
+  .diagram-popup--monitor {
+    --popup-accent: var(--monitor-color);
+  }
+
+  .diagram-popup--video {
+    --popup-accent: var(--video-color);
+  }
+
+  .diagram-popup--motor {
+    --popup-accent: var(--motor-color);
+  }
+
+  .diagram-popup--controller {
+    --popup-accent: var(--controller-color);
+  }
+
+  .diagram-popup--distance {
+    --popup-accent: var(--distance-color);
+  }
+
+  .diagram-popup[class*="diagram-popup--"] {
+    border-color: var(--popup-accent);
+    border-width: 2px;
+  }
+
+  .diagram-popup[class*="diagram-popup--"] .diagram-popup__header {
+    background-color: color-mix(in srgb, var(--popup-accent) 15%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--popup-accent) 30%, transparent);
+    margin: calc(-1 * clamp(1rem, 2.4vw, 1.65rem));
+    margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+    padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2.4vw, 1.65rem);
+  }
+
+  .diagram-popup[class*="diagram-popup--"] .diagram-popup__title {
+    color: var(--popup-accent);
+  }
+
+  /* Dark mode adjustments for popups */
+  .dark-mode .diagram-popup[class*="diagram-popup--"] .diagram-popup__header {
+    background-color: color-mix(in srgb, var(--popup-accent) 25%, transparent);
+  }
+
 
   .diagram-detail-dialog__surface {
     padding: clamp(16px, 4vw, 24px);

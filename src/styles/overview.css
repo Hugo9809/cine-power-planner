@@ -501,76 +501,74 @@ th {
   page-break-inside: avoid;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-  }
+body.dark-mode {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
 
-  h1,
-  h2,
-  h3 {
-    color: var(--inverse-text-color);
-  }
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+  color: var(--inverse-text-color);
+}
 
-  h2 {
-    border-bottom: 1px solid var(--inverse-text-color);
-  }
+body.dark-mode h2 {
+  border-bottom: 1px solid var(--inverse-text-color);
+}
 
-  th {
-    background-color: var(--control-bg);
-    font-weight: var(--font-weight-bold);
-  }
+body.dark-mode th {
+  background-color: var(--control-bg);
+  font-weight: var(--font-weight-bold);
+}
 
-  .print-btn,
-  .back-btn {
-    background: var(--control-bg);
-    color: var(--text-color);
-  }
+body.dark-mode .print-btn,
+body.dark-mode .back-btn {
+  background: var(--control-bg);
+  color: var(--text-color);
+}
 
-  .device-category {
-    background: var(--panel-bg);
-    border-color: var(--panel-border);
-    box-shadow: var(--panel-shadow);
-  }
+body.dark-mode .device-category {
+  background: var(--panel-bg);
+  border-color: var(--panel-border);
+  box-shadow: var(--panel-shadow);
+}
 
-  .device-category h3 {
-    border-bottom: 1px solid var(--inverse-text-color);
-    color: var(--inverse-text-color);
-  }
+body.dark-mode .device-category h3 {
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
+}
 
-  .device-block {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--control-border);
-    box-shadow: var(--panel-shadow);
-  }
+body.dark-mode .device-block {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--control-border);
+  box-shadow: var(--panel-shadow);
+}
 
-  .connector-block,
-  .info-box {
-    background-color: transparent;
-  }
+body.dark-mode .connector-block,
+body.dark-mode .info-box {
+  background-color: transparent;
+}
 
-  .gear-table td {
-    border-top: 1px solid var(--inverse-text-color);
-    border-bottom: 1px solid var(--inverse-text-color);
-  }
+body.dark-mode .gear-table td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+}
 
-  .gear-table .category-row td {
-    border-top: 1px solid var(--inverse-text-color);
-    border-bottom: 1px solid var(--inverse-text-color);
-    color: var(--inverse-text-color);
-  }
+body.dark-mode .gear-table .category-row td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
+}
 
-  body.pink-mode .gear-table td {
-    border-top: 1px solid var(--accent-color);
-    border-bottom: 1px solid var(--accent-color);
-  }
+body.dark-mode.pink-mode .gear-table td {
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+}
 
-  body.pink-mode .gear-table .category-row td {
-    border-top: 1px solid var(--accent-color);
-    border-bottom: 1px solid var(--accent-color);
-    color: var(--accent-color);
-  }
+body.dark-mode.pink-mode .gear-table .category-row td {
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  color: var(--accent-color);
 }
 
 #heroBatteryLabel {
