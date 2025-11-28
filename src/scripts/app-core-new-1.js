@@ -15339,6 +15339,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   let currentPowerWarningKey = '';
   let dismissedPowerWarningKey = '';
 
+  function updatePowerSummary() {
+    // Placeholder to prevent ReferenceError
+    // This function is intended to update the plain text summary of power usage.
+    // Currently implemented as a no-op to resolve the runtime error.
+  }
+
   function closePowerWarningDialog(options = {}) {
     if (!powerWarningDialog) return;
     if (isDialogOpen(powerWarningDialog)) {
@@ -21099,6 +21105,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
 
   exposeCoreRuntimeBindings({
+    updatePowerSummary: updatePowerSummary,
     drawPowerDiagram: drawPowerDiagram,
     safeGenerateConnectorSummary: {
       get: () => sessionSafeGenerateConnectorSummary,

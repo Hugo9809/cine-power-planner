@@ -695,7 +695,6 @@
             // Debug log
             .then(result => {
               console.log(`[PinkMode] Asset loaded: ${normalized} -> ${result ? 'Success' : 'Failed'}`);
-              if (!result) console.log(`[PinkMode] Failed asset url was: ${fallbackUrl}`);
               return result; // Ensure the result is passed down the chain
             })
             .finally(() => {
@@ -1430,6 +1429,11 @@
           }
 
           pinkModeAnimatedIconTemplateOrder = templates.map((_, index) => index);
+          // Shuffle the order for random spawning
+          for (let i = pinkModeAnimatedIconTemplateOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pinkModeAnimatedIconTemplateOrder[i], pinkModeAnimatedIconTemplateOrder[j]] = [pinkModeAnimatedIconTemplateOrder[j], pinkModeAnimatedIconTemplateOrder[i]];
+          }
           pinkModeAnimatedIconTemplateCursor = 0;
         }
 
@@ -1483,9 +1487,25 @@
           const startLoad = () => {
             // Use setTimeout to ensure this happens after current execution
             setTimeout(() => {
-              loadPinkModeAnimatedIconTemplates().catch(error => {
-                console.warn('[PinkMode] Background icon preload failed', error);
-              });
+              const globalScope = detectGlobalScope();
+              const deferredPromise = globalScope && globalScope.cineDeferredScriptsReady;
+
+              if (deferredPromise && typeof deferredPromise.then === 'function') {
+                deferredPromise.then(() => {
+                  loadPinkModeAnimatedIconTemplates().catch(error => {
+                    console.warn('[PinkMode] Background icon preload failed', error);
+                  });
+                }).catch(() => {
+                  // If deferred scripts fail, try loading templates anyway
+                  loadPinkModeAnimatedIconTemplates().catch(error => {
+                    console.warn('[PinkMode] Background icon preload failed (fallback)', error);
+                  });
+                });
+              } else {
+                loadPinkModeAnimatedIconTemplates().catch(error => {
+                  console.warn('[PinkMode] Background icon preload failed', error);
+                });
+              }
             }, 100);
           };
 
@@ -3131,10 +3151,10 @@
     }
 
     // Start preloading icons in the background (non-blocking)
-    if (exportsMap['modules/core/pink-mode'] &&
-      exportsMap['modules/core/pink-mode'].startPinkModeIconPreload) {
+    if (exportsMap['modules/core/pink-mode-support.js'] &&
+      exportsMap['modules/core/pink-mode-support.js'].startPinkModeIconPreload) {
       try {
-        exportsMap['modules/core/pink-mode'].startPinkModeIconPreload();
+        exportsMap['modules/core/pink-mode-support.js'].startPinkModeIconPreload();
       } catch (preloadError) {
         console.warn('[PinkMode] Could not start icon preload', preloadError);
       }
