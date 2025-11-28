@@ -2450,6 +2450,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           startPinkModeAnimatedIcons: startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons: stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain: triggerPinkModeIconRain,
+          startPinkModeIconPreload: startPinkModeIconPreload,
           getPinkModeIconRotationTimer: readPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: writePinkModeIconRotationTimer,
           getPinkModeIconIndex: readPinkModeIconIndex,

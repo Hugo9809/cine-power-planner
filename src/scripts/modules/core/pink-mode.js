@@ -2892,6 +2892,7 @@
             startPinkModeAnimatedIcons: noop,
             stopPinkModeAnimatedIcons: noop,
             triggerPinkModeIconRain: noop,
+            startPinkModeIconPreload: noop,
             getPinkModeIconRotationTimer: getNull,
             setPinkModeIconRotationTimer: noop,
             getPinkModeIconIndex: getZero,
@@ -2970,6 +2971,10 @@
               typeof animations.triggerPinkModeIconRain === 'function'
                 ? animations.triggerPinkModeIconRain
                 : fallback.triggerPinkModeIconRain,
+            startPinkModeIconPreload:
+              typeof animations.startPinkModeIconPreload === 'function'
+                ? animations.startPinkModeIconPreload
+                : fallback.startPinkModeIconPreload,
             getPinkModeIconRotationTimer:
               typeof animations.getPinkModeIconRotationTimer === 'function'
                 ? animations.getPinkModeIconRotationTimer
@@ -3022,7 +3027,7 @@
           startPinkModeAnimatedIcons: support.startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons: support.stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain: support.triggerPinkModeIconRain,
-          startPinkModeIconPreload,
+          startPinkModeIconPreload: support.startPinkModeIconPreload || function () { },
           getPinkModeIconRotationTimer: support.getPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: support.setPinkModeIconRotationTimer,
           getPinkModeIconIndex: support.getPinkModeIconIndex,
