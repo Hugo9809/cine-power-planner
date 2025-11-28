@@ -3463,7 +3463,7 @@
     skipButton.className = 'button-link onboarding-skip';
     skipButton.addEventListener('click', () => {
       if (!active) return;
-      confirmSkip();
+      handleSkipTutorial();
     });
     header.appendChild(skipButton);
 
@@ -7784,7 +7784,7 @@
     }
     if (key === 'Escape') {
       event.preventDefault();
-      confirmSkip();
+      handleSkipTutorial();
       return;
     }
     if (key === 'ArrowRight') {
