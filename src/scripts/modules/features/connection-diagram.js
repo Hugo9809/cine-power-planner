@@ -1750,8 +1750,9 @@
           hidePopup();
           return;
         }
+        const entry = lastPopupEntries[nodeId];
         const safeNotice = escapeHtml(hoverNoticeText);
-        popup.className = 'diagram-popup diagram-popup--notice';
+        popup.className = `diagram-popup diagram-popup--notice ${entry.className || ''}`;
         popup.innerHTML = `<p class="diagram-popup-notice">${safeNotice}</p>`;
         popup.setAttribute('aria-label', hoverNoticeText);
         popup.removeAttribute('aria-labelledby');
