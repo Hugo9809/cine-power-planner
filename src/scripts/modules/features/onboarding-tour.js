@@ -7687,6 +7687,13 @@
     applyHelpButtonLabel();
   }
 
+  function resolveText(key, defaultValue) {
+    if (tourTexts && typeof tourTexts[key] === 'string') {
+      return tourTexts[key];
+    }
+    return defaultValue;
+  }
+
   function handleSkipTutorial(event) {
     if (event) {
       event.preventDefault();
