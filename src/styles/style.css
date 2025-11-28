@@ -9621,24 +9621,25 @@ body.light-mode #topBar select:focus-visible {
   .diagram-legend .swatch {
     width: 12px;
     height: 12px;
-    border-radius: 50%;
+    border-radius: 2px;
     margin-right: 4px;
     display: inline-block;
+    vertical-align: middle;
   }
 
-  #diagramLegend .power,
-  .diagram-legend .power {
-    background: var(--power-color);
+  #diagramLegend .swatch.power,
+  .diagram-legend .swatch.power {
+    background-color: var(--power-color);
   }
 
-  #diagramLegend .video,
-  .diagram-legend .video {
-    background: var(--video-color);
+  #diagramLegend .swatch.video,
+  .diagram-legend .swatch.video {
+    background-color: var(--video-color);
   }
 
-  #diagramLegend .fiz,
-  .diagram-legend .fiz {
-    background: var(--fiz-color);
+  #diagramLegend .swatch.fiz,
+  .diagram-legend .swatch.fiz {
+    background-color: var(--fiz-color);
   }
 
   #powerDiagramLegend,
@@ -9847,6 +9848,8 @@ body.light-mode #topBar select:focus-visible {
     justify-content: center;
     font-weight: var(--font-weight-bold);
     text-align: center;
+    padding: 0.75rem 1rem;
+    min-width: 200px;
   }
 
   .diagram-popup-notice {
@@ -9871,38 +9874,38 @@ body.light-mode #topBar select:focus-visible {
     --diagram-popup-columns: 4;
   }
 
-  .diagram-popup--camera {
+  .diagram-popup[class*="diagram-popup--"] {
     --diagram-popup-dynamic-width: 520px;
     width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
     max-width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
   }
 
-  .diagram-popup--camera .connector-summary,
-  .diagram-popup--camera .scenario-summary,
-  .diagram-popup--camera .icon-box-summary {
+  .diagram-popup[class*="diagram-popup--"] .connector-summary,
+  .diagram-popup[class*="diagram-popup--"] .scenario-summary,
+  .diagram-popup[class*="diagram-popup--"] .icon-box-summary {
     display: grid;
     grid-template-columns: repeat(var(--diagram-popup-columns, 1), minmax(var(--diagram-popup-min-column-width, 180px), 1fr));
     column-gap: 6px;
     row-gap: 4px;
   }
 
-  .diagram-popup--camera .connector-summary>*,
-  .diagram-popup--camera .scenario-summary>*,
-  .diagram-popup--camera .icon-box-summary>* {
+  .diagram-popup[class*="diagram-popup--"] .connector-summary>*,
+  .diagram-popup[class*="diagram-popup--"] .scenario-summary>*,
+  .diagram-popup[class*="diagram-popup--"] .icon-box-summary>* {
     min-width: 0;
   }
 
-  .diagram-popup--camera .connector-summary .info-label,
-  .diagram-popup--camera .connector-summary .port-table,
-  .diagram-popup--camera .connector-summary .lens-mount-box,
-  .diagram-popup--camera .connector-summary .tray-box {
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .info-label,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .port-table,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .lens-mount-box,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .tray-box {
     grid-column: 1 / -1;
   }
 
-  .diagram-popup--camera .connector-summary .connector-block,
-  .diagram-popup--camera .connector-summary .info-box,
-  .diagram-popup--camera .connector-summary .scenario-box,
-  .diagram-popup--camera .connector-summary .icon-box {
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .connector-block,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .info-box,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .scenario-box,
+  .diagram-popup[class*="diagram-popup--"] .connector-summary .icon-box {
     width: 100%;
   }
 
@@ -10463,7 +10466,7 @@ body.light-mode #topBar select:focus-visible {
   /* Battery comparison bars */
   .barContainer {
     width: 100%;
-    background-color: var(--surface-color);
+    background-color: var(--control-bg);
     border-radius: 3px;
     overflow: hidden;
     height: 15px;
@@ -10696,7 +10699,7 @@ body.light-mode #topBar select:focus-visible {
   }
 
   .dark-mode .barContainer {
-    background-color: var(--panel-bg);
+    background-color: var(--control-bg);
   }
 
   .dark-mode .device-category h4 {
@@ -10846,7 +10849,7 @@ body.light-mode #topBar select:focus-visible {
     }
 
     body:not(.light-mode) .barContainer {
-      background-color: var(--panel-bg);
+      background-color: var(--control-bg);
     }
 
     body:not(.light-mode) .device-category h4 {
