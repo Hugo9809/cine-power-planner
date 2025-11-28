@@ -2915,7 +2915,7 @@
 
           if (typeof require === 'function') {
             try {
-              const required = require('./pink-mode-animations.js');
+              const required = require('modules/core/pink-mode-animations.js');
               if (isObject(required)) {
                 return required;
               }
