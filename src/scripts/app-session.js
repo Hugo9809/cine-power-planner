@@ -14727,9 +14727,9 @@ async function clearCachesAndReload() {
   }
 }
 
-const reloadButton = typeof document !== 'undefined' ? document.getElementById('reloadButton') : null;
-if (reloadButton) {
-  reloadButton.addEventListener("click", clearCachesAndReload);
+const sessionReloadButton = typeof document !== 'undefined' ? document.getElementById('reloadButton') : null;
+if (sessionReloadButton) {
+  sessionReloadButton.addEventListener("click", clearCachesAndReload);
 }
 
 function exportDiagramSvg() {
