@@ -1089,32 +1089,43 @@ if (typeof self !== 'undefined') {
         }
       })();
 
-      const timeoutPromise = new Promise(resolve =>
-        setTimeout(() => resolve('TIMEOUT'), NETWORK_TIMEOUT_MS)
-      );
-
       let response;
-      try {
-        response = await Promise.race([networkPromise, timeoutPromise]);
 
-        if (response === 'TIMEOUT') {
-          const cachedResponse = await caches.match(event.request, cacheMatchOptions);
-          if (cachedResponse) {
-            serviceWorkerLog.warn('Network request timed out. Serving cached fallback.');
-            // Ensure network request completes in background to update cache
-            networkPromise.catch(() => { });
-
-            if (isConnectivityProbe) {
-              return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
-            }
-            return cachedResponse;
-          }
-          // No cache available, must wait for network
+      if (bypassCache) {
+        // Hard refresh: Wait for network, do not race with timeout.
+        try {
           response = await networkPromise;
+        } catch (networkError) {
+          response = null;
         }
-      } catch (networkError) {
-        // Network failed, proceed to fallback logic
-        response = null;
+      } else {
+        // Normal navigation: Race with timeout for fast fallback.
+        const timeoutPromise = new Promise(resolve =>
+          setTimeout(() => resolve('TIMEOUT'), NETWORK_TIMEOUT_MS)
+        );
+
+        try {
+          response = await Promise.race([networkPromise, timeoutPromise]);
+
+          if (response === 'TIMEOUT') {
+            const cachedResponse = await caches.match(event.request, cacheMatchOptions);
+            if (cachedResponse) {
+              serviceWorkerLog.warn('Network request timed out. Serving cached fallback.');
+              // Ensure network request completes in background to update cache
+              networkPromise.catch(() => { });
+
+              if (isConnectivityProbe) {
+                return annotateConnectivityProbeResponse(cachedResponse, CONNECTIVITY_PROBE_RESULT_FALLBACK);
+              }
+              return cachedResponse;
+            }
+            // No cache available, must wait for network
+            response = await networkPromise;
+          }
+        } catch (networkError) {
+          // Network failed, proceed to fallback logic
+          response = null;
+        }
       }
 
       if (response) {

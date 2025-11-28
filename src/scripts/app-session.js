@@ -14727,6 +14727,7 @@ async function clearCachesAndReload() {
   }
 }
 
+const reloadButton = typeof document !== 'undefined' ? document.getElementById('reloadButton') : null;
 if (reloadButton) {
   reloadButton.addEventListener("click", clearCachesAndReload);
 }

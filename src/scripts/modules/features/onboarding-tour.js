@@ -2614,6 +2614,13 @@
 
   let tourTexts = resolveTourTexts();
 
+  function resolveText(key, defaultValue) {
+    if (tourTexts && typeof tourTexts[key] === 'string') {
+      return tourTexts[key];
+    }
+    return defaultValue;
+  }
+
   function createStepConfig() {
     return [
       {
@@ -7687,12 +7694,6 @@
     applyHelpButtonLabel();
   }
 
-  function resolveText(key, defaultValue) {
-    if (tourTexts && typeof tourTexts[key] === 'string') {
-      return tourTexts[key];
-    }
-    return defaultValue;
-  }
 
   function handleSkipTutorial(event) {
     if (event) {
