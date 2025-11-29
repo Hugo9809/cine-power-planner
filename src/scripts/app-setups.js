@@ -3744,6 +3744,13 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       }
     }
     storageKeys.forEach((key) => {
+      if (
+        typeof cineFeatureBackup !== 'undefined'
+        && typeof cineFeatureBackup.isAutoBackupName === 'function'
+        && cineFeatureBackup.isAutoBackupName(key)
+      ) {
+        return;
+      }
       try {
         const storedProject = loadProject(key);
         if (storedProject && storedProject.projectInfo) {
@@ -5557,9 +5564,15 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
       gatherPower(devices.wirelessReceivers[rxName]);
     }
   }
-  motorSelects.forEach(sel => gatherPower(devices.fiz.motors[sel.value]));
-  controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
-  gatherPower(devices.fiz.distance[distanceSelect.value]);
+  if (devices.fiz && devices.fiz.motors) {
+    motorSelects.forEach(sel => gatherPower(devices.fiz.motors[sel.value]));
+  }
+  if (devices.fiz && devices.fiz.controllers) {
+    controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
+  }
+  if (devices.fiz && devices.fiz.distance) {
+    gatherPower(devices.fiz.distance[distanceSelect.value]);
+  }
 
   const fizCableDb = acc.cables?.fiz || {};
   const getFizConnectors = data => {
@@ -5602,12 +5615,12 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
   const motorEntries = motorSelects
     .map(sel => sel.value)
     .filter(v => v && v !== 'None')
-    .map(name => ({ name, data: devices.fiz.motors[name] }))
+    .map(name => ({ name, data: devices.fiz?.motors?.[name] }))
     .filter(entry => entry.data);
   const controllerEntries = controllerSelects
     .map(sel => sel.value)
     .filter(v => v && v !== 'None')
-    .map(name => ({ name, data: devices.fiz.controllers[name] }))
+    .map(name => ({ name, data: devices.fiz?.controllers?.[name] }))
     .filter(entry => entry.data);
   motorEntries.forEach(motorEntry => {
     const motorConns = getFizConnectors(motorEntry.data);
