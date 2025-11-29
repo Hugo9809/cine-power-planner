@@ -14490,7 +14490,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllPowerPortTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
+      Object.values(devices.cameras || {}).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
       Object.values(devices.viewfinders || {}).forEach(vf => powerInputTypes(vf).forEach(t => types.add(t)));
       Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
       Object.values(devices.video || {}).forEach(vd => powerInputTypes(vd).forEach(t => types.add(t)));
@@ -14628,7 +14628,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllFizConnectorTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         if (Array.isArray(cam.fizConnectors)) {
           cam.fizConnectors.forEach(fc => {
             if (fc && fc.type) types.add(fc.type);
@@ -16008,7 +16008,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllPlateTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         const list = cam.power?.batteryPlateSupport;
         if (Array.isArray(list)) {
           list.forEach(bp => {
@@ -16136,10 +16136,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearBatteryPlates() {
       setBatteryPlatesLocal([]);
     }
+    if (typeof window !== 'undefined') {
+      window.clearBatteryPlates = clearBatteryPlates;
+    }
 
     function getAllViewfinderTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         if (Array.isArray(cam.viewfinder)) {
           cam.viewfinder.forEach(vf => {
             if (vf && vf.type) types.add(vf.type);
@@ -16151,7 +16154,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllViewfinderConnectors() {
       const conns = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         if (Array.isArray(cam.viewfinder)) {
           cam.viewfinder.forEach(vf => {
             if (vf && vf.connector) conns.add(vf.connector);
@@ -16281,7 +16284,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllMountTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         if (Array.isArray(cam.lensMount)) {
           cam.lensMount.forEach(lm => {
             if (lm && lm.type) types.add(lm.type);
@@ -16482,7 +16485,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllPowerDistTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         const list = cam.power?.powerDistributionOutputs;
         if (Array.isArray(list)) {
           list.forEach(pd => { if (pd && pd.type) types.add(pd.type); });
@@ -16494,7 +16497,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     let powerDistTypeOptions = getAllPowerDistTypes();
     function getAllPowerDistVoltages() {
       const volts = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         const list = cam.power?.powerDistributionOutputs;
         if (Array.isArray(list)) {
           list.forEach(pd => { if (pd && pd.voltage) volts.add(pd.voltage); });
@@ -16505,7 +16508,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllPowerDistCurrents() {
       const currents = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         const list = cam.power?.powerDistributionOutputs;
         if (Array.isArray(list)) {
           list.forEach(pd => { if (pd && pd.current) currents.add(pd.current); });
@@ -16703,7 +16706,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function getAllTimecodeTypes() {
       const types = new Set();
-      Object.values(devices.cameras).forEach(cam => {
+      Object.values(devices.cameras || {}).forEach(cam => {
         const list = cam.timecode;
         if (Array.isArray(list)) {
           list.forEach(tc => { if (tc && tc.type) types.add(tc.type); });
@@ -17609,14 +17612,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     // Initialize device selection dropdowns
-    populateSelect(cameraSelect, devices.cameras, true);
+    populateSelect(cameraSelect, devices.cameras || {}, true);
     populateMonitorSelect();
-    populateSelect(videoSelect, devices.video, true);
+    populateSelect(videoSelect, devices.video || {}, true);
     updateCageSelectOptions();
-    motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-    controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-    populateSelect(distanceSelect, devices.fiz.distance, true);
-    populateSelect(batterySelect, devices.batteries, true);
+    motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
+    controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+    populateSelect(distanceSelect, (devices.fiz && devices.fiz.distance) || {}, true);
+    populateSelect(batterySelect, devices.batteries || {}, true);
     populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
     updateBatteryPlateVisibility();
     updateBatteryOptions();
@@ -18166,13 +18169,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateMountTypeOptions();
 
       // Re-populate dropdowns to include any newly added devices
-      populateSelect(cameraSelect, devices.cameras, true);
+      populateSelect(cameraSelect, devices.cameras || {}, true);
       populateMonitorSelect();
-      populateSelect(videoSelect, devices.video, true);
+      populateSelect(videoSelect, devices.video || {}, true);
       updateCageSelectOptions();
-      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-      populateSelect(distanceSelect, devices.fiz.distance, true);
+      motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
+      controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+      populateSelect(distanceSelect, (devices.fiz && devices.fiz.distance) || {}, true);
       populateSelect(batterySelect, devices.batteries, true);
 
       updateFizConnectorOptions();

@@ -6180,7 +6180,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   unifyDevices(devices, { force: true });
 
   function getBatteryPlateSupport(name) {
-    const cam = devices.cameras[name];
+    const cam = devices.cameras && devices.cameras[name];
     if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
     return cam.power.batteryPlateSupport.filter(Boolean);
   }
@@ -6304,7 +6304,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
   function isSelectedPlateNative(camName) {
     const plate = getSelectedPlate();
-    const cam = devices.cameras[camName];
+    const cam = (devices.cameras || {})[camName];
     if (!plate || !cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
     return cam.power.batteryPlateSupport.some(bp => bp.type === plate && bp.mount === 'native');
   }
@@ -6420,7 +6420,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   function cameraFizPort(camName, controllerPort, deviceName = '') {
-    const cam = devices.cameras[camName];
+    const cam = (devices.cameras || {})[camName];
     if (!cam || !Array.isArray(cam.fizConnectors) || cam.fizConnectors.length === 0) return 'LBUS';
     if (!controllerPort) return cam.fizConnectors[0].type;
 
@@ -6864,7 +6864,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
     const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
     const camName = cameraSelect.value;
-    const cam = devices.cameras[camName];
+    const cam = (devices.cameras || {})[camName];
 
     const isAmira = /Arri Amira/i.test(camName);
     const onlyCforceMiniPlus = motors.length > 0 && motors.every(n => {
@@ -6929,7 +6929,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const distance = distanceSelect.value;
 
     const camName = cameraSelect.value;
-    const cam = devices.cameras[camName];
+    const cam = (devices.cameras || {})[camName];
     const cameraHasLBUS = Array.isArray(cam?.fizConnectors) &&
       cam.fizConnectors.some(fc => /LBUS/i.test(fc.type));
     const builtInController = cameraHasLBUS && /arri/i.test(camName);
