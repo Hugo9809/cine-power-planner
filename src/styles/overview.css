@@ -159,7 +159,7 @@ th {
 }
 
 .gear-table .gear-item select {
-  background-color: var(--panel-bg);
+  background-color: var(--control-bg);
   color: inherit;
   border-color: var(--panel-border);
   box-shadow: none;
@@ -171,7 +171,7 @@ th {
   display: inline-flex;
   align-items: center;
   gap: 0.3em;
-  background-color: var(--panel-bg);
+  background-color: var(--control-bg);
   color: inherit;
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius-sm, 4px);
@@ -186,7 +186,7 @@ th {
 }
 
 .dark-mode .gear-table .gear-select-value {
-  background-color: var(--panel-bg, var(--surface-2));
+  background-color: var(--control-bg);
   border-color: var(--panel-border, var(--surface-border));
 }
 
@@ -210,11 +210,15 @@ th {
 
 .gear-table .gear-item .gear-rental-toggle {
   margin-left: auto;
-  font-size: 0.75em;
-  padding: 0.2em 0.4em;
+  font-size: 0.6em;
+  padding: 0.15em 0.3em;
   line-height: 1;
   min-height: auto;
   height: auto;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: var(--font-weight-bold);
 }
 
 .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
@@ -573,4 +577,68 @@ body.dark-mode.pink-mode .gear-table .category-row td {
 
 #heroBatteryLabel {
   color: #000000;
+}
+
+/* Diagram Detail Dialog */
+.diagram-detail-dialog {
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: min(600px, 90vw);
+  max-height: min(800px, 90vh);
+  background: var(--surface-color, #ffffff);
+  color: var(--text-color, #000000);
+  overflow: hidden;
+}
+
+.diagram-detail-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.diagram-detail-dialog__content {
+  padding: 0;
+  overflow-y: auto;
+  max-height: calc(90vh - 2rem);
+}
+
+.diagram-detail-dialog .diagram-popup {
+  position: static;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+  max-width: none;
+  background: transparent;
+}
+
+.diagram-detail-dialog .diagram-popup__layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.diagram-detail-dialog .diagram-popup__header {
+  position: sticky;
+  top: 0;
+  background: var(--surface-color, #ffffff);
+  z-index: 1;
+  padding: 1rem;
+  border-bottom: 1px solid var(--panel-border, #eee);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.diagram-detail-dialog .diagram-popup__body {
+  padding: 1rem;
+}
+
+body.dark-mode .diagram-detail-dialog {
+  background: var(--panel-bg, #222);
+  color: var(--text-color, #fff);
+}
+
+body.dark-mode .diagram-detail-dialog .diagram-popup__header {
+  background: var(--panel-bg, #222);
+  border-color: var(--panel-border, #444);
 }

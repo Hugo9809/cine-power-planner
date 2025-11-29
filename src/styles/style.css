@@ -344,18 +344,68 @@ body.pink-mode {
 }
 
 body.dark-mode {
+  --background-color: #1c1c1e;
+  --surface-color: #1c1c1e;
+  --text-color: #f0f0f0;
+  --control-bg: #2c2c2f;
+  --control-text: #f0f0f0;
+  --control-border: #444;
+  --control-hover-bg: #3a3a3d;
+  --control-active-bg: #4a4a4d;
+  --control-disabled-bg: #333;
+  --panel-bg: #1c1c1e;
+  --panel-border: #333;
+  --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.5);
+  --link-color: #7ec8ff;
+  --muted-text-color: #bbb;
+  --border-strong-color: #555;
+  --divider-color: #444;
+  --diagram-gridline-color: #444;
+  --diagram-button-active-bg: #3a3a3d;
+  --warning-text-color: #000000;
+  --danger-color: #ff6666;
+  --danger-overlay-color: rgba(255, 102, 102, 0.4);
+  --success-color: #66bb6a;
+  --info-color: #7ec8ff;
+  --neutral-color: #bbbbbb;
+  --status-error-bg: rgba(255, 120, 120, 0.45);
+  --status-warning-bg: rgba(255, 107, 107, 0.65);
+  --status-success-bg: rgba(102, 187, 106, 0.2);
+  --status-border-color: #444;
+  --status-error-text-color: #ffffff;
+  --status-warning-text-color: #ffffff;
+  --status-success-text-color: #f0f0f0;
+  --favorite-inactive-color: var(--control-text);
   --diagram-node-fill: #444444;
   --diagram-text-fill: #ffffff;
   --diagram-stroke: #ffffff;
   --diagram-power-stroke: #ff6666;
   --diagram-video-stroke: #7ec8ff;
   --diagram-fiz-stroke: #6f6;
+  --power-color: #ff6666;
+  --video-color: #7ec8ff;
+  --fiz-color: #6f6;
+  --camera-color: #66bb6a;
+  --monitor-color: #7ec8ff;
+  --video-segment-color: #ffd54f;
+  --motor-color: #ce93d8;
+  --controller-color: #ff8a65;
+  --distance-color: #a1887f;
+  --selected-row-bg: #003366;
+  --power-conn-bg: rgba(255, 102, 102, 0.3);
+  --fiz-conn-bg: rgba(102, 187, 106, 0.3);
+  --video-conn-bg: rgba(126, 200, 255, 0.3);
+  --neutral-conn-bg: rgba(187, 187, 187, 0.3);
   --notification-bg: color-mix(in srgb, var(--accent-color) 52%, rgba(12, 12, 14, 0.6));
   --notification-border: color-mix(in srgb, var(--accent-color) 45%, transparent);
   --notification-text: var(--inverse-text-color);
   --notification-spinner-track:
     color-mix(in srgb, var(--notification-text) 32%, transparent);
   --notification-spinner-indicator: var(--inverse-text-color);
+
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 body.dark-mode.pink-mode {
@@ -9851,6 +9901,7 @@ body.light-mode #topBar select:focus-visible {
   text-align: center;
   padding: 0.75rem 1rem;
   min-width: 200px;
+  pointer-events: none;
 }
 
 .diagram-popup-notice {

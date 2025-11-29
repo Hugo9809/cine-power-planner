@@ -1474,7 +1474,6 @@
         dragActivationTimer = setTimeout(() => {
           startDragSession();
         }, DRAG_HOLD_DELAY);
-        e.stopPropagation();
       };
       const ensureDragSession = () => {
         if (dragActive) return true;
@@ -1618,15 +1617,17 @@
           void popup.offsetHeight;
         }
       };
-      const positionPopup = (nodeEl, entry) => {
+      const positionPopup = (nodeEl, entry, repositionOnly = false) => {
         if (!popup || !nodeEl) return;
         const rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
         if (!rect) return;
 
-        const margin = 12;
-        popup.style.visibility = 'hidden';
-        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
-        popup.removeAttribute('hidden');
+        const margin = 8;
+        if (!repositionOnly) {
+          popup.style.visibility = 'hidden';
+          popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
+          popup.removeAttribute('hidden');
+        }
 
         const viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth)
           ? windowObj.innerWidth
@@ -1635,7 +1636,9 @@
           ? windowObj.innerHeight
           : (document?.documentElement?.clientHeight || 0);
 
-        adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+        if (!repositionOnly) {
+          adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+        }
 
         const popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
         if (!popupRect) return;
@@ -1645,9 +1648,9 @@
         const pointer = lastPointerPosition;
 
         if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
-          // Position above the mouse cursor
-          left = pointer.x - (popupRect.width / 2);
-          top = pointer.y - popupRect.height - margin * 2;
+          // Position next to the mouse cursor
+          left = pointer.x + margin;
+          top = pointer.y + margin;
 
           // Keep within viewport bounds
           if (viewportWidth) {
@@ -1675,7 +1678,9 @@
 
         popup.style.left = `${Math.round(left)}px`;
         popup.style.top = `${Math.round(top)}px`;
-        popup.style.visibility = 'visible';
+        if (!repositionOnly) {
+          popup.style.visibility = 'visible';
+        }
       };
 
       const focusPopup = () => {
@@ -1778,6 +1783,14 @@
         hidePopup();
       };
 
+      const onNodeMove = e => {
+        updatePointerPosition(e);
+        if (!activePopupNode) return;
+        if (popup && popup.classList.contains('diagram-popup--notice')) {
+          positionPopup(activePopupNode, null, true);
+        }
+      };
+
       const onSvgLeave = e => {
         if (svg.contains(e.relatedTarget)) return;
         if (popup && (e.relatedTarget === popup || popup.contains(e.relatedTarget))) return;
@@ -1851,6 +1864,7 @@
       svg.addEventListener('touchend', onNodeTouchEnd, { passive: false });
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
+      svg.addEventListener('mousemove', onNodeMove);
       svg.addEventListener('mouseleave', onSvgLeave);
       svg.addEventListener('dblclick', onNodeDoubleClick);
       const repositionActivePopup = () => {
@@ -1894,6 +1908,7 @@
         svg.removeEventListener('touchend', onNodeTouchEnd);
         svg.removeEventListener('mouseover', onNodeOver);
         svg.removeEventListener('mouseout', onNodeOut);
+        svg.removeEventListener('mousemove', onNodeMove);
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
