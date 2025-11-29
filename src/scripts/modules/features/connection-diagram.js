@@ -1230,6 +1230,7 @@
       lastDiagramPositions = Object.fromEntries(Object.entries(pos));
 
       enableDiagramInteractions();
+      updateDiagramLegend();
     }
 
     function enableDiagramInteractions() {

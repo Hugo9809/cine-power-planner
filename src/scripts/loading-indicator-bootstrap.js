@@ -258,6 +258,7 @@
   }
 
   function handleComplete() {
+    document.removeEventListener('cine-loader-complete', handleComplete, false);
     setMessageKey('almost');
     setBusy(false);
     scheduleHideAfterComplete();
