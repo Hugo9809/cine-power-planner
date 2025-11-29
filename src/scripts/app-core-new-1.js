@@ -6649,7 +6649,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       populateSelect(batterySelect, getBatteriesByMount('Gold-Mount'), true);
       swaps = getHotswapsByMount('Gold-Mount');
     } else {
-      let bats = devices.batteries;
+      let bats = devices.batteries || {};
       if (!supportsB) {
         bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'B-Mount'));
       }

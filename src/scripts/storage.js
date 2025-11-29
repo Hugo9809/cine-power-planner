@@ -9055,17 +9055,43 @@
     ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
     const normalizedState = normalizeLegacyLongGopStructure(state);
     const normalizedOptions = isPlainObject(options) ? options : {};
-    if (normalizedOptions.disableCompression === false) {
-      console.warn(
-        'saveSessionState compression override ignored. Session storage compression is disabled to protect user data.',
-      );
-    }
+
+    // We default to disabling compression for session state to keep it human-readable
+    // and safer to edit manually if needed, BUT we must allow it if the user is
+    // running out of space.
+    const disableCompression = normalizedOptions.disableCompression !== false;
 
     const saveOptions = {
       ...normalizedOptions,
-      disableCompression: true,
-      forceCompressionOnQuota: false,
+      disableCompression,
+      forceCompressionOnQuota: true,
+      onQuotaExceeded: (error, context = {}) => {
+        // If we hit a quota limit while saving the session, try to clear out
+        // old auto-backups or other non-essential data to make room.
+        const storage = context && context.storage ? context.storage : safeStorage;
+
+        // 1. Try clearing the oldest auto-gear backup first
+        if (typeof removeOldestAutoGearBackupEntry === 'function') {
+          // We need to load them first to find the oldest
+          const backups = loadAutoGearBackups();
+          if (removeOldestAutoGearBackupEntry(backups)) {
+            console.warn('Removed oldest automatic gear backup to free up space for session state.');
+            return true;
+          }
+        }
+
+        // 2. Try clearing cached planner data
+        if (typeof clearCachedPlannerDataForAutoGearBackups === 'function') {
+          if (clearCachedPlannerDataForAutoGearBackups()) {
+            console.warn('Cleared cached planner data to free up space for session state.');
+            return true;
+          }
+        }
+
+        return false;
+      },
     };
+
     saveJSONToStorage(
       safeStorage,
       SESSION_STATE_KEY,
@@ -14610,6 +14636,8 @@
         clearVaultFn = GLOBAL_SCOPE.clearBackupVault;
       } else if (typeof clearBackupVault === 'function') {
         clearVaultFn = clearBackupVault;
+      } else if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && typeof GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault === 'function') {
+        clearVaultFn = GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault;
       }
 
       if (clearVaultFn) {

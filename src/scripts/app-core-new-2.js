@@ -703,6 +703,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('clearMonitorVideoOutputs', clearMonitorVideoOutputs);
     ensureGlobalFunctionBinding('storeLoadedSetupState', storeLoadedSetupState);
     ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
+    ensureGlobalFunctionBinding('powerInputTypes', powerInputTypes);
 
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
