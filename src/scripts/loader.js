@@ -3240,6 +3240,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
             }
 
             resetScriptRetryState(currentUrl);
+            console.log('Parallel script loaded:', currentUrl);
 
             remaining -= 1;
             if (remaining <= 0) {
@@ -3335,12 +3336,11 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
 
     function finalize() {
-      console.log('finalize called', { completed: completed });
       if (completed) {
-
         return;
       }
 
+      console.log('Finalizing loader sequence');
       completed = true;
 
       flushAllScriptRetryState();
@@ -3375,6 +3375,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
       if (currentItem && typeof currentItem === 'object' && !Array.isArray(currentItem)) {
         if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
+          console.log('Starting parallel script block', currentItem.parallel.length, 'items');
           loadScriptsInParallel(currentItem.parallel, {
             onError: function handleParallelError(context) {
               var shouldAbort = false;
@@ -3397,6 +3398,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               if (aborted) {
                 return;
               }
+              console.log('Parallel script block finished');
               index = currentIndex + 1;
               loadScriptAtIndex(index);
             },
