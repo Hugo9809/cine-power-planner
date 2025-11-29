@@ -7999,6 +7999,82 @@
       return true;
     };
 
+    const attemptStorageCleanup = (storage, options) => {
+      if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+        return { success: false, freed: 0 };
+      }
+
+      const { skipKeys = [] } = options || {};
+      const skipSet = new Set(skipKeys);
+      if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
+        skipSet.add(ACTIVE_PROJECT_COMPRESSION_HOLD_KEY);
+      }
+
+      const candidates = [];
+      const total = storage.length;
+
+      for (let i = 0; i < total; i += 1) {
+        let key;
+        try {
+          key = storage.key(i);
+        } catch (e) {
+          continue;
+        }
+
+        if (!key || skipSet.has(key)) continue;
+
+        // Priority 1: Legacy migration backups (safest to delete)
+        if (key.endsWith('__legacyMigrationBackup')) {
+          candidates.push({ key, priority: 1, size: 0 }); // Size calc is expensive, do lazily if needed or just count on priority
+          continue;
+        }
+
+        // Priority 2: Standard backups (safe if we have primary)
+        if (key.endsWith('__backup')) {
+          candidates.push({ key, priority: 2, size: 0 });
+          continue;
+        }
+
+        // Priority 3: Caches (can be rebuilt)
+        if (key === DEVICE_SCHEMA_CACHE_KEY || key === LEGACY_SCHEMA_CACHE_KEY) {
+          candidates.push({ key, priority: 3, size: 0 });
+          continue;
+        }
+      }
+
+      if (!candidates.length) {
+        return { success: false, freed: 0 };
+      }
+
+      // Sort by priority (ascending)
+      candidates.sort((a, b) => a.priority - b.priority);
+
+      let freed = 0;
+      let cleaned = 0;
+
+      for (let i = 0; i < candidates.length; i += 1) {
+        const candidate = candidates[i];
+        try {
+          const val = storage.getItem(candidate.key);
+          const size = val ? val.length : 0;
+          storage.removeItem(candidate.key);
+          clearCachedStorageEntry(storage, candidate.key);
+          freed += size;
+          cleaned += 1;
+          console.warn(`[Storage Cleanup] Removed ${candidate.key} to free ${size} chars.`);
+          // If we freed a significant amount, we might stop, but for now let's be aggressive
+          // to ensure the user's save succeeds.
+          if (freed > 50000) { // Arbitrary threshold to stop if we freed "enough"
+            break;
+          }
+        } catch (e) {
+          console.warn(`[Storage Cleanup] Failed to remove ${candidate.key}`, e);
+        }
+      }
+
+      return { success: cleaned > 0, freed };
+    };
+
     const attemptHandleQuota = (error, context = {}) => {
       if (!isQuotaExceededError(error)) {
         return false;
@@ -8022,21 +8098,30 @@
         }
       }
 
-      if (compressionSweepAttempted || enableCompressionSweep === false) {
-        return false;
+      // First try compression
+      if (!compressionSweepAttempted && enableCompressionSweep !== false) {
+        compressionSweepAttempted = true;
+        const skipKeys = [key];
+        if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
+          skipKeys.push(fallbackKey);
+        }
+        if (context && typeof context.backupKey === 'string' && context.backupKey) {
+          skipKeys.push(context.backupKey);
+        }
+
+        const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys });
+        if (sweepResult && sweepResult.success) {
+          return true;
+        }
       }
 
-      compressionSweepAttempted = true;
-      const skipKeys = [key];
-      if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
-        skipKeys.push(fallbackKey);
+      // If compression failed or wasn't enough, try cleanup
+      const skipKeysCleanup = [key];
+      if (useBackup && typeof fallbackKey === 'string' && fallbackKey) {
+        skipKeysCleanup.push(fallbackKey);
       }
-      if (context && typeof context.backupKey === 'string' && context.backupKey) {
-        skipKeys.push(context.backupKey);
-      }
-
-      const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys });
-      return Boolean(sweepResult && sweepResult.success);
+      const cleanupResult = attemptStorageCleanup(storage, { skipKeys: skipKeysCleanup });
+      return Boolean(cleanupResult && cleanupResult.success);
     };
 
     let attempts = 0;
