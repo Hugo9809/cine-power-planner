@@ -13504,9 +13504,167 @@ body.menu-open #menuOverlay {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 
-/* Avatar Drag and Drop */
-.avatar-drag-over {
-  outline: 2px dashed var(--accent-color);
-  outline-offset: -2px;
-  background-color: var(--onboarding-highlight-fill);
+/* Avatar Options Dialog Redesign */
+.avatar-options-dialog {
+  --avatar-dialog-width: 400px;
+  --avatar-preview-size: 160px;
+}
+
+.avatar-options-surface {
+  width: var(--avatar-dialog-width);
+  max-width: 100%;
+}
+
+.avatar-options-body {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.avatar-options-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.avatar-drop-zone {
+  width: 100%;
+  border: 2px dashed var(--control-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--panel-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-drop-zone:hover,
+.avatar-drop-zone.drag-over {
+  border-color: var(--accent-color);
+  background-color: color-mix(in srgb, var(--accent-color) 5%, var(--panel-bg));
+}
+
+.avatar-drop-zone.drag-over {
+  transform: scale(1.02);
+}
+
+.avatar-preview-container {
+  width: var(--avatar-preview-size);
+  height: var(--avatar-preview-size);
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--control-bg);
+  border: 4px solid var(--surface-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.avatar-options-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-drop-instructions {
+  text-align: center;
+  color: var(--text-muted);
+  pointer-events: none;
+  /* Let clicks pass through to the drop zone */
+}
+
+.avatar-drop-icon {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-xs);
+  display: block;
+}
+
+.avatar-drop-text {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  margin: 0;
+}
+
+.avatar-drop-subtext {
+  font-size: var(--font-scale-sm);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Edit Section (Zoom) */
+.avatar-edit {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--divider-color);
+}
+
+.avatar-edit-controls {
+  width: 100%;
+  max-width: 240px;
+}
+
+.avatar-edit-zoom {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  color: var(--text-muted);
+}
+
+.avatar-edit-zoom input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent-color);
+}
+
+/* Footer Actions */
+.avatar-options-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--divider-color);
+  background-color: var(--surface-2);
+}
+
+.avatar-options-primary-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.danger-ghost {
+  background: transparent;
+  color: var(--danger-color);
+  border: 1px solid transparent;
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.danger-ghost:hover {
+  background: color-mix(in srgb, var(--danger-color) 10%, transparent);
 }

@@ -5,46 +5,65 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--background-color);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 9999;
     display: flex;
     overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#printPreviewModal:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 #printPreviewModal.hidden {
-    display: none !important;
+    display: flex !important;
+    /* Override generic hidden to allow transition, handled by opacity */
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Sidebar Layout */
 .mockup-sidebar {
-    width: 340px;
+    width: 360px;
     background-color: var(--panel-bg);
     border-right: 1px solid var(--panel-border);
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-xl);
+    padding: 24px;
     box-shadow: var(--panel-shadow);
     z-index: 10;
     overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+#printPreviewModal.hidden .mockup-sidebar {
+    transform: translateX(-100%);
 }
 
 .mockup-sidebar-header {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--panel-border);
 }
 
 .mockup-sidebar-header h2 {
     margin: 0;
-    font-size: 1.4rem;
-    font-weight: var(--font-weight-medium);
-    color: var(--accent-color);
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);
 }
 
 .control-section {
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-lg);
+    margin-bottom: 24px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--panel-border);
 }
 
@@ -53,11 +72,11 @@
 }
 
 .section-title {
-    font-size: var(--font-scale-xs);
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--muted-text-color);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 12px;
     font-weight: var(--font-weight-bold);
 }
 
@@ -65,15 +84,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 12px;
+}
+
+.control-row label {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: var(--font-weight-medium);
 }
 
 /* Custom Toggle Switch */
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 24px;
+    width: 48px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 .toggle-switch input {
@@ -90,21 +116,22 @@
     right: 0;
     bottom: 0;
     background-color: var(--control-bg);
-    transition: .3s;
-    border-radius: 24px;
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 34px;
     border: 1px solid var(--control-border);
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
-    left: 2px;
-    bottom: 2px;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
     background-color: var(--control-text);
-    transition: .3s;
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 input:checked+.slider {
@@ -117,15 +144,70 @@ input:checked+.slider:before {
     background-color: #fff;
 }
 
+input:focus-visible+.slider {
+    box-shadow: 0 0 0 2px var(--panel-bg), 0 0 0 4px var(--accent-color);
+}
+
+/* Checkbox Style for Sections */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.checkbox-row:hover {
+    opacity: 0.8;
+}
+
+.checkbox-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--control-border);
+    border-radius: 4px;
+    background-color: var(--surface-color);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.checkbox-row input[type="checkbox"]:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.checkbox-row input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-row input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
 /* Preview Area */
 .preview-area {
     flex: 1;
-    background-color: #121212;
+    background-color: #525659;
+    /* Standard PDF viewer background */
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 60px;
     overflow-y: auto;
+    perspective: 1000px;
 }
 
 .paper {
@@ -134,11 +216,12 @@ input:checked+.slider:before {
     width: 210mm;
     min-height: 297mm;
     padding: 15mm;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     position: relative;
     transform-origin: top center;
     margin-bottom: 60px;
+    transition: transform 0.3s ease;
 
     /* Force light mode vars for the paper content to match print output */
     --accent-color: #001589;
@@ -255,26 +338,35 @@ input:checked+.slider:before {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--panel-border);
 }
 
 .sidebar-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 12px;
+    padding: 12px 16px;
     font-size: 1rem;
     cursor: pointer;
     border-radius: var(--border-radius);
     font-weight: 500;
     border: 1px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .btn-primary {
     background-color: var(--accent-color);
     color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
@@ -285,17 +377,36 @@ input:checked+.slider:before {
 
 .btn-secondary:hover {
     background-color: var(--control-hover-bg);
+    border-color: var(--control-border);
 }
 
 /* Close button for modal */
 .close-preview-btn {
-    background: none;
+    background: transparent;
     border: none;
     color: var(--muted-text-color);
     cursor: pointer;
     font-size: 1.2rem;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .close-preview-btn:hover {
     color: var(--text-color);
+    background-color: var(--control-hover-bg);
+}
+
+/* Dark Mode Overrides for Sidebar */
+body.dark-mode .mockup-sidebar {
+    background-color: #1e1e1e;
+    border-right-color: #333;
+}
+
+body.dark-mode .paper {
+    /* Keep paper white even in dark mode for print preview accuracy */
+    filter: none;
 }

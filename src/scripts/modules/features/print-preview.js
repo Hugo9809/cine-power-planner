@@ -61,11 +61,13 @@
     function bindEvents() {
         if (!state.elements.modal) return;
 
-        // Remove existing listeners to avoid duplicates if re-bound
-        const newCloseBtn = state.elements.closeBtn.cloneNode(true);
-        state.elements.closeBtn.parentNode.replaceChild(newCloseBtn, state.elements.closeBtn);
-        state.elements.closeBtn = newCloseBtn;
-        state.elements.closeBtn.addEventListener('click', closePreview);
+        // Close Button
+        if (state.elements.closeBtn) {
+            const newCloseBtn = state.elements.closeBtn.cloneNode(true);
+            state.elements.closeBtn.parentNode.replaceChild(newCloseBtn, state.elements.closeBtn);
+            state.elements.closeBtn = newCloseBtn;
+            state.elements.closeBtn.addEventListener('click', closePreview);
+        }
 
         // Layout Toggle
         if (state.elements.layoutToggle) {
@@ -107,8 +109,26 @@
     // --- Helper Functions ---
 
     function generateRentalDeviceGrid() {
-        const sourceDevs = document.getElementById('overviewDeviceSection');
-        if (!sourceDevs) return '<p>No devices selected.</p>';
+        // Try to find the device section. It might be 'overviewDeviceSection' or inside 'setup-config'
+        let sourceDevs = document.getElementById('overviewDeviceSection');
+
+        // Fallback: try to construct it from the live DOM if the specific ID isn't found
+        // This is a bit of a hack, but it handles the case where overview.js hasn't generated the ID yet
+        if (!sourceDevs) {
+            // Look for the header "Configure Devices" and assume content follows? 
+            // Or better, check if we can find .device-category elements
+            const potentialCategories = document.querySelectorAll('.device-category');
+            if (potentialCategories.length > 0) {
+                // We found categories in the DOM, let's use them
+                const container = document.createElement('div');
+                container.className = 'device-category-container';
+                potentialCategories.forEach(cat => {
+                    container.appendChild(cat.cloneNode(true));
+                });
+                return container.outerHTML;
+            }
+            return '<p>No devices selected or overview not generated.</p>';
+        }
 
         const container = document.createElement('div');
         container.className = 'device-category-container';
@@ -144,6 +164,9 @@
                 // Clone the device block
                 const clone = child.cloneNode(true);
                 currentCategoryDiv.appendChild(clone);
+            } else if (child.classList.contains('device-category')) {
+                // If it's already a category div (nested structure), just clone it
+                container.appendChild(child.cloneNode(true));
             }
         });
 
@@ -227,6 +250,16 @@
             const sourceDevs = document.getElementById('overviewDeviceSection');
             if (sourceDevs) {
                 devSection.innerHTML += sourceDevs.innerHTML;
+            } else {
+                // Fallback attempt
+                const potentialCategories = document.querySelectorAll('.device-category');
+                if (potentialCategories.length > 0) {
+                    potentialCategories.forEach(cat => {
+                        devSection.appendChild(cat.cloneNode(true));
+                    });
+                } else {
+                    devSection.innerHTML += '<p>No devices selected.</p>';
+                }
             }
         }
         paper.appendChild(devSection);

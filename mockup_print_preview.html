@@ -10,919 +10,655 @@
     <link rel="stylesheet" href="src/styles/fonts.css" />
     <link rel="stylesheet" href="src/styles/style.css" />
     <link rel="stylesheet" href="src/styles/overview-print.css" />
+    <link rel="stylesheet" href="src/styles/print-preview.css" />
 
     <style>
-        /* Mockup-specific layout styles */
-        body {
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-            background-color: var(--background-color);
-            margin: 0;
-        }
-
-        /* Sidebar Layout */
-        .mockup-sidebar {
-            width: 340px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--panel-border);
-            display: flex;
-            flex-direction: column;
-            padding: var(--spacing-xl);
-            box-shadow: var(--panel-shadow);
-            z-index: 10;
-            overflow-y: auto;
-        }
-
-        .mockup-sidebar-header {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .mockup-sidebar-header h2 {
-            margin: 0;
-            font-size: 1.4rem;
-            font-weight: var(--font-weight-medium);
-            color: var(--accent-color);
-        }
-
-        .control-section {
-            margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--panel-border);
-        }
-
-        .control-section:last-child {
-            border-bottom: none;
-        }
-
-        .section-title {
-            font-size: var(--font-scale-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--muted-text-color);
-            margin-bottom: var(--spacing-md);
-            font-weight: var(--font-weight-bold);
-        }
-
-        .control-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-md);
-        }
-
-        /* Custom Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--control-bg);
-            transition: .3s;
-            border-radius: 24px;
-            border: 1px solid var(--control-border);
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 2px;
-            bottom: 2px;
-            background-color: var(--control-text);
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(20px);
-            background-color: #fff;
-        }
-
-        /* Preview Area */
-        .preview-area {
-            flex: 1;
-            background-color: #121212;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 60px;
-            overflow-y: auto;
-        }
-
-        .paper {
-            background-color: #ffffff;
-            color: #000000;
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-            position: relative;
-            transform-origin: top center;
-
-            /* Force light mode vars for the paper content to match print output */
-            --accent-color: #001589;
-            --text-color: #000000;
-            --panel-border: #ddd;
-            --panel-bg: #fff;
-            --control-bg: #f0f0f0;
-            --control-text: #333;
-            --muted-text-color: #555;
-            --font-family: 'Ubuntu', sans-serif;
-        }
-
-        /* Scoped styles to match overview.css structure within .paper */
-        .paper h1 {
-            font-size: 2em;
-            margin-bottom: 0.2em;
-            color: var(--accent-color);
-        }
-
-        .paper h2 {
-            font-size: 1.5em;
-            margin-top: 1.3em;
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 5px;
-            color: var(--accent-color);
-        }
-
-        .paper p {
-            margin: 0.5em 0;
-            line-height: 1.5;
-        }
-
-        /* Device Blocks Grid */
-        .paper .device-category-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .paper .device-category {
-            flex: 1 1 calc((100% - 20px) / 3);
-            border: 1px solid var(--panel-border);
-            padding: 10px;
-            border-radius: 5px;
-            background: #fff;
-            box-shadow: none;
-            /* Print usually removes shadows */
-        }
-
-        .paper .device-category h3 {
-            margin-top: 0;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 3px;
-            font-size: 1em;
-            color: var(--accent-color);
-        }
-
-        .paper .device-block {
-            background: #fff;
-            border: 1px solid var(--panel-border);
-            border-radius: 6px;
-            padding: 6px 10px;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-
-        .paper .device-block strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* Gear Table */
-        .paper .gear-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            table-layout: fixed;
-        }
-
-        .paper .gear-table td {
-            border: 1px solid var(--panel-border);
-            padding: 4px 8px;
-            font-size: 0.9em;
-            vertical-align: middle;
-        }
-
-        .paper .gear-table .category-row td {
-            border-top: 1px solid var(--accent-color);
-            border-bottom: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            font-weight: bold;
-            background: transparent;
-            padding-top: 12px;
-        }
-
-        .paper .gear-table tr,
-        .paper .gear-table tr:nth-child(even) {
-            background-color: transparent !important;
-        }
-
-        .paper .gear-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .paper .gear-select-value {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3em;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 4px;
-            padding: 0.2em 0.55em;
-            font-weight: 500;
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .sidebar-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            border: 1px solid transparent;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-color);
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            border-color: var(--control-border);
-            color: var(--text-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--control-hover-bg);
+        /* Mockup-specific overrides to ensure visibility without JS */
+        #printPreviewModal {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            /* Override fixed for mockup if needed, but fixed is fine if body is 100vh */
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Sidebar -->
-    <div class="mockup-sidebar">
-        <div class="mockup-sidebar-header">
-            <h2>Print & Export</h2>
-        </div>
-
-        <div class="control-section">
-            <div class="section-title">Layout Mode</div>
-            <div class="control-row">
-                <label>Rental Friendly</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
+    <div id="printPreviewModal">
+        <!-- Sidebar -->
+        <div class="mockup-sidebar">
+            <div class="mockup-sidebar-header">
+                <h2>Print & Export</h2>
             </div>
-            <p style="font-size: 0.85rem; color: var(--muted-text-color); line-height: 1.4;">
-                Optimizes layout for rental houses by grouping items by category.
-            </p>
-        </div>
 
-        <div class="control-section">
-            <div class="section-title">Sections</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" checked
-                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                    Project Requirements
-                </label>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" checked
-                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                    Device List
-                </label>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" checked
-                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                    Power Diagram
-                </label>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" checked
-                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                    Gear List
-                </label>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" checked
-                        style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                    Battery Comparison
-                </label>
+            <div class="control-section">
+                <div class="section-title">Layout Mode</div>
+                <div class="control-row">
+                    <label>Rental Friendly</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--muted-text-color); line-height: 1.4;">
+                    Optimizes layout for rental houses by grouping items by category.
+                </p>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">Sections</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked>
+                        Project Requirements
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked>
+                        Device List
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked>
+                        Power Diagram
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked>
+                        Gear List
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked>
+                        Battery Comparison
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="sidebar-btn btn-primary">
+                    <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
+                    Export PDF
+                </button>
+                <button class="sidebar-btn btn-secondary">
+                    <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
+                    Print
+                </button>
             </div>
         </div>
 
-        <div class="sidebar-footer">
-            <button class="sidebar-btn btn-primary">
-                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
-                Export PDF
-            </button>
-            <button class="sidebar-btn btn-secondary">
-                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
-                Print
-            </button>
+        <!-- Preview Area -->
+        <div class="preview-area">
+            <div class="paper" id="overviewDialogContent">
+                <h1>Overview</h1>
+                <p><strong>Project Name:</strong> Midnight Chase - Unit A</p>
+                <p><strong>Production:</strong> Nightfall Pictures | <strong>Company:</strong> CineRentals Berlin</p>
+                <p><em>Generated on: Nov 27, 2025</em></p>
+
+                <!-- Project Requirements -->
+                <section id="projectRequirementsOutput" class="print-section project-requirements-section">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <div
+                            style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Resolution</div>
+                            <div style="font-weight: bold; color: var(--accent-color);">4.6K OG</div>
+                        </div>
+                        <div
+                            style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Frame Rate</div>
+                            <div style="font-weight: bold; color: var(--accent-color);">24 / 48 fps</div>
+                        </div>
+                        <div
+                            style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Codec</div>
+                            <div style="font-weight: bold; color: var(--accent-color);">ARRIRAW</div>
+                        </div>
+                        <div
+                            style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Aspect Ratio</div>
+                            <div style="font-weight: bold; color: var(--accent-color);">2.39:1</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
+                                Logistics</div>
+                            <div style="font-size: 0.9em;"><strong>Prep:</strong> 2025-12-01 (CineRentals)</div>
+                            <div style="font-size: 0.9em;"><strong>Shoot:</strong> 2025-12-03 to 2025-12-15</div>
+                            <div style="font-size: 0.9em;"><strong>Return:</strong> 2025-12-16</div>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
+                                Location</div>
+                            <div style="font-size: 0.9em;"><strong>Base:</strong> Studio Babelsberg</div>
+                            <div style="font-size: 0.9em;"><strong>Unit:</strong> A-Cam, Steadicam</div>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                            <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
+                                Notes
+                            </div>
+                            <div style="font-size: 0.9em; font-style: italic;">"Heavy rain sequences expected. Bring
+                                rain
+                                covers for all monitors and heads."</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Device Selection -->
+                <section class="print-section">
+                    <h2>Device Selection</h2>
+                    <div class="device-category-container">
+                        <!-- Camera -->
+                        <div class="device-category">
+                            <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                    data-icon-font="uicons">&#xE90F;</span>Camera</h3>
+                            <div class="device-block">
+                                <strong>ARRI Alexa 35</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Power: 90.0 W</div>
+                                    <div>Voltage: 20.5-33.6 V</div>
+                                    <div>Mount: LPL</div>
+                                    <div>Weight: 2.9 kg</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Lens -->
+                        <div class="device-category">
+                            <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                    data-icon-font="uicons">&#xE910;</span>Lenses</h3>
+                            <div class="device-block">
+                                <strong>Cooke S4/i Set (18-100mm)</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>6 Lenses</div>
+                                    <div>Avg Weight: 1.8 kg</div>
+                                    <div>Front Dia: 110mm</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Monitor -->
+                        <div class="device-category">
+                            <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                    data-icon-font="uicons">&#xE913;</span>Monitoring</h3>
+                            <div class="device-block">
+                                <strong>SmallHD Ultra 7</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>On-Board</div>
+                                    <div>Power: 16.0 W</div>
+                                </div>
+                            </div>
+                            <div class="device-block">
+                                <strong>SmallHD Cine 13</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Director's Monitor</div>
+                                    <div>Power: 45.0 W</div>
+                                </div>
+                            </div>
+                            <div class="device-block">
+                                <strong><span class="icon-glyph" style="color: #2e7d32;"
+                                        data-icon-font="uicons">&#xE88E;</span> SmallHD 703 Bolt</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>AC Monitor (Own Gear)</div>
+                                    <div>Power: 22.0 W</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Wireless -->
+                        <div class="device-category">
+                            <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                    data-icon-font="uicons">&#xE912;</span>Wireless</h3>
+                            <div class="device-block">
+                                <strong>Teradek Bolt 6 XT 1500 TX</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Transmitter</div>
+                                    <div>Power: 11.0 W</div>
+                                </div>
+                            </div>
+                            <div class="device-block">
+                                <strong>Teradek Bolt 6 XT 1500 RX</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Receiver (x2)</div>
+                                    <div>Power: 9.0 W</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- FIZ -->
+                        <div class="device-category">
+                            <h3><span class="category-icon icon-glyph" aria-hidden="true"
+                                    data-icon-font="uicons">&#xE90E;</span>FIZ</h3>
+                            <div class="device-block">
+                                <strong>Arri Hi-5</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Hand Unit</div>
+                                    <div>Radio: White</div>
+                                </div>
+                            </div>
+                            <div class="device-block">
+                                <strong>Arri cforce mini RF</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Motor (Brain)</div>
+                                </div>
+                            </div>
+                            <div class="device-block">
+                                <strong>Arri cforce mini</strong>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    <div>Motor (x2)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Power Summary -->
+                <section class="print-section" style="margin-top: 20px;">
+                    <h2>Power Summary</h2>
+                    <div style="display: flex; gap: 15px;">
+                        <div
+                            style="flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
+                            <div
+                                style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">
+                                Total Load</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #14532d;">~217 W</div>
+                            <div style="font-size: 0.8em; color: #166534;">Peak: 240 W</div>
+                        </div>
+                        <div
+                            style="flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;">
+                            <div
+                                style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">
+                                Est. Runtime</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #1e3a8a;">~1h 20m</div>
+                            <div style="font-size: 0.8em; color: #1e40af;">w/ Bebob B290cine</div>
+                        </div>
+                        <div
+                            style="flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;">
+                            <div
+                                style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">
+                                Daily Needs</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">8 Batts</div>
+                            <div style="font-size: 0.8em; color: #9a3412;">for 12h day</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gear List -->
+                <section id="gearListOutput" class="gear-list-section print-section">
+                    <h2>Gear List</h2>
+                    <table class="gear-table">
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Camera System</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="ARRI Alexa 35" data-gear-quantity="1">
+                                            <span class="gear-item-text">1x ARRI Alexa 35</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="ARRI Production Set"
+                                            data-gear-quantity="1"
+                                            data-gear-attributes="Top Plate, Side Brackets, CCH-5">
+                                            <span class="gear-item-text">1x ARRI Production Set (Top Plate, Side
+                                                Brackets,
+                                                CCH-5)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="ARRI CBP-5" data-gear-quantity="1"
+                                            data-gear-attributes="19mm Rod Support">
+                                            <span class="gear-item-text">1x ARRI CBP-5 (19mm Rod Support)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Lenses</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 18mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 18mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 25mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 25mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 32mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 32mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 50mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 50mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 75mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 75mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Cooke S4/i 100mm" data-gear-quantity="1"
+                                            data-gear-attributes="T2.0">
+                                            <span class="gear-item-text">1x Cooke S4/i 100mm (T2.0)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Monitoring</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="SmallHD Ultra 7" data-gear-quantity="1">
+                                            <span class="gear-item-text">1x SmallHD Ultra 7</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="SmallHD Cine 13" data-gear-quantity="1"
+                                            data-gear-attributes="Yoke Mount">
+                                            <span class="gear-item-text">1x SmallHD Cine 13 (Yoke Mount)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="SmallHD 703 Bolt" data-gear-quantity="1"
+                                            data-gear-attributes="Own Gear" data-rental-note="Own Gear">
+                                            <span class="gear-item-text">1x SmallHD 703 Bolt (Own Gear)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Teradek Bolt 6 XT 1500"
+                                            data-gear-quantity="1" data-gear-label="Wireless TX">
+                                            <span class="gear-item-text">1x Teradek Bolt 6 XT 1500 (Wireless TX)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Teradek Bolt 6 XT 1500"
+                                            data-gear-quantity="2" data-gear-label="Wireless RX">
+                                            <span class="gear-item-text">2x Teradek Bolt 6 XT 1500 (Wireless RX)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">FIZ & Control</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="Arri Hi-5" data-gear-quantity="1"
+                                            data-gear-attributes="RF Motor License">
+                                            <span class="gear-item-text">1x Arri Hi-5 (RF Motor License)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Arri cforce mini RF"
+                                            data-gear-quantity="1">
+                                            <span class="gear-item-text">1x Arri cforce mini RF</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Arri cforce mini" data-gear-quantity="2"
+                                            data-gear-attributes="Daisy-chained">
+                                            <span class="gear-item-text">2x Arri cforce mini (Daisy-chained)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Power</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="Bebob B290cine" data-gear-quantity="8"
+                                            data-gear-attributes="B-Mount">
+                                            <span class="gear-item-text">8x Bebob B290cine (B-Mount)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Bebob BS4" data-gear-quantity="2"
+                                            data-gear-attributes="4-Channel Simultaneous">
+                                            <span class="gear-item-text">2x Bebob BS4 (4-Channel Simultaneous)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Bebob Cube 1200" data-gear-quantity="1"
+                                            data-gear-attributes="For Director's Monitor">
+                                            <span class="gear-item-text">1x Bebob Cube 1200 (For Director's
+                                                Monitor)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Support</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="OConnor Ultimate 2575D"
+                                            data-gear-quantity="1" data-gear-attributes="150mm Bowl">
+                                            <span class="gear-item-text">1x OConnor Ultimate 2575D (150mm Bowl)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Ronford-Baker Heavy Duty (Tall)"
+                                            data-gear-quantity="1" data-gear-attributes="Mitchell / 150mm">
+                                            <span class="gear-item-text">1x Ronford-Baker Heavy Duty (Tall) (Mitchell /
+                                                150mm)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Ronford-Baker Heavy Duty (Short)"
+                                            data-gear-quantity="1" data-gear-attributes="Mitchell / 150mm">
+                                            <span class="gear-item-text">1x Ronford-Baker Heavy Duty (Short) (Mitchell /
+                                                150mm)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Ronford-Baker 150mm"
+                                            data-gear-quantity="1" data-gear-attributes="Board Mounted">
+                                            <span class="gear-item-text">1x Ronford-Baker 150mm (Board Mounted)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Matte Box & Filters</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="ARRI LMB 4x5 Pro Set"
+                                            data-gear-quantity="1" data-gear-attributes="3-Stage, Swing-Away">
+                                            <span class="gear-item-text">1x ARRI LMB 4x5 Pro Set (3-Stage,
+                                                Swing-Away)</span>
+                                            <span class="gear-item-camera-link" data-gear-camera-link="camera"
+                                                data-gear-camera-link-label="ARRI Alexa 35">
+                                                <span class="gear-item-camera-link__icon">A</span>
+                                            </span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Tiffen 4x5.65 Full Spectrum IRND"
+                                            data-gear-quantity="1"
+                                            data-gear-attributes=".3, .6, .9, 1.2, 1.5, 1.8, 2.1">
+                                            <span class="gear-item-text">1x Tiffen 4x5.65 Full Spectrum IRND (.3, .6,
+                                                .9,
+                                                1.2, 1.5, 1.8, 2.1)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Revar Cine Rota-Pola"
+                                            data-gear-quantity="1" data-gear-attributes="4x5.65 Tray Mount">
+                                            <span class="gear-item-text">1x Revar Cine Rota-Pola (4x5.65 Tray
+                                                Mount)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Schneider 138mm" data-gear-quantity="2"
+                                            data-gear-attributes="+1, +2">
+                                            <span class="gear-item-text">2x Schneider 138mm (+1, +2)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Media</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="CODEX Compact Drive 2TB"
+                                            data-gear-quantity="4" data-gear-attributes="High Speed">
+                                            <span class="gear-item-text">4x CODEX Compact Drive 2TB (High Speed)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="CODEX Compact Drive Dock"
+                                            data-gear-quantity="1" data-gear-attributes="Thunderbolt 3">
+                                            <span class="gear-item-text">1x CODEX Compact Drive Dock (Thunderbolt
+                                                3)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Cables</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="12G-SDI (Short)" data-gear-quantity="4"
+                                            data-gear-attributes="0.3m / 1ft">
+                                            <span class="gear-item-text">4x 12G-SDI (Short) (0.3m / 1ft)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="12G-SDI (Medium)" data-gear-quantity="4"
+                                            data-gear-attributes="0.6m / 2ft">
+                                            <span class="gear-item-text">4x 12G-SDI (Medium) (0.6m / 2ft)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="RS 3-pin to 2-pin LEMO"
+                                            data-gear-quantity="2" data-gear-attributes="For Teradek">
+                                            <span class="gear-item-text">2x RS 3-pin to 2-pin LEMO (For Teradek)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="D-Tap to 2-pin LEMO"
+                                            data-gear-quantity="2" data-gear-attributes="Spare">
+                                            <span class="gear-item-text">2x D-Tap to 2-pin LEMO (Spare)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="category-group">
+                            <tr class="category-row">
+                                <td>
+                                    <div class="gear-category-header">
+                                        <span class="gear-category-label">Crew</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="gear-standard-items">
+                                        <span class="gear-item" data-gear-name="Sarah Jenkins" data-gear-quantity="1"
+                                            data-gear-label="DP" data-gear-attributes="+49 123 456 789">
+                                            <span class="gear-item-text">1x Sarah Jenkins (DP, +49 123 456 789)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="John Doe" data-gear-quantity="1"
+                                            data-gear-label="1st AC" data-gear-attributes="+49 987 654 321">
+                                            <span class="gear-item-text">1x John Doe (1st AC, +49 987 654 321)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Emily Chen" data-gear-quantity="1"
+                                            data-gear-label="2nd AC">
+                                            <span class="gear-item-text">1x Emily Chen (2nd AC)</span>
+                                        </span><br>
+                                        <span class="gear-item" data-gear-name="Michael Ross" data-gear-quantity="1"
+                                            data-gear-label="DIT">
+                                            <span class="gear-item-text">1x Michael Ross (DIT)</span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
         </div>
+
     </div>
-
-    <!-- Preview Area -->
-    <div class="preview-area">
-        <div class="paper" id="overviewDialogContent">
-            <h1>Overview</h1>
-            <p><strong>Project Name:</strong> Midnight Chase - Unit A</p>
-            <p><strong>Production:</strong> Nightfall Pictures | <strong>Company:</strong> CineRentals Berlin</p>
-            <p><em>Generated on: Nov 27, 2025</em></p>
-
-            <!-- Project Requirements -->
-            <section id="projectRequirementsOutput" class="print-section project-requirements-section">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                    <div
-                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Resolution</div>
-                        <div style="font-weight: bold; color: var(--accent-color);">4.6K OG</div>
-                    </div>
-                    <div
-                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Frame Rate</div>
-                        <div style="font-weight: bold; color: var(--accent-color);">24 / 48 fps</div>
-                    </div>
-                    <div
-                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Codec</div>
-                        <div style="font-weight: bold; color: var(--accent-color);">ARRIRAW</div>
-                    </div>
-                    <div
-                        style="background: #e2e3e7; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase;">Aspect Ratio</div>
-                        <div style="font-weight: bold; color: var(--accent-color);">2.39:1</div>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
-                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
-                            Logistics</div>
-                        <div style="font-size: 0.9em;"><strong>Prep:</strong> 2025-12-01 (CineRentals)</div>
-                        <div style="font-size: 0.9em;"><strong>Shoot:</strong> 2025-12-03 to 2025-12-15</div>
-                        <div style="font-size: 0.9em;"><strong>Return:</strong> 2025-12-16</div>
-                    </div>
-                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">
-                            Location</div>
-                        <div style="font-size: 0.9em;"><strong>Base:</strong> Studio Babelsberg</div>
-                        <div style="font-size: 0.9em;"><strong>Unit:</strong> A-Cam, Steadicam</div>
-                    </div>
-                    <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
-                        <div style="font-size: 0.8em; color: #555; text-transform: uppercase; margin-bottom: 4px;">Notes
-                        </div>
-                        <div style="font-size: 0.9em; font-style: italic;">"Heavy rain sequences expected. Bring rain
-                            covers for all monitors and heads."</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Device Selection -->
-            <section class="print-section">
-                <h2>Device Selection</h2>
-                <div class="device-category-container">
-                    <!-- Camera -->
-                    <div class="device-category">
-                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
-                                data-icon-font="uicons">&#xE90F;</span>Camera</h3>
-                        <div class="device-block">
-                            <strong>ARRI Alexa 35</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Power: 90.0 W</div>
-                                <div>Voltage: 20.5-33.6 V</div>
-                                <div>Mount: LPL</div>
-                                <div>Weight: 2.9 kg</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Lens -->
-                    <div class="device-category">
-                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
-                                data-icon-font="uicons">&#xE910;</span>Lenses</h3>
-                        <div class="device-block">
-                            <strong>Cooke S4/i Set (18-100mm)</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>6 Lenses</div>
-                                <div>Avg Weight: 1.8 kg</div>
-                                <div>Front Dia: 110mm</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Monitor -->
-                    <div class="device-category">
-                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
-                                data-icon-font="uicons">&#xE913;</span>Monitoring</h3>
-                        <div class="device-block">
-                            <strong>SmallHD Ultra 7</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>On-Board</div>
-                                <div>Power: 16.0 W</div>
-                            </div>
-                        </div>
-                        <div class="device-block">
-                            <strong>SmallHD Cine 13</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Director's Monitor</div>
-                                <div>Power: 45.0 W</div>
-                            </div>
-                        </div>
-                        <div class="device-block">
-                            <strong><span class="icon-glyph" style="color: #2e7d32;"
-                                    data-icon-font="uicons">&#xE88E;</span> SmallHD 703 Bolt</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>AC Monitor (Own Gear)</div>
-                                <div>Power: 22.0 W</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Wireless -->
-                    <div class="device-category">
-                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
-                                data-icon-font="uicons">&#xE912;</span>Wireless</h3>
-                        <div class="device-block">
-                            <strong>Teradek Bolt 6 XT 1500 TX</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Transmitter</div>
-                                <div>Power: 11.0 W</div>
-                            </div>
-                        </div>
-                        <div class="device-block">
-                            <strong>Teradek Bolt 6 XT 1500 RX</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Receiver (x2)</div>
-                                <div>Power: 9.0 W</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FIZ -->
-                    <div class="device-category">
-                        <h3><span class="category-icon icon-glyph" aria-hidden="true"
-                                data-icon-font="uicons">&#xE90E;</span>FIZ</h3>
-                        <div class="device-block">
-                            <strong>Arri Hi-5</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Hand Unit</div>
-                                <div>Radio: White</div>
-                            </div>
-                        </div>
-                        <div class="device-block">
-                            <strong>Arri cforce mini RF</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Motor (Brain)</div>
-                            </div>
-                        </div>
-                        <div class="device-block">
-                            <strong>Arri cforce mini</strong>
-                            <div style="font-size: 0.85em; color: #666;">
-                                <div>Motor (x2)</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Power Summary -->
-            <section class="print-section" style="margin-top: 20px;">
-                <h2>Power Summary</h2>
-                <div style="display: flex; gap: 15px;">
-                    <div
-                        style="flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
-                        <div style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">
-                            Total Load</div>
-                        <div style="font-size: 1.5em; font-weight: bold; color: #14532d;">~217 W</div>
-                        <div style="font-size: 0.8em; color: #166534;">Peak: 240 W</div>
-                    </div>
-                    <div
-                        style="flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;">
-                        <div style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">
-                            Est. Runtime</div>
-                        <div style="font-size: 1.5em; font-weight: bold; color: #1e3a8a;">~1h 20m</div>
-                        <div style="font-size: 0.8em; color: #1e40af;">w/ Bebob B290cine</div>
-                    </div>
-                    <div
-                        style="flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;">
-                        <div style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">
-                            Daily Needs</div>
-                        <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">8 Batts</div>
-                        <div style="font-size: 0.8em; color: #9a3412;">for 12h day</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Gear List -->
-            <section id="gearListOutput" class="gear-list-section print-section">
-                <h2>Gear List</h2>
-                <table class="gear-table">
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Camera System</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="ARRI Alexa 35" data-gear-quantity="1">
-                                        <span class="gear-item-text">1x ARRI Alexa 35</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="ARRI Production Set" data-gear-quantity="1"
-                                        data-gear-attributes="Top Plate, Side Brackets, CCH-5">
-                                        <span class="gear-item-text">1x ARRI Production Set (Top Plate, Side Brackets,
-                                            CCH-5)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="ARRI CBP-5" data-gear-quantity="1"
-                                        data-gear-attributes="19mm Rod Support">
-                                        <span class="gear-item-text">1x ARRI CBP-5 (19mm Rod Support)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Lenses</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 18mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 18mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 25mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 25mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 32mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 32mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 50mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 50mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 75mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 75mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Cooke S4/i 100mm" data-gear-quantity="1"
-                                        data-gear-attributes="T2.0">
-                                        <span class="gear-item-text">1x Cooke S4/i 100mm (T2.0)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Monitoring</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="SmallHD Ultra 7" data-gear-quantity="1">
-                                        <span class="gear-item-text">1x SmallHD Ultra 7</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="SmallHD Cine 13" data-gear-quantity="1"
-                                        data-gear-attributes="Yoke Mount">
-                                        <span class="gear-item-text">1x SmallHD Cine 13 (Yoke Mount)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="SmallHD 703 Bolt" data-gear-quantity="1"
-                                        data-gear-attributes="Own Gear" data-rental-note="Own Gear">
-                                        <span class="gear-item-text">1x SmallHD 703 Bolt (Own Gear)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Teradek Bolt 6 XT 1500"
-                                        data-gear-quantity="1" data-gear-label="Wireless TX">
-                                        <span class="gear-item-text">1x Teradek Bolt 6 XT 1500 (Wireless TX)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Teradek Bolt 6 XT 1500"
-                                        data-gear-quantity="2" data-gear-label="Wireless RX">
-                                        <span class="gear-item-text">2x Teradek Bolt 6 XT 1500 (Wireless RX)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">FIZ & Control</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="Arri Hi-5" data-gear-quantity="1"
-                                        data-gear-attributes="RF Motor License">
-                                        <span class="gear-item-text">1x Arri Hi-5 (RF Motor License)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Arri cforce mini RF" data-gear-quantity="1">
-                                        <span class="gear-item-text">1x Arri cforce mini RF</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Arri cforce mini" data-gear-quantity="2"
-                                        data-gear-attributes="Daisy-chained">
-                                        <span class="gear-item-text">2x Arri cforce mini (Daisy-chained)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Power</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="Bebob B290cine" data-gear-quantity="8"
-                                        data-gear-attributes="B-Mount">
-                                        <span class="gear-item-text">8x Bebob B290cine (B-Mount)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Bebob BS4" data-gear-quantity="2"
-                                        data-gear-attributes="4-Channel Simultaneous">
-                                        <span class="gear-item-text">2x Bebob BS4 (4-Channel Simultaneous)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Bebob Cube 1200" data-gear-quantity="1"
-                                        data-gear-attributes="For Director's Monitor">
-                                        <span class="gear-item-text">1x Bebob Cube 1200 (For Director's Monitor)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Support</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="OConnor Ultimate 2575D"
-                                        data-gear-quantity="1" data-gear-attributes="150mm Bowl">
-                                        <span class="gear-item-text">1x OConnor Ultimate 2575D (150mm Bowl)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Ronford-Baker Heavy Duty (Tall)"
-                                        data-gear-quantity="1" data-gear-attributes="Mitchell / 150mm">
-                                        <span class="gear-item-text">1x Ronford-Baker Heavy Duty (Tall) (Mitchell /
-                                            150mm)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Ronford-Baker Heavy Duty (Short)"
-                                        data-gear-quantity="1" data-gear-attributes="Mitchell / 150mm">
-                                        <span class="gear-item-text">1x Ronford-Baker Heavy Duty (Short) (Mitchell /
-                                            150mm)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Ronford-Baker 150mm" data-gear-quantity="1"
-                                        data-gear-attributes="Board Mounted">
-                                        <span class="gear-item-text">1x Ronford-Baker 150mm (Board Mounted)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Matte Box & Filters</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="ARRI LMB 4x5 Pro Set" data-gear-quantity="1"
-                                        data-gear-attributes="3-Stage, Swing-Away">
-                                        <span class="gear-item-text">1x ARRI LMB 4x5 Pro Set (3-Stage,
-                                            Swing-Away)</span>
-                                        <span class="gear-item-camera-link" data-gear-camera-link="camera"
-                                            data-gear-camera-link-label="ARRI Alexa 35">
-                                            <span class="gear-item-camera-link__icon">A</span>
-                                        </span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Tiffen 4x5.65 Full Spectrum IRND"
-                                        data-gear-quantity="1" data-gear-attributes=".3, .6, .9, 1.2, 1.5, 1.8, 2.1">
-                                        <span class="gear-item-text">1x Tiffen 4x5.65 Full Spectrum IRND (.3, .6, .9,
-                                            1.2, 1.5, 1.8, 2.1)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Revar Cine Rota-Pola" data-gear-quantity="1"
-                                        data-gear-attributes="4x5.65 Tray Mount">
-                                        <span class="gear-item-text">1x Revar Cine Rota-Pola (4x5.65 Tray Mount)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Schneider 138mm" data-gear-quantity="2"
-                                        data-gear-attributes="+1, +2">
-                                        <span class="gear-item-text">2x Schneider 138mm (+1, +2)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Media</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="CODEX Compact Drive 2TB"
-                                        data-gear-quantity="4" data-gear-attributes="High Speed">
-                                        <span class="gear-item-text">4x CODEX Compact Drive 2TB (High Speed)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="CODEX Compact Drive Dock"
-                                        data-gear-quantity="1" data-gear-attributes="Thunderbolt 3">
-                                        <span class="gear-item-text">1x CODEX Compact Drive Dock (Thunderbolt 3)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Cables</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="12G-SDI (Short)" data-gear-quantity="4"
-                                        data-gear-attributes="0.3m / 1ft">
-                                        <span class="gear-item-text">4x 12G-SDI (Short) (0.3m / 1ft)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="12G-SDI (Medium)" data-gear-quantity="4"
-                                        data-gear-attributes="0.6m / 2ft">
-                                        <span class="gear-item-text">4x 12G-SDI (Medium) (0.6m / 2ft)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="RS 3-pin to 2-pin LEMO"
-                                        data-gear-quantity="2" data-gear-attributes="For Teradek">
-                                        <span class="gear-item-text">2x RS 3-pin to 2-pin LEMO (For Teradek)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="D-Tap to 2-pin LEMO" data-gear-quantity="2"
-                                        data-gear-attributes="Spare">
-                                        <span class="gear-item-text">2x D-Tap to 2-pin LEMO (Spare)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="category-group">
-                        <tr class="category-row">
-                            <td>
-                                <div class="gear-category-header">
-                                    <span class="gear-category-label">Crew</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gear-standard-items">
-                                    <span class="gear-item" data-gear-name="Sarah Jenkins" data-gear-quantity="1"
-                                        data-gear-label="DP" data-gear-attributes="+49 123 456 789">
-                                        <span class="gear-item-text">1x Sarah Jenkins (DP, +49 123 456 789)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="John Doe" data-gear-quantity="1"
-                                        data-gear-label="1st AC" data-gear-attributes="+49 987 654 321">
-                                        <span class="gear-item-text">1x John Doe (1st AC, +49 987 654 321)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Emily Chen" data-gear-quantity="1"
-                                        data-gear-label="2nd AC">
-                                        <span class="gear-item-text">1x Emily Chen (2nd AC)</span>
-                                    </span><br>
-                                    <span class="gear-item" data-gear-name="Michael Ross" data-gear-quantity="1"
-                                        data-gear-label="DIT">
-                                        <span class="gear-item-text">1x Michael Ross (DIT)</span>
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </div>
-    </div>
-
 </body>
 
 </html>

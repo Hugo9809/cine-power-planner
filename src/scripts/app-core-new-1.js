@@ -12327,6 +12327,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var avatarOptionsContext = null;
   var avatarEditState = null;
   var avatarEditLastViewportSize = 0;
+  var avatarDropZone = null;
+  var avatarUploadInput = null;
+  var avatarSaveButton = null;
+  var avatarCancelButton = null;
 
   function resolveContactsDomRefs() {
     if (typeof document === 'undefined') return;
@@ -12384,6 +12388,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
     avatarEditCancelButton = avatarEditCancelButton || document.getElementById('avatarEditCancel');
     avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
+    avatarDropZone = avatarDropZone || document.getElementById('avatarDropZone');
+    avatarUploadInput = avatarUploadInput || document.getElementById('avatarUploadInput');
+    avatarSaveButton = avatarSaveButton || document.getElementById('avatarSaveButton');
+    avatarCancelButton = avatarCancelButton || document.getElementById('avatarCancelButton');
   }
 
   var monitoringConfigurationUserChanged = false;
@@ -13404,6 +13412,70 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     stopAvatarEditing({ restoreFocus: true });
   }
 
+  function handleAvatarDrop(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    if (file) {
+      processAvatarFile(file);
+    }
+  }
+
+  function handleAvatarDragOver(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.add('drag-over');
+  }
+
+  function handleAvatarDragLeave(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+  }
+
+  function handleAvatarUpload(event) {
+    const file = event.target && event.target.files && event.target.files[0];
+    if (file) {
+      processAvatarFile(file);
+    }
+    if (event.target) event.target.value = '';
+  }
+
+  function processAvatarFile(file) {
+    readAvatarFile(file, dataUrl => {
+      const fallbackName = typeof avatarOptionsContext?.getName === 'function' ? avatarOptionsContext.getName() : '';
+      updateAvatarOptionsPreview(dataUrl, fallbackName);
+
+      // Initialize edit state directly with the new image data
+      // This ensures the zoom slider works with the new image immediately
+      initializeAvatarEditState(dataUrl);
+
+    }, reason => {
+      announceContactsMessage(getContactsText('avatarReadError', 'Could not read image.'));
+    });
+  }
+
+  function handleAvatarSave() {
+    // If we have an active edit state (which we should if we loaded an image), export it.
+    if (avatarEditState && avatarEditState.active) {
+      const dataUrl = exportAvatarEditResult();
+      if (dataUrl && typeof avatarOptionsContext?.onEditSave === 'function') {
+        avatarOptionsContext.onEditSave(dataUrl);
+      }
+    } else {
+      // If no edit state (e.g. just opened and clicked save without touching anything),
+      // effectively no-op or save current.
+      // If we just uploaded a file but didn't trigger edit state (unlikely with my logic above),
+      // we might lose the upload.
+      // So ensuring startAvatarEditing is called on upload is key.
+    }
+    closeAvatarOptionsDialog();
+  }
+
   function handleAvatarOptionsDialogPointerDown(event) {
     if (!avatarOptionsDialog || !isDialogOpen(avatarOptionsDialog)) return;
     if (event && typeof event.button === 'number' && event.button !== 0) return;
@@ -14417,6 +14489,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarOptionsDialog?.addEventListener('close', handleAvatarOptionsDialogClosed);
     avatarOptionsDialog?.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
     avatarOptionsDeleteButton?.addEventListener('click', handleAvatarDeleteAction);
+
+    // New bindings
+    if (avatarDropZone) {
+      avatarDropZone.addEventListener('dragenter', handleAvatarDragOver);
+      avatarDropZone.addEventListener('dragover', handleAvatarDragOver);
+      avatarDropZone.addEventListener('dragleave', handleAvatarDragLeave);
+      avatarDropZone.addEventListener('drop', handleAvatarDrop);
+      avatarDropZone.addEventListener('click', () => avatarUploadInput && avatarUploadInput.click());
+    }
+    avatarUploadInput?.addEventListener('change', handleAvatarUpload);
+    avatarSaveButton?.addEventListener('click', handleAvatarSave);
+    avatarCancelButton?.addEventListener('click', () => closeAvatarOptionsDialog());
+
+    // Legacy/Existing bindings (some might be unused now but kept for safety)
     avatarOptionsChangeButton?.addEventListener('click', handleAvatarChangeAction);
     avatarOptionsEditButton?.addEventListener('click', handleAvatarEditAction);
     avatarEditCancelButton?.addEventListener('click', handleAvatarEditCancel);

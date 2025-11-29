@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="src/styles/print-preview.css" />
   <link rel="stylesheet" href="src/styles/overview.css" />
   <link rel="stylesheet" href="src/styles/onboarding-tour.css" />
+  <script src="src/scripts/data/pink-mode-animated-icons.js"></script>
   <script src="src/scripts/static-theme.js"></script>
   <link rel="icon" href="src/icons/Icon Bluenew.svg" type="image/svg+xml" />
   <link rel="icon" href="src/icons/app-icon.png" type="image/png" />
@@ -6131,52 +6132,59 @@
     </form>
   </dialog>
 
-  <dialog id="avatarOptionsDialog" class="app-modal" aria-labelledby="avatarOptionsTitle"
+  <dialog id="avatarOptionsDialog" class="app-modal avatar-options-dialog" aria-labelledby="avatarOptionsTitle"
     aria-describedby="avatarOptionsDescription">
     <form id="avatarOptionsForm" method="dialog" class="modal-surface avatar-options-surface">
       <header class="modal-header avatar-options-header">
         <div class="modal-header-main">
           <h2 id="avatarOptionsTitle" class="modal-title">Photo options</h2>
           <p id="avatarOptionsDescription" class="modal-description">
-            Preview this photo and choose how to update it.
+            Add a photo to make this contact easier to recognize.
           </p>
         </div>
-        <div class="modal-toolbar avatar-options-toolbar" role="group" aria-label="Photo options controls">
-          <button type="button" id="avatarOptionsClose" class="ghost-button">
+        <div class="modal-toolbar avatar-options-toolbar">
+          <button type="button" id="avatarOptionsClose" class="ghost-button" aria-label="Close">
             <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF131;</span>
-            <span id="avatarOptionsCloseLabel">Close</span>
           </button>
         </div>
       </header>
       <div class="modal-body avatar-options-body">
-        <div id="avatarOptionsPreview" class="avatar-options-preview contact-card-avatar" aria-hidden="true">
-          <div class="contact-card-avatar-visual"></div>
-        </div>
-        <section id="avatarEditSection" class="avatar-edit hidden" aria-labelledby="avatarEditTitle">
-          <h3 id="avatarEditTitle" class="avatar-edit-title">Adjust framing</h3>
-          <p id="avatarEditInstructions" class="avatar-edit-instructions">
-            Drag the photo to adjust the framing.
-          </p>
-          <div class="avatar-edit-stage">
-            <div id="avatarEditViewport" class="avatar-edit-viewport" tabindex="0" role="application"
-              aria-describedby="avatarEditInstructions">
-              <img id="avatarEditImage" alt="" draggable="false" />
+        <div class="avatar-options-content">
+          <div id="avatarDropZone" class="avatar-drop-zone">
+            <div class="avatar-preview-container">
+              <div id="avatarOptionsPreview" class="avatar-options-preview contact-card-avatar">
+                <div class="contact-card-avatar-visual"></div>
+                <img id="avatarPreviewImage" class="avatar-preview-image" alt="" aria-hidden="true" hidden />
+              </div>
             </div>
+            <div class="avatar-drop-instructions">
+              <span class="icon-glyph avatar-drop-icon" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>
+              <p class="avatar-drop-text">Drag and drop an image here</p>
+              <p class="avatar-drop-subtext">or click to upload</p>
+            </div>
+            <input type="file" id="avatarUploadInput" accept="image/png,image/jpeg,image/webp,image/gif"
+              class="visually-hidden" tabindex="-1" />
           </div>
-          <label class="avatar-edit-zoom" for="avatarEditZoom">
-            <span id="avatarEditZoomLabel">Zoom</span>
-            <input type="range" id="avatarEditZoom" min="100" max="250" step="5" value="100" />
-          </label>
-          <div class="avatar-edit-actions">
-            <button type="button" id="avatarEditCancel" class="secondary"></button>
-            <button type="button" id="avatarEditApply" class="primary"></button>
-          </div>
-        </section>
+
+          <section id="avatarEditSection" class="avatar-edit hidden" aria-labelledby="avatarEditTitle">
+            <div class="avatar-edit-controls">
+              <label class="avatar-edit-zoom" for="avatarEditZoom">
+                <span id="avatarEditZoomLabel" class="visually-hidden">Zoom</span>
+                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE862;</span>
+                <input type="range" id="avatarEditZoom" min="100" max="250" step="5" value="100"
+                  aria-label="Zoom image" />
+                <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE864;</span>
+              </label>
+            </div>
+          </section>
+        </div>
       </div>
       <footer class="modal-footer dialog-actions avatar-options-actions">
-        <button type="button" id="avatarDeleteButton" class="danger"></button>
-        <button type="button" id="avatarEditButton" class="secondary"></button>
-        <button type="button" id="avatarChangeButton" class="primary"></button>
+        <button type="button" id="avatarDeleteButton" class="danger-ghost">Remove photo</button>
+        <div class="avatar-options-primary-actions">
+          <button type="button" id="avatarCancelButton" class="secondary">Cancel</button>
+          <button type="submit" id="avatarSaveButton" class="primary">Save</button>
+        </div>
       </footer>
     </form>
   </dialog>
