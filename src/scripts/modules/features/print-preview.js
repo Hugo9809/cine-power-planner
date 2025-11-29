@@ -344,161 +344,160 @@
         if (sourceReq) {
             reqSection.innerHTML = sourceReq.innerHTML;
         } else reqSection.innerHTML = '<p><em>' + getText('printPreview.generatedNoProjectRequirements', 'No project requirements data.') + '</em></p>';
-    }
-    paper.appendChild(reqSection);
+        paper.appendChild(reqSection);
 
-    // 3. Device Selection (Rental Layout vs Standard)
-    const devSection = document.createElement('section');
-    devSection.id = 'preview-section-devices';
-    devSection.className = 'print-section';
-    devSection.innerHTML = '<h2>' + getText('printPreview.generatedDeviceSelectionTitle', 'Device Selection') + '</h2>';
+        // 3. Device Selection (Rental Layout vs Standard)
+        const devSection = document.createElement('section');
+        devSection.id = 'preview-section-devices';
+        devSection.className = 'print-section';
+        devSection.innerHTML = '<h2>' + getText('printPreview.generatedDeviceSelectionTitle', 'Device Selection') + '</h2>';
 
-    if (state.preferences.layout === 'rental') {
-        devSection.innerHTML += generateRentalDeviceGrid();
-    } else {
-        const sourceDevs = document.getElementById('overviewDeviceSection');
-        if (sourceDevs) {
-            devSection.innerHTML += sourceDevs.innerHTML;
+        if (state.preferences.layout === 'rental') {
+            devSection.innerHTML += generateRentalDeviceGrid();
         } else {
-            // Fallback attempt
-            const potentialCategories = document.querySelectorAll('.device-category');
-            if (potentialCategories.length > 0) {
-                potentialCategories.forEach(cat => {
-                    devSection.appendChild(cat.cloneNode(true));
-                });
+            const sourceDevs = document.getElementById('overviewDeviceSection');
+            if (sourceDevs) {
+                devSection.innerHTML += sourceDevs.innerHTML;
             } else {
-                devSection.innerHTML += '<p>' + getText('printPreview.generatedNoDevicesSelected', 'No devices selected.') + '</p>';
+                // Fallback attempt
+                const potentialCategories = document.querySelectorAll('.device-category');
+                if (potentialCategories.length > 0) {
+                    potentialCategories.forEach(cat => {
+                        devSection.appendChild(cat.cloneNode(true));
+                    });
+                } else {
+                    devSection.innerHTML += '<p>' + getText('printPreview.generatedNoDevicesSelected', 'No devices selected.') + '</p>';
+                }
             }
         }
-    }
-    paper.appendChild(devSection);
+        paper.appendChild(devSection);
 
-    // 4. Power Diagram
-    const diagSection = document.createElement('section');
-    diagSection.id = 'preview-section-diagram';
-    diagSection.className = 'print-section';
-    diagSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerDiagramTitle', 'Power Diagram') + '</h2>';
-    const sourceDiag = document.getElementById('setupDiagram');
-    if (sourceDiag) {
-        // Clone SVG or Canvas
-        const svg = sourceDiag.querySelector('svg');
-        if (svg) {
-            diagSection.appendChild(svg.cloneNode(true));
-        } else {
-            diagSection.innerHTML += sourceDiag.innerHTML;
+        // 4. Power Diagram
+        const diagSection = document.createElement('section');
+        diagSection.id = 'preview-section-diagram';
+        diagSection.className = 'print-section';
+        diagSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerDiagramTitle', 'Power Diagram') + '</h2>';
+        const sourceDiag = document.getElementById('setupDiagram');
+        if (sourceDiag) {
+            // Clone SVG or Canvas
+            const svg = sourceDiag.querySelector('svg');
+            if (svg) {
+                diagSection.appendChild(svg.cloneNode(true));
+            } else {
+                diagSection.innerHTML += sourceDiag.innerHTML;
+            }
         }
+        paper.appendChild(diagSection);
+
+        // 5. Power Summary
+        const powerSection = document.createElement('section');
+        powerSection.id = 'preview-section-battery'; // Using battery ID for toggle mapping
+        powerSection.className = 'print-section';
+        powerSection.style.marginTop = '20px';
+        powerSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerSummaryTitle', 'Power Summary') + '</h2>';
+        powerSection.innerHTML += generatePowerSummary();
+
+        // Also append Battery Comparison Table if needed, or just the summary
+        const sourceBatteryTable = document.getElementById('batteryComparison');
+        if (sourceBatteryTable) {
+            const batteryClone = sourceBatteryTable.cloneNode(true);
+            // Remove the heading from clone as we have our own section heading
+            const heading = batteryClone.querySelector('h2');
+            if (heading) heading.remove();
+            powerSection.appendChild(batteryClone);
+        }
+
+        paper.appendChild(powerSection);
+
+        // 6. Gear List
+        const gearSection = document.createElement('section');
+        gearSection.id = 'preview-section-gearList';
+        gearSection.className = 'print-section gear-list-section';
+        gearSection.innerHTML = '<h2>' + getText('printPreview.generatedGearListTitle', 'Gear List') + '</h2>';
+        const sourceGear = document.getElementById('gearListOutput');
+        if (sourceGear) {
+            gearSection.innerHTML += sourceGear.innerHTML;
+        }
+        paper.appendChild(gearSection);
+
+        updateSectionVisibility();
     }
-    paper.appendChild(diagSection);
-
-    // 5. Power Summary
-    const powerSection = document.createElement('section');
-    powerSection.id = 'preview-section-battery'; // Using battery ID for toggle mapping
-    powerSection.className = 'print-section';
-    powerSection.style.marginTop = '20px';
-    powerSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerSummaryTitle', 'Power Summary') + '</h2>';
-    powerSection.innerHTML += generatePowerSummary();
-
-    // Also append Battery Comparison Table if needed, or just the summary
-    const sourceBatteryTable = document.getElementById('batteryComparison');
-    if (sourceBatteryTable) {
-        const batteryClone = sourceBatteryTable.cloneNode(true);
-        // Remove the heading from clone as we have our own section heading
-        const heading = batteryClone.querySelector('h2');
-        if (heading) heading.remove();
-        powerSection.appendChild(batteryClone);
-    }
-
-    paper.appendChild(powerSection);
-
-    // 6. Gear List
-    const gearSection = document.createElement('section');
-    gearSection.id = 'preview-section-gearList';
-    gearSection.className = 'print-section gear-list-section';
-    gearSection.innerHTML = '<h2>' + getText('printPreview.generatedGearListTitle', 'Gear List') + '</h2>';
-    const sourceGear = document.getElementById('gearListOutput');
-    if (sourceGear) {
-        gearSection.innerHTML += sourceGear.innerHTML;
-    }
-    paper.appendChild(gearSection);
-
-    updateSectionVisibility();
-}
 
     function updateSectionVisibility() {
-    const map = {
-        project: 'preview-section-project',
-        devices: 'preview-section-devices',
-        diagram: 'preview-section-diagram',
-        gearList: 'preview-section-gearList',
-        battery: 'preview-section-battery'
+        const map = {
+            project: 'preview-section-project',
+            devices: 'preview-section-devices',
+            diagram: 'preview-section-diagram',
+            gearList: 'preview-section-gearList',
+            battery: 'preview-section-battery'
+        };
+
+        Object.entries(map).forEach(([key, id]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = state.preferences.sections[key] ? 'block' : 'none';
+            }
+        });
+    }
+
+    function openPreview() {
+        if (!state.elements.modal) initializeDomReferences();
+        if (!state.elements.modal) return;
+
+        // bindEvents() and localizeStaticContent() are called on init
+        // We re-render content to ensure it's fresh
+        renderPreviewContent();
+        state.elements.modal.classList.remove('hidden');
+        state.isOpen = true;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+        if (!state.elements.modal) return;
+        state.elements.modal.classList.add('hidden');
+        state.isOpen = false;
+        document.body.style.overflow = '';
+    }
+
+    function triggerNativePrint() {
+        document.body.classList.add('printing-preview');
+        window.print();
+        document.body.classList.remove('printing-preview');
+    }
+
+    // --- API ---
+    const api = {
+        open: openPreview,
+        close: closePreview
     };
 
-    Object.entries(map).forEach(([key, id]) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = state.preferences.sections[key] ? 'block' : 'none';
+    // --- Initialization ---
+    function init() {
+        if (initializeDomReferences()) {
+            bindEvents();
+            localizeStaticContent();
         }
-    });
-}
-
-function openPreview() {
-    if (!state.elements.modal) initializeDomReferences();
-    if (!state.elements.modal) return;
-
-    // bindEvents() and localizeStaticContent() are called on init
-    // We re-render content to ensure it's fresh
-    renderPreviewContent();
-    state.elements.modal.classList.remove('hidden');
-    state.isOpen = true;
-    document.body.style.overflow = 'hidden';
-}
-
-function closePreview() {
-    if (!state.elements.modal) return;
-    state.elements.modal.classList.add('hidden');
-    state.isOpen = false;
-    document.body.style.overflow = '';
-}
-
-function triggerNativePrint() {
-    document.body.classList.add('printing-preview');
-    window.print();
-    document.body.classList.remove('printing-preview');
-}
-
-// --- API ---
-const api = {
-    open: openPreview,
-    close: closePreview
-};
-
-// --- Initialization ---
-function init() {
-    if (initializeDomReferences()) {
-        bindEvents();
-        localizeStaticContent();
     }
-}
 
-if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+    if (typeof document !== 'undefined') {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     }
-}
 
-// --- Registration ---
-MODULE_BASE.registerOrQueueModule(
-    'cineFeaturePrintPreview',
-    api,
-    {
-        category: 'feature',
-        description: 'Print Preview Modal',
-        connections: ['cineUi']
-    }
-);
+    // --- Registration ---
+    MODULE_BASE.registerOrQueueModule(
+        'cineFeaturePrintPreview',
+        api,
+        {
+            category: 'feature',
+            description: 'Print Preview Modal',
+            connections: ['cineUi']
+        }
+    );
 
-MODULE_BASE.exposeGlobal('cineFeaturePrintPreview', api);
+    MODULE_BASE.exposeGlobal('cineFeaturePrintPreview', api);
 
-}) ();
+})();
