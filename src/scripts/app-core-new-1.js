@@ -7791,7 +7791,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const resolvedSaved = resolveLanguagePreference(savedLang);
     if (savedLang && resolvedSaved.matched) {
       currentLang = resolvedSaved.language;
-    } else if (typeof navigator !== "undefined") {
+    }
+    // Auto-detection disabled to enforce English default
+    /* else if (typeof navigator !== "undefined") {
       const navLangs = Array.isArray(navigator.languages)
         ? navigator.languages
         : [navigator.language];
@@ -7802,7 +7804,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           break;
         }
       }
-    }
+    } */
   } catch (e) {
     console.warn("Could not load language from localStorage", e);
   }
@@ -12315,19 +12317,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var avatarOptionsDeleteButton = null;
   var avatarOptionsEditButton = null;
   var avatarOptionsChangeButton = null;
-  var avatarEditSection = null;
-  var avatarEditTitle = null;
-  var avatarEditInstructions = null;
   var avatarEditViewport = null;
   var avatarEditImage = null;
+  var avatarPlaceholder = null;
+  var avatarControls = null;
   var avatarEditZoomInput = null;
   var avatarEditZoomLabelElem = null;
-  var avatarEditCancelButton = null;
-  var avatarEditApplyButton = null;
   var avatarOptionsContext = null;
   var avatarEditState = null;
   var avatarEditLastViewportSize = 0;
-  var avatarDropZone = null;
   var avatarUploadInput = null;
   var avatarSaveButton = null;
   var avatarCancelButton = null;
@@ -12375,20 +12373,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       avatarOptionsDescriptionElem || document.getElementById('avatarOptionsDescription');
     avatarOptionsCloseButton = avatarOptionsCloseButton || document.getElementById('avatarOptionsClose');
     avatarOptionsCloseLabel = avatarOptionsCloseLabel || document.getElementById('avatarOptionsCloseLabel');
-    avatarOptionsPreview = avatarOptionsPreview || document.getElementById('avatarOptionsPreview');
-    avatarOptionsDeleteButton = avatarOptionsDeleteButton || document.getElementById('avatarDeleteButton');
-    avatarOptionsEditButton = avatarOptionsEditButton || document.getElementById('avatarEditButton');
-    avatarOptionsChangeButton = avatarOptionsChangeButton || document.getElementById('avatarChangeButton');
-    avatarEditSection = avatarEditSection || document.getElementById('avatarEditSection');
-    avatarEditTitle = avatarEditTitle || document.getElementById('avatarEditTitle');
-    avatarEditInstructions = avatarEditInstructions || document.getElementById('avatarEditInstructions');
     avatarEditViewport = avatarEditViewport || document.getElementById('avatarEditViewport');
     avatarEditImage = avatarEditImage || document.getElementById('avatarEditImage');
+    avatarPlaceholder = avatarPlaceholder || document.getElementById('avatarPlaceholder');
+    avatarControls = avatarControls || document.getElementById('avatarControls');
     avatarEditZoomInput = avatarEditZoomInput || document.getElementById('avatarEditZoom');
     avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
-    avatarEditCancelButton = avatarEditCancelButton || document.getElementById('avatarEditCancel');
-    avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
-    avatarDropZone = avatarDropZone || document.getElementById('avatarDropZone');
     avatarUploadInput = avatarUploadInput || document.getElementById('avatarUploadInput');
     avatarSaveButton = avatarSaveButton || document.getElementById('avatarSaveButton');
     avatarCancelButton = avatarCancelButton || document.getElementById('avatarCancelButton');
@@ -13044,7 +13034,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       ? avatarOptionsContext.getName()
       : '';
     updateAvatarOptionsPreview(currentAvatar, fallbackName);
-    refreshAvatarOptionsActions();
+    updateAvatarOptionsPreview(currentAvatar, fallbackName);
+    // refreshAvatarOptionsActions();
   }
 
   function closeAvatarOptionsDialog() {
@@ -13067,7 +13058,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const fallbackName = typeof context?.getName === 'function' ? context.getName() : '';
     updateAvatarOptionsPreview(avatarValue, fallbackName);
     stopAvatarEditing();
-    refreshAvatarOptionsActions();
+    stopAvatarEditing();
+    // refreshAvatarOptionsActions();
     openDialog(avatarOptionsDialog);
     if (avatarOptionsChangeButton && !avatarOptionsChangeButton.disabled) {
       try {
@@ -13108,13 +13100,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     let restoreHidden = false;
     let previousVisibility = '';
     let previousPointerEvents = '';
-    if (avatarEditSection && avatarEditSection.classList.contains('hidden')) {
+    if (avatarEditViewport && avatarEditViewport.classList.contains('hidden')) {
       restoreHidden = true;
-      previousVisibility = avatarEditSection.style.visibility || '';
-      previousPointerEvents = avatarEditSection.style.pointerEvents || '';
-      avatarEditSection.style.visibility = 'hidden';
-      avatarEditSection.style.pointerEvents = 'none';
-      avatarEditSection.classList.remove('hidden');
+      previousVisibility = avatarEditViewport.style.visibility || '';
+      previousPointerEvents = avatarEditViewport.style.pointerEvents || '';
+      avatarEditViewport.style.visibility = 'hidden';
+      avatarEditViewport.style.pointerEvents = 'none';
+      avatarEditViewport.classList.remove('hidden');
     }
     let viewportSize = 0;
     try {
@@ -13127,10 +13119,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         )
       );
     } finally {
-      if (restoreHidden && avatarEditSection) {
-        avatarEditSection.classList.add('hidden');
-        avatarEditSection.style.visibility = previousVisibility;
-        avatarEditSection.style.pointerEvents = previousPointerEvents;
+      if (restoreHidden && avatarEditViewport) {
+        avatarEditViewport.classList.add('hidden');
+        avatarEditViewport.style.visibility = previousVisibility;
+        avatarEditViewport.style.pointerEvents = previousPointerEvents;
       }
     }
     if (!viewportSize && avatarEditLastViewportSize) {
@@ -13185,12 +13177,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         displayHeight: 0
       };
       avatarEditImage.src = dataUrl;
-      avatarEditSection?.classList.remove('hidden');
+
+      // Unified Interface Updates
+      if (avatarEditViewport) avatarEditViewport.classList.add('has-image');
+      if (avatarControls) avatarControls.classList.remove('hidden');
+
       if (avatarEditZoomInput) {
         avatarEditZoomInput.value = '100';
       }
       updateAvatarEditMetrics(avatarEditState);
-      refreshAvatarOptionsActions();
+      // refreshAvatarOptionsActions(); // Removed as actions are simplified
       try {
         avatarEditViewport.focus();
       } catch (error) {
@@ -13205,8 +13201,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
   function startAvatarEditing() {
     const avatarValue = typeof avatarOptionsContext?.getAvatar === 'function' ? avatarOptionsContext.getAvatar() : '';
+
+    // Reset UI state
+    resolveContactsDomRefs();
+    if (avatarEditViewport) avatarEditViewport.classList.remove('has-image');
+    if (avatarControls) avatarControls.classList.add('hidden');
+    if (avatarEditImage) {
+      avatarEditImage.src = '';
+      avatarEditImage.removeAttribute('style');
+    }
+
     if (!avatarValue) {
-      announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
+      // No avatar, just show placeholder (handled by CSS via missing .has-image)
       return;
     }
     initializeAvatarEditState(avatarValue);
@@ -13392,7 +13398,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const avatarValue = typeof avatarOptionsContext?.getAvatar === 'function' ? avatarOptionsContext.getAvatar() : '';
     const fallbackName = typeof avatarOptionsContext?.getName === 'function' ? avatarOptionsContext.getName() : '';
     updateAvatarOptionsPreview(avatarValue, fallbackName);
-    refreshAvatarOptionsActions();
+    updateAvatarOptionsPreview(avatarValue, fallbackName);
+    // refreshAvatarOptionsActions();
     if (!avatarValue) {
       closeAvatarOptionsDialog();
     }
@@ -13416,7 +13423,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.remove('drag-over');
     const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
     if (file) {
       processAvatarFile(file);
@@ -13427,14 +13434,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.add('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.add('drag-over');
   }
 
   function handleAvatarDragLeave(event) {
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.remove('drag-over');
   }
 
   function handleAvatarUpload(event) {
@@ -14488,32 +14495,32 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     avatarOptionsDialog?.addEventListener('close', handleAvatarOptionsDialogClosed);
     avatarOptionsDialog?.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
-    avatarOptionsDeleteButton?.addEventListener('click', handleAvatarDeleteAction);
+    avatarOptionsDialog?.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
+    // avatarOptionsDeleteButton?.addEventListener('click', handleAvatarDeleteAction); // Removed from UI
 
     // New bindings
-    if (avatarDropZone) {
-      avatarDropZone.addEventListener('dragenter', handleAvatarDragOver);
-      avatarDropZone.addEventListener('dragover', handleAvatarDragOver);
-      avatarDropZone.addEventListener('dragleave', handleAvatarDragLeave);
-      avatarDropZone.addEventListener('drop', handleAvatarDrop);
-      avatarDropZone.addEventListener('click', () => avatarUploadInput && avatarUploadInput.click());
+    // Unified Interface Bindings
+    if (avatarEditViewport) {
+      avatarEditViewport.addEventListener('dragenter', handleAvatarDragOver);
+      avatarEditViewport.addEventListener('dragover', handleAvatarDragOver);
+      avatarEditViewport.addEventListener('dragleave', handleAvatarDragLeave);
+      avatarEditViewport.addEventListener('drop', handleAvatarDrop);
+      avatarEditViewport.addEventListener('click', () => avatarUploadInput && avatarUploadInput.click());
+
+      // Pointer events for panning
+      avatarEditViewport.addEventListener('pointerdown', handleAvatarEditPointerDown);
+      avatarEditViewport.addEventListener('pointermove', handleAvatarEditPointerMove);
+      avatarEditViewport.addEventListener('pointerup', handleAvatarEditPointerUp);
+      avatarEditViewport.addEventListener('pointercancel', handleAvatarEditPointerCancel);
+      avatarEditViewport.addEventListener('keydown', handleAvatarEditKeyDown);
     }
+
     avatarUploadInput?.addEventListener('change', handleAvatarUpload);
     avatarSaveButton?.addEventListener('click', handleAvatarSave);
     avatarCancelButton?.addEventListener('click', () => closeAvatarOptionsDialog());
 
-    // Legacy/Existing bindings (some might be unused now but kept for safety)
-    avatarOptionsChangeButton?.addEventListener('click', handleAvatarChangeAction);
-    avatarOptionsEditButton?.addEventListener('click', handleAvatarEditAction);
-    avatarEditCancelButton?.addEventListener('click', handleAvatarEditCancel);
-    avatarEditApplyButton?.addEventListener('click', applyAvatarEditChanges);
     avatarEditZoomInput?.addEventListener('input', handleAvatarEditZoomInputChange);
     avatarEditZoomInput?.addEventListener('change', handleAvatarEditZoomInputChange);
-    avatarEditViewport?.addEventListener('pointerdown', handleAvatarEditPointerDown);
-    avatarEditViewport?.addEventListener('pointermove', handleAvatarEditPointerMove);
-    avatarEditViewport?.addEventListener('pointerup', handleAvatarEditPointerUp);
-    avatarEditViewport?.addEventListener('pointercancel', handleAvatarEditPointerCancel);
-    avatarEditViewport?.addEventListener('keydown', handleAvatarEditKeyDown);
 
     contactsCloseButton?.addEventListener('click', () => closeDialog(contactsDialog));
 

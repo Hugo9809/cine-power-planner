@@ -29,6 +29,7 @@ let cachedCacheName = null;
 let cachedCacheVersion = null;
 let navigationPreloadUnavailable = false;
 let navigationPreloadUnavailableLogged = false;
+let forceReloadUntil = 0;
 
 if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
   try {
@@ -770,6 +771,10 @@ function shouldBypassCache(request, requestUrl) {
     return true;
   }
 
+  if (Date.now() < forceReloadUntil) {
+    return true;
+  }
+
   return false;
 }
 
@@ -1002,6 +1007,13 @@ if (typeof self !== 'undefined') {
     }
 
     const isNavigationRequest = event.request.mode === 'navigate';
+
+    if (isNavigationRequest) {
+      const url = new URL(event.request.url);
+      if (url.searchParams.has('forceReload')) {
+        forceReloadUntil = Date.now() + 10000;
+      }
+    }
 
     const requestUrl = new URL(event.request.url);
     const isSameOrigin = requestUrl.origin === self.location.origin;

@@ -152,6 +152,7 @@
       <li><a href="#batteryComparison" data-nav-key="batteryComparisonHeading">Battery Comparison</a></li>
       <li><a href="#projectRequirementsOutput" data-nav-key="projectRequirementsNav">Project Requirements</a></li>
       <li><a href="#gearListOutput" data-nav-key="gearListNav">Gear List</a></li>
+      <li class="sidebar-divider" role="separator" aria-hidden="true"></li>
       <li>
         <button type="button" id="openContactsBtn" data-nav-key="contactsNav" data-sidebar-action="open-contacts"
           aria-haspopup="dialog" aria-controls="contactsDialog">
@@ -6417,37 +6418,28 @@
       </header>
       <div class="modal-body avatar-options-body">
         <div class="avatar-options-content">
-          <div id="avatarDropZone" class="avatar-drop-zone">
-            <div class="avatar-preview-container">
-              <div id="avatarOptionsPreview" class="avatar-options-preview contact-card-avatar">
-                <div class="contact-card-avatar-visual"></div>
-                <img id="avatarPreviewImage" class="avatar-preview-image" alt="" aria-hidden="true" hidden />
+          <div class="avatar-stage">
+            <div id="avatarEditViewport" class="avatar-viewport">
+              <img id="avatarEditImage" class="avatar-image" alt="" draggable="false" />
+              <div id="avatarPlaceholder" class="avatar-placeholder">
+                <span class="icon-glyph avatar-placeholder-icon" aria-hidden="true"
+                  data-icon-font="uicons">&#xE7C7;</span>
+                <p class="avatar-placeholder-text">Drop or click to upload</p>
               </div>
+              <!-- Hidden input for click-to-upload -->
+              <input type="file" id="avatarUploadInput" accept="image/png,image/jpeg,image/webp,image/gif"
+                class="visually-hidden" tabindex="-1" />
             </div>
-            <div class="avatar-drop-instructions">
-              <span class="icon-glyph avatar-drop-icon" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>
-              <p class="avatar-drop-text">Drag and drop an image here</p>
-              <p class="avatar-drop-subtext">or click to upload</p>
-            </div>
-            <input type="file" id="avatarUploadInput" accept="image/png,image/jpeg,image/webp,image/gif"
-              class="visually-hidden" tabindex="-1" />
-          </div>
 
-          <section id="avatarEditSection" class="avatar-edit hidden" aria-labelledby="avatarEditTitle">
-            <div id="avatarEditViewport" class="avatar-edit-viewport">
-              <img id="avatarEditImage" class="avatar-edit-image" alt="" draggable="false" />
-              <div class="avatar-viewport-mask"></div>
-            </div>
-            <div class="avatar-edit-controls">
-              <label class="avatar-edit-zoom" for="avatarEditZoom">
-                <span id="avatarEditZoomLabel" class="visually-hidden">Zoom</span>
+            <div id="avatarControls" class="avatar-controls hidden">
+              <label class="avatar-zoom-control" for="avatarEditZoom">
                 <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE862;</span>
-                <input type="range" id="avatarEditZoom" min="100" max="250" step="5" value="100"
+                <input type="range" id="avatarEditZoom" min="50" max="250" step="5" value="100"
                   aria-label="Zoom image" />
                 <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE864;</span>
               </label>
             </div>
-          </section>
+          </div>
         </div>
       </div>
       <footer class="modal-footer dialog-actions avatar-options-actions">

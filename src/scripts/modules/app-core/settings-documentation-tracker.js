@@ -544,9 +544,10 @@
         const locale =
           typeof currentLanguage === 'string' && currentLanguage
             ? currentLanguage
-            : (typeof navigator !== 'undefined' && navigator && navigator.language)
-              ? navigator.language
-              : 'en';
+            : 'en';
+        /* : (typeof navigator !== 'undefined' && navigator && navigator.language)
+          ? navigator.language
+          : 'en'; */
         const formatOptions = includeTime && !dateOnly
           ? { dateStyle: 'medium', timeStyle: 'short' }
           : { dateStyle: 'medium' };
@@ -736,8 +737,8 @@
         config.items.forEach(item => {
           const status =
             release.statuses &&
-            release.statuses[sectionKey] &&
-            release.statuses[sectionKey][item.id]
+              release.statuses[sectionKey] &&
+              release.statuses[sectionKey][item.id]
               ? release.statuses[sectionKey][item.id]
               : { completed: false, updatedAt: null };
           const itemId = `${idPrefix}-${sectionKey}-${item.id}-${release.id}`;

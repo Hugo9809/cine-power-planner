@@ -2015,7 +2015,7 @@
       "hideDeviceManagerHelp": "Close the device database editor and return to normal mode.",
       "zoomInLabel": "Zoom in",
       "zoomOutLabel": "Zoom out",
-      "diagramHoverNotice": "Click me for more information!",
+      "diagramHoverNotice": "Double click for details",
       "diagramDetailBackLabel": "Back",
       "diagramDetailDefaultHeading": "Diagram details",
       "diagramMoveHint": "Drag nodes to rearrange; drag empty space to pan."

@@ -1649,8 +1649,8 @@
 
         if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
           // Position next to the mouse cursor
-          left = pointer.x + margin;
-          top = pointer.y + margin;
+          left = pointer.x + 15;
+          top = pointer.y + 15;
 
           // Keep within viewport bounds
           if (viewportWidth) {

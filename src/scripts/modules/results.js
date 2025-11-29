@@ -2159,9 +2159,9 @@
     if (!lang && doc && doc.documentElement && typeof doc.documentElement.lang === 'string') {
       lang = doc.documentElement.lang;
     }
-    if (!lang && typeof navigator !== 'undefined' && navigator && typeof navigator.language === 'string') {
+    /* if (!lang && typeof navigator !== 'undefined' && navigator && typeof navigator.language === 'string') {
       lang = navigator.language;
-    }
+    } */
     if (typeof lang !== 'string' || !lang) {
       return 'en';
     }

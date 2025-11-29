@@ -729,18 +729,50 @@ textarea {
 .status-message--note,
 .status-message--warning,
 .status-message--danger {
-  padding: 0.5em 0.75em;
+  padding: 0.75em 1em;
   border-radius: var(--border-radius);
-  border: 1px solid var(--status-border-color);
+  border: none;
   background-color: var(--panel-bg);
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.status-message--warning::before,
+.status-message--danger::before {
+  content: "\F26F";
+  font-family: 'EssentialIconsV2';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: 1.25em;
+  flex-shrink: 0;
+  margin-top: 0.1em;
+}
+
+.status-message--note::before {
+  content: "\F13E";
+  font-family: 'EssentialIconsV2';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: 1.25em;
+  flex-shrink: 0;
+  margin-top: 0.1em;
 }
 
 #results #pinWarning,
 #results #dtapWarning,
 #results #hotswapWarning {
-  display: inline-block;
-  max-width: min(36rem, 100%);
+  display: flex;
+  max-width: 100%;
 }
 
 .status-message--info {
@@ -9921,17 +9953,24 @@ body.light-mode #topBar select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   text-align: center;
-  padding: 0.75rem 1rem;
-  min-width: 200px;
+  padding: 0.4rem 0.75rem;
+  width: fit-content;
+  min-width: 0;
+  max-width: 200px;
   pointer-events: none;
+  border-radius: 6px;
+  background: var(--surface-elevated, #fff);
+  border: 1px solid var(--panel-border, #eee);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .diagram-popup-notice {
-  font-size: var(--font-size-diagram-text);
-  line-height: 1.4;
+  font-size: calc(var(--font-size-diagram-text) * 0.9);
+  line-height: 1.3;
   margin: 0;
+  white-space: nowrap;
 }
 
 .diagram-popup[data-columns="1"] {
@@ -13139,49 +13178,23 @@ body.dark-mode.pink-mode #gearListOutput h2,
 }
 
 /* Sidebar menu */
+/* Sidebar menu */
 #menuToggle {
   background: none;
   border: none;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
-}
-
-#sideMenu .sidebar-header {
-  display: none;
-}
-
-#sideMenuTitle {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
-  margin: 0;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.01em;
-}
-
-#sideMenu .sidebar-close {
-  display: inline-flex;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-color);
-  font: inherit;
-  cursor: pointer;
-  border-radius: 50%;
-  min-width: 40px;
-  min-height: 40px;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-#sideMenu .sidebar-close:hover {
+#menuToggle:hover {
+  background-color: var(--control-hover-bg);
   color: var(--accent-color);
-  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
-}
-
-#sideMenu .sidebar-close:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-  background: color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 
 #sideMenu {
@@ -13189,16 +13202,15 @@ body.dark-mode.pink-mode #gearListOutput h2,
   top: 0;
   right: 0;
   height: 100%;
-  width: 300px;
-  background: var(--surface-color);
-  background: color-mix(in srgb, var(--surface-color) 90%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.12);
-  padding: calc(var(--page-padding) + 15px);
-  padding-left: calc(var(--page-padding) + 25px);
+  width: 340px;
+  max-width: 85vw;
+  background: color-mix(in srgb, var(--surface-color) 85%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+  padding: 0;
   z-index: 200;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
   transform: translateX(100%);
   display: flex;
   flex-direction: column;
@@ -13209,34 +13221,77 @@ body.dark-mode.pink-mode #gearListOutput h2,
   transform: translateX(0);
 }
 
+#sideMenu .sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  margin-bottom: 8px;
+}
+
+#sideMenuTitle {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-color);
+}
+
+#sideMenu .sidebar-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+#sideMenu .sidebar-close:hover {
+  background-color: var(--control-hover-bg);
+  color: var(--accent-color);
+  transform: rotate(90deg);
+}
+
+#sideMenu .sidebar-close:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+#sideMenu .sidebar-controls {
+  padding: 0 24px;
+  margin-bottom: 16px;
+}
+
 #sideMenu ul {
   list-style: none;
-  padding: 0;
-  margin: 10px 0;
+  padding: 0 12px;
+  margin: 0;
   border: none;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 16px;
+  /* Bottom padding for scrolling */
 }
 
 #sideMenu li {
   margin: 0;
 }
 
-#sideMenu li+li {
-  border: none;
-}
-
 #sideMenu li.sidebar-divider {
   height: 1px;
   background: color-mix(in srgb, var(--panel-border) 60%, transparent);
-  margin: 12px 4px;
-  padding: 0;
+  margin: 6px 4px;
   width: auto;
-}
-
-#sideMenu li.sidebar-divider+li {
-  border-top: none;
 }
 
 #sideMenu a,
@@ -13244,37 +13299,54 @@ body.dark-mode.pink-mode #gearListOutput h2,
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: transparent;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--text-color);
   text-decoration: none;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
-  font-weight: var(--font-weight-medium);
+  font-size: 0.95rem;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
   user-select: none;
+  gap: 10px;
+  min-height: 36px;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 #sideMenu a:hover,
 #sideMenu button[data-sidebar-action]:hover {
+  background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
   color: var(--accent-color);
-  background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+  transform: translateX(4px);
 }
 
 #sideMenu a:active,
 #sideMenu button[data-sidebar-action]:active {
-  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-  transform: scale(0.98);
+  background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+  transform: translateX(2px) scale(0.98);
 }
 
 #sideMenu a:focus-visible,
 #sideMenu button[data-sidebar-action]:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: -2px;
-  background: color-mix(in srgb, var(--accent-color) 5%, transparent);
+  background-color: color-mix(in srgb, var(--accent-color) 5%, transparent);
+}
+
+/* Icons in menu items if present (future proofing) */
+#sideMenu a .icon-glyph,
+#sideMenu button .icon-glyph {
+  font-size: 1.2em;
+  opacity: 0.8;
+}
+
+#sideMenu a:hover .icon-glyph,
+#sideMenu button:hover .icon-glyph {
+  opacity: 1;
 }
 
 /* Remove old borders for light/dark modes as we use gap and hover bg now */
@@ -13545,90 +13617,123 @@ body.menu-open #menuOverlay {
   padding: var(--spacing-4);
 }
 
-.avatar-options-content {
-  width: 100%;
+/* Avatar Unified Interface */
+.avatar-stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: 24px;
+  width: 100%;
+  padding: 12px 0;
 }
 
-.avatar-drop-zone {
-  width: 100%;
-  max-width: 320px;
-  height: 200px;
-  border: 2px dashed var(--avatar-drop-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--avatar-drop-bg);
+.avatar-viewport {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-color-secondary);
+  border: 4px solid var(--border-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  /* Indicates clickable for upload */
+}
+
+.avatar-viewport.drag-over {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+}
+
+.avatar-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  /* Initial transform set by JS, but centered by default */
+  transform: translate(-50%, -50%) scale(1);
+  max-width: none;
+  /* Allow scaling beyond container */
+  /* Prevent user selection/dragging of the image element itself */
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  /* Let events pass to viewport for panning */
+}
+
+/* When editing is active (image loaded), viewport handles panning */
+.avatar-viewport.has-image {
+  cursor: grab;
+}
+
+.avatar-viewport.has-image:active {
+  cursor: grabbing;
+}
+
+.avatar-placeholder {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-3);
-  cursor: pointer;
-  transition: all var(--duration-short) var(--easing-standard);
-  position: relative;
-  overflow: hidden;
+  background-color: var(--bg-color-secondary);
+  color: var(--text-secondary);
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
+  /* Allow clicks to pass through to viewport */
 }
 
-.avatar-drop-zone:hover,
-.avatar-drop-zone.drag-over {
-  background-color: var(--avatar-drop-hover);
-  border-color: var(--avatar-drop-hover-border);
-}
-
-.avatar-drop-instructions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  color: var(--on-surface-variant);
+.avatar-viewport.has-image .avatar-placeholder {
+  opacity: 0;
   pointer-events: none;
 }
 
-.avatar-drop-icon {
-  font-size: 32px;
-  margin-bottom: var(--spacing-2);
-  color: var(--primary);
-}
+/* Show placeholder on hover even if image exists (optional hint) 
+   or just keep it hidden. Let's keep it simple: hidden if image exists.
+*/
 
-.avatar-drop-text {
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-body-large);
-}
-
-.avatar-drop-subtext {
-  margin: 0;
+.avatar-placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: var(--primary-color);
   opacity: 0.8;
 }
 
-/* Edit Section (Zoom) */
-.avatar-edit {
+.avatar-placeholder-text {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.avatar-controls {
   width: 100%;
+  max-width: 280px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.avatar-controls.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  /* Use display: none to remove from flow if needed, but opacity is smoother */
+  display: none;
+}
+
+.avatar-zoom-control {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--divider-color);
+  gap: 12px;
+  color: var(--text-secondary);
 }
 
-.avatar-edit-controls {
-  width: 100%;
-  max-width: 240px;
-}
-
-.avatar-edit-zoom {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  width: 100%;
-  color: var(--text-muted);
-}
-
-.avatar-edit-zoom input[type="range"] {
+.avatar-zoom-control input[type="range"] {
   flex: 1;
-  accent-color: var(--accent-color);
+  cursor: pointer;
 }
 
 /* Footer Actions */

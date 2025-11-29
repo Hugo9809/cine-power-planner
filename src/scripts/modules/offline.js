@@ -1381,7 +1381,7 @@
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
 
-    const requestMode = 'cors';
+    const requestMode = 'same-origin';
 
     const warmupCredentials = (() => {
       if (!includeCredentials) {
@@ -1594,13 +1594,7 @@
           void responseTypeError;
         }
 
-        try {
-          const cacheDirective = allowCachePopulation ? 'no-cache' : 'no-store';
-          xhrInstance.setRequestHeader('Cache-Control', cacheDirective);
-          xhrInstance.setRequestHeader('Pragma', cacheDirective);
-        } catch (headerError) {
-          void headerError;
-        }
+
 
         try {
           xhrInstance.send(null);
@@ -1717,7 +1711,7 @@
 
     const warmupTask = executeWarmup();
     if (warmupTask && typeof warmupTask.catch === 'function') {
-      warmupTask.catch(() => {});
+      warmupTask.catch(() => { });
     }
 
     return {
@@ -2318,7 +2312,7 @@
 
   function subscribeConnectivityStatus(listener) {
     if (typeof listener !== 'function') {
-      return function unsubscribeNoop() {};
+      return function unsubscribeNoop() { };
     }
 
     connectivityListeners.add(listener);
