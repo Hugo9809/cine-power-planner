@@ -11829,7 +11829,7 @@ function gearListGenerateHtmlImpl(info = {}) {
         const extraAttr = extraAttrParts.length ? ` ${extraAttrParts.join(' ')}` : '';
         return `<span class="gear-item" data-gear-name="${safeDataName}"${quantityAttr}${labelAttr}${attributesAttr}${noteAttr}${extraAttr}><span class="gear-item-text">${escapeHtml(textContent)}</span><span class="gear-item-note" hidden></span></span>`;
       })
-      .join('<br>');
+      .join('');
   };
   const wrapGearItemHtml = (contentHtml, options = {}) => {
     if (!contentHtml) return '';
@@ -11931,7 +11931,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       extraAttributes: cageExtraAttributes,
     });
   }
-  addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
+  addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join(''));
   const storageGearListItems = Array.isArray(info.storageRequirements)
     ? info.storageRequirements
       .map(entry => {
@@ -13109,7 +13109,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     const rows = items
       .map((item, index) => buildCartItemHtml(item, index))
       .filter(Boolean);
-    return rows.join('<br>');
+    return rows.join('');
   }
 
   const cartsTransportationItems = [];
@@ -13251,7 +13251,7 @@ function gearListGenerateHtmlImpl(info = {}) {
   ensureItems(powerItems, 'accessories.power');
   addRow('Power', formatItems(powerItems));
   const gripItemsHtml = formatItems(gripItems, { onItem: applyCameraLinkFromTargets });
-  addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join('<br>'));
+  addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join(''));
   const cartRowHtml = buildCartRowsHtml(cartsTransportationItems);
   addRow('Carts and Transportation', cartRowHtml || formatItems(cartsTransportationItems));
   const miscExcluded = new Set([
@@ -13386,7 +13386,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     const labelAttr = ' data-gear-label="Pro Gaff Tape"';
     const textHtml = `${escapeHtml(String(proGaffCount))}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select>`;
     return `<span class="gear-item" data-gear-name="Pro Gaff Tape"${quantityAttr}${labelAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`;
-  }).join('<br>');
+  }).join('');
   let eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     const colors = [
@@ -13410,7 +13410,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large"${quantityAttr}${labelAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`;
   }
   addRow('Miscellaneous', formatItems(miscItems));
-  addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
+  addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join(''));
   let body = `<h2>${projectTitle}</h2>`;
   if (infoHtml) body += infoHtml;
   const tableHtml = '<table class="gear-table">' + categoryGroups.join('') + '</table>';
