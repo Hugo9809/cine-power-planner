@@ -10163,6 +10163,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var avatarOptionsContext = null;
   var avatarEditState = null;
   var avatarEditLastViewportSize = 0;
+  var avatarDropZone = null;
+  var avatarUploadInput = null;
+  var avatarSaveButton = null;
+  var avatarCancelButton = null;
   function resolveContactsDomRefs() {
     if (typeof document === 'undefined') return;
     contactsDialog = contactsDialog || document.getElementById('contactsDialog');
@@ -10216,6 +10220,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
     avatarEditCancelButton = avatarEditCancelButton || document.getElementById('avatarEditCancel');
     avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
+    avatarDropZone = avatarDropZone || document.getElementById('avatarDropZone');
+    avatarUploadInput = avatarUploadInput || document.getElementById('avatarUploadInput');
+    avatarSaveButton = avatarSaveButton || document.getElementById('avatarSaveButton');
+    avatarCancelButton = avatarCancelButton || document.getElementById('avatarCancelButton');
   }
   var monitoringConfigurationUserChanged = false;
   var crewRoles = ['DoP', 'Steadicam Operator', 'Camera Operator', 'B-Camera Operator', 'Drone Operator', 'DIT', '1st AC', '2nd AC', 'Video Operator', 'Key Grip', 'Dolly Grip', 'Best Boy Grip', 'Rigging Grip', 'Grip', 'Key Gaffer', 'Gaffer', 'Rigging Gaffer', 'Best Boy Electric', 'Electrician', 'Director', 'Assistant Director', 'Producer', 'Production Manager', 'Production Assistant'];
@@ -11126,6 +11134,55 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     stopAvatarEditing({
       restoreFocus: true
     });
+  }
+  function handleAvatarDrop(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    if (file) {
+      processAvatarFile(file);
+    }
+  }
+  function handleAvatarDragOver(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.add('drag-over');
+  }
+  function handleAvatarDragLeave(event) {
+    if (!event) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+  }
+  function handleAvatarUpload(event) {
+    var file = event.target && event.target.files && event.target.files[0];
+    if (file) {
+      processAvatarFile(file);
+    }
+    if (event.target) event.target.value = '';
+  }
+  function processAvatarFile(file) {
+    readAvatarFile(file, function (dataUrl) {
+      var _avatarOptionsContext1;
+      var fallbackName = typeof ((_avatarOptionsContext1 = avatarOptionsContext) === null || _avatarOptionsContext1 === void 0 ? void 0 : _avatarOptionsContext1.getName) === 'function' ? avatarOptionsContext.getName() : '';
+      updateAvatarOptionsPreview(dataUrl, fallbackName);
+      initializeAvatarEditState(dataUrl);
+    }, function (reason) {
+      announceContactsMessage(getContactsText('avatarReadError', 'Could not read image.'));
+    });
+  }
+  function handleAvatarSave() {
+    if (avatarEditState && avatarEditState.active) {
+      var _avatarOptionsContext10;
+      var dataUrl = exportAvatarEditResult();
+      if (dataUrl && typeof ((_avatarOptionsContext10 = avatarOptionsContext) === null || _avatarOptionsContext10 === void 0 ? void 0 : _avatarOptionsContext10.onEditSave) === 'function') {
+        avatarOptionsContext.onEditSave(dataUrl);
+      }
+    } else {}
+    closeAvatarOptionsDialog();
   }
   function handleAvatarOptionsDialogPointerDown(event) {
     if (!avatarOptionsDialog || !isDialogOpen(avatarOptionsDialog)) return;
@@ -12049,7 +12106,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     container.addEventListener('drop', handleDrop);
   }
   function initializeContactsModule() {
-    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDeleteB, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
+    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDeleteB, _avatarUploadInput, _avatarSaveButton, _avatarCancelButton, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
     resolveContactsDomRefs();
     if (contactsInitialized) return;
     contactsInitialized = true;
@@ -12159,6 +12216,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     (_avatarOptionsDialog2 = avatarOptionsDialog) === null || _avatarOptionsDialog2 === void 0 || _avatarOptionsDialog2.addEventListener('close', handleAvatarOptionsDialogClosed);
     (_avatarOptionsDialog3 = avatarOptionsDialog) === null || _avatarOptionsDialog3 === void 0 || _avatarOptionsDialog3.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
     (_avatarOptionsDeleteB = avatarOptionsDeleteButton) === null || _avatarOptionsDeleteB === void 0 || _avatarOptionsDeleteB.addEventListener('click', handleAvatarDeleteAction);
+    if (avatarDropZone) {
+      avatarDropZone.addEventListener('dragenter', handleAvatarDragOver);
+      avatarDropZone.addEventListener('dragover', handleAvatarDragOver);
+      avatarDropZone.addEventListener('dragleave', handleAvatarDragLeave);
+      avatarDropZone.addEventListener('drop', handleAvatarDrop);
+      avatarDropZone.addEventListener('click', function () {
+        return avatarUploadInput && avatarUploadInput.click();
+      });
+    }
+    (_avatarUploadInput = avatarUploadInput) === null || _avatarUploadInput === void 0 || _avatarUploadInput.addEventListener('change', handleAvatarUpload);
+    (_avatarSaveButton = avatarSaveButton) === null || _avatarSaveButton === void 0 || _avatarSaveButton.addEventListener('click', handleAvatarSave);
+    (_avatarCancelButton = avatarCancelButton) === null || _avatarCancelButton === void 0 || _avatarCancelButton.addEventListener('click', function () {
+      return closeAvatarOptionsDialog();
+    });
     (_avatarOptionsChangeB = avatarOptionsChangeButton) === null || _avatarOptionsChangeB === void 0 || _avatarOptionsChangeB.addEventListener('click', handleAvatarChangeAction);
     (_avatarOptionsEditBut = avatarOptionsEditButton) === null || _avatarOptionsEditBut === void 0 || _avatarOptionsEditBut.addEventListener('click', handleAvatarEditAction);
     (_avatarEditCancelButt = avatarEditCancelButton) === null || _avatarEditCancelButt === void 0 || _avatarEditCancelButt.addEventListener('click', handleAvatarEditCancel);
@@ -13060,6 +13131,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
   var currentPowerWarningKey = '';
   var dismissedPowerWarningKey = '';
+  function updatePowerSummary() {}
   function closePowerWarningDialog() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!powerWarningDialog) return;
@@ -18404,6 +18476,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
   exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
   exposeCoreRuntimeBindings({
+    updatePowerSummary: updatePowerSummary,
     drawPowerDiagram: drawPowerDiagram,
     safeGenerateConnectorSummary: {
       get: function get() {

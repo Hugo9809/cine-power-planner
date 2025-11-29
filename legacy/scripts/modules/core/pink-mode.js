@@ -730,7 +730,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return null;
           }).then(function (result) {
             console.log("[PinkMode] Asset loaded: ".concat(normalized, " -> ").concat(result ? 'Success' : 'Failed'));
-            if (!result) console.log("[PinkMode] Failed asset url was: ".concat(fallbackUrl));
             return result;
           }).finally(function () {
             pinkModeAssetTextPromiseCache.delete(normalized);
@@ -1285,6 +1284,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           pinkModeAnimatedIconTemplateOrder = templates.map(function (_, index) {
             return index;
           });
+          for (var i = pinkModeAnimatedIconTemplateOrder.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var _ref2 = [pinkModeAnimatedIconTemplateOrder[j], pinkModeAnimatedIconTemplateOrder[i]];
+            pinkModeAnimatedIconTemplateOrder[i] = _ref2[0];
+            pinkModeAnimatedIconTemplateOrder[j] = _ref2[1];
+          }
           pinkModeAnimatedIconTemplateCursor = 0;
         }
         function loadPinkModeAnimatedIconTemplates() {
@@ -1344,9 +1349,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           var startLoad = function startLoad() {
             setTimeout(function () {
-              loadPinkModeAnimatedIconTemplates().catch(function (error) {
-                console.warn('[PinkMode] Background icon preload failed', error);
-              });
+              var globalScope = detectGlobalScope();
+              var deferredPromise = globalScope && globalScope.cineDeferredScriptsReady;
+              if (deferredPromise && typeof deferredPromise.then === 'function') {
+                deferredPromise.then(function () {
+                  loadPinkModeAnimatedIconTemplates().catch(function (error) {
+                    console.warn('[PinkMode] Background icon preload failed', error);
+                  });
+                }).catch(function () {
+                  loadPinkModeAnimatedIconTemplates().catch(function (error) {
+                    console.warn('[PinkMode] Background icon preload failed (fallback)', error);
+                  });
+                });
+              } else {
+                loadPinkModeAnimatedIconTemplates().catch(function (error) {
+                  console.warn('[PinkMode] Background icon preload failed', error);
+                });
+              }
             }, 100);
           };
           if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -1863,23 +1882,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return true;
         }
-        function findPinkModeAnimationPlacement(_ref2) {
-          var layer = _ref2.layer,
-            hostRect = _ref2.hostRect,
-            hostTop = _ref2.hostTop,
-            visibleTop = _ref2.visibleTop,
-            visibleBottom = _ref2.visibleBottom,
-            horizontalPadding = _ref2.horizontalPadding,
-            verticalPadding = _ref2.verticalPadding,
-            hostWidth = _ref2.hostWidth,
-            size = _ref2.size,
-            avoidRegions = _ref2.avoidRegions,
-            _ref2$leftMarginExten = _ref2.leftMarginExtension,
-            leftMarginExtension = _ref2$leftMarginExten === void 0 ? 0 : _ref2$leftMarginExten,
-            _ref2$rightMarginExte = _ref2.rightMarginExtension,
-            rightMarginExtension = _ref2$rightMarginExte === void 0 ? 0 : _ref2$rightMarginExte,
-            _ref2$spotOptions = _ref2.spotOptions,
-            spotOptions = _ref2$spotOptions === void 0 ? null : _ref2$spotOptions;
+        function findPinkModeAnimationPlacement(_ref3) {
+          var layer = _ref3.layer,
+            hostRect = _ref3.hostRect,
+            hostTop = _ref3.hostTop,
+            visibleTop = _ref3.visibleTop,
+            visibleBottom = _ref3.visibleBottom,
+            horizontalPadding = _ref3.horizontalPadding,
+            verticalPadding = _ref3.verticalPadding,
+            hostWidth = _ref3.hostWidth,
+            size = _ref3.size,
+            avoidRegions = _ref3.avoidRegions,
+            _ref3$leftMarginExten = _ref3.leftMarginExtension,
+            leftMarginExtension = _ref3$leftMarginExten === void 0 ? 0 : _ref3$leftMarginExten,
+            _ref3$rightMarginExte = _ref3.rightMarginExtension,
+            rightMarginExtension = _ref3$rightMarginExte === void 0 ? 0 : _ref3$rightMarginExte,
+            _ref3$spotOptions = _ref3.spotOptions,
+            spotOptions = _ref3$spotOptions === void 0 ? null : _ref3$spotOptions;
           var minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
           var maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
           var marginLeft = Math.max(0, leftMarginExtension);
@@ -2552,6 +2571,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             startPinkModeAnimatedIcons: noop,
             stopPinkModeAnimatedIcons: noop,
             triggerPinkModeIconRain: noop,
+            startPinkModeIconPreload: noop,
             getPinkModeIconRotationTimer: getNull,
             setPinkModeIconRotationTimer: noop,
             getPinkModeIconIndex: getZero,
@@ -2571,7 +2591,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           if (typeof require === 'function') {
             try {
-              var required = require('./pink-mode-animations.js');
+              var required = require('modules/core/pink-mode-animations.js');
               if (isObject(required)) {
                 return required;
               }
@@ -2597,6 +2617,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             startPinkModeAnimatedIcons: typeof animations.startPinkModeAnimatedIcons === 'function' ? animations.startPinkModeAnimatedIcons : fallback.startPinkModeAnimatedIcons,
             stopPinkModeAnimatedIcons: typeof animations.stopPinkModeAnimatedIcons === 'function' ? animations.stopPinkModeAnimatedIcons : fallback.stopPinkModeAnimatedIcons,
             triggerPinkModeIconRain: typeof animations.triggerPinkModeIconRain === 'function' ? animations.triggerPinkModeIconRain : fallback.triggerPinkModeIconRain,
+            startPinkModeIconPreload: typeof animations.startPinkModeIconPreload === 'function' ? animations.startPinkModeIconPreload : fallback.startPinkModeIconPreload,
             getPinkModeIconRotationTimer: typeof animations.getPinkModeIconRotationTimer === 'function' ? animations.getPinkModeIconRotationTimer : fallback.getPinkModeIconRotationTimer,
             setPinkModeIconRotationTimer: typeof animations.setPinkModeIconRotationTimer === 'function' ? animations.setPinkModeIconRotationTimer : fallback.setPinkModeIconRotationTimer,
             getPinkModeIconIndex: typeof animations.getPinkModeIconIndex === 'function' ? animations.getPinkModeIconIndex : fallback.getPinkModeIconIndex,
@@ -2623,7 +2644,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           startPinkModeAnimatedIcons: support.startPinkModeAnimatedIcons,
           stopPinkModeAnimatedIcons: support.stopPinkModeAnimatedIcons,
           triggerPinkModeIconRain: support.triggerPinkModeIconRain,
-          startPinkModeIconPreload: startPinkModeIconPreload,
+          startPinkModeIconPreload: support.startPinkModeIconPreload || function () {},
           getPinkModeIconRotationTimer: support.getPinkModeIconRotationTimer,
           setPinkModeIconRotationTimer: support.setPinkModeIconRotationTimer,
           getPinkModeIconIndex: support.getPinkModeIconIndex,
@@ -2700,9 +2721,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (assignError) {
       void assignError;
     }
-    if (exportsMap['modules/core/pink-mode'] && exportsMap['modules/core/pink-mode'].startPinkModeIconPreload) {
+    if (exportsMap['modules/core/pink-mode-support.js'] && exportsMap['modules/core/pink-mode-support.js'].startPinkModeIconPreload) {
       try {
-        exportsMap['modules/core/pink-mode'].startPinkModeIconPreload();
+        exportsMap['modules/core/pink-mode-support.js'].startPinkModeIconPreload();
       } catch (preloadError) {
         console.warn('[PinkMode] Could not start icon preload', preloadError);
       }

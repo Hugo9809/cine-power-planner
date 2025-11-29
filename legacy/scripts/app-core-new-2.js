@@ -9266,19 +9266,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (optionId) {
           optionEntryMap.set(optionId, option.entry || null);
         }
+        var entryValue = option.entry && _typeof(option.entry) === 'object' ? option.entry.value : null;
+        var iconGlyph = entryValue && entryValue.icon ? entryValue.icon : null;
+        if (iconGlyph) {
+          var iconSpan = document.createElement('span');
+          iconSpan.className = 'feature-search-option-icon';
+          applyIconGlyph(iconSpan, iconGlyph);
+          button.appendChild(iconSpan);
+        }
+        var contentDiv = document.createElement('div');
+        contentDiv.className = 'feature-search-option-content';
         var labelSpan = document.createElement('span');
         labelSpan.className = 'feature-search-option-label';
         var labelText = option.label || option.value;
         applyFeatureSearchHighlight(labelSpan, labelText);
-        button.appendChild(labelSpan);
+        contentDiv.appendChild(labelSpan);
         var normalizedLabel = (labelText || '').trim().toLowerCase();
         var normalizedValue = option.value.trim().toLowerCase();
         if (normalizedValue && normalizedLabel && normalizedValue !== normalizedLabel) {
           var valueSpan = document.createElement('span');
           valueSpan.className = 'feature-search-option-value';
           applyFeatureSearchHighlight(valueSpan, option.value);
-          button.appendChild(valueSpan);
+          contentDiv.appendChild(valueSpan);
         }
+        button.appendChild(contentDiv);
         list.appendChild(button);
       });
       featureSearchDropdown.appendChild(list);
@@ -12079,6 +12090,86 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
+      });
+      var commandActions = [{
+        label: 'Create New Project',
+        key: 'action-create-new-project',
+        action: 'create-new-project',
+        keywords: 'new clear reset start scratch empty',
+        detail: 'Clear current project and start fresh',
+        icon: ICON_GLYPHS.resetView
+      }, {
+        label: 'Save Project',
+        key: 'action-save-project',
+        action: 'save-project',
+        keywords: 'save download keep store backup',
+        detail: 'Save current configuration to file',
+        icon: ICON_GLYPHS.save
+      }, {
+        label: 'Export Project',
+        key: 'action-export-project',
+        action: 'export-project',
+        keywords: 'export share send bundle package',
+        detail: 'Create a shareable bundle',
+        icon: ICON_GLYPHS.share
+      }, {
+        label: 'Toggle Dark Mode',
+        key: 'action-toggle-dark-mode',
+        action: 'toggle-dark-mode',
+        keywords: 'dark light theme mode night day switch toggle',
+        detail: 'Switch between light and dark themes',
+        icon: ICON_GLYPHS.moon
+      }, {
+        label: 'Toggle Pink Mode',
+        key: 'action-toggle-pink-mode',
+        action: 'toggle-pink-mode',
+        keywords: 'pink barbie theme mode color style switch toggle',
+        detail: 'Toggle the special Pink Mode theme',
+        icon: ICON_GLYPHS.star
+      }, {
+        label: 'Open Settings',
+        key: 'action-open-settings',
+        action: 'open-settings',
+        keywords: 'settings preferences config options gear setup',
+        detail: 'Open application settings dialog',
+        icon: ICON_GLYPHS.gears
+      }, {
+        label: 'Open Help Center',
+        key: 'action-open-help',
+        action: 'open-help',
+        keywords: 'help support guide manual docs documentation info',
+        detail: 'Open the Help Center',
+        icon: ICON_GLYPHS.note
+      }, {
+        label: 'Force Reload',
+        key: 'action-force-reload',
+        action: 'force-reload',
+        keywords: 'reload refresh restart update clear cache',
+        detail: 'Reload the application and clear caches',
+        icon: ICON_GLYPHS.reload
+      }];
+      commandActions.forEach(function (cmd) {
+        var key = cmd.key;
+        var tokens = searchTokens("".concat(cmd.label, " ").concat(cmd.keywords).trim());
+        var primaryTokens = searchTokens(cmd.label);
+        var actionEntry = {
+          type: 'action',
+          key: key,
+          display: cmd.label,
+          tokens: tokens,
+          primaryTokens: primaryTokens,
+          value: {
+            type: 'action',
+            action: cmd.action,
+            label: cmd.label,
+            key: key,
+            icon: cmd.icon
+          },
+          optionLabel: cmd.label,
+          detail: cmd.detail
+        };
+        registerOption(actionEntry);
+        featureSearchEntries.push(actionEntry);
       });
       registerDeviceLibraryEntriesForSearch();
       featureSearchEntries.forEach(function (entry) {

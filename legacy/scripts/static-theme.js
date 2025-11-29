@@ -44,31 +44,28 @@
   function applyPreferences() {
     var root = document.documentElement;
     var body = document.body;
-    if (!root || !body) {
-      return;
-    }
     var highContrastEnabled = safeGet('highContrast') === 'true';
-    root.classList.toggle('high-contrast', highContrastEnabled);
-    body.classList.toggle('high-contrast', highContrastEnabled);
+    if (root) root.classList.toggle('high-contrast', highContrastEnabled);
+    if (body) body.classList.toggle('high-contrast', highContrastEnabled);
     var storedReduceMotion = safeGet('reduceMotion');
     if (storedReduceMotion === null && typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       storedReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'true' : 'false';
     }
     var reduceMotionEnabled = storedReduceMotion === 'true';
-    root.classList.toggle('reduce-motion', reduceMotionEnabled);
-    body.classList.toggle('reduce-motion', reduceMotionEnabled);
+    if (root) root.classList.toggle('reduce-motion', reduceMotionEnabled);
+    if (body) body.classList.toggle('reduce-motion', reduceMotionEnabled);
     var relaxedSpacingEnabled = safeGet('relaxedSpacing') === 'true';
-    root.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
-    body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
+    if (root) root.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
+    if (body) body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
     var pinkModeEnabled = safeGet('pinkMode') === 'true';
-    root.classList.toggle('pink-mode', pinkModeEnabled);
-    body.classList.toggle('pink-mode', pinkModeEnabled);
+    if (root) root.classList.toggle('pink-mode', pinkModeEnabled);
+    if (body) body.classList.toggle('pink-mode', pinkModeEnabled);
     var storedFontSize = safeGet('fontSize');
-    if (storedFontSize) {
+    if (storedFontSize && root) {
       root.style.fontSize = storedFontSize + 'px';
     }
     var storedFontFamily = safeGet('fontFamily');
-    if (storedFontFamily) {
+    if (storedFontFamily && root) {
       root.style.setProperty('--font-family', storedFontFamily);
     }
     var storedDarkMode = safeGet('darkMode');
@@ -76,29 +73,36 @@
       storedDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'true' : 'false';
     }
     var darkModeEnabled = storedDarkMode === 'true';
-    root.classList.toggle('dark-mode', darkModeEnabled);
-    body.classList.toggle('dark-mode', darkModeEnabled);
-    root.classList.toggle('light-mode', !darkModeEnabled);
-    body.classList.toggle('light-mode', !darkModeEnabled);
+    if (root) {
+      root.classList.toggle('dark-mode', darkModeEnabled);
+      root.classList.toggle('light-mode', !darkModeEnabled);
+    }
+    if (body) {
+      body.classList.toggle('dark-mode', darkModeEnabled);
+      body.classList.toggle('light-mode', !darkModeEnabled);
+    }
     updateThemeColor(darkModeEnabled);
     var storedAccent = safeGet('accentColor');
     var accentColor = storedAccent || DEFAULT_ACCENT;
     if (pinkModeEnabled) {
-      root.style.removeProperty('--accent-color');
-      root.style.removeProperty('--link-color');
-      body.style.removeProperty('--accent-color');
-      body.style.removeProperty('--link-color');
-      root.style.removeProperty('--logo-background-color');
-      root.style.removeProperty('--logo-accent-color');
-      body.style.removeProperty('--logo-background-color');
-      body.style.removeProperty('--logo-accent-color');
+      if (root) {
+        root.style.removeProperty('--accent-color');
+        root.style.removeProperty('--link-color');
+        root.style.removeProperty('--logo-background-color');
+        root.style.removeProperty('--logo-accent-color');
+      }
+      if (body) {
+        body.style.removeProperty('--accent-color');
+        body.style.removeProperty('--link-color');
+        body.style.removeProperty('--logo-background-color');
+        body.style.removeProperty('--logo-accent-color');
+      }
     } else {
       applyAccent(accentColor, root, body);
     }
   }
+  applyPreferences();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', applyPreferences);
-  } else {
-    applyPreferences();
   }
 })();

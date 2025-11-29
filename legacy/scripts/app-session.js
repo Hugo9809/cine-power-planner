@@ -13050,8 +13050,9 @@ function _clearCachesAndReload() {
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
-if (reloadButton) {
-  reloadButton.addEventListener("click", clearCachesAndReload);
+var sessionReloadButton = typeof document !== 'undefined' ? document.getElementById('reloadButton') : null;
+if (sessionReloadButton) {
+  sessionReloadButton.addEventListener("click", clearCachesAndReload);
 }
 function exportDiagramSvg() {
   if (!setupDiagramContainer) return '';
@@ -14018,6 +14019,25 @@ if (helpButton && helpDialog) {
       closeHelp();
     }
   };
+  var helpMobileToggle = document.getElementById('helpMobileToggle');
+  var helpSidebar = helpDialog ? helpDialog.querySelector('.mockup-sidebar') : null;
+  if (helpMobileToggle && helpDialog) {
+    helpMobileToggle.addEventListener('click', function () {
+      helpDialog.classList.toggle('sidebar-open');
+    });
+    helpDialog.addEventListener('click', function (e) {
+      if (window.innerWidth <= 768 && helpDialog.classList.contains('sidebar-open') && !e.target.closest('.mockup-sidebar') && !e.target.closest('.help-mobile-toggle')) {
+        helpDialog.classList.remove('sidebar-open');
+      }
+    });
+    helpDialog.addEventListener('click', function (e) {
+      if (window.innerWidth <= 768 && e.target.closest('button') && helpDialog.classList.contains('sidebar-open')) {
+        if (e.target.closest('.help-topic-link') || e.target.closest('#helpQuickLinksList button')) {
+          helpDialog.classList.remove('sidebar-open');
+        }
+      }
+    });
+  }
   var hoverHelpActive = false;
   var hoverHelpTooltip;
   var hoverHelpCurrentTarget = null;
@@ -15155,6 +15175,56 @@ if (helpButton && helpDialog) {
             quickLink.button.classList.add('active');
           }
           return true;
+        }
+      }
+      if (entryType === 'action') {
+        recordUsage();
+        var actionKey = entry.action;
+        switch (actionKey) {
+          case 'create-new-project':
+            if (typeof setupSelect !== 'undefined' && setupSelect) {
+              setupSelect.value = '';
+              setupSelect.dispatchEvent(new Event('change', {
+                bubbles: true
+              }));
+              if (typeof checkSetupChanged === 'function') checkSetupChanged();
+            }
+            return true;
+          case 'save-project':
+            if (typeof saveSetupBtn !== 'undefined' && saveSetupBtn) {
+              saveSetupBtn.click();
+            }
+            return true;
+          case 'export-project':
+            if (typeof shareSetupBtn !== 'undefined' && shareSetupBtn) {
+              shareSetupBtn.click();
+            }
+            return true;
+          case 'toggle-dark-mode':
+            if (typeof darkModeToggle !== 'undefined' && darkModeToggle) {
+              darkModeToggle.click();
+            }
+            return true;
+          case 'toggle-pink-mode':
+            if (typeof pinkModeToggle !== 'undefined' && pinkModeToggle) {
+              pinkModeToggle.click();
+            }
+            return true;
+          case 'open-settings':
+            if (typeof settingsButton !== 'undefined' && settingsButton) {
+              settingsButton.click();
+            }
+            return true;
+          case 'open-help':
+            if (typeof helpButton !== 'undefined' && helpButton) {
+              helpButton.click();
+            }
+            return true;
+          case 'force-reload':
+            if (typeof reloadButton !== 'undefined' && reloadButton) {
+              reloadButton.click();
+            }
+            return true;
         }
       }
       return false;

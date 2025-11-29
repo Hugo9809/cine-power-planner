@@ -11179,7 +11179,7 @@ function gearListGenerateHtmlImpl() {
       }
       var extraAttr = extraAttrParts.length ? " ".concat(extraAttrParts.join(' ')) : '';
       return "<span class=\"gear-item\" data-gear-name=\"".concat(safeDataName, "\"").concat(quantityAttr).concat(labelAttr).concat(attributesAttr).concat(noteAttr).concat(extraAttr, "><span class=\"gear-item-text\">").concat(escapeHtml(textContent), "</span><span class=\"gear-item-note\" hidden></span></span>");
-    }).join('<br>');
+    }).join('');
   };
   var wrapGearItemHtml = function wrapGearItemHtml(contentHtml) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -11268,7 +11268,7 @@ function gearListGenerateHtmlImpl() {
       extraAttributes: cageExtraAttributes
     });
   }
-  addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
+  addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join(''));
   var storageGearListItems = Array.isArray(info.storageRequirements) ? info.storageRequirements.map(function (entry) {
     if (!entry || _typeof(entry) !== 'object') return '';
     var quantity = Number.isFinite(entry.quantity) && entry.quantity > 0 ? entry.quantity : null;
@@ -12446,7 +12446,7 @@ function gearListGenerateHtmlImpl() {
     var rows = items.map(function (item, index) {
       return buildCartItemHtml(item, index);
     }).filter(Boolean);
-    return rows.join('<br>');
+    return rows.join('');
   }
   var cartsTransportationItems = [];
   ensureItems(cartsTransportationItems, 'accessories.carts');
@@ -12601,7 +12601,7 @@ function gearListGenerateHtmlImpl() {
   var gripItemsHtml = formatItems(gripItems, {
     onItem: applyCameraLinkFromTargets
   });
-  addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join('<br>'));
+  addRow('Grip', [sliderSelectHtml, gripItemsHtml, easyrigSelectHtml].filter(Boolean).join(''));
   var cartRowHtml = buildCartRowsHtml(cartsTransportationItems);
   addRow('Carts and Transportation', cartRowHtml || formatItems(cartsTransportationItems));
   var miscExcluded = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable', 'BNC SDI Cable', 'Ultraslim BNC Cable 0.5 m']);
@@ -12740,7 +12740,7 @@ function gearListGenerateHtmlImpl() {
     var labelAttr = ' data-gear-label="Pro Gaff Tape"';
     var textHtml = "".concat(escapeHtml(String(proGaffCount)), "x Pro Gaff Tape <select id=\"gearListProGaffColor").concat(id, "\">").concat(colorOpts, "</select> <select id=\"gearListProGaffWidth").concat(id, "\">").concat(widthOpts, "</select>");
     return "<span class=\"gear-item\" data-gear-name=\"Pro Gaff Tape\"".concat(quantityAttr).concat(labelAttr).concat(rentalNoteAttr, "><span class=\"gear-item-text\">").concat(textHtml, "</span><span class=\"gear-item-note\" hidden></span></span>");
-  }).join('<br>');
+  }).join('');
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
@@ -12756,7 +12756,7 @@ function gearListGenerateHtmlImpl() {
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\"".concat(quantityAttr).concat(labelAttr).concat(rentalNoteAttr, "><span class=\"gear-item-text\">").concat(textHtml, "</span><span class=\"gear-item-note\" hidden></span></span>");
   }
   addRow('Miscellaneous', formatItems(miscItems));
-  addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
+  addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join(''));
   var body = "<h2>".concat(projectTitle, "</h2>");
   if (infoHtml) body += infoHtml;
   var tableHtml = '<table class="gear-table">' + categoryGroups.join('') + '</table>';

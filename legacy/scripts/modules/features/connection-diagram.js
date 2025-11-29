@@ -360,6 +360,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var popupClassForCategory = function popupClassForCategory(category) {
       if (!category) return '';
       if (category === 'cameras') return 'diagram-popup--camera';
+      if (category === 'batteries') return 'diagram-popup--battery';
+      if (category === 'monitors') return 'diagram-popup--monitor';
+      if (category === 'video') return 'diagram-popup--video';
+      if (category === 'fiz.motors') return 'diagram-popup--motor';
+      if (category === 'fiz.controllers') return 'diagram-popup--controller';
+      if (category === 'fiz.distance') return 'diagram-popup--distance';
       return '';
     };
     function ensureDetailDialogElements() {
@@ -502,11 +508,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         renderSetupDiagram();
       }
     }
-    var diagramCssLight = "\n    .node-box{fill:#f0f0f0;stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    .conn{stroke:none;}\n    .conn.red{fill:#d33;}\n    .conn.blue{fill:#369;}\n    .conn.green{fill:#090;}\n    text{font-family:system-ui,sans-serif;}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);}\n    line{stroke:#333;stroke-width:2px;}\n    path.edge-path{stroke:#333;stroke-width:2px;fill:none;}\n    path.power{stroke:#d33;}\n    path.video{stroke:#369;}\n    path.fiz{stroke:#090;}\n    .diagram-placeholder{font-style:italic;color:#666;margin:0;}\n    ";
-    var diagramCssDark = "\n    .node-box{fill:#444;stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    text{fill:#fff;font-family:system-ui,sans-serif;}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);}\n    line{stroke:#fff;}\n    path.edge-path{stroke:#fff;}\n    path.power{stroke:#ff6666;}\n    path.video{stroke:#7ec8ff;}\n    path.fiz{stroke:#6f6;}\n    .conn.red{fill:#ff6666;}\n    .conn.blue{fill:#7ec8ff;}\n    .conn.green{fill:#6f6;}\n    .diagram-placeholder{color:#bbb;}\n    ";
+    var diagramCssLight = "\n    .node-box{fill:var(--diagram-node-fill, #f0f0f0);stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    .conn{stroke:none;}\n    .conn.red{fill:var(--diagram-power-stroke, #d33);}\n    .conn.blue{fill:var(--diagram-video-stroke, #369);}\n    .conn.green{fill:var(--diagram-fiz-stroke, #090);}\n    text{font-family:system-ui,sans-serif;fill:var(--diagram-text-fill, #000);}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);fill:var(--diagram-text-fill, #000);}\n    line{stroke:var(--diagram-stroke, #333);stroke-width:2px;}\n    path.edge-path{stroke:var(--diagram-stroke, #333);stroke-width:2px;fill:none;}\n    path.power{stroke:var(--diagram-power-stroke, #d33);}\n    path.video{stroke:var(--diagram-video-stroke, #369);}\n    path.fiz{stroke:var(--diagram-fiz-stroke, #090);}\n    .diagram-placeholder{font-style:italic;color:#666;margin:0;}\n    ";
+    var diagramCssDark = "";
     function getDiagramCss() {
       var includeDark = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      return diagramCssLight + (includeDark ? "@media (prefers-color-scheme: dark){".concat(diagramCssDark, "}") : '');
+      return diagramCssLight;
     }
     var safeIconGlyph = function safeIconGlyph(char, font) {
       try {
@@ -1231,7 +1237,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
       var EDGE_LABEL_WRAP = 18;
-      var defs = "\n        <defs>\n          <linearGradient id=\"firstFizGrad\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n            <stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0.9\"></stop>\n            <stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"></stop>\n          </linearGradient>\n        </defs>\n      ";
+      var css = getDiagramCss();
+      var defs = "\n        <defs>\n          <style>".concat(css, "</style>\n          <linearGradient id=\"firstFizGrad\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n            <stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0.9\"></stop>\n            <stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"></stop>\n          </linearGradient>\n        </defs>\n      ");
       var svg = "<svg viewBox=\"".concat(viewBoxX, " ").concat(viewBoxY, " ").concat(viewWidth, " ").concat(viewHeight, "\" role=\"group\" aria-labelledby=\"diagramDesc\">").concat(defs);
       svg += '<g id="diagramRoot">';
       nodes.forEach(function (id) {
@@ -1388,6 +1395,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       lastDiagramPositions = Object.fromEntries(Object.entries(pos));
       enableDiagramInteractions();
+      updateDiagramLegend();
     }
     function enableDiagramInteractions() {
       var _texts$currentLang4, _texts$en4, _texts$currentLang5, _texts$en5, _texts$currentLang6, _texts$en6;
@@ -1397,7 +1405,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!svg) return;
       var texts = resolveTexts();
       var currentLang = resolveCurrentLang();
-      var hoverNoticeText = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.diagramHoverNotice) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.diagramHoverNotice) || 'Click me for more information!';
+      var hoverNoticeText = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.diagramHoverNotice) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.diagramHoverNotice) || 'Double click for more information';
       detailDialogDefaultHeading = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.diagramDetailDefaultHeading) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.diagramDetailDefaultHeading) || detailDialogDefaultHeading;
       detailDialogBackLabel = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.diagramDetailBackLabel) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.diagramDetailBackLabel) || detailDialogBackLabel;
       ensureDetailDialogElements();
@@ -1649,7 +1657,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         dragActivationTimer = setTimeout(function () {
           startDragSession();
         }, DRAG_HOLD_DELAY);
-        e.stopPropagation();
       };
       var ensureDragSession = function ensureDragSession() {
         if (dragActive) return true;
@@ -1792,74 +1799,54 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
       var positionPopup = function positionPopup(nodeEl, entry) {
         var _document$documentEle, _document$documentEle2;
+        var repositionOnly = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         if (!popup || !nodeEl) return;
         var rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
         if (!rect) return;
+        var margin = 8;
+        if (!repositionOnly) {
+          popup.style.visibility = 'hidden';
+          popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
+          popup.removeAttribute('hidden');
+        }
         var viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth) ? windowObj.innerWidth : (document === null || document === void 0 || (_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
         var viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight) ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
-        var margin = 12;
-        popup.style.visibility = 'hidden';
-        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
-        popup.removeAttribute('hidden');
-        adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+        if (!repositionOnly) {
+          adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+        }
         var popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
-        var left = rect.right + margin;
-        var top = rect.top;
-        if (popupRect) {
-          var pointer = lastPointerPosition;
-          var usePointerPosition = !entry && pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y);
-          if (usePointerPosition) {
-            var preferredLeft = pointer.x + margin;
-            if (viewportWidth && preferredLeft + popupRect.width > viewportWidth - margin) {
-              preferredLeft = pointer.x - popupRect.width - margin;
-            }
-            if (viewportWidth) {
-              if (preferredLeft + popupRect.width > viewportWidth - margin) {
-                preferredLeft = viewportWidth - popupRect.width - margin;
-              }
-              if (preferredLeft < margin) {
-                var alternativeLeft = pointer.x + margin;
-                var clampedAlternative = Math.min(alternativeLeft, viewportWidth - popupRect.width - margin);
-                preferredLeft = Math.max(margin, clampedAlternative);
-              }
-            }
-            left = preferredLeft;
-            top = pointer.y - popupRect.height * 0.5;
-          } else {
-            var pointerOnRightSide = pointer && viewportWidth && Number.isFinite(pointer.x) && pointer.x >= viewportWidth * 0.55;
-            if (pointerOnRightSide) {
-              var _preferredLeft = rect.left - popupRect.width - margin;
-              if (_preferredLeft >= margin) {
-                left = _preferredLeft;
-              } else if (viewportWidth) {
-                left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
-              } else {
-                left = Math.max(margin, _preferredLeft);
-              }
-            } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
-              left = Math.max(margin, rect.left - popupRect.width - margin);
-            }
-          }
+        if (!popupRect) return;
+        var left = 0;
+        var top = 0;
+        var pointer = lastPointerPosition;
+        if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
+          left = pointer.x + margin;
+          top = pointer.y + margin;
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
-              left = Math.max(margin, viewportWidth - popupRect.width - margin);
+              left = viewportWidth - popupRect.width - margin;
             }
             if (left < margin) {
               left = margin;
             }
           }
           if (viewportHeight) {
+            if (top < margin) {
+              top = pointer.y + margin * 2;
+            }
             if (top + popupRect.height > viewportHeight - margin) {
               top = viewportHeight - popupRect.height - margin;
             }
-            if (top < margin) {
-              top = margin;
-            }
           }
+        } else {
+          left = rect.left + rect.width / 2 - popupRect.width / 2;
+          top = rect.top - popupRect.height - margin;
         }
         popup.style.left = "".concat(Math.round(left), "px");
         popup.style.top = "".concat(Math.round(top), "px");
-        popup.style.visibility = 'visible';
+        if (!repositionOnly) {
+          popup.style.visibility = 'visible';
+        }
       };
       var focusPopup = function focusPopup() {
         if (!popup || typeof popup.focus !== 'function') return;
@@ -1936,8 +1923,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           hidePopup();
           return;
         }
+        var entry = lastPopupEntries[nodeId];
         var safeNotice = escapeHtml(hoverNoticeText);
-        popup.className = 'diagram-popup diagram-popup--notice';
+        popup.className = "diagram-popup diagram-popup--notice ".concat(entry.className || '');
         popup.innerHTML = "<p class=\"diagram-popup-notice\">".concat(safeNotice, "</p>");
         popup.setAttribute('aria-label', hoverNoticeText);
         popup.removeAttribute('aria-labelledby');
@@ -1958,6 +1946,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
         if (popup && (related === popup || related && popup.contains(related))) return;
         hidePopup();
+      };
+      var onNodeMove = function onNodeMove(e) {
+        updatePointerPosition(e);
+        if (!activePopupNode) return;
+        if (popup && popup.classList.contains('diagram-popup--notice')) {
+          positionPopup(activePopupNode, null, true);
+        }
       };
       var onSvgLeave = function onSvgLeave(e) {
         if (svg.contains(e.relatedTarget)) return;
@@ -2040,6 +2035,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
+      svg.addEventListener('mousemove', onNodeMove);
       svg.addEventListener('mouseleave', onSvgLeave);
       svg.addEventListener('dblclick', onNodeDoubleClick);
       var repositionActivePopup = function repositionActivePopup() {
@@ -2085,6 +2081,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         svg.removeEventListener('touchend', onNodeTouchEnd);
         svg.removeEventListener('mouseover', onNodeOver);
         svg.removeEventListener('mouseout', onNodeOut);
+        svg.removeEventListener('mousemove', onNodeMove);
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);

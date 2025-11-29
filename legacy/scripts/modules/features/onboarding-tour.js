@@ -2278,6 +2278,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   var tourTexts = resolveTourTexts();
+  function resolveText(key, defaultValue) {
+    if (tourTexts && typeof tourTexts[key] === 'string') {
+      return tourTexts[key];
+    }
+    return defaultValue;
+  }
   function createStepConfig() {
     return [{
       key: 'intro',
@@ -2970,7 +2976,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     skipButton.className = 'button-link onboarding-skip';
     skipButton.addEventListener('click', function () {
       if (!active) return;
-      confirmSkip();
+      handleSkipTutorial();
     });
     header.appendChild(skipButton);
     cardContentEl = DOCUMENT.createElement('div');
@@ -6741,7 +6747,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (key === 'Escape') {
       event.preventDefault();
-      confirmSkip();
+      handleSkipTutorial();
       return;
     }
     if (key === 'ArrowRight') {
