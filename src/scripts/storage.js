@@ -14588,7 +14588,7 @@
   }
 
   // --- Clear All Stored Data ---
-  function clearAllData() {
+  async function clearAllData() {
     const msg = "Error clearing storage:";
     // Use the shared project deletion helper so all in-memory project caches and
     // activity trackers, including auto backup metadata, are cleared alongside
@@ -14599,6 +14599,24 @@
       deleteProject();
     } catch (error) {
       console.warn('Unable to clear stored projects during factory reset', error);
+    }
+
+    // Attempt to clear the backup vault (IndexedDB) if the backup module is available.
+    // We do this defensively so that core storage clearing proceeds even if the
+    // backup module fails or is not loaded.
+    try {
+      let clearVaultFn = null;
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearBackupVault === 'function') {
+        clearVaultFn = GLOBAL_SCOPE.clearBackupVault;
+      } else if (typeof clearBackupVault === 'function') {
+        clearVaultFn = clearBackupVault;
+      }
+
+      if (clearVaultFn) {
+        await clearVaultFn();
+      }
+    } catch (vaultError) {
+      console.warn('Failed to clear backup vault during factory reset', vaultError);
     }
 
     const safeStorage = getSafeLocalStorage();

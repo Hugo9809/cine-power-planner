@@ -731,7 +731,7 @@ textarea {
 .status-message--danger {
   padding: 0.75em 1em;
   border-radius: var(--border-radius);
-  border: none;
+  border: none !important;
   background-color: var(--panel-bg);
   display: flex;
   align-items: flex-start;
@@ -9956,9 +9956,9 @@ body.light-mode #topBar select:focus-visible {
   font-weight: var(--font-weight-medium);
   text-align: center;
   padding: 0.4rem 0.75rem;
-  width: fit-content;
-  min-width: 0;
-  max-width: 200px;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 200px !important;
   pointer-events: none;
   border-radius: 6px;
   background: var(--surface-elevated, #fff);

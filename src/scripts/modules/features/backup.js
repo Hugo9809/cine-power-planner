@@ -51,76 +51,76 @@
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? MODULE_BASE.freezeDeep
     : function fallbackFreezeDeep(value) {
-        if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
-          return value;
+      if (!value || typeof value === 'function' || (typeof value !== 'object' && typeof value !== 'function')) {
+        return value;
+      }
+
+      const seen = new WeakSet();
+
+      function freeze(target) {
+        if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+          return target;
         }
 
-        const seen = new WeakSet();
+        const isFunction = typeof target === 'function';
+        if (seen.has(target)) {
+          return target;
+        }
+        seen.add(target);
 
-        function freeze(target) {
-          if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
-            return target;
-          }
-
-          const isFunction = typeof target === 'function';
-          if (seen.has(target)) {
-            return target;
-          }
-          seen.add(target);
-
-          // Functions often carry deep prototype chains and links back into the
-          // runtime environment. Walking those graphs can trigger V8 assertions
-          // (as seen in Jest) and does not improve immutability guarantees for
-          // the serialisable data we expose. Freeze the function object itself
-          // but do not attempt to descend into its internals.
-          if (isFunction) {
-            try {
-              Object.freeze(target);
-            } catch (freezeError) {
-              void freezeError;
-            }
-            return target;
-          }
-
+        // Functions often carry deep prototype chains and links back into the
+        // runtime environment. Walking those graphs can trigger V8 assertions
+        // (as seen in Jest) and does not improve immutability guarantees for
+        // the serialisable data we expose. Freeze the function object itself
+        // but do not attempt to descend into its internals.
+        if (isFunction) {
           try {
-            const keys = Object.getOwnPropertyNames(target);
-            for (let index = 0; index < keys.length; index += 1) {
-              const key = keys[index];
-              let child;
-              try {
-                child = target[key];
-              } catch (accessError) {
-                void accessError;
-                child = undefined;
-              }
-              if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
-                continue;
-              }
-              freeze(child);
-            }
             Object.freeze(target);
-          } catch (error) {
-            void error;
+          } catch (freezeError) {
+            void freezeError;
           }
           return target;
         }
 
-        return freeze(value);
-      };
+        try {
+          const keys = Object.getOwnPropertyNames(target);
+          for (let index = 0; index < keys.length; index += 1) {
+            const key = keys[index];
+            let child;
+            try {
+              child = target[key];
+            } catch (accessError) {
+              void accessError;
+              child = undefined;
+            }
+            if (!child || typeof child === 'function' || (typeof child !== 'object' && typeof child !== 'function')) {
+              continue;
+            }
+            freeze(child);
+          }
+          Object.freeze(target);
+        } catch (error) {
+          void error;
+        }
+        return target;
+      }
+
+      return freeze(value);
+    };
 
   const exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function expose(name, value, options) {
-        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
-      }
+      return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
+    }
     : function fallbackExpose(name, value) {
-        try {
-          GLOBAL_SCOPE[name] = value;
-          return true;
-        } catch (error) {
-          void error;
-          return false;
-        }
-      };
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (error) {
+        void error;
+        return false;
+      }
+    };
 
   const moduleRegistry = typeof MODULE_BASE.getModuleRegistry === 'function'
     ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE)
@@ -128,18 +128,18 @@
 
   const registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function register(name, api, options, onError) {
-        return MODULE_BASE.registerOrQueueModule(
-          name,
-          api,
-          options,
-          onError,
-          GLOBAL_SCOPE,
-          moduleRegistry,
-        );
-      }
+      return MODULE_BASE.registerOrQueueModule(
+        name,
+        api,
+        options,
+        onError,
+        GLOBAL_SCOPE,
+        moduleRegistry,
+      );
+    }
     : function fallbackRegister() {
-        return false;
-      };
+      return false;
+    };
 
   const SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
   const SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
@@ -2645,6 +2645,59 @@
     },
   );
 
+  function clearBackupVault() {
+    const indexedPromise = withBackupVaultStore('readwrite', (store) => {
+      if (!store) {
+        return false;
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const request = store.clear();
+          request.addEventListener('success', () => {
+            resolve(true);
+          });
+          request.addEventListener('error', () => {
+            reject(request.error);
+          });
+        } catch (clearError) {
+          reject(clearError);
+        }
+      }).catch((error) => {
+        console.warn('Failed to clear backup vault IndexedDB', error);
+        return false;
+      });
+    }).catch((error) => {
+      console.warn('Backup vault clear failed', error);
+      return false;
+    });
+
+    const fallbackPromise = Promise.resolve().then(() => {
+      const { storage } = getBackupVaultFallbackStorage();
+      if (isStorageLike(storage)) {
+        try {
+          storage.removeItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY);
+          fallbackStorageRecordCount = 0;
+          return true;
+        } catch (error) {
+          console.warn('Failed to clear fallback backup vault', error);
+          return false;
+        }
+      }
+      return false;
+    });
+
+    const memoryPromise = memoryBackupVault.list().then((entries) => {
+      const ids = entries.map(e => e.id);
+      return Promise.all(ids.map(id => memoryBackupVault.remove(id))).then(() => true);
+    });
+
+    return Promise.all([indexedPromise, fallbackPromise, memoryPromise]).then(() => {
+      backupVaultTransientRecords.clear();
+      refreshBackupVaultFallbackMode();
+      return true;
+    });
+  }
+
   const globalExports = [
     ['cineFeatureBackup', backupAPI],
     ['formatFullBackupFilename', formatFullBackupFilename],
@@ -2672,6 +2725,7 @@
     ['getBackupVaultFallbackState', getBackupVaultFallbackState],
     ['isAutoBackupName', isAutoBackupName],
     ['parseAutoBackupName', parseAutoBackupName],
+    ['clearBackupVault', clearBackupVault],
     ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX],
     ['SESSION_AUTO_BACKUP_DELETION_PREFIX', SESSION_AUTO_BACKUP_DELETION_PREFIX],
   ];

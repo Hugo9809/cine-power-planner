@@ -350,85 +350,9 @@
         const pinkModeAssetTextCache = new Map();
         const pinkModeAssetTextPromiseCache = new Map();
 
-        function getPinkModeEmbeddedAssetStore() {
-          const scope = GLOBAL_SCOPE ||
-            (typeof window !== 'undefined' && window) ||
-            (typeof self !== 'undefined' && self) ||
-            null;
 
-          if (!scope) {
-            return null;
-          }
 
-          try {
-            const store = scope.cinePinkModeAnimatedIconData;
-            if (store && typeof store === 'object') {
-              return store;
-            }
-          } catch (error) {
-            void error;
-          }
 
-          return null;
-        }
-
-        function resolvePinkModeEmbeddedAsset(key) {
-          if (typeof key !== 'string' || !key) {
-            return null;
-          }
-
-          const store = getPinkModeEmbeddedAssetStore();
-          if (!store) {
-            return null;
-          }
-
-          const candidates = [];
-          const registerCandidate = candidate => {
-            if (typeof candidate !== 'string' || !candidate) {
-              return;
-            }
-            if (candidates.indexOf(candidate) === -1) {
-              candidates.push(candidate);
-            }
-          };
-
-          registerCandidate(key);
-
-          const trimmed = key.replace(/^\.\/+/, '');
-          if (trimmed && trimmed !== key) {
-            registerCandidate(trimmed);
-          }
-
-          const decoded = decodePinkModeUriCandidate(key);
-          if (decoded) {
-            registerCandidate(decoded);
-          }
-
-          const encoded = encodeURI(key);
-          if (encoded && encoded !== key) {
-            registerCandidate(encoded);
-          }
-
-          if (trimmed) {
-            const encodedTrimmed = encodeURI(trimmed);
-            if (encodedTrimmed && encodedTrimmed !== trimmed) {
-              registerCandidate(encodedTrimmed);
-            }
-          }
-
-          for (let index = 0; index < candidates.length; index += 1) {
-            const candidate = candidates[index];
-            if (!Object.prototype.hasOwnProperty.call(store, candidate)) {
-              continue;
-            }
-            const value = store[candidate];
-            if (typeof value === 'string' && value) {
-              return value;
-            }
-          }
-
-          return null;
-        }
 
         function decodePinkModeUriCandidate(value) {
           if (typeof value !== 'string' || !value) {
@@ -637,11 +561,7 @@
             return Promise.resolve(pinkModeAssetTextCache.get(normalized));
           }
 
-          const embedded = resolvePinkModeEmbeddedAsset(normalized);
-          if (typeof embedded === 'string') {
-            pinkModeAssetTextCache.set(normalized, embedded);
-            return Promise.resolve(embedded);
-          }
+
 
           if (pinkModeAssetTextPromiseCache.has(normalized)) {
             return pinkModeAssetTextPromiseCache.get(normalized);

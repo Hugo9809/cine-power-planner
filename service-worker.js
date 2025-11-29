@@ -771,6 +771,17 @@ function shouldBypassCache(request, requestUrl) {
     return true;
   }
 
+  if (request.referrer) {
+    try {
+      const referrerUrl = new URL(request.referrer);
+      if (referrerUrl.searchParams.has('forceReload')) {
+        return true;
+      }
+    } catch (referrerError) {
+      // Ignore invalid referrer URLs
+    }
+  }
+
   if (Date.now() < forceReloadUntil) {
     return true;
   }
@@ -1012,6 +1023,7 @@ if (typeof self !== 'undefined') {
       const url = new URL(event.request.url);
       if (url.searchParams.has('forceReload')) {
         forceReloadUntil = Date.now() + 10000;
+        console.log('[cine-sw] Force reload detected. Bypassing cache until:', forceReloadUntil);
       }
     }
 
@@ -1019,6 +1031,9 @@ if (typeof self !== 'undefined') {
     const isSameOrigin = requestUrl.origin === self.location.origin;
     const isAppIconRequest = isSameOrigin && requestUrl.pathname.includes('/src/icons/');
     const bypassCache = shouldBypassCache(event.request, requestUrl);
+    if (bypassCache) {
+      console.log('[cine-sw] Bypassing cache for:', requestUrl.href);
+    }
     const isConnectivityProbe = isConnectivityProbeRequest(event.request, requestUrl);
     const shouldIgnoreSearch =
       isNavigationRequest && (!requestUrl.searchParams || !requestUrl.searchParams.has('forceReload'));
@@ -1082,6 +1097,8 @@ if (typeof self !== 'undefined') {
         }
       }
 
+      let lastNetworkError = null;
+
       // 2. Try Network with Timeout
       const networkPromise = (async () => {
         try {
@@ -1108,6 +1125,7 @@ if (typeof self !== 'undefined') {
         try {
           response = await networkPromise;
         } catch (networkError) {
+          lastNetworkError = networkError;
           response = null;
         }
       } else {
@@ -1136,6 +1154,7 @@ if (typeof self !== 'undefined') {
           }
         } catch (networkError) {
           // Network failed, proceed to fallback logic
+          lastNetworkError = networkError;
           response = null;
         }
       }
@@ -1168,7 +1187,7 @@ if (typeof self !== 'undefined') {
           serviceWorkerLog.info('Served offline shell after navigation request failed.', {
             url: event.request && event.request.url ? event.request.url : null,
             cacheName: CACHE_NAME,
-            error: networkError,
+            error: lastNetworkError,
           });
           if (isConnectivityProbe) {
             return annotateConnectivityProbeResponse(offlineShell, CONNECTIVITY_PROBE_RESULT_FALLBACK);
@@ -1177,8 +1196,8 @@ if (typeof self !== 'undefined') {
         }
       }
 
-      serviceWorkerLog.error('Network request failed and no cache available.', networkError);
-      throw networkError;
+      serviceWorkerLog.error('Network request failed and no cache available.', lastNetworkError);
+      throw lastNetworkError;
     })());
   });
 }
