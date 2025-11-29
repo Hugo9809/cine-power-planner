@@ -8,8 +8,8 @@ workstations.
 ## Save & autosave
 
 - **Manual save trigger:** Press **Save**, **Enter** on focused inputs once
-  composition is finalized (the IME guard blocks mid-composition commits), or
-  `Ctrl+S` / `⌘S`. `app-session.js` dispatches a structured save event which
+  composition is finalized (the IME guard blocks mid-composition commits),
+  `Ctrl+S` / `⌘S`, or use **Command Palette** (`Cmd+K` / `Ctrl+K`). `app-session.js` dispatches a structured save event which
   `modules/persistence.js` clones and persists.
 - **Critical storage guard:** During application initialization,
   `ensureCriticalStorageBackups()` mirrors critical keys (projects, gear rules,
@@ -98,7 +98,7 @@ workstations.
 
 ## Share & import
 
-- **Project export:** From the selector, choose **Export Project**. The bundle
+- **Project export:** From the selector or **Command Palette**, choose **Export Project**. The bundle
   includes project data, crew contacts (with phone, email, website, notes and
   avatars), referenced custom devices, runtime estimates and (if selected)
   automatic gear rules. Favorites and other global data remain local—ship a full

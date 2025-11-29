@@ -10290,11 +10290,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           optionEntryMap.set(optionId, option.entry || null);
         }
 
+        // Icon
+        const entryValue = option.entry && typeof option.entry === 'object' ? option.entry.value : null;
+        const iconGlyph = entryValue && entryValue.icon ? entryValue.icon : null;
+
+        if (iconGlyph) {
+          const iconSpan = document.createElement('span');
+          iconSpan.className = 'feature-search-option-icon';
+          applyIconGlyph(iconSpan, iconGlyph);
+          button.appendChild(iconSpan);
+        }
+
+        // Content Wrapper
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'feature-search-option-content';
+
         const labelSpan = document.createElement('span');
         labelSpan.className = 'feature-search-option-label';
         const labelText = option.label || option.value;
         applyFeatureSearchHighlight(labelSpan, labelText);
-        button.appendChild(labelSpan);
+        contentDiv.appendChild(labelSpan);
 
         const normalizedLabel = (labelText || '').trim().toLowerCase();
         const normalizedValue = option.value.trim().toLowerCase();
@@ -10302,9 +10317,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const valueSpan = document.createElement('span');
           valueSpan.className = 'feature-search-option-value';
           applyFeatureSearchHighlight(valueSpan, option.value);
-          button.appendChild(valueSpan);
+          contentDiv.appendChild(valueSpan);
         }
 
+        button.appendChild(contentDiv);
         list.appendChild(button);
       });
 
@@ -13004,6 +13020,101 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           featureSearchEntries.push(deviceData);
         });
       });
+
+      // [COMMAND PALETTE] Register Actions
+      const commandActions = [
+        {
+          label: 'Create New Project',
+          key: 'action-create-new-project',
+          action: 'create-new-project',
+          keywords: 'new clear reset start scratch empty',
+          detail: 'Clear current project and start fresh',
+          icon: ICON_GLYPHS.resetView
+        },
+        {
+          label: 'Save Project',
+          key: 'action-save-project',
+          action: 'save-project',
+          keywords: 'save download keep store backup',
+          detail: 'Save current configuration to file',
+          icon: ICON_GLYPHS.save
+        },
+        {
+          label: 'Export Project',
+          key: 'action-export-project',
+          action: 'export-project',
+          keywords: 'export share send bundle package',
+          detail: 'Create a shareable bundle',
+          icon: ICON_GLYPHS.share
+        },
+        {
+          label: 'Toggle Dark Mode',
+          key: 'action-toggle-dark-mode',
+          action: 'toggle-dark-mode',
+          keywords: 'dark light theme mode night day switch toggle',
+          detail: 'Switch between light and dark themes',
+          icon: ICON_GLYPHS.moon
+        },
+        {
+          label: 'Toggle Pink Mode',
+          key: 'action-toggle-pink-mode',
+          action: 'toggle-pink-mode',
+          keywords: 'pink barbie theme mode color style switch toggle',
+          detail: 'Toggle the special Pink Mode theme',
+          icon: ICON_GLYPHS.star
+        },
+        {
+          label: 'Open Settings',
+          key: 'action-open-settings',
+          action: 'open-settings',
+          keywords: 'settings preferences config options gear setup',
+          detail: 'Open application settings dialog',
+          icon: ICON_GLYPHS.gears
+        },
+        {
+          label: 'Open Help Center',
+          key: 'action-open-help',
+          action: 'open-help',
+          keywords: 'help support guide manual docs documentation info',
+          detail: 'Open the Help Center',
+          icon: ICON_GLYPHS.note
+        },
+        {
+          label: 'Force Reload',
+          key: 'action-force-reload',
+          action: 'force-reload',
+          keywords: 'reload refresh restart update clear cache',
+          detail: 'Reload the application and clear caches',
+          icon: ICON_GLYPHS.reload
+        }
+      ];
+
+      commandActions.forEach(cmd => {
+        const key = cmd.key;
+        const tokens = searchTokens(`${cmd.label} ${cmd.keywords}`.trim());
+        const primaryTokens = searchTokens(cmd.label);
+
+        const actionEntry = {
+          type: 'action',
+          key,
+          display: cmd.label,
+          tokens,
+          primaryTokens,
+          value: {
+            type: 'action',
+            action: cmd.action,
+            label: cmd.label,
+            key,
+            icon: cmd.icon
+          },
+          optionLabel: cmd.label,
+          detail: cmd.detail
+        };
+
+        registerOption(actionEntry);
+        featureSearchEntries.push(actionEntry);
+      });
+
       registerDeviceLibraryEntriesForSearch();
       featureSearchEntries.forEach(entry => {
         if (!entry || !entry.key) return;

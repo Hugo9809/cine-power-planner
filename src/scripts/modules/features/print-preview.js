@@ -32,6 +32,91 @@
         }
     };
 
+    function getText(key, defaultText) {
+        const accessors = typeof cineCoreAppLocalizationAccessors !== 'undefined' ? cineCoreAppLocalizationAccessors : (typeof window !== 'undefined' ? window.cineCoreAppLocalizationAccessors : null);
+
+        if (accessors && typeof accessors.getLanguageTexts === 'function') {
+            const lang = (typeof document !== 'undefined' && document.documentElement && document.documentElement.lang) || 'en';
+            const texts = accessors.getLanguageTexts(lang);
+            const parts = key.split('.');
+            let current = texts;
+            for (const part of parts) {
+                if (current && typeof current === 'object' && part in current) {
+                    current = current[part];
+                } else {
+                    return defaultText;
+                }
+            }
+            return current || defaultText;
+        }
+        return defaultText;
+    }
+
+    function localizeStaticContent() {
+        if (!state.elements.modal) return;
+
+        const sidebar = state.elements.modal.querySelector('.mockup-sidebar');
+        if (!sidebar) return;
+
+        // Title
+        const title = sidebar.querySelector('.mockup-sidebar-header h2');
+        if (title) title.textContent = getText('printPreview.title', 'Print & Export');
+
+        // Close Btn
+        if (state.elements.closeBtn) state.elements.closeBtn.setAttribute('aria-label', getText('printPreview.closeLabel', 'Close Preview'));
+
+        // Layout Mode
+        const layoutTitle = sidebar.querySelector('.control-section:nth-child(2) .section-title');
+        if (layoutTitle) layoutTitle.textContent = getText('printPreview.layoutModeTitle', 'Layout Mode');
+
+        const rentalLabel = sidebar.querySelector('label[for="printLayoutRentalToggle"]');
+        if (rentalLabel && rentalLabel.childNodes.length > 0) {
+            // Assuming text is the last child or we replace the text node
+            const textNode = Array.from(rentalLabel.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+            if (textNode) textNode.textContent = getText('printPreview.layoutRentalLabel', 'Rental Friendly');
+        }
+
+        const rentalDesc = sidebar.querySelector('.control-section:nth-child(2) p');
+        if (rentalDesc) rentalDesc.textContent = getText('printPreview.layoutRentalDescription', 'Optimizes layout for rental houses by grouping items by category.');
+
+        // Sections
+        const sectionsTitle = sidebar.querySelector('.control-section:nth-child(3) .section-title');
+        if (sectionsTitle) sectionsTitle.textContent = getText('printPreview.sectionsTitle', 'Sections');
+
+        const sectionLabels = {
+            'printSectionProject': 'printPreview.sectionProject',
+            'printSectionDevices': 'printPreview.sectionDevices',
+            'printSectionDiagram': 'printPreview.sectionDiagram',
+            'printSectionGearList': 'printPreview.sectionGearList',
+            'printSectionBattery': 'printPreview.sectionBattery'
+        };
+
+        Object.entries(sectionLabels).forEach(([id, key]) => {
+            const label = sidebar.querySelector(`label[for="${id}"]`);
+            if (label) {
+                const textNode = Array.from(label.childNodes).find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+                if (textNode) {
+                    textNode.textContent = ' ' + getText(key, textNode.textContent.trim());
+                }
+            }
+        });
+
+        // Buttons
+        if (state.elements.exportBtn) {
+            const icon = state.elements.exportBtn.querySelector('.icon-glyph');
+            state.elements.exportBtn.innerHTML = '';
+            if (icon) state.elements.exportBtn.appendChild(icon);
+            state.elements.exportBtn.appendChild(document.createTextNode(' ' + getText('printPreview.exportPdfButton', 'Export PDF')));
+        }
+
+        if (state.elements.printBtn) {
+            const icon = state.elements.printBtn.querySelector('.icon-glyph');
+            state.elements.printBtn.innerHTML = '';
+            if (icon) state.elements.printBtn.appendChild(icon);
+            state.elements.printBtn.appendChild(document.createTextNode(' ' + getText('printPreview.printButton', 'Print')));
+        }
+    }
+
     function initializeDomReferences() {
         if (typeof document === 'undefined') return false;
 
@@ -52,7 +137,10 @@
 
             // Actions
             exportBtn: document.getElementById('printPreviewExportBtn'),
-            printBtn: document.getElementById('printPreviewPrintBtn')
+            printBtn: document.getElementById('printPreviewPrintBtn'),
+
+            // Trigger
+            generateOverviewBtn: document.getElementById('generateOverviewBtn')
         };
 
         return !!state.elements.modal;
@@ -60,6 +148,17 @@
 
     function bindEvents() {
         if (!state.elements.modal) return;
+
+        // Trigger Button
+        if (state.elements.generateOverviewBtn) {
+            // Remove existing listeners by cloning (optional, but safer if we want to override)
+            // For now, we'll just add the listener. If there's an existing one, it might run too.
+            // Given the user request, we probably want to ensure THIS opens.
+            state.elements.generateOverviewBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openPreview();
+            });
+        }
 
         // Close Button
         if (state.elements.closeBtn) {
@@ -106,7 +205,18 @@
         }
     }
 
-    // --- Helper Functions ---
+    // Delegated listener for the "Print / Export" button inside the dynamically generated Overview Dialog
+    // This ensures we catch the click even if the element is created later or by another script
+    if (typeof document !== 'undefined' && document.body) {
+        document.body.addEventListener('click', (e) => {
+            const target = e.target.closest('#openPrintOptionsBtn');
+            if (target) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // Prevent overview.js from opening the old dialog
+                openPreview();
+            }
+        }, { capture: true }); // Use capture to intercept before bubbling listeners
+    }
 
     function generateRentalDeviceGrid() {
         // Try to find the device section. It might be 'overviewDeviceSection' or inside 'setup-config'
@@ -157,7 +267,7 @@
                     currentCategoryDiv = document.createElement('div');
                     currentCategoryDiv.className = 'device-category';
                     const title = document.createElement('h3');
-                    title.textContent = 'Other';
+                    title.textContent = getText('categoryNames.other', 'Other');
                     currentCategoryDiv.appendChild(title);
                     container.appendChild(currentCategoryDiv);
                 }
@@ -186,19 +296,19 @@
         return `
             <div style="display: flex; gap: 15px;">
                 <div style="flex: 1; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
-                    <div style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">Total Load</div>
+                    <div style="font-size: 0.8em; color: #166534; text-transform: uppercase; font-weight: bold;">${getText('printPreview.generatedTotalLoad', 'Total Load')}</div>
                     <div style="font-size: 1.5em; font-weight: bold; color: #14532d;">${totalWatt}</div>
-                    <div style="font-size: 0.8em; color: #166534;">${peakLoad ? 'Peak: ' + peakLoad : ''}</div>
+                    <div style="font-size: 0.8em; color: #166534;">${peakLoad ? getText('printPreview.generatedPeak', 'Peak:') + ' ' + peakLoad : ''}</div>
                 </div>
                 <div style="flex: 1; background: #eff6ff; padding: 10px; border: 1px solid #bfdbfe; border-radius: 4px;">
-                    <div style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">Est. Runtime</div>
+                    <div style="font-size: 0.8em; color: #1e40af; text-transform: uppercase; font-weight: bold;">${getText('printPreview.generatedEstRuntime', 'Est. Runtime')}</div>
                     <div style="font-size: 1.5em; font-weight: bold; color: #1e3a8a;">${runtime}</div>
-                    <div style="font-size: 0.8em; color: #1e40af;">w/ ${batteryName}</div>
+                    <div style="font-size: 0.8em; color: #1e40af;">${getText('printPreview.generatedWith', 'w/')} ${batteryName}</div>
                 </div>
                 <div style="flex: 1; background: #fff7ed; padding: 10px; border: 1px solid #fed7aa; border-radius: 4px;">
-                    <div style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">Daily Needs</div>
-                    <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">${batteryCount} Batts</div>
-                    <div style="font-size: 0.8em; color: #9a3412;">for 12h day</div>
+                    <div style="font-size: 0.8em; color: #9a3412; text-transform: uppercase; font-weight: bold;">${getText('printPreview.generatedDailyNeeds', 'Daily Needs')}</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #7c2d12;">${batteryCount} ${getText('printPreview.generatedBatts', 'Batts')}</div>
+                    <div style="font-size: 0.8em; color: #9a3412;">${getText('printPreview.generatedFor12hDay', 'for 12h day')}</div>
                 </div>
             </div>
         `;
@@ -220,9 +330,9 @@
         const dateStr = new Date().toLocaleDateString();
 
         header.innerHTML = `
-            <h1>Overview</h1>
-            <p><strong>Project Name:</strong> ${projectName}</p>
-            <p><strong>Production:</strong> ${production} | <strong>Date:</strong> ${dateStr}</p>
+            <h1>${getText('printPreview.generatedTitle', 'Overview')}</h1>
+            <p><strong>${getText('printPreview.generatedProjectNameLabel', 'Project Name:')}</strong> ${projectName}</p>
+            <p><strong>${getText('printPreview.generatedProductionLabel', 'Production:')}</strong> ${production} | <strong>${getText('printPreview.generatedDateLabel', 'Date:')}</strong> ${dateStr}</p>
         `;
         paper.appendChild(header);
 
@@ -233,146 +343,162 @@
         const sourceReq = document.getElementById('projectRequirementsOutput');
         if (sourceReq) {
             reqSection.innerHTML = sourceReq.innerHTML;
-        } else {
-            reqSection.innerHTML = '<p><em>No project requirements data.</em></p>';
-        }
-        paper.appendChild(reqSection);
-
-        // 3. Device Selection (Rental Layout vs Standard)
-        const devSection = document.createElement('section');
-        devSection.id = 'preview-section-devices';
-        devSection.className = 'print-section';
-        devSection.innerHTML = '<h2>Device Selection</h2>';
-
-        if (state.preferences.layout === 'rental') {
-            devSection.innerHTML += generateRentalDeviceGrid();
-        } else {
-            const sourceDevs = document.getElementById('overviewDeviceSection');
-            if (sourceDevs) {
-                devSection.innerHTML += sourceDevs.innerHTML;
-            } else {
-                // Fallback attempt
-                const potentialCategories = document.querySelectorAll('.device-category');
-                if (potentialCategories.length > 0) {
-                    potentialCategories.forEach(cat => {
-                        devSection.appendChild(cat.cloneNode(true));
-                    });
-                } else {
-                    devSection.innerHTML += '<p>No devices selected.</p>';
-                }
-            }
-        }
-        paper.appendChild(devSection);
-
-        // 4. Power Diagram
-        const diagSection = document.createElement('section');
-        diagSection.id = 'preview-section-diagram';
-        diagSection.className = 'print-section';
-        diagSection.innerHTML = '<h2>Power Diagram</h2>';
-        const sourceDiag = document.getElementById('setupDiagram');
-        if (sourceDiag) {
-            // Clone SVG or Canvas
-            const svg = sourceDiag.querySelector('svg');
-            if (svg) {
-                diagSection.appendChild(svg.cloneNode(true));
-            } else {
-                diagSection.innerHTML += sourceDiag.innerHTML;
-            }
-        }
-        paper.appendChild(diagSection);
-
-        // 5. Power Summary
-        const powerSection = document.createElement('section');
-        powerSection.id = 'preview-section-battery'; // Using battery ID for toggle mapping
-        powerSection.className = 'print-section';
-        powerSection.style.marginTop = '20px';
-        powerSection.innerHTML = '<h2>Power Summary</h2>';
-        powerSection.innerHTML += generatePowerSummary();
-
-        // Also append Battery Comparison Table if needed, or just the summary
-        const sourceBatteryTable = document.getElementById('batteryComparison');
-        if (sourceBatteryTable) {
-            const batteryClone = sourceBatteryTable.cloneNode(true);
-            // Remove the heading from clone as we have our own section heading
-            const heading = batteryClone.querySelector('h2');
-            if (heading) heading.remove();
-            powerSection.appendChild(batteryClone);
-        }
-
-        paper.appendChild(powerSection);
-
-        // 6. Gear List
-        const gearSection = document.createElement('section');
-        gearSection.id = 'preview-section-gearList';
-        gearSection.className = 'print-section gear-list-section';
-        gearSection.innerHTML = '<h2>Gear List</h2>';
-        const sourceGear = document.getElementById('gearListOutput');
-        if (sourceGear) {
-            gearSection.innerHTML += sourceGear.innerHTML;
-        }
-        paper.appendChild(gearSection);
-
-        updateSectionVisibility();
+        } else reqSection.innerHTML = '<p><em>' + getText('printPreview.generatedNoProjectRequirements', 'No project requirements data.') + '</em></p>';
     }
+    paper.appendChild(reqSection);
+
+    // 3. Device Selection (Rental Layout vs Standard)
+    const devSection = document.createElement('section');
+    devSection.id = 'preview-section-devices';
+    devSection.className = 'print-section';
+    devSection.innerHTML = '<h2>' + getText('printPreview.generatedDeviceSelectionTitle', 'Device Selection') + '</h2>';
+
+    if (state.preferences.layout === 'rental') {
+        devSection.innerHTML += generateRentalDeviceGrid();
+    } else {
+        const sourceDevs = document.getElementById('overviewDeviceSection');
+        if (sourceDevs) {
+            devSection.innerHTML += sourceDevs.innerHTML;
+        } else {
+            // Fallback attempt
+            const potentialCategories = document.querySelectorAll('.device-category');
+            if (potentialCategories.length > 0) {
+                potentialCategories.forEach(cat => {
+                    devSection.appendChild(cat.cloneNode(true));
+                });
+            } else {
+                devSection.innerHTML += '<p>' + getText('printPreview.generatedNoDevicesSelected', 'No devices selected.') + '</p>';
+            }
+        }
+    }
+    paper.appendChild(devSection);
+
+    // 4. Power Diagram
+    const diagSection = document.createElement('section');
+    diagSection.id = 'preview-section-diagram';
+    diagSection.className = 'print-section';
+    diagSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerDiagramTitle', 'Power Diagram') + '</h2>';
+    const sourceDiag = document.getElementById('setupDiagram');
+    if (sourceDiag) {
+        // Clone SVG or Canvas
+        const svg = sourceDiag.querySelector('svg');
+        if (svg) {
+            diagSection.appendChild(svg.cloneNode(true));
+        } else {
+            diagSection.innerHTML += sourceDiag.innerHTML;
+        }
+    }
+    paper.appendChild(diagSection);
+
+    // 5. Power Summary
+    const powerSection = document.createElement('section');
+    powerSection.id = 'preview-section-battery'; // Using battery ID for toggle mapping
+    powerSection.className = 'print-section';
+    powerSection.style.marginTop = '20px';
+    powerSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerSummaryTitle', 'Power Summary') + '</h2>';
+    powerSection.innerHTML += generatePowerSummary();
+
+    // Also append Battery Comparison Table if needed, or just the summary
+    const sourceBatteryTable = document.getElementById('batteryComparison');
+    if (sourceBatteryTable) {
+        const batteryClone = sourceBatteryTable.cloneNode(true);
+        // Remove the heading from clone as we have our own section heading
+        const heading = batteryClone.querySelector('h2');
+        if (heading) heading.remove();
+        powerSection.appendChild(batteryClone);
+    }
+
+    paper.appendChild(powerSection);
+
+    // 6. Gear List
+    const gearSection = document.createElement('section');
+    gearSection.id = 'preview-section-gearList';
+    gearSection.className = 'print-section gear-list-section';
+    gearSection.innerHTML = '<h2>' + getText('printPreview.generatedGearListTitle', 'Gear List') + '</h2>';
+    const sourceGear = document.getElementById('gearListOutput');
+    if (sourceGear) {
+        gearSection.innerHTML += sourceGear.innerHTML;
+    }
+    paper.appendChild(gearSection);
+
+    updateSectionVisibility();
+}
 
     function updateSectionVisibility() {
-        const map = {
-            project: 'preview-section-project',
-            devices: 'preview-section-devices',
-            diagram: 'preview-section-diagram',
-            gearList: 'preview-section-gearList',
-            battery: 'preview-section-battery'
-        };
-
-        Object.entries(map).forEach(([key, id]) => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.display = state.preferences.sections[key] ? 'block' : 'none';
-            }
-        });
-    }
-
-    function openPreview() {
-        if (!state.elements.modal) initializeDomReferences();
-        if (!state.elements.modal) return;
-
-        bindEvents();
-        renderPreviewContent();
-        state.elements.modal.classList.remove('hidden');
-        state.isOpen = true;
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closePreview() {
-        if (!state.elements.modal) return;
-        state.elements.modal.classList.add('hidden');
-        state.isOpen = false;
-        document.body.style.overflow = '';
-    }
-
-    function triggerNativePrint() {
-        document.body.classList.add('printing-preview');
-        window.print();
-        document.body.classList.remove('printing-preview');
-    }
-
-    // --- API ---
-    const api = {
-        open: openPreview,
-        close: closePreview
+    const map = {
+        project: 'preview-section-project',
+        devices: 'preview-section-devices',
+        diagram: 'preview-section-diagram',
+        gearList: 'preview-section-gearList',
+        battery: 'preview-section-battery'
     };
 
-    // --- Registration ---
-    MODULE_BASE.registerOrQueueModule(
-        'cineFeaturePrintPreview',
-        api,
-        {
-            category: 'feature',
-            description: 'Print Preview Modal',
-            connections: ['cineUi']
+    Object.entries(map).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = state.preferences.sections[key] ? 'block' : 'none';
         }
-    );
+    });
+}
 
-    MODULE_BASE.exposeGlobal('cineFeaturePrintPreview', api);
+function openPreview() {
+    if (!state.elements.modal) initializeDomReferences();
+    if (!state.elements.modal) return;
 
-})();
+    // bindEvents() and localizeStaticContent() are called on init
+    // We re-render content to ensure it's fresh
+    renderPreviewContent();
+    state.elements.modal.classList.remove('hidden');
+    state.isOpen = true;
+    document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+    if (!state.elements.modal) return;
+    state.elements.modal.classList.add('hidden');
+    state.isOpen = false;
+    document.body.style.overflow = '';
+}
+
+function triggerNativePrint() {
+    document.body.classList.add('printing-preview');
+    window.print();
+    document.body.classList.remove('printing-preview');
+}
+
+// --- API ---
+const api = {
+    open: openPreview,
+    close: closePreview
+};
+
+// --- Initialization ---
+function init() {
+    if (initializeDomReferences()) {
+        bindEvents();
+        localizeStaticContent();
+    }
+}
+
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+}
+
+// --- Registration ---
+MODULE_BASE.registerOrQueueModule(
+    'cineFeaturePrintPreview',
+    api,
+    {
+        category: 'feature',
+        description: 'Print Preview Modal',
+        connections: ['cineUi']
+    }
+);
+
+MODULE_BASE.exposeGlobal('cineFeaturePrintPreview', api);
+
+}) ();

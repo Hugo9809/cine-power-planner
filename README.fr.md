@@ -485,7 +485,7 @@ Les autonomies remontées par les utilisateurs alimentent un modèle pondéré r
 
 | Raccourci | Action | Notes |
 | --- | --- | --- |
-| `/`, `Ctrl+K`, `⌘K` | Focaliser la recherche globale | Fonctionne même navigation repliée ; `Échap` efface |
+| `/`, `Ctrl+K`, `⌘K` | Ouvrir la palette de commandes / Recherche globale | Fonctionne même navigation repliée ; `Échap` efface |
 | `Entrée`, `Ctrl+S`, `⌘S` | Sauvegarder le projet actif | Le bouton reste inactif tant qu’aucun nom n’est saisi |
 | `?`, `H`, `F1`, `Ctrl+/` | Ouvrir l’aide | La boîte de dialogue reste consultable |
 | `D` | Basculer en mode sombre | Aussi disponible dans **Paramètres → Thèmes** ; le bouton d’en-tête, la sélection d’onboarding et la case Paramètres restent synchronisés automatiquement. |

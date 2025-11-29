@@ -33,6 +33,10 @@ If you see something that can be improved, feel free to open an issue or pull re
 
 Interested in hacking on the code? Great! Follow these steps to set up a local development environment:
 
+> [!IMPORTANT]
+> **Always run the app via a local server** (e.g., `npm run serve` or `python3 -m http.server`) when developing and testing. Do not use the `file://` protocol.
+
+
 1.  **Fork the repository** (click the "Fork" button at the top right of this page) and clone your fork:
     ```sh
     git clone https://github.com/<your-username>/cine-power-planner.git

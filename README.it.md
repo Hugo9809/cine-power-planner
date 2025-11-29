@@ -483,7 +483,7 @@ Le autonomie fornite dagli utenti alimentano un modello ponderato per riflettere
 
 | Scorciatoia | Azione | Note |
 | --- | --- | --- |
-| `/`, `Ctrl+K`, `⌘K` | Focalizza la ricerca globale | Funziona anche con navigazione collassata; `Esc` svuota |
+| `/`, `Ctrl+K`, `⌘K` | Apri Palette dei Comandi / Ricerca Globale | Funziona anche con navigazione collassata; `Esc` svuota |
 | `Invio`, `Ctrl+S`, `⌘S` | Salva il progetto attivo | Il pulsante resta disabilitato finché non inserisci un nome |
 | `?`, `H`, `F1`, `Ctrl+/` | Apri il centro assistenza | Il dialogo resta ricercabile |
 | `D` | Attiva/disattiva il tema scuro | Disponibile anche in **Impostazioni → Temi**; interruttore in testata, selettore onboarding e casella nelle Impostazioni restano sincronizzati automaticamente. |

@@ -9231,9 +9231,9 @@ body.pink-mode #topBar #logo .logo-pink {
 
 .feature-search-option {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   border: none;
   background: none;
@@ -9244,6 +9244,30 @@ body.pink-mode #topBar #logo .logo-pink {
   cursor: pointer;
   border-radius: 6px;
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.feature-search-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.feature-search-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--muted-text-color);
+  flex-shrink: 0;
+}
+
+.feature-search-option:hover .feature-search-option-icon,
+.feature-search-option:focus .feature-search-option-icon,
+.feature-search-option[aria-selected="true"] .feature-search-option-icon {
+  color: var(--accent-color);
 }
 
 .feature-search-option:hover,
@@ -13504,23 +13528,21 @@ body.menu-open #menuOverlay {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 
-/* Avatar Options Dialog Redesign */
+/* Avatar Drag and Drop */
 .avatar-options-dialog {
-  --avatar-dialog-width: 400px;
-  --avatar-preview-size: 160px;
-}
-
-.avatar-options-surface {
-  width: var(--avatar-dialog-width);
-  max-width: 100%;
+  --avatar-drop-bg: var(--surface-2);
+  --avatar-drop-border: var(--outline-variant);
+  --avatar-drop-hover: var(--primary-container);
+  --avatar-drop-hover-border: var(--primary);
+  --avatar-viewport-size: 280px;
 }
 
 .avatar-options-body {
-  padding: var(--spacing-xl);
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-4);
   align-items: center;
-  gap: var(--spacing-lg);
+  padding: var(--spacing-4);
 }
 
 .avatar-options-content {
@@ -13528,84 +13550,54 @@ body.menu-open #menuOverlay {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-4);
 }
 
 .avatar-drop-zone {
   width: 100%;
-  border: 2px dashed var(--control-border);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-xl);
+  max-width: 320px;
+  height: 200px;
+  border: 2px dashed var(--avatar-drop-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--avatar-drop-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-3);
   cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: var(--panel-bg);
+  transition: all var(--duration-short) var(--easing-standard);
   position: relative;
   overflow: hidden;
 }
 
 .avatar-drop-zone:hover,
 .avatar-drop-zone.drag-over {
-  border-color: var(--accent-color);
-  background-color: color-mix(in srgb, var(--accent-color) 5%, var(--panel-bg));
-}
-
-.avatar-drop-zone.drag-over {
-  transform: scale(1.02);
-}
-
-.avatar-preview-container {
-  width: var(--avatar-preview-size);
-  height: var(--avatar-preview-size);
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: var(--control-bg);
-  border: 4px solid var(--surface-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 2;
-}
-
-.avatar-options-preview {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-preview-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background-color: var(--avatar-drop-hover);
+  border-color: var(--avatar-drop-hover-border);
 }
 
 .avatar-drop-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  color: var(--text-muted);
+  color: var(--on-surface-variant);
   pointer-events: none;
-  /* Let clicks pass through to the drop zone */
 }
 
 .avatar-drop-icon {
-  font-size: 2rem;
-  color: var(--accent-color);
-  margin-bottom: var(--spacing-xs);
-  display: block;
+  font-size: 32px;
+  margin-bottom: var(--spacing-2);
+  color: var(--primary);
 }
 
 .avatar-drop-text {
   font-weight: var(--font-weight-medium);
-  color: var(--text-color);
-  margin: 0;
+  font-size: var(--font-size-body-large);
 }
 
 .avatar-drop-subtext {
-  font-size: var(--font-scale-sm);
   margin: 0;
   opacity: 0.8;
 }

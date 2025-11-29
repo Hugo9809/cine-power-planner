@@ -21,7 +21,7 @@ restore workflows protect every bit of user data.
    - [ ] Restore connectivity and reload; verify the app returns to the modern bundle automatically and the legacy flag remains absent.
    - [ ] In the DevTools console confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and `window.cinePowerPlanner.version` match the release identifier recorded for this rehearsal.
 2. **Manual save**
-   - [ ] Modify project notes, press **Save** (or `Ctrl+S` / `⌘S`).
+   - [ ] Modify project notes, press **Save** (or `Ctrl+S` / `⌘S` / Command Palette).
    - [ ] Verify confirmation toast, check autosave ledger entry.
 3. **Autosave cadence**
    - [ ] Make >50 changes or wait 10 minutes.

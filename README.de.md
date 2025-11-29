@@ -247,6 +247,12 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
 - **Ausreichender lokaler Speicher.** Große Produktionen erzeugen viele Projekte, Backups und Gerätelisten. Beobachte den Speicherplatz deines Browserprofils und exportiere regelmäßig auf redundante Medien.
 - **Keine externen Abhängigkeiten.** Alle Icons, Fonts und Hilfsskripte liegen im Repository. Kopiere Ordner wie `animated icons 3/` und lokale Uicons mit, damit Optik und Scripts identisch bleiben.
 
+- **Überarbeitete Druckvorschau**: Sidebar-basiertes Druckerlebnis mit Echtzeit-Vorschau.
+- **Erweiterte Befehlspalette**: `Cmd+K` / `Strg+K` für Schnellaktionen.
+- **Interaktive Kontaktfotos**: Avatar-Verwaltung per Drag-and-Drop.
+- **Pink Mode Refactor**: Verbesserte Animationen und Icon-Regen.
+
+### Frühere Updates
 ## Speicher-, Teil- & Import-Drill
 
 Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Workstations oder größeren Updates durchgeführt werden. Er zeigt, dass Speichern, Teilen, Import, Backup und Restore ohne Netzwerk funktionieren.
@@ -484,7 +490,7 @@ Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetes Modell:
 
 | Shortcut | Aktion | Hinweise |
 | --- | --- | --- |
-| `/`, `Strg+K`, `⌘K` | Globale Suche fokussieren | Funktioniert auch bei eingeklappter Navigation, `Esc` löscht |
+| `/`, `Strg+K`, `⌘K` | Command Palette / Globale Suche öffnen | Funktioniert auch bei eingeklappter Navigation, `Esc` löscht |
 | `Enter`, `Strg+S`, `⌘S` | Aktives Projekt speichern | Button bleibt deaktiviert bis ein Name gesetzt ist |
 | `?`, `H`, `F1`, `Strg+/` | Hilfe öffnen | Dialog bleibt durchsuchtbar |
 | `D` | Dark Mode umschalten | Ebenfalls in **Einstellungen → Themes**; Header-Schalter, Onboarding-Auswahl und Einstellungen bleiben automatisch synchron. |

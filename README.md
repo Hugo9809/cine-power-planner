@@ -413,6 +413,10 @@ localization steps.
 
 ## What’s New
 
+- **Redesigned Print Preview** – a new sidebar-based print experience brings real-time previews, layout settings and PDF export controls directly into the planner so you can fine-tune reports without guessing.
+- **Enhanced Command Palette** – press `Cmd+K` (or `Ctrl+K`) to access a command center for quick actions like creating projects, toggling dark mode, adding devices or jumping to specific features.
+- **Interactive Contact Photos** – drag and drop image files directly onto contact cards to update avatars instantly, with new cropping and preview tools to keep your crew roster looking professional.
+- **Pink Mode Refactor** – enjoy smoother animations and a more robust "icon rain" effect when using the Pink theme, now with improved performance and reliability.
 - **Backup version comparisons** – pick any manual save or timestamped
   auto-backup to review diffs, add incident notes and export a log before you
   roll a change back or hand footage to post.
@@ -1269,7 +1273,7 @@ experience:
 
 | Shortcut | Action | Notes |
 | --- | --- | --- |
-| `/`, `Ctrl+K`, `⌘K` | Focus the global search field. | Works even when navigation is collapsed; press `Esc` to clear. |
+| `/`, `Ctrl+K`, `⌘K` | Open Command Palette / Global Search. | Works even when navigation is collapsed; press `Esc` to clear. |
 | `Enter`, `Ctrl+S`, `⌘S` | Save the active project. | The Save button stays disabled until a project name is entered. |
 | `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog stays searchable while you type elsewhere. |
 | `D` | Toggle dark mode. | Also available from **Settings → Themes**; all theme controls (header, onboarding and Settings) stay synchronized automatically. |
@@ -1420,6 +1424,10 @@ coverage and recovery instructions. Each update should:
 ## Development
 
 Set up with Node.js 18 or later. After cloning the repository:
+
+> [!IMPORTANT]
+> **Always run the app via a local server** (e.g., `npm run serve` or `python3 -m http.server`) when developing and testing. Do not use the `file://` protocol.
+
 
 ```bash
 npm install

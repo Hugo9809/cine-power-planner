@@ -482,7 +482,7 @@ Los tiempos aportados por usuarios alimentan un modelo ponderado para aproximars
 
 | Atajo | Acción | Notas |
 | --- | --- | --- |
-| `/`, `Ctrl+K`, `⌘K` | Enfocar la búsqueda global | Funciona incluso con navegación plegada; `Esc` limpia |
+| `/`, `Ctrl+K`, `⌘K` | Abrir Paleta de Comandos / Búsqueda Global | Funciona incluso con navegación plegada; `Esc` limpia |
 | `Enter`, `Ctrl+S`, `⌘S` | Guardar el proyecto activo | El botón Guardar se habilita tras introducir un nombre |
 | `?`, `H`, `F1`, `Ctrl+/` | Abrir la ayuda | El diálogo sigue siendo buscable mientras escribes |
 | `D` | Cambiar a modo oscuro | También disponible en **Configuración → Temas**; el selector de onboarding, el interruptor de la barra superior y la casilla de Configuración se mantienen sincronizados automáticamente. |

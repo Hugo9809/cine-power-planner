@@ -3,6 +3,11 @@
 This document outlines the testing strategy, available test scripts, and known limitations for the Cine Power Planner application.
 
 ## Overview
+
+> [!IMPORTANT]
+> **ALWAYS run the app via the local server (e.g., `npm run serve` or `python3 -m http.server`) for testing.**
+> Do NOT test via the `file://` protocol. The application relies on features that may not work correctly when opened directly from the file system.
+
 The testing suite is designed to verify critical user flows and logic. Due to current limitations in the automated browser environment (connection resets, page load hangs), these scripts are primarily intended for **manual execution** or use in a stable local development environment.
 
 ## Test Scripts
