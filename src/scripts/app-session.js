@@ -13094,7 +13094,7 @@ if (factoryResetButton) {
           } catch (animationError) {
             console.warn('Failed to stop pink mode animations during factory reset', animationError);
           }
-          clearAllData();
+          await clearAllData();
           try {
             if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
               const eventName = 'cameraPowerPlannerFactoryReset';

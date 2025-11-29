@@ -212,14 +212,17 @@ th {
 #gearListOutput .gear-rental-toggle {
   margin-left: auto;
   font-size: 0.75rem;
-  padding: 0.125em 0.3em;
+  padding: 0 0.3em;
   line-height: 1;
-  min-height: auto;
-  height: auto;
+  min-height: 0;
+  height: 1.25em;
+  display: inline-flex;
+  align-items: center;
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   font-weight: var(--font-weight-bold);
+  border: none;
 }
 
 .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,

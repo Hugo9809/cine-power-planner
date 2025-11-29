@@ -938,6 +938,16 @@
           'animated icons 3/video-camera.json'
         ]);
 
+        function getPinkModeEmbeddedAssetStore() {
+          if (typeof window !== 'undefined' && window.pinkModeEmbeddedAssets) {
+            return window.pinkModeEmbeddedAssets;
+          }
+          if (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.pinkModeEmbeddedAssets) {
+            return GLOBAL_SCOPE.pinkModeEmbeddedAssets;
+          }
+          return null;
+        }
+
         function collectPinkModeAnimatedIconFiles() {
           const seen = new Set();
           const collected = [];
