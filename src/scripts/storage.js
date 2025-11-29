@@ -5143,6 +5143,15 @@
       }
     }
 
+    if (
+      parsedValue &&
+      typeof parsedValue === 'object' &&
+      ((Array.isArray(parsedValue) && parsedValue.length === 0) ||
+        (!Array.isArray(parsedValue) && Object.keys(parsedValue).length === 0))
+    ) {
+      return parsedValue;
+    }
+
     createStorageMigrationBackup(storage, key, parsedValue);
     return parsedValue;
   }
@@ -14648,6 +14657,7 @@
     }
 
     const safeStorage = getSafeLocalStorage();
+    deleteFromStorage(safeStorage, 'cineBackupVaultFallbackRecords', msg);
     deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
@@ -14675,6 +14685,8 @@
     deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
+      deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
+      deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
     }
     const preferenceKeys = [
       'darkMode',
@@ -14840,6 +14852,15 @@
 
     clearStorages(storageCandidates);
     clearStorages(sessionCandidates);
+
+    try {
+      const logging = GLOBAL_SCOPE && GLOBAL_SCOPE.cineLogging ? GLOBAL_SCOPE.cineLogging : null;
+      if (logging && typeof logging.clearHistory === 'function') {
+        logging.clearHistory({ persist: false });
+      }
+    } catch (loggingError) {
+      console.warn('Unable to clear logging history during factory reset', loggingError);
+    }
   }
 
   // --- Export/Import All Planner Data ---
