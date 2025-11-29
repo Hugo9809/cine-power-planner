@@ -15853,35 +15853,7 @@ if (helpButton && helpDialog) {
     }
   };
 
-  // Mobile Sidebar Logic
-  const helpMobileToggle = document.getElementById('helpMobileToggle');
-  const helpSidebar = helpDialog ? helpDialog.querySelector('.mockup-sidebar') : null;
 
-  if (helpMobileToggle && helpDialog) {
-    helpMobileToggle.addEventListener('click', () => {
-      helpDialog.classList.toggle('sidebar-open');
-    });
-
-    // Close sidebar when clicking outside on mobile (backdrop)
-    helpDialog.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 &&
-        helpDialog.classList.contains('sidebar-open') &&
-        !e.target.closest('.mockup-sidebar') &&
-        !e.target.closest('.help-mobile-toggle')) {
-        helpDialog.classList.remove('sidebar-open');
-      }
-    });
-
-    // Close sidebar when a link is clicked
-    helpDialog.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 && e.target.closest('button') && helpDialog.classList.contains('sidebar-open')) {
-        // If it's a quick link or topic link, close the sidebar
-        if (e.target.closest('.help-topic-link') || e.target.closest('#helpQuickLinksList button')) {
-          helpDialog.classList.remove('sidebar-open');
-        }
-      }
-    });
-  }
 
   // Hover help mode displays a tooltip describing whichever element the user
   // points at or focuses. It is triggered from a button inside the dialog and

@@ -10058,13 +10058,12 @@ body.light-mode #topBar select:focus-visible {
 }
 
 .diagram-popup[class*="diagram-popup--"] {
-  border-color: var(--popup-accent);
-  border-width: 2px;
+  border: none;
 }
 
 .diagram-popup[class*="diagram-popup--"] .diagram-popup__header {
-  background-color: color-mix(in srgb, var(--popup-accent) 15%, transparent);
-  border-bottom-color: color-mix(in srgb, var(--popup-accent) 30%, transparent);
+  background-color: transparent;
+  border-bottom: none;
   margin: calc(-1 * clamp(1rem, 2.4vw, 1.65rem));
   margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
   padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2.4vw, 1.65rem);
@@ -10076,7 +10075,7 @@ body.light-mode #topBar select:focus-visible {
 
 /* Dark mode adjustments for popups */
 .dark-mode .diagram-popup[class*="diagram-popup--"] .diagram-popup__header {
-  background-color: color-mix(in srgb, var(--popup-accent) 25%, transparent);
+  background-color: transparent;
 }
 
 
@@ -10225,7 +10224,7 @@ body.light-mode #topBar select:focus-visible {
   padding: 2px 6px;
   margin: 2px;
   border-radius: 3px;
-  border: 1px solid;
+  border: none;
   background-color: transparent;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
 }

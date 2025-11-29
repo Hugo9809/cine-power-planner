@@ -12041,26 +12041,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
         avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
       }
-      if (avatarEditTitle && contactsTexts.avatarEditAction) {
-        avatarEditTitle.textContent = contactsTexts.avatarEditAction;
-      }
-      if (avatarEditInstructions && contactsTexts.avatarEditInstructions) {
-        avatarEditInstructions.textContent = contactsTexts.avatarEditInstructions;
-      }
       if (avatarEditZoomLabelElem && contactsTexts.avatarEditZoomLabel) {
         avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
-      }
-      if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
-        setButtonLabelWithIconBinding(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
-        avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
-        avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
-        avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
-      }
-      if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
-        setButtonLabelWithIconBinding(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
-        avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
-        avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
-        avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
       }
       if (contactsCloseButton && contactsTexts.close) {
         contactsCloseButton.textContent = contactsTexts.close;
@@ -12380,6 +12362,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarEditZoomInput = avatarEditZoomInput || document.getElementById('avatarEditZoom');
     avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
     avatarUploadInput = avatarUploadInput || document.getElementById('avatarUploadInput');
+    avatarOptionsDeleteButton = avatarOptionsDeleteButton || document.getElementById('avatarDeleteButton');
     avatarSaveButton = avatarSaveButton || document.getElementById('avatarSaveButton');
     avatarCancelButton = avatarCancelButton || document.getElementById('avatarCancelButton');
   }

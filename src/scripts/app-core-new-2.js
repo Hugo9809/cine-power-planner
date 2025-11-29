@@ -13895,23 +13895,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             const baseDesc = value ? `${label}: ${value}` : label;
             const logic = describeRequirement(field, value);
             const desc = logic ? `${baseDesc} – ${logic}` : baseDesc;
-            box.setAttribute('title', desc);
-            box.setAttribute('data-help', desc);
+
+            if (desc && desc.trim()) {
+              box.setAttribute('title', desc);
+              box.setAttribute('data-help', desc);
+              box.setAttribute('aria-label', desc);
+            } else {
+              box.removeAttribute('title');
+              box.removeAttribute('data-help');
+              box.removeAttribute('aria-label');
+            }
+
             if (!box.hasAttribute('tabindex')) {
               box.setAttribute('tabindex', '0');
             }
             if (!box.hasAttribute('role')) {
               box.setAttribute('role', 'group');
             }
-            if (desc) {
-              box.setAttribute('aria-label', desc);
-            } else if (baseDesc) {
-              box.setAttribute('aria-label', baseDesc);
-            }
+
             box.addEventListener('keydown', handleRequirementBoxKeydown);
             box.querySelectorAll('.req-label, .req-value').forEach(el => {
-              el.setAttribute('title', desc);
-              el.setAttribute('data-help', desc);
+              if (desc && desc.trim()) {
+                el.setAttribute('title', desc);
+                el.setAttribute('data-help', desc);
+              } else {
+                el.removeAttribute('title');
+                el.removeAttribute('data-help');
+              }
             });
           });
           adjustGearListSelectWidths(projectRequirementsOutput);

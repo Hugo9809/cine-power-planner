@@ -3825,6 +3825,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           'src/scripts/modules/globals.js',
           'src/scripts/modules/localization.js',
           'src/scripts/modules/offline.js',
+          'src/scripts/data/pink-mode-animated-icons.js',
         ]
       },
       'src/scripts/storage.js',
@@ -3886,8 +3887,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/auto-gear-monitoring.js',
       'src/scripts/overview.js',
       'src/scripts/autosave-overlay.js',
-      'src/scripts/modules/features/onboarding-tour.js',
-      'src/scripts/data/pink-mode-animated-icons.js'
+      'src/scripts/modules/features/onboarding-tour.js'
     ],
   };
 
@@ -3911,6 +3911,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           'legacy/data/devices/cages.js',
           'legacy/data/devices/gearList.js',
           'legacy/data/devices/wirelessReceivers.js',
+          'legacy/scripts/data/pink-mode-animated-icons.js',
         ]
       },
       'legacy/scripts/storage.js',
@@ -3981,8 +3982,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/auto-gear-monitoring.js',
       'legacy/scripts/overview.js',
       'legacy/scripts/autosave-overlay.js',
-      'legacy/scripts/modules/features/onboarding-tour.js',
-      'legacy/scripts/data/pink-mode-animated-icons.js'
+      'legacy/scripts/modules/features/onboarding-tour.js'
     ],
   };
 
