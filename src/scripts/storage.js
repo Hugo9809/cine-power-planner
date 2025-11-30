@@ -2023,9 +2023,14 @@
           && typeof console !== 'undefined'
           && console
           && typeof console.warn === 'function') {
-          console.warn(
-            'Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.',
-          );
+          try {
+            console.warn(
+              'Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.',
+            );
+          } catch (e) {
+            void e;
+            // Ignore warning errors during recursion
+          }
         }
         if (cloneState) {
           cloneState.reportedCycle = true;
@@ -6388,11 +6393,21 @@
     return LEGACY_LONG_GOP_TOKEN_REGEX.test(key) ? 'long-gop' : key;
   }
 
-  function normalizeLegacyLongGopStructure(value) {
+  function normalizeLegacyLongGopStructure(value, visited) {
+    if (value === null || typeof value !== 'object') {
+      return normalizeLegacyLongGopString(value);
+    }
+
+    const seen = visited || new WeakSet();
+    if (seen.has(value)) {
+      return value;
+    }
+    seen.add(value);
+
     if (Array.isArray(value)) {
       let changed = false;
       const normalizedArray = value.map((item) => {
-        const normalizedItem = normalizeLegacyLongGopStructure(item);
+        const normalizedItem = normalizeLegacyLongGopStructure(item, seen);
         if (normalizedItem !== item) {
           changed = true;
         }
@@ -6407,7 +6422,7 @@
       Object.keys(value).forEach((key) => {
         const normalizedKey = normalizeLegacyLongGopKey(key);
         const originalValue = value[key];
-        const normalizedValue = normalizeLegacyLongGopStructure(originalValue);
+        const normalizedValue = normalizeLegacyLongGopStructure(originalValue, seen);
         if (normalizedKey !== key || normalizedValue !== originalValue) {
           changed = true;
         }
@@ -9133,29 +9148,24 @@
 
     if (!isPlainObject(data.fiz)) {
       data.fiz = {};
-      rawData.fiz = data.fiz;
       changed = true;
     }
     FIZ_COLLECTION_KEYS.forEach((key) => {
-      const collection = ensureObject(data.fiz, key);
-      rawData.fiz[key] = collection;
+      ensureObject(data.fiz, key);
     });
 
     if (!isPlainObject(data.accessories)) {
       data.accessories = {};
-      rawData.accessories = data.accessories;
       changed = true;
     }
     ACCESSORY_COLLECTION_KEYS.forEach((key) => {
-      const collection = ensureObject(data.accessories, key);
-      rawData.accessories[key] = collection;
+      ensureObject(data.accessories, key);
     });
 
     if (!Array.isArray(data.filterOptions)) {
       data.filterOptions = Array.isArray(rawData.filterOptions)
         ? rawData.filterOptions.slice()
         : [];
-      rawData.filterOptions = data.filterOptions;
       changed = true;
     }
 
@@ -13639,15 +13649,23 @@
     return trimmed;
   };
 
-  function normalizeImportedFullBackupHistory(value) {
+  function normalizeImportedFullBackupHistory(value, visited) {
     if (value === null || value === undefined) {
       return [];
+    }
+
+    const seen = visited || new WeakSet();
+    if (seen.has(value)) {
+      return [];
+    }
+    if (typeof value === 'object') {
+      seen.add(value);
     }
 
     if (isMapLike(value)) {
       const converted = convertMapLikeToObject(value);
       if (converted) {
-        return normalizeImportedFullBackupHistory(Object.values(converted));
+        return normalizeImportedFullBackupHistory(Object.values(converted), seen);
       }
       return [];
     }
@@ -13655,7 +13673,7 @@
     if (typeof value === 'string') {
       const parsed = tryParseJSONLike(value);
       if (parsed.success) {
-        return normalizeImportedFullBackupHistory(parsed.parsed);
+        return normalizeImportedFullBackupHistory(parsed.parsed, seen);
       }
       const entry = normalizeFullBackupHistoryEntry(value);
       return entry ? [entry] : [];
@@ -13669,13 +13687,13 @@
 
     if (isPlainObject(value)) {
       if (Array.isArray(value.history)) {
-        return normalizeImportedFullBackupHistory(value.history);
+        return normalizeImportedFullBackupHistory(value.history, seen);
       }
       if (Array.isArray(value.entries)) {
-        return normalizeImportedFullBackupHistory(value.entries);
+        return normalizeImportedFullBackupHistory(value.entries, seen);
       }
       if (Array.isArray(value.list)) {
-        return normalizeImportedFullBackupHistory(value.list);
+        return normalizeImportedFullBackupHistory(value.list, seen);
       }
       const entry = normalizeFullBackupHistoryEntry(value);
       if (entry) {
@@ -13683,7 +13701,7 @@
       }
       const nestedValues = Object.values(value);
       if (nestedValues.length) {
-        return normalizeImportedFullBackupHistory(nestedValues);
+        return normalizeImportedFullBackupHistory(nestedValues, seen);
       }
     }
 
@@ -14055,7 +14073,24 @@
     if (normalizedRules !== rules) {
       saveAutoGearRules(normalizedRules, { skipNormalization: true });
     }
-    return Array.isArray(normalizedRules) ? normalizedRules : [];
+
+    if (Array.isArray(normalizedRules)) {
+      let defaultsApplied = false;
+      const withDefaults = normalizedRules.map(rule => {
+        if (rule && typeof rule === 'object' && typeof rule.enabled === 'undefined') {
+          defaultsApplied = true;
+          return { ...rule, enabled: true };
+        }
+        return rule;
+      });
+
+      if (defaultsApplied) {
+        return withDefaults;
+      }
+      return normalizedRules;
+    }
+
+    return [];
   }
 
   function saveAutoGearRules(rules, options = {}) {

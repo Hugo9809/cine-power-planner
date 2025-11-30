@@ -5145,7 +5145,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
 
-    const loaderNamespace = fallbackRequireCoreRuntimeModule('./app-core-auto-backup.js');
+    let loaderNamespace = null;
+    if (typeof fallbackRequireCoreRuntimeModule === 'function') {
+      loaderNamespace = fallbackRequireCoreRuntimeModule('./app-core-auto-backup.js');
+    } else if (
+      typeof cineRuntimeBootstrapExports === 'object' &&
+      cineRuntimeBootstrapExports &&
+      typeof cineRuntimeBootstrapExports.fallbackRequireCoreRuntimeModule === 'function'
+    ) {
+      loaderNamespace = cineRuntimeBootstrapExports.fallbackRequireCoreRuntimeModule('./app-core-auto-backup.js');
+    } else {
+      // Last ditch attempt to find it on global scope
+      const globalScope =
+        (typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null) ||
+        (typeof globalThis !== 'undefined' ? globalThis : null) ||
+        (typeof window !== 'undefined' ? window : null) ||
+        (typeof self !== 'undefined' ? self : null) ||
+        (typeof global !== 'undefined' ? global : null);
+
+      if (globalScope && typeof globalScope.fallbackRequireCoreRuntimeModule === 'function') {
+        loaderNamespace = globalScope.fallbackRequireCoreRuntimeModule('./app-core-auto-backup.js');
+      }
+    }
+
     if (loaderNamespace && typeof loaderNamespace === 'object') {
       return loaderNamespace;
     }
@@ -17101,527 +17123,456 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const isVideoLike =
       category === "video" ||
       category === "wirelessReceivers" ||
-      category === "iosVideo" ||
-      (data &&
-        (data.videoInputs ||
-          data.videoOutputs ||
-          data.frequency ||
-          (data.video && (data.video.inputs || data.video.outputs))));
-    if (isVideoLike) {
-      videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
+      category === "iosVideo";
+
+    if (isVideoLike && typeof videoFieldsDiv !== 'undefined' && videoFieldsDiv) {
+      addDeviceForm.insertBefore(wattFieldDiv, videoFieldsDiv);
     } else {
       addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
     }
   }
+}
+try {
   exposeCoreRuntimeConstant('placeWattField', placeWattField);
+} catch (error) {
+  void error;
   if (typeof window !== 'undefined') window.placeWattField = placeWattField;
-  var motorFieldsDiv = document.getElementById("motorFields");
-  var motorConnectorInput = document.getElementById("motorConnector");
-  var motorInternalInput = document.getElementById("motorInternal");
-  var motorTorqueInput = document.getElementById("motorTorque");
-  var motorGearInput = document.getElementById("motorGearTypes");
-  var motorNotesInput = document.getElementById("motorNotes");
-  var controllerFieldsDiv = document.getElementById("controllerFields");
-  var controllerConnectorInput = document.getElementById("controllerConnector");
-  var controllerPowerInput = document.getElementById("controllerPower");
-  var controllerBatteryInput = document.getElementById("controllerBattery");
-  var controllerConnectivityInput = document.getElementById("controllerConnectivity");
-  var controllerNotesInput = document.getElementById("controllerNotes");
-  var distanceFieldsDiv = document.getElementById("distanceFields");
-  var distanceConnectionInput = document.getElementById("distanceConnection");
-  var distanceMethodInput = document.getElementById("distanceMethod");
-  var distanceRangeInput = document.getElementById("distanceRange");
-  var distanceAccuracyInput = document.getElementById("distanceAccuracy");
-  var distanceOutputInput = document.getElementById("distanceOutput");
-  var distanceNotesInput = document.getElementById("distanceNotes");
-  const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
-  const cameraMediaContainer = document.getElementById("cameraMediaContainer");
-  const lensMountContainer = document.getElementById("lensMountContainer");
-  var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
-  const powerDistContainer = document.getElementById("powerDistContainer");
-  const videoOutputsContainer = document.getElementById("videoOutputsContainer");
-  const fizConnectorContainer = document.getElementById("fizConnectorContainer");
-  var viewfinderContainer = document.getElementById("viewfinderContainer");
-  const timecodeContainer = document.getElementById("timecodeContainer");
-  var batteryFieldsDiv = document.getElementById("batteryFields");
-  var newCapacityInput = document.getElementById("newCapacity");
-  var newPinAInput = document.getElementById("newPinA");
-  var newDtapAInput = document.getElementById("newDtapA");
-  var dtapRow = newDtapAInput ? newDtapAInput.parentElement : null;
-  var addDeviceBtn = document.getElementById("addDeviceBtn");
-  var cancelEditBtn = document.getElementById("cancelEditBtn");
-  var exportBtn = document.getElementById("exportDataBtn");
-  var exportOutput = document.getElementById("exportOutput");
-  var importFileInput = document.getElementById("importFileInput");
-  var importDataBtn = document.getElementById("importDataBtn");
-  var skipLink = document.getElementById("skipLink");
+}
+var motorFieldsDiv = document.getElementById("motorFields");
+var motorConnectorInput = document.getElementById("motorConnector");
+var motorInternalInput = document.getElementById("motorInternal");
+var motorTorqueInput = document.getElementById("motorTorque");
+var motorGearInput = document.getElementById("motorGearTypes");
+var motorNotesInput = document.getElementById("motorNotes");
+var controllerFieldsDiv = document.getElementById("controllerFields");
+var controllerConnectorInput = document.getElementById("controllerConnector");
+var controllerPowerInput = document.getElementById("controllerPower");
+var controllerBatteryInput = document.getElementById("controllerBattery");
+var controllerConnectivityInput = document.getElementById("controllerConnectivity");
+var controllerNotesInput = document.getElementById("controllerNotes");
+var distanceFieldsDiv = document.getElementById("distanceFields");
+var distanceConnectionInput = document.getElementById("distanceConnection");
+var distanceMethodInput = document.getElementById("distanceMethod");
+var distanceRangeInput = document.getElementById("distanceRange");
+var distanceAccuracyInput = document.getElementById("distanceAccuracy");
+var distanceOutputInput = document.getElementById("distanceOutput");
+var distanceNotesInput = document.getElementById("distanceNotes");
+const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
+const cameraMediaContainer = document.getElementById("cameraMediaContainer");
+const lensMountContainer = document.getElementById("lensMountContainer");
+var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
+const powerDistContainer = document.getElementById("powerDistContainer");
+const videoOutputsContainer = document.getElementById("videoOutputsContainer");
+const fizConnectorContainer = document.getElementById("fizConnectorContainer");
+var viewfinderContainer = document.getElementById("viewfinderContainer");
+const timecodeContainer = document.getElementById("timecodeContainer");
+var batteryFieldsDiv = document.getElementById("batteryFields");
+var newCapacityInput = document.getElementById("newCapacity");
+var newPinAInput = document.getElementById("newPinA");
+var newDtapAInput = document.getElementById("newDtapA");
+var dtapRow = newDtapAInput ? newDtapAInput.parentElement : null;
+var addDeviceBtn = document.getElementById("addDeviceBtn");
+var cancelEditBtn = document.getElementById("cancelEditBtn");
+var exportBtn = document.getElementById("exportDataBtn");
+var exportOutput = document.getElementById("exportOutput");
+var importFileInput = document.getElementById("importFileInput");
+var importDataBtn = document.getElementById("importDataBtn");
+var skipLink = document.getElementById("skipLink");
 
-  function resolveGlobalFocusScalePreference() {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
-    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
-      ? scope.focusScalePreference
-      : null;
-    const rawPreference = scopePreference
-      || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
-      || 'metric';
-    if (typeof normalizeFocusScale === 'function') {
+function resolveGlobalFocusScalePreference() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+  const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+    ? scope.focusScalePreference
+    : null;
+  const rawPreference = scopePreference
+    || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
+    || 'metric';
+  if (typeof normalizeFocusScale === 'function') {
+    try {
+      const normalized = normalizeFocusScale(rawPreference);
+      if (normalized === 'imperial' || normalized === 'metric') {
+        return normalized;
+      }
+    } catch (focusScaleNormalizeError) {
+      void focusScaleNormalizeError;
+    }
+  }
+  const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+  return normalized === 'imperial' ? 'imperial' : 'metric';
+}
+
+const monitorExcludedAttributes = [
+  "screenSizeInches",
+  "brightnessNits",
+  "power",
+  "powerDrawWatts",
+  "videoInputs",
+  "videoOutputs",
+  "wirelessTx",
+  "latencyMs",
+  "audioOutput"
+];
+
+var categoryExcludedAttrs = {
+  batteries: ["capacity", "pinA", "dtapA"],
+  batteryHotswaps: ["capacity", "pinA"],
+  "accessories.batteries": ["capacity", "pinA"],
+  cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
+  lenses: ["mount", "mountOptions", "focusScale"],
+  monitors: monitorExcludedAttributes,
+  directorMonitors: monitorExcludedAttributes,
+  viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
+  video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  iosVideo: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  "fiz.motors": ["fizConnectors", "gearTypes", "internalController", "notes", "powerDrawWatts", "torqueNm"],
+  "fiz.controllers": ["batteryType", "connectivity", "fizConnectors", "internalController", "notes", "powerDrawWatts", "powerSource"],
+  "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
+};
+
+function updateLensFocusScaleSelectOptions(lang = currentLang, { preserveValue = true } = {}) {
+  if (!lensFocusScaleSelect) {
+    return;
+  }
+
+  const previousValue = preserveValue ? lensFocusScaleSelect.value : '';
+  const language = typeof lang === 'string' ? lang : currentLang;
+  const languageTexts = texts && language && texts[language] ? texts[language] : texts?.en || {};
+  const defaultLabelBase = languageTexts.lensFocusScaleDefault
+    || languageTexts.focusScaleSetting
+    || 'Use global focus scale';
+  const metricLabel = languageTexts.focusScaleMetric || 'Metric';
+  const imperialLabel = languageTexts.focusScaleImperial || 'Imperial';
+  const globalPreference = resolveGlobalFocusScalePreference();
+  const defaultLabel =
+    globalPreference === 'imperial'
+      ? `${defaultLabelBase} (${imperialLabel})`
+      : `${defaultLabelBase} (${metricLabel})`;
+
+  const desiredValue = previousValue && (previousValue === 'metric' || previousValue === 'imperial')
+    ? previousValue
+    : '';
+
+  lensFocusScaleSelect.innerHTML = '';
+
+  const addOption = (value, label) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    lensFocusScaleSelect.appendChild(option);
+  };
+
+  addOption('', defaultLabel);
+  addOption('metric', metricLabel);
+  addOption('imperial', imperialLabel);
+
+  lensFocusScaleSelect.value = desiredValue;
+}
+
+const schemaFieldConfigs = {
+  '*': {
+    brand: { type: 'text', placeholder: 'ARRI' },
+    model: { type: 'text', placeholder: 'Mini LF' },
+    notes: { type: 'textarea', rows: 3, placeholder: 'Additional notes' }
+  },
+  batteries: {
+    mount_type: { type: 'text', placeholder: 'V-Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  'accessories.batteries': {
+    mount_type: { type: 'text', placeholder: 'V-Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  batteryHotswaps: {
+    mount_type: { type: 'text', placeholder: 'Gold Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  cameras: {
+    recordingCodecs: { type: 'list', placeholder: 'ProRes 422 HQ' },
+    frameRates: { type: 'list', placeholder: '4K 120 fps' },
+    resolutions: { type: 'list', placeholder: '4.5K Open Gate' },
+    sensorModes: { type: 'list', placeholder: 'LF Open Gate' },
+    viewfinder: { type: 'json', rows: 4 },
+    timecode: { type: 'json', rows: 3 },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  monitors: {
+    audioInput: { type: 'text', placeholder: '3.5mm stereo' },
+    audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
+    audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
+    bluetooth: { type: 'boolean' },
+    latencyMs: { type: 'text', placeholder: '< 1ms' },
+    wireless: { type: 'text', placeholder: 'Bolt 6' },
+    wirelessRX: { type: 'boolean' },
+    wirelessTx: { type: 'boolean' }
+  },
+  directorMonitors: {
+    audioInput: { type: 'text', placeholder: '3.5mm stereo' },
+    audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
+    audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
+    bluetooth: { type: 'boolean' },
+    latencyMs: { type: 'text', placeholder: '< 1ms' },
+    wireless: { type: 'text', placeholder: 'Bolt 6' },
+    wirelessRX: { type: 'boolean' },
+    wirelessTx: { type: 'boolean' }
+  },
+  video: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  wirelessReceivers: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  iosVideo: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  'fiz.motors': {
+    gearTypes: { type: 'list', placeholder: '0.8 MOD' },
+    internalController: { type: 'boolean' }
+  },
+  'fiz.controllers': {
+    connectivity: { type: 'text', placeholder: '2.4 GHz' },
+    internalController: { type: 'boolean' }
+  },
+  'fiz.distance': {
+    accuracy: { type: 'text', placeholder: '± 1"' }
+  }
+};
+
+function formatAttributeLabel(attr) {
+  return attr
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .replace(/^./, ch => ch.toUpperCase())
+    .trim();
+}
+
+function resolveSchemaFieldConfig(category, attr) {
+  if (!category) return schemaFieldConfigs['*'][attr] || null;
+  const parts = category.split('.');
+  while (parts.length) {
+    const key = parts.join('.');
+    if (schemaFieldConfigs[key] && schemaFieldConfigs[key][attr]) {
+      return schemaFieldConfigs[key][attr];
+    }
+    parts.pop();
+  }
+  return schemaFieldConfigs['*'][attr] || null;
+}
+
+function autoRows(text, min = 3, max = 10) {
+  if (!text) return min;
+  const lines = text.split('\n').length + 1;
+  return Math.max(min, Math.min(max, lines));
+}
+
+function normalizeSchemaListValues(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map(item => (item === null || item === undefined ? '' : String(item).trim()))
+      .filter(Boolean);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function createSchemaListControl(options) {
+  const {
+    attrId,
+    labelText,
+    values = [],
+    placeholder = ''
+  } = options || {};
+
+  const ensureId = typeof ensureElementId === 'function'
+    ? ensureElementId
+    : (element, baseText) => {
+      if (!element) return '';
+      if (element.id) return element.id;
+      const base = (baseText || 'field').toString().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field';
+      let counter = 0;
+      let candidate = '';
+      do {
+        counter += 1;
+        candidate = `${base}-${counter}`;
+      } while (typeof document !== 'undefined' && document.getElementById(candidate));
       try {
-        const normalized = normalizeFocusScale(rawPreference);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (focusScaleNormalizeError) {
-        void focusScaleNormalizeError;
+        element.id = candidate;
+      } catch (assignError) {
+        void assignError;
       }
-    }
-    const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
-    return normalized === 'imperial' ? 'imperial' : 'metric';
-  }
-
-  const monitorExcludedAttributes = [
-    "screenSizeInches",
-    "brightnessNits",
-    "power",
-    "powerDrawWatts",
-    "videoInputs",
-    "videoOutputs",
-    "wirelessTx",
-    "latencyMs",
-    "audioOutput"
-  ];
-
-  var categoryExcludedAttrs = {
-    batteries: ["capacity", "pinA", "dtapA"],
-    batteryHotswaps: ["capacity", "pinA"],
-    "accessories.batteries": ["capacity", "pinA"],
-    cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
-    lenses: ["mount", "mountOptions", "focusScale"],
-    monitors: monitorExcludedAttributes,
-    directorMonitors: monitorExcludedAttributes,
-    viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
-    video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
-    wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
-    iosVideo: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
-    "fiz.motors": ["fizConnectors", "gearTypes", "internalController", "notes", "powerDrawWatts", "torqueNm"],
-    "fiz.controllers": ["batteryType", "connectivity", "fizConnectors", "internalController", "notes", "powerDrawWatts", "powerSource"],
-    "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
-  };
-
-  function updateLensFocusScaleSelectOptions(lang = currentLang, { preserveValue = true } = {}) {
-    if (!lensFocusScaleSelect) {
-      return;
-    }
-
-    const previousValue = preserveValue ? lensFocusScaleSelect.value : '';
-    const language = typeof lang === 'string' ? lang : currentLang;
-    const languageTexts = texts && language && texts[language] ? texts[language] : texts?.en || {};
-    const defaultLabelBase = languageTexts.lensFocusScaleDefault
-      || languageTexts.focusScaleSetting
-      || 'Use global focus scale';
-    const metricLabel = languageTexts.focusScaleMetric || 'Metric';
-    const imperialLabel = languageTexts.focusScaleImperial || 'Imperial';
-    const globalPreference = resolveGlobalFocusScalePreference();
-    const defaultLabel =
-      globalPreference === 'imperial'
-        ? `${defaultLabelBase} (${imperialLabel})`
-        : `${defaultLabelBase} (${metricLabel})`;
-
-    const desiredValue = previousValue && (previousValue === 'metric' || previousValue === 'imperial')
-      ? previousValue
-      : '';
-
-    lensFocusScaleSelect.innerHTML = '';
-
-    const addOption = (value, label) => {
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = label;
-      lensFocusScaleSelect.appendChild(option);
+      return element.id || candidate;
     };
 
-    addOption('', defaultLabel);
-    addOption('metric', metricLabel);
-    addOption('imperial', imperialLabel);
-
-    lensFocusScaleSelect.value = desiredValue;
-  }
-
-  const schemaFieldConfigs = {
-    '*': {
-      brand: { type: 'text', placeholder: 'ARRI' },
-      model: { type: 'text', placeholder: 'Mini LF' },
-      notes: { type: 'textarea', rows: 3, placeholder: 'Additional notes' }
-    },
-    batteries: {
-      mount_type: { type: 'text', placeholder: 'V-Mount' },
-      pinV: { type: 'number', step: '0.1', suffix: 'V' },
-      weight_g: { type: 'number', step: '1', suffix: 'g' }
-    },
-    'accessories.batteries': {
-      mount_type: { type: 'text', placeholder: 'V-Mount' },
-      pinV: { type: 'number', step: '0.1', suffix: 'V' },
-      weight_g: { type: 'number', step: '1', suffix: 'g' }
-    },
-    batteryHotswaps: {
-      mount_type: { type: 'text', placeholder: 'Gold Mount' },
-      pinV: { type: 'number', step: '0.1', suffix: 'V' },
-      weight_g: { type: 'number', step: '1', suffix: 'g' }
-    },
-    cameras: {
-      recordingCodecs: { type: 'list', placeholder: 'ProRes 422 HQ' },
-      frameRates: { type: 'list', placeholder: '4K 120 fps' },
-      resolutions: { type: 'list', placeholder: '4.5K Open Gate' },
-      sensorModes: { type: 'list', placeholder: 'LF Open Gate' },
-      viewfinder: { type: 'json', rows: 4 },
-      timecode: { type: 'json', rows: 3 },
-      weight_g: { type: 'number', step: '1', suffix: 'g' }
-    },
-    monitors: {
-      audioInput: { type: 'text', placeholder: '3.5mm stereo' },
-      audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
-      audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
-      bluetooth: { type: 'boolean' },
-      latencyMs: { type: 'text', placeholder: '< 1ms' },
-      wireless: { type: 'text', placeholder: 'Bolt 6' },
-      wirelessRX: { type: 'boolean' },
-      wirelessTx: { type: 'boolean' }
-    },
-    directorMonitors: {
-      audioInput: { type: 'text', placeholder: '3.5mm stereo' },
-      audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
-      audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
-      bluetooth: { type: 'boolean' },
-      latencyMs: { type: 'text', placeholder: '< 1ms' },
-      wireless: { type: 'text', placeholder: 'Bolt 6' },
-      wirelessRX: { type: 'boolean' },
-      wirelessTx: { type: 'boolean' }
-    },
-    video: {
-      frequency: { type: 'text', placeholder: '5 GHz' },
-      latencyMs: { type: 'text', placeholder: '1 ms' }
-    },
-    wirelessReceivers: {
-      frequency: { type: 'text', placeholder: '5 GHz' },
-      latencyMs: { type: 'text', placeholder: '1 ms' }
-    },
-    iosVideo: {
-      frequency: { type: 'text', placeholder: '5 GHz' },
-      latencyMs: { type: 'text', placeholder: '1 ms' }
-    },
-    'fiz.motors': {
-      gearTypes: { type: 'list', placeholder: '0.8 MOD' },
-      internalController: { type: 'boolean' }
-    },
-    'fiz.controllers': {
-      connectivity: { type: 'text', placeholder: '2.4 GHz' },
-      internalController: { type: 'boolean' }
-    },
-    'fiz.distance': {
-      accuracy: { type: 'text', placeholder: '± 1"' }
-    }
-  };
-
-  function formatAttributeLabel(attr) {
-    return attr
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/_/g, ' ')
-      .replace(/^./, ch => ch.toUpperCase())
-      .trim();
-  }
-
-  function resolveSchemaFieldConfig(category, attr) {
-    if (!category) return schemaFieldConfigs['*'][attr] || null;
-    const parts = category.split('.');
-    while (parts.length) {
-      const key = parts.join('.');
-      if (schemaFieldConfigs[key] && schemaFieldConfigs[key][attr]) {
-        return schemaFieldConfigs[key][attr];
-      }
-      parts.pop();
-    }
-    return schemaFieldConfigs['*'][attr] || null;
-  }
-
-  function autoRows(text, min = 3, max = 10) {
-    if (!text) return min;
-    const lines = text.split('\n').length + 1;
-    return Math.max(min, Math.min(max, lines));
-  }
-
-  function normalizeSchemaListValues(value) {
-    if (Array.isArray(value)) {
-      return value
-        .map(item => (item === null || item === undefined ? '' : String(item).trim()))
-        .filter(Boolean);
-    }
-    if (typeof value === 'string') {
-      return value
-        .split(/\r?\n/)
-        .map(item => item.trim())
-        .filter(Boolean);
-    }
-    return [];
-  }
-
-  function createSchemaListControl(options) {
-    const {
-      attrId,
-      labelText,
-      values = [],
-      placeholder = ''
-    } = options || {};
-
-    const ensureId = typeof ensureElementId === 'function'
-      ? ensureElementId
-      : (element, baseText) => {
-        if (!element) return '';
-        if (element.id) return element.id;
-        const base = (baseText || 'field').toString().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field';
-        let counter = 0;
-        let candidate = '';
-        do {
-          counter += 1;
-          candidate = `${base}-${counter}`;
-        } while (typeof document !== 'undefined' && document.getElementById(candidate));
-        try {
-          element.id = candidate;
-        } catch (assignError) {
-          void assignError;
-        }
-        return element.id || candidate;
-      };
-
-    const createLabel = typeof createHiddenLabel === 'function'
-      ? createHiddenLabel
-      : (forId, text) => {
-        const label = document.createElement('label');
-        label.className = 'visually-hidden';
-        if (forId) label.setAttribute('for', forId);
-        label.textContent = typeof text === 'string' ? text : '';
-        return label;
-      };
-
-    const container = document.createElement('div');
-    container.className = 'schema-list-control';
-    container.id = attrId;
-    container.dataset.attrType = 'list';
-
-    const listBody = document.createElement('div');
-    listBody.className = 'schema-list-body';
-
-    const normalizedValues = normalizeSchemaListValues(values);
-    const normalizedPlaceholder = typeof placeholder === 'string' ? placeholder : '';
-    const fallbackContext = typeof labelText === 'string' && labelText ? labelText : attrId || '';
-
-    const createRow = (initialValue = '') => {
-      const row = document.createElement('div');
-      row.className = 'schema-list-row';
-
-      const inputWrapper = document.createElement('div');
-      inputWrapper.className = 'schema-list-row-input';
-
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'schema-input schema-list-input';
-      input.dataset.listItem = 'true';
-      if (normalizedPlaceholder) {
-        input.placeholder = normalizedPlaceholder;
-      }
-      input.value = initialValue === null || initialValue === undefined ? '' : String(initialValue);
-
-      const inputId = ensureId(input, `${attrId || 'list'}-item`);
-      inputWrapper.appendChild(createLabel(inputId, labelText));
-      inputWrapper.appendChild(input);
-
-      const actions = document.createElement('div');
-      actions.className = 'schema-list-row-actions';
-
-      const addBtn = document.createElement('button');
-      addBtn.type = 'button';
-      if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
-        configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
-          fallbackContext,
-          actionKey: 'addEntry',
-        });
-      } else {
-        addBtn.textContent = '+';
-        addBtn.setAttribute('aria-label', 'Add');
-      }
-
-      addBtn.addEventListener('click', () => {
-        const newRow = createRow('');
-        row.after(newRow);
-        const nextInput = newRow.querySelector('[data-list-item="true"]');
-        if (nextInput && typeof nextInput.focus === 'function') {
-          nextInput.focus();
-        }
-      });
-
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
-        configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
-          fallbackContext,
-          actionKey: 'removeEntry',
-        });
-      } else {
-        removeBtn.textContent = '−';
-        removeBtn.setAttribute('aria-label', 'Remove');
-      }
-
-      removeBtn.addEventListener('click', () => {
-        const rows = Array.from(listBody.querySelectorAll('.schema-list-row'));
-        if (rows.length > 1) {
-          row.remove();
-          return;
-        }
-        input.value = '';
-        if (typeof input.focus === 'function') {
-          input.focus();
-        }
-      });
-
-      actions.appendChild(addBtn);
-      actions.appendChild(removeBtn);
-
-      row.appendChild(inputWrapper);
-      row.appendChild(actions);
-      return row;
+  const createLabel = typeof createHiddenLabel === 'function'
+    ? createHiddenLabel
+    : (forId, text) => {
+      const label = document.createElement('label');
+      label.className = 'visually-hidden';
+      if (forId) label.setAttribute('for', forId);
+      label.textContent = typeof text === 'string' ? text : '';
+      return label;
     };
 
-    if (normalizedValues.length) {
-      normalizedValues.forEach(val => {
-        listBody.appendChild(createRow(val));
+  const container = document.createElement('div');
+  container.className = 'schema-list-control';
+  container.id = attrId;
+  container.dataset.attrType = 'list';
+
+  const listBody = document.createElement('div');
+  listBody.className = 'schema-list-body';
+
+  const normalizedValues = normalizeSchemaListValues(values);
+  const normalizedPlaceholder = typeof placeholder === 'string' ? placeholder : '';
+  const fallbackContext = typeof labelText === 'string' && labelText ? labelText : attrId || '';
+
+  const createRow = (initialValue = '') => {
+    const row = document.createElement('div');
+    row.className = 'schema-list-row';
+
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'schema-list-row-input';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'schema-input schema-list-input';
+    input.dataset.listItem = 'true';
+    if (normalizedPlaceholder) {
+      input.placeholder = normalizedPlaceholder;
+    }
+    input.value = initialValue === null || initialValue === undefined ? '' : String(initialValue);
+
+    const inputId = ensureId(input, `${attrId || 'list'}-item`);
+    inputWrapper.appendChild(createLabel(inputId, labelText));
+    inputWrapper.appendChild(input);
+
+    const actions = document.createElement('div');
+    actions.className = 'schema-list-row-actions';
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+        fallbackContext,
+        actionKey: 'addEntry',
       });
     } else {
-      listBody.appendChild(createRow(''));
+      addBtn.textContent = '+';
+      addBtn.setAttribute('aria-label', 'Add');
     }
 
-    container.appendChild(listBody);
+    addBtn.addEventListener('click', () => {
+      const newRow = createRow('');
+      row.after(newRow);
+      const nextInput = newRow.querySelector('[data-list-item="true"]');
+      if (nextInput && typeof nextInput.focus === 'function') {
+        nextInput.focus();
+      }
+    });
 
-    return container;
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    if (typeof configureIconOnlyButton === 'function' && typeof ICON_GLYPHS !== 'undefined') {
+      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+        fallbackContext,
+        actionKey: 'removeEntry',
+      });
+    } else {
+      removeBtn.textContent = '−';
+      removeBtn.setAttribute('aria-label', 'Remove');
+    }
+
+    removeBtn.addEventListener('click', () => {
+      const rows = Array.from(listBody.querySelectorAll('.schema-list-row'));
+      if (rows.length > 1) {
+        row.remove();
+        return;
+      }
+      input.value = '';
+      if (typeof input.focus === 'function') {
+        input.focus();
+      }
+    });
+
+    actions.appendChild(addBtn);
+    actions.appendChild(removeBtn);
+
+    row.appendChild(inputWrapper);
+    row.appendChild(actions);
+    return row;
+  };
+
+  if (normalizedValues.length) {
+    normalizedValues.forEach(val => {
+      listBody.appendChild(createRow(val));
+    });
+  } else {
+    listBody.appendChild(createRow(''));
   }
 
-  function createSchemaField(category, attr, value) {
-    const config = resolveSchemaFieldConfig(category, attr) || {};
-    const attrId = `attr-${attr}`;
-    const labelText = config.label || formatAttributeLabel(attr);
-    let inputType = config.type;
+  container.appendChild(listBody);
 
-    if (!inputType) {
-      if (Array.isArray(value)) {
-        inputType = value.every(item => typeof item === 'string') ? 'list' : 'json';
-      } else if (typeof value === 'number') {
-        inputType = 'number';
-      } else if (typeof value === 'boolean') {
-        inputType = 'boolean';
-      } else if (value && typeof value === 'object') {
-        inputType = 'json';
-      } else {
-        inputType = 'text';
-      }
+  return container;
+}
+
+function createSchemaField(category, attr, value) {
+  const config = resolveSchemaFieldConfig(category, attr) || {};
+  const attrId = `attr-${attr}`;
+  const labelText = config.label || formatAttributeLabel(attr);
+  let inputType = config.type;
+
+  if (!inputType) {
+    if (Array.isArray(value)) {
+      inputType = value.every(item => typeof item === 'string') ? 'list' : 'json';
+    } else if (typeof value === 'number') {
+      inputType = 'number';
+    } else if (typeof value === 'boolean') {
+      inputType = 'boolean';
+    } else if (value && typeof value === 'object') {
+      inputType = 'json';
+    } else {
+      inputType = 'text';
     }
+  }
 
-    if (inputType === 'boolean') {
-      const row = document.createElement('div');
-      row.className = 'form-row schema-form-row';
-
-      const label = document.createElement('label');
-      label.setAttribute('for', attrId);
-      label.textContent = labelText;
-      row.appendChild(label);
-
-      const controlContainer = document.createElement('div');
-      controlContainer.className = 'schema-control schema-control--checkbox';
-      const inlineWrap = document.createElement('div');
-      inlineWrap.className = 'schema-control-inline';
-
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.id = attrId;
-      input.className = 'schema-input schema-input--checkbox';
-      input.dataset.attrType = 'boolean';
-      input.checked = value === undefined ? !!config.default : !!value;
-      inlineWrap.appendChild(input);
-
-      controlContainer.appendChild(inlineWrap);
-      if (config.help) {
-        const help = document.createElement('p');
-        help.className = 'schema-field-help';
-        help.textContent = config.help;
-        controlContainer.appendChild(help);
-      }
-
-      row.appendChild(controlContainer);
-      return row;
-    }
-
+  if (inputType === 'boolean') {
     const row = document.createElement('div');
     row.className = 'form-row schema-form-row';
+
     const label = document.createElement('label');
     label.setAttribute('for', attrId);
     label.textContent = labelText;
     row.appendChild(label);
 
-    let control;
-    if (inputType === 'list') {
-      control = createSchemaListControl({
-        attrId,
-        labelText,
-        values: value,
-        placeholder: config.placeholder
-      });
-    } else if (inputType === 'json' || inputType === 'textarea') {
-      control = document.createElement('textarea');
-      control.className = 'schema-input schema-input--textarea';
-      control.id = attrId;
-      const textValue = value === undefined || value === null
-        ? ''
-        : inputType === 'list' && Array.isArray(value)
-          ? value.join('\n')
-          : typeof value === 'string'
-            ? value
-            : JSON.stringify(value, null, 2);
-      control.value = textValue;
-      control.rows = config.rows || autoRows(control.value);
-    } else {
-      control = document.createElement('input');
-      control.className = 'schema-input';
-      control.id = attrId;
-      control.type = inputType === 'number' ? 'number' : 'text';
-      if (inputType === 'number') {
-        if (config.step) control.step = config.step;
-      }
-      if (value !== undefined && value !== null) {
-        control.value = value;
-      }
-    }
-
-    if (control && control.dataset) {
-      control.dataset.attrType = inputType;
-    }
-    if (config.placeholder && !control.value) {
-      control.placeholder = config.placeholder;
-    }
-
     const controlContainer = document.createElement('div');
-    controlContainer.className = 'schema-control';
+    controlContainer.className = 'schema-control schema-control--checkbox';
     const inlineWrap = document.createElement('div');
     inlineWrap.className = 'schema-control-inline';
-    inlineWrap.appendChild(control);
-    if (config.suffix) {
-      const suffix = document.createElement('span');
-      suffix.className = 'schema-field-suffix';
-      suffix.textContent = config.suffix;
-      inlineWrap.appendChild(suffix);
-    }
-    controlContainer.appendChild(inlineWrap);
 
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.id = attrId;
+    input.className = 'schema-input schema-input--checkbox';
+    input.dataset.attrType = 'boolean';
+    input.checked = value === undefined ? !!config.default : !!value;
+    inlineWrap.appendChild(input);
+
+    controlContainer.appendChild(inlineWrap);
     if (config.help) {
       const help = document.createElement('p');
       help.className = 'schema-field-help';
@@ -17630,1821 +17581,1835 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
 
     row.appendChild(controlContainer);
-
     return row;
   }
 
-  function getSchemaAttributesForCategory(category) {
-    if (!deviceSchema) return [];
-    const parts = category.split('.');
-    let node = deviceSchema;
-    for (const p of parts) {
-      node = node && node[p];
-      if (!node) return [];
+  const row = document.createElement('div');
+  row.className = 'form-row schema-form-row';
+  const label = document.createElement('label');
+  label.setAttribute('for', attrId);
+  label.textContent = labelText;
+  row.appendChild(label);
+
+  let control;
+  if (inputType === 'list') {
+    control = createSchemaListControl({
+      attrId,
+      labelText,
+      values: value,
+      placeholder: config.placeholder
+    });
+  } else if (inputType === 'json' || inputType === 'textarea') {
+    control = document.createElement('textarea');
+    control.className = 'schema-input schema-input--textarea';
+    control.id = attrId;
+    const textValue = value === undefined || value === null
+      ? ''
+      : inputType === 'list' && Array.isArray(value)
+        ? value.join('\n')
+        : typeof value === 'string'
+          ? value
+          : JSON.stringify(value, null, 2);
+    control.value = textValue;
+    control.rows = config.rows || autoRows(control.value);
+  } else {
+    control = document.createElement('input');
+    control.className = 'schema-input';
+    control.id = attrId;
+    control.type = inputType === 'number' ? 'number' : 'text';
+    if (inputType === 'number') {
+      if (config.step) control.step = config.step;
     }
-    return Array.isArray(node.attributes) ? node.attributes : [];
+    if (value !== undefined && value !== null) {
+      control.value = value;
+    }
   }
 
-  function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
-    const seen = new Set();
-    const attrs = [];
-    const skip = (attr) => !attr || exclude.includes(attr) || seen.has(attr);
-
-    for (const attr of getSchemaAttributesForCategory(category)) {
-      if (skip(attr)) continue;
-      seen.add(attr);
-      attrs.push(attr);
-    }
-
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
-      for (const key of Object.keys(data)) {
-        if (skip(key)) continue;
-        seen.add(key);
-        attrs.push(key);
-      }
-    }
-
-    return attrs;
+  if (control && control.dataset) {
+    control.dataset.attrType = inputType;
+  }
+  if (config.placeholder && !control.value) {
+    control.placeholder = config.placeholder;
   }
 
-  function clearDynamicFields() {
-    if (!dynamicFieldsDiv) return;
-    dynamicFieldsDiv.innerHTML = '';
+  const controlContainer = document.createElement('div');
+  controlContainer.className = 'schema-control';
+  const inlineWrap = document.createElement('div');
+  inlineWrap.className = 'schema-control-inline';
+  inlineWrap.appendChild(control);
+  if (config.suffix) {
+    const suffix = document.createElement('span');
+    suffix.className = 'schema-field-suffix';
+    suffix.textContent = config.suffix;
+    inlineWrap.appendChild(suffix);
+  }
+  controlContainer.appendChild(inlineWrap);
+
+  if (config.help) {
+    const help = document.createElement('p');
+    help.className = 'schema-field-help';
+    help.textContent = config.help;
+    controlContainer.appendChild(help);
+  }
+
+  row.appendChild(controlContainer);
+
+  return row;
+}
+
+function getSchemaAttributesForCategory(category) {
+  if (!deviceSchema) return [];
+  const parts = category.split('.');
+  let node = deviceSchema;
+  for (const p of parts) {
+    node = node && node[p];
+    if (!node) return [];
+  }
+  return Array.isArray(node.attributes) ? node.attributes : [];
+}
+
+function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
+  const seen = new Set();
+  const attrs = [];
+  const skip = (attr) => !attr || exclude.includes(attr) || seen.has(attr);
+
+  for (const attr of getSchemaAttributesForCategory(category)) {
+    if (skip(attr)) continue;
+    seen.add(attr);
+    attrs.push(attr);
+  }
+
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    for (const key of Object.keys(data)) {
+      if (skip(key)) continue;
+      seen.add(key);
+      attrs.push(key);
+    }
+  }
+
+  return attrs;
+}
+
+function clearDynamicFields() {
+  if (!dynamicFieldsDiv) return;
+  dynamicFieldsDiv.innerHTML = '';
+  dynamicFieldsDiv.hidden = true;
+  if (dynamicFieldsDiv.dataset) {
+    delete dynamicFieldsDiv.dataset.attrs;
+  }
+}
+
+function buildDynamicFields(category, data = {}, exclude = []) {
+  if (!dynamicFieldsDiv) return;
+  const attrs = getCombinedCategoryAttributes(category, data, exclude);
+  dynamicFieldsDiv.innerHTML = '';
+  if (!attrs.length) {
     dynamicFieldsDiv.hidden = true;
     if (dynamicFieldsDiv.dataset) {
       delete dynamicFieldsDiv.dataset.attrs;
     }
+    return;
   }
-
-  function buildDynamicFields(category, data = {}, exclude = []) {
-    if (!dynamicFieldsDiv) return;
-    const attrs = getCombinedCategoryAttributes(category, data, exclude);
-    dynamicFieldsDiv.innerHTML = '';
-    if (!attrs.length) {
-      dynamicFieldsDiv.hidden = true;
-      if (dynamicFieldsDiv.dataset) {
-        delete dynamicFieldsDiv.dataset.attrs;
-      }
-      return;
-    }
-    dynamicFieldsDiv.hidden = false;
-    if (dynamicFieldsDiv.dataset) {
-      dynamicFieldsDiv.dataset.attrs = JSON.stringify(attrs);
-    }
-    const list = document.createElement('div');
-    list.className = 'schema-attribute-list';
-    for (const attr of attrs) {
-      const value = data && data[attr] !== undefined ? data[attr] : undefined;
-      list.appendChild(createSchemaField(category, attr, value));
-    }
-    dynamicFieldsDiv.appendChild(list);
+  dynamicFieldsDiv.hidden = false;
+  if (dynamicFieldsDiv.dataset) {
+    dynamicFieldsDiv.dataset.attrs = JSON.stringify(attrs);
   }
-
-  const COLLECTED_DYNAMIC_ATTRS_SYMBOL =
-    typeof Symbol === 'function' ? Symbol('collectedDynamicAttrs') : '__collectedDynamicAttrs';
-
-  function markCollectedDynamicAttributes(target, attrs) {
-    if (!target || !Array.isArray(attrs)) {
-      return;
-    }
-    try {
-      Object.defineProperty(target, COLLECTED_DYNAMIC_ATTRS_SYMBOL, {
-        configurable: true,
-        enumerable: false,
-        value: attrs.slice(),
-      });
-    } catch (error) {
-      void error;
-    }
+  const list = document.createElement('div');
+  list.className = 'schema-attribute-list';
+  for (const attr of attrs) {
+    const value = data && data[attr] !== undefined ? data[attr] : undefined;
+    list.appendChild(createSchemaField(category, attr, value));
   }
+  dynamicFieldsDiv.appendChild(list);
+}
 
-  function getCollectedDynamicAttributes(source) {
-    if (!source || typeof source !== 'object') {
-      return [];
-    }
-    const attrs = source[COLLECTED_DYNAMIC_ATTRS_SYMBOL];
-    return Array.isArray(attrs) ? attrs : [];
+const COLLECTED_DYNAMIC_ATTRS_SYMBOL =
+  typeof Symbol === 'function' ? Symbol('collectedDynamicAttrs') : '__collectedDynamicAttrs';
+
+function markCollectedDynamicAttributes(target, attrs) {
+  if (!target || !Array.isArray(attrs)) {
+    return;
   }
-
-  function removeClearedDynamicAttributes(target, attrs, values) {
-    if (!target || !Array.isArray(attrs)) {
-      return;
-    }
-    attrs.forEach(attr => {
-      if (
-        Object.prototype.hasOwnProperty.call(target, attr) &&
-        !Object.prototype.hasOwnProperty.call(values, attr)
-      ) {
-        delete target[attr];
-      }
+  try {
+    Object.defineProperty(target, COLLECTED_DYNAMIC_ATTRS_SYMBOL, {
+      configurable: true,
+      enumerable: false,
+      value: attrs.slice(),
     });
+  } catch (error) {
+    void error;
   }
+}
 
-  function collectDynamicFieldValues(category, exclude = []) {
-    let attrs = [];
-    let rawDynamicFieldAttrs = '';
-    const excludeSnapshot = Array.isArray(exclude) ? exclude.slice() : exclude;
-    if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
-      rawDynamicFieldAttrs = String(dynamicFieldsDiv.dataset.attrs);
-      try {
-        const parsed = JSON.parse(rawDynamicFieldAttrs);
-        if (Array.isArray(parsed)) {
-          attrs = parsed;
-        }
-      } catch (err) {
-        const LOG_ATTR_SNIPPET_LIMIT = 500;
-        const rawAttrsSnippet = rawDynamicFieldAttrs.slice(0, LOG_ATTR_SNIPPET_LIMIT);
-        console.warn('Failed to parse dynamic field attributes', {
-          error: err,
-          rawAttrsSnippet,
-          rawAttrsTruncated: rawDynamicFieldAttrs.length > LOG_ATTR_SNIPPET_LIMIT,
-          category,
-          exclude: excludeSnapshot,
-        });
-      }
-    }
-    if (!attrs.length) {
-      attrs = getCombinedCategoryAttributes(category, {}, exclude);
-    }
-    const filteredAttrs = attrs.filter(attr => !exclude.includes(attr));
-    const result = {};
-    for (const attr of filteredAttrs) {
-      const el = document.getElementById(`attr-${attr}`);
-      if (!el) {
-        continue;
-      }
-      const type = el.dataset.attrType || el.type;
-      if (type === 'boolean') {
-        result[attr] = el.checked;
-        continue;
-      }
-      if (type === 'list') {
-        const listInputs = Array.from(el.querySelectorAll('[data-list-item="true"]'));
-        let list = [];
-        if (listInputs.length) {
-          list = listInputs
-            .map(input => (typeof input.value === 'string' ? input.value.trim() : ''))
-            .filter(Boolean);
-        } else if (typeof el.value === 'string') {
-          list = el.value
-            .split('\n')
-            .map(item => item.trim())
-            .filter(Boolean);
-        }
-        if (list.length) {
-          result[attr] = list;
-        }
-        continue;
-      }
-      if (type === 'json') {
-        const raw = el.value.trim();
-        if (raw) {
-          try {
-            result[attr] = JSON.parse(raw);
-          } catch {
-            result[attr] = raw;
-          }
-        }
-        continue;
-      }
-      if (type === 'number') {
-        const num = parseFloat(el.value);
-        if (!isNaN(num)) {
-          result[attr] = num;
-        }
-        continue;
-      }
-      if (el.value !== '') {
-        result[attr] = el.value;
-      }
-    }
-    markCollectedDynamicAttributes(result, filteredAttrs);
-    return result;
+function getCollectedDynamicAttributes(source) {
+  if (!source || typeof source !== 'object') {
+    return [];
   }
+  const attrs = source[COLLECTED_DYNAMIC_ATTRS_SYMBOL];
+  return Array.isArray(attrs) ? attrs : [];
+}
 
-  function cloneDynamicFieldTarget(target) {
-    const clone = {};
+function removeClearedDynamicAttributes(target, attrs, values) {
+  if (!target || !Array.isArray(attrs)) {
+    return;
+  }
+  attrs.forEach(attr => {
     if (
-      typeof Object.getPrototypeOf === 'function' &&
-      typeof Object.setPrototypeOf === 'function'
+      Object.prototype.hasOwnProperty.call(target, attr) &&
+      !Object.prototype.hasOwnProperty.call(values, attr)
     ) {
-      try {
-        Object.setPrototypeOf(clone, Object.getPrototypeOf(target));
-      } catch (protoError) {
-        void protoError;
+      delete target[attr];
+    }
+  });
+}
+
+function collectDynamicFieldValues(category, exclude = []) {
+  let attrs = [];
+  let rawDynamicFieldAttrs = '';
+  const excludeSnapshot = Array.isArray(exclude) ? exclude.slice() : exclude;
+  if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
+    rawDynamicFieldAttrs = String(dynamicFieldsDiv.dataset.attrs);
+    try {
+      const parsed = JSON.parse(rawDynamicFieldAttrs);
+      if (Array.isArray(parsed)) {
+        attrs = parsed;
       }
+    } catch (err) {
+      const LOG_ATTR_SNIPPET_LIMIT = 500;
+      const rawAttrsSnippet = rawDynamicFieldAttrs.slice(0, LOG_ATTR_SNIPPET_LIMIT);
+      console.warn('Failed to parse dynamic field attributes', {
+        error: err,
+        rawAttrsSnippet,
+        rawAttrsTruncated: rawDynamicFieldAttrs.length > LOG_ATTR_SNIPPET_LIMIT,
+        category,
+        exclude: excludeSnapshot,
+      });
+    }
+  }
+  if (!attrs.length) {
+    attrs = getCombinedCategoryAttributes(category, {}, exclude);
+  }
+  const filteredAttrs = attrs.filter(attr => !exclude.includes(attr));
+  const result = {};
+  for (const attr of filteredAttrs) {
+    const el = document.getElementById(`attr-${attr}`);
+    if (!el) {
+      continue;
+    }
+    const type = el.dataset.attrType || el.type;
+    if (type === 'boolean') {
+      result[attr] = el.checked;
+      continue;
+    }
+    if (type === 'list') {
+      const listInputs = Array.from(el.querySelectorAll('[data-list-item="true"]'));
+      let list = [];
+      if (listInputs.length) {
+        list = listInputs
+          .map(input => (typeof input.value === 'string' ? input.value.trim() : ''))
+          .filter(Boolean);
+      } else if (typeof el.value === 'string') {
+        list = el.value
+          .split('\n')
+          .map(item => item.trim())
+          .filter(Boolean);
+      }
+      if (list.length) {
+        result[attr] = list;
+      }
+      continue;
+    }
+    if (type === 'json') {
+      const raw = el.value.trim();
+      if (raw) {
+        try {
+          result[attr] = JSON.parse(raw);
+        } catch {
+          result[attr] = raw;
+        }
+      }
+      continue;
+    }
+    if (type === 'number') {
+      const num = parseFloat(el.value);
+      if (!isNaN(num)) {
+        result[attr] = num;
+      }
+      continue;
+    }
+    if (el.value !== '') {
+      result[attr] = el.value;
+    }
+  }
+  markCollectedDynamicAttributes(result, filteredAttrs);
+  return result;
+}
+
+function cloneDynamicFieldTarget(target) {
+  const clone = {};
+  if (
+    typeof Object.getPrototypeOf === 'function' &&
+    typeof Object.setPrototypeOf === 'function'
+  ) {
+    try {
+      Object.setPrototypeOf(clone, Object.getPrototypeOf(target));
+    } catch (protoError) {
+      void protoError;
+    }
+  }
+
+  const keys =
+    typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function'
+      ? Reflect.ownKeys(target)
+      : Object.getOwnPropertyNames(target);
+
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(target, key);
+    } catch (descError) {
+      descriptor = null;
     }
 
-    const keys =
-      typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function'
-        ? Reflect.ownKeys(target)
-        : Object.getOwnPropertyNames(target);
+    if (!descriptor) {
+      continue;
+    }
 
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
+    const nextDescriptor = {
+      configurable: true,
+      enumerable: !!descriptor.enumerable,
+    };
 
+    if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+      nextDescriptor.value = descriptor.value;
+      nextDescriptor.writable = true;
+    } else {
+      nextDescriptor.get = descriptor.get;
+      nextDescriptor.set = descriptor.set;
+    }
+
+    try {
+      Object.defineProperty(clone, key, nextDescriptor);
+    } catch (defineError) {
+      void defineError;
+      clone[key] = descriptor.value;
+    }
+  }
+
+  return clone;
+}
+
+function ensureWritableDynamicFieldTarget(target, attrs) {
+  if (!target || typeof target !== 'object') {
+    return {};
+  }
+
+  let requiresClone = false;
+
+  try {
+    if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+      requiresClone = true;
+    }
+  } catch (extensibleError) {
+    void extensibleError;
+  }
+
+  if (!requiresClone && Array.isArray(attrs)) {
+    for (let index = 0; index < attrs.length; index += 1) {
+      const attr = attrs[index];
       let descriptor;
       try {
-        descriptor = Object.getOwnPropertyDescriptor(target, key);
-      } catch (descError) {
+        descriptor = Object.getOwnPropertyDescriptor(target, attr);
+      } catch (descriptorError) {
         descriptor = null;
       }
-
-      if (!descriptor) {
-        continue;
-      }
-
-      const nextDescriptor = {
-        configurable: true,
-        enumerable: !!descriptor.enumerable,
-      };
-
-      if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
-        nextDescriptor.value = descriptor.value;
-        nextDescriptor.writable = true;
-      } else {
-        nextDescriptor.get = descriptor.get;
-        nextDescriptor.set = descriptor.set;
-      }
-
-      try {
-        Object.defineProperty(clone, key, nextDescriptor);
-      } catch (defineError) {
-        void defineError;
-        clone[key] = descriptor.value;
-      }
-    }
-
-    return clone;
-  }
-
-  function ensureWritableDynamicFieldTarget(target, attrs) {
-    if (!target || typeof target !== 'object') {
-      return {};
-    }
-
-    let requiresClone = false;
-
-    try {
-      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+      if (
+        descriptor &&
+        Object.prototype.hasOwnProperty.call(descriptor, 'writable') &&
+        descriptor.writable === false &&
+        descriptor.configurable === false
+      ) {
         requiresClone = true;
-      }
-    } catch (extensibleError) {
-      void extensibleError;
-    }
-
-    if (!requiresClone && Array.isArray(attrs)) {
-      for (let index = 0; index < attrs.length; index += 1) {
-        const attr = attrs[index];
-        let descriptor;
-        try {
-          descriptor = Object.getOwnPropertyDescriptor(target, attr);
-        } catch (descriptorError) {
-          descriptor = null;
-        }
-        if (
-          descriptor &&
-          Object.prototype.hasOwnProperty.call(descriptor, 'writable') &&
-          descriptor.writable === false &&
-          descriptor.configurable === false
-        ) {
-          requiresClone = true;
-          break;
-        }
+        break;
       }
     }
-
-    if (!requiresClone) {
-      return target;
-    }
-
-    return cloneDynamicFieldTarget(target);
   }
 
-  function applyDynamicFieldValues(target, category, exclude = []) {
-    const values = collectDynamicFieldValues(category, exclude);
-    const attrs = getCollectedDynamicAttributes(values);
-    let writableTarget = ensureWritableDynamicFieldTarget(target, attrs);
+  if (!requiresClone) {
+    return target;
+  }
 
+  return cloneDynamicFieldTarget(target);
+}
+
+function applyDynamicFieldValues(target, category, exclude = []) {
+  const values = collectDynamicFieldValues(category, exclude);
+  const attrs = getCollectedDynamicAttributes(values);
+  let writableTarget = ensureWritableDynamicFieldTarget(target, attrs);
+
+  try {
+    Object.assign(writableTarget, values);
+  } catch (assignError) {
+    const fallbackTarget = cloneDynamicFieldTarget(writableTarget);
     try {
-      Object.assign(writableTarget, values);
-    } catch (assignError) {
-      const fallbackTarget = cloneDynamicFieldTarget(writableTarget);
-      try {
-        Object.assign(fallbackTarget, values);
-        writableTarget = fallbackTarget;
-      } catch (fallbackError) {
-        console.error('Failed to apply dynamic field values', fallbackError);
-      }
+      Object.assign(fallbackTarget, values);
+      writableTarget = fallbackTarget;
+    } catch (fallbackError) {
+      console.error('Failed to apply dynamic field values', fallbackError);
     }
-
-    removeClearedDynamicAttributes(writableTarget, attrs, values);
-    return writableTarget;
   }
-  var languageSelect = document.getElementById("languageSelect");
-  var pinkModeToggle = document.getElementById("pinkModeToggle");
-  var pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
-  var darkModeToggle = document.getElementById("darkModeToggle");
-  var helpButton = document.getElementById("helpButton");
-  var reloadButton = document.getElementById("reloadButton");
-  var helpDialog = document.getElementById("helpDialog");
-  var closeHelpBtn = document.getElementById("closeHelp");
-  var helpSearch = document.getElementById("helpSearch");
-  var helpNoResults = document.getElementById("helpNoResults");
-  var helpNoResultsSuggestions = document.getElementById("helpNoResultsSuggestions");
-  var helpNoResultsSuggestionsHeading = document.getElementById("helpNoResultsSuggestionsHeading");
-  var helpNoResultsSuggestionsIntro = document.getElementById("helpNoResultsSuggestionsIntro");
-  var helpNoResultsSuggestionClear = document.getElementById("helpNoResultsSuggestionClear");
-  var helpNoResultsSuggestionSynonyms = document.getElementById("helpNoResultsSuggestionSynonyms");
-  var helpNoResultsSuggestionQuickStart = document.getElementById("helpNoResultsSuggestionQuickStart");
-  var helpNoResultsSuggestionBackup = document.getElementById("helpNoResultsSuggestionBackup");
-  var helpDataAuditHeading = document.getElementById("helpDataAuditHeading");
-  var helpDataAuditStep1 = document.getElementById("helpDataAuditStep1");
-  var helpDataAuditStep2 = document.getElementById("helpDataAuditStep2");
-  var helpDataAuditStep3 = document.getElementById("helpDataAuditStep3");
-  var helpDataAuditStep4 = document.getElementById("helpDataAuditStep4");
-  var helpDataAuditNote = document.getElementById("helpDataAuditNote");
-  var helpResultsSummary = document.getElementById("helpResultsSummary");
-  var helpResultsAssist = document.getElementById("helpResultsAssist");
-  var helpSearchClear = document.getElementById("helpSearchClear");
-  var helpSectionsContainer = document.getElementById("helpSections");
-  var helpQuickLinksNav = document.getElementById("helpQuickLinks");
-  var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
-  var helpQuickLinksList = document.getElementById("helpQuickLinksList");
-  var installPromptBanner;
-  var installPromptBannerText;
-  var installPromptBannerAction;
-  var installPromptBannerIcon;
-  var installPromptBannerDismiss;
-  var installGuideDialog;
-  var installGuideTitle;
-  var installGuideIntro;
-  var installGuideSteps;
-  var installGuideNote;
-  var installGuideMigration;
-  var installGuideMigrationTitle;
-  var installGuideMigrationIntro;
-  var installGuideMigrationSteps;
-  var installGuideMigrationNote;
-  var installGuideClose;
-  var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
-  var iosPwaHelpTitle;
-  var iosPwaHelpIntro;
-  var iosPwaHelpStep1;
-  var installPromptElementsInitialized = false;
 
-  function ensureInstallPromptElements() {
-    if (installPromptElementsInitialized && installPromptBanner) {
-      return;
-    }
-    if (typeof document === 'undefined') {
-      installPromptElementsInitialized = true;
-      installPromptBanner = installPromptBanner || null;
-      installPromptBannerText = installPromptBannerText || null;
-      installPromptBannerAction = installPromptBannerAction || null;
-      installPromptBannerIcon = installPromptBannerIcon || null;
-      installPromptBannerDismiss = installPromptBannerDismiss || null;
-      installGuideDialog = installGuideDialog || null;
-      installGuideTitle = installGuideTitle || null;
-      installGuideIntro = installGuideIntro || null;
-      installGuideSteps = installGuideSteps || null;
-      installGuideNote = installGuideNote || null;
-      installGuideMigration = installGuideMigration || null;
-      installGuideMigrationTitle = installGuideMigrationTitle || null;
-      installGuideMigrationIntro = installGuideMigrationIntro || null;
-      installGuideMigrationSteps = installGuideMigrationSteps || null;
-      installGuideMigrationNote = installGuideMigrationNote || null;
-      installGuideClose = installGuideClose || null;
-      iosPwaHelpTitle = iosPwaHelpTitle || null;
-      iosPwaHelpIntro = iosPwaHelpIntro || null;
-      iosPwaHelpStep1 = iosPwaHelpStep1 || null;
-      return;
-    }
+  removeClearedDynamicAttributes(writableTarget, attrs, values);
+  return writableTarget;
+}
+var languageSelect = document.getElementById("languageSelect");
+var pinkModeToggle = document.getElementById("pinkModeToggle");
+var pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
+var darkModeToggle = document.getElementById("darkModeToggle");
+var helpButton = document.getElementById("helpButton");
+var reloadButton = document.getElementById("reloadButton");
+var helpDialog = document.getElementById("helpDialog");
+var closeHelpBtn = document.getElementById("closeHelp");
+var helpSearch = document.getElementById("helpSearch");
+var helpNoResults = document.getElementById("helpNoResults");
+var helpNoResultsSuggestions = document.getElementById("helpNoResultsSuggestions");
+var helpNoResultsSuggestionsHeading = document.getElementById("helpNoResultsSuggestionsHeading");
+var helpNoResultsSuggestionsIntro = document.getElementById("helpNoResultsSuggestionsIntro");
+var helpNoResultsSuggestionClear = document.getElementById("helpNoResultsSuggestionClear");
+var helpNoResultsSuggestionSynonyms = document.getElementById("helpNoResultsSuggestionSynonyms");
+var helpNoResultsSuggestionQuickStart = document.getElementById("helpNoResultsSuggestionQuickStart");
+var helpNoResultsSuggestionBackup = document.getElementById("helpNoResultsSuggestionBackup");
+var helpDataAuditHeading = document.getElementById("helpDataAuditHeading");
+var helpDataAuditStep1 = document.getElementById("helpDataAuditStep1");
+var helpDataAuditStep2 = document.getElementById("helpDataAuditStep2");
+var helpDataAuditStep3 = document.getElementById("helpDataAuditStep3");
+var helpDataAuditStep4 = document.getElementById("helpDataAuditStep4");
+var helpDataAuditNote = document.getElementById("helpDataAuditNote");
+var helpResultsSummary = document.getElementById("helpResultsSummary");
+var helpResultsAssist = document.getElementById("helpResultsAssist");
+var helpSearchClear = document.getElementById("helpSearchClear");
+var helpSectionsContainer = document.getElementById("helpSections");
+var helpQuickLinksNav = document.getElementById("helpQuickLinks");
+var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
+var helpQuickLinksList = document.getElementById("helpQuickLinksList");
+var installPromptBanner;
+var installPromptBannerText;
+var installPromptBannerAction;
+var installPromptBannerIcon;
+var installPromptBannerDismiss;
+var installGuideDialog;
+var installGuideTitle;
+var installGuideIntro;
+var installGuideSteps;
+var installGuideNote;
+var installGuideMigration;
+var installGuideMigrationTitle;
+var installGuideMigrationIntro;
+var installGuideMigrationSteps;
+var installGuideMigrationNote;
+var installGuideClose;
+var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
+var iosPwaHelpTitle;
+var iosPwaHelpIntro;
+var iosPwaHelpStep1;
+var installPromptElementsInitialized = false;
 
-    installPromptBanner = document.getElementById('installPromptBanner');
-    installPromptBannerText = document.getElementById('installPromptBannerText');
-    installPromptBannerAction = document.getElementById('installPromptBannerAction');
-    installPromptBannerIcon = document.getElementById('installPromptBannerIcon');
-    installPromptBannerDismiss = document.getElementById('installPromptBannerDismiss');
-    installGuideDialog = document.getElementById('installGuideDialog');
-    installGuideTitle = document.getElementById('installGuideTitle');
-    installGuideIntro = document.getElementById('installGuideIntro');
-    installGuideSteps = document.getElementById('installGuideSteps');
-    installGuideNote = document.getElementById('installGuideNote');
-    installGuideMigration = document.getElementById('installGuideMigration');
-    installGuideMigrationTitle = document.getElementById('installGuideMigrationTitle');
-    installGuideMigrationIntro = document.getElementById('installGuideMigrationIntro');
-    installGuideMigrationSteps = document.getElementById('installGuideMigrationSteps');
-    installGuideMigrationNote = document.getElementById('installGuideMigrationNote');
-    installGuideClose = document.getElementById('installGuideClose');
-    iosPwaHelpTitle = document.getElementById('iosPwaHelpTitle');
-    iosPwaHelpIntro = document.getElementById('iosPwaHelpIntro');
-    iosPwaHelpStep1 = document.getElementById('iosPwaHelpStep1');
+function ensureInstallPromptElements() {
+  if (installPromptElementsInitialized && installPromptBanner) {
+    return;
+  }
+  if (typeof document === 'undefined') {
     installPromptElementsInitialized = true;
-  }
-  const syncResetButtonGlobal =
-    (typeof globalThis !== 'undefined'
-      && globalThis
-      && typeof globalThis.syncMountVoltageResetButtonGlobal === 'function'
-      ? globalThis.syncMountVoltageResetButtonGlobal
-      : null)
-    || (typeof syncMountVoltageResetButtonGlobal === 'function'
-      ? syncMountVoltageResetButtonGlobal
-      : function noopSyncMountVoltageResetButtonGlobal() { });
-
-  const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
-  const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
-  const mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
-  const mountVoltageNoteElem = document.getElementById('mountVoltageNote');
-  const mountVoltageResetButton = document.getElementById('mountVoltageReset');
-  syncResetButtonGlobal(mountVoltageResetButton);
-  const mountVoltageTitleElems = {
-    V: document.getElementById('mountVoltageVTitle'),
-    Gold: document.getElementById('mountVoltageGoldTitle'),
-    B: document.getElementById('mountVoltageBTitle'),
-  };
-
-  const mountVoltageInputs = {
-    'V-Mount': {
-      high: document.getElementById('mountVoltageVHigh'),
-      low: document.getElementById('mountVoltageVLow'),
-      highLabel: document.getElementById('mountVoltageVHighLabel'),
-      lowLabel: document.getElementById('mountVoltageVLowLabel'),
-    },
-    'Gold-Mount': {
-      high: document.getElementById('mountVoltageGoldHigh'),
-      low: document.getElementById('mountVoltageGoldLow'),
-      highLabel: document.getElementById('mountVoltageGoldHighLabel'),
-      lowLabel: document.getElementById('mountVoltageGoldLowLabel'),
-    },
-    'B-Mount': {
-      high: document.getElementById('mountVoltageBHigh'),
-      low: document.getElementById('mountVoltageBLow'),
-      highLabel: document.getElementById('mountVoltageBHighLabel'),
-      lowLabel: document.getElementById('mountVoltageBLowLabel'),
-    },
-  };
-
-  const mountVoltageNamespace =
-    typeof setMountVoltageDomReferences === 'function'
-      ? { setDomReferences: setMountVoltageDomReferences }
-      : CORE_GLOBAL_SCOPE
-        && typeof CORE_GLOBAL_SCOPE === 'object'
-        && CORE_GLOBAL_SCOPE.cineCoreMountVoltage
-        && typeof CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences === 'function'
-        ? { setDomReferences: CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences }
-        : null;
-
-  if (mountVoltageNamespace && typeof mountVoltageNamespace.setDomReferences === 'function') {
-    mountVoltageNamespace.setDomReferences({
-      section: mountVoltageSectionElem,
-      heading: mountVoltageHeadingElem,
-      description: mountVoltageDescriptionElem,
-      note: mountVoltageNoteElem,
-      resetButton: mountVoltageResetButton,
-      titles: mountVoltageTitleElems,
-      inputs: mountVoltageInputs,
-    });
-  } else if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-    try {
-      CORE_GLOBAL_SCOPE.mountVoltageInputs = mountVoltageInputs;
-    } catch (mountVoltageInputsAssignError) {
-      void mountVoltageInputsAssignError;
-    }
+    installPromptBanner = installPromptBanner || null;
+    installPromptBannerText = installPromptBannerText || null;
+    installPromptBannerAction = installPromptBannerAction || null;
+    installPromptBannerIcon = installPromptBannerIcon || null;
+    installPromptBannerDismiss = installPromptBannerDismiss || null;
+    installGuideDialog = installGuideDialog || null;
+    installGuideTitle = installGuideTitle || null;
+    installGuideIntro = installGuideIntro || null;
+    installGuideSteps = installGuideSteps || null;
+    installGuideNote = installGuideNote || null;
+    installGuideMigration = installGuideMigration || null;
+    installGuideMigrationTitle = installGuideMigrationTitle || null;
+    installGuideMigrationIntro = installGuideMigrationIntro || null;
+    installGuideMigrationSteps = installGuideMigrationSteps || null;
+    installGuideMigrationNote = installGuideMigrationNote || null;
+    installGuideClose = installGuideClose || null;
+    iosPwaHelpTitle = iosPwaHelpTitle || null;
+    iosPwaHelpIntro = iosPwaHelpIntro || null;
+    iosPwaHelpStep1 = iosPwaHelpStep1 || null;
+    return;
   }
 
-  if (typeof updateMountVoltageInputsFromState === 'function') {
-    updateMountVoltageInputsFromState();
+  installPromptBanner = document.getElementById('installPromptBanner');
+  installPromptBannerText = document.getElementById('installPromptBannerText');
+  installPromptBannerAction = document.getElementById('installPromptBannerAction');
+  installPromptBannerIcon = document.getElementById('installPromptBannerIcon');
+  installPromptBannerDismiss = document.getElementById('installPromptBannerDismiss');
+  installGuideDialog = document.getElementById('installGuideDialog');
+  installGuideTitle = document.getElementById('installGuideTitle');
+  installGuideIntro = document.getElementById('installGuideIntro');
+  installGuideSteps = document.getElementById('installGuideSteps');
+  installGuideNote = document.getElementById('installGuideNote');
+  installGuideMigration = document.getElementById('installGuideMigration');
+  installGuideMigrationTitle = document.getElementById('installGuideMigrationTitle');
+  installGuideMigrationIntro = document.getElementById('installGuideMigrationIntro');
+  installGuideMigrationSteps = document.getElementById('installGuideMigrationSteps');
+  installGuideMigrationNote = document.getElementById('installGuideMigrationNote');
+  installGuideClose = document.getElementById('installGuideClose');
+  iosPwaHelpTitle = document.getElementById('iosPwaHelpTitle');
+  iosPwaHelpIntro = document.getElementById('iosPwaHelpIntro');
+  iosPwaHelpStep1 = document.getElementById('iosPwaHelpStep1');
+  installPromptElementsInitialized = true;
+}
+const syncResetButtonGlobal =
+  (typeof globalThis !== 'undefined'
+    && globalThis
+    && typeof globalThis.syncMountVoltageResetButtonGlobal === 'function'
+    ? globalThis.syncMountVoltageResetButtonGlobal
+    : null)
+  || (typeof syncMountVoltageResetButtonGlobal === 'function'
+    ? syncMountVoltageResetButtonGlobal
+    : function noopSyncMountVoltageResetButtonGlobal() { });
+
+const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
+const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
+const mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
+const mountVoltageNoteElem = document.getElementById('mountVoltageNote');
+const mountVoltageResetButton = document.getElementById('mountVoltageReset');
+syncResetButtonGlobal(mountVoltageResetButton);
+const mountVoltageTitleElems = {
+  V: document.getElementById('mountVoltageVTitle'),
+  Gold: document.getElementById('mountVoltageGoldTitle'),
+  B: document.getElementById('mountVoltageBTitle'),
+};
+
+const mountVoltageInputs = {
+  'V-Mount': {
+    high: document.getElementById('mountVoltageVHigh'),
+    low: document.getElementById('mountVoltageVLow'),
+    highLabel: document.getElementById('mountVoltageVHighLabel'),
+    lowLabel: document.getElementById('mountVoltageVLowLabel'),
+  },
+  'Gold-Mount': {
+    high: document.getElementById('mountVoltageGoldHigh'),
+    low: document.getElementById('mountVoltageGoldLow'),
+    highLabel: document.getElementById('mountVoltageGoldHighLabel'),
+    lowLabel: document.getElementById('mountVoltageGoldLowLabel'),
+  },
+  'B-Mount': {
+    high: document.getElementById('mountVoltageBHigh'),
+    low: document.getElementById('mountVoltageBLow'),
+    highLabel: document.getElementById('mountVoltageBHighLabel'),
+    lowLabel: document.getElementById('mountVoltageBLowLabel'),
+  },
+};
+
+const mountVoltageNamespace =
+  typeof setMountVoltageDomReferences === 'function'
+    ? { setDomReferences: setMountVoltageDomReferences }
+    : CORE_GLOBAL_SCOPE
+      && typeof CORE_GLOBAL_SCOPE === 'object'
+      && CORE_GLOBAL_SCOPE.cineCoreMountVoltage
+      && typeof CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences === 'function'
+      ? { setDomReferences: CORE_GLOBAL_SCOPE.cineCoreMountVoltage.setMountVoltageDomReferences }
+      : null;
+
+if (mountVoltageNamespace && typeof mountVoltageNamespace.setDomReferences === 'function') {
+  mountVoltageNamespace.setDomReferences({
+    section: mountVoltageSectionElem,
+    heading: mountVoltageHeadingElem,
+    description: mountVoltageDescriptionElem,
+    note: mountVoltageNoteElem,
+    resetButton: mountVoltageResetButton,
+    titles: mountVoltageTitleElems,
+    inputs: mountVoltageInputs,
+  });
+} else if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  try {
+    CORE_GLOBAL_SCOPE.mountVoltageInputs = mountVoltageInputs;
+  } catch (mountVoltageInputsAssignError) {
+    void mountVoltageInputsAssignError;
   }
-  if (typeof updateMountVoltageSettingLabels === 'function') {
-    updateMountVoltageSettingLabels(currentLang);
+}
+
+if (typeof updateMountVoltageInputsFromState === 'function') {
+  updateMountVoltageInputsFromState();
+}
+if (typeof updateMountVoltageSettingLabels === 'function') {
+  updateMountVoltageSettingLabels(currentLang);
+}
+const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
+const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
+
+setPinkModeIconSequence(PINK_MODE_ICON_FALLBACK_MARKUP);
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  loadPinkModeIconsFromFiles().catch(() => { });
+}
+const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
+const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
+var iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
+
+let installBannerSetupComplete = false;
+let currentInstallGuidePlatform = null;
+let lastActiveBeforeInstallGuide = null;
+let lastActiveBeforeIosHelp = null;
+
+function parseRgbComponent(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(0, Math.min(255, Math.round(value)));
   }
-  const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
-  const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
-
-  setPinkModeIconSequence(PINK_MODE_ICON_FALLBACK_MARKUP);
-
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    loadPinkModeIconsFromFiles().catch(() => { });
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.endsWith('%')) {
+    const percent = Number.parseFloat(trimmed.slice(0, -1));
+    if (Number.isNaN(percent)) return null;
+    return Math.max(0, Math.min(255, Math.round((percent / 100) * 255)));
   }
-  const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
-  const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
-  var iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
+  const numeric = Number.parseFloat(trimmed);
+  if (Number.isNaN(numeric)) return null;
+  return Math.max(0, Math.min(255, Math.round(numeric)));
+}
 
-  let installBannerSetupComplete = false;
-  let currentInstallGuidePlatform = null;
-  let lastActiveBeforeInstallGuide = null;
-  let lastActiveBeforeIosHelp = null;
-
-  function parseRgbComponent(value) {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return Math.max(0, Math.min(255, Math.round(value)));
-    }
-    if (typeof value !== 'string') return null;
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-    if (trimmed.endsWith('%')) {
-      const percent = Number.parseFloat(trimmed.slice(0, -1));
-      if (Number.isNaN(percent)) return null;
-      return Math.max(0, Math.min(255, Math.round((percent / 100) * 255)));
-    }
-    const numeric = Number.parseFloat(trimmed);
-    if (Number.isNaN(numeric)) return null;
-    return Math.max(0, Math.min(255, Math.round(numeric)));
-  }
-
-  function parseColorToRgb(color) {
-    if (typeof color !== 'string') return null;
-    const trimmed = color.trim();
-    if (!trimmed) return null;
-    const hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
-    if (hexMatch) {
-      const hex = hexMatch[1];
-      if (hex.length === 3) {
-        return {
-          r: Number.parseInt(hex[0] + hex[0], 16),
-          g: Number.parseInt(hex[1] + hex[1], 16),
-          b: Number.parseInt(hex[2] + hex[2], 16),
-        };
-      }
+function parseColorToRgb(color) {
+  if (typeof color !== 'string') return null;
+  const trimmed = color.trim();
+  if (!trimmed) return null;
+  const hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hexMatch) {
+    const hex = hexMatch[1];
+    if (hex.length === 3) {
       return {
-        r: Number.parseInt(hex.slice(0, 2), 16),
-        g: Number.parseInt(hex.slice(2, 4), 16),
-        b: Number.parseInt(hex.slice(4, 6), 16),
+        r: Number.parseInt(hex[0] + hex[0], 16),
+        g: Number.parseInt(hex[1] + hex[1], 16),
+        b: Number.parseInt(hex[2] + hex[2], 16),
       };
     }
-    const rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/i);
-    if (rgbMatch) {
-      const parts = rgbMatch[1].split(',');
-      if (parts.length < 3) return null;
-      const [r, g, b] = parts;
-      const red = parseRgbComponent(r);
-      const green = parseRgbComponent(g);
-      const blue = parseRgbComponent(b);
-      if ([red, green, blue].some(component => component === null)) return null;
-      return { r: red, g: green, b: blue };
-    }
-    return null;
-  }
-
-  function computeRelativeLuminance(rgb) {
-    if (!rgb || typeof rgb !== 'object') return 0;
-    const clamp = component => {
-      const numeric = Number(component);
-      if (!Number.isFinite(numeric)) return 0;
-      return Math.min(1, Math.max(0, numeric / 255));
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
     };
-    const transform = value =>
-      value <= 0.03928
-        ? value / 12.92
-        : Math.pow((value + 0.055) / 1.055, 2.4);
-    const red = transform(clamp(rgb.r));
-    const green = transform(clamp(rgb.g));
-    const blue = transform(clamp(rgb.b));
-    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
   }
+  const rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/i);
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(',');
+    if (parts.length < 3) return null;
+    const [r, g, b] = parts;
+    const red = parseRgbComponent(r);
+    const green = parseRgbComponent(g);
+    const blue = parseRgbComponent(b);
+    if ([red, green, blue].some(component => component === null)) return null;
+    return { r: red, g: green, b: blue };
+  }
+  return null;
+}
 
-  function isIosDevice() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.isIosDevice === 'function') {
-        return Boolean(helpModuleApi.isIosDevice());
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('isIosDevice() failed', error);
-      }
+function computeRelativeLuminance(rgb) {
+  if (!rgb || typeof rgb !== 'object') return 0;
+  const clamp = component => {
+    const numeric = Number(component);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.min(1, Math.max(0, numeric / 255));
+  };
+  const transform = value =>
+    value <= 0.03928
+      ? value / 12.92
+      : Math.pow((value + 0.055) / 1.055, 2.4);
+  const red = transform(clamp(rgb.r));
+  const green = transform(clamp(rgb.g));
+  const blue = transform(clamp(rgb.b));
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function isIosDevice() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.isIosDevice === 'function') {
+      return Boolean(helpModuleApi.isIosDevice());
     }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('isIosDevice() failed', error);
+    }
+  }
+  return false;
+}
+
+function isAndroidDevice() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.isAndroidDevice === 'function') {
+      return Boolean(helpModuleApi.isAndroidDevice());
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('isAndroidDevice() failed', error);
+    }
+  }
+  return false;
+}
+
+function isStandaloneDisplayMode() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.isStandaloneDisplayMode === 'function') {
+      return Boolean(helpModuleApi.isStandaloneDisplayMode());
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('isStandaloneDisplayMode() failed', error);
+    }
+  }
+  return false;
+}
+
+function hasDismissedIosPwaHelp() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.hasDismissedIosPwaHelp === 'function') {
+      return Boolean(helpModuleApi.hasDismissedIosPwaHelp());
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('hasDismissedIosPwaHelp() failed', error);
+    }
+  }
+  return false;
+}
+
+function markIosPwaHelpDismissed() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.markIosPwaHelpDismissed === 'function') {
+      helpModuleApi.markIosPwaHelpDismissed();
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('markIosPwaHelpDismissed() failed', error);
+    }
+  }
+}
+
+function getInstallBannerDismissedInSession() {
+  if (!installBannerGlobalScope || typeof installBannerGlobalScope !== 'object') {
     return false;
   }
-
-  function isAndroidDevice() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.isAndroidDevice === 'function') {
-        return Boolean(helpModuleApi.isAndroidDevice());
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('isAndroidDevice() failed', error);
-      }
-    }
+  if (typeof installBannerGlobalScope.installBannerDismissedInSession !== 'boolean') {
+    installBannerGlobalScope.installBannerDismissedInSession = false;
     return false;
   }
+  return installBannerGlobalScope.installBannerDismissedInSession;
+}
 
-  function isStandaloneDisplayMode() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.isStandaloneDisplayMode === 'function') {
-        return Boolean(helpModuleApi.isStandaloneDisplayMode());
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('isStandaloneDisplayMode() failed', error);
-      }
-    }
-    return false;
+function setInstallBannerDismissedInSession(value) {
+  if (!installBannerGlobalScope || typeof installBannerGlobalScope !== 'object') {
+    return;
   }
+  installBannerGlobalScope.installBannerDismissedInSession = Boolean(value);
+}
 
-  function hasDismissedIosPwaHelp() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.hasDismissedIosPwaHelp === 'function') {
-        return Boolean(helpModuleApi.hasDismissedIosPwaHelp());
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('hasDismissedIosPwaHelp() failed', error);
-      }
+function hasDismissedInstallBanner() {
+  if (getInstallBannerDismissedInSession()) return true;
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    const storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
+    const dismissed = storedValue === '1';
+    if (dismissed) {
+      setInstallBannerDismissedInSession(true);
     }
-    return false;
+    return dismissed;
+  } catch (error) {
+    console.warn('Could not read install banner dismissal flag', error);
+    return getInstallBannerDismissedInSession();
   }
+}
 
-  function markIosPwaHelpDismissed() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.markIosPwaHelpDismissed === 'function') {
-        helpModuleApi.markIosPwaHelpDismissed();
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('markIosPwaHelpDismissed() failed', error);
-      }
-    }
+function markInstallBannerDismissed() {
+  setInstallBannerDismissedInSession(true);
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store install banner dismissal', error);
   }
+}
 
-  function getInstallBannerDismissedInSession() {
-    if (!installBannerGlobalScope || typeof installBannerGlobalScope !== 'object') {
-      return false;
-    }
-    if (typeof installBannerGlobalScope.installBannerDismissedInSession !== 'boolean') {
-      installBannerGlobalScope.installBannerDismissedInSession = false;
-      return false;
-    }
-    return installBannerGlobalScope.installBannerDismissedInSession;
+function shouldShowInstallBanner() {
+  ensureInstallPromptElements();
+  if (!installPromptBanner) return false;
+  if (isStandaloneDisplayMode()) return false;
+  if (hasDismissedInstallBanner()) return false;
+  return isIosDevice() || isAndroidDevice();
+}
+
+function updateInstallBannerVisibility() {
+  ensureInstallPromptElements();
+  if (!installPromptBanner) return;
+  const shouldShow = shouldShowInstallBanner();
+  const root = typeof document !== 'undefined' ? document.documentElement : null;
+  if (root && typeof root.classList !== 'undefined') {
+    root.classList.toggle('install-banner-visible', shouldShow);
   }
+  if (shouldShow) {
+    installPromptBanner.removeAttribute('hidden');
+    updateInstallBannerColors();
+    updateInstallBannerPosition();
+  } else {
+    installPromptBanner.setAttribute('hidden', '');
+    setInstallBannerOffset(0);
+    installPromptBanner.style.removeProperty('top');
+  }
+}
 
-  function setInstallBannerDismissedInSession(value) {
-    if (!installBannerGlobalScope || typeof installBannerGlobalScope !== 'object') {
+function updateInstallBannerColors() {
+  ensureInstallPromptElements();
+  if (!installPromptBanner) return;
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    return;
+  }
+  try {
+    const root = document.documentElement;
+    if (!root) return;
+    const computed = window.getComputedStyle(root);
+    const accentValue = computed.getPropertyValue('--accent-color').trim();
+    if (!accentValue) {
+      installPromptBanner.style.removeProperty('--install-banner-text-color');
       return;
     }
-    installBannerGlobalScope.installBannerDismissedInSession = Boolean(value);
+    const rgb = parseColorToRgb(accentValue);
+    if (!rgb) return;
+    const luminance = computeRelativeLuminance(rgb);
+    const textColor = luminance > 0.55 ? '#000000' : '#ffffff';
+    installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
+  } catch (error) {
+    console.warn('Unable to update install banner colors', error);
+  }
+}
+
+function renderInstallGuideContent(platform, lang = currentLang) {
+  ensureInstallPromptElements();
+  if (!installGuideDialog) return;
+  const fallbackTexts = texts.en || {};
+  const langTexts = texts[lang] || fallbackTexts;
+  const isIos = platform === 'ios';
+
+  const titleKey = isIos ? 'installHelpTitleIos' : 'installHelpTitleAndroid';
+  const introKey = isIos ? 'installHelpIntroIos' : 'installHelpIntroAndroid';
+  const stepsKey = isIos ? 'installHelpStepsIos' : 'installHelpStepsAndroid';
+  const noteKey = isIos ? 'installHelpNoteIos' : 'installHelpNoteAndroid';
+
+  const title = langTexts[titleKey] || fallbackTexts[titleKey] || '';
+  if (installGuideTitle) installGuideTitle.textContent = title;
+
+  const intro = langTexts[introKey] || fallbackTexts[introKey] || '';
+  if (installGuideIntro) installGuideIntro.textContent = intro;
+
+  const stepsSource = langTexts[stepsKey];
+  const fallbackStepsSource = fallbackTexts[stepsKey];
+  const toArray = value => {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
+  };
+  const steps = toArray(stepsSource);
+  const fallbackSteps = toArray(fallbackStepsSource);
+  const effectiveSteps = steps.length ? steps : fallbackSteps;
+  if (installGuideSteps) {
+    installGuideSteps.textContent = '';
+    effectiveSteps.forEach(step => {
+      if (!step) return;
+      const li = document.createElement('li');
+      li.textContent = step;
+      installGuideSteps.appendChild(li);
+    });
   }
 
-  function hasDismissedInstallBanner() {
-    if (getInstallBannerDismissedInSession()) return true;
-    if (typeof localStorage === 'undefined') return false;
+  const note = langTexts[noteKey] || fallbackTexts[noteKey] || '';
+  if (installGuideNote) installGuideNote.textContent = note;
+
+  installGuideDialog.setAttribute('data-platform', platform);
+
+  if (!installGuideMigration || !installGuideMigrationTitle || !installGuideMigrationIntro || !installGuideMigrationSteps || !installGuideMigrationNote) {
+    return;
+  }
+
+  if (isIos) {
+    installGuideMigration.removeAttribute('hidden');
+    const migrationTitle = langTexts.installHelpMigrationTitle || fallbackTexts.installHelpMigrationTitle || '';
+    installGuideMigrationTitle.textContent = migrationTitle;
+    const migrationIntro = langTexts.iosPwaHelpIntro || fallbackTexts.iosPwaHelpIntro || '';
+    installGuideMigrationIntro.textContent = migrationIntro;
+    const migrationSteps = [
+      langTexts.iosPwaHelpStep1 || fallbackTexts.iosPwaHelpStep1,
+      langTexts.iosPwaHelpStep2 || fallbackTexts.iosPwaHelpStep2,
+      langTexts.iosPwaHelpStep3 || fallbackTexts.iosPwaHelpStep3,
+      langTexts.iosPwaHelpStep4 || fallbackTexts.iosPwaHelpStep4,
+    ].filter(Boolean);
+    installGuideMigrationSteps.textContent = '';
+    migrationSteps.forEach(step => {
+      const li = document.createElement('li');
+      li.textContent = step;
+      installGuideMigrationSteps.appendChild(li);
+    });
+    const migrationNote = langTexts.iosPwaHelpNote || fallbackTexts.iosPwaHelpNote || '';
+    installGuideMigrationNote.textContent = migrationNote;
+  } else {
+    installGuideMigration.setAttribute('hidden', '');
+    installGuideMigrationTitle.textContent = '';
+    installGuideMigrationIntro.textContent = '';
+    installGuideMigrationSteps.textContent = '';
+    installGuideMigrationNote.textContent = '';
+  }
+}
+
+function openInstallGuide(platform) {
+  ensureInstallPromptElements();
+  if (!installGuideDialog) return;
+  currentInstallGuidePlatform = platform;
+  lastActiveBeforeInstallGuide = document.activeElement;
+  renderInstallGuideContent(platform);
+  installGuideDialog.removeAttribute('hidden');
+  const focusTarget = installGuideClose || installGuideDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
     try {
-      const storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
-      const dismissed = storedValue === '1';
-      if (dismissed) {
-        setInstallBannerDismissedInSession(true);
-      }
-      return dismissed;
-    } catch (error) {
-      console.warn('Could not read install banner dismissal flag', error);
-      return getInstallBannerDismissedInSession();
+      focusTarget.focus();
+    } catch {
+      focusTarget.focus();
     }
   }
+}
 
-  function markInstallBannerDismissed() {
-    setInstallBannerDismissedInSession(true);
-    if (typeof localStorage === 'undefined') return;
+function closeInstallGuide() {
+  ensureInstallPromptElements();
+  if (!installGuideDialog) return;
+  installGuideDialog.setAttribute('hidden', '');
+  currentInstallGuidePlatform = null;
+  if (lastActiveBeforeInstallGuide && typeof lastActiveBeforeInstallGuide.focus === 'function') {
     try {
-      localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
-    } catch (error) {
-      console.warn('Could not store install banner dismissal', error);
+      lastActiveBeforeInstallGuide.focus();
+    } catch {
+      lastActiveBeforeInstallGuide.focus();
     }
   }
+}
 
-  function shouldShowInstallBanner() {
-    ensureInstallPromptElements();
-    if (!installPromptBanner) return false;
-    if (isStandaloneDisplayMode()) return false;
-    if (hasDismissedInstallBanner()) return false;
-    return isIosDevice() || isAndroidDevice();
-  }
+function setupInstallBanner() {
+  ensureInstallPromptElements();
+  if (!installPromptBanner) return false;
 
-  function updateInstallBannerVisibility() {
-    ensureInstallPromptElements();
-    if (!installPromptBanner) return;
-    const shouldShow = shouldShowInstallBanner();
-    const root = typeof document !== 'undefined' ? document.documentElement : null;
-    if (root && typeof root.classList !== 'undefined') {
-      root.classList.toggle('install-banner-visible', shouldShow);
-    }
-    if (shouldShow) {
-      installPromptBanner.removeAttribute('hidden');
-      updateInstallBannerColors();
-      updateInstallBannerPosition();
-    } else {
-      installPromptBanner.setAttribute('hidden', '');
-      setInstallBannerOffset(0);
-      installPromptBanner.style.removeProperty('top');
-    }
-  }
-
-  function updateInstallBannerColors() {
-    ensureInstallPromptElements();
-    if (!installPromptBanner) return;
-    if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-      return;
-    }
-    try {
-      const root = document.documentElement;
-      if (!root) return;
-      const computed = window.getComputedStyle(root);
-      const accentValue = computed.getPropertyValue('--accent-color').trim();
-      if (!accentValue) {
-        installPromptBanner.style.removeProperty('--install-banner-text-color');
-        return;
-      }
-      const rgb = parseColorToRgb(accentValue);
-      if (!rgb) return;
-      const luminance = computeRelativeLuminance(rgb);
-      const textColor = luminance > 0.55 ? '#000000' : '#ffffff';
-      installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
-    } catch (error) {
-      console.warn('Unable to update install banner colors', error);
-    }
-  }
-
-  function renderInstallGuideContent(platform, lang = currentLang) {
-    ensureInstallPromptElements();
-    if (!installGuideDialog) return;
-    const fallbackTexts = texts.en || {};
-    const langTexts = texts[lang] || fallbackTexts;
-    const isIos = platform === 'ios';
-
-    const titleKey = isIos ? 'installHelpTitleIos' : 'installHelpTitleAndroid';
-    const introKey = isIos ? 'installHelpIntroIos' : 'installHelpIntroAndroid';
-    const stepsKey = isIos ? 'installHelpStepsIos' : 'installHelpStepsAndroid';
-    const noteKey = isIos ? 'installHelpNoteIos' : 'installHelpNoteAndroid';
-
-    const title = langTexts[titleKey] || fallbackTexts[titleKey] || '';
-    if (installGuideTitle) installGuideTitle.textContent = title;
-
-    const intro = langTexts[introKey] || fallbackTexts[introKey] || '';
-    if (installGuideIntro) installGuideIntro.textContent = intro;
-
-    const stepsSource = langTexts[stepsKey];
-    const fallbackStepsSource = fallbackTexts[stepsKey];
-    const toArray = value => {
-      if (!value) return [];
-      return Array.isArray(value) ? value : [value];
-    };
-    const steps = toArray(stepsSource);
-    const fallbackSteps = toArray(fallbackStepsSource);
-    const effectiveSteps = steps.length ? steps : fallbackSteps;
-    if (installGuideSteps) {
-      installGuideSteps.textContent = '';
-      effectiveSteps.forEach(step => {
-        if (!step) return;
-        const li = document.createElement('li');
-        li.textContent = step;
-        installGuideSteps.appendChild(li);
-      });
-    }
-
-    const note = langTexts[noteKey] || fallbackTexts[noteKey] || '';
-    if (installGuideNote) installGuideNote.textContent = note;
-
-    installGuideDialog.setAttribute('data-platform', platform);
-
-    if (!installGuideMigration || !installGuideMigrationTitle || !installGuideMigrationIntro || !installGuideMigrationSteps || !installGuideMigrationNote) {
-      return;
-    }
-
-    if (isIos) {
-      installGuideMigration.removeAttribute('hidden');
-      const migrationTitle = langTexts.installHelpMigrationTitle || fallbackTexts.installHelpMigrationTitle || '';
-      installGuideMigrationTitle.textContent = migrationTitle;
-      const migrationIntro = langTexts.iosPwaHelpIntro || fallbackTexts.iosPwaHelpIntro || '';
-      installGuideMigrationIntro.textContent = migrationIntro;
-      const migrationSteps = [
-        langTexts.iosPwaHelpStep1 || fallbackTexts.iosPwaHelpStep1,
-        langTexts.iosPwaHelpStep2 || fallbackTexts.iosPwaHelpStep2,
-        langTexts.iosPwaHelpStep3 || fallbackTexts.iosPwaHelpStep3,
-        langTexts.iosPwaHelpStep4 || fallbackTexts.iosPwaHelpStep4,
-      ].filter(Boolean);
-      installGuideMigrationSteps.textContent = '';
-      migrationSteps.forEach(step => {
-        const li = document.createElement('li');
-        li.textContent = step;
-        installGuideMigrationSteps.appendChild(li);
-      });
-      const migrationNote = langTexts.iosPwaHelpNote || fallbackTexts.iosPwaHelpNote || '';
-      installGuideMigrationNote.textContent = migrationNote;
-    } else {
-      installGuideMigration.setAttribute('hidden', '');
-      installGuideMigrationTitle.textContent = '';
-      installGuideMigrationIntro.textContent = '';
-      installGuideMigrationSteps.textContent = '';
-      installGuideMigrationNote.textContent = '';
-    }
-  }
-
-  function openInstallGuide(platform) {
-    ensureInstallPromptElements();
-    if (!installGuideDialog) return;
-    currentInstallGuidePlatform = platform;
-    lastActiveBeforeInstallGuide = document.activeElement;
-    renderInstallGuideContent(platform);
-    installGuideDialog.removeAttribute('hidden');
-    const focusTarget = installGuideClose || installGuideDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
-    if (focusTarget && typeof focusTarget.focus === 'function') {
-      try {
-        focusTarget.focus();
-      } catch {
-        focusTarget.focus();
-      }
-    }
-  }
-
-  function closeInstallGuide() {
-    ensureInstallPromptElements();
-    if (!installGuideDialog) return;
-    installGuideDialog.setAttribute('hidden', '');
-    currentInstallGuidePlatform = null;
-    if (lastActiveBeforeInstallGuide && typeof lastActiveBeforeInstallGuide.focus === 'function') {
-      try {
-        lastActiveBeforeInstallGuide.focus();
-      } catch {
-        lastActiveBeforeInstallGuide.focus();
-      }
-    }
-  }
-
-  function setupInstallBanner() {
-    ensureInstallPromptElements();
-    if (!installPromptBanner) return false;
-
-    if (installBannerSetupComplete) {
-      applyInstallTexts(currentLang);
-      updateInstallBannerColors();
-      updateInstallBannerVisibility();
-      updateInstallBannerPosition();
-      return true;
-    }
-
-    installBannerSetupComplete = true;
-
-    if (installPromptBannerIcon && typeof applyIconGlyph === 'function') {
-      applyIconGlyph(installPromptBannerIcon, ICON_GLYPHS.installApp);
-    }
-
-    if (installPromptBannerAction) {
-      installPromptBannerAction.addEventListener('click', event => {
-        event.preventDefault();
-        const platform = isIosDevice() ? 'ios' : 'android';
-        openInstallGuide(platform);
-      });
-    }
-
-    if (installPromptBannerDismiss) {
-      installPromptBannerDismiss.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        markInstallBannerDismissed();
-        updateInstallBannerVisibility();
-      });
-    }
-
-    if (installGuideClose) {
-      installGuideClose.addEventListener('click', () => {
-        closeInstallGuide();
-      });
-    }
-
-    if (installGuideDialog) {
-      installGuideDialog.addEventListener('click', event => {
-        if (event.target === installGuideDialog) {
-          closeInstallGuide();
-        }
-      });
-    }
-
+  if (installBannerSetupComplete) {
     applyInstallTexts(currentLang);
     updateInstallBannerColors();
     updateInstallBannerVisibility();
     updateInstallBannerPosition();
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', updateInstallBannerPosition);
-      window.addEventListener('appinstalled', updateInstallBannerVisibility);
-      if (typeof window.matchMedia === 'function') {
-        try {
-          const media = window.matchMedia('(display-mode: standalone)');
-          const handleChange = () => updateInstallBannerVisibility();
-          if (typeof media.addEventListener === 'function') {
-            media.addEventListener('change', handleChange);
-          } else if (typeof media.addListener === 'function') {
-            media.addListener(handleChange);
-          }
-        } catch (error) {
-          console.warn('matchMedia display-mode listener failed', error);
-        }
-      }
-    }
-
     return true;
   }
 
-  function applyInstallTexts(lang) {
-    ensureInstallPromptElements();
-    const fallbackTexts = texts.en || {};
-    const langTexts = texts[lang] || fallbackTexts;
-    const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText || '';
-    if (installPromptBannerText && bannerText) {
-      installPromptBannerText.textContent = bannerText;
-    }
-    if (installPromptBanner) {
-      if (bannerText) {
-        installPromptBanner.setAttribute('aria-label', bannerText);
-        installPromptBanner.setAttribute('title', bannerText);
-      } else {
-        installPromptBanner.removeAttribute('aria-label');
-        installPromptBanner.removeAttribute('title');
-      }
-    }
-    if (installPromptBannerAction) {
-      if (bannerText) {
-        installPromptBannerAction.setAttribute('aria-label', bannerText);
-        installPromptBannerAction.setAttribute('title', bannerText);
-      } else {
-        installPromptBannerAction.removeAttribute('aria-label');
-        installPromptBannerAction.removeAttribute('title');
-      }
-    }
+  installBannerSetupComplete = true;
 
-    const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose || '';
-    const dismissLabel =
-      langTexts.installBannerDismiss ||
-      fallbackTexts.installBannerDismiss ||
-      closeLabel ||
-      '';
-
-    if (installPromptBannerDismiss) {
-      const labelText = dismissLabel || '';
-      if (typeof setButtonLabelWithIconBinding === 'function') {
-        setButtonLabelWithIconBinding(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
-      }
-      Array.from(installPromptBannerDismiss.querySelectorAll('.visually-hidden')).forEach(node => {
-        if (node && node.parentNode === installPromptBannerDismiss) {
-          installPromptBannerDismiss.removeChild(node);
-        }
-      });
-      if (labelText) {
-        installPromptBannerDismiss.setAttribute('aria-label', labelText);
-        installPromptBannerDismiss.setAttribute('title', labelText);
-        const hiddenLabel = document.createElement('span');
-        hiddenLabel.className = 'visually-hidden';
-        hiddenLabel.textContent = labelText;
-        installPromptBannerDismiss.appendChild(hiddenLabel);
-      } else {
-        installPromptBannerDismiss.removeAttribute('aria-label');
-        installPromptBannerDismiss.removeAttribute('title');
-      }
-    }
-
-    if (installGuideClose) {
-      if (closeLabel && typeof setButtonLabelWithIconBinding === 'function') {
-        setButtonLabelWithIconBinding(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
-        installGuideClose.setAttribute('aria-label', closeLabel);
-        installGuideClose.setAttribute('title', closeLabel);
-      } else if (!closeLabel) {
-        installGuideClose.removeAttribute('aria-label');
-        installGuideClose.removeAttribute('title');
-      }
-    }
-
-    if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
-      renderInstallGuideContent(currentInstallGuidePlatform, lang);
-    }
-
-    updateInstallBannerPosition();
-    updateInstallBannerColors();
+  if (installPromptBannerIcon && typeof applyIconGlyph === 'function') {
+    applyIconGlyph(installPromptBannerIcon, ICON_GLYPHS.installApp);
   }
 
-  function shouldShowIosPwaHelp() {
-    try {
-      if (helpModuleApi && typeof helpModuleApi.shouldShowIosPwaHelp === 'function') {
-        return Boolean(helpModuleApi.shouldShowIosPwaHelp(() => iosPwaHelpDialog));
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('shouldShowIosPwaHelp() failed', error);
-      }
-    }
-    return false;
+  if (installPromptBannerAction) {
+    installPromptBannerAction.addEventListener('click', event => {
+      event.preventDefault();
+      const platform = isIosDevice() ? 'ios' : 'android';
+      openInstallGuide(platform);
+    });
   }
 
-  function openIosPwaHelp() {
-    if (!iosPwaHelpDialog) return;
-    if (!shouldShowIosPwaHelp()) return;
-    lastActiveBeforeIosHelp = document.activeElement;
-    iosPwaHelpDialog.removeAttribute('hidden');
-    const focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
-    if (focusTarget && typeof focusTarget.focus === 'function') {
-      try {
-        focusTarget.focus();
-      } catch {
-        focusTarget.focus();
-      }
-    }
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      markInstallBannerDismissed();
+      updateInstallBannerVisibility();
+    });
   }
 
-  function closeIosPwaHelp(storeDismissal = false) {
-    if (!iosPwaHelpDialog) return;
-    iosPwaHelpDialog.setAttribute('hidden', '');
-    if (storeDismissal) {
-      markIosPwaHelpDismissed();
-    }
-    if (lastActiveBeforeIosHelp && typeof lastActiveBeforeIosHelp.focus === 'function') {
-      try {
-        lastActiveBeforeIosHelp.focus();
-      } catch {
-        lastActiveBeforeIosHelp.focus();
-      }
-    }
+  if (installGuideClose) {
+    installGuideClose.addEventListener('click', () => {
+      closeInstallGuide();
+    });
   }
 
-  function maybeShowIosPwaHelp() {
-    openIosPwaHelp();
-  }
-
-  if (iosPwaHelpClose) {
-    iosPwaHelpClose.addEventListener('click', () => closeIosPwaHelp(true));
-  }
-
-  if (iosPwaHelpDialog) {
-    iosPwaHelpDialog.addEventListener('click', event => {
-      if (event.target === iosPwaHelpDialog) {
-        closeIosPwaHelp(true);
+  if (installGuideDialog) {
+    installGuideDialog.addEventListener('click', event => {
+      if (event.target === installGuideDialog) {
+        closeInstallGuide();
       }
     });
   }
 
-  document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' && event.key !== 'Esc') return;
-    let handled = false;
-    if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+  applyInstallTexts(currentLang);
+  updateInstallBannerColors();
+  updateInstallBannerVisibility();
+  updateInstallBannerPosition();
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateInstallBannerPosition);
+    window.addEventListener('appinstalled', updateInstallBannerVisibility);
+    if (typeof window.matchMedia === 'function') {
+      try {
+        const media = window.matchMedia('(display-mode: standalone)');
+        const handleChange = () => updateInstallBannerVisibility();
+        if (typeof media.addEventListener === 'function') {
+          media.addEventListener('change', handleChange);
+        } else if (typeof media.addListener === 'function') {
+          media.addListener(handleChange);
+        }
+      } catch (error) {
+        console.warn('matchMedia display-mode listener failed', error);
+      }
+    }
+  }
+
+  return true;
+}
+
+function applyInstallTexts(lang) {
+  ensureInstallPromptElements();
+  const fallbackTexts = texts.en || {};
+  const langTexts = texts[lang] || fallbackTexts;
+  const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText || '';
+  if (installPromptBannerText && bannerText) {
+    installPromptBannerText.textContent = bannerText;
+  }
+  if (installPromptBanner) {
+    if (bannerText) {
+      installPromptBanner.setAttribute('aria-label', bannerText);
+      installPromptBanner.setAttribute('title', bannerText);
+    } else {
+      installPromptBanner.removeAttribute('aria-label');
+      installPromptBanner.removeAttribute('title');
+    }
+  }
+  if (installPromptBannerAction) {
+    if (bannerText) {
+      installPromptBannerAction.setAttribute('aria-label', bannerText);
+      installPromptBannerAction.setAttribute('title', bannerText);
+    } else {
+      installPromptBannerAction.removeAttribute('aria-label');
+      installPromptBannerAction.removeAttribute('title');
+    }
+  }
+
+  const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose || '';
+  const dismissLabel =
+    langTexts.installBannerDismiss ||
+    fallbackTexts.installBannerDismiss ||
+    closeLabel ||
+    '';
+
+  if (installPromptBannerDismiss) {
+    const labelText = dismissLabel || '';
+    if (typeof setButtonLabelWithIconBinding === 'function') {
+      setButtonLabelWithIconBinding(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
+    }
+    Array.from(installPromptBannerDismiss.querySelectorAll('.visually-hidden')).forEach(node => {
+      if (node && node.parentNode === installPromptBannerDismiss) {
+        installPromptBannerDismiss.removeChild(node);
+      }
+    });
+    if (labelText) {
+      installPromptBannerDismiss.setAttribute('aria-label', labelText);
+      installPromptBannerDismiss.setAttribute('title', labelText);
+      const hiddenLabel = document.createElement('span');
+      hiddenLabel.className = 'visually-hidden';
+      hiddenLabel.textContent = labelText;
+      installPromptBannerDismiss.appendChild(hiddenLabel);
+    } else {
+      installPromptBannerDismiss.removeAttribute('aria-label');
+      installPromptBannerDismiss.removeAttribute('title');
+    }
+  }
+
+  if (installGuideClose) {
+    if (closeLabel && typeof setButtonLabelWithIconBinding === 'function') {
+      setButtonLabelWithIconBinding(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
+      installGuideClose.setAttribute('aria-label', closeLabel);
+      installGuideClose.setAttribute('title', closeLabel);
+    } else if (!closeLabel) {
+      installGuideClose.removeAttribute('aria-label');
+      installGuideClose.removeAttribute('title');
+    }
+  }
+
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
+    renderInstallGuideContent(currentInstallGuidePlatform, lang);
+  }
+
+  updateInstallBannerPosition();
+  updateInstallBannerColors();
+}
+
+function shouldShowIosPwaHelp() {
+  try {
+    if (helpModuleApi && typeof helpModuleApi.shouldShowIosPwaHelp === 'function') {
+      return Boolean(helpModuleApi.shouldShowIosPwaHelp(() => iosPwaHelpDialog));
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('shouldShowIosPwaHelp() failed', error);
+    }
+  }
+  return false;
+}
+
+function openIosPwaHelp() {
+  if (!iosPwaHelpDialog) return;
+  if (!shouldShowIosPwaHelp()) return;
+  lastActiveBeforeIosHelp = document.activeElement;
+  iosPwaHelpDialog.removeAttribute('hidden');
+  const focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    try {
+      focusTarget.focus();
+    } catch {
+      focusTarget.focus();
+    }
+  }
+}
+
+function closeIosPwaHelp(storeDismissal = false) {
+  if (!iosPwaHelpDialog) return;
+  iosPwaHelpDialog.setAttribute('hidden', '');
+  if (storeDismissal) {
+    markIosPwaHelpDismissed();
+  }
+  if (lastActiveBeforeIosHelp && typeof lastActiveBeforeIosHelp.focus === 'function') {
+    try {
+      lastActiveBeforeIosHelp.focus();
+    } catch {
+      lastActiveBeforeIosHelp.focus();
+    }
+  }
+}
+
+function maybeShowIosPwaHelp() {
+  openIosPwaHelp();
+}
+
+if (iosPwaHelpClose) {
+  iosPwaHelpClose.addEventListener('click', () => closeIosPwaHelp(true));
+}
+
+if (iosPwaHelpDialog) {
+  iosPwaHelpDialog.addEventListener('click', event => {
+    if (event.target === iosPwaHelpDialog) {
       closeIosPwaHelp(true);
-      handled = true;
-    }
-    if (installGuideDialog && !installGuideDialog.hasAttribute('hidden')) {
-      closeInstallGuide();
-      handled = true;
-    }
-    if (handled) {
-      event.preventDefault();
     }
   });
-  var hoverHelpButton = document.getElementById("hoverHelpButton");
-  var settingsButton = document.getElementById("settingsButton");
-  const settingsButtonIcon = settingsButton?.querySelector?.('.settings-button-icon');
-  var settingsDialog = document.getElementById("settingsDialog");
-  if (settingsButton) {
-    settingsButton.setAttribute('data-allow-hover-help', '');
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' && event.key !== 'Esc') return;
+  let handled = false;
+  if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+    closeIosPwaHelp(true);
+    handled = true;
   }
-  if (settingsButtonIcon) {
-    applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.gears);
-    settingsButtonIcon.setAttribute('aria-hidden', 'true');
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden')) {
+    closeInstallGuide();
+    handled = true;
   }
-  if (settingsDialog) {
-    settingsDialog.setAttribute('data-allow-hover-help', '');
+  if (handled) {
+    event.preventDefault();
   }
-  const settingsTablist = document.getElementById('settingsTablist');
-  const settingsTabButtons = settingsTablist
-    ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
-    : [];
-  const settingsTabsContainer = settingsTablist
-    ? settingsTablist.closest('.settings-tabs-container') || settingsTablist
+});
+var hoverHelpButton = document.getElementById("hoverHelpButton");
+var settingsButton = document.getElementById("settingsButton");
+const settingsButtonIcon = settingsButton?.querySelector?.('.settings-button-icon');
+var settingsDialog = document.getElementById("settingsDialog");
+if (settingsButton) {
+  settingsButton.setAttribute('data-allow-hover-help', '');
+}
+if (settingsButtonIcon) {
+  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.gears);
+  settingsButtonIcon.setAttribute('aria-hidden', 'true');
+}
+if (settingsDialog) {
+  settingsDialog.setAttribute('data-allow-hover-help', '');
+}
+const settingsTablist = document.getElementById('settingsTablist');
+const settingsTabButtons = settingsTablist
+  ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
+  : [];
+const settingsTabsContainer = settingsTablist
+  ? settingsTablist.closest('.settings-tabs-container') || settingsTablist
+  : null;
+const settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev');
+const settingsTabsScrollNext = document.getElementById('settingsTabsScrollNext');
+let settingsTabsOverflowFrame = 0;
+
+const SETTINGS_TABS_SIDEBAR_QUERY = '(max-width: 720px)';
+const settingsTabsOrientationQuery =
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia(SETTINGS_TABS_SIDEBAR_QUERY)
     : null;
-  const settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev');
-  const settingsTabsScrollNext = document.getElementById('settingsTabsScrollNext');
-  let settingsTabsOverflowFrame = 0;
 
-  const SETTINGS_TABS_SIDEBAR_QUERY = '(max-width: 720px)';
-  const settingsTabsOrientationQuery =
-    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-      ? window.matchMedia(SETTINGS_TABS_SIDEBAR_QUERY)
-      : null;
+function applySettingsTabsOrientation(matches) {
+  if (!settingsTablist) return;
+  settingsTablist.setAttribute('aria-orientation', matches ? 'vertical' : 'horizontal');
+  scheduleSettingsTabsOverflowUpdate();
+}
 
-  function applySettingsTabsOrientation(matches) {
-    if (!settingsTablist) return;
-    settingsTablist.setAttribute('aria-orientation', matches ? 'vertical' : 'horizontal');
-    scheduleSettingsTabsOverflowUpdate();
-  }
-
-  if (settingsTabsOrientationQuery) {
-    try {
-      applySettingsTabsOrientation(settingsTabsOrientationQuery.matches);
-      const handleSettingsTabsOrientationChange = event => {
-        applySettingsTabsOrientation(event.matches);
-      };
-      if (typeof settingsTabsOrientationQuery.addEventListener === 'function') {
-        settingsTabsOrientationQuery.addEventListener('change', handleSettingsTabsOrientationChange);
-      } else if (typeof settingsTabsOrientationQuery.addListener === 'function') {
-        settingsTabsOrientationQuery.addListener(handleSettingsTabsOrientationChange);
-      }
-    } catch {
-      applySettingsTabsOrientation(false);
+if (settingsTabsOrientationQuery) {
+  try {
+    applySettingsTabsOrientation(settingsTabsOrientationQuery.matches);
+    const handleSettingsTabsOrientationChange = event => {
+      applySettingsTabsOrientation(event.matches);
+    };
+    if (typeof settingsTabsOrientationQuery.addEventListener === 'function') {
+      settingsTabsOrientationQuery.addEventListener('change', handleSettingsTabsOrientationChange);
+    } else if (typeof settingsTabsOrientationQuery.addListener === 'function') {
+      settingsTabsOrientationQuery.addListener(handleSettingsTabsOrientationChange);
     }
-  } else if (settingsTablist) {
-    settingsTablist.setAttribute('aria-orientation', 'horizontal');
+  } catch {
+    applySettingsTabsOrientation(false);
   }
+} else if (settingsTablist) {
+  settingsTablist.setAttribute('aria-orientation', 'horizontal');
+}
 
-  function updateSettingsTabsOverflowIndicators() {
-    if (!settingsTablist || !settingsTabsContainer) {
-      if (settingsTabsScrollPrev) {
-        settingsTabsScrollPrev.hidden = true;
-      }
-      if (settingsTabsScrollNext) {
-        settingsTabsScrollNext.hidden = true;
-      }
-      return;
-    }
-
-    const scrollWidth = typeof settingsTablist.scrollWidth === 'number'
-      ? settingsTablist.scrollWidth
-      : 0;
-    const clientWidth = typeof settingsTablist.clientWidth === 'number'
-      ? settingsTablist.clientWidth
-      : 0;
-    const rawScrollLeft = typeof settingsTablist.scrollLeft === 'number'
-      ? settingsTablist.scrollLeft
-      : Number(settingsTablist.scrollLeft) || 0;
-    const maxScrollLeft = Math.max(0, scrollWidth - clientWidth);
-    const scrollLeft = Math.min(maxScrollLeft, Math.max(0, rawScrollLeft));
-    const canScroll = scrollWidth > clientWidth + 4;
-    const atStart = !canScroll || scrollLeft <= 1;
-    const atEnd = !canScroll || Math.abs(scrollWidth - clientWidth - scrollLeft) <= 1;
-
-    settingsTabsContainer.classList.toggle('is-scrollable', canScroll);
-    settingsTabsContainer.classList.toggle('is-at-start', atStart);
-    settingsTabsContainer.classList.toggle('is-at-end', atEnd);
-
+function updateSettingsTabsOverflowIndicators() {
+  if (!settingsTablist || !settingsTabsContainer) {
     if (settingsTabsScrollPrev) {
-      settingsTabsScrollPrev.hidden = !canScroll;
-      settingsTabsScrollPrev.disabled = atStart;
+      settingsTabsScrollPrev.hidden = true;
     }
-
     if (settingsTabsScrollNext) {
-      settingsTabsScrollNext.hidden = !canScroll;
-      settingsTabsScrollNext.disabled = atEnd;
+      settingsTabsScrollNext.hidden = true;
     }
+    return;
   }
 
-  function scheduleSettingsTabsOverflowUpdate() {
-    if (!settingsTablist) return;
+  const scrollWidth = typeof settingsTablist.scrollWidth === 'number'
+    ? settingsTablist.scrollWidth
+    : 0;
+  const clientWidth = typeof settingsTablist.clientWidth === 'number'
+    ? settingsTablist.clientWidth
+    : 0;
+  const rawScrollLeft = typeof settingsTablist.scrollLeft === 'number'
+    ? settingsTablist.scrollLeft
+    : Number(settingsTablist.scrollLeft) || 0;
+  const maxScrollLeft = Math.max(0, scrollWidth - clientWidth);
+  const scrollLeft = Math.min(maxScrollLeft, Math.max(0, rawScrollLeft));
+  const canScroll = scrollWidth > clientWidth + 4;
+  const atStart = !canScroll || scrollLeft <= 1;
+  const atEnd = !canScroll || Math.abs(scrollWidth - clientWidth - scrollLeft) <= 1;
 
-    if (
-      typeof window !== 'undefined' &&
-      typeof window.requestAnimationFrame === 'function'
-    ) {
-      if (settingsTabsOverflowFrame) {
-        if (typeof window.cancelAnimationFrame === 'function') {
-          window.cancelAnimationFrame(settingsTabsOverflowFrame);
-        }
-        settingsTabsOverflowFrame = 0;
-      }
-
-      settingsTabsOverflowFrame = window.requestAnimationFrame(() => {
-        settingsTabsOverflowFrame = 0;
-        updateSettingsTabsOverflowIndicators();
-      });
-    } else {
-      updateSettingsTabsOverflowIndicators();
-    }
-  }
-
-  function scrollSettingsTabs(direction) {
-    if (!settingsTablist) return;
-
-    const distance = settingsTablist.clientWidth
-      ? settingsTablist.clientWidth * 0.75
-      : 200;
-    const amount = direction * distance;
-
-    if (typeof settingsTablist.scrollBy === 'function') {
-      try {
-        settingsTablist.scrollBy({ left: amount, behavior: 'smooth' });
-      } catch {
-        settingsTablist.scrollLeft += amount;
-      }
-    } else {
-      settingsTablist.scrollLeft += amount;
-    }
-
-    scheduleSettingsTabsOverflowUpdate();
-  }
+  settingsTabsContainer.classList.toggle('is-scrollable', canScroll);
+  settingsTabsContainer.classList.toggle('is-at-start', atStart);
+  settingsTabsContainer.classList.toggle('is-at-end', atEnd);
 
   if (settingsTabsScrollPrev) {
-    settingsTabsScrollPrev.addEventListener('click', () => {
-      scrollSettingsTabs(-1);
-    });
+    settingsTabsScrollPrev.hidden = !canScroll;
+    settingsTabsScrollPrev.disabled = atStart;
   }
 
   if (settingsTabsScrollNext) {
-    settingsTabsScrollNext.addEventListener('click', () => {
-      scrollSettingsTabs(1);
-    });
+    settingsTabsScrollNext.hidden = !canScroll;
+    settingsTabsScrollNext.disabled = atEnd;
   }
+}
 
-  if (settingsTablist) {
-    let settingsTabsPassiveOptions = false;
-    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      try {
-        const passiveTestHandler = () => { };
-        const passiveTestOptions = Object.defineProperty({}, 'passive', {
-          get() {
-            settingsTabsPassiveOptions = { passive: true };
-            return false;
-          },
-        });
-        window.addEventListener('testPassive', passiveTestHandler, passiveTestOptions);
-        window.removeEventListener('testPassive', passiveTestHandler, passiveTestOptions);
-      } catch {
-        settingsTabsPassiveOptions = false;
+function scheduleSettingsTabsOverflowUpdate() {
+  if (!settingsTablist) return;
+
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.requestAnimationFrame === 'function'
+  ) {
+    if (settingsTabsOverflowFrame) {
+      if (typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(settingsTabsOverflowFrame);
       }
+      settingsTabsOverflowFrame = 0;
     }
 
-    settingsTablist.addEventListener(
-      'scroll',
-      () => {
-        scheduleSettingsTabsOverflowUpdate();
-      },
-      settingsTabsPassiveOptions
-    );
-
-    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      window.addEventListener('resize', scheduleSettingsTabsOverflowUpdate, settingsTabsPassiveOptions);
-    }
+    settingsTabsOverflowFrame = window.requestAnimationFrame(() => {
+      settingsTabsOverflowFrame = 0;
+      updateSettingsTabsOverflowIndicators();
+    });
+  } else {
+    updateSettingsTabsOverflowIndicators();
   }
-  const settingsTabPanels = settingsDialog
-    ? Array.from(settingsDialog.querySelectorAll('.settings-panel'))
-    : [];
-  const settingsTabGeneral = document.getElementById('settingsTab-general');
-  const settingsTabAutoGear = document.getElementById('settingsTab-autoGear');
-  const settingsTabAccessibility = document.getElementById('settingsTab-accessibility');
-  const settingsTabBackup = document.getElementById('settingsTab-backup');
-  const settingsTabData = document.getElementById('settingsTab-data');
-  const settingsTabAbout = document.getElementById('settingsTab-about');
-  const settingsTabIconAssignments = [
-    [settingsTabGeneral, ICON_GLYPHS.settingsGeneral],
-    [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear],
-    [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility],
-    [settingsTabBackup, ICON_GLYPHS.settingsBackup],
-    [settingsTabData, ICON_GLYPHS.settingsData],
-    [settingsTabAbout, ICON_GLYPHS.settingsAbout]
-  ];
-  settingsTabIconAssignments.forEach(([button, glyph]) => {
-    if (!button || !glyph) return;
-    const iconElement = button.querySelector?.('.settings-tab-icon');
-    if (!iconElement) return;
-    applyIconGlyph(iconElement, glyph);
-    iconElement.setAttribute('aria-hidden', 'true');
-  });
-  const generalSettingsHeading = document.getElementById('generalSettingsHeading');
-  const generalLanguageHeading = document.getElementById('generalLanguageHeading');
-  const generalAppearanceHeading = document.getElementById('generalAppearanceHeading');
-  const generalTypographyHeading = document.getElementById('generalTypographyHeading');
-  const generalBrandingHeading = document.getElementById('generalBrandingHeading');
-  const generalCameraColorsHeading = document.getElementById('generalCameraColorsHeading');
-  const cameraColorsDescription = document.getElementById('cameraColorsDescription');
-  const cameraColorALabel = document.getElementById('cameraColorALabel');
-  const cameraColorBLabel = document.getElementById('cameraColorBLabel');
-  const cameraColorCLabel = document.getElementById('cameraColorCLabel');
-  const cameraColorDLabel = document.getElementById('cameraColorDLabel');
-  const cameraColorELabel = document.getElementById('cameraColorELabel');
-  var cameraColorA = document.getElementById('cameraColorA');
-  var cameraColorB = document.getElementById('cameraColorB');
-  var cameraColorC = document.getElementById('cameraColorC');
-  var cameraColorD = document.getElementById('cameraColorD');
-  var cameraColorE = document.getElementById('cameraColorE');
-  var settingsLanguage = document.getElementById("settingsLanguage");
-  var settingsDarkMode = document.getElementById("settingsDarkMode");
-  var settingsPinkMode = document.getElementById("settingsPinkMode");
-  var accentColorInput = document.getElementById("accentColorInput");
-  var accentColorResetButton = document.getElementById("accentColorReset");
-  var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
-  var settingsFocusScale = document.getElementById('settingsFocusScale');
-  var settingsFontSize = document.getElementById("settingsFontSize");
-  var settingsFontFamily = document.getElementById("settingsFontFamily");
-  const localFontsButton = document.getElementById("localFontsButton");
-  const localFontsInput = document.getElementById("localFontsInput");
-  const localFontsStatus = document.getElementById("localFontsStatus");
-  const localFontsGroup = document.getElementById("localFontsGroup");
-  const bundledFontGroup = document.getElementById("bundledFontOptions");
-  var settingsLogo = document.getElementById("settingsLogo");
-  var settingsLogoPreview = document.getElementById("settingsLogoPreview");
-  const documentationTrackerController = (() => {
-    const manager =
-      SETTINGS_DOCUMENTATION_TRACKER_TOOLS &&
-        typeof SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager === 'function'
-        ? (() => {
-          try {
-            return SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager({
-              document: typeof document !== 'undefined' ? document : null,
-            });
-          } catch (documentationTrackerCreateError) {
-            console.warn(
-              'Failed to create documentation tracker manager',
-              documentationTrackerCreateError,
-            );
-            return null;
-          }
-        })()
-        : null;
+}
 
-    if (manager) {
-      return {
-        initialize() {
-          try {
-            manager.initialize();
-          } catch (documentationTrackerInitError) {
-            console.warn(
-              'Failed to initialise documentation tracker',
-              documentationTrackerInitError,
-            );
-          }
-        },
-        updateLocalization(localization) {
-          try {
-            manager.updateLocalization(localization);
-          } catch (documentationTrackerLocaleError) {
-            console.warn(
-              'Failed to update documentation tracker localisation',
-              documentationTrackerLocaleError,
-            );
-          }
-        },
-        render() {
-          try {
-            manager.render();
-          } catch (documentationTrackerRenderError) {
-            console.warn(
-              'Failed to render documentation tracker',
-              documentationTrackerRenderError,
-            );
-          }
-        },
-        isInitialized() {
-          try {
-            return typeof manager.isInitialized === 'function'
-              ? manager.isInitialized() === true
-              : false;
-          } catch (documentationTrackerStateError) {
-            void documentationTrackerStateError;
-          }
+function scrollSettingsTabs(direction) {
+  if (!settingsTablist) return;
+
+  const distance = settingsTablist.clientWidth
+    ? settingsTablist.clientWidth * 0.75
+    : 200;
+  const amount = direction * distance;
+
+  if (typeof settingsTablist.scrollBy === 'function') {
+    try {
+      settingsTablist.scrollBy({ left: amount, behavior: 'smooth' });
+    } catch {
+      settingsTablist.scrollLeft += amount;
+    }
+  } else {
+    settingsTablist.scrollLeft += amount;
+  }
+
+  scheduleSettingsTabsOverflowUpdate();
+}
+
+if (settingsTabsScrollPrev) {
+  settingsTabsScrollPrev.addEventListener('click', () => {
+    scrollSettingsTabs(-1);
+  });
+}
+
+if (settingsTabsScrollNext) {
+  settingsTabsScrollNext.addEventListener('click', () => {
+    scrollSettingsTabs(1);
+  });
+}
+
+if (settingsTablist) {
+  let settingsTabsPassiveOptions = false;
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    try {
+      const passiveTestHandler = () => { };
+      const passiveTestOptions = Object.defineProperty({}, 'passive', {
+        get() {
+          settingsTabsPassiveOptions = { passive: true };
           return false;
         },
-      };
+      });
+      window.addEventListener('testPassive', passiveTestHandler, passiveTestOptions);
+      window.removeEventListener('testPassive', passiveTestHandler, passiveTestOptions);
+    } catch {
+      settingsTabsPassiveOptions = false;
     }
+  }
 
-    const noop = () => { };
+  settingsTablist.addEventListener(
+    'scroll',
+    () => {
+      scheduleSettingsTabsOverflowUpdate();
+    },
+    settingsTabsPassiveOptions
+  );
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('resize', scheduleSettingsTabsOverflowUpdate, settingsTabsPassiveOptions);
+  }
+}
+const settingsTabPanels = settingsDialog
+  ? Array.from(settingsDialog.querySelectorAll('.settings-panel'))
+  : [];
+const settingsTabGeneral = document.getElementById('settingsTab-general');
+const settingsTabAutoGear = document.getElementById('settingsTab-autoGear');
+const settingsTabAccessibility = document.getElementById('settingsTab-accessibility');
+const settingsTabBackup = document.getElementById('settingsTab-backup');
+const settingsTabData = document.getElementById('settingsTab-data');
+const settingsTabAbout = document.getElementById('settingsTab-about');
+const settingsTabIconAssignments = [
+  [settingsTabGeneral, ICON_GLYPHS.settingsGeneral],
+  [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear],
+  [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility],
+  [settingsTabBackup, ICON_GLYPHS.settingsBackup],
+  [settingsTabData, ICON_GLYPHS.settingsData],
+  [settingsTabAbout, ICON_GLYPHS.settingsAbout]
+];
+settingsTabIconAssignments.forEach(([button, glyph]) => {
+  if (!button || !glyph) return;
+  const iconElement = button.querySelector?.('.settings-tab-icon');
+  if (!iconElement) return;
+  applyIconGlyph(iconElement, glyph);
+  iconElement.setAttribute('aria-hidden', 'true');
+});
+const generalSettingsHeading = document.getElementById('generalSettingsHeading');
+const generalLanguageHeading = document.getElementById('generalLanguageHeading');
+const generalAppearanceHeading = document.getElementById('generalAppearanceHeading');
+const generalTypographyHeading = document.getElementById('generalTypographyHeading');
+const generalBrandingHeading = document.getElementById('generalBrandingHeading');
+const generalCameraColorsHeading = document.getElementById('generalCameraColorsHeading');
+const cameraColorsDescription = document.getElementById('cameraColorsDescription');
+const cameraColorALabel = document.getElementById('cameraColorALabel');
+const cameraColorBLabel = document.getElementById('cameraColorBLabel');
+const cameraColorCLabel = document.getElementById('cameraColorCLabel');
+const cameraColorDLabel = document.getElementById('cameraColorDLabel');
+const cameraColorELabel = document.getElementById('cameraColorELabel');
+var cameraColorA = document.getElementById('cameraColorA');
+var cameraColorB = document.getElementById('cameraColorB');
+var cameraColorC = document.getElementById('cameraColorC');
+var cameraColorD = document.getElementById('cameraColorD');
+var cameraColorE = document.getElementById('cameraColorE');
+var settingsLanguage = document.getElementById("settingsLanguage");
+var settingsDarkMode = document.getElementById("settingsDarkMode");
+var settingsPinkMode = document.getElementById("settingsPinkMode");
+var accentColorInput = document.getElementById("accentColorInput");
+var accentColorResetButton = document.getElementById("accentColorReset");
+var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+var settingsFocusScale = document.getElementById('settingsFocusScale');
+var settingsFontSize = document.getElementById("settingsFontSize");
+var settingsFontFamily = document.getElementById("settingsFontFamily");
+const localFontsButton = document.getElementById("localFontsButton");
+const localFontsInput = document.getElementById("localFontsInput");
+const localFontsStatus = document.getElementById("localFontsStatus");
+const localFontsGroup = document.getElementById("localFontsGroup");
+const bundledFontGroup = document.getElementById("bundledFontOptions");
+var settingsLogo = document.getElementById("settingsLogo");
+var settingsLogoPreview = document.getElementById("settingsLogoPreview");
+const documentationTrackerController = (() => {
+  const manager =
+    SETTINGS_DOCUMENTATION_TRACKER_TOOLS &&
+      typeof SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager === 'function'
+      ? (() => {
+        try {
+          return SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager({
+            document: typeof document !== 'undefined' ? document : null,
+          });
+        } catch (documentationTrackerCreateError) {
+          console.warn(
+            'Failed to create documentation tracker manager',
+            documentationTrackerCreateError,
+          );
+          return null;
+        }
+      })()
+      : null;
+
+  if (manager) {
     return {
-      initialize: noop,
-      updateLocalization: noop,
-      render: noop,
+      initialize() {
+        try {
+          manager.initialize();
+        } catch (documentationTrackerInitError) {
+          console.warn(
+            'Failed to initialise documentation tracker',
+            documentationTrackerInitError,
+          );
+        }
+      },
+      updateLocalization(localization) {
+        try {
+          manager.updateLocalization(localization);
+        } catch (documentationTrackerLocaleError) {
+          console.warn(
+            'Failed to update documentation tracker localisation',
+            documentationTrackerLocaleError,
+          );
+        }
+      },
+      render() {
+        try {
+          manager.render();
+        } catch (documentationTrackerRenderError) {
+          console.warn(
+            'Failed to render documentation tracker',
+            documentationTrackerRenderError,
+          );
+        }
+      },
       isInitialized() {
+        try {
+          return typeof manager.isInitialized === 'function'
+            ? manager.isInitialized() === true
+            : false;
+        } catch (documentationTrackerStateError) {
+          void documentationTrackerStateError;
+        }
         return false;
       },
     };
-  })();
-
-  var activeSettingsTabId = '';
-  if (settingsTabButtons.length) {
-    const initiallySelected = settingsTabButtons.find(button => button.getAttribute('aria-selected') === 'true');
-    activeSettingsTabId = initiallySelected?.id || settingsTabButtons[0].id;
-    try {
-      const storedTab = localStorage.getItem('settingsActiveTab');
-      if (storedTab && settingsTabButtons.some(button => button.id === storedTab)) {
-        activeSettingsTabId = storedTab;
-      }
-    } catch (e) {
-      console.warn('Could not load settings tab preference', e);
-    }
   }
 
-  function activateSettingsTab(tabId, options = {}) {
-    if (!settingsTabButtons.length) return;
-    const { focusTab = false } = options || {};
-    let target = settingsTabButtons.find(button => button.id === tabId);
-    if (!target) {
-      target = settingsTabButtons[0];
-    }
-    if (!target) return;
-
-    settingsTabButtons.forEach(button => {
-      const selected = button === target;
-      button.setAttribute('aria-selected', selected ? 'true' : 'false');
-      button.tabIndex = selected ? 0 : -1;
-      if (selected && focusTab) {
-        try {
-          button.focus({ preventScroll: true });
-        } catch {
-          button.focus();
-        }
-      }
-      button.classList.toggle('active', selected);
-    });
-
-    settingsTabPanels.forEach(panel => {
-      if (!panel) return;
-      const labelledBy = panel.getAttribute('aria-labelledby') || '';
-      const labelledIds = labelledBy
-        .split(/\s+/)
-        .map(id => id.trim())
-        .filter(Boolean);
-      if (labelledIds.includes(target.id)) {
-        panel.removeAttribute('hidden');
-      } else {
-        panel.setAttribute('hidden', '');
-      }
-    });
-
-    if (
-      settingsTablist &&
-      typeof settingsTablist.scrollWidth === 'number' &&
-      typeof settingsTablist.clientWidth === 'number' &&
-      settingsTablist.scrollWidth > settingsTablist.clientWidth + 4 &&
-      typeof target.scrollIntoView === 'function'
-    ) {
-      try {
-        target.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-      } catch {
-        target.scrollIntoView();
-      }
-    }
-
-    scheduleSettingsTabsOverflowUpdate();
-
-    activeSettingsTabId = target.id;
-    try {
-      localStorage.setItem('settingsActiveTab', activeSettingsTabId);
-    } catch (e) {
-      console.warn('Could not save settings tab preference', e);
-    }
-  }
-  documentationTrackerController.initialize();
-  if (settingsTabButtons.length) {
-    activateSettingsTab(activeSettingsTabId);
-    settingsTabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        activateSettingsTab(button.id);
-      });
-      button.addEventListener('keydown', event => {
-        const { key } = event;
-        if (!key) return;
-        if (!['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Home', 'End'].includes(key)) {
-          return;
-        }
-        event.preventDefault();
-        const currentIndex = settingsTabButtons.indexOf(button);
-        if (currentIndex === -1) return;
-        let nextIndex = currentIndex;
-        if (key === 'ArrowLeft' || key === 'ArrowUp') {
-          nextIndex = (currentIndex - 1 + settingsTabButtons.length) % settingsTabButtons.length;
-        } else if (key === 'ArrowRight' || key === 'ArrowDown') {
-          nextIndex = (currentIndex + 1) % settingsTabButtons.length;
-        } else if (key === 'Home') {
-          nextIndex = 0;
-        } else if (key === 'End') {
-          nextIndex = settingsTabButtons.length - 1;
-        }
-        const nextTab = settingsTabButtons[nextIndex];
-        if (nextTab) {
-          activateSettingsTab(nextTab.id, { focusTab: true });
-        }
-      });
-    });
-  }
-
-  if (storageOpenBackupTabButton) {
-    storageOpenBackupTabButton.addEventListener('click', () => {
-      activateSettingsTab('settingsTab-backup', { focusTab: true });
-      const backupButton = document.getElementById('backupSettings');
-      if (backupButton && typeof backupButton.focus === 'function') {
-        try {
-          backupButton.focus({ preventScroll: true });
-        } catch {
-          backupButton.focus();
-        }
-      }
-    });
-  }
-
-  var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
-    const section = autoGearConditionSections[key] || null;
-    acc[key] = {
-      key,
-      section,
-      label: autoGearConditionLabels[key] || null,
-      select: autoGearConditionSelects[key] || null,
-      addShortcut: autoGearConditionAddShortcuts[key] || null,
-      removeButton: autoGearConditionRemoveButtons[key] || null,
-      logicLabel: autoGearConditionLogicLabels[key] || null,
-      logicSelect: autoGearConditionLogicSelects[key] || null,
-    };
-    if (section) {
-      section.setAttribute('aria-hidden', section.hidden ? 'true' : 'false');
-    }
-    return acc;
-  }, {});
-  const refreshAutoGearShootingDaysValue =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
-      : function refreshAutoGearShootingDaysValue() { };
-
-  const refreshAutoGearScenarioOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions
-      : function refreshAutoGearScenarioOptions() { };
-
-  const refreshAutoGearScenarioBaseSelect =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect
-      : function refreshAutoGearScenarioBaseSelect() { };
-
-  const refreshAutoGearMatteboxOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions
-      : function refreshAutoGearMatteboxOptions() { };
-
-  const refreshAutoGearCameraHandleOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions
-      : function refreshAutoGearCameraHandleOptions() { };
-
-  const refreshAutoGearViewfinderExtensionOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions
-      : function refreshAutoGearViewfinderExtensionOptions() { };
-
-  const refreshAutoGearDeliveryResolutionOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions
-      : function refreshAutoGearDeliveryResolutionOptions() { };
-
-  const refreshAutoGearVideoDistributionOptions =
-    typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions
-      : function refreshAutoGearVideoDistributionOptions() { };
-
-  const collectAutoGearSelectedValues =
-    typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function'
-      ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues
-      : function collectAutoGearSelectedValues() { return []; };
-
-  var autoGearConditionRefreshers = {
-    always: null,
-    scenarios: refreshAutoGearScenarioOptions,
-    shootingDays: refreshAutoGearShootingDaysValue,
-    mattebox: refreshAutoGearMatteboxOptions,
-    cameraHandle: refreshAutoGearCameraHandleOptions,
-    viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
-    deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
-    videoDistribution: refreshAutoGearVideoDistributionOptions,
-    camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
-    ownGear: refreshAutoGearOwnGearConditionOptions,
-    cameraWeight: createDeferredAutoGearRefresher('refreshAutoGearCameraWeightCondition'),
-    monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
-    tripodHeadBrand: createDeferredAutoGearRefresher('refreshAutoGearTripodHeadOptions'),
-    tripodBowl: createDeferredAutoGearRefresher('refreshAutoGearTripodBowlOptions'),
-    tripodTypes: createDeferredAutoGearRefresher('refreshAutoGearTripodTypesOptions'),
-    tripodSpreader: createDeferredAutoGearRefresher('refreshAutoGearTripodSpreaderOptions'),
-    crewPresent: selected =>
-      callCoreFunctionIfAvailable(
-        'refreshAutoGearCrewOptions',
-        [autoGearCrewPresentSelect, selected, 'crewPresent'],
-        { defer: true },
-      ),
-    crewAbsent: selected =>
-      callCoreFunctionIfAvailable(
-        'refreshAutoGearCrewOptions',
-        [autoGearCrewAbsentSelect, selected, 'crewAbsent'],
-        { defer: true },
-      ),
-    wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
-    motors: createDeferredAutoGearRefresher('refreshAutoGearMotorsOptions'),
-    controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
-    distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
-  };
-  var autoGearActiveConditions = new Set();
-
-  function getAutoGearConditionConfig(key) {
-    if (!key) return null;
-    if (Object.prototype.hasOwnProperty.call(autoGearConditionConfigs, key)) {
-      return autoGearConditionConfigs[key];
-    }
-    return null;
-  }
-
-  function getAutoGearConditionLabel(key) {
-    const config = getAutoGearConditionConfig(key);
-    if (config && config.label && typeof config.label.textContent === 'string') {
-      const text = config.label.textContent.trim();
-      if (text) return text;
-    }
-    const fallback = AUTO_GEAR_CONDITION_FALLBACK_LABELS[key];
-    if (typeof fallback === 'string' && fallback) {
-      return fallback;
-    }
-    if (typeof key === 'string' && key) {
-      return key.replace(/([A-Z])/g, ' $1').replace(/^./, char => char.toUpperCase());
-    }
-    return '';
-  }
-
-  function isAutoGearConditionActive(key) {
-    return autoGearActiveConditions.has(key);
-  }
-
-  function refreshAutoGearConditionPicker() {
-    if (!autoGearConditionSelect) return;
-    const previousValue = autoGearConditionSelect.value || '';
-    const placeholderLabel = texts[currentLang]?.autoGearConditionPlaceholder
-      || texts.en?.autoGearConditionPlaceholder
-      || 'Choose a condition';
-    autoGearConditionSelect.innerHTML = '';
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = placeholderLabel;
-    autoGearConditionSelect.appendChild(placeholder);
-    const available = AUTO_GEAR_CONDITION_KEYS.filter(key => {
-      if (!autoGearActiveConditions.has(key)) {
-        return true;
-      }
-      return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
-    });
-    available.forEach(key => {
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = getAutoGearConditionLabel(key);
-      autoGearConditionSelect.appendChild(option);
-    });
-    if (previousValue && available.includes(previousValue)) {
-      autoGearConditionSelect.value = previousValue;
-    } else {
-      autoGearConditionSelect.value = '';
-    }
-    autoGearConditionSelect.disabled = available.length === 0;
-  }
-
-  function updateAutoGearConditionAddButtonState() {
-    const hasSelection = autoGearConditionSelect && autoGearConditionSelect.value;
-    const disabledPicker = autoGearConditionSelect ? autoGearConditionSelect.disabled : true;
-    if (autoGearConditionAddButton) {
-      autoGearConditionAddButton.disabled = !hasSelection || disabledPicker;
-    }
-    const hasAvailable = AUTO_GEAR_CONDITION_KEYS.some(key => {
-      if (!autoGearActiveConditions.has(key)) {
-        return true;
-      }
-      return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
-    });
-    AUTO_GEAR_CONDITION_KEYS.forEach(key => {
-      const shortcut = autoGearConditionAddShortcuts[key];
-      if (shortcut) {
-        shortcut.disabled = !hasAvailable;
-      }
-    });
-  }
-
-  function focusAutoGearConditionSection(key, options = {}) {
-    const config = getAutoGearConditionConfig(key);
-    if (!config || !config.section) {
-      return;
-    }
-    const { section, select } = config;
-    const { flash = false } = options || {};
-    if (section.hidden) {
-      section.hidden = false;
-      section.setAttribute('aria-hidden', 'false');
-    }
-    if (flash && section.classList) {
-      section.classList.add('auto-gear-condition-flash');
-      const schedule = typeof window !== 'undefined' && typeof window.setTimeout === 'function'
-        ? window.setTimeout
-        : setTimeout;
-      schedule(() => {
-        section.classList.remove('auto-gear-condition-flash');
-      }, 1200);
-    }
-    const target = select || section.querySelector('select, input, button');
-    if (!target) return;
-    try {
-      target.focus({ preventScroll: true });
-    } catch {
-      target.focus();
-    }
-  }
-
-  function notifyAutoGearConditionRepeat(key) {
-    if (typeof showNotification !== 'function') {
-      return;
-    }
-    const template = texts[currentLang]?.autoGearConditionRepeatHint
-      || texts.en?.autoGearConditionRepeatHint
-      || '';
-    if (!template) return;
-    const label = getAutoGearConditionLabel(key);
-    let message;
-    if (label) {
-      message = template.replace('{condition}', label);
-    } else if (template.includes(' {condition}')) {
-      message = template.replace(' {condition}', '');
-    } else {
-      message = template.replace('{condition}', '');
-    }
-    if (message) {
-      showNotification('info', message);
-    }
-  }
-
-  function handleAutoGearConditionShortcut() {
-    if (!autoGearConditionSelect) {
-      focusAutoGearConditionPicker();
-      return;
-    }
-    if (autoGearConditionSelect.disabled) {
-      focusAutoGearConditionPicker();
-      return;
-    }
-    const availableOptions = Array.from(autoGearConditionSelect.options || [])
-      .filter(option => option.value);
-    if (availableOptions.length === 1) {
-      autoGearConditionSelect.value = availableOptions[0].value;
-      addAutoGearConditionFromPicker();
-      return;
-    }
-    focusAutoGearConditionPicker();
-  }
-
-  function addAutoGearCondition(key, options = {}) {
-    const config = getAutoGearConditionConfig(key);
-    if (!config) return false;
-    if (autoGearActiveConditions.has(key)) {
-      if (AUTO_GEAR_REPEATABLE_CONDITIONS.has(key)) {
-        focusAutoGearConditionSection(key, { flash: true });
-        notifyAutoGearConditionRepeat(key);
-        return true;
-      }
-      if (options.focus !== false && config.select) {
-        try {
-          config.select.focus({ preventScroll: true });
-        } catch {
-          config.select.focus();
-        }
-      }
+  const noop = () => { };
+  return {
+    initialize: noop,
+    updateLocalization: noop,
+    render: noop,
+    isInitialized() {
       return false;
+    },
+  };
+})();
+
+var activeSettingsTabId = '';
+if (settingsTabButtons.length) {
+  const initiallySelected = settingsTabButtons.find(button => button.getAttribute('aria-selected') === 'true');
+  activeSettingsTabId = initiallySelected?.id || settingsTabButtons[0].id;
+  try {
+    const storedTab = localStorage.getItem('settingsActiveTab');
+    if (storedTab && settingsTabButtons.some(button => button.id === storedTab)) {
+      activeSettingsTabId = storedTab;
     }
-    autoGearActiveConditions.add(key);
-    if (config.section) {
-      config.section.hidden = false;
-      config.section.setAttribute('aria-hidden', 'false');
-    }
-    if (autoGearEditorDraft) {
-      if (key === 'always') {
-        autoGearEditorDraft.always = ['always'];
-      } else if (key === 'shootingDays') {
-        if (!autoGearEditorDraft.shootingDays) {
-          autoGearEditorDraft.shootingDays = null;
-        }
-      } else if (!Array.isArray(autoGearEditorDraft[key])) {
-        autoGearEditorDraft[key] = [];
+  } catch (e) {
+    console.warn('Could not load settings tab preference', e);
+  }
+}
+
+function activateSettingsTab(tabId, options = {}) {
+  if (!settingsTabButtons.length) return;
+  const { focusTab = false } = options || {};
+  let target = settingsTabButtons.find(button => button.id === tabId);
+  if (!target) {
+    target = settingsTabButtons[0];
+  }
+  if (!target) return;
+
+  settingsTabButtons.forEach(button => {
+    const selected = button === target;
+    button.setAttribute('aria-selected', selected ? 'true' : 'false');
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && focusTab) {
+      try {
+        button.focus({ preventScroll: true });
+      } catch {
+        button.focus();
       }
     }
-    let values;
-    if (key === 'always') {
-      values = ['always'];
-    } else if (key === 'shootingDays') {
-      if (options.initialValues) {
-        values = options.initialValues;
-      } else if (autoGearEditorDraft?.shootingDays) {
-        values = autoGearEditorDraft.shootingDays;
-      } else {
-        values = null;
-      }
+    button.classList.toggle('active', selected);
+  });
+
+  settingsTabPanels.forEach(panel => {
+    if (!panel) return;
+    const labelledBy = panel.getAttribute('aria-labelledby') || '';
+    const labelledIds = labelledBy
+      .split(/\s+/)
+      .map(id => id.trim())
+      .filter(Boolean);
+    if (labelledIds.includes(target.id)) {
+      panel.removeAttribute('hidden');
     } else {
-      values = Array.isArray(options.initialValues)
-        ? options.initialValues
-        : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []);
+      panel.setAttribute('hidden', '');
     }
-    const refresher = autoGearConditionRefreshers[key];
-    if (typeof refresher === 'function') {
-      refresher(values);
+  });
+
+  if (
+    settingsTablist &&
+    typeof settingsTablist.scrollWidth === 'number' &&
+    typeof settingsTablist.clientWidth === 'number' &&
+    settingsTablist.scrollWidth > settingsTablist.clientWidth + 4 &&
+    typeof target.scrollIntoView === 'function'
+  ) {
+    try {
+      target.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    } catch {
+      target.scrollIntoView();
     }
-    if (config.logicSelect) {
-      const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
-      const stored = property && autoGearEditorDraft
-        ? normalizeAutoGearConditionLogic(autoGearEditorDraft[property])
-        : 'all';
-      config.logicSelect.value = stored;
-      config.logicSelect.disabled = false;
+  }
+
+  scheduleSettingsTabsOverflowUpdate();
+
+  activeSettingsTabId = target.id;
+  try {
+    localStorage.setItem('settingsActiveTab', activeSettingsTabId);
+  } catch (e) {
+    console.warn('Could not save settings tab preference', e);
+  }
+}
+documentationTrackerController.initialize();
+if (settingsTabButtons.length) {
+  activateSettingsTab(activeSettingsTabId);
+  settingsTabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      activateSettingsTab(button.id);
+    });
+    button.addEventListener('keydown', event => {
+      const { key } = event;
+      if (!key) return;
+      if (!['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Home', 'End'].includes(key)) {
+        return;
+      }
+      event.preventDefault();
+      const currentIndex = settingsTabButtons.indexOf(button);
+      if (currentIndex === -1) return;
+      let nextIndex = currentIndex;
+      if (key === 'ArrowLeft' || key === 'ArrowUp') {
+        nextIndex = (currentIndex - 1 + settingsTabButtons.length) % settingsTabButtons.length;
+      } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+        nextIndex = (currentIndex + 1) % settingsTabButtons.length;
+      } else if (key === 'Home') {
+        nextIndex = 0;
+      } else if (key === 'End') {
+        nextIndex = settingsTabButtons.length - 1;
+      }
+      const nextTab = settingsTabButtons[nextIndex];
+      if (nextTab) {
+        activateSettingsTab(nextTab.id, { focusTab: true });
+      }
+    });
+  });
+}
+
+if (storageOpenBackupTabButton) {
+  storageOpenBackupTabButton.addEventListener('click', () => {
+    activateSettingsTab('settingsTab-backup', { focusTab: true });
+    const backupButton = document.getElementById('backupSettings');
+    if (backupButton && typeof backupButton.focus === 'function') {
+      try {
+        backupButton.focus({ preventScroll: true });
+      } catch {
+        backupButton.focus();
+      }
     }
-    if (autoGearConditionSelect) {
-      autoGearConditionSelect.value = '';
+  });
+}
+
+var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
+  const section = autoGearConditionSections[key] || null;
+  acc[key] = {
+    key,
+    section,
+    label: autoGearConditionLabels[key] || null,
+    select: autoGearConditionSelects[key] || null,
+    addShortcut: autoGearConditionAddShortcuts[key] || null,
+    removeButton: autoGearConditionRemoveButtons[key] || null,
+    logicLabel: autoGearConditionLogicLabels[key] || null,
+    logicSelect: autoGearConditionLogicSelects[key] || null,
+  };
+  if (section) {
+    section.setAttribute('aria-hidden', section.hidden ? 'true' : 'false');
+  }
+  return acc;
+}, {});
+const refreshAutoGearShootingDaysValue =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
+    : function refreshAutoGearShootingDaysValue() { };
+
+const refreshAutoGearScenarioOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioOptions
+    : function refreshAutoGearScenarioOptions() { };
+
+const refreshAutoGearScenarioBaseSelect =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearScenarioBaseSelect
+    : function refreshAutoGearScenarioBaseSelect() { };
+
+const refreshAutoGearMatteboxOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearMatteboxOptions
+    : function refreshAutoGearMatteboxOptions() { };
+
+const refreshAutoGearCameraHandleOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearCameraHandleOptions
+    : function refreshAutoGearCameraHandleOptions() { };
+
+const refreshAutoGearViewfinderExtensionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearViewfinderExtensionOptions
+    : function refreshAutoGearViewfinderExtensionOptions() { };
+
+const refreshAutoGearDeliveryResolutionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearDeliveryResolutionOptions
+    : function refreshAutoGearDeliveryResolutionOptions() { };
+
+const refreshAutoGearVideoDistributionOptions =
+  typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearVideoDistributionOptions
+    : function refreshAutoGearVideoDistributionOptions() { };
+
+const collectAutoGearSelectedValues =
+  typeof AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues === 'function'
+    ? AUTO_GEAR_UI_EXPORTS.collectAutoGearSelectedValues
+    : function collectAutoGearSelectedValues() { return []; };
+
+var autoGearConditionRefreshers = {
+  always: null,
+  scenarios: refreshAutoGearScenarioOptions,
+  shootingDays: refreshAutoGearShootingDaysValue,
+  mattebox: refreshAutoGearMatteboxOptions,
+  cameraHandle: refreshAutoGearCameraHandleOptions,
+  viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
+  deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
+  videoDistribution: refreshAutoGearVideoDistributionOptions,
+  camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
+  ownGear: refreshAutoGearOwnGearConditionOptions,
+  cameraWeight: createDeferredAutoGearRefresher('refreshAutoGearCameraWeightCondition'),
+  monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
+  tripodHeadBrand: createDeferredAutoGearRefresher('refreshAutoGearTripodHeadOptions'),
+  tripodBowl: createDeferredAutoGearRefresher('refreshAutoGearTripodBowlOptions'),
+  tripodTypes: createDeferredAutoGearRefresher('refreshAutoGearTripodTypesOptions'),
+  tripodSpreader: createDeferredAutoGearRefresher('refreshAutoGearTripodSpreaderOptions'),
+  crewPresent: selected =>
+    callCoreFunctionIfAvailable(
+      'refreshAutoGearCrewOptions',
+      [autoGearCrewPresentSelect, selected, 'crewPresent'],
+      { defer: true },
+    ),
+  crewAbsent: selected =>
+    callCoreFunctionIfAvailable(
+      'refreshAutoGearCrewOptions',
+      [autoGearCrewAbsentSelect, selected, 'crewAbsent'],
+      { defer: true },
+    ),
+  wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
+  motors: createDeferredAutoGearRefresher('refreshAutoGearMotorsOptions'),
+  controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
+  distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
+};
+var autoGearActiveConditions = new Set();
+
+function getAutoGearConditionConfig(key) {
+  if (!key) return null;
+  if (Object.prototype.hasOwnProperty.call(autoGearConditionConfigs, key)) {
+    return autoGearConditionConfigs[key];
+  }
+  return null;
+}
+
+function getAutoGearConditionLabel(key) {
+  const config = getAutoGearConditionConfig(key);
+  if (config && config.label && typeof config.label.textContent === 'string') {
+    const text = config.label.textContent.trim();
+    if (text) return text;
+  }
+  const fallback = AUTO_GEAR_CONDITION_FALLBACK_LABELS[key];
+  if (typeof fallback === 'string' && fallback) {
+    return fallback;
+  }
+  if (typeof key === 'string' && key) {
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, char => char.toUpperCase());
+  }
+  return '';
+}
+
+function isAutoGearConditionActive(key) {
+  return autoGearActiveConditions.has(key);
+}
+
+function refreshAutoGearConditionPicker() {
+  if (!autoGearConditionSelect) return;
+  const previousValue = autoGearConditionSelect.value || '';
+  const placeholderLabel = texts[currentLang]?.autoGearConditionPlaceholder
+    || texts.en?.autoGearConditionPlaceholder
+    || 'Choose a condition';
+  autoGearConditionSelect.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderLabel;
+  autoGearConditionSelect.appendChild(placeholder);
+  const available = AUTO_GEAR_CONDITION_KEYS.filter(key => {
+    if (!autoGearActiveConditions.has(key)) {
+      return true;
     }
-    refreshAutoGearConditionPicker();
-    updateAutoGearConditionAddButtonState();
+    return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
+  });
+  available.forEach(key => {
+    const option = document.createElement('option');
+    option.value = key;
+    option.textContent = getAutoGearConditionLabel(key);
+    autoGearConditionSelect.appendChild(option);
+  });
+  if (previousValue && available.includes(previousValue)) {
+    autoGearConditionSelect.value = previousValue;
+  } else {
+    autoGearConditionSelect.value = '';
+  }
+  autoGearConditionSelect.disabled = available.length === 0;
+}
+
+function updateAutoGearConditionAddButtonState() {
+  const hasSelection = autoGearConditionSelect && autoGearConditionSelect.value;
+  const disabledPicker = autoGearConditionSelect ? autoGearConditionSelect.disabled : true;
+  if (autoGearConditionAddButton) {
+    autoGearConditionAddButton.disabled = !hasSelection || disabledPicker;
+  }
+  const hasAvailable = AUTO_GEAR_CONDITION_KEYS.some(key => {
+    if (!autoGearActiveConditions.has(key)) {
+      return true;
+    }
+    return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
+  });
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    const shortcut = autoGearConditionAddShortcuts[key];
+    if (shortcut) {
+      shortcut.disabled = !hasAvailable;
+    }
+  });
+}
+
+function focusAutoGearConditionSection(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config || !config.section) {
+    return;
+  }
+  const { section, select } = config;
+  const { flash = false } = options || {};
+  if (section.hidden) {
+    section.hidden = false;
+    section.setAttribute('aria-hidden', 'false');
+  }
+  if (flash && section.classList) {
+    section.classList.add('auto-gear-condition-flash');
+    const schedule = typeof window !== 'undefined' && typeof window.setTimeout === 'function'
+      ? window.setTimeout
+      : setTimeout;
+    schedule(() => {
+      section.classList.remove('auto-gear-condition-flash');
+    }, 1200);
+  }
+  const target = select || section.querySelector('select, input, button');
+  if (!target) return;
+  try {
+    target.focus({ preventScroll: true });
+  } catch {
+    target.focus();
+  }
+}
+
+function notifyAutoGearConditionRepeat(key) {
+  if (typeof showNotification !== 'function') {
+    return;
+  }
+  const template = texts[currentLang]?.autoGearConditionRepeatHint
+    || texts.en?.autoGearConditionRepeatHint
+    || '';
+  if (!template) return;
+  const label = getAutoGearConditionLabel(key);
+  let message;
+  if (label) {
+    message = template.replace('{condition}', label);
+  } else if (template.includes(' {condition}')) {
+    message = template.replace(' {condition}', '');
+  } else {
+    message = template.replace('{condition}', '');
+  }
+  if (message) {
+    showNotification('info', message);
+  }
+}
+
+function handleAutoGearConditionShortcut() {
+  if (!autoGearConditionSelect) {
+    focusAutoGearConditionPicker();
+    return;
+  }
+  if (autoGearConditionSelect.disabled) {
+    focusAutoGearConditionPicker();
+    return;
+  }
+  const availableOptions = Array.from(autoGearConditionSelect.options || [])
+    .filter(option => option.value);
+  if (availableOptions.length === 1) {
+    autoGearConditionSelect.value = availableOptions[0].value;
+    addAutoGearConditionFromPicker();
+    return;
+  }
+  focusAutoGearConditionPicker();
+}
+
+function addAutoGearCondition(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config) return false;
+  if (autoGearActiveConditions.has(key)) {
+    if (AUTO_GEAR_REPEATABLE_CONDITIONS.has(key)) {
+      focusAutoGearConditionSection(key, { flash: true });
+      notifyAutoGearConditionRepeat(key);
+      return true;
+    }
     if (options.focus !== false && config.select) {
       try {
         config.select.focus({ preventScroll: true });
@@ -19452,38 +19417,165 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         config.select.focus();
       }
     }
-    return true;
+    return false;
   }
-
-  function addAutoGearConditionFromPicker() {
-    if (!autoGearConditionSelect) return false;
-    const key = autoGearConditionSelect.value;
-    if (!key) {
-      focusAutoGearConditionPicker();
-      return false;
-    }
-    const result = addAutoGearCondition(key, { focus: true });
-    if (result && autoGearConditionSelect) {
-      autoGearConditionSelect.value = '';
-    }
-    updateAutoGearConditionAddButtonState();
-    return result;
+  autoGearActiveConditions.add(key);
+  if (config.section) {
+    config.section.hidden = false;
+    config.section.setAttribute('aria-hidden', 'false');
   }
+  if (autoGearEditorDraft) {
+    if (key === 'always') {
+      autoGearEditorDraft.always = ['always'];
+    } else if (key === 'shootingDays') {
+      if (!autoGearEditorDraft.shootingDays) {
+        autoGearEditorDraft.shootingDays = null;
+      }
+    } else if (!Array.isArray(autoGearEditorDraft[key])) {
+      autoGearEditorDraft[key] = [];
+    }
+  }
+  let values;
+  if (key === 'always') {
+    values = ['always'];
+  } else if (key === 'shootingDays') {
+    if (options.initialValues) {
+      values = options.initialValues;
+    } else if (autoGearEditorDraft?.shootingDays) {
+      values = autoGearEditorDraft.shootingDays;
+    } else {
+      values = null;
+    }
+  } else {
+    values = Array.isArray(options.initialValues)
+      ? options.initialValues
+      : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []);
+  }
+  const refresher = autoGearConditionRefreshers[key];
+  if (typeof refresher === 'function') {
+    refresher(values);
+  }
+  if (config.logicSelect) {
+    const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
+    const stored = property && autoGearEditorDraft
+      ? normalizeAutoGearConditionLogic(autoGearEditorDraft[property])
+      : 'all';
+    config.logicSelect.value = stored;
+    config.logicSelect.disabled = false;
+  }
+  if (autoGearConditionSelect) {
+    autoGearConditionSelect.value = '';
+  }
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+  if (options.focus !== false && config.select) {
+    try {
+      config.select.focus({ preventScroll: true });
+    } catch {
+      config.select.focus();
+    }
+  }
+  return true;
+}
 
-  function removeAutoGearCondition(key, options = {}) {
+function addAutoGearConditionFromPicker() {
+  if (!autoGearConditionSelect) return false;
+  const key = autoGearConditionSelect.value;
+  if (!key) {
+    focusAutoGearConditionPicker();
+    return false;
+  }
+  const result = addAutoGearCondition(key, { focus: true });
+  if (result && autoGearConditionSelect) {
+    autoGearConditionSelect.value = '';
+  }
+  updateAutoGearConditionAddButtonState();
+  return result;
+}
+
+function removeAutoGearCondition(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config) return false;
+  if (!autoGearActiveConditions.has(key)) return false;
+  autoGearActiveConditions.delete(key);
+  if (config.section) {
+    config.section.hidden = true;
+    config.section.setAttribute('aria-hidden', 'true');
+  }
+  if (config.logicSelect) {
+    config.logicSelect.value = 'all';
+    config.logicSelect.disabled = true;
+  }
+  if (!options.preserveDraft && autoGearEditorDraft) {
+    if (key === 'always') {
+      autoGearEditorDraft.always = [];
+    } else if (key === 'shootingDays') {
+      autoGearEditorDraft.shootingDays = null;
+    } else if (key === 'cameraWeight') {
+      autoGearEditorDraft.cameraWeight = null;
+    } else if (Array.isArray(autoGearEditorDraft[key])) {
+      autoGearEditorDraft[key] = [];
+    }
+    const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
+    if (property) {
+      autoGearEditorDraft[property] = 'all';
+      if (autoGearEditorDraft.conditionLogic && typeof autoGearEditorDraft.conditionLogic === 'object') {
+        delete autoGearEditorDraft.conditionLogic[key];
+      }
+    }
+  }
+  if (config.select) {
+    Array.from(config.select.options || []).forEach(option => {
+      option.selected = false;
+    });
+    config.select.value = '';
+  }
+  if (key === 'cameraWeight') {
+    if (autoGearCameraWeightOperator) {
+      autoGearCameraWeightOperator.value = 'greater';
+    }
+    if (autoGearCameraWeightValueInput) {
+      autoGearCameraWeightValueInput.value = '';
+    }
+  }
+  if (key === 'shootingDays') {
+    if (autoGearShootingDaysMode) {
+      autoGearShootingDaysMode.value = 'minimum';
+    }
+    if (autoGearShootingDaysInput) {
+      autoGearShootingDaysInput.value = '';
+    }
+  }
+  const refresher = autoGearConditionRefreshers[key];
+  if (typeof refresher === 'function') {
+    if (key === 'shootingDays') {
+      refresher(null);
+    } else {
+      refresher([]);
+    }
+  }
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+  if (options.focusPicker) {
+    focusAutoGearConditionPicker();
+  }
+  return true;
+}
+
+function clearAllAutoGearConditions(options = {}) {
+  const { preserveDraft = false } = options || {};
+  Array.from(autoGearActiveConditions).forEach(key => {
+    removeAutoGearCondition(key, { preserveDraft, focusPicker: false });
+  });
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    if (autoGearActiveConditions.has(key)) return;
     const config = getAutoGearConditionConfig(key);
-    if (!config) return false;
-    if (!autoGearActiveConditions.has(key)) return false;
-    autoGearActiveConditions.delete(key);
+    if (!config) return;
     if (config.section) {
       config.section.hidden = true;
       config.section.setAttribute('aria-hidden', 'true');
     }
-    if (config.logicSelect) {
-      config.logicSelect.value = 'all';
-      config.logicSelect.disabled = true;
-    }
-    if (!options.preserveDraft && autoGearEditorDraft) {
+    if (!preserveDraft && autoGearEditorDraft) {
       if (key === 'always') {
         autoGearEditorDraft.always = [];
       } else if (key === 'shootingDays') {
@@ -19507,6 +19599,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
       config.select.value = '';
     }
+    if (config.logicSelect) {
+      config.logicSelect.value = 'all';
+      config.logicSelect.disabled = true;
+    }
     if (key === 'cameraWeight') {
       if (autoGearCameraWeightOperator) {
         autoGearCameraWeightOperator.value = 'greater';
@@ -19526,1086 +19622,1013 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     const refresher = autoGearConditionRefreshers[key];
     if (typeof refresher === 'function') {
       if (key === 'shootingDays') {
-        refresher(null);
+        const source = preserveDraft ? autoGearEditorDraft?.shootingDays : null;
+        refresher(source || null);
       } else {
-        refresher([]);
+        refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
       }
     }
-    refreshAutoGearConditionPicker();
-    updateAutoGearConditionAddButtonState();
-    if (options.focusPicker) {
-      focusAutoGearConditionPicker();
-    }
-    return true;
-  }
+  });
+  autoGearActiveConditions.clear();
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+}
 
-  function clearAllAutoGearConditions(options = {}) {
-    const { preserveDraft = false } = options || {};
-    Array.from(autoGearActiveConditions).forEach(key => {
-      removeAutoGearCondition(key, { preserveDraft, focusPicker: false });
-    });
-    AUTO_GEAR_CONDITION_KEYS.forEach(key => {
-      if (autoGearActiveConditions.has(key)) return;
-      const config = getAutoGearConditionConfig(key);
-      if (!config) return;
-      if (config.section) {
-        config.section.hidden = true;
-        config.section.setAttribute('aria-hidden', 'true');
+function initializeAutoGearConditionsFromDraft() {
+  clearAllAutoGearConditions({ preserveDraft: true });
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    let hasValue = false;
+    let values = [];
+    if (key === 'always') {
+      values = autoGearEditorDraft?.always && autoGearEditorDraft.always.length ? ['always'] : [];
+      hasValue = values.length > 0;
+    } else if (key === 'shootingDays') {
+      const condition = autoGearEditorDraft?.shootingDays
+        ? normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays)
+        : null;
+      if (condition) {
+        values = condition;
+        hasValue = true;
       }
-      if (!preserveDraft && autoGearEditorDraft) {
-        if (key === 'always') {
-          autoGearEditorDraft.always = [];
-        } else if (key === 'shootingDays') {
-          autoGearEditorDraft.shootingDays = null;
-        } else if (key === 'cameraWeight') {
-          autoGearEditorDraft.cameraWeight = null;
-        } else if (Array.isArray(autoGearEditorDraft[key])) {
-          autoGearEditorDraft[key] = [];
-        }
-        const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
-        if (property) {
-          autoGearEditorDraft[property] = 'all';
-          if (autoGearEditorDraft.conditionLogic && typeof autoGearEditorDraft.conditionLogic === 'object') {
-            delete autoGearEditorDraft.conditionLogic[key];
-          }
-        }
+    } else if (key === 'cameraWeight') {
+      const condition = autoGearEditorDraft?.cameraWeight || null;
+      if (condition && typeof condition === 'object') {
+        values = condition;
+        hasValue = true;
       }
-      if (config.select) {
-        Array.from(config.select.options || []).forEach(option => {
-          option.selected = false;
-        });
-        config.select.value = '';
-      }
-      if (config.logicSelect) {
-        config.logicSelect.value = 'all';
-        config.logicSelect.disabled = true;
-      }
-      if (key === 'cameraWeight') {
-        if (autoGearCameraWeightOperator) {
-          autoGearCameraWeightOperator.value = 'greater';
+    } else if (Array.isArray(autoGearEditorDraft?.[key])) {
+      values = autoGearEditorDraft[key].filter(value => {
+        if (typeof value === 'number') {
+          return Number.isFinite(value) && value > 0;
         }
-        if (autoGearCameraWeightValueInput) {
-          autoGearCameraWeightValueInput.value = '';
+        if (typeof value === 'string') {
+          return value.trim();
         }
-      }
-      if (key === 'shootingDays') {
-        if (autoGearShootingDaysMode) {
-          autoGearShootingDaysMode.value = 'minimum';
-        }
-        if (autoGearShootingDaysInput) {
-          autoGearShootingDaysInput.value = '';
-        }
-      }
+        return false;
+      });
+      hasValue = values.length > 0;
+    }
+    if (hasValue) {
+      addAutoGearCondition(key, { focus: false, initialValues: values });
+    } else {
       const refresher = autoGearConditionRefreshers[key];
       if (typeof refresher === 'function') {
         if (key === 'shootingDays') {
-          const source = preserveDraft ? autoGearEditorDraft?.shootingDays : null;
-          refresher(source || null);
+          refresher(null);
         } else {
-          refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
+          refresher([]);
         }
       }
-    });
-    autoGearActiveConditions.clear();
-    refreshAutoGearConditionPicker();
-    updateAutoGearConditionAddButtonState();
-  }
-
-  function initializeAutoGearConditionsFromDraft() {
-    clearAllAutoGearConditions({ preserveDraft: true });
-    AUTO_GEAR_CONDITION_KEYS.forEach(key => {
-      let hasValue = false;
-      let values = [];
-      if (key === 'always') {
-        values = autoGearEditorDraft?.always && autoGearEditorDraft.always.length ? ['always'] : [];
-        hasValue = values.length > 0;
-      } else if (key === 'shootingDays') {
-        const condition = autoGearEditorDraft?.shootingDays
-          ? normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays)
-          : null;
-        if (condition) {
-          values = condition;
-          hasValue = true;
+      const config = getAutoGearConditionConfig(key);
+      if (config) {
+        if (config.section) {
+          config.section.hidden = true;
+          config.section.setAttribute('aria-hidden', 'true');
         }
-      } else if (key === 'cameraWeight') {
-        const condition = autoGearEditorDraft?.cameraWeight || null;
-        if (condition && typeof condition === 'object') {
-          values = condition;
-          hasValue = true;
+        if (config.select) {
+          config.select.value = '';
         }
-      } else if (Array.isArray(autoGearEditorDraft?.[key])) {
-        values = autoGearEditorDraft[key].filter(value => {
-          if (typeof value === 'number') {
-            return Number.isFinite(value) && value > 0;
+        if (key === 'shootingDays') {
+          if (autoGearShootingDaysMode) {
+            autoGearShootingDaysMode.value = 'minimum';
           }
-          if (typeof value === 'string') {
-            return value.trim();
-          }
-          return false;
-        });
-        hasValue = values.length > 0;
-      }
-      if (hasValue) {
-        addAutoGearCondition(key, { focus: false, initialValues: values });
-      } else {
-        const refresher = autoGearConditionRefreshers[key];
-        if (typeof refresher === 'function') {
-          if (key === 'shootingDays') {
-            refresher(null);
-          } else {
-            refresher([]);
-          }
-        }
-        const config = getAutoGearConditionConfig(key);
-        if (config) {
-          if (config.section) {
-            config.section.hidden = true;
-            config.section.setAttribute('aria-hidden', 'true');
-          }
-          if (config.select) {
-            config.select.value = '';
-          }
-          if (key === 'shootingDays') {
-            if (autoGearShootingDaysMode) {
-              autoGearShootingDaysMode.value = 'minimum';
-            }
-            if (autoGearShootingDaysInput) {
-              autoGearShootingDaysInput.value = '';
-            }
+          if (autoGearShootingDaysInput) {
+            autoGearShootingDaysInput.value = '';
           }
         }
       }
-    });
-    refreshAutoGearConditionPicker();
-    updateAutoGearConditionAddButtonState();
-    if (autoGearScenarioModeSelectElement && autoGearEditorDraft) {
-      autoGearScenarioModeSelectElement.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
     }
-    if (autoGearScenarioFactorInput) {
-      const storedMultiplier = autoGearEditorDraft
-        ? normalizeAutoGearScenarioMultiplier(autoGearEditorDraft.scenarioMultiplier)
-        : 1;
-      autoGearScenarioFactorInput.value = String(storedMultiplier);
-    }
-    applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
-  }
-
+  });
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
-  configureAutoGearConditionButtons();
-  if (autoGearShootingDaysMode) {
-    const handleShootingDaysModeChange = () => {
-      updateAutoGearShootingDaysDraft();
-      callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
-    };
-    autoGearShootingDaysMode.addEventListener('input', handleShootingDaysModeChange);
-    autoGearShootingDaysMode.addEventListener('change', handleShootingDaysModeChange);
+  if (autoGearScenarioModeSelectElement && autoGearEditorDraft) {
+    autoGearScenarioModeSelectElement.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
   }
-  if (autoGearShootingDaysInput) {
-    const handleShootingDaysValueInput = () => {
-      updateAutoGearShootingDaysDraft();
-      callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
-    };
-    autoGearShootingDaysInput.addEventListener('input', handleShootingDaysValueInput);
-    autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
-    autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
+  if (autoGearScenarioFactorInput) {
+    const storedMultiplier = autoGearEditorDraft
+      ? normalizeAutoGearScenarioMultiplier(autoGearEditorDraft.scenarioMultiplier)
+      : 1;
+    autoGearScenarioFactorInput.value = String(storedMultiplier);
   }
-  Object.entries(autoGearConditionLogicSelects).forEach(([key, select]) => {
-    if (!select) return;
-    const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
-    const handleLogicChange = () => {
-      const normalized = normalizeAutoGearConditionLogic(select.value);
-      select.value = normalized;
-      if (autoGearEditorDraft && property) {
-        autoGearEditorDraft[property] = normalized;
-        if (!autoGearEditorDraft.conditionLogic || typeof autoGearEditorDraft.conditionLogic !== 'object') {
-          autoGearEditorDraft.conditionLogic = {};
-        }
-        if (normalized === 'all') {
-          delete autoGearEditorDraft.conditionLogic[key];
-        } else {
-          autoGearEditorDraft.conditionLogic[key] = normalized;
-        }
-      }
-      callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
-    };
-    select.addEventListener('input', handleLogicChange);
-    select.addEventListener('change', handleLogicChange);
-  });
-  if (autoGearCameraWeightOperator) {
-    const handleCameraWeightOperatorChange = () => {
-      updateAutoGearCameraWeightDraft();
-      callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
-    };
-    autoGearCameraWeightOperator.addEventListener('input', handleCameraWeightOperatorChange);
-    autoGearCameraWeightOperator.addEventListener('change', handleCameraWeightOperatorChange);
-  }
-  if (autoGearCameraWeightValueInput) {
-    const handleCameraWeightValueInput = () => {
-      updateAutoGearCameraWeightDraft();
-      callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
-    };
-    autoGearCameraWeightValueInput.addEventListener('input', handleCameraWeightValueInput);
-    autoGearCameraWeightValueInput.addEventListener('change', handleCameraWeightValueInput);
-    autoGearCameraWeightValueInput.addEventListener('blur', handleCameraWeightValueInput);
-  }
-  var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
-  var autoGearAddOwnGearLabel = document.getElementById('autoGearAddOwnGearLabel');
-  var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
-  var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
-  var autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
-  var autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeLabel');
-  var autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
-  var autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
-  var autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
-  var autoGearAddOwnGearSelect = document.getElementById('autoGearAddOwnGear');
-  var autoGearAddNameInput = document.getElementById('autoGearAddName');
-  var autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
-  var autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
-  var autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
-  var autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
-  var autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
-  var autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
-  var autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
-  var autoGearAddList = document.getElementById('autoGearAddList');
-  var autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
-  var autoGearRemoveOwnGearLabel = document.getElementById('autoGearRemoveOwnGearLabel');
-  var autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
-  var autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
-  var autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
-  var autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScreenSizeLabel');
-  var autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
-  var autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
-  var autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
-  var autoGearRemoveOwnGearSelect = document.getElementById('autoGearRemoveOwnGear');
-  var autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
-  var autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
-  var autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
-  var autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
-  var autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
-  var autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
-  var autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
-  var autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
-  var autoGearRemoveList = document.getElementById('autoGearRemoveList');
-  var autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
-  var autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
-  var autoGearDraftImpactDescription = document.getElementById('autoGearDraftImpactDescription');
-  var autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
-  var autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
-  var autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
-  var autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
-  var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
-  var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
-  var autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
-
-  updateAutoGearOwnGearOptions();
-
-  if (typeof document !== 'undefined' && document) {
-    document.addEventListener('own-gear-data-changed', () => {
-      invalidateAutoGearOwnGearCache();
-      updateAutoGearOwnGearOptions();
-      updateAutoGearCatalogOptions();
-    });
-  }
-
-  function enableAutoGearMultiSelectToggle(select) {
-    if (!select || !select.multiple) return;
-
-    const handlePointerToggle = event => {
-      if (!select.multiple || event.defaultPrevented) return;
-
-      const isPointerEvent = typeof PointerEvent !== 'undefined' && event instanceof PointerEvent;
-      if (isPointerEvent && event.pointerType && event.pointerType !== 'mouse') {
-        return;
-      }
-
-      if (typeof event.button === 'number' && event.button !== 0) {
-        return;
-      }
-
-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
-        return;
-      }
-
-      const option = event.target instanceof HTMLOptionElement ? event.target : null;
-      if (!option || option.disabled) {
-        return;
-      }
-
-      event.preventDefault();
-
-      option.selected = !option.selected;
-
-      const dispatchEvent = type => {
-        try {
-          const evt = new Event(type, { bubbles: true });
-          select.dispatchEvent(evt);
-        } catch {
-          const evt = document.createEvent('Event');
-          evt.initEvent(type, true, true);
-          select.dispatchEvent(evt);
-        }
-      };
-
-      dispatchEvent('input');
-      dispatchEvent('change');
-
-      if (typeof select.focus === 'function') {
-        try {
-          select.focus({ preventScroll: true });
-        } catch {
-          select.focus();
-        }
-      }
-    };
-
-    if (typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined') {
-      select.addEventListener('pointerdown', handlePointerToggle);
-    } else {
-      select.addEventListener('mousedown', handlePointerToggle);
-    }
-  }
-
-  [
-    autoGearScenariosSelect,
-    autoGearMatteboxSelect,
-    autoGearCameraHandleSelect,
-    autoGearViewfinderExtensionSelect,
-    autoGearVideoDistributionSelect,
-    autoGearCameraSelect,
-    autoGearOwnGearSelect,
-    autoGearMonitorSelect,
-    autoGearCrewPresentSelect,
-    autoGearCrewAbsentSelect,
-    autoGearWirelessSelect,
-    autoGearMotorsSelect,
-    autoGearControllersSelect,
-    autoGearDistanceSelect,
-  ].forEach(enableAutoGearMultiSelectToggle);
-
-  var autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
-    || autoGearAddScreenSizeLabel?.closest('.auto-gear-field')
-    || null;
-  var autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.auto-gear-field')
-    || autoGearAddSelectorTypeLabel?.closest('.auto-gear-field')
-    || null;
-  var autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
-    || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
-    || null;
-  var autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
-    || autoGearRemoveScreenSizeLabel?.closest('.auto-gear-field')
-    || null;
-  var autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closest('.auto-gear-field')
-    || autoGearRemoveSelectorTypeLabel?.closest('.auto-gear-field')
-    || null;
-  var autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
-    || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
-    || null;
-
-  autoGearAddMonitorFieldGroup = {
-    select: autoGearAddCategorySelect,
-    screenSizeField: autoGearAddScreenSizeField,
-    screenSizeInput: autoGearAddScreenSizeInput,
-    selectorTypeField: autoGearAddSelectorTypeField,
-    selectorTypeSelect: autoGearAddSelectorTypeSelect,
-    selectorDefaultField: autoGearAddSelectorDefaultField,
-    selectorDefaultInput: autoGearAddSelectorDefaultInput,
-  };
-
-  autoGearRemoveMonitorFieldGroup = {
-    select: autoGearRemoveCategorySelect,
-    screenSizeField: autoGearRemoveScreenSizeField,
-    screenSizeInput: autoGearRemoveScreenSizeInput,
-    selectorTypeField: autoGearRemoveSelectorTypeField,
-    selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
-    selectorDefaultField: autoGearRemoveSelectorDefaultField,
-    selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
-  };
-
-  autoGearMonitorDefaultGroups = [
-    {
-      selectorTypeSelect: autoGearAddSelectorTypeSelect,
-      selectorDefaultInput: autoGearAddSelectorDefaultInput,
-    },
-    {
-      selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
-      selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
-    },
-  ].filter(group => group.selectorDefaultInput);
-
-  function syncAutoGearMonitorFieldVisibility() {
-    if (autoGearAddMonitorFieldGroup) {
-      updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
-    }
-    if (autoGearRemoveMonitorFieldGroup) {
-      updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
-    }
-  }
-
-  exposeCoreRuntimeConstant('syncAutoGearMonitorFieldVisibility', syncAutoGearMonitorFieldVisibility);
-  var autoGearExportButton = document.getElementById('autoGearExport');
-  var autoGearImportButton = document.getElementById('autoGearImport');
-  var autoGearImportInput = document.getElementById('autoGearImportInput');
-  var autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
-  var autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
-  var autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
-  var autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
-  var autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
-  var autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
-  var autoGearBackupControls = document.getElementById('autoGearBackupControls');
-  var autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
-  var autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
-  var autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
-  var autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
-  var autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
-  var autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
-  var autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
-  var autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
-  const dataHeading = document.getElementById("dataHeading");
-  const storageSummaryIntro = document.getElementById("storageSummaryIntro");
-  const storageSummaryList = document.getElementById("storageSummaryList");
-  const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
-  const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
-  const storagePersistenceSection = document.getElementById("storagePersistence");
-  const storagePersistenceHeading = document.getElementById("storagePersistenceHeading");
-  const storagePersistenceIntro = document.getElementById("storagePersistenceIntro");
-  const storagePersistenceRequestButton = document.getElementById("storagePersistenceRequest");
-  const storagePersistenceStatus = document.getElementById("storagePersistenceStatus");
-  var storageActionsHeading = document.getElementById('storageActionsHeading');
-  var storageActionsIntro = document.getElementById('storageActionsIntro');
-  var storageBackupNowButton = document.getElementById('storageBackupNow');
-  var storageOpenBackupTabButton = document.getElementById('storageOpenBackupTab');
-  var storageStatusHeading = document.getElementById('storageStatusHeading');
-  var storageStatusLastProjectLabel = document.getElementById('storageStatusLastProjectLabel');
-  var storageStatusLastProjectValue = document.getElementById('storageStatusLastProjectValue');
-  var storageStatusLastAutoBackupLabel = document.getElementById('storageStatusLastAutoBackupLabel');
-  var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
-  var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
-  var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
-  var storageStatusReminder = document.getElementById('storageStatusReminder');
-  const loggingSection = document.getElementById('loggingSection');
-  const loggingHeading = document.getElementById('loggingHeading');
-  const loggingIntro = document.getElementById('loggingIntro');
-  const loggingLevelFilterLabel = document.getElementById('loggingLevelFilterLabel');
-  const loggingLevelFilter = document.getElementById('loggingLevelFilter');
-  const loggingNamespaceFilterLabel = document.getElementById('loggingNamespaceFilterLabel');
-  const loggingNamespaceFilter = document.getElementById('loggingNamespaceFilter');
-  const loggingNamespaceFilterHelp = document.getElementById('loggingNamespaceFilterHelp');
-  const loggingHistoryLimitLabel = document.getElementById('loggingHistoryLimitLabel');
-  const loggingHistoryLimit = document.getElementById('loggingHistoryLimit');
-  const loggingHistoryLimitHelp = document.getElementById('loggingHistoryLimitHelp');
-  const loggingConsoleOutputLabel = document.getElementById('loggingConsoleOutputLabel');
-  const loggingConsoleOutputHelp = document.getElementById('loggingConsoleOutputHelp');
-  const loggingCaptureConsoleLabel = document.getElementById('loggingCaptureConsoleLabel');
-  const loggingCaptureConsoleHelp = document.getElementById('loggingCaptureConsoleHelp');
-  const loggingCaptureErrorsLabel = document.getElementById('loggingCaptureErrorsLabel');
-  const loggingCaptureErrorsHelp = document.getElementById('loggingCaptureErrorsHelp');
-  const loggingPersistSessionLabel = document.getElementById('loggingPersistSessionLabel');
-  const loggingPersistSessionHelp = document.getElementById('loggingPersistSessionHelp');
-  const loggingExportButton = document.getElementById('loggingExportBtn');
-  const loggingExportHelp = document.getElementById('loggingExportHelp');
-  const loggingStatus = document.getElementById('loggingStatus');
-  const loggingEmpty = document.getElementById('loggingEmpty');
-  const loggingUnavailable = document.getElementById('loggingUnavailable');
-
-  if (autoGearBackupRetentionInput) {
-    const queueAutoGearRetentionHandler = handlerName => {
-      callCoreFunctionIfAvailable(handlerName, [], { defer: true });
-    };
-
-    autoGearBackupRetentionInput.addEventListener('input', () => {
-      queueAutoGearRetentionHandler('handleAutoGearBackupRetentionInput');
-    });
-    autoGearBackupRetentionInput.addEventListener('blur', () => {
-      queueAutoGearRetentionHandler('handleAutoGearBackupRetentionBlur');
-    });
-    autoGearBackupRetentionInput.addEventListener('change', () => {
-      queueAutoGearRetentionHandler('handleAutoGearBackupRetentionChange');
-    });
-  }
-
-  function computeAutoGearMultiSelectSize(optionCount, {
-    fallback,
-    minRows = AUTO_GEAR_MULTI_SELECT_MIN_ROWS,
-    maxRows = AUTO_GEAR_MULTI_SELECT_MAX_ROWS,
-  } = {}) {
-    const effectiveFallback = Number.isFinite(fallback) && fallback >= minRows
-      ? fallback
-      : minRows;
-    if (!Number.isFinite(optionCount) || optionCount <= 0) {
-      return effectiveFallback;
-    }
-    const boundedMax = Number.isFinite(maxRows) && maxRows >= minRows ? maxRows : minRows;
-    return Math.max(minRows, Math.min(optionCount, boundedMax));
-  }
-
-  function setAutoGearSearchQuery(value) {
-    const nextValue = typeof value === 'string' ? value : '';
-    if (autoGearSearchQuery === nextValue) return;
-    autoGearSearchQuery = nextValue;
-    callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
-  }
-
-  function setAutoGearScenarioFilter(value) {
-    const nextValue = typeof value === 'string' && value !== 'all' ? value : 'all';
-    if (autoGearScenarioFilter === nextValue) return;
-    autoGearScenarioFilter = nextValue;
-    callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
-  }
-
-  function clearAutoGearFilters() {
-    autoGearSearchQuery = '';
-    autoGearScenarioFilter = 'all';
-    autoGearSummaryFocus = 'all';
-    if (autoGearSearchInput && autoGearSearchInput.value !== '') {
-      autoGearSearchInput.value = '';
-    }
-    if (autoGearFilterScenarioSelect && autoGearFilterScenarioSelect.value !== 'all') {
-      autoGearFilterScenarioSelect.value = 'all';
-    }
-    callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
-    if (autoGearSearchInput && typeof autoGearSearchInput.focus === 'function') {
-      try {
-        autoGearSearchInput.focus({ preventScroll: true });
-      } catch {
-        autoGearSearchInput.focus();
-      }
-    }
-  }
-
-  function autoGearRuleMatchesScenario(rule, scenarioValue) {
-    if (!scenarioValue || scenarioValue === 'all') return true;
-    if (!rule || !Array.isArray(rule.scenarios)) return false;
-    return rule.scenarios.some(value => value === scenarioValue);
-  }
-
-  function autoGearRuleMatchesSearch(rule, query) {
-    const normalizedQuery = typeof query === 'string' ? query.trim().toLowerCase() : '';
-    if (!normalizedQuery) return true;
-    const haystack = [];
-    const pushValues = values => {
-      if (!Array.isArray(values)) return;
-      values.forEach(value => {
-        if (typeof value === 'string' && value) {
-          haystack.push(value);
-        }
-      });
-    };
-    if (rule && typeof rule.label === 'string') {
-      haystack.push(rule.label);
-    }
-    if (rule && rule.always) {
-      haystack.push('always');
-      const alwaysText = texts[currentLang]?.autoGearAlwaysMeta
-        || texts.en?.autoGearAlwaysMeta
-        || 'Always active';
-      if (alwaysText) {
-        haystack.push(alwaysText);
-      }
-    }
-    pushValues(rule?.scenarios);
-    pushValues(rule?.mattebox);
-    pushValues(rule?.cameraHandle);
-    pushValues(rule?.viewfinderExtension);
-    pushValues(rule?.deliveryResolution);
-    pushValues(rule?.videoDistribution);
-    pushValues(rule?.camera);
-    pushValues(rule?.monitor);
-    pushValues(rule?.crewPresent);
-    pushValues(rule?.crewAbsent);
-    pushValues(rule?.wireless);
-    pushValues(rule?.motors);
-    pushValues(rule?.controllers);
-    pushValues(rule?.distance);
-    const shootingCondition = normalizeAutoGearShootingDaysCondition(rule?.shootingDays);
-    if (shootingCondition) {
-      const shootingLabel = texts[currentLang]?.autoGearShootingDaysLabel
-        || texts.en?.autoGearShootingDaysLabel
-        || 'Shooting days condition';
-      const minimumLabel = texts[currentLang]?.autoGearShootingDaysModeMinimum
-        || texts.en?.autoGearShootingDaysModeMinimum
-        || 'Minimum';
-      const maximumLabel = texts[currentLang]?.autoGearShootingDaysModeMaximum
-        || texts.en?.autoGearShootingDaysModeMaximum
-        || 'Maximum';
-      const everyLabel = texts[currentLang]?.autoGearShootingDaysModeEvery
-        || texts.en?.autoGearShootingDaysModeEvery
-        || 'Every';
-      if (shootingLabel) {
-        haystack.push(shootingLabel);
-      }
-      haystack.push(String(shootingCondition.value));
-      if (shootingCondition.mode === 'minimum') {
-        haystack.push(minimumLabel);
-      } else if (shootingCondition.mode === 'maximum') {
-        haystack.push(maximumLabel);
-      } else if (shootingCondition.mode === 'every') {
-        haystack.push(everyLabel);
-      }
-    }
-    const collectItems = items => {
-      if (!Array.isArray(items)) return;
-      items.forEach(item => {
-        if (!item || typeof item !== 'object') return;
-        if (typeof item.name === 'string' && item.name) {
-          haystack.push(item.name);
-        }
-        if (typeof item.notes === 'string' && item.notes) {
-          haystack.push(item.notes);
-        }
-        if (typeof item.category === 'string' && item.category) {
-          haystack.push(item.category);
-        }
-        if (typeof item.screenSize === 'string' && item.screenSize) {
-          haystack.push(item.screenSize);
-        }
-        if (item.selector && typeof item.selector === 'object') {
-          if (typeof item.selector.type === 'string' && item.selector.type) {
-            haystack.push(item.selector.type);
-          }
-          if (typeof item.selector.default === 'string' && item.selector.default) {
-            haystack.push(item.selector.default);
-          }
-        }
-        haystack.push(safeFormatAutoGearItemSummary(item));
-      });
-    };
-    collectItems(rule?.add);
-    collectItems(rule?.remove);
-    return haystack.some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(normalizedQuery)
-    );
-  }
-
-  const AUTO_GEAR_SCENARIO_FALLBACK_VALUES = Object.freeze([
-    'Indoor',
-    'Outdoor',
-    'Studio',
-    'Tripod',
-    'Handheld',
-    'Easyrig',
-    'Cine Saddle',
-    'Steadybag',
-    'Dolly',
-    'Slider',
-    'Steadicam',
-    'Gimbal',
-    'Trinity',
-    'Rollcage',
-    'Car Mount',
-    'Jib',
-    'Undersling mode',
-    'Crane',
-    'Remote Head',
-    'Extreme cold (snow)',
-    'Extreme rain',
-    'Extreme heat',
-    'Rain Machine',
-    'Slow Motion',
-    'Battery Belt',
-  ]);
-
-  function getAutoGearScenarioFallbackOptions() {
-    const normalizeEntry = entry => {
-      if (!entry || typeof entry !== 'object') {
-        return null;
-      }
-
-      const { value, label } = entry;
-      if (typeof value !== 'string') {
-        return null;
-      }
-
-      const trimmedValue = value.trim();
-      if (!trimmedValue) {
-        return null;
-      }
-
-      const displayLabel =
-        typeof label === 'string' && label.trim()
-          ? label.trim()
-          : trimmedValue;
-
-      return { value: trimmedValue, label: displayLabel };
-    };
-
-    const resolveFromSession = () => {
-      const sessionEntries = callCoreFunctionIfAvailable(
-        'getRequiredScenarioOptionEntries',
-        [],
-        { defaultValue: null },
-      );
-
-      if (Array.isArray(sessionEntries) && sessionEntries.length) {
-        const normalized = sessionEntries
-          .map(normalizeEntry)
-          .filter(Boolean);
-        if (normalized.length) {
-          return normalized;
-        }
-      }
-      return null;
-    };
-
-    const resolveFromScenarioIcons = () => {
-      const scope = getCoreGlobalObject();
-      const scenarioIcons = scope && scope.scenarioIcons;
-      if (!scenarioIcons || typeof scenarioIcons !== 'object') {
-        return null;
-      }
-
-      const entries = Object.keys(scenarioIcons)
-        .filter(key => typeof key === 'string')
-        .map(key => key.trim())
-        .filter(Boolean)
-        .map(value => ({ value, label: value }));
-
-      return entries.length ? entries : null;
-    };
-
-    const resolveFromFallbackValues = () =>
-      AUTO_GEAR_SCENARIO_FALLBACK_VALUES.map(value => ({ value, label: value }));
-
-    return (
-      resolveFromSession()
-      || resolveFromScenarioIcons()
-      || resolveFromFallbackValues()
-    ).sort((a, b) => localeSort(a.label, b.label));
-  }
-
-  function collectAutoGearScenarioFilterOptions(rules) {
-    const options = new Map();
-    const source = document.getElementById('requiredScenarios');
-    if (source) {
-      Array.from(source.options || []).forEach(option => {
-        const value = typeof option.value === 'string' ? option.value.trim() : '';
-        if (!value) return;
-        const label = option.textContent || value;
-        if (!options.has(value)) {
-          options.set(value, label);
-        }
-      });
-    }
-    if (Array.isArray(rules)) {
-      rules.forEach(rule => {
-        if (!rule || !Array.isArray(rule.scenarios)) return;
-        rule.scenarios.forEach(value => {
-          if (typeof value !== 'string') return;
-          const trimmed = value.trim();
-          if (!trimmed) return;
-          if (!options.has(trimmed)) {
-            options.set(trimmed, trimmed);
-          }
-        });
-      });
-    }
-    if (!options.size) {
-      getAutoGearScenarioFallbackOptions().forEach(({ value, label }) => {
-        if (!options.has(value)) {
-          options.set(value, label);
-        }
-      });
-    }
-    return Array.from(options.entries())
-      .map(([value, label]) => ({ value, label }))
-      .sort((a, b) => localeSort(a.label, b.label));
-  }
-
-  function refreshAutoGearScenarioFilterOptions(rules) {
-    if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
-    const options = collectAutoGearScenarioFilterOptions(rules);
-    const anyLabel = texts[currentLang]?.autoGearFilterScenarioAny
-      || texts.en?.autoGearFilterScenarioAny
-      || 'All scenarios';
-    autoGearFilterScenarioSelect.innerHTML = '';
-    const anyOption = document.createElement('option');
-    anyOption.value = 'all';
-    anyOption.textContent = anyLabel;
-    autoGearFilterScenarioSelect.appendChild(anyOption);
-    options.forEach(({ value, label }) => {
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = label;
-      if (value === autoGearScenarioFilter) {
-        option.selected = true;
-      }
-      autoGearFilterScenarioSelect.appendChild(option);
-    });
-    const optionsAvailable = options.length > 0;
-    autoGearFilterScenarioSelect.disabled = !optionsAvailable;
-    if (!optionsAvailable && autoGearScenarioFilter !== 'all') {
-      autoGearScenarioFilter = 'all';
-    } else if (
-      autoGearScenarioFilter !== 'all' &&
-      !options.some(option => option.value === autoGearScenarioFilter)
-    ) {
-      autoGearScenarioFilter = 'all';
-    }
-    autoGearFilterScenarioSelect.value = autoGearScenarioFilter;
-    return autoGearScenarioFilter;
-  }
-
-  function cloneAutoGearDraftItem(item) {
-    const normalized = normalizeAutoGearItem(item);
-    if (normalized) return normalized;
-    return {
-      id: generateAutoGearId('item'),
-      name: '',
-      category: '',
-      quantity: 1,
-      screenSize: '',
-      selectorType: 'none',
-      selectorDefault: '',
-      selectorEnabled: false,
-      notes: '',
-      ownGearId: '',
-      ownGearLabel: '',
-    };
-  }
-
-  function createAutoGearDraft(rule) {
-    if (rule) {
-      const scenarioLogic = normalizeAutoGearScenarioLogic(rule.scenarioLogic);
-      const matteboxLogic = readAutoGearConditionLogic(rule, 'mattebox');
-      const cameraHandleLogic = readAutoGearConditionLogic(rule, 'cameraHandle');
-      const viewfinderExtensionLogic = readAutoGearConditionLogic(rule, 'viewfinderExtension');
-      const deliveryResolutionLogic = readAutoGearConditionLogic(rule, 'deliveryResolution');
-      const videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
-      const cameraLogic = readAutoGearConditionLogic(rule, 'camera');
-      const ownGearLogic = readAutoGearConditionLogic(rule, 'ownGear');
-      const monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
-      const crewPresentLogic = readAutoGearConditionLogic(rule, 'crewPresent');
-      const crewAbsentLogic = readAutoGearConditionLogic(rule, 'crewAbsent');
-      const wirelessLogic = readAutoGearConditionLogic(rule, 'wireless');
-      const motorsLogic = readAutoGearConditionLogic(rule, 'motors');
-      const controllersLogic = readAutoGearConditionLogic(rule, 'controllers');
-      const distanceLogic = readAutoGearConditionLogic(rule, 'distance');
-      const draftConditionLogic = {};
-      if (scenarioLogic !== 'all') draftConditionLogic.scenarios = scenarioLogic;
-      if (matteboxLogic !== 'all') draftConditionLogic.mattebox = matteboxLogic;
-      if (cameraHandleLogic !== 'all') draftConditionLogic.cameraHandle = cameraHandleLogic;
-      if (viewfinderExtensionLogic !== 'all') draftConditionLogic.viewfinderExtension = viewfinderExtensionLogic;
-      if (deliveryResolutionLogic !== 'all') draftConditionLogic.deliveryResolution = deliveryResolutionLogic;
-      if (videoDistributionLogic !== 'all') draftConditionLogic.videoDistribution = videoDistributionLogic;
-      if (cameraLogic !== 'all') draftConditionLogic.camera = cameraLogic;
-      if (ownGearLogic !== 'all') draftConditionLogic.ownGear = ownGearLogic;
-      if (monitorLogic !== 'all') draftConditionLogic.monitor = monitorLogic;
-      if (crewPresentLogic !== 'all') draftConditionLogic.crewPresent = crewPresentLogic;
-      if (crewAbsentLogic !== 'all') draftConditionLogic.crewAbsent = crewAbsentLogic;
-      if (wirelessLogic !== 'all') draftConditionLogic.wireless = wirelessLogic;
-      if (motorsLogic !== 'all') draftConditionLogic.motors = motorsLogic;
-      if (controllersLogic !== 'all') draftConditionLogic.controllers = controllersLogic;
-      if (distanceLogic !== 'all') draftConditionLogic.distance = distanceLogic;
-      return {
-        id: rule.id,
-        label: rule.label || '',
-        always: rule.always ? ['always'] : [],
-        scenarioLogic,
-        scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
-        scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
-        scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
-        mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
-        cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
-        viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
-        deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
-        videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
-        camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
-        ownGear: Array.isArray(rule.ownGear) ? rule.ownGear.slice() : [],
-        cameraWeight: rule.cameraWeight
-          ? normalizeAutoGearCameraWeightCondition(rule.cameraWeight) || null
-          : null,
-        monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
-        crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
-        crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
-        wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
-        motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
-        controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
-        distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
-        shootingDays: normalizeAutoGearShootingDaysCondition(rule.shootingDays),
-        add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearDraftItem) : [],
-        remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearDraftItem) : [],
-        matteboxLogic,
-        cameraHandleLogic,
-        viewfinderExtensionLogic,
-        deliveryResolutionLogic,
-        videoDistributionLogic,
-        cameraLogic,
-        ownGearLogic,
-        monitorLogic,
-        crewPresentLogic,
-        crewAbsentLogic,
-        wirelessLogic,
-        motorsLogic,
-        controllersLogic,
-        distanceLogic,
-        conditionLogic: draftConditionLogic,
-      };
-    }
-    return {
-      id: generateAutoGearId('rule'),
-      label: '',
-      always: [],
-      scenarioLogic: 'all',
-      scenarioPrimary: '',
-      scenarioMultiplier: 1,
-      scenarios: [],
-      mattebox: [],
-      cameraHandle: [],
-      viewfinderExtension: [],
-      deliveryResolution: [],
-      videoDistribution: [],
-      camera: [],
-      ownGear: [],
-      cameraWeight: null,
-      monitor: [],
-      crewPresent: [],
-      crewAbsent: [],
-      wireless: [],
-      motors: [],
-      controllers: [],
-      distance: [],
-      shootingDays: null,
-      add: [],
-      remove: [],
-      matteboxLogic: 'all',
-      cameraHandleLogic: 'all',
-      viewfinderExtensionLogic: 'all',
-      deliveryResolutionLogic: 'all',
-      videoDistributionLogic: 'all',
-      cameraLogic: 'all',
-      ownGearLogic: 'all',
-      monitorLogic: 'all',
-      crewPresentLogic: 'all',
-      crewAbsentLogic: 'all',
-      wirelessLogic: 'all',
-      motorsLogic: 'all',
-      controllersLogic: 'all',
-      distanceLogic: 'all',
-      conditionLogic: {},
-    };
-  }
-
-  function getCrewRoleEntries() {
-    const langTexts = texts[currentLang] || texts.en || {};
-    const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
-    const seen = new Set();
-    const entries = [];
-    Object.entries(crewRoleMap).forEach(([value, label]) => {
-      if (typeof value !== 'string') return;
-      const trimmedValue = value.trim();
-      if (!trimmedValue) return;
-      const key = trimmedValue.toLowerCase();
-      if (seen.has(key)) return;
-      seen.add(key);
-      const displayLabel = typeof label === 'string' && label.trim() ? label.trim() : trimmedValue;
-      entries.push({ value: trimmedValue, label: displayLabel });
-    });
-    return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
-  }
-
-  exposeCoreRuntimeConstant('setupInstallBanner', setupInstallBanner);
-  exposeCoreRuntimeConstant('maybeShowIosPwaHelp', maybeShowIosPwaHelp);
-  exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
-  exposeCoreRuntimeConstant('updateGlobalDevicesReference', updateGlobalDevicesReference);
-  exposeCoreRuntimeConstant('setLanguage', setLanguage);
-  exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
-  exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
-  exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
-  exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
-  exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
-  exposeCoreRuntimeConstant('iconGlyph', iconGlyph);
-  exposeCoreRuntimeConstant('resolveIconGlyph', resolveIconGlyph);
-  exposeCoreRuntimeConstant('applyIconGlyph', applyIconGlyph);
-  exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
-  exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
-  const CORE_RUNTIME_CONSTANTS = {
-    CORE_GLOBAL_SCOPE,
-    CORE_BOOT_QUEUE_KEY,
-    CORE_BOOT_QUEUE,
-    CORE_SHARED,
-    INSTALL_BANNER_DISMISSED_KEY,
-    AUTO_GEAR_ANY_MOTOR_TOKEN,
-    AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE,
-    AUTO_GEAR_BACKUP_RETENTION_MAX,
-    AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
-    AUTO_GEAR_MONITOR_DEFAULT_TYPES,
-    GEAR_LIST_CATEGORIES,
-    TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
-    TEMPERATURE_UNITS: CORE_TEMPERATURE_UNITS,
-    TEMPERATURE_SCENARIOS,
-    FOCUS_SCALE_STORAGE_KEY,
-    FOCUS_SCALE_VALUES: focusScaleValues,
-    FEEDBACK_TEMPERATURE_MIN: globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE,
-    FEEDBACK_TEMPERATURE_MAX: globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE,
-  };
-
-  // Ensure mount voltage helpers remain reachable from the session layer.
-  Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
-
-
-
-  exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
-
-  exposeCoreRuntimeBindings({
-    updatePowerSummary: updatePowerSummary,
-    drawPowerDiagram: drawPowerDiagram,
-    safeGenerateConnectorSummary: {
-      get: () => sessionSafeGenerateConnectorSummary,
-      set: value => {
-        if (typeof value === 'function') {
-          sessionSafeGenerateConnectorSummary = value;
-        }
-      },
-    },
-    baseAutoGearRules: {
-      get: () => baseAutoGearRulesState,
-      set: value => {
-        if (Array.isArray(value)) {
-          baseAutoGearRulesState = value;
-        }
-      },
-    },
-    autoGearAutoPresetId: {
-      get: () => autoGearAutoPresetIdState,
-      set: value => {
-        if (typeof value === 'string') {
-          autoGearAutoPresetIdState = value;
-        } else if (value === null || typeof value === 'undefined') {
-          autoGearAutoPresetIdState = '';
-        }
-      },
-    },
-    autoGearScenarioModeSelect: {
-      get: () => autoGearScenarioModeSelectElement,
-      set: value => {
-        autoGearScenarioModeSelectElement = value || null;
-        setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
-      },
-    },
-    pinkModeIconRotationTimer: {
-      get: () =>
-        typeof getPinkModeIconRotationTimer === 'function'
-          ? getPinkModeIconRotationTimer()
-          : null,
-      set: value => {
-        if (typeof setPinkModeIconRotationTimer === 'function') {
-          setPinkModeIconRotationTimer(value);
-        }
-      },
-    },
-    pinkModeIconIndex: {
-      get: () =>
-        typeof getPinkModeIconIndex === 'function'
-          ? getPinkModeIconIndex()
-          : 0,
-      set: value => {
-        if (typeof setPinkModeIconIndex === 'function') {
-          setPinkModeIconIndex(value);
-        }
-      },
-    },
-  });
-  scheduleLayoutInitialization();
-
+  applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
 }
+
+refreshAutoGearConditionPicker();
+updateAutoGearConditionAddButtonState();
+configureAutoGearConditionButtons();
+if (autoGearShootingDaysMode) {
+  const handleShootingDaysModeChange = () => {
+    updateAutoGearShootingDaysDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearShootingDaysMode.addEventListener('input', handleShootingDaysModeChange);
+  autoGearShootingDaysMode.addEventListener('change', handleShootingDaysModeChange);
+}
+if (autoGearShootingDaysInput) {
+  const handleShootingDaysValueInput = () => {
+    updateAutoGearShootingDaysDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearShootingDaysInput.addEventListener('input', handleShootingDaysValueInput);
+  autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
+  autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
+}
+Object.entries(autoGearConditionLogicSelects).forEach(([key, select]) => {
+  if (!select) return;
+  const property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
+  const handleLogicChange = () => {
+    const normalized = normalizeAutoGearConditionLogic(select.value);
+    select.value = normalized;
+    if (autoGearEditorDraft && property) {
+      autoGearEditorDraft[property] = normalized;
+      if (!autoGearEditorDraft.conditionLogic || typeof autoGearEditorDraft.conditionLogic !== 'object') {
+        autoGearEditorDraft.conditionLogic = {};
+      }
+      if (normalized === 'all') {
+        delete autoGearEditorDraft.conditionLogic[key];
+      } else {
+        autoGearEditorDraft.conditionLogic[key] = normalized;
+      }
+    }
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  select.addEventListener('input', handleLogicChange);
+  select.addEventListener('change', handleLogicChange);
+});
+if (autoGearCameraWeightOperator) {
+  const handleCameraWeightOperatorChange = () => {
+    updateAutoGearCameraWeightDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearCameraWeightOperator.addEventListener('input', handleCameraWeightOperatorChange);
+  autoGearCameraWeightOperator.addEventListener('change', handleCameraWeightOperatorChange);
+}
+if (autoGearCameraWeightValueInput) {
+  const handleCameraWeightValueInput = () => {
+    updateAutoGearCameraWeightDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearCameraWeightValueInput.addEventListener('input', handleCameraWeightValueInput);
+  autoGearCameraWeightValueInput.addEventListener('change', handleCameraWeightValueInput);
+  autoGearCameraWeightValueInput.addEventListener('blur', handleCameraWeightValueInput);
+}
+var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
+var autoGearAddOwnGearLabel = document.getElementById('autoGearAddOwnGearLabel');
+var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
+var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
+var autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
+var autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeLabel');
+var autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
+var autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
+var autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
+var autoGearAddOwnGearSelect = document.getElementById('autoGearAddOwnGear');
+var autoGearAddNameInput = document.getElementById('autoGearAddName');
+var autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
+var autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
+var autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
+var autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
+var autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
+var autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
+var autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
+var autoGearAddList = document.getElementById('autoGearAddList');
+var autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
+var autoGearRemoveOwnGearLabel = document.getElementById('autoGearRemoveOwnGearLabel');
+var autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
+var autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
+var autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
+var autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScreenSizeLabel');
+var autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
+var autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
+var autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
+var autoGearRemoveOwnGearSelect = document.getElementById('autoGearRemoveOwnGear');
+var autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
+var autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
+var autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
+var autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
+var autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
+var autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
+var autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
+var autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
+var autoGearRemoveList = document.getElementById('autoGearRemoveList');
+var autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
+var autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
+var autoGearDraftImpactDescription = document.getElementById('autoGearDraftImpactDescription');
+var autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
+var autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
+var autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
+var autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
+var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
+var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
+var autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
+
+updateAutoGearOwnGearOptions();
+
+if (typeof document !== 'undefined' && document) {
+  document.addEventListener('own-gear-data-changed', () => {
+    invalidateAutoGearOwnGearCache();
+    updateAutoGearOwnGearOptions();
+    updateAutoGearCatalogOptions();
+  });
+}
+
+function enableAutoGearMultiSelectToggle(select) {
+  if (!select || !select.multiple) return;
+
+  const handlePointerToggle = event => {
+    if (!select.multiple || event.defaultPrevented) return;
+
+    const isPointerEvent = typeof PointerEvent !== 'undefined' && event instanceof PointerEvent;
+    if (isPointerEvent && event.pointerType && event.pointerType !== 'mouse') {
+      return;
+    }
+
+    if (typeof event.button === 'number' && event.button !== 0) {
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    const option = event.target instanceof HTMLOptionElement ? event.target : null;
+    if (!option || option.disabled) {
+      return;
+    }
+
+    event.preventDefault();
+
+    option.selected = !option.selected;
+
+    const dispatchEvent = type => {
+      try {
+        const evt = new Event(type, { bubbles: true });
+        select.dispatchEvent(evt);
+      } catch {
+        const evt = document.createEvent('Event');
+        evt.initEvent(type, true, true);
+        select.dispatchEvent(evt);
+      }
+    };
+
+    dispatchEvent('input');
+    dispatchEvent('change');
+
+    if (typeof select.focus === 'function') {
+      try {
+        select.focus({ preventScroll: true });
+      } catch {
+        select.focus();
+      }
+    }
+  };
+
+  if (typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined') {
+    select.addEventListener('pointerdown', handlePointerToggle);
+  } else {
+    select.addEventListener('mousedown', handlePointerToggle);
+  }
+}
+
+[
+  autoGearScenariosSelect,
+  autoGearMatteboxSelect,
+  autoGearCameraHandleSelect,
+  autoGearViewfinderExtensionSelect,
+  autoGearVideoDistributionSelect,
+  autoGearCameraSelect,
+  autoGearOwnGearSelect,
+  autoGearMonitorSelect,
+  autoGearCrewPresentSelect,
+  autoGearCrewAbsentSelect,
+  autoGearWirelessSelect,
+  autoGearMotorsSelect,
+  autoGearControllersSelect,
+  autoGearDistanceSelect,
+].forEach(enableAutoGearMultiSelectToggle);
+
+var autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
+  || autoGearAddScreenSizeLabel?.closest('.auto-gear-field')
+  || null;
+var autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.auto-gear-field')
+  || autoGearAddSelectorTypeLabel?.closest('.auto-gear-field')
+  || null;
+var autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
+  || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
+  || null;
+var autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
+  || autoGearRemoveScreenSizeLabel?.closest('.auto-gear-field')
+  || null;
+var autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closest('.auto-gear-field')
+  || autoGearRemoveSelectorTypeLabel?.closest('.auto-gear-field')
+  || null;
+var autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
+  || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
+  || null;
+
+autoGearAddMonitorFieldGroup = {
+  select: autoGearAddCategorySelect,
+  screenSizeField: autoGearAddScreenSizeField,
+  screenSizeInput: autoGearAddScreenSizeInput,
+  selectorTypeField: autoGearAddSelectorTypeField,
+  selectorTypeSelect: autoGearAddSelectorTypeSelect,
+  selectorDefaultField: autoGearAddSelectorDefaultField,
+  selectorDefaultInput: autoGearAddSelectorDefaultInput,
+};
+
+autoGearRemoveMonitorFieldGroup = {
+  select: autoGearRemoveCategorySelect,
+  screenSizeField: autoGearRemoveScreenSizeField,
+  screenSizeInput: autoGearRemoveScreenSizeInput,
+  selectorTypeField: autoGearRemoveSelectorTypeField,
+  selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
+  selectorDefaultField: autoGearRemoveSelectorDefaultField,
+  selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
+};
+
+autoGearMonitorDefaultGroups = [
+  {
+    selectorTypeSelect: autoGearAddSelectorTypeSelect,
+    selectorDefaultInput: autoGearAddSelectorDefaultInput,
+  },
+  {
+    selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
+    selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
+  },
+].filter(group => group.selectorDefaultInput);
+
+function syncAutoGearMonitorFieldVisibility() {
+  if (autoGearAddMonitorFieldGroup) {
+    updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
+  }
+  if (autoGearRemoveMonitorFieldGroup) {
+    updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
+  }
+}
+
+exposeCoreRuntimeConstant('syncAutoGearMonitorFieldVisibility', syncAutoGearMonitorFieldVisibility);
+var autoGearExportButton = document.getElementById('autoGearExport');
+var autoGearImportButton = document.getElementById('autoGearImport');
+var autoGearImportInput = document.getElementById('autoGearImportInput');
+var autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
+var autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
+var autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
+var autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
+var autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
+var autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
+var autoGearBackupControls = document.getElementById('autoGearBackupControls');
+var autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
+var autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
+var autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
+var autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
+var autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
+var autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
+var autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
+var autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
+const dataHeading = document.getElementById("dataHeading");
+const storageSummaryIntro = document.getElementById("storageSummaryIntro");
+const storageSummaryList = document.getElementById("storageSummaryList");
+const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
+const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+const storagePersistenceSection = document.getElementById("storagePersistence");
+const storagePersistenceHeading = document.getElementById("storagePersistenceHeading");
+const storagePersistenceIntro = document.getElementById("storagePersistenceIntro");
+const storagePersistenceRequestButton = document.getElementById("storagePersistenceRequest");
+const storagePersistenceStatus = document.getElementById("storagePersistenceStatus");
+var storageActionsHeading = document.getElementById('storageActionsHeading');
+var storageActionsIntro = document.getElementById('storageActionsIntro');
+var storageBackupNowButton = document.getElementById('storageBackupNow');
+var storageOpenBackupTabButton = document.getElementById('storageOpenBackupTab');
+var storageStatusHeading = document.getElementById('storageStatusHeading');
+var storageStatusLastProjectLabel = document.getElementById('storageStatusLastProjectLabel');
+var storageStatusLastProjectValue = document.getElementById('storageStatusLastProjectValue');
+var storageStatusLastAutoBackupLabel = document.getElementById('storageStatusLastAutoBackupLabel');
+var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
+var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
+var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
+var storageStatusReminder = document.getElementById('storageStatusReminder');
+const loggingSection = document.getElementById('loggingSection');
+const loggingHeading = document.getElementById('loggingHeading');
+const loggingIntro = document.getElementById('loggingIntro');
+const loggingLevelFilterLabel = document.getElementById('loggingLevelFilterLabel');
+const loggingLevelFilter = document.getElementById('loggingLevelFilter');
+const loggingNamespaceFilterLabel = document.getElementById('loggingNamespaceFilterLabel');
+const loggingNamespaceFilter = document.getElementById('loggingNamespaceFilter');
+const loggingNamespaceFilterHelp = document.getElementById('loggingNamespaceFilterHelp');
+const loggingHistoryLimitLabel = document.getElementById('loggingHistoryLimitLabel');
+const loggingHistoryLimit = document.getElementById('loggingHistoryLimit');
+const loggingHistoryLimitHelp = document.getElementById('loggingHistoryLimitHelp');
+const loggingConsoleOutputLabel = document.getElementById('loggingConsoleOutputLabel');
+const loggingConsoleOutputHelp = document.getElementById('loggingConsoleOutputHelp');
+const loggingCaptureConsoleLabel = document.getElementById('loggingCaptureConsoleLabel');
+const loggingCaptureConsoleHelp = document.getElementById('loggingCaptureConsoleHelp');
+const loggingCaptureErrorsLabel = document.getElementById('loggingCaptureErrorsLabel');
+const loggingCaptureErrorsHelp = document.getElementById('loggingCaptureErrorsHelp');
+const loggingPersistSessionLabel = document.getElementById('loggingPersistSessionLabel');
+const loggingPersistSessionHelp = document.getElementById('loggingPersistSessionHelp');
+const loggingExportButton = document.getElementById('loggingExportBtn');
+const loggingExportHelp = document.getElementById('loggingExportHelp');
+const loggingStatus = document.getElementById('loggingStatus');
+const loggingEmpty = document.getElementById('loggingEmpty');
+const loggingUnavailable = document.getElementById('loggingUnavailable');
+
+if (autoGearBackupRetentionInput) {
+  const queueAutoGearRetentionHandler = handlerName => {
+    callCoreFunctionIfAvailable(handlerName, [], { defer: true });
+  };
+
+  autoGearBackupRetentionInput.addEventListener('input', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionInput');
+  });
+  autoGearBackupRetentionInput.addEventListener('blur', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionBlur');
+  });
+  autoGearBackupRetentionInput.addEventListener('change', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionChange');
+  });
+}
+
+function computeAutoGearMultiSelectSize(optionCount, {
+  fallback,
+  minRows = AUTO_GEAR_MULTI_SELECT_MIN_ROWS,
+  maxRows = AUTO_GEAR_MULTI_SELECT_MAX_ROWS,
+} = {}) {
+  const effectiveFallback = Number.isFinite(fallback) && fallback >= minRows
+    ? fallback
+    : minRows;
+  if (!Number.isFinite(optionCount) || optionCount <= 0) {
+    return effectiveFallback;
+  }
+  const boundedMax = Number.isFinite(maxRows) && maxRows >= minRows ? maxRows : minRows;
+  return Math.max(minRows, Math.min(optionCount, boundedMax));
+}
+
+function setAutoGearSearchQuery(value) {
+  const nextValue = typeof value === 'string' ? value : '';
+  if (autoGearSearchQuery === nextValue) return;
+  autoGearSearchQuery = nextValue;
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+}
+
+function setAutoGearScenarioFilter(value) {
+  const nextValue = typeof value === 'string' && value !== 'all' ? value : 'all';
+  if (autoGearScenarioFilter === nextValue) return;
+  autoGearScenarioFilter = nextValue;
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+}
+
+function clearAutoGearFilters() {
+  autoGearSearchQuery = '';
+  autoGearScenarioFilter = 'all';
+  autoGearSummaryFocus = 'all';
+  if (autoGearSearchInput && autoGearSearchInput.value !== '') {
+    autoGearSearchInput.value = '';
+  }
+  if (autoGearFilterScenarioSelect && autoGearFilterScenarioSelect.value !== 'all') {
+    autoGearFilterScenarioSelect.value = 'all';
+  }
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+  if (autoGearSearchInput && typeof autoGearSearchInput.focus === 'function') {
+    try {
+      autoGearSearchInput.focus({ preventScroll: true });
+    } catch {
+      autoGearSearchInput.focus();
+    }
+  }
+}
+
+function autoGearRuleMatchesScenario(rule, scenarioValue) {
+  if (!scenarioValue || scenarioValue === 'all') return true;
+  if (!rule || !Array.isArray(rule.scenarios)) return false;
+  return rule.scenarios.some(value => value === scenarioValue);
+}
+
+function autoGearRuleMatchesSearch(rule, query) {
+  const normalizedQuery = typeof query === 'string' ? query.trim().toLowerCase() : '';
+  if (!normalizedQuery) return true;
+  const haystack = [];
+  const pushValues = values => {
+    if (!Array.isArray(values)) return;
+    values.forEach(value => {
+      if (typeof value === 'string' && value) {
+        haystack.push(value);
+      }
+    });
+  };
+  if (rule && typeof rule.label === 'string') {
+    haystack.push(rule.label);
+  }
+  if (rule && rule.always) {
+    haystack.push('always');
+    const alwaysText = texts[currentLang]?.autoGearAlwaysMeta
+      || texts.en?.autoGearAlwaysMeta
+      || 'Always active';
+    if (alwaysText) {
+      haystack.push(alwaysText);
+    }
+  }
+  pushValues(rule?.scenarios);
+  pushValues(rule?.mattebox);
+  pushValues(rule?.cameraHandle);
+  pushValues(rule?.viewfinderExtension);
+  pushValues(rule?.deliveryResolution);
+  pushValues(rule?.videoDistribution);
+  pushValues(rule?.camera);
+  pushValues(rule?.monitor);
+  pushValues(rule?.crewPresent);
+  pushValues(rule?.crewAbsent);
+  pushValues(rule?.wireless);
+  pushValues(rule?.motors);
+  pushValues(rule?.controllers);
+  pushValues(rule?.distance);
+  const shootingCondition = normalizeAutoGearShootingDaysCondition(rule?.shootingDays);
+  if (shootingCondition) {
+    const shootingLabel = texts[currentLang]?.autoGearShootingDaysLabel
+      || texts.en?.autoGearShootingDaysLabel
+      || 'Shooting days condition';
+    const minimumLabel = texts[currentLang]?.autoGearShootingDaysModeMinimum
+      || texts.en?.autoGearShootingDaysModeMinimum
+      || 'Minimum';
+    const maximumLabel = texts[currentLang]?.autoGearShootingDaysModeMaximum
+      || texts.en?.autoGearShootingDaysModeMaximum
+      || 'Maximum';
+    const everyLabel = texts[currentLang]?.autoGearShootingDaysModeEvery
+      || texts.en?.autoGearShootingDaysModeEvery
+      || 'Every';
+    if (shootingLabel) {
+      haystack.push(shootingLabel);
+    }
+    haystack.push(String(shootingCondition.value));
+    if (shootingCondition.mode === 'minimum') {
+      haystack.push(minimumLabel);
+    } else if (shootingCondition.mode === 'maximum') {
+      haystack.push(maximumLabel);
+    } else if (shootingCondition.mode === 'every') {
+      haystack.push(everyLabel);
+    }
+  }
+  const collectItems = items => {
+    if (!Array.isArray(items)) return;
+    items.forEach(item => {
+      if (!item || typeof item !== 'object') return;
+      if (typeof item.name === 'string' && item.name) {
+        haystack.push(item.name);
+      }
+      if (typeof item.notes === 'string' && item.notes) {
+        haystack.push(item.notes);
+      }
+      if (typeof item.category === 'string' && item.category) {
+        haystack.push(item.category);
+      }
+      if (typeof item.screenSize === 'string' && item.screenSize) {
+        haystack.push(item.screenSize);
+      }
+      if (item.selector && typeof item.selector === 'object') {
+        if (typeof item.selector.type === 'string' && item.selector.type) {
+          haystack.push(item.selector.type);
+        }
+        if (typeof item.selector.default === 'string' && item.selector.default) {
+          haystack.push(item.selector.default);
+        }
+      }
+      haystack.push(safeFormatAutoGearItemSummary(item));
+    });
+  };
+  collectItems(rule?.add);
+  collectItems(rule?.remove);
+  return haystack.some(value =>
+    typeof value === 'string' && value.toLowerCase().includes(normalizedQuery)
+  );
+}
+
+const AUTO_GEAR_SCENARIO_FALLBACK_VALUES = Object.freeze([
+  'Indoor',
+  'Outdoor',
+  'Studio',
+  'Tripod',
+  'Handheld',
+  'Easyrig',
+  'Cine Saddle',
+  'Steadybag',
+  'Dolly',
+  'Slider',
+  'Steadicam',
+  'Gimbal',
+  'Trinity',
+  'Rollcage',
+  'Car Mount',
+  'Jib',
+  'Undersling mode',
+  'Crane',
+  'Remote Head',
+  'Extreme cold (snow)',
+  'Extreme rain',
+  'Extreme heat',
+  'Rain Machine',
+  'Slow Motion',
+  'Battery Belt',
+]);
+
+function getAutoGearScenarioFallbackOptions() {
+  const normalizeEntry = entry => {
+    if (!entry || typeof entry !== 'object') {
+      return null;
+    }
+
+    const { value, label } = entry;
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      return null;
+    }
+
+    const displayLabel =
+      typeof label === 'string' && label.trim()
+        ? label.trim()
+        : trimmedValue;
+
+    return { value: trimmedValue, label: displayLabel };
+  };
+
+  const resolveFromSession = () => {
+    const sessionEntries = callCoreFunctionIfAvailable(
+      'getRequiredScenarioOptionEntries',
+      [],
+      { defaultValue: null },
+    );
+
+    if (Array.isArray(sessionEntries) && sessionEntries.length) {
+      const normalized = sessionEntries
+        .map(normalizeEntry)
+        .filter(Boolean);
+      if (normalized.length) {
+        return normalized;
+      }
+    }
+    return null;
+  };
+
+  const resolveFromScenarioIcons = () => {
+    const scope = getCoreGlobalObject();
+    const scenarioIcons = scope && scope.scenarioIcons;
+    if (!scenarioIcons || typeof scenarioIcons !== 'object') {
+      return null;
+    }
+
+    const entries = Object.keys(scenarioIcons)
+      .filter(key => typeof key === 'string')
+      .map(key => key.trim())
+      .filter(Boolean)
+      .map(value => ({ value, label: value }));
+
+    return entries.length ? entries : null;
+  };
+
+  const resolveFromFallbackValues = () =>
+    AUTO_GEAR_SCENARIO_FALLBACK_VALUES.map(value => ({ value, label: value }));
+
+  return (
+    resolveFromSession()
+    || resolveFromScenarioIcons()
+    || resolveFromFallbackValues()
+  ).sort((a, b) => localeSort(a.label, b.label));
+}
+
+function collectAutoGearScenarioFilterOptions(rules) {
+  const options = new Map();
+  const source = document.getElementById('requiredScenarios');
+  if (source) {
+    Array.from(source.options || []).forEach(option => {
+      const value = typeof option.value === 'string' ? option.value.trim() : '';
+      if (!value) return;
+      const label = option.textContent || value;
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
+    });
+  }
+  if (Array.isArray(rules)) {
+    rules.forEach(rule => {
+      if (!rule || !Array.isArray(rule.scenarios)) return;
+      rule.scenarios.forEach(value => {
+        if (typeof value !== 'string') return;
+        const trimmed = value.trim();
+        if (!trimmed) return;
+        if (!options.has(trimmed)) {
+          options.set(trimmed, trimmed);
+        }
+      });
+    });
+  }
+  if (!options.size) {
+    getAutoGearScenarioFallbackOptions().forEach(({ value, label }) => {
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
+    });
+  }
+  return Array.from(options.entries())
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => localeSort(a.label, b.label));
+}
+
+function refreshAutoGearScenarioFilterOptions(rules) {
+  if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
+  const options = collectAutoGearScenarioFilterOptions(rules);
+  const anyLabel = texts[currentLang]?.autoGearFilterScenarioAny
+    || texts.en?.autoGearFilterScenarioAny
+    || 'All scenarios';
+  autoGearFilterScenarioSelect.innerHTML = '';
+  const anyOption = document.createElement('option');
+  anyOption.value = 'all';
+  anyOption.textContent = anyLabel;
+  autoGearFilterScenarioSelect.appendChild(anyOption);
+  options.forEach(({ value, label }) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    if (value === autoGearScenarioFilter) {
+      option.selected = true;
+    }
+    autoGearFilterScenarioSelect.appendChild(option);
+  });
+  const optionsAvailable = options.length > 0;
+  autoGearFilterScenarioSelect.disabled = !optionsAvailable;
+  if (!optionsAvailable && autoGearScenarioFilter !== 'all') {
+    autoGearScenarioFilter = 'all';
+  } else if (
+    autoGearScenarioFilter !== 'all' &&
+    !options.some(option => option.value === autoGearScenarioFilter)
+  ) {
+    autoGearScenarioFilter = 'all';
+  }
+  autoGearFilterScenarioSelect.value = autoGearScenarioFilter;
+  return autoGearScenarioFilter;
+}
+
+function cloneAutoGearDraftItem(item) {
+  const normalized = normalizeAutoGearItem(item);
+  if (normalized) return normalized;
+  return {
+    id: generateAutoGearId('item'),
+    name: '',
+    category: '',
+    quantity: 1,
+    screenSize: '',
+    selectorType: 'none',
+    selectorDefault: '',
+    selectorEnabled: false,
+    notes: '',
+    ownGearId: '',
+    ownGearLabel: '',
+  };
+}
+
+function createAutoGearDraft(rule) {
+  if (rule) {
+    const scenarioLogic = normalizeAutoGearScenarioLogic(rule.scenarioLogic);
+    const matteboxLogic = readAutoGearConditionLogic(rule, 'mattebox');
+    const cameraHandleLogic = readAutoGearConditionLogic(rule, 'cameraHandle');
+    const viewfinderExtensionLogic = readAutoGearConditionLogic(rule, 'viewfinderExtension');
+    const deliveryResolutionLogic = readAutoGearConditionLogic(rule, 'deliveryResolution');
+    const videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
+    const cameraLogic = readAutoGearConditionLogic(rule, 'camera');
+    const ownGearLogic = readAutoGearConditionLogic(rule, 'ownGear');
+    const monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
+    const crewPresentLogic = readAutoGearConditionLogic(rule, 'crewPresent');
+    const crewAbsentLogic = readAutoGearConditionLogic(rule, 'crewAbsent');
+    const wirelessLogic = readAutoGearConditionLogic(rule, 'wireless');
+    const motorsLogic = readAutoGearConditionLogic(rule, 'motors');
+    const controllersLogic = readAutoGearConditionLogic(rule, 'controllers');
+    const distanceLogic = readAutoGearConditionLogic(rule, 'distance');
+    const draftConditionLogic = {};
+    if (scenarioLogic !== 'all') draftConditionLogic.scenarios = scenarioLogic;
+    if (matteboxLogic !== 'all') draftConditionLogic.mattebox = matteboxLogic;
+    if (cameraHandleLogic !== 'all') draftConditionLogic.cameraHandle = cameraHandleLogic;
+    if (viewfinderExtensionLogic !== 'all') draftConditionLogic.viewfinderExtension = viewfinderExtensionLogic;
+    if (deliveryResolutionLogic !== 'all') draftConditionLogic.deliveryResolution = deliveryResolutionLogic;
+    if (videoDistributionLogic !== 'all') draftConditionLogic.videoDistribution = videoDistributionLogic;
+    if (cameraLogic !== 'all') draftConditionLogic.camera = cameraLogic;
+    if (ownGearLogic !== 'all') draftConditionLogic.ownGear = ownGearLogic;
+    if (monitorLogic !== 'all') draftConditionLogic.monitor = monitorLogic;
+    if (crewPresentLogic !== 'all') draftConditionLogic.crewPresent = crewPresentLogic;
+    if (crewAbsentLogic !== 'all') draftConditionLogic.crewAbsent = crewAbsentLogic;
+    if (wirelessLogic !== 'all') draftConditionLogic.wireless = wirelessLogic;
+    if (motorsLogic !== 'all') draftConditionLogic.motors = motorsLogic;
+    if (controllersLogic !== 'all') draftConditionLogic.controllers = controllersLogic;
+    if (distanceLogic !== 'all') draftConditionLogic.distance = distanceLogic;
+    return {
+      id: rule.id,
+      label: rule.label || '',
+      always: rule.always ? ['always'] : [],
+      scenarioLogic,
+      scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
+      scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
+      scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+      mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
+      cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
+      viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
+      deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
+      videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
+      camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+      ownGear: Array.isArray(rule.ownGear) ? rule.ownGear.slice() : [],
+      cameraWeight: rule.cameraWeight
+        ? normalizeAutoGearCameraWeightCondition(rule.cameraWeight) || null
+        : null,
+      monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+      crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+      crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
+      wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
+      motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
+      controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
+      distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
+      shootingDays: normalizeAutoGearShootingDaysCondition(rule.shootingDays),
+      add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearDraftItem) : [],
+      remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearDraftItem) : [],
+      matteboxLogic,
+      cameraHandleLogic,
+      viewfinderExtensionLogic,
+      deliveryResolutionLogic,
+      videoDistributionLogic,
+      cameraLogic,
+      ownGearLogic,
+      monitorLogic,
+      crewPresentLogic,
+      crewAbsentLogic,
+      wirelessLogic,
+      motorsLogic,
+      controllersLogic,
+      distanceLogic,
+      conditionLogic: draftConditionLogic,
+    };
+  }
+  return {
+    id: generateAutoGearId('rule'),
+    label: '',
+    always: [],
+    scenarioLogic: 'all',
+    scenarioPrimary: '',
+    scenarioMultiplier: 1,
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    deliveryResolution: [],
+    videoDistribution: [],
+    camera: [],
+    ownGear: [],
+    cameraWeight: null,
+    monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
+    wireless: [],
+    motors: [],
+    controllers: [],
+    distance: [],
+    shootingDays: null,
+    add: [],
+    remove: [],
+    matteboxLogic: 'all',
+    cameraHandleLogic: 'all',
+    viewfinderExtensionLogic: 'all',
+    deliveryResolutionLogic: 'all',
+    videoDistributionLogic: 'all',
+    cameraLogic: 'all',
+    ownGearLogic: 'all',
+    monitorLogic: 'all',
+    crewPresentLogic: 'all',
+    crewAbsentLogic: 'all',
+    wirelessLogic: 'all',
+    motorsLogic: 'all',
+    controllersLogic: 'all',
+    distanceLogic: 'all',
+    conditionLogic: {},
+  };
+}
+
+function getCrewRoleEntries() {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
+  const seen = new Set();
+  const entries = [];
+  Object.entries(crewRoleMap).forEach(([value, label]) => {
+    if (typeof value !== 'string') return;
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return;
+    const key = trimmedValue.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    const displayLabel = typeof label === 'string' && label.trim() ? label.trim() : trimmedValue;
+    entries.push({ value: trimmedValue, label: displayLabel });
+  });
+  return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+}
+
+exposeCoreRuntimeConstant('setupInstallBanner', setupInstallBanner);
+exposeCoreRuntimeConstant('maybeShowIosPwaHelp', maybeShowIosPwaHelp);
+exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+exposeCoreRuntimeConstant('updateGlobalDevicesReference', updateGlobalDevicesReference);
+exposeCoreRuntimeConstant('setLanguage', setLanguage);
+exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
+exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
+exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
+exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
+exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
+exposeCoreRuntimeConstant('iconGlyph', iconGlyph);
+exposeCoreRuntimeConstant('resolveIconGlyph', resolveIconGlyph);
+exposeCoreRuntimeConstant('applyIconGlyph', applyIconGlyph);
+exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
+exposeCoreRuntimeConstant('formatSvgCoordinate', formatSvgCoordinate);
+const CORE_RUNTIME_CONSTANTS = {
+  CORE_GLOBAL_SCOPE,
+  CORE_BOOT_QUEUE_KEY,
+  CORE_BOOT_QUEUE,
+  CORE_SHARED,
+  INSTALL_BANNER_DISMISSED_KEY,
+  AUTO_GEAR_ANY_MOTOR_TOKEN,
+  AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE,
+  AUTO_GEAR_BACKUP_RETENTION_MAX,
+  AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+  AUTO_GEAR_MONITOR_DEFAULT_TYPES,
+  GEAR_LIST_CATEGORIES,
+  TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
+  TEMPERATURE_UNITS: CORE_TEMPERATURE_UNITS,
+  TEMPERATURE_SCENARIOS,
+  FOCUS_SCALE_STORAGE_KEY,
+  FOCUS_SCALE_VALUES: focusScaleValues,
+  FEEDBACK_TEMPERATURE_MIN: globalThis.FEEDBACK_TEMPERATURE_MIN_VALUE,
+  FEEDBACK_TEMPERATURE_MAX: globalThis.FEEDBACK_TEMPERATURE_MAX_VALUE,
+};
+
+// Ensure mount voltage helpers remain reachable from the session layer.
+Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
+
+
+
+exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
+
+exposeCoreRuntimeBindings({
+  updatePowerSummary: updatePowerSummary,
+  drawPowerDiagram: drawPowerDiagram,
+  safeGenerateConnectorSummary: {
+    get: () => sessionSafeGenerateConnectorSummary,
+    set: value => {
+      if (typeof value === 'function') {
+        sessionSafeGenerateConnectorSummary = value;
+      }
+    },
+  },
+  baseAutoGearRules: {
+    get: () => baseAutoGearRulesState,
+    set: value => {
+      if (Array.isArray(value)) {
+        baseAutoGearRulesState = value;
+      }
+    },
+  },
+  autoGearAutoPresetId: {
+    get: () => autoGearAutoPresetIdState,
+    set: value => {
+      if (typeof value === 'string') {
+        autoGearAutoPresetIdState = value;
+      } else if (value === null || typeof value === 'undefined') {
+        autoGearAutoPresetIdState = '';
+      }
+    },
+  },
+  autoGearScenarioModeSelect: {
+    get: () => autoGearScenarioModeSelectElement,
+    set: value => {
+      autoGearScenarioModeSelectElement = value || null;
+      setAutoGearScenarioModeSelectElementRef(autoGearScenarioModeSelectElement);
+    },
+  },
+  pinkModeIconRotationTimer: {
+    get: () =>
+      typeof getPinkModeIconRotationTimer === 'function'
+        ? getPinkModeIconRotationTimer()
+        : null,
+    set: value => {
+      if (typeof setPinkModeIconRotationTimer === 'function') {
+        setPinkModeIconRotationTimer(value);
+      }
+    },
+  },
+  pinkModeIconIndex: {
+    get: () =>
+      typeof getPinkModeIconIndex === 'function'
+        ? getPinkModeIconIndex()
+        : 0,
+    set: value => {
+      if (typeof setPinkModeIconIndex === 'function') {
+        setPinkModeIconIndex(value);
+      }
+    },
+  },
+});
+scheduleLayoutInitialization();
+
+
 

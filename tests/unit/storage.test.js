@@ -304,6 +304,7 @@ describe('device data storage', () => {
       accessories: {
         chargers: {},
         cages: {},
+        cardReaders: {},
         powerPlates: {},
         cameraSupport: {},
         matteboxes: {},
@@ -534,7 +535,7 @@ describe('setup storage', () => {
   });
 
   test('saveSetups stores JSON', () => {
-    const setups = {A: {foo: 1}};
+    const setups = { A: { foo: 1 } };
     saveSetups(setups);
     expect(getDecodedLocalStorageItem(SETUP_KEY)).toBe(JSON.stringify(setups));
   });
@@ -544,7 +545,7 @@ describe('setup storage', () => {
   });
 
   test('loadSetups returns parsed object when present', () => {
-    const setups = {A: {foo: 1}};
+    const setups = { A: { foo: 1 } };
     localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
     expect(loadSetups()).toEqual(setups);
   });
@@ -624,7 +625,9 @@ describe('setup storage', () => {
     const cycleEntry = { label: 'Cycle Entry' };
     cycleEntry.self = cycleEntry;
 
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
     saveSetups({ [cycleKey]: cycleEntry });
+    warnSpy.mockRestore();
 
     const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored).toHaveProperty(cycleKey);
@@ -749,7 +752,7 @@ describe('setup storage', () => {
   });
 
   test('saveSetups logs when duplicate auto backups are trimmed without losing the newest copy', () => {
-    const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
+    const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
 
     const setups = {};
     for (let index = 0; index < 140; index += 1) {
@@ -833,73 +836,73 @@ describe('setup storage', () => {
   });
 
   test('saveSetup adds and persists single setup', () => {
-    const initial = {A: {foo: 1}};
+    const initial = { A: { foo: 1 } };
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));
-    saveSetup('B', {bar: 2});
+    saveSetup('B', { bar: 2 });
     const result = parseLocalStorageJSON(SETUP_KEY);
-    expect(result).toEqual({A:{foo:1}, B:{bar:2}});
+    expect(result).toEqual({ A: { foo: 1 }, B: { bar: 2 } });
   });
 
   test('loadSetup retrieves named setup', () => {
-    const setups = {A:{foo:1}};
+    const setups = { A: { foo: 1 } };
     localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-    expect(loadSetup('A')).toEqual({foo:1});
+    expect(loadSetup('A')).toEqual({ foo: 1 });
   });
 
-    test('deleteSetup removes named setup', () => {
-      const setups = {A:{foo:1}, B:{bar:2}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      deleteSetup('A');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({B:{bar:2}});
-    });
-
-    test('renameSetup renames setup to a new unique name', () => {
-      const setups = {A:{foo:1}, B:{bar:2}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      const newName = renameSetup('A', 'C');
-      expect(newName).toBe('C');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({C:{foo:1}, B:{bar:2}});
-    });
-
-    test('renameSetup appends suffix when target exists', () => {
-      const setups = {A:{foo:1}, C:{bar:2}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      const newName = renameSetup('A', 'C');
-      expect(newName).toBe('C (2)');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({'C (2)':{foo:1}, C:{bar:2}});
-    });
-
-    test('renameSetup ignores case and whitespace when name unchanged', () => {
-      const setups = {A:{foo:1}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      const newName = renameSetup('A', ' a ');
-      expect(newName).toBe('A');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
-    });
-
-    test('renameSetup prevents case-insensitive duplicates', () => {
-      const setups = {A:{foo:1}, B:{bar:2}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      const newName = renameSetup('B', ' a ');
-      expect(newName).toBe('a (2)');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}, 'a (2)':{bar:2}});
-    });
-
-    test('renameSetup returns null when original missing', () => {
-      localStorage.setItem(SETUP_KEY, JSON.stringify({A:{foo:1}}));
-      const result = renameSetup('B', 'C');
-      expect(result).toBeNull();
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
-    });
-
-    test('renameSetup ignores empty new name', () => {
-      const setups = {A:{foo:1}};
-      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-      const newName = renameSetup('A', '   ');
-      expect(newName).toBe('A');
-      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
-    });
+  test('deleteSetup removes named setup', () => {
+    const setups = { A: { foo: 1 }, B: { bar: 2 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    deleteSetup('A');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ B: { bar: 2 } });
   });
+
+  test('renameSetup renames setup to a new unique name', () => {
+    const setups = { A: { foo: 1 }, B: { bar: 2 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    const newName = renameSetup('A', 'C');
+    expect(newName).toBe('C');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ C: { foo: 1 }, B: { bar: 2 } });
+  });
+
+  test('renameSetup appends suffix when target exists', () => {
+    const setups = { A: { foo: 1 }, C: { bar: 2 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    const newName = renameSetup('A', 'C');
+    expect(newName).toBe('C (2)');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ 'C (2)': { foo: 1 }, C: { bar: 2 } });
+  });
+
+  test('renameSetup ignores case and whitespace when name unchanged', () => {
+    const setups = { A: { foo: 1 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    const newName = renameSetup('A', ' a ');
+    expect(newName).toBe('A');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { foo: 1 } });
+  });
+
+  test('renameSetup prevents case-insensitive duplicates', () => {
+    const setups = { A: { foo: 1 }, B: { bar: 2 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    const newName = renameSetup('B', ' a ');
+    expect(newName).toBe('a (2)');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { foo: 1 }, 'a (2)': { bar: 2 } });
+  });
+
+  test('renameSetup returns null when original missing', () => {
+    localStorage.setItem(SETUP_KEY, JSON.stringify({ A: { foo: 1 } }));
+    const result = renameSetup('B', 'C');
+    expect(result).toBeNull();
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { foo: 1 } });
+  });
+
+  test('renameSetup ignores empty new name', () => {
+    const setups = { A: { foo: 1 } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+    const newName = renameSetup('A', '   ');
+    expect(newName).toBe('A');
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { foo: 1 } });
+  });
+});
 
 describe('session state storage', () => {
   beforeEach(() => {
@@ -1036,7 +1039,7 @@ describe('feedback storage', () => {
   test('loadFeedback returns empty object for non-object data', () => {
     localStorage.setItem(FEEDBACK_KEY, JSON.stringify(5));
     expect(loadFeedback()).toEqual({});
-    localStorage.setItem(FEEDBACK_KEY, JSON.stringify([ { runtime: '1h' } ]));
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify([{ runtime: '1h' }]));
     expect(loadFeedback()).toEqual({});
   });
 });
@@ -1177,7 +1180,8 @@ describe('project storage', () => {
     };
     saveProject('Overwrite Demo', original);
 
-    jest.setSystemTime(new Date('2024-05-01T10:21:30Z'));
+    const now = new Date('2024-05-01T10:21:30Z');
+    jest.setSystemTime(now);
 
     const updated = {
       gearList: '<ul>Updated</ul>',
@@ -1186,10 +1190,20 @@ describe('project storage', () => {
     };
     saveProject('Overwrite Demo', updated);
 
+    const pad = (n) => String(n).padStart(2, '0');
+    const expectedTimestamp = [
+      now.getFullYear(),
+      pad(now.getMonth() + 1),
+      pad(now.getDate()),
+      pad(now.getHours()),
+      pad(now.getMinutes()),
+      pad(now.getSeconds()),
+    ].join('-');
+
     const stored = parseLocalStorageJSON(PROJECT_KEY);
     const backupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(backupKeys).toHaveLength(1);
-    expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
+    expect(backupKeys[0]).toBe(`auto-backup-${expectedTimestamp}-Overwrite Demo`);
     expectAutoBackupSnapshot(
       stored[backupKeys[0]],
       withGenerationFlag({
@@ -1780,7 +1794,7 @@ describe('automatic gear storage', () => {
           return originalSetItem.call(this, key, value);
         };
 
-        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
         const storedBackups = isolatedSaveAutoGearBackups(backups);
         const storedRaw = localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY);
         const stored = storedRaw === null || storedRaw === undefined
@@ -1872,7 +1886,7 @@ describe('automatic gear storage', () => {
           return originalSetItem.call(this, key, value);
         };
 
-        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
         const storedBackups = saveAutoGearBackups([]);
 
@@ -1965,7 +1979,7 @@ describe('automatic gear storage', () => {
           return originalSetItem.call(this, key, value);
         };
 
-        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
         const storedBackups = saveAutoGearBackups([]);
 
@@ -2234,7 +2248,7 @@ describe('export/import all data', () => {
         { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
       ]),
     );
-    const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [], enabled: true }];
     saveAutoGearRules(rules);
     const backups = [
       {
@@ -2278,7 +2292,9 @@ describe('export/import all data', () => {
       autoGearAutoPresetId: 'preset-auto',
       autoGearBackupRetention: 20,
       autoGearShowBackups: true,
+      contacts: [],
       fullBackupHistory: [],
+      ownGear: [],
       preferences: {
         darkMode: true,
         pinkMode: true,
@@ -2431,33 +2447,33 @@ describe('export/import all data', () => {
         { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
       ],
       autoGearSeeded: true,
-        autoGearPresets: [
-          { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
-        ],
-        autoGearActivePresetId: 'preset-restore',
-        autoGearAutoPresetId: 'preset-restore',
-        autoGearBackupRetention: 18,
-        autoGearShowBackups: true,
-        preferences: {
-          darkMode: true,
-          pinkMode: false,
-          highContrast: true,
-          reduceMotion: false,
-          relaxedSpacing: true,
-          showAutoBackups: true,
-          accentColor: '#00ff00',
-          fontSize: '20',
-          fontFamily: "'Other Font', serif",
-          language: 'fr',
-          iosPwaHelpShown: true,
-          temperatureUnit: 'fahrenheit',
-        },
-        customLogo: 'data:image/svg+xml;base64,PE1PQ0s+',
-        customFonts: [
-          { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
-        ],
-      };
-      importAllData(data);
+      autoGearPresets: [
+        { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
+      ],
+      autoGearActivePresetId: 'preset-restore',
+      autoGearAutoPresetId: 'preset-restore',
+      autoGearBackupRetention: 18,
+      autoGearShowBackups: true,
+      preferences: {
+        darkMode: true,
+        pinkMode: false,
+        highContrast: true,
+        reduceMotion: false,
+        relaxedSpacing: true,
+        showAutoBackups: true,
+        accentColor: '#00ff00',
+        fontSize: '20',
+        fontFamily: "'Other Font', serif",
+        language: 'fr',
+        iosPwaHelpShown: true,
+        temperatureUnit: 'fahrenheit',
+      },
+      customLogo: 'data:image/svg+xml;base64,PE1PQ0s+',
+      customFonts: [
+        { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
+      ],
+    };
+    importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
     expect(loadSetups()).toEqual({ A: { foo: 1 } });
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
@@ -2467,24 +2483,24 @@ describe('export/import all data', () => {
     expect(loadFavorites()).toEqual({ cat: ['B'] });
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
-      expect(loadAutoGearSeedFlag()).toBe(true);
+    expect(loadAutoGearSeedFlag()).toBe(true);
     expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
     expect(loadAutoGearActivePresetId()).toBe('preset-restore');
     expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
     expect(loadAutoGearBackupRetention()).toBe(18);
-      expect(loadAutoGearBackupVisibility()).toBe(true);
-      expect(getDecodedLocalStorageItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
-      expect(getDecodedLocalStorageItem('darkMode')).toBe('true');
-      expect(getDecodedLocalStorageItem('pinkMode')).toBe('false');
-      expect(getDecodedLocalStorageItem('highContrast')).toBe('true');
-      expect(getDecodedLocalStorageItem('reduceMotion')).toBe('false');
-      expect(getDecodedLocalStorageItem('relaxedSpacing')).toBe('true');
-      expect(getDecodedLocalStorageItem('showAutoBackups')).toBe('true');
-      expect(getDecodedLocalStorageItem('accentColor')).toBe('#00ff00');
-      expect(getDecodedLocalStorageItem('fontSize')).toBe('20');
-      expect(getDecodedLocalStorageItem('fontFamily')).toBe("'Other Font', serif");
-      expect(getDecodedLocalStorageItem('language')).toBe('fr');
-      expect(getDecodedLocalStorageItem('iosPwaHelpShown')).toBe('true');
+    expect(loadAutoGearBackupVisibility()).toBe(true);
+    expect(getDecodedLocalStorageItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
+    expect(getDecodedLocalStorageItem('darkMode')).toBe('true');
+    expect(getDecodedLocalStorageItem('pinkMode')).toBe('false');
+    expect(getDecodedLocalStorageItem('highContrast')).toBe('true');
+    expect(getDecodedLocalStorageItem('reduceMotion')).toBe('false');
+    expect(getDecodedLocalStorageItem('relaxedSpacing')).toBe('true');
+    expect(getDecodedLocalStorageItem('showAutoBackups')).toBe('true');
+    expect(getDecodedLocalStorageItem('accentColor')).toBe('#00ff00');
+    expect(getDecodedLocalStorageItem('fontSize')).toBe('20');
+    expect(getDecodedLocalStorageItem('fontFamily')).toBe("'Other Font', serif");
+    expect(getDecodedLocalStorageItem('language')).toBe('fr');
+    expect(getDecodedLocalStorageItem('iosPwaHelpShown')).toBe('true');
     expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
     expect(parseLocalStorageJSON('cameraPowerPlanner_customFonts')).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
@@ -2568,7 +2584,7 @@ describe('export/import all data', () => {
     expect(loadProject('Snapshot')).toEqual(withGenerationFlag({ gearList: '<p>Snapshot</p>', projectInfo: null }));
 
     expect(loadAutoGearRules()).toEqual([
-      { id: 'snap-rule', label: 'Snap', scenarios: [], add: [], remove: [] },
+      { id: 'snap-rule', label: 'Snap', scenarios: [], add: [], remove: [], enabled: true },
     ]);
     expect(loadAutoGearBackups()).toEqual([
       { id: 'snap-backup', label: 'Snapshot backup', createdAt: 123, rules: [] },
@@ -2974,7 +2990,7 @@ describe('export/import all data', () => {
     });
 
     expect(loadAutoGearRules()).toEqual([
-      { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [] },
+      { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [], enabled: true },
     ]);
     expect(loadAutoGearBackups()).toEqual([
       { id: 'map-backup', label: 'Map backup', createdAt: 789, rules: [] },
@@ -3098,7 +3114,7 @@ describe('full backup history storage', () => {
 
   test('saveFullBackupHistory preserves existing history when payload normalizes to empty', () => {
     saveFullBackupHistory([{ createdAt: '2024-07-04T10:20:30Z', fileName: 'primary.json' }]);
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
     saveFullBackupHistory([
       { createdAt: '   ' },
