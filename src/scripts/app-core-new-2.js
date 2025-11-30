@@ -9212,6 +9212,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date)
         ? fullBackupInfo.date
         : null;
+      const storageSummaryList = document.getElementById('storageSummaryList');
 
       const connectivityState = typeof window !== 'undefined' && window && typeof window.cineConnectivityStatus === 'object'
         ? window.cineConnectivityStatus
@@ -9400,6 +9401,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function updateStorageSummary() {
+      const storageSummaryList = document.getElementById('storageSummaryList');
       if (!storageSummaryList) return;
       while (storageSummaryList.firstChild) {
         storageSummaryList.removeChild(storageSummaryList.firstChild);

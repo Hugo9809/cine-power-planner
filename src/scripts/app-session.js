@@ -10716,9 +10716,9 @@ const loggingNamespaceFilterEl = typeof document !== 'undefined'
 const loggingNamespaceHelpEl = typeof document !== 'undefined'
   ? document.getElementById('loggingNamespaceFilterHelp')
   : null;
-const loggingExportButton = typeof document !== 'undefined'
-  ? document.getElementById('loggingExportBtn')
-  : null;
+// const loggingExportButton = typeof document !== 'undefined'
+//   ? document.getElementById('loggingExportBtn')
+//   : null;
 const loggingHistoryLimitInput = typeof document !== 'undefined'
   ? document.getElementById('loggingHistoryLimit')
   : null;
@@ -10736,6 +10736,14 @@ const loggingCaptureErrorsInput = typeof document !== 'undefined'
   : null;
 const loggingPersistSessionInput = typeof document !== 'undefined'
   ? document.getElementById('loggingPersistSession')
+  : null;
+
+const storagePersistenceRequestButton = typeof document !== 'undefined'
+  ? document.getElementById('storagePersistenceRequestBtn')
+  : null;
+
+const sessionLoggingExportButton = typeof document !== 'undefined'
+  ? document.getElementById('loggingExportBtn')
   : null;
 
 const storagePersistenceState = {
@@ -10970,7 +10978,7 @@ function setLoggingControlsDisabled(disabled) {
     loggingCaptureConsoleInput,
     loggingCaptureErrorsInput,
     loggingPersistSessionInput,
-    loggingExportButton,
+    sessionLoggingExportButton,
   ];
   inputs.forEach(input => {
     if (!input) return;
@@ -11147,10 +11155,10 @@ function exportLoggingHistory() {
     || (fallbackTexts && fallbackTexts.loggingExportSuccess)
     || 'Diagnostics log exported.';
 
-  const shouldRestoreDisabled = loggingExportButton && !loggingExportButton.disabled;
-  if (loggingExportButton) {
-    loggingExportButton.disabled = true;
-    loggingExportButton.setAttribute('aria-disabled', 'true');
+  const shouldRestoreDisabled = sessionLoggingExportButton && !sessionLoggingExportButton.disabled;
+  if (sessionLoggingExportButton) {
+    sessionLoggingExportButton.disabled = true;
+    sessionLoggingExportButton.setAttribute('aria-disabled', 'true');
   }
 
   try {
@@ -11289,9 +11297,9 @@ function exportLoggingHistory() {
     setLoggingStatusKey('loggingStatusExportFailed');
     scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
   } finally {
-    if (loggingExportButton && shouldRestoreDisabled) {
-      loggingExportButton.disabled = false;
-      loggingExportButton.setAttribute('aria-disabled', 'false');
+    if (sessionLoggingExportButton && shouldRestoreDisabled) {
+      sessionLoggingExportButton.disabled = false;
+      sessionLoggingExportButton.setAttribute('aria-disabled', 'false');
     }
   }
 }
@@ -11769,8 +11777,8 @@ function initializeLoggingPanel() {
   registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
   registerToggleHandler(loggingPersistSessionInput, 'persistSession');
 
-  if (loggingExportButton) {
-    loggingExportButton.addEventListener('click', () => {
+  if (sessionLoggingExportButton) {
+    sessionLoggingExportButton.addEventListener('click', () => {
       exportLoggingHistory();
     });
   }
