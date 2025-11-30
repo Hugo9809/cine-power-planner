@@ -9074,7 +9074,7 @@
       ...normalizedOptions,
       disableCompression,
       forceCompressionOnQuota: true,
-      onQuotaExceeded: (error, context = {}) => {
+      onQuotaExceeded: () => {
         // If we hit a quota limit while saving the session, try to clear out
         // old auto-backups or other non-essential data to make room.
 

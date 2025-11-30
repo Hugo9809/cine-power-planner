@@ -3619,7 +3619,7 @@ function resolveOwnGearFeatureModuleForEditor() {
     }
   }
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-  if (scope && _typeof(scope.cineFeaturesOwnGear) === 'object' && scope.cineFeaturesOwnGear) {
+  if (scope && typeof scope.cineFeaturesOwnGear !== 'undefined') {
     return scope.cineFeaturesOwnGear;
   }
   if ((typeof cineFeaturesOwnGear === "undefined" ? "undefined" : _typeof(cineFeaturesOwnGear)) === 'object' && cineFeaturesOwnGear) {
@@ -14593,4 +14593,9 @@ if (typeof document !== 'undefined') {
     refreshAllCameraLinkIndicators();
     refreshGearItemEditCameraLinkOptionsIfOpen();
   });
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.saveCurrentGearList = saveCurrentGearList;
+  globalThis.doesProjectNameExist = doesProjectNameExist;
+  globalThis.resolveProjectStorageNameCollision = resolveProjectStorageNameCollision;
 }

@@ -5740,6 +5740,7 @@
     const normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
     const matchesAvatarChangeLabel = (value) => {
       if (!value) {
+        return false;
       }
       return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
     };

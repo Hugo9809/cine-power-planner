@@ -4068,6 +4068,7 @@ function resolveOwnGearFeatureModuleForEditor() {
     || (typeof global !== 'undefined' && global)
     || null;
   if (scope && typeof scope.cineFeaturesOwnGear !== 'undefined') {
+    return scope.cineFeaturesOwnGear;
   }
   if (typeof cineFeaturesOwnGear === 'object' && cineFeaturesOwnGear) {
     return cineFeaturesOwnGear;

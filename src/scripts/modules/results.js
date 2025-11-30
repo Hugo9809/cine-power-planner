@@ -3917,6 +3917,15 @@
         safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
       }
     }
+
+    var refreshGearListIfVisibleFn = resolveFunctionDependency('refreshGearListIfVisible');
+    if (refreshGearListIfVisibleFn) {
+      try {
+        refreshGearListIfVisibleFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not refresh gear list.', error);
+      }
+    }
   }
 
 

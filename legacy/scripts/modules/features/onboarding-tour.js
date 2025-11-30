@@ -970,112 +970,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
-  function createAnyFieldCompletionRequirement(selectors, predicate, events) {
-    var normalizedSelectors = Array.isArray(selectors) ? selectors.slice() : [selectors];
-    var eventList = Array.isArray(events) && events.length ? events : ['change', 'input'];
-    var evaluator = typeof predicate === 'function' ? predicate : function (value) {
-      return Boolean(value && value !== 'None');
-    };
-    return {
-      check: function check() {
-        var elementFound = false;
-        for (var index = 0; index < normalizedSelectors.length; index += 1) {
-          var selector = normalizedSelectors[index];
-          if (!selector) {
-            continue;
-          }
-          var element = getElement(selector);
-          if (!element) {
-            continue;
-          }
-          elementFound = true;
-          try {
-            if (evaluator(getFieldValue(element), element)) {
-              return true;
-            }
-          } catch (error) {
-            safeWarn('cine.features.onboardingTour could not evaluate multi-field requirement.', error);
-          }
-        }
-        return !elementFound;
-      },
-      attach: function attach(context) {
-        var removers = [];
-        var elementFound = false;
-        var evaluate = function evaluate() {
-          var matches = false;
-          for (var index = 0; index < normalizedSelectors.length; index += 1) {
-            var selector = normalizedSelectors[index];
-            if (!selector) {
-              continue;
-            }
-            var element = getElement(selector);
-            if (!element) {
-              continue;
-            }
-            elementFound = true;
-            try {
-              if (evaluator(getFieldValue(element), element)) {
-                matches = true;
-                break;
-              }
-            } catch (error) {
-              safeWarn('cine.features.onboardingTour could not evaluate multi-field change.', error);
-            }
-          }
-          if (!elementFound) {
-            matches = true;
-          }
-          if (matches) {
-            if (typeof context.complete === 'function') {
-              context.complete();
-            }
-          } else if (typeof context.incomplete === 'function') {
-            context.incomplete();
-          }
-        };
-        var _loop = function _loop() {
-            var selector = normalizedSelectors[index];
-            if (!selector) {
-              return 0;
-            }
-            var element = getElement(selector);
-            if (!element) {
-              return 0;
-            }
-            elementFound = true;
-            var handler = function handler() {
-              evaluate();
-            };
-            var _loop2 = function _loop2() {
-              var eventName = eventList[eventIndex];
-              element.addEventListener(eventName, handler);
-              removers.push(function () {
-                element.removeEventListener(eventName, handler);
-              });
-            };
-            for (var eventIndex = 0; eventIndex < eventList.length; eventIndex += 1) {
-              _loop2();
-            }
-          },
-          _ret;
-        for (var index = 0; index < normalizedSelectors.length; index += 1) {
-          _ret = _loop();
-          if (_ret === 0) continue;
-        }
-        evaluate();
-        return function () {
-          for (var _index2 = 0; _index2 < removers.length; _index2 += 1) {
-            try {
-              removers[_index2]();
-            } catch (error) {
-              safeWarn('cine.features.onboardingTour could not detach multi-field requirement.', error);
-            }
-          }
-        };
-      }
-    };
-  }
   function createClickCompletionRequirement(selectors, options) {
     var normalized = Array.isArray(selectors) ? selectors.slice() : [selectors];
     var eventName = options && typeof options.eventName === 'string' && options.eventName ? options.eventName : 'click';
@@ -1095,7 +989,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       attach: function attach(context) {
         var removers = [];
         var elementFound = false;
-        var _loop3 = function _loop3() {
+        var _loop = function _loop() {
           var selector = normalized[index];
           var node = getElement(selector);
           if (!node) {
@@ -1113,7 +1007,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           });
         };
         for (var index = 0; index < normalized.length; index += 1) {
-          if (_loop3()) continue;
+          if (_loop()) continue;
         }
         if (evaluate) {
           var matches = false;
@@ -1132,9 +1026,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           context.complete();
         }
         return function () {
-          for (var _index3 = 0; _index3 < removers.length; _index3 += 1) {
+          for (var _index2 = 0; _index2 < removers.length; _index2 += 1) {
             try {
-              removers[_index3]();
+              removers[_index2]();
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
             }
@@ -1562,7 +1456,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var containers = ['#crewContainer', '#prepContainer', '#shootContainer', '#returnContainer'];
         var addButtons = ['#addPersonBtn', '#addPrepBtn', '#addShootBtn', '#addReturnBtn'];
         var removers = [];
-        var _loop4 = function _loop4() {
+        var _loop2 = function _loop2() {
           var container = getElement(containers[index]);
           if (!container) {
             return 1;
@@ -1596,10 +1490,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         };
         for (var index = 0; index < containers.length; index += 1) {
-          if (_loop4()) continue;
+          if (_loop2()) continue;
         }
-        var _loop5 = function _loop5() {
-          var button = getElement(addButtons[_index4]);
+        var _loop3 = function _loop3() {
+          var button = getElement(addButtons[_index3]);
           if (!button) {
             return 1;
           }
@@ -1611,14 +1505,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             button.removeEventListener('click', handleClick);
           });
         };
-        for (var _index4 = 0; _index4 < addButtons.length; _index4 += 1) {
-          if (_loop5()) continue;
+        for (var _index3 = 0; _index3 < addButtons.length; _index3 += 1) {
+          if (_loop3()) continue;
         }
         evaluateAndDispatch();
         return function () {
-          for (var _index5 = 0; _index5 < removers.length; _index5 += 1) {
+          for (var _index4 = 0; _index4 < removers.length; _index4 += 1) {
             try {
-              removers[_index5]();
+              removers[_index4]();
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not detach crew requirement listener.', error);
             }
@@ -2232,8 +2126,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       void error;
     }
-    for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
-      var candidate = candidates[_index6];
+    for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
+      var candidate = candidates[_index5];
       if (candidate && Object.prototype.hasOwnProperty.call(availableTexts, candidate)) {
         return candidate;
       }
@@ -4406,22 +4300,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var highlightSelectors = toSelectorArray(step.highlight);
-    for (var _index7 = 0; _index7 < highlightSelectors.length; _index7 += 1) {
-      var _selector = highlightSelectors[_index7];
+    for (var _index6 = 0; _index6 < highlightSelectors.length; _index6 += 1) {
+      var _selector = highlightSelectors[_index6];
       if (selectors.indexOf(_selector) === -1) {
         selectors.push(_selector);
       }
     }
     var alternateSelectors = toSelectorArray(step.alternateHighlight);
-    for (var _index8 = 0; _index8 < alternateSelectors.length; _index8 += 1) {
-      var _selector2 = alternateSelectors[_index8];
+    for (var _index7 = 0; _index7 < alternateSelectors.length; _index7 += 1) {
+      var _selector2 = alternateSelectors[_index7];
       if (selectors.indexOf(_selector2) === -1) {
         selectors.push(_selector2);
       }
     }
     var target = null;
-    for (var _index9 = 0; _index9 < selectors.length; _index9 += 1) {
-      var _selector3 = selectors[_index9];
+    for (var _index8 = 0; _index8 < selectors.length; _index8 += 1) {
+      var _selector3 = selectors[_index8];
       if (!_selector3) {
         continue;
       }
@@ -4653,8 +4547,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sourceOptions = source && source.options ? Array.from(source.options) : [];
       if (sourceOptions.length) {
-        for (var _index0 = 0; _index0 < sourceOptions.length; _index0 += 1) {
-          languageProxy.appendChild(sourceOptions[_index0].cloneNode(true));
+        for (var _index9 = 0; _index9 < sourceOptions.length; _index9 += 1) {
+          languageProxy.appendChild(sourceOptions[_index9].cloneNode(true));
         }
       } else if (typeof source.value === 'string') {
         var option = DOCUMENT.createElement('option');
@@ -4667,8 +4561,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var getActiveLanguageValue = function getActiveLanguageValue() {
-      for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
-        var target = languageTargets[_index1];
+      for (var _index0 = 0; _index0 < languageTargets.length; _index0 += 1) {
+        var target = languageTargets[_index0];
         if (target && typeof target.value === 'string' && target.value) {
           return target.value;
         }
@@ -4726,10 +4620,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var preserveValue = languageProxy.value;
       languageProxy.textContent = '';
       var options = resolveFallbackLanguageOptions();
-      for (var _index10 = 0; _index10 < options.length; _index10 += 1) {
+      for (var _index1 = 0; _index1 < options.length; _index1 += 1) {
         var option = DOCUMENT.createElement('option');
-        option.value = options[_index10].value;
-        option.textContent = options[_index10].label;
+        option.value = options[_index1].value;
+        option.textContent = options[_index1].label;
         languageProxy.appendChild(option);
       }
       var active = preserveValue || resolveLanguage();
@@ -4740,8 +4634,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var handleLanguageProxyChange = function handleLanguageProxyChange() {
       var value = languageProxy.value;
       var applied = applyLanguagePreference(value);
-      for (var _index11 = 0; _index11 < languageTargets.length; _index11 += 1) {
-        var target = languageTargets[_index11];
+      for (var _index10 = 0; _index10 < languageTargets.length; _index10 += 1) {
+        var target = languageTargets[_index10];
         if (!target) {
           continue;
         }
@@ -5022,7 +4916,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }();
     var normalizedAvatarAction = rawAvatarActionLabel ? rawAvatarActionLabel.trim() : '';
     var matchesAvatarChangeLabel = function matchesAvatarChangeLabel(value) {
-      if (!value) {}
+      if (!value) {
+        return false;
+      }
       return avatarChangeLabel && value.toLowerCase() === avatarChangeLabel.toLowerCase();
     };
     var resolveAvatarActionLabel = function resolveAvatarActionLabel(hasPhoto) {
@@ -5124,6 +5020,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
+    var avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-avatar-action';
+    avatarAction.textContent = resolveAvatarActionLabel(false);
     var handleAvatarActionClick = function handleAvatarActionClick() {
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {
@@ -5572,8 +5472,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         _option2.textContent = focusScaleSelect.value || 'Metric';
         proxyFocus.appendChild(_option2);
       } else {
-        for (var _index12 = 0; _index12 < focusOptions.length; _index12 += 1) {
-          var _source = focusOptions[_index12];
+        for (var _index11 = 0; _index11 < focusOptions.length; _index11 += 1) {
+          var _source = focusOptions[_index11];
           var _option3 = DOCUMENT.createElement('option');
           _option3.value = _source.value;
           _option3.textContent = _source.textContent || _source.value;
@@ -5623,8 +5523,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         _option4.textContent = tempUnitSelect.value || 'Celsius';
         proxyUnits.appendChild(_option4);
       } else {
-        for (var _index13 = 0; _index13 < unitOptions.length; _index13 += 1) {
-          var _source2 = unitOptions[_index13];
+        for (var _index12 = 0; _index12 < unitOptions.length; _index12 += 1) {
+          var _source2 = unitOptions[_index12];
           var _option5 = DOCUMENT.createElement('option');
           _option5.value = _source2.value;
           _option5.textContent = _source2.textContent || _source2.value;
@@ -6776,15 +6676,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focusableElements.push(element);
     };
     var cardFocusable = collectFocusableElements(cardEl);
-    for (var _index14 = 0; _index14 < cardFocusable.length; _index14 += 1) {
-      pushUnique(cardFocusable[_index14]);
+    for (var _index13 = 0; _index13 < cardFocusable.length; _index13 += 1) {
+      pushUnique(cardFocusable[_index13]);
     }
     if (Array.isArray(activeTargetElements)) {
       for (var targetIndex = 0; targetIndex < activeTargetElements.length; targetIndex += 1) {
         var _target = activeTargetElements[targetIndex];
         var targetFocusable = collectFocusableElements(_target, true);
-        for (var _index15 = 0; _index15 < targetFocusable.length; _index15 += 1) {
-          pushUnique(targetFocusable[_index15]);
+        for (var _index14 = 0; _index14 < targetFocusable.length; _index14 += 1) {
+          pushUnique(targetFocusable[_index14]);
         }
       }
     }
@@ -7045,8 +6945,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var seen = new Set();
     if (DOCUMENT && typeof DOCUMENT.querySelectorAll === 'function') {
       var candidates = DOCUMENT.querySelectorAll(HELP_TRIGGER_SELECTOR);
-      for (var _index16 = 0; _index16 < candidates.length; _index16 += 1) {
-        var _button = candidates[_index16];
+      for (var _index15 = 0; _index15 < candidates.length; _index15 += 1) {
+        var _button = candidates[_index15];
         if (!_button || typeof _button.addEventListener !== 'function') {
           continue;
         }
@@ -7213,8 +7113,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var message = template;
     var tokens = Object.keys(replacements);
-    for (var _index17 = 0; _index17 < tokens.length; _index17 += 1) {
-      var token = tokens[_index17];
+    for (var _index16 = 0; _index16 < tokens.length; _index16 += 1) {
+      var token = tokens[_index16];
       message = message.split(token).join(replacements[token]);
     }
     var progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);

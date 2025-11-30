@@ -778,7 +778,7 @@ function shouldBypassCache(request, requestUrl) {
       if (referrerUrl.searchParams.has('forceReload')) {
         return true;
       }
-    } catch (referrerError) {
+    } catch {
       // Ignore invalid referrer URLs
     }
   }

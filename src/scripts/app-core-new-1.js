@@ -136,7 +136,10 @@ const {
   fallbackRequireCoreRuntimeModule = function fallbackRequireCoreRuntimeModuleMissing() {
     return null;
   },
-  exposeCoreRuntimeConstant = function noopExposeCoreRuntimeConstant() { },
+  exposeCoreRuntimeConstant = function fallbackExposeCoreRuntimeConstant(name, value) {
+    if (typeof window !== 'undefined') window[name] = value;
+    if (typeof globalThis !== 'undefined') globalThis[name] = value;
+  },
   exposeCoreRuntimeConstants = function noopExposeCoreRuntimeConstants() { },
   CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue',
   CORE_BOOT_QUEUE: resolvedCoreBootQueue = defaultCoreBootQueue,
@@ -198,6 +201,25 @@ const TEMPERATURE_UNITS_FALLBACK = Object.freeze({
 
 const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+
+  // Moved from lower down to avoid TDZ issues
+  const {
+    normalizeVideoType,
+    normalizeFizConnectorType,
+    normalizeViewfinderType,
+    normalizePowerPortType,
+    fixPowerInput,
+    applyFixPowerInput,
+    ensureList,
+    markDevicesNormalized,
+    hasNormalizedDevicesMarker,
+    unifyDevices,
+    normalizeDevicesForPersistence
+  } = (typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : (typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization) || {});
+
+  if (typeof window !== 'undefined') {
+    window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+  }
 
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const scope = candidateScopes[index];
@@ -5074,13 +5096,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const runLayoutInitialization = () => {
+    var runLayoutInitialization = () => {
       initializeLayoutControls();
       initializeOwnGearManager();
       initializeContactsModule();
     };
 
-    const scheduleLayoutInitialization = () => {
+    var scheduleLayoutInitialization = () => {
       const invoke = () => {
         if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
           window.setTimeout(runLayoutInitialization, 0);
@@ -5283,7 +5305,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     saveDeviceData(deviceData);
   }
 
-  exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
+
 
   function loadSession() {
     return typeof loadSessionState === 'function' ? loadSessionState() : null;
@@ -5364,19 +5386,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open');
   }
 
-  const {
-    normalizeVideoType,
-    normalizeFizConnectorType,
-    normalizeViewfinderType,
-    normalizePowerPortType,
-    fixPowerInput,
-    applyFixPowerInput,
-    ensureList,
-    markDevicesNormalized,
-    hasNormalizedDevicesMarker,
-    unifyDevices,
-    normalizeDevicesForPersistence
-  } = (typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : (typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization) || {});
+  // normalizeDevicesForPersistence declaration moved to top of file to avoid TDZ
+  exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
 
 
 
@@ -11460,26 +11471,46 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
   // Reference elements (DOM Elements)
   var cameraSelect = document.getElementById("cameraSelect");
+  if (typeof window !== 'undefined') window.cameraSelect = cameraSelect;
+
   var monitorSelect = document.getElementById("monitorSelect");
+  if (typeof window !== 'undefined') window.monitorSelect = monitorSelect;
+
   var videoSelect = document.getElementById("videoSelect");
+  if (typeof window !== 'undefined') window.videoSelect = videoSelect;
+
   var videoDistributionSelect = document.getElementById("videoDistribution");
+  if (typeof window !== 'undefined') window.videoDistributionSelect = videoDistributionSelect;
+
   var cageSelect = document.getElementById("cageSelect");
+  if (typeof window !== 'undefined') window.cageSelect = cageSelect;
   var motorSelects = [
     document.getElementById("motor1Select"),
     document.getElementById("motor2Select"),
     document.getElementById("motor3Select"),
     document.getElementById("motor4Select")
   ];
+  if (typeof window !== 'undefined') window.motorSelects = motorSelects;
+
   var controllerSelects = [
     document.getElementById("controller1Select"),
     document.getElementById("controller2Select"),
     document.getElementById("controller3Select"),
     document.getElementById("controller4Select")
   ];
+  if (typeof window !== 'undefined') window.controllerSelects = controllerSelects;
+
   var distanceSelect = document.getElementById("distanceSelect");
+  if (typeof window !== 'undefined') window.distanceSelect = distanceSelect;
+
   var batterySelect = document.getElementById("batterySelect");
+  if (typeof window !== 'undefined') window.batterySelect = batterySelect;
+
   var hotswapSelect = document.getElementById("batteryHotswapSelect");
+  if (typeof window !== 'undefined') window.hotswapSelect = hotswapSelect;
+
   var lensSelect = document.getElementById("lenses");
+  if (typeof window !== 'undefined') window.lensSelect = lensSelect;
   var requiredScenariosSelect = document.getElementById("requiredScenarios");
   var requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
   var remoteHeadOption = requiredScenariosSelect ?
@@ -17083,6 +17114,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   exposeCoreRuntimeConstant('placeWattField', placeWattField);
+  if (typeof window !== 'undefined') window.placeWattField = placeWattField;
   var motorFieldsDiv = document.getElementById("motorFields");
   var motorConnectorInput = document.getElementById("motorConnector");
   var motorInternalInput = document.getElementById("motorInternal");

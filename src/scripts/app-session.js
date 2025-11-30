@@ -412,7 +412,7 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
     void sessionDeepCloneError;
   }
 }
-/* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
+/* global triggerPinkModeIconRain, loadDeviceData, loadSetups,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
@@ -4846,9 +4846,6 @@ function resetSelectsToNone(selects) {
 const _loadSession = (typeof window !== 'undefined' && typeof window.loadSession === 'function')
   ? window.loadSession
   : function loadSessionFallback() {
-    return typeof saveSessionState === 'function' ? loadSessionState() : null; // Note: loadSessionState might be the intended fallback? Or saveSessionState was a typo?
-    // Wait, line 4848 said `loadSessionState()`. Line 4855 said `saveSessionState(state)`.
-    // I will assume `loadSessionState` and `saveSessionState` are globals.
     return typeof loadSessionState === 'function' ? loadSessionState() : null;
   };
 

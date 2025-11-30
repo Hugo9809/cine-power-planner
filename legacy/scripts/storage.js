@@ -6848,7 +6848,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var _key4 = void 0;
         try {
           _key4 = storage.key(i);
-        } catch (e) {
+        } catch (_unused2) {
           continue;
         }
         if (!_key4 || skipSet.has(_key4)) continue;
@@ -7750,9 +7750,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var saveOptions = _objectSpread(_objectSpread({}, normalizedOptions), {}, {
       disableCompression: disableCompression,
       forceCompressionOnQuota: true,
-      onQuotaExceeded: function onQuotaExceeded(error) {
-        var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var storage = context && context.storage ? context.storage : safeStorage;
+      onQuotaExceeded: function onQuotaExceeded() {
         if (typeof removeOldestAutoGearBackupEntry === 'function') {
           var backups = loadAutoGearBackups();
           if (removeOldestAutoGearBackupEntry(backups)) {
@@ -13228,7 +13226,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       try {
         return JSON.parse(trimmed);
-      } catch (_unused2) {
+      } catch (_unused3) {
         return raw;
       }
     }

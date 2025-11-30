@@ -1,9 +1,5 @@
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-(function (_cameraData) {
-  var cameraData = (_cameraData = {
+(function () {
+  var cameraData = {
     "Arri Alexa Mini LF": {
       "powerDrawWatts": 89,
       "requiredImageCircleMm": 44.71,
@@ -6939,619 +6935,584 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       "sensorModes": ["Full Frame 3:2 Open Gate", "6K DCI 17:9", "6K 2.4:1", "Super 35 4:3", "4K DCI 17:9", "Super 16 16:9"],
       "resolutions": ["6048×4032", "4832×4032", "6048×3200", "6048×2520", "4096×3072", "4096×2160", "2112×1184", "1920×1080"],
       "frameRates": ["6K open gate: up to 36 fps", "6K 2.4:1: up to 60 fps", "4K DCI: up to 60 fps", "1080p: up to 120 fps"]
+    },
+    "Canon EOS R5 C": {
+      "powerDrawWatts": 13.3,
+      "requiredImageCircleMm": 43.27,
+      "power": {
+        "input": {
+          "voltageRange": "9-15",
+          "type": ["USB-C PD,DC Coupler"]
+        },
+        "batteryPlateSupport": [{
+          "type": "Canon LP-E6NH",
+          "mount": "native",
+          "notes": "Also accepts LP-E6N/LP-E6 packs"
+        }, {
+          "type": "DC Coupler (DR-E6C)",
+          "mount": "native",
+          "notes": "Used with CA-946 AC adapter"
+        }, {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires external plate feeding USB-C PD or coupler"
+        }],
+        "powerDistributionOutputs": []
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "CFexpress Type B",
+        "notes": "Slot 1"
+      }, {
+        "type": "SD Card",
+        "notes": "Slot 2 (UHS-II)"
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "RF",
+        "mount": "native",
+        "notes": ""
+      }],
+      "timecode": [],
+      "weight_g": 680,
+      "recordingCodecs": ["Cinema RAW Light (CRM) 12-bit", "XF-AVC (MXF) 4:2:2 10-bit (ALL-I/Long GOP)", "HEVC/H.265 4:2:2 10-bit / 4:2:0 10-bit", "H.264/AVC 4:2:0 8-bit"],
+      "sensorModes": ["Full-Frame 8K", "Super 35 (5.9K crop)", "Super 16 (2.9K crop)"],
+      "resolutions": ["8192×4320 (8K)", "5952×3140 (5.9K)", "2976×1570 (2.9K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "1920×1080 (HD)"],
+      "frameRates": ["8K Cinema RAW Light: up to 60 fps", "4K DCI/UHD: up to 120 fps", "2K/HD: up to 180 fps"]
+    },
+    "Blackmagic URSA Broadcast G2": {
+      "powerDrawWatts": 100,
+      "requiredImageCircleMm": 26.51,
+      "power": {
+        "input": {
+          "voltageRange": "12-20",
+          "type": ["XLR 4-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Integrated plate"
+        }, {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Optional accessory plate"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": null,
+          "notes": "Accessory power 1"
+        }, {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": null,
+          "notes": "Accessory power 2"
+        }, {
+          "type": "Hirose 12-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": null,
+          "notes": "Lens power/control connector"
+        }, {
+          "type": "USB-C",
+          "voltage": "5V",
+          "current": "1.5A",
+          "wattage": null,
+          "notes": "USB-C expansion port"
+        }]
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "CFast 2.0",
+        "notes": "Dual slots"
+      }, {
+        "type": "SD Card",
+        "notes": "Dual slots (UHS-II)"
+      }, {
+        "type": "USB-C SSD",
+        "notes": "External recording"
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "B4",
+        "mount": "native",
+        "notes": "Standard"
+      }, {
+        "type": "EF",
+        "mount": "included",
+        "notes": "Interchangeable"
+      }],
+      "timecode": [],
+      "weight_g": 3550,
+      "recordingCodecs": ["Blackmagic RAW", "Apple ProRes", "H.265/HEVC", "H.264/AVC"],
+      "sensorModes": ["6K film (digital film mode)", "UHD 4K video", "HD"],
+      "resolutions": ["3840×2160 (UHD)", "1920×1080 (HD)"],
+      "frameRates": ["6K BRAW: up to 50 fps", "UHD ProRes: up to 60 fps", "HD windowed: up to 120 fps"]
+    },
+    "Kinefinity MAVO Edge 6K": {
+      "powerDrawWatts": 32,
+      "requiredImageCircleMm": 43.27,
+      "power": {
+        "input": {
+          "voltageRange": "10.5-34",
+          "type": ["LEMO 2-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Hybrid plate accepts standard 14.8V packs"
+        }, {
+          "type": "BP-U",
+          "mount": "native",
+          "notes": "Supports GripBAT 4S batteries for compact builds"
+        }, {
+          "type": "NP-F",
+          "mount": "optional",
+          "notes": "GripBAT 2S via UPS baseplate can supply backup power"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "D-Tap",
+          "voltage": "14.8V",
+          "current": "",
+          "wattage": null,
+          "notes": "Unregulated output on camera body"
+        }, {
+          "type": "RS (LEMO 2-pin)",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Regulated 12V accessory rail"
+        }, {
+          "type": "Lens port (LEMO 7-pin)",
+          "voltage": "12V",
+          "current": "",
+          "wattage": null,
+          "notes": "Lens/control port with 12V accessory power"
+        }]
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "KineMAG Nano SSD",
+        "notes": "Dual slots (NVMe M.2)"
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "KineMOUNT",
+        "mount": "native",
+        "notes": "Adapts to PL/EF/E/LPL"
+      }],
+      "timecode": [],
+      "weight_g": 1600,
+      "recordingCodecs": ["Apple ProRes 422 LT/422/422 HQ", "Apple ProRes 4444/4444 XQ", "CinemaDNG (uncompressed RAW)"],
+      "sensorModes": ["Full-Frame 3:2 6K Open Gate", "FF 6K 2.4:1", "FF 5.7K 3:2", "S35/APS-C modes"],
+      "resolutions": ["6016×2520 (6K 2.4:1)", "5760×3700 (5.7K 3:2)", "5120×2700 (5K DCI)", "3840×2160 (UHD)"],
+      "frameRates": ["6K 3:2: up to 75 fps", "6K 17:9: up to 60 fps", "4K 17:9: up to 150 fps", "2K 17:9: up to 290 fps"]
+    },
+    "Z CAM E2-F6": {
+      "powerDrawWatts": 50,
+      "requiredImageCircleMm": 43.27,
+      "power": {
+        "input": {
+          "voltageRange": "12-16.8",
+          "notes": "DC input",
+          "type": ["LEMO 2-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "Sony NP-F (L-Series)",
+          "mount": "native",
+          "notes": "Integrated L-Series battery sled"
+        }, {
+          "type": "V-Mount",
+          "mount": "optional",
+          "notes": "Available via optional power module"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": null,
+          "notes": "Regulated accessory power output"
+        }]
+      },
+      "videoOutputs": [{
+        "type": "HDMI",
+        "notes": "4K up to 59.94p, 10-bit 4:2:2",
+        "version": "2.0 Type A"
+      }, {
+        "type": "12G-SDI",
+        "notes": "BNC, up to 4K60 10-bit 4:2:2"
+      }],
+      "fizConnectors": [{
+        "notes": "Remote control port",
+        "type": "2.5mm LANC"
+      }, {
+        "notes": "Dedicated accessory control port",
+        "type": "Serial CTRL"
+      }],
+      "recordingMedia": [{
+        "type": "CFast 2.0",
+        "notes": "Dual slots"
+      }, {
+        "type": "ZBlade",
+        "notes": "Optional NVMe media module"
+      }],
+      "viewfinder": [{
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "Included monitor powered via control cable",
+        "type": "5\" Touchscreen LCD"
+      }],
+      "lensMount": [{
+        "type": "EF",
+        "mount": "native",
+        "notes": "Optional adapters support M, MFT, PL, and LPL"
+      }],
+      "timecode": [{
+        "type": "BNC (TC/Genlock)",
+        "notes": "Shared LTC and tri-level sync input"
+      }],
+      "weight_g": 1090,
+      "recordingCodecs": ["ZRAW 12-bit", "Apple ProRes 422 Proxy", "Apple ProRes 422 LT", "Apple ProRes 422", "Apple ProRes 422 HQ", "H.265/HEVC", "H.264/AVC"],
+      "sensorModes": ["Full-Frame 6K Open Gate", "C6K", "6K 2.4:1", "6K UHD", "5K 4:3", "C5K", "4K UHD"],
+      "resolutions": ["6064×4040 (Open Gate)", "6064×3196 (C6K)", "6064×2560 (6K 2.4:1)", "5760×3240 (6K UHD)", "5376×4032 (5K 4:3)", "5120×2700 (C5K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "2112×1188 (S16 16:9)", "1920×1080 (FHD)"],
+      "frameRates": ["6K 17:9: up to 60 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
+    },
+    "Z CAM E2-F6 Pro / Mark II": {
+      "powerDrawWatts": 50,
+      "requiredImageCircleMm": 43.27,
+      "power": {
+        "input": {
+          "voltageRange": "12-18",
+          "type": ["LEMO 2-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Integrated 14.8V plate on Pro body"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "wattage": null,
+          "notes": "AUX DC output"
+        }]
+      },
+      "videoOutputs": [{
+        "type": "HDMI",
+        "notes": "4K up to 59.94p, 10-bit 4:2:2",
+        "version": "2.0 Type A"
+      }, {
+        "type": "12G-SDI",
+        "notes": "BNC, up to 4K60 10-bit 4:2:2"
+      }],
+      "fizConnectors": [{
+        "notes": "Remote control port",
+        "type": "2.5mm LANC"
+      }, {
+        "notes": "Dedicated accessory control port",
+        "type": "Serial CTRL"
+      }],
+      "recordingMedia": [{
+        "type": "CFast 2.0",
+        "notes": "Dual slots"
+      }, {
+        "type": "ZBlade",
+        "notes": "Optional NVMe media module"
+      }],
+      "viewfinder": [{
+        "resolution": "1920x1080",
+        "connector": "",
+        "notes": "Included monitor powered via control cable",
+        "type": "5\" Touchscreen LCD"
+      }],
+      "lensMount": [{
+        "type": "EF",
+        "mount": "native",
+        "notes": "Optional adapters support M, MFT, PL, and LPL"
+      }],
+      "timecode": [{
+        "type": "BNC (TC/Genlock)",
+        "notes": "Shared LTC and tri-level sync input"
+      }],
+      "weight_g": 1390,
+      "recordingCodecs": ["ProRes 422 Proxy", "ProRes 422 LT", "ProRes 422", "ProRes 422 HQ"],
+      "sensorModes": ["Full-Frame 6K Open Gate", "C6K", "6K 2.4:1", "6K UHD", "5K 4:3", "C5K", "4K UHD"],
+      "resolutions": ["6064×4040 (Open Gate)", "6064×3196 (C6K)", "6064×2560 (6K 2.4:1)", "5760×3240 (6K UHD)", "5376×4032 (5K 4:3)", "5120×2700 (C5K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "2112×1188 (S16 16:9)", "1920×1080 (FHD)"],
+      "frameRates": ["6K 17:9: up to 60 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
+    },
+    "RED DSMC2 MONSTRO 8K VV": {
+      "powerDrawWatts": 60,
+      "requiredImageCircleMm": 46.31,
+      "power": {
+        "input": {
+          "voltageRange": "11.5-32",
+          "type": ["LEMO 6-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        }, {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        }, {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "DC OUT from DSMC2 I/O expander"
+        }, {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "Aux PWR rail on expander"
+        }]
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "Interchangeable",
+        "mount": "native",
+        "notes": "PL/EF/Leica M/Nikon F supported"
+      }],
+      "timecode": [],
+      "weight_g": 1520,
+      "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes 422 HQ/422/422 LT (to 2K)", "Avid DNxHR/HD"],
+      "sensorModes": ["Full-Frame/VV 8K"],
+      "resolutions": ["8192×4320 (8K 17:9)", "8192×3456 (8K 2.4:1)", "4096×2160 (4K)", "2048×1080 (2K)"],
+      "frameRates": ["8K 17:9: up to 60 fps", "8K 2.4:1: up to 75 fps", "6K 17:9: up to 100 fps", "4K 17:9: up to 120 fps"]
+    },
+    "RED DSMC2 HELIUM 8K S35": {
+      "powerDrawWatts": 45,
+      "requiredImageCircleMm": 33.8,
+      "power": {
+        "input": {
+          "voltageRange": "11.5-32",
+          "type": ["LEMO 6-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        }, {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        }, {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "DC OUT from DSMC2 I/O expander"
+        }, {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "Aux PWR rail on expander"
+        }]
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "Interchangeable",
+        "mount": "native",
+        "notes": "PL/EF/Leica M/Nikon F supported"
+      }],
+      "timecode": [],
+      "weight_g": 1520,
+      "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes", "Avid DNxHR/HD"],
+      "sensorModes": ["Super 35 8K"],
+      "resolutions": ["8192×4320 (8K 17:9)", "8192×3456 (8K 2.4:1)", "4096×2160 (4K)", "2048×1080 (2K)"],
+      "frameRates": ["8K 17:9: up to 75 fps", "6K 17:9: up to 100 fps", "4K 17:9: up to 150 fps", "2K 17:9: up to 300 fps"]
+    },
+    "RED DSMC2 GEMINI 5K S35": {
+      "powerDrawWatts": 63,
+      "requiredImageCircleMm": 34.5,
+      "power": {
+        "input": {
+          "voltageRange": "11.5-32",
+          "type": ["LEMO 6-pin"]
+        },
+        "batteryPlateSupport": [{
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        }, {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        }, {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }],
+        "powerDistributionOutputs": [{
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "DC OUT from DSMC2 I/O expander"
+        }, {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": null,
+          "notes": "Aux PWR rail on expander"
+        }]
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [{
+        "type": "RED MINI-MAG",
+        "notes": ""
+      }],
+      "viewfinder": [],
+      "lensMount": [{
+        "type": "Interchangeable",
+        "mount": "native",
+        "notes": "PL/EF/Leica M/Nikon F supported"
+      }],
+      "timecode": [],
+      "weight_g": 1520,
+      "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes 4444/422 HQ/422/422 LT (to 4K/2K)", "Avid DNxHR/HD"],
+      "sensorModes": ["Super 35 5K"],
+      "resolutions": ["5120×3000 (5K 17:9)", "4096×2160 (4K)", "2048×1080 (2K)"],
+      "frameRates": ["5K 17:9: up to 96 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
+    },
+    "Insta360 Titan": {
+      "powerDrawWatts": 160,
+      "power": {
+        "input": {
+          "voltageRange": "19.5",
+          "type": ["DC Barrel", "Removable Battery (10000mAh)"]
+        }
+      },
+      "weight_g": 5500,
+      "recordingMedia": [{
+        "type": "SD Card (x9)",
+        "notes": "8x MicroSD for lenses, 1x SD for proxy/stabilization"
+      }],
+      "resolutions": ["11K 2D", "10K 3D"],
+      "notes": "11K Cinematic VR Camera. 8x Micro Four Thirds Sensors.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
+    },
+    "Insta360 Pro 2": {
+      "powerDrawWatts": 60,
+      "power": {
+        "input": {
+          "voltageRange": "12",
+          "type": ["DC Barrel", "Removable Battery (5100mAh)"]
+        }
+      },
+      "weight_g": 1550,
+      "recordingMedia": [{
+        "type": "SD Card (x7)",
+        "notes": "6x MicroSD for lenses, 1x SD for proxy/stabilization"
+      }],
+      "resolutions": ["8K 3D", "8K 2D"],
+      "notes": "8K Professional VR Camera. 6x F2.4 Fisheye Lenses.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
+    },
+    "Insta360 ONE RS 1-Inch 360": {
+      "powerDrawWatts": 10,
+      "power": {
+        "input": {
+          "voltageRange": "5",
+          "type": ["USB-C", "Internal Battery (1350mAh)"]
+        }
+      },
+      "weight_g": 239,
+      "recordingMedia": [{
+        "type": "MicroSD",
+        "notes": "UHS-I V30 Speed Class"
+      }],
+      "resolutions": ["6K 360"],
+      "notes": "Dual 1-Inch Sensors. Co-engineered with Leica.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
+    },
+    "Kandao Obsidian Pro": {
+      "powerDrawWatts": 160,
+      "power": {
+        "input": {
+          "voltageRange": "20",
+          "type": ["DC Barrel", "V-Mount (x2)"]
+        }
+      },
+      "weight_g": 11160,
+      "recordingMedia": [{
+        "type": "SSD (x8)",
+        "notes": "8x M.2 NVMe SSD modules"
+      }],
+      "resolutions": ["12K 3D"],
+      "notes": "12K 3D VR Camera. 8x APS-C Sensors.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
+    },
+    "None": {
+      "powerDrawWatts": 0,
+      "requiredImageCircleMm": null,
+      "power": {
+        "input": {
+          "voltageRange": null,
+          "notes": "Placeholder entry representing no camera body",
+          "type": ["N", "A"]
+        },
+        "batteryPlateSupport": [],
+        "powerDistributionOutputs": []
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": [],
+      "frameRates": []
     }
-  }, _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_cameraData, "Leica SL3-S", {
-    "powerDrawWatts": 10,
-    "requiredImageCircleMm": 43.27,
-    "power": {
-      "input": {
-        "voltageRange": "7.2 (battery) / USB-C",
-        "type": ["Battery Slot,USB-C"]
-      },
-      "batteryPlateSupport": [{
-        "type": "Leica BP-SCL6",
-        "mount": "native",
-        "notes": ""
-      }, {
-        "type": "V-Mount",
-        "mount": "adapted",
-        "notes": ""
-      }, {
-        "type": "Gold-Mount",
-        "mount": "adapted",
-        "notes": ""
-      }],
-      "powerDistributionOutputs": [{
-        "type": "USB-C",
-        "voltage": "",
-        "current": "",
-        "wattage": null,
-        "notes": "For charging or powering accessories"
-      }]
-    },
-    "videoOutputs": [{
-      "type": "HDMI",
-      "notes": "",
-      "version": "2.1 Type A"
-    }],
-    "fizConnectors": [{
-      "notes": "For camera control",
-      "type": "USB-C"
-    }],
-    "recordingMedia": [{
-      "type": "SD Card",
-      "notes": "UHS-II"
-    }, {
-      "type": "CFexpress Type B",
-      "notes": ""
-    }],
-    "viewfinder": [{
-      "resolution": "High-resolution",
-      "connector": "",
-      "notes": "",
-      "type": "OLED EVF"
-    }, {
-      "resolution": "",
-      "connector": "",
-      "notes": "",
-      "size": "Vari-angle touchscreen",
-      "type": "Integrated LCD monitor"
-    }],
-    "lensMount": [{
-      "type": "L-Mount",
-      "mount": "native",
-      "notes": "Supports L-Mount electronic lens data"
-    }],
-    "timecode": [],
-    "weight_g": 768,
-    "recordingCodecs": ["Apple ProRes 422 HQ (SSD)", "H.265/HEVC", "H.264/AVC"],
-    "sensorModes": ["FF 3:2 Open Gate", "FF 16:9"],
-    "resolutions": ["6K", "4K", "1920x1080"],
-    "frameRates": ["8K 10-bit: up to 30 fps", "4K 10-bit: up to 60 fps", "Full HD slow motion: up to 180 fps"]
-  }), "Canon EOS R5 C", {
-    "powerDrawWatts": 13.3,
-    "requiredImageCircleMm": 43.27,
-    "power": {
-      "input": {
-        "voltageRange": "9-15",
-        "type": ["USB-C PD,DC Coupler"]
-      },
-      "batteryPlateSupport": [{
-        "type": "Canon LP-E6NH",
-        "mount": "native",
-        "notes": "Also accepts LP-E6N/LP-E6 packs"
-      }, {
-        "type": "DC Coupler (DR-E6C)",
-        "mount": "native",
-        "notes": "Used with CA-946 AC adapter"
-      }, {
-        "type": "V-Mount",
-        "mount": "adapted",
-        "notes": "Requires external plate feeding USB-C PD or coupler"
-      }],
-      "powerDistributionOutputs": []
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "CFexpress Type B",
-      "notes": "Slot 1"
-    }, {
-      "type": "SD Card",
-      "notes": "Slot 2 (UHS-II)"
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "RF",
-      "mount": "native",
-      "notes": ""
-    }],
-    "timecode": [],
-    "weight_g": 680,
-    "recordingCodecs": ["Cinema RAW Light (CRM) 12-bit", "XF-AVC (MXF) 4:2:2 10-bit (ALL-I/Long GOP)", "HEVC/H.265 4:2:2 10-bit / 4:2:0 10-bit", "H.264/AVC 4:2:0 8-bit"],
-    "sensorModes": ["Full-Frame 8K", "Super 35 (5.9K crop)", "Super 16 (2.9K crop)"],
-    "resolutions": ["8192×4320 (8K)", "5952×3140 (5.9K)", "2976×1570 (2.9K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "1920×1080 (HD)"],
-    "frameRates": ["8K Cinema RAW Light: up to 60 fps", "4K DCI/UHD: up to 120 fps", "2K/HD: up to 180 fps"]
-  }), "Blackmagic URSA Broadcast G2", {
-    "powerDrawWatts": 100,
-    "requiredImageCircleMm": 26.51,
-    "power": {
-      "input": {
-        "voltageRange": "12-20",
-        "type": ["XLR 4-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Integrated plate"
-      }, {
-        "type": "Gold-Mount",
-        "mount": "adapted",
-        "notes": "Optional accessory plate"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "2A",
-        "wattage": null,
-        "notes": "Accessory power 1"
-      }, {
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "2A",
-        "wattage": null,
-        "notes": "Accessory power 2"
-      }, {
-        "type": "Hirose 12-pin",
-        "voltage": "12V",
-        "current": "2A",
-        "wattage": null,
-        "notes": "Lens power/control connector"
-      }, {
-        "type": "USB-C",
-        "voltage": "5V",
-        "current": "1.5A",
-        "wattage": null,
-        "notes": "USB-C expansion port"
-      }]
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "CFast 2.0",
-      "notes": "Dual slots"
-    }, {
-      "type": "SD Card",
-      "notes": "Dual slots (UHS-II)"
-    }, {
-      "type": "USB-C SSD",
-      "notes": "External recording"
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "B4",
-      "mount": "native",
-      "notes": "Standard"
-    }, {
-      "type": "EF",
-      "mount": "included",
-      "notes": "Interchangeable"
-    }],
-    "timecode": [],
-    "weight_g": 3550,
-    "recordingCodecs": ["Blackmagic RAW", "Apple ProRes", "H.265/HEVC", "H.264/AVC"],
-    "sensorModes": ["6K film (digital film mode)", "UHD 4K video", "HD"],
-    "resolutions": ["3840×2160 (UHD)", "1920×1080 (HD)"],
-    "frameRates": ["6K BRAW: up to 50 fps", "UHD ProRes: up to 60 fps", "HD windowed: up to 120 fps"]
-  }), "Kinefinity MAVO Edge 6K", {
-    "powerDrawWatts": 32,
-    "requiredImageCircleMm": 43.27,
-    "power": {
-      "input": {
-        "voltageRange": "10.5-34",
-        "type": ["LEMO 2-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Hybrid plate accepts standard 14.8V packs"
-      }, {
-        "type": "BP-U",
-        "mount": "native",
-        "notes": "Supports GripBAT 4S batteries for compact builds"
-      }, {
-        "type": "NP-F",
-        "mount": "optional",
-        "notes": "GripBAT 2S via UPS baseplate can supply backup power"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "D-Tap",
-        "voltage": "14.8V",
-        "current": "",
-        "wattage": null,
-        "notes": "Unregulated output on camera body"
-      }, {
-        "type": "RS (LEMO 2-pin)",
-        "voltage": "12V",
-        "current": "",
-        "wattage": null,
-        "notes": "Regulated 12V accessory rail"
-      }, {
-        "type": "Lens port (LEMO 7-pin)",
-        "voltage": "12V",
-        "current": "",
-        "wattage": null,
-        "notes": "Lens/control port with 12V accessory power"
-      }]
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "KineMAG Nano SSD",
-      "notes": "Dual slots (NVMe M.2)"
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "KineMOUNT",
-      "mount": "native",
-      "notes": "Adapts to PL/EF/E/LPL"
-    }],
-    "timecode": [],
-    "weight_g": 1600,
-    "recordingCodecs": ["Apple ProRes 422 LT/422/422 HQ", "Apple ProRes 4444/4444 XQ", "CinemaDNG (uncompressed RAW)"],
-    "sensorModes": ["Full-Frame 3:2 6K Open Gate", "FF 6K 2.4:1", "FF 5.7K 3:2", "S35/APS-C modes"],
-    "resolutions": ["6016×2520 (6K 2.4:1)", "5760×3700 (5.7K 3:2)", "5120×2700 (5K DCI)", "3840×2160 (UHD)"],
-    "frameRates": ["6K 3:2: up to 75 fps", "6K 17:9: up to 60 fps", "4K 17:9: up to 150 fps", "2K 17:9: up to 290 fps"]
-  }), "Z CAM E2-F6", {
-    "powerDrawWatts": 50,
-    "requiredImageCircleMm": 43.27,
-    "power": {
-      "input": {
-        "voltageRange": "12-16.8",
-        "notes": "DC input",
-        "type": ["LEMO 2-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "Sony NP-F (L-Series)",
-        "mount": "native",
-        "notes": "Integrated L-Series battery sled"
-      }, {
-        "type": "V-Mount",
-        "mount": "optional",
-        "notes": "Available via optional power module"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "2A",
-        "wattage": null,
-        "notes": "Regulated accessory power output"
-      }]
-    },
-    "videoOutputs": [{
-      "type": "HDMI",
-      "notes": "4K up to 59.94p, 10-bit 4:2:2",
-      "version": "2.0 Type A"
-    }, {
-      "type": "12G-SDI",
-      "notes": "BNC, up to 4K60 10-bit 4:2:2"
-    }],
-    "fizConnectors": [{
-      "notes": "Remote control port",
-      "type": "2.5mm LANC"
-    }, {
-      "notes": "Dedicated accessory control port",
-      "type": "Serial CTRL"
-    }],
-    "recordingMedia": [{
-      "type": "CFast 2.0",
-      "notes": "Dual slots"
-    }, {
-      "type": "ZBlade",
-      "notes": "Optional NVMe media module"
-    }],
-    "viewfinder": [{
-      "resolution": "1920x1080",
-      "connector": "",
-      "notes": "Included monitor powered via control cable",
-      "type": "5\" Touchscreen LCD"
-    }],
-    "lensMount": [{
-      "type": "EF",
-      "mount": "native",
-      "notes": "Optional adapters support M, MFT, PL, and LPL"
-    }],
-    "timecode": [{
-      "type": "BNC (TC/Genlock)",
-      "notes": "Shared LTC and tri-level sync input"
-    }],
-    "weight_g": 1090,
-    "recordingCodecs": ["ZRAW 12-bit", "Apple ProRes 422 Proxy", "Apple ProRes 422 LT", "Apple ProRes 422", "Apple ProRes 422 HQ", "H.265/HEVC", "H.264/AVC"],
-    "sensorModes": ["Full-Frame 6K Open Gate", "C6K", "6K 2.4:1", "6K UHD", "5K 4:3", "C5K", "4K UHD"],
-    "resolutions": ["6064×4040 (Open Gate)", "6064×3196 (C6K)", "6064×2560 (6K 2.4:1)", "5760×3240 (6K UHD)", "5376×4032 (5K 4:3)", "5120×2700 (C5K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "2112×1188 (S16 16:9)", "1920×1080 (FHD)"],
-    "frameRates": ["6K 17:9: up to 60 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
-  }), "Z CAM E2-F6 Pro / Mark II", {
-    "powerDrawWatts": 50,
-    "requiredImageCircleMm": 43.27,
-    "power": {
-      "input": {
-        "voltageRange": "12-18",
-        "type": ["LEMO 2-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Integrated 14.8V plate on Pro body"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "2A",
-        "wattage": null,
-        "notes": "AUX DC output"
-      }]
-    },
-    "videoOutputs": [{
-      "type": "HDMI",
-      "notes": "4K up to 59.94p, 10-bit 4:2:2",
-      "version": "2.0 Type A"
-    }, {
-      "type": "12G-SDI",
-      "notes": "BNC, up to 4K60 10-bit 4:2:2"
-    }],
-    "fizConnectors": [{
-      "notes": "Remote control port",
-      "type": "2.5mm LANC"
-    }, {
-      "notes": "Dedicated accessory control port",
-      "type": "Serial CTRL"
-    }],
-    "recordingMedia": [{
-      "type": "CFast 2.0",
-      "notes": "Dual slots"
-    }, {
-      "type": "ZBlade",
-      "notes": "Optional NVMe media module"
-    }],
-    "viewfinder": [{
-      "resolution": "1920x1080",
-      "connector": "",
-      "notes": "Included monitor powered via control cable",
-      "type": "5\" Touchscreen LCD"
-    }],
-    "lensMount": [{
-      "type": "EF",
-      "mount": "native",
-      "notes": "Optional adapters support M, MFT, PL, and LPL"
-    }],
-    "timecode": [{
-      "type": "BNC (TC/Genlock)",
-      "notes": "Shared LTC and tri-level sync input"
-    }],
-    "weight_g": 1390,
-    "recordingCodecs": ["ProRes 422 Proxy", "ProRes 422 LT", "ProRes 422", "ProRes 422 HQ"],
-    "sensorModes": ["Full-Frame 6K Open Gate", "C6K", "6K 2.4:1", "6K UHD", "5K 4:3", "C5K", "4K UHD"],
-    "resolutions": ["6064×4040 (Open Gate)", "6064×3196 (C6K)", "6064×2560 (6K 2.4:1)", "5760×3240 (6K UHD)", "5376×4032 (5K 4:3)", "5120×2700 (C5K)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "2112×1188 (S16 16:9)", "1920×1080 (FHD)"],
-    "frameRates": ["6K 17:9: up to 60 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
-  }), "RED DSMC2 MONSTRO 8K VV", {
-    "powerDrawWatts": 60,
-    "requiredImageCircleMm": 46.31,
-    "power": {
-      "input": {
-        "voltageRange": "11.5-32",
-        "type": ["LEMO 6-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
-      }, {
-        "type": "Gold-Mount",
-        "mount": "native",
-        "notes": "Compatible with DSMC2 Gold Mount battery module"
-      }, {
-        "type": "REDVOLT Micro-V",
-        "mount": "native",
-        "notes": "Dual-battery expander provides compact onboard power"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "14V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "DC OUT from DSMC2 I/O expander"
-      }, {
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "Aux PWR rail on expander"
-      }]
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "RED MINI-MAG",
-      "notes": ""
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "Interchangeable",
-      "mount": "native",
-      "notes": "PL/EF/Leica M/Nikon F supported"
-    }],
-    "timecode": [],
-    "weight_g": 1520,
-    "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes 422 HQ/422/422 LT (to 2K)", "Avid DNxHR/HD"],
-    "sensorModes": ["Full-Frame/VV 8K"],
-    "resolutions": ["8192×4320 (8K 17:9)", "8192×3456 (8K 2.4:1)", "4096×2160 (4K)", "2048×1080 (2K)"],
-    "frameRates": ["8K 17:9: up to 60 fps", "8K 2.4:1: up to 75 fps", "6K 17:9: up to 100 fps", "4K 17:9: up to 120 fps"]
-  }), "RED DSMC2 HELIUM 8K S35", {
-    "powerDrawWatts": 45,
-    "requiredImageCircleMm": 33.8,
-    "power": {
-      "input": {
-        "voltageRange": "11.5-32",
-        "type": ["LEMO 6-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
-      }, {
-        "type": "Gold-Mount",
-        "mount": "native",
-        "notes": "Compatible with DSMC2 Gold Mount battery module"
-      }, {
-        "type": "REDVOLT Micro-V",
-        "mount": "native",
-        "notes": "Dual-battery expander provides compact onboard power"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "14V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "DC OUT from DSMC2 I/O expander"
-      }, {
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "Aux PWR rail on expander"
-      }]
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "RED MINI-MAG",
-      "notes": ""
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "Interchangeable",
-      "mount": "native",
-      "notes": "PL/EF/Leica M/Nikon F supported"
-    }],
-    "timecode": [],
-    "weight_g": 1520,
-    "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes", "Avid DNxHR/HD"],
-    "sensorModes": ["Super 35 8K"],
-    "resolutions": ["8192×4320 (8K 17:9)", "8192×3456 (8K 2.4:1)", "4096×2160 (4K)", "2048×1080 (2K)"],
-    "frameRates": ["8K 17:9: up to 75 fps", "6K 17:9: up to 100 fps", "4K 17:9: up to 150 fps", "2K 17:9: up to 300 fps"]
-  }), "RED DSMC2 GEMINI 5K S35", {
-    "powerDrawWatts": 63,
-    "requiredImageCircleMm": 34.5,
-    "power": {
-      "input": {
-        "voltageRange": "11.5-32",
-        "type": ["LEMO 6-pin"]
-      },
-      "batteryPlateSupport": [{
-        "type": "V-Mount",
-        "mount": "native",
-        "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
-      }, {
-        "type": "Gold-Mount",
-        "mount": "native",
-        "notes": "Compatible with DSMC2 Gold Mount battery module"
-      }, {
-        "type": "REDVOLT Micro-V",
-        "mount": "native",
-        "notes": "Dual-battery expander provides compact onboard power"
-      }],
-      "powerDistributionOutputs": [{
-        "type": "LEMO 2-pin",
-        "voltage": "14V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "DC OUT from DSMC2 I/O expander"
-      }, {
-        "type": "LEMO 2-pin",
-        "voltage": "12V",
-        "current": "3A",
-        "wattage": null,
-        "notes": "Aux PWR rail on expander"
-      }]
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [{
-      "type": "RED MINI-MAG",
-      "notes": ""
-    }],
-    "viewfinder": [],
-    "lensMount": [{
-      "type": "Interchangeable",
-      "mount": "native",
-      "notes": "PL/EF/Leica M/Nikon F supported"
-    }],
-    "timecode": [],
-    "weight_g": 1520,
-    "recordingCodecs": ["REDCODE RAW (R3D)", "Apple ProRes 4444/422 HQ/422/422 LT (to 4K/2K)", "Avid DNxHR/HD"],
-    "sensorModes": ["Super 35 5K"],
-    "resolutions": ["5120×3000 (5K 17:9)", "4096×2160 (4K)", "2048×1080 (2K)"],
-    "frameRates": ["5K 17:9: up to 96 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 240 fps"]
-  }), "Insta360 Titan", {
-    "powerDrawWatts": 160,
-    "power": {
-      "input": {
-        "voltageRange": "19.5",
-        "type": ["DC Barrel", "Removable Battery (10000mAh)"]
-      }
-    },
-    "weight_g": 5500,
-    "recordingMedia": [{
-      "type": "SD Card (x9)",
-      "notes": "8x MicroSD for lenses, 1x SD for proxy/stabilization"
-    }],
-    "resolutions": ["11K 2D", "10K 3D"],
-    "notes": "11K Cinematic VR Camera. 8x Micro Four Thirds Sensors."
-  }), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_cameraData, "Insta360 Pro 2", {
-    "powerDrawWatts": 60,
-    "power": {
-      "input": {
-        "voltageRange": "12",
-        "type": ["DC Barrel", "Removable Battery (5100mAh)"]
-      }
-    },
-    "weight_g": 1550,
-    "recordingMedia": [{
-      "type": "SD Card (x7)",
-      "notes": "6x MicroSD for lenses, 1x SD for proxy/stabilization"
-    }],
-    "resolutions": ["8K 3D", "8K 2D"],
-    "notes": "8K Professional VR Camera. 6x F2.4 Fisheye Lenses."
-  }), "Insta360 ONE RS 1-Inch 360", {
-    "powerDrawWatts": 10,
-    "power": {
-      "input": {
-        "voltageRange": "5",
-        "type": ["USB-C", "Internal Battery (1350mAh)"]
-      }
-    },
-    "weight_g": 239,
-    "recordingMedia": [{
-      "type": "MicroSD",
-      "notes": "UHS-I V30 Speed Class"
-    }],
-    "resolutions": ["6K 360"],
-    "notes": "Dual 1-Inch Sensors. Co-engineered with Leica."
-  }), "Kandao Obsidian Pro", {
-    "powerDrawWatts": 160,
-    "power": {
-      "input": {
-        "voltageRange": "20",
-        "type": ["DC Barrel", "V-Mount (x2)"]
-      }
-    },
-    "weight_g": 11160,
-    "recordingMedia": [{
-      "type": "SSD (x8)",
-      "notes": "8x M.2 NVMe SSD modules"
-    }],
-    "resolutions": ["12K 3D"],
-    "notes": "12K 3D VR Camera. 8x APS-C Sensors."
-  }), "None", {
-    "powerDrawWatts": 0,
-    "requiredImageCircleMm": null,
-    "power": {
-      "input": {
-        "voltageRange": null,
-        "notes": "Placeholder entry representing no camera body",
-        "type": ["N", "A"]
-      },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
-    },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [],
-    "viewfinder": [],
-    "lensMount": [],
-    "timecode": [],
-    "frameRates": []
-  }));
+  };
   var suppressedCameras = [];
   suppressedCameras.forEach(function (name) {
     if (Object.prototype.hasOwnProperty.call(cameraData, name)) {

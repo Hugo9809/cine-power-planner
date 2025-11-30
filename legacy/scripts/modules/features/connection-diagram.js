@@ -509,9 +509,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var diagramCssLight = "\n    .node-box{fill:var(--diagram-node-fill, #f0f0f0);stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    .conn{stroke:none;}\n    .conn.red{fill:var(--diagram-power-stroke, #d33);}\n    .conn.blue{fill:var(--diagram-video-stroke, #369);}\n    .conn.green{fill:var(--diagram-fiz-stroke, #090);}\n    text{font-family:system-ui,sans-serif;fill:var(--diagram-text-fill, #000);}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);fill:var(--diagram-text-fill, #000);}\n    line{stroke:var(--diagram-stroke, #333);stroke-width:2px;}\n    path.edge-path{stroke:var(--diagram-stroke, #333);stroke-width:2px;fill:none;}\n    path.power{stroke:var(--diagram-power-stroke, #d33);}\n    path.video{stroke:var(--diagram-video-stroke, #369);}\n    path.fiz{stroke:var(--diagram-fiz-stroke, #090);}\n    .diagram-placeholder{font-style:italic;color:#666;margin:0;}\n    ";
-    var diagramCssDark = "";
     function getDiagramCss() {
-      var includeDark = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       return diagramCssLight;
     }
     var safeIconGlyph = function safeIconGlyph(char, font) {

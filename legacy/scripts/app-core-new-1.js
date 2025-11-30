@@ -1,10 +1,4 @@
-var _excluded = ["portType", "type"],
-  _excluded2 = ["count"],
-  _excluded3 = ["type"],
-  _excluded4 = ["type"];
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
-function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
@@ -25,6 +19,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+console.log('app-core-new-1.js LOADED - DEBUG VERSION');
 var runtimeBootstrapExports = function resolveRuntimeBootstrapExports() {
   if (typeof require === 'function') {
     try {
@@ -74,7 +69,10 @@ var _ref = runtimeBootstrapExports || {},
     return null;
   } : _ref$fallbackRequireC,
   _ref$exposeCoreRuntim = _ref.exposeCoreRuntimeConstant,
-  exposeCoreRuntimeConstant = _ref$exposeCoreRuntim === void 0 ? function noopExposeCoreRuntimeConstant() {} : _ref$exposeCoreRuntim,
+  exposeCoreRuntimeConstant = _ref$exposeCoreRuntim === void 0 ? function fallbackExposeCoreRuntimeConstant(name, value) {
+    if (typeof window !== 'undefined') window[name] = value;
+    if (typeof globalThis !== 'undefined') globalThis[name] = value;
+  } : _ref$exposeCoreRuntim,
   _ref$exposeCoreRuntim2 = _ref.exposeCoreRuntimeConstants,
   exposeCoreRuntimeConstants = _ref$exposeCoreRuntim2 === void 0 ? function noopExposeCoreRuntimeConstants() {} : _ref$exposeCoreRuntim2,
   _ref$CORE_BOOT_QUEUE_ = _ref.CORE_BOOT_QUEUE_KEY,
@@ -119,6 +117,21 @@ var TEMPERATURE_UNITS_FALLBACK = Object.freeze({
 });
 var CORE_TEMPERATURE_UNITS = function resolveTemperatureUnits() {
   var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
+  var _ref2 = typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization || {},
+    normalizeVideoType = _ref2.normalizeVideoType,
+    normalizeFizConnectorType = _ref2.normalizeFizConnectorType,
+    normalizeViewfinderType = _ref2.normalizeViewfinderType,
+    normalizePowerPortType = _ref2.normalizePowerPortType,
+    fixPowerInput = _ref2.fixPowerInput,
+    applyFixPowerInput = _ref2.applyFixPowerInput,
+    ensureList = _ref2.ensureList,
+    markDevicesNormalized = _ref2.markDevicesNormalized,
+    hasNormalizedDevicesMarker = _ref2.hasNormalizedDevicesMarker,
+    unifyDevices = _ref2.unifyDevices,
+    normalizeDevicesForPersistence = _ref2.normalizeDevicesForPersistence;
+  if (typeof window !== 'undefined') {
+    window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+  }
   for (var index = 0; index < candidateScopes.length; index += 1) {
     var scope = candidateScopes[index];
     try {
@@ -274,19 +287,19 @@ if (!localizationBootstrapWiringRef && typeof require === 'function') {
     localizationBootstrapWiringRef = bootstrapModule.localizationBootstrapWiring;
   } catch (e) {}
 }
-var _ref2 = localizationBootstrapWiringRef || {},
-  APP_CORE_LOCALIZATION_SUPPORT = _ref2.localizationSupport,
-  localizationRuntimeEnvironment = _ref2.localizationRuntimeEnvironment,
-  CORE_LOCALIZATION_BRIDGE = _ref2.localizationBridge,
-  CORE_LOCALIZATION_FALLBACKS = _ref2.localizationFallbacks,
-  CORE_INLINE_LOCALIZATION_FALLBACKS = _ref2.inlineLocalizationFallbacks,
-  LOCALIZATION_FALLBACK_SUPPORT = _ref2.localizationFallbackSupport,
-  createBasicLocalizationFallbackResolvers = _ref2.createBasicLocalizationFallbackResolvers,
-  LOCALIZATION_FALLBACK_REGISTRY = _ref2.localizationFallbackRegistry,
-  LOCALIZATION_FALLBACK_RESOLVERS = _ref2.localizationFallbackResolvers,
-  LOCALIZATION_FALLBACK_NAMESPACE = _ref2.localizationFallbackNamespace,
-  fallbackResolveLocaleModule = _ref2.fallbackResolveLocaleModule,
-  createLocaleFallbacks = _ref2.createLocaleFallbacks;
+var _ref3 = localizationBootstrapWiringRef || {},
+  APP_CORE_LOCALIZATION_SUPPORT = _ref3.localizationSupport,
+  localizationRuntimeEnvironment = _ref3.localizationRuntimeEnvironment,
+  CORE_LOCALIZATION_BRIDGE = _ref3.localizationBridge,
+  CORE_LOCALIZATION_FALLBACKS = _ref3.localizationFallbacks,
+  CORE_INLINE_LOCALIZATION_FALLBACKS = _ref3.inlineLocalizationFallbacks,
+  LOCALIZATION_FALLBACK_SUPPORT = _ref3.localizationFallbackSupport,
+  createBasicLocalizationFallbackResolvers = _ref3.createBasicLocalizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_REGISTRY = _ref3.localizationFallbackRegistry,
+  LOCALIZATION_FALLBACK_RESOLVERS = _ref3.localizationFallbackResolvers,
+  LOCALIZATION_FALLBACK_NAMESPACE = _ref3.localizationFallbackNamespace,
+  fallbackResolveLocaleModule = _ref3.fallbackResolveLocaleModule,
+  createLocaleFallbacks = _ref3.createLocaleFallbacks;
 var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');
 var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRuntimeToolFallbacks', './modules/core/runtime-tool-fallbacks.js');
 var RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeToolInlineFallbacks', './modules/app-core/runtime.js');
@@ -298,24 +311,24 @@ if (!pinkModeSupportApiRef && typeof require === 'function') {
     pinkModeSupportApiRef = pinkModeModule.PINK_MODE_SUPPORT_API;
   } catch (e) {}
 }
-var _ref3 = pinkModeSupportApiRef || {},
-  pinkModeIcons = _ref3.pinkModeIcons,
-  ensureSvgHasAriaHidden = _ref3.ensureSvgHasAriaHidden,
-  setPinkModeIconSequence = _ref3.setPinkModeIconSequence,
-  loadPinkModeIconsFromFiles = _ref3.loadPinkModeIconsFromFiles,
-  ensurePinkModeLottieRuntime = _ref3.ensurePinkModeLottieRuntime,
-  resolvePinkModeLottieRuntime = _ref3.resolvePinkModeLottieRuntime,
-  startPinkModeAnimatedIcons = _ref3.startPinkModeAnimatedIcons,
-  stopPinkModeAnimatedIcons = _ref3.stopPinkModeAnimatedIcons,
-  triggerPinkModeIconRain = _ref3.triggerPinkModeIconRain,
-  getPinkModeIconRotationTimer = _ref3.getPinkModeIconRotationTimer,
-  setPinkModeIconRotationTimer = _ref3.setPinkModeIconRotationTimer,
-  getPinkModeIconIndex = _ref3.getPinkModeIconIndex,
-  setPinkModeIconIndex = _ref3.setPinkModeIconIndex,
-  PINK_MODE_ICON_INTERVAL_MS = _ref3.PINK_MODE_ICON_INTERVAL_MS,
-  PINK_MODE_ICON_ANIMATION_CLASS = _ref3.PINK_MODE_ICON_ANIMATION_CLASS,
-  PINK_MODE_ICON_ANIMATION_RESET_DELAY = _ref3.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-  PINK_MODE_ICON_FALLBACK_MARKUP = _ref3.PINK_MODE_ICON_FALLBACK_MARKUP;
+var _ref4 = pinkModeSupportApiRef || {},
+  pinkModeIcons = _ref4.pinkModeIcons,
+  ensureSvgHasAriaHidden = _ref4.ensureSvgHasAriaHidden,
+  setPinkModeIconSequence = _ref4.setPinkModeIconSequence,
+  loadPinkModeIconsFromFiles = _ref4.loadPinkModeIconsFromFiles,
+  ensurePinkModeLottieRuntime = _ref4.ensurePinkModeLottieRuntime,
+  resolvePinkModeLottieRuntime = _ref4.resolvePinkModeLottieRuntime,
+  startPinkModeAnimatedIcons = _ref4.startPinkModeAnimatedIcons,
+  stopPinkModeAnimatedIcons = _ref4.stopPinkModeAnimatedIcons,
+  triggerPinkModeIconRain = _ref4.triggerPinkModeIconRain,
+  getPinkModeIconRotationTimer = _ref4.getPinkModeIconRotationTimer,
+  setPinkModeIconRotationTimer = _ref4.setPinkModeIconRotationTimer,
+  getPinkModeIconIndex = _ref4.getPinkModeIconIndex,
+  setPinkModeIconIndex = _ref4.setPinkModeIconIndex,
+  PINK_MODE_ICON_INTERVAL_MS = _ref4.PINK_MODE_ICON_INTERVAL_MS,
+  PINK_MODE_ICON_ANIMATION_CLASS = _ref4.PINK_MODE_ICON_ANIMATION_CLASS,
+  PINK_MODE_ICON_ANIMATION_RESET_DELAY = _ref4.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+  PINK_MODE_ICON_FALLBACK_MARKUP = _ref4.PINK_MODE_ICON_FALLBACK_MARKUP;
 function iconMarkup(glyph) {
   var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -685,10 +698,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!scope || _typeof(scope) !== 'object') {
       return;
     }
-    Object.entries(bindings).forEach(function (_ref4) {
-      var _ref5 = _slicedToArray(_ref4, 2),
-        name = _ref5[0],
-        descriptor = _ref5[1];
+    Object.entries(bindings).forEach(function (_ref5) {
+      var _ref6 = _slicedToArray(_ref5, 2),
+        name = _ref6[0],
+        descriptor = _ref6[1];
       if (typeof name !== 'string' || !name) {
         return;
       }
@@ -1973,29 +1986,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     };
   }
-  var _ref7 = contactsProfileModule || {},
-    _ref7$CONTACT_AVATAR_ = _ref7.CONTACT_AVATAR_MAX_BYTES,
-    resolvedContactAvatarMaxBytes = _ref7$CONTACT_AVATAR_ === void 0 ? 300 * 1024 : _ref7$CONTACT_AVATAR_,
-    _ref7$CONTACT_AVATAR_2 = _ref7.CONTACT_AVATAR_MAX_SOURCE_BYTES,
-    resolvedContactAvatarMaxSourceBytes = _ref7$CONTACT_AVATAR_2 === void 0 ? 6 * 1024 * 1024 : _ref7$CONTACT_AVATAR_2,
-    _ref7$CONTACT_AVATAR_3 = _ref7.CONTACT_AVATAR_MAX_DIMENSION,
-    resolvedContactAvatarMaxDimension = _ref7$CONTACT_AVATAR_3 === void 0 ? 256 : _ref7$CONTACT_AVATAR_3,
-    _ref7$CONTACT_AVATAR_4 = _ref7.CONTACT_AVATAR_JPEG_QUALITY,
-    resolvedContactAvatarJpegQuality = _ref7$CONTACT_AVATAR_4 === void 0 ? 0.85 : _ref7$CONTACT_AVATAR_4,
-    _ref7$CONTACT_AVATAR_5 = _ref7.CONTACT_AVATAR_JPEG_MIN_QUALITY,
-    resolvedContactAvatarJpegMinQuality = _ref7$CONTACT_AVATAR_5 === void 0 ? 0.55 : _ref7$CONTACT_AVATAR_5,
-    resolvedCreateProfileController = _ref7.createProfileController,
-    resolvedEstimateDataUrlSize = _ref7.estimateDataUrlSize,
-    resolvedOptimiseAvatarDataUrl = _ref7.optimiseAvatarDataUrl,
-    resolvedReadAvatarFile = _ref7.readAvatarFile,
-    resolvedIsSafeImageUrl = _ref7.isSafeImageUrl;
-  var _ref8 = contactsListModule || {},
-    resolvedSanitizeContactValue = _ref8.sanitizeContactValue,
-    resolvedNormalizeContactEntry = _ref8.normalizeContactEntry,
-    resolvedSortContacts = _ref8.sortContacts,
-    resolvedParseVCardEntries = _ref8.parseVCard,
-    resolvedMergeImportedContacts = _ref8.mergeImportedContacts,
-    resolvedCreateCrewRowSync = _ref8.createCrewRowSync;
+  var _ref8 = contactsProfileModule || {},
+    _ref8$CONTACT_AVATAR_ = _ref8.CONTACT_AVATAR_MAX_BYTES,
+    resolvedContactAvatarMaxBytes = _ref8$CONTACT_AVATAR_ === void 0 ? 300 * 1024 : _ref8$CONTACT_AVATAR_,
+    _ref8$CONTACT_AVATAR_2 = _ref8.CONTACT_AVATAR_MAX_SOURCE_BYTES,
+    resolvedContactAvatarMaxSourceBytes = _ref8$CONTACT_AVATAR_2 === void 0 ? 6 * 1024 * 1024 : _ref8$CONTACT_AVATAR_2,
+    _ref8$CONTACT_AVATAR_3 = _ref8.CONTACT_AVATAR_MAX_DIMENSION,
+    resolvedContactAvatarMaxDimension = _ref8$CONTACT_AVATAR_3 === void 0 ? 256 : _ref8$CONTACT_AVATAR_3,
+    _ref8$CONTACT_AVATAR_4 = _ref8.CONTACT_AVATAR_JPEG_QUALITY,
+    resolvedContactAvatarJpegQuality = _ref8$CONTACT_AVATAR_4 === void 0 ? 0.85 : _ref8$CONTACT_AVATAR_4,
+    _ref8$CONTACT_AVATAR_5 = _ref8.CONTACT_AVATAR_JPEG_MIN_QUALITY,
+    resolvedContactAvatarJpegMinQuality = _ref8$CONTACT_AVATAR_5 === void 0 ? 0.55 : _ref8$CONTACT_AVATAR_5,
+    resolvedCreateProfileController = _ref8.createProfileController,
+    resolvedEstimateDataUrlSize = _ref8.estimateDataUrlSize,
+    resolvedOptimiseAvatarDataUrl = _ref8.optimiseAvatarDataUrl,
+    resolvedReadAvatarFile = _ref8.readAvatarFile,
+    resolvedIsSafeImageUrl = _ref8.isSafeImageUrl;
+  var _ref9 = contactsListModule || {},
+    resolvedSanitizeContactValue = _ref9.sanitizeContactValue,
+    resolvedNormalizeContactEntry = _ref9.normalizeContactEntry,
+    resolvedSortContacts = _ref9.sortContacts,
+    resolvedParseVCardEntries = _ref9.parseVCard,
+    resolvedMergeImportedContacts = _ref9.mergeImportedContacts,
+    resolvedCreateCrewRowSync = _ref9.createCrewRowSync;
   var CONTACT_AVATAR_MAX_BYTES = resolvedContactAvatarMaxBytes;
   var CONTACT_AVATAR_MAX_SOURCE_BYTES = resolvedContactAvatarMaxSourceBytes;
   var CONTACT_AVATAR_MAX_DIMENSION = resolvedContactAvatarMaxDimension;
@@ -2463,11 +2476,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return _objectSpread({}, autoGearMonitorDefaults);
   }
   function setAutoGearMonitorDefaults(defaults) {
-    var _ref9 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref9$skipRender = _ref9.skipRender,
-      skipRender = _ref9$skipRender === void 0 ? false : _ref9$skipRender,
-      _ref9$skipRefresh = _ref9.skipRefresh,
-      skipRefresh = _ref9$skipRefresh === void 0 ? false : _ref9$skipRefresh;
+    var _ref0 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref0$skipRender = _ref0.skipRender,
+      skipRender = _ref0$skipRender === void 0 ? false : _ref0$skipRender,
+      _ref0$skipRefresh = _ref0.skipRefresh,
+      skipRefresh = _ref0$skipRefresh === void 0 ? false : _ref0$skipRefresh;
     var normalized = normalizeAutoGearMonitorDefaults(defaults);
     var changed = false;
     Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(function (key) {
@@ -2777,10 +2790,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (seen.has(obj)) return;
         seen.add(obj);
       }
-      Object.entries(obj).forEach(function (_ref0) {
-        var _ref1 = _slicedToArray(_ref0, 2),
-          key = _ref1[0],
-          value = _ref1[1];
+      Object.entries(obj).forEach(function (_ref1) {
+        var _ref10 = _slicedToArray(_ref1, 2),
+          key = _ref10[0],
+          value = _ref10[1];
         if (!value || _typeof(value) !== 'object' || Array.isArray(value)) return;
         addName(key);
         _visit(value);
@@ -4093,7 +4106,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         invoke();
       }
     };
-    scheduleLayoutInitialization();
   }
   var VIDEO_OUTPUT_TYPES = new Set(['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI', 'DisplayPort']);
   var NORMALIZED_FLAG_KEY = '__normalized';
@@ -4221,7 +4233,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function storeDevices(deviceData) {
     saveDeviceData(deviceData);
   }
-  exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
   function loadSession() {
     return typeof loadSessionState === 'function' ? loadSessionState() : null;
   }
@@ -4265,529 +4276,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open');
   }
-  function memoizeNormalization(fn) {
-    var cache = new Map();
-    return function (value) {
-      if (!value) return '';
-      var str = String(value).replace(/[™®]/g, '').trim();
-      var key = str.toLowerCase();
-      if (!cache.has(key)) cache.set(key, fn(str, key));
-      return cache.get(key);
-    };
-  }
-  var VIDEO_TYPE_PATTERNS = [{
-    needles: ['12g'],
-    value: '12G-SDI'
-  }, {
-    needles: ['6g'],
-    value: '6G-SDI'
-  }, {
-    needles: ['3g'],
-    value: '3G-SDI'
-  }, {
-    needles: ['hd', 'sdi'],
-    value: '3G-SDI'
-  }, {
-    needles: ['mini', 'bnc'],
-    value: 'Mini BNC'
-  }, {
-    needles: ['micro', 'hdmi'],
-    value: 'Micro HDMI'
-  }, {
-    needles: ['mini', 'hdmi'],
-    value: 'Mini HDMI'
-  }, {
-    needles: ['hdmi'],
-    value: 'HDMI'
-  }, {
-    needles: ['displayport'],
-    value: 'DisplayPort'
-  }, {
-    needles: ['display', 'port'],
-    value: 'DisplayPort'
-  }, {
-    needles: ['dp'],
-    value: 'DisplayPort'
-  }];
-  var normalizeVideoType = memoizeNormalization(function (_, key) {
-    var match = VIDEO_TYPE_PATTERNS.find(function (_ref10) {
-      var needles = _ref10.needles;
-      return needles.every(function (n) {
-        return key.includes(n);
-      });
-    });
-    return match ? match.value : '';
-  });
-  var FIZ_CONNECTOR_MAP = {
-    'lemo 4-pin (lbus)': 'LBUS (LEMO 4-pin)',
-    'lbus (lemo 4-pin)': 'LBUS (LEMO 4-pin)',
-    'lbus (4-pin lemo)': 'LBUS (LEMO 4-pin)',
-    'lbus (4-pin lemo for motors)': 'LBUS (LEMO 4-pin)',
-    '4-pin lemo (lbus)': 'LBUS (LEMO 4-pin)',
-    'lemo 4-pin': 'LEMO 4-pin',
-    '4-pin lemo': 'LEMO 4-pin',
-    'lemo 7-pin': 'LEMO 7-pin',
-    'lemo 7-pin 1b': 'LEMO 7-pin',
-    '7-pin lemo': 'LEMO 7-pin',
-    '7-pin lemo (lcs)': 'LEMO 7-pin (LCS)',
-    '7-pin lemo (cam)': 'LEMO 7-pin (CAM)',
-    'ext (lemo 7-pin)': 'EXT LEMO 7-pin',
-    'hirose 12pin': 'Hirose 12-pin',
-    '12-pin hirose': 'Hirose 12-pin',
-    '12pin broadcast connector': 'Hirose 12-pin',
-    'lens 12 pin': 'Hirose 12-pin',
-    'lens terminal 12-pin': 'Hirose 12-pin',
-    'lens terminal 12-pin jack': 'Hirose 12-pin',
-    'lens terminal': 'Hirose 12-pin',
-    'usb type-c': 'USB-C',
-    'usb-c': 'USB-C',
-    'usb-c (usb 3.2 / 3.1 gen 1)': 'USB-C',
-    'usb-c / gigabit ethernet (via adapter)': 'USB-C',
-    'active ef mount': 'Active EF mount',
-    'lanc (2.5mm stereo mini jack)': 'LANC',
-    '2.5 mm sub-mini (lanc)': 'LANC',
-    'remote a (2.5mm)': 'REMOTE A connector',
-    'remote control terminal': 'REMOTE A connector',
-    'remote 8 pin': 'REMOTE B connector'
-  };
-  function createMapNormalizer(map) {
-    return memoizeNormalization(function (str, key) {
-      return map[key] || str;
-    });
-  }
-  var normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
-  var VIEWFINDER_TYPE_MAP = {
-    'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'lcd touch panel': 'LCD touchscreen',
-    'lcd touchscreen': 'LCD touchscreen',
-    'native lcd capacitive touchscreen': 'LCD touchscreen',
-    'integrated touchscreen lcd': 'LCD touchscreen',
-    'free-angle lcd': 'Vari-angle LCD',
-    'lcd monitor (native)': 'Integrated LCD monitor',
-    'native lcd viewfinder': 'Integrated LCD monitor',
-    'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
-    'integrated main monitor': 'Integrated LCD monitor',
-    'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
-    'optional evf-v50': 'EVF-V50 (Optional)',
-    'optional oled viewfinder': 'OLED EVF (Optional)',
-    'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
-    'external backlit lcd status display': 'LCD status display',
-    'built-in fold-out lcd': 'Fold-out LCD',
-    'oled lvf (live view finder)': 'OLED EVF',
-    'lcd capacitive touchscreen': 'LCD touchscreen',
-    'lemo 26 pin': 'LEMO 26-pin port'
-  };
-  var normalizeViewfinderType = createMapNormalizer(VIEWFINDER_TYPE_MAP);
-  var POWER_PORT_TYPE_MAP = {
-    'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
-    'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
-    'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
-    'lemo 8-pin': 'Bat LEMO 8-pin',
-    '2-pin dc-input': '2-pin DC-IN',
-    'dc-': 'DC IN',
-    'dc': 'DC IN',
-    '2-pin xlr': 'XLR 2-pin',
-    '2-pin locking connector': 'LEMO 2-pin',
-    '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
-    '4-pin xlr / dc in 12v': 'XLR 4-pin',
-    '4-pin xlr / v-lock': 'XLR 4-pin',
-    'xlr 4-pin jack': 'XLR 4-pin',
-    'xlr 4-pin (main input)': 'XLR 4-pin',
-    'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
-    '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
-    'battery slot': 'Battery Slot',
-    'usb-c': 'USB-C',
-    'usb type-c': 'USB-C',
-    'usb-c pd': 'USB-C PD',
-    'usb-c (power delivery)': 'USB-C PD',
-    'usb-c pd,dc coupler': 'USB-C PD / DC Coupler',
-    'dc coupler': 'DC Coupler',
-    'dc coupler (dr-e6c)': 'DC Coupler',
-    'dc input': 'DC IN',
-    'dc barrel': 'DC Barrel',
-    'dc (barrel)': 'DC Barrel',
-    'locking dc barrel': 'DC Barrel',
-    'dc 24v terminal': 'DC Barrel',
-    'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
-    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN',
-    '6-pin 1b dc-,tb50': '6-pin 1B DC-IN'
-  };
-  var mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP);
-  function normalizePowerPortType(type) {
-    if (!type) return [];
-    var toArray = function toArray(val) {
-      var normalized = mapPowerPortOne(val);
-      if (!normalized) return [];
-      return normalized.split(/[/,]/).map(function (piece) {
-        return mapPowerPortOne(piece.trim());
-      }).map(function (piece) {
-        return piece && piece.trim() || '';
-      }).filter(Boolean);
-    };
-    return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
-  }
-  function ensureList(list, defaults) {
-    if (!Array.isArray(list)) return [];
-    return list.map(function (item) {
-      return typeof item === 'string' ? _objectSpread(_objectSpread({}, defaults), {}, {
-        type: item
-      }) : _objectSpread(_objectSpread({}, defaults), item || {});
-    });
-  }
-  function fixPowerInput(dev) {
-    var _dev$power, _dev$power2;
-    if (!dev) return;
-    if (dev.powerInput && !((_dev$power = dev.power) !== null && _dev$power !== void 0 && _dev$power.input)) {
-      dev.power = _objectSpread(_objectSpread({}, dev.power || {}), {}, {
-        input: {
-          type: normalizePowerPortType(dev.powerInput)
-        }
-      });
-      delete dev.powerInput;
-    }
-    var input = (_dev$power2 = dev.power) === null || _dev$power2 === void 0 ? void 0 : _dev$power2.input;
-    if (!input) return;
-    var normalizeEntry = function normalizeEntry(it) {
-      if (typeof it === 'string') {
-        return {
-          type: normalizePowerPortType(it)
-        };
-      }
-      if (it) {
-        var pType = it.portType,
-          tType = it.type,
-          rest = _objectWithoutProperties(it, _excluded);
-        var typeField = !tType && pType ? pType : tType;
-        return _objectSpread(_objectSpread({}, rest), {}, {
-          type: typeField ? normalizePowerPortType(typeField) : []
-        });
-      }
-      return {
-        type: []
-      };
-    };
-    dev.power.input = Array.isArray(input) ? input.map(normalizeEntry) : normalizeEntry(input);
-  }
-  function applyFixPowerInput(collection) {
-    if (!collection || _typeof(collection) !== 'object') return;
-    Object.values(collection).forEach(fixPowerInput);
-  }
-  function hasNormalizedDevicesMarker(bundle) {
-    return Boolean(bundle && Object.prototype.hasOwnProperty.call(bundle, NORMALIZED_FLAG_KEY) && bundle[NORMALIZED_FLAG_KEY]);
-  }
-  function markDevicesNormalized(bundle) {
-    if (!bundle || _typeof(bundle) !== 'object') {
-      return bundle;
-    }
-    try {
-      Object.defineProperty(bundle, NORMALIZED_FLAG_KEY, {
-        configurable: true,
-        enumerable: false,
-        value: true,
-        writable: true
-      });
-    } catch (defineNormalizedError) {
-      void defineNormalizedError;
-      bundle[NORMALIZED_FLAG_KEY] = true;
-    }
-    return bundle;
-  }
-  function unifyDevices(devicesData, options) {
-    var _devicesData$fiz, _devicesData$fiz2;
-    if (!devicesData || _typeof(devicesData) !== 'object') return devicesData;
-    var force = Boolean(options && options.force);
-    if (!force && hasNormalizedDevicesMarker(devicesData)) {
-      return devicesData;
-    }
-    Object.values(devicesData.cameras || {}).forEach(function (cam) {
-      var _cam$power, _cam$power2;
-      if ((_cam$power = cam.power) !== null && _cam$power !== void 0 && _cam$power.input && cam.power.input.powerDrawWatts !== undefined) {
-        delete cam.power.input.powerDrawWatts;
-      }
-      fixPowerInput(cam);
-      if (Array.isArray((_cam$power2 = cam.power) === null || _cam$power2 === void 0 ? void 0 : _cam$power2.batteryPlateSupport)) {
-        cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(function (it) {
-          if (typeof it === 'string') {
-            var m = it.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.*))?/);
-            var type = m ? m[1].trim() : it;
-            var mount = m && m[2] ? m[2].trim().toLowerCase() : '';
-            if (!mount) {
-              mount = /adapted|via adapter/i.test(it) ? 'adapted' : 'native';
-            } else if (/via adapter/i.test(mount)) {
-              mount = 'adapted';
-            }
-            var notes = m && m[3] ? m[3].trim() : /via adapter/i.test(it) ? 'via adapter' : '';
-            return {
-              type: type,
-              mount: mount,
-              notes: notes
-            };
-          }
-          return {
-            type: it.type || '',
-            mount: (it.mount ? it.mount : it.native ? 'native' : it.adapted ? 'adapted' : 'native').toLowerCase(),
-            notes: it.notes || ''
-          };
-        });
-      }
-      if (cam.power) {
-        cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, {
-          type: '',
-          voltage: '',
-          current: '',
-          wattage: null,
-          notes: ''
-        });
-      }
-      cam.videoOutputs = ensureList(cam.videoOutputs, {
-        type: '',
-        notes: ''
-      }).flatMap(function (vo) {
-        var _ref11 = vo || {},
-          count = _ref11.count,
-          rest = _objectWithoutProperties(_ref11, _excluded2);
-        var norm = normalizeVideoType(rest.type);
-        if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
-        var parsedCount = parseInt(count, 10);
-        var num = Number.isFinite(parsedCount) && parsedCount > 0 ? parsedCount : 1;
-        var base = _objectSpread(_objectSpread({}, rest), {}, {
-          type: norm,
-          notes: rest.notes || ''
-        });
-        return Array.from({
-          length: num
-        }, function () {
-          return _objectSpread({}, base);
-        });
-      });
-      cam.fizConnectors = ensureList(cam.fizConnectors, {
-        type: '',
-        notes: ''
-      }).map(function (fc) {
-        var _ref12 = fc || {},
-          type = _ref12.type,
-          rest = _objectWithoutProperties(_ref12, _excluded3);
-        return _objectSpread(_objectSpread({}, rest), {}, {
-          type: normalizeFizConnectorType(type)
-        });
-      });
-      cam.viewfinder = ensureList(cam.viewfinder, {
-        type: '',
-        resolution: '',
-        connector: '',
-        notes: ''
-      }).map(function (vf) {
-        var _ref13 = vf || {},
-          type = _ref13.type,
-          rest = _objectWithoutProperties(_ref13, _excluded4);
-        return _objectSpread(_objectSpread({}, rest), {}, {
-          type: normalizeViewfinderType(type)
-        });
-      });
-      cam.recordingMedia = ensureList(cam.recordingMedia, {
-        type: '',
-        notes: ''
-      }).map(function (m) {
-        var _ref14 = m || {},
-          _ref14$type = _ref14.type,
-          type = _ref14$type === void 0 ? '' : _ref14$type,
-          _ref14$notes = _ref14.notes,
-          notes = _ref14$notes === void 0 ? '' : _ref14$notes;
-        var match = type.match(/^(.*?)(?:\((.*)\))?$/);
-        if (match) {
-          type = match[1].trim();
-          notes = notes || (match[2] ? match[2].trim() : '');
-        }
-        if (/^SD UHS-II$/i.test(type)) {
-          type = 'SD Card';
-          notes = notes ? "".concat(notes, "; UHS-II") : 'UHS-II';
-        } else if (/^SD \(UHS-II\/UHS-I\)$/i.test(type)) {
-          type = 'SD Card';
-          notes = 'UHS-II/UHS-I';
-        } else if (type === 'CFast 2.0 card slots') {
-          type = 'CFast 2.0';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'CFexpress Type B (Dual Slots)') {
-          type = 'CFexpress Type B';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'CFexpress Type B (via adapter)') {
-          type = 'CFexpress Type B';
-          notes = notes || 'via adapter';
-        } else if (/^SD UHS-II \(Dual Slots\)$/i.test(type)) {
-          type = 'SD Card';
-          notes = notes ? "".concat(notes, "; UHS-II (Dual Slots)") : 'UHS-II (Dual Slots)';
-        } else if (type === 'SD Card (Dual Slots)') {
-          type = 'SD Card';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'SD card slot (for proxy/backup)') {
-          type = 'SD Card';
-          notes = notes || 'for proxy/backup';
-        }
-        return {
-          type: type,
-          notes: notes
-        };
-      });
-      cam.timecode = ensureList(cam.timecode, {
-        type: '',
-        notes: ''
-      });
-      cam.lensMount = ensureList(cam.lensMount, {
-        type: '',
-        mount: 'native',
-        notes: ''
-      }).map(function (lm) {
-        return {
-          type: lm.type,
-          mount: lm.mount ? lm.mount.toLowerCase() : 'native',
-          notes: lm.notes || ''
-        };
-      }).filter(function (lm, idx, arr) {
-        return idx === arr.findIndex(function (o) {
-          return o.type === lm.type && o.mount === lm.mount && o.notes === lm.notes;
-        });
-      });
-    });
-    Object.values(devicesData.lenses || {}).forEach(function (lens) {
-      if (!lens || _typeof(lens) !== 'object') return;
-      var normalizeMountEntry = function normalizeMountEntry(entry) {
-        if (!entry) return null;
-        if (typeof entry === 'string') {
-          var trimmed = entry.trim();
-          if (!trimmed) return null;
-          return {
-            type: trimmed,
-            mount: 'native'
-          };
-        }
-        var type = typeof entry.type === 'string' ? entry.type.trim() : '';
-        if (!type) return null;
-        var status = typeof entry.mount === 'string' ? entry.mount.trim().toLowerCase() : '';
-        return {
-          type: type,
-          mount: status === 'adapted' ? 'adapted' : 'native'
-        };
-      };
-      var existingMountOptions = lens.mountOptions;
-      var normalizedOptions = [];
-      var pushNormalizedEntry = function pushNormalizedEntry(entry) {
-        var normalized = normalizeMountEntry(entry);
-        if (normalized) {
-          normalizedOptions.push(normalized);
-        }
-      };
-      if (Array.isArray(existingMountOptions)) {
-        existingMountOptions.forEach(pushNormalizedEntry);
-      } else if (existingMountOptions && _typeof(existingMountOptions) === 'object') {
-        pushNormalizedEntry(existingMountOptions);
-      }
-      if (!normalizedOptions.length && Array.isArray(lens.lensMount)) {
-        lens.lensMount.forEach(pushNormalizedEntry);
-        delete lens.lensMount;
-      }
-      if (!normalizedOptions.length) {
-        var mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
-        if (mountType) {
-          pushNormalizedEntry({
-            type: mountType,
-            mount: 'native'
-          });
-        }
-      }
-      var dedupedOptions = [];
-      normalizedOptions.forEach(function (opt) {
-        if (!opt || !opt.type) return;
-        var mountState = opt.mount === 'adapted' ? 'adapted' : 'native';
-        var alreadyPresent = dedupedOptions.some(function (existing) {
-          return existing.type === opt.type && existing.mount === mountState;
-        });
-        if (!alreadyPresent) {
-          dedupedOptions.push({
-            type: opt.type,
-            mount: mountState
-          });
-        }
-      });
-      var safeMountOptions = Array.isArray(dedupedOptions) ? dedupedOptions : [];
-      lens.mountOptions = safeMountOptions;
-      var mountOptions = Array.isArray(lens.mountOptions) ? lens.mountOptions : [];
-      if (mountOptions.length) {
-        var primary = mountOptions.find(function (opt) {
-          return opt && opt.mount === 'native' && opt.type;
-        }) || mountOptions[0];
-        var primaryType = primary && primary.type ? primary.type : '';
-        if (primaryType) {
-          lens.mount = primaryType;
-        } else if (typeof lens.mount === 'string') {
-          lens.mount = lens.mount.trim();
-        }
-      } else if (typeof lens.mount === 'string') {
-        lens.mount = lens.mount.trim();
-        if (!lens.mount) {
-          delete lens.mount;
-        }
-      }
-    });
-    ['monitors', 'video', 'viewfinders'].forEach(function (key) {
-      applyFixPowerInput(devicesData[key]);
-    });
-    var fizGroups = devicesData.fiz || {};
-    ['motors', 'controllers', 'distance'].forEach(function (key) {
-      applyFixPowerInput(fizGroups[key]);
-    });
-    Object.values(((_devicesData$fiz = devicesData.fiz) === null || _devicesData$fiz === void 0 ? void 0 : _devicesData$fiz.motors) || {}).forEach(function (m) {
-      if (!m) return;
-      if (m.connector && !m.fizConnector) {
-        m.fizConnector = m.connector;
-        delete m.connector;
-      }
-      if (m.fizConnector) {
-        m.fizConnector = normalizeFizConnectorType(m.fizConnector);
-      }
-    });
-    Object.values(((_devicesData$fiz2 = devicesData.fiz) === null || _devicesData$fiz2 === void 0 ? void 0 : _devicesData$fiz2.controllers) || {}).forEach(function (c) {
-      if (!c) return;
-      if (c.FIZ_connector && !c.fizConnector && !c.fizConnectors) {
-        c.fizConnector = c.FIZ_connector;
-        delete c.FIZ_connector;
-      }
-      if (Array.isArray(c.fizConnectors)) {
-        c.fizConnectors = c.fizConnectors.map(function (fc) {
-          if (!fc) return {
-            type: ''
-          };
-          var type = normalizeFizConnectorType(fc.type || fc);
-          var notes = fc.notes || undefined;
-          return notes ? {
-            type: type,
-            notes: notes
-          } : {
-            type: type
-          };
-        });
-      } else if (c.fizConnector) {
-        var parts = String(c.fizConnector).split(',').map(function (s) {
-          return s.trim();
-        }).filter(Boolean);
-        c.fizConnectors = parts.map(function (p) {
-          return {
-            type: normalizeFizConnectorType(p)
-          };
-        });
-        delete c.fizConnector;
-      } else {
-        c.fizConnectors = [];
-      }
-    });
-    markDevicesNormalized(devicesData);
-    return devicesData;
-  }
-  function normalizeDevicesForPersistence(devicesData) {
-    return unifyDevices(devicesData, {
-      force: true
-    });
-  }
+  exposeCoreRuntimeConstant('normalizeDevicesForPersistence', normalizeDevicesForPersistence);
   function resolveUpdateDevicesReferenceFunction() {
     var directReference = null;
     try {
@@ -5353,48 +4842,48 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } else {
       var bats = devices.batteries || {};
       if (!supportsB) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref15) {
-          var _ref16 = _slicedToArray(_ref15, 2),
-            b = _ref16[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref11) {
+          var _ref12 = _slicedToArray(_ref11, 2),
+            b = _ref12[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref17) {
-          var _ref18 = _slicedToArray(_ref17, 2),
-            b = _ref18[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref13) {
+          var _ref14 = _slicedToArray(_ref13, 2),
+            b = _ref14[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
       populateSelect(batterySelect, bats, true);
       swaps = devices.batteryHotswaps || {};
       if (!supportsB) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref19) {
-          var _ref20 = _slicedToArray(_ref19, 2),
-            b = _ref20[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref15) {
+          var _ref16 = _slicedToArray(_ref15, 2),
+            b = _ref16[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref21) {
-          var _ref22 = _slicedToArray(_ref21, 2),
-            b = _ref22[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref17) {
+          var _ref18 = _slicedToArray(_ref17, 2),
+            b = _ref18[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
     }
     if (!/FXLion Nano/i.test(current)) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref23) {
-        var _ref24 = _slicedToArray(_ref23, 1),
-          name = _ref24[0];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref19) {
+        var _ref20 = _slicedToArray(_ref19, 1),
+          name = _ref20[0];
         return name !== 'FX-Lion NANO Dual V-Mount Hot-Swap Plate';
       }));
     }
     var totalCurrentLow = totalCurrent12Elem && typeof totalCurrent12Elem.textContent === 'string' ? parseFloat(totalCurrent12Elem.textContent) : 0;
     if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref25) {
-        var _ref26 = _slicedToArray(_ref25, 2),
-          info = _ref26[1];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref21) {
+        var _ref22 = _slicedToArray(_ref21, 2),
+          info = _ref22[1];
         var pinLimit = parseBatteryCurrentLimit(info && info.pinA);
         return !Number.isFinite(pinLimit) || pinLimit >= totalCurrentLow;
       }));
@@ -6613,11 +6102,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               element.textContent = text;
             };
             createHelpLink = function createHelpLink(href, text) {
-              var _ref73 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-                target = _ref73.target,
-                highlight = _ref73.highlight,
-                _ref73$isButton = _ref73.isButton,
-                isButton = _ref73$isButton === void 0 ? true : _ref73$isButton;
+              var _ref69 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+                target = _ref69.target,
+                highlight = _ref69.highlight,
+                _ref69$isButton = _ref69.isButton,
+                isButton = _ref69$isButton === void 0 ? true : _ref69$isButton;
               if (!doc) {
                 return null;
               }
@@ -6852,6 +6341,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 link.setAttribute("title", helpText);
                 link.setAttribute("data-help", helpText);
               } else {
+                if (navKey === 'projectRequirementsNav') {
+                  console.warn("[Cine Power Planner] Missing help text for ".concat(navKey, " in lang ").concat(lang));
+                }
                 link.removeAttribute("title");
                 link.removeAttribute("data-help");
               }
@@ -7574,12 +7066,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             cameraColorHelpTemplate = texts[lang].cameraColorInputHelp || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.cameraColorInputHelp) || '';
             cameraColorLabelEntries = [['A', cameraColorALabel, cameraColorA], ['B', cameraColorBLabel, cameraColorB], ['C', cameraColorCLabel, cameraColorC], ['D', cameraColorDLabel, cameraColorD], ['E', cameraColorELabel, cameraColorE]];
-            cameraColorLabelEntries.forEach(function (_ref74) {
+            cameraColorLabelEntries.forEach(function (_ref70) {
               var _texts$en76;
-              var _ref75 = _slicedToArray(_ref74, 3),
-                letter = _ref75[0],
-                labelElement = _ref75[1],
-                inputElement = _ref75[2];
+              var _ref71 = _slicedToArray(_ref70, 3),
+                letter = _ref71[0],
+                labelElement = _ref71[1],
+                inputElement = _ref71[2];
               if (!labelElement) {
                 return;
               }
@@ -8235,10 +7727,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               none: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicNone) || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearConditionLogicNone) || 'Require none of the selected values',
               multiplier: ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.autoGearConditionLogicMultiplier) || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
             };
-            Object.entries(autoGearConditionLogicSelects).forEach(function (_ref76) {
-              var _ref77 = _slicedToArray(_ref76, 2),
-                key = _ref77[0],
-                select = _ref77[1];
+            Object.entries(autoGearConditionLogicSelects).forEach(function (_ref72) {
+              var _ref73 = _slicedToArray(_ref72, 2),
+                key = _ref73[0],
+                select = _ref73[1];
               var label = autoGearConditionLogicLabels[key];
               if (label) {
                 label.textContent = logicLabelText;
@@ -9705,16 +9197,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return _setLanguage.apply(this, arguments);
   }
   var cameraSelect = document.getElementById("cameraSelect");
+  if (typeof window !== 'undefined') window.cameraSelect = cameraSelect;
   var monitorSelect = document.getElementById("monitorSelect");
+  if (typeof window !== 'undefined') window.monitorSelect = monitorSelect;
   var videoSelect = document.getElementById("videoSelect");
+  if (typeof window !== 'undefined') window.videoSelect = videoSelect;
   var videoDistributionSelect = document.getElementById("videoDistribution");
+  if (typeof window !== 'undefined') window.videoDistributionSelect = videoDistributionSelect;
   var cageSelect = document.getElementById("cageSelect");
+  if (typeof window !== 'undefined') window.cageSelect = cageSelect;
   var motorSelects = [document.getElementById("motor1Select"), document.getElementById("motor2Select"), document.getElementById("motor3Select"), document.getElementById("motor4Select")];
+  if (typeof window !== 'undefined') window.motorSelects = motorSelects;
   var controllerSelects = [document.getElementById("controller1Select"), document.getElementById("controller2Select"), document.getElementById("controller3Select"), document.getElementById("controller4Select")];
+  if (typeof window !== 'undefined') window.controllerSelects = controllerSelects;
   var distanceSelect = document.getElementById("distanceSelect");
+  if (typeof window !== 'undefined') window.distanceSelect = distanceSelect;
   var batterySelect = document.getElementById("batterySelect");
+  if (typeof window !== 'undefined') window.batterySelect = batterySelect;
   var hotswapSelect = document.getElementById("batteryHotswapSelect");
+  if (typeof window !== 'undefined') window.hotswapSelect = hotswapSelect;
   var lensSelect = document.getElementById("lenses");
+  if (typeof window !== 'undefined') window.lensSelect = lensSelect;
   var requiredScenariosSelect = document.getElementById("requiredScenarios");
   var requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
   var remoteHeadOption = requiredScenariosSelect ? requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
@@ -10076,13 +9579,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function configureIconOnlyButton(button, glyph) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!button) return;
-    var _ref27 = options || {},
-      _ref27$contextPaths = _ref27.contextPaths,
-      contextPaths = _ref27$contextPaths === void 0 ? [] : _ref27$contextPaths,
-      _ref27$fallbackContex = _ref27.fallbackContext,
-      fallbackContext = _ref27$fallbackContex === void 0 ? '' : _ref27$fallbackContex,
-      _ref27$actionKey = _ref27.actionKey,
-      actionKey = _ref27$actionKey === void 0 ? 'addEntry' : _ref27$actionKey;
+    var _ref23 = options || {},
+      _ref23$contextPaths = _ref23.contextPaths,
+      contextPaths = _ref23$contextPaths === void 0 ? [] : _ref23$contextPaths,
+      _ref23$fallbackContex = _ref23.fallbackContext,
+      fallbackContext = _ref23$fallbackContex === void 0 ? '' : _ref23$fallbackContex,
+      _ref23$actionKey = _ref23.actionKey,
+      actionKey = _ref23$actionKey === void 0 ? 'addEntry' : _ref23$actionKey;
     setButtonLabelWithIconBinding(button, '', glyph || ICON_GLYPHS.add);
     var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
     var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
@@ -10472,9 +9975,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function stopAvatarEditing() {
     var _avatarOptionsContext2, _avatarOptionsContext3;
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref28 = options || {},
-      _ref28$restoreFocus = _ref28.restoreFocus,
-      restoreFocus = _ref28$restoreFocus === void 0 ? false : _ref28$restoreFocus;
+    var _ref24 = options || {},
+      _ref24$restoreFocus = _ref24.restoreFocus,
+      restoreFocus = _ref24$restoreFocus === void 0 ? false : _ref24$restoreFocus;
     if (avatarEditSection) {
       avatarEditSection.classList.add('hidden');
     }
@@ -10510,7 +10013,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function openAvatarOptionsDialog() {
     var context = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    console.log('openAvatarOptionsDialog called', context);
     resolveContactsDomRefs();
+    console.log('avatarOptionsDialog ref:', avatarOptionsDialog);
     if (!avatarOptionsDialog) return;
     avatarOptionsContext = context || null;
     var avatarValue = typeof (context === null || context === void 0 ? void 0 : context.getAvatar) === 'function' ? context.getAvatar() : '';
@@ -11127,6 +10632,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function handleUserProfileAvatarButtonClick() {
     var profile = getUserProfileSnapshot();
     var hasAvatar = Boolean(profile && profile.avatar);
+    console.log('handleUserProfileAvatarButtonClick', {
+      hasAvatar: hasAvatar,
+      profile: profile
+    });
     if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
       try {
         userProfileAvatarInput.click();
@@ -11170,9 +10679,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function handleUserProfileAvatarInputChange() {
     if (!userProfileAvatarInput) return;
-    var _ref29 = userProfileAvatarInput.files || [],
-      _ref30 = _slicedToArray(_ref29, 1),
-      file = _ref30[0];
+    var _ref25 = userProfileAvatarInput.files || [],
+      _ref26 = _slicedToArray(_ref25, 1),
+      file = _ref26[0];
     if (!file) {
       return;
     }
@@ -11207,9 +10716,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function detachCrewRowContact(row) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!row) return;
-    var _ref31 = options || {},
-      _ref31$preserveSelect = _ref31.preserveSelect,
-      preserveSelect = _ref31$preserveSelect === void 0 ? false : _ref31$preserveSelect;
+    var _ref27 = options || {},
+      _ref27$preserveSelect = _ref27.preserveSelect,
+      preserveSelect = _ref27$preserveSelect === void 0 ? false : _ref27$preserveSelect;
     delete row.dataset.contactId;
     if (!preserveSelect) {
       var contactSelect = row.querySelector('.person-contact-select');
@@ -11285,11 +10794,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function applyContactToCrewRow(row, contact) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!row || !contact) return;
-    var _ref32 = options || {},
-      _ref32$skipDirty = _ref32.skipDirty,
-      skipDirty = _ref32$skipDirty === void 0 ? false : _ref32$skipDirty,
-      _ref32$skipAnnounceme = _ref32.skipAnnouncement,
-      skipAnnouncement = _ref32$skipAnnounceme === void 0 ? false : _ref32$skipAnnounceme;
+    var _ref28 = options || {},
+      _ref28$skipDirty = _ref28.skipDirty,
+      skipDirty = _ref28$skipDirty === void 0 ? false : _ref28$skipDirty,
+      _ref28$skipAnnounceme = _ref28.skipAnnouncement,
+      skipAnnouncement = _ref28$skipAnnounceme === void 0 ? false : _ref28$skipAnnounceme;
     var snapshot = getCrewRowSnapshot(row) || {};
     var merged = typeof createCrewRowSync === 'function' ? createCrewRowSync(snapshot, contact) : {
       role: contact.role || '',
@@ -11718,9 +11227,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarInput.addEventListener('change', function () {
-      var _ref33 = avatarInput.files || [],
-        _ref34 = _slicedToArray(_ref33, 1),
-        file = _ref34[0];
+      var _ref29 = avatarInput.files || [],
+        _ref30 = _slicedToArray(_ref29, 1),
+        file = _ref30[0];
       if (!file) return;
       readAvatarFile(file, function (dataUrl) {
         contact.avatar = dataUrl;
@@ -11748,9 +11257,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     resolveContactsDomRefs();
     if (!contactsList) return;
-    var _ref35 = options || {},
-      _ref35$focusContactId = _ref35.focusContactId,
-      focusContactId = _ref35$focusContactId === void 0 ? null : _ref35$focusContactId;
+    var _ref31 = options || {},
+      _ref31$focusContactId = _ref31.focusContactId,
+      focusContactId = _ref31$focusContactId === void 0 ? null : _ref31$focusContactId;
     while (contactsList.firstChild) {
       contactsList.removeChild(contactsList.firstChild);
     }
@@ -11803,15 +11312,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function initializeContactsModule() {
     var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDialog4, _avatarUploadInput, _avatarSaveButton, _avatarCancelButton, _avatarEditZoomInput, _avatarEditZoomInput2, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
+    console.log('initializeContactsModule called');
     resolveContactsDomRefs();
-    if (contactsInitialized) return;
-    contactsInitialized = true;
+    if (contactsInitialized && contactsList && userProfileAvatarButton) {
+      return;
+    }
+    console.log('initializeContactsModule running (re-init or first run)');
     contactsCache = loadStoredContacts();
     loadUserProfileState();
     populateUserProfileRoleSelect();
     renderContactsList();
     updateContactPickers();
     applyUserProfileToDom();
+    console.log('userProfileAvatarButton found (first-run):', !!userProfileAvatarButton);
     if (userProfileNameInput) {
       userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
       userProfileNameInput.addEventListener('blur', handleUserProfileFieldBlur);
@@ -11886,9 +11399,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return contactsImportInput.click();
       });
       contactsImportInput.addEventListener('change', function () {
-        var _ref36 = contactsImportInput.files || [],
-          _ref37 = _slicedToArray(_ref36, 1),
-          file = _ref37[0];
+        var _ref32 = contactsImportInput.files || [],
+          _ref33 = _slicedToArray(_ref32, 1),
+          file = _ref33[0];
         if (!file) return;
         file.text().then(function (text) {
           return mergeImportedContacts(parseVCard(text));
@@ -11948,6 +11461,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       event.preventDefault();
       openDialog(contactsDialog);
     });
+    if (contactsList && userProfileAvatarButton) {
+      contactsInitialized = true;
+    }
   }
   function createCrewRow() {
     var _texts$en, _texts$currentLang, _texts$currentLang2, _texts$en2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4;
@@ -12167,9 +11683,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
     avatarFileInput.addEventListener('change', function () {
-      var _ref38 = avatarFileInput.files || [],
-        _ref39 = _slicedToArray(_ref38, 1),
-        file = _ref39[0];
+      var _ref34 = avatarFileInput.files || [],
+        _ref35 = _slicedToArray(_ref34, 1),
+        file = _ref35[0];
       if (file) {
         handleAvatarFileSelection(row, file);
       }
@@ -12400,10 +11916,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (selectedName && cameraDb[selectedName]) {
       addCameraTypes(cameraDb[selectedName]);
     }
-    Object.entries(cameraDb).forEach(function (_ref40) {
-      var _ref41 = _slicedToArray(_ref40, 2),
-        name = _ref41[0],
-        cam = _ref41[1];
+    Object.entries(cameraDb).forEach(function (_ref36) {
+      var _ref37 = _slicedToArray(_ref36, 2),
+        name = _ref37[0],
+        cam = _ref37[1];
       if (name === selectedName) return;
       addCameraTypes(cam);
     });
@@ -12444,10 +11960,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
       seen.add(value);
     };
-    Object.entries(mediaDb).forEach(function (_ref42) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        name = _ref43[0],
-        info = _ref43[1];
+    Object.entries(mediaDb).forEach(function (_ref38) {
+      var _ref39 = _slicedToArray(_ref38, 2),
+        name = _ref39[0],
+        info = _ref39[1];
       if (!name) return;
       var fields = [name, info === null || info === void 0 ? void 0 : info.model, info === null || info === void 0 ? void 0 : info.interface];
       var matches = fields.some(function (field) {
@@ -12849,14 +12365,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function showPowerWarningDialog(context) {
     var _texts$en1, _texts$en10, _texts$en11;
     if (!powerWarningDialog) return;
-    var _ref44 = context || {},
-      batteryName = _ref44.batteryName,
-      current = _ref44.current,
-      hasPinLimit = _ref44.hasPinLimit,
-      pinLimit = _ref44.pinLimit,
-      hasDtapRating = _ref44.hasDtapRating,
-      dtapLimit = _ref44.dtapLimit,
-      dtapAllowed = _ref44.dtapAllowed;
+    var _ref40 = context || {},
+      batteryName = _ref40.batteryName,
+      current = _ref40.current,
+      hasPinLimit = _ref40.hasPinLimit,
+      pinLimit = _ref40.pinLimit,
+      hasDtapRating = _ref40.hasDtapRating,
+      dtapLimit = _ref40.dtapLimit,
+      dtapAllowed = _ref40.dtapAllowed;
     var safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect === null || batterySelect === void 0 ? void 0 : batterySelect.value) || '';
     var formattedCurrent = formatCurrentValue(Number(current) || 0);
     var langTexts = texts[currentLang] || texts.en || {};
@@ -13796,10 +13312,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           addCategory(path.join('.'));
         }
       }
-      Object.entries(node).forEach(function (_ref45) {
-        var _ref46 = _slicedToArray(_ref45, 2),
-          childKey = _ref46[0],
-          value = _ref46[1];
+      Object.entries(node).forEach(function (_ref41) {
+        var _ref42 = _slicedToArray(_ref41, 2),
+          childKey = _ref42[0],
+          value = _ref42[1];
         if (childKey === 'attributes') {
           return;
         }
@@ -13813,16 +13329,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var addFromData = function addFromData(data) {
       if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-      Object.entries(data).forEach(function (_ref47) {
-        var _ref48 = _slicedToArray(_ref47, 2),
-          key = _ref48[0],
-          value = _ref48[1];
+      Object.entries(data).forEach(function (_ref43) {
+        var _ref44 = _slicedToArray(_ref43, 2),
+          key = _ref44[0],
+          value = _ref44[1];
         if (key === 'accessories') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref49) {
-              var _ref50 = _slicedToArray(_ref49, 2),
-                subKey = _ref50[0],
-                subValue = _ref50[1];
+            Object.entries(value).forEach(function (_ref45) {
+              var _ref46 = _slicedToArray(_ref45, 2),
+                subKey = _ref46[0],
+                subValue = _ref46[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("accessories.".concat(subKey));
               }
@@ -13830,10 +13346,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         } else if (key === 'fiz') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref51) {
-              var _ref52 = _slicedToArray(_ref51, 2),
-                subKey = _ref52[0],
-                subValue = _ref52[1];
+            Object.entries(value).forEach(function (_ref47) {
+              var _ref48 = _slicedToArray(_ref47, 2),
+                subKey = _ref48[0],
+                subValue = _ref48[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("fiz.".concat(subKey));
               }
@@ -14160,9 +13676,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   _populateCategoryOptions();
   function getCategoryContainer(categoryKey, subcategory) {
-    var _ref53 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref53$create = _ref53.create,
-      create = _ref53$create === void 0 ? false : _ref53$create;
+    var _ref49 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref49$create = _ref49.create,
+      create = _ref49$create === void 0 ? false : _ref49$create;
     if (!categoryKey) {
       return null;
     }
@@ -14333,12 +13849,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function formatTemperatureForDisplay(celsius) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref54 = options || {},
-      unit = _ref54.unit,
-      _ref54$lang = _ref54.lang,
-      lang = _ref54$lang === void 0 ? currentLang : _ref54$lang,
-      _ref54$includeSign = _ref54.includeSign,
-      includeSign = _ref54$includeSign === void 0 ? true : _ref54$includeSign;
+    var _ref50 = options || {},
+      unit = _ref50.unit,
+      _ref50$lang = _ref50.lang,
+      lang = _ref50$lang === void 0 ? currentLang : _ref50$lang,
+      _ref50$includeSign = _ref50.includeSign,
+      includeSign = _ref50$includeSign === void 0 ? true : _ref50$includeSign;
     var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
     var converted = convertCelsiusToUnit(celsius, resolvedUnit);
     if (!Number.isFinite(converted)) {
@@ -14525,10 +14041,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var viewfinderInputsContainerEl = resolveContainer('viewfinderVideoInputsContainer');
     var viewfinderOutputsContainerEl = resolveContainer('viewfinderVideoOutputsContainer');
     var ensureContainers = [['setViewfinders', viewfinderContainerEl], ['getViewfinders', viewfinderContainerEl], ['clearViewfinders', viewfinderContainerEl]];
-    var missingRequiredContainer = ensureContainers.some(function (_ref55) {
-      var _ref56 = _slicedToArray(_ref55, 2),
-        name = _ref56[0],
-        container = _ref56[1];
+    var missingRequiredContainer = ensureContainers.some(function (_ref51) {
+      var _ref52 = _slicedToArray(_ref51, 2),
+        name = _ref52[0],
+        container = _ref52[1];
       if (container) {
         return false;
       }
@@ -14891,6 +14407,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   exposeCoreRuntimeConstant('placeWattField', placeWattField);
+  if (typeof window !== 'undefined') window.placeWattField = placeWattField;
   var motorFieldsDiv = document.getElementById("motorFields");
   var motorConnectorInput = document.getElementById("motorConnector");
   var motorInternalInput = document.getElementById("motorInternal");
@@ -14968,9 +14485,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function updateLensFocusScaleSelectOptions() {
     var _texts11;
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-    var _ref57 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref57$preserveValue = _ref57.preserveValue,
-      preserveValue = _ref57$preserveValue === void 0 ? true : _ref57$preserveValue;
+    var _ref53 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref53$preserveValue = _ref53.preserveValue,
+      preserveValue = _ref53$preserveValue === void 0 ? true : _ref53$preserveValue;
     if (!lensFocusScaleSelect) {
       return;
     }
@@ -15245,13 +14762,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return [];
   }
   function createSchemaListControl(options) {
-    var _ref58 = options || {},
-      attrId = _ref58.attrId,
-      labelText = _ref58.labelText,
-      _ref58$values = _ref58.values,
-      values = _ref58$values === void 0 ? [] : _ref58$values,
-      _ref58$placeholder = _ref58.placeholder,
-      placeholder = _ref58$placeholder === void 0 ? '' : _ref58$placeholder;
+    var _ref54 = options || {},
+      attrId = _ref54.attrId,
+      labelText = _ref54.labelText,
+      _ref54$values = _ref54.values,
+      values = _ref54$values === void 0 ? [] : _ref54$values,
+      _ref54$placeholder = _ref54.placeholder,
+      placeholder = _ref54$placeholder === void 0 ? '' : _ref54$placeholder;
     var ensureId = typeof ensureElementId === 'function' ? ensureElementId : function (element, baseText) {
       if (!element) return '';
       if (element.id) return element.id;
@@ -16620,11 +16137,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var settingsTabData = document.getElementById('settingsTab-data');
   var settingsTabAbout = document.getElementById('settingsTab-about');
   var settingsTabIconAssignments = [[settingsTabGeneral, ICON_GLYPHS.settingsGeneral], [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear], [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility], [settingsTabBackup, ICON_GLYPHS.settingsBackup], [settingsTabData, ICON_GLYPHS.settingsData], [settingsTabAbout, ICON_GLYPHS.settingsAbout]];
-  settingsTabIconAssignments.forEach(function (_ref59) {
+  settingsTabIconAssignments.forEach(function (_ref55) {
     var _button$querySelector;
-    var _ref60 = _slicedToArray(_ref59, 2),
-      button = _ref60[0],
-      glyph = _ref60[1];
+    var _ref56 = _slicedToArray(_ref55, 2),
+      button = _ref56[0],
+      glyph = _ref56[1];
     if (!button || !glyph) return;
     var iconElement = (_button$querySelector = button.querySelector) === null || _button$querySelector === void 0 ? void 0 : _button$querySelector.call(button, '.settings-tab-icon');
     if (!iconElement) return;
@@ -16738,9 +16255,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function activateSettingsTab(tabId) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!settingsTabButtons.length) return;
-    var _ref61 = options || {},
-      _ref61$focusTab = _ref61.focusTab,
-      focusTab = _ref61$focusTab === void 0 ? false : _ref61$focusTab;
+    var _ref57 = options || {},
+      _ref57$focusTab = _ref57.focusTab,
+      focusTab = _ref57$focusTab === void 0 ? false : _ref57$focusTab;
     var target = settingsTabButtons.find(function (button) {
       return button.id === tabId;
     });
@@ -16990,9 +16507,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var section = config.section,
       select = config.select;
-    var _ref62 = options || {},
-      _ref62$flash = _ref62.flash,
-      flash = _ref62$flash === void 0 ? false : _ref62$flash;
+    var _ref58 = options || {},
+      _ref58$flash = _ref58.flash,
+      flash = _ref58$flash === void 0 ? false : _ref58$flash;
     if (section.hidden) {
       section.hidden = false;
       section.setAttribute('aria-hidden', 'false');
@@ -17219,9 +16736,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function clearAllAutoGearConditions() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref63 = options || {},
-      _ref63$preserveDraft = _ref63.preserveDraft,
-      preserveDraft = _ref63$preserveDraft === void 0 ? false : _ref63$preserveDraft;
+    var _ref59 = options || {},
+      _ref59$preserveDraft = _ref59.preserveDraft,
+      preserveDraft = _ref59$preserveDraft === void 0 ? false : _ref59$preserveDraft;
     Array.from(autoGearActiveConditions).forEach(function (key) {
       removeAutoGearCondition(key, {
         preserveDraft: preserveDraft,
@@ -17397,10 +16914,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
     autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
   }
-  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref64) {
-    var _ref65 = _slicedToArray(_ref64, 2),
-      key = _ref65[0],
-      select = _ref65[1];
+  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref60) {
+    var _ref61 = _slicedToArray(_ref60, 2),
+      key = _ref61[0],
+      select = _ref61[1];
     if (!select) return;
     var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
     var handleLogicChange = function handleLogicChange() {
@@ -17675,12 +17192,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function computeAutoGearMultiSelectSize(optionCount) {
-    var _ref66 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      fallback = _ref66.fallback,
-      _ref66$minRows = _ref66.minRows,
-      minRows = _ref66$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref66$minRows,
-      _ref66$maxRows = _ref66.maxRows,
-      maxRows = _ref66$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref66$maxRows;
+    var _ref62 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      fallback = _ref62.fallback,
+      _ref62$minRows = _ref62.minRows,
+      minRows = _ref62$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref62$minRows,
+      _ref62$maxRows = _ref62.maxRows,
+      maxRows = _ref62$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref62$maxRows;
     var effectiveFallback = Number.isFinite(fallback) && fallback >= minRows ? fallback : minRows;
     if (!Number.isFinite(optionCount) || optionCount <= 0) {
       return effectiveFallback;
@@ -17913,18 +17430,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (!options.size) {
-      getAutoGearScenarioFallbackOptions().forEach(function (_ref67) {
-        var value = _ref67.value,
-          label = _ref67.label;
+      getAutoGearScenarioFallbackOptions().forEach(function (_ref63) {
+        var value = _ref63.value,
+          label = _ref63.label;
         if (!options.has(value)) {
           options.set(value, label);
         }
       });
     }
-    return Array.from(options.entries()).map(function (_ref68) {
-      var _ref69 = _slicedToArray(_ref68, 2),
-        value = _ref69[0],
-        label = _ref69[1];
+    return Array.from(options.entries()).map(function (_ref64) {
+      var _ref65 = _slicedToArray(_ref64, 2),
+        value = _ref65[0],
+        label = _ref65[1];
       return {
         value: value,
         label: label
@@ -17943,9 +17460,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     anyOption.value = 'all';
     anyOption.textContent = anyLabel;
     autoGearFilterScenarioSelect.appendChild(anyOption);
-    options.forEach(function (_ref70) {
-      var value = _ref70.value,
-        label = _ref70.label;
+    options.forEach(function (_ref66) {
+      var value = _ref66.value,
+        label = _ref66.label;
       var option = document.createElement('option');
       option.value = value;
       option.textContent = label;
@@ -18108,10 +17625,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var crewRoleMap = langTexts.crewRoles || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.crewRoles) || {};
     var seen = new Set();
     var entries = [];
-    Object.entries(crewRoleMap).forEach(function (_ref71) {
-      var _ref72 = _slicedToArray(_ref71, 2),
-        value = _ref72[0],
-        label = _ref72[1];
+    Object.entries(crewRoleMap).forEach(function (_ref67) {
+      var _ref68 = _slicedToArray(_ref67, 2),
+        value = _ref68[0],
+        label = _ref68[1];
       if (typeof value !== 'string') return;
       var trimmedValue = value.trim();
       if (!trimmedValue) return;
@@ -18232,4 +17749,5 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
   });
+  scheduleLayoutInitialization();
 }

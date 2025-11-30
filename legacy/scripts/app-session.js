@@ -3976,9 +3976,17 @@ function resetSelectsToNone(selects) {
     }
   });
 }
+var _loadSession = typeof window !== 'undefined' && typeof window.loadSession === 'function' ? window.loadSession : function loadSessionFallback() {
+  return typeof loadSessionState === 'function' ? loadSessionState() : null;
+};
+var _storeSession = typeof window !== 'undefined' && typeof window.storeSession === 'function' ? window.storeSession : function storeSessionFallback(state) {
+  if (typeof saveSessionState === 'function') {
+    saveSessionState(state);
+  }
+};
 function restoreSessionState() {
   restoringSession = true;
-  var loadedState = loadSession();
+  var loadedState = _loadSession();
   var state = loadedState && _typeof(loadedState) === 'object' ? _objectSpread({}, loadedState) : null;
   if (state) {
     var savedBattery = typeof state.battery === 'string' ? state.battery : '';
@@ -14671,6 +14679,12 @@ if (helpButton && helpDialog) {
     if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
       hideHoverHelpTooltip();
       return;
+    }
+    if (detailText.length === 0 && shortcutList.length === 0) {
+      if (!hasLabel || label.trim() === '') {
+        hideHoverHelpTooltip();
+        return;
+      }
     }
     hoverHelpTooltip.textContent = '';
     if (hasLabel) {
