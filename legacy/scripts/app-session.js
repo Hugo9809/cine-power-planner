@@ -10495,8 +10495,8 @@ function _refreshStoragePersistenceStatus() {
       quotaValue,
       estimate,
       _args2 = arguments,
-      _t3,
-      _t4;
+      _t4,
+      _t5;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.p = _context2.n) {
         case 0:
@@ -10552,8 +10552,8 @@ function _refreshStoragePersistenceStatus() {
           break;
         case 6:
           _context2.p = 6;
-          _t3 = _context2.v;
-          console.warn('Unable to determine persistent storage state', _t3);
+          _t4 = _context2.v;
+          console.warn('Unable to determine persistent storage state', _t4);
         case 7:
           usageValue = storagePersistenceState.usage;
           quotaValue = storagePersistenceState.quota;
@@ -10578,8 +10578,8 @@ function _refreshStoragePersistenceStatus() {
           break;
         case 10:
           _context2.p = 10;
-          _t4 = _context2.v;
-          console.warn('Unable to estimate storage usage', _t4);
+          _t5 = _context2.v;
+          console.warn('Unable to estimate storage usage', _t5);
         case 11:
           if (!(checkToken !== storagePersistenceCheckToken)) {
             _context2.n = 12;
@@ -10610,7 +10610,7 @@ function handleStoragePersistenceRequest(_x3) {
 }
 function _handleStoragePersistenceRequest() {
   _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee3(event) {
-    var storageManager, supportsPersist, granted, alreadyGranted, result, _t5;
+    var storageManager, supportsPersist, granted, alreadyGranted, result, _t6;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.p = _context3.n) {
         case 0:
@@ -10675,9 +10675,9 @@ function _handleStoragePersistenceRequest() {
           break;
         case 8:
           _context3.p = 8;
-          _t5 = _context3.v;
-          storagePersistenceState.lastError = _t5;
-          console.warn('Persistent storage request failed', _t5);
+          _t6 = _context3.v;
+          storagePersistenceState.lastError = _t6;
+          console.warn('Persistent storage request failed', _t6);
         case 9:
           storagePersistenceState.requestInFlight = false;
           storagePersistenceState.lastRequestDenied = !(granted || alreadyGranted);
@@ -11398,7 +11398,7 @@ if (factoryResetButton) {
       danger: true,
       onConfirm: function () {
         var _onConfirm = _asyncToGenerator(_regenerator().m(function _callee() {
-          var errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2;
+          var errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2, _t3;
           return _regenerator().w(function (_context) {
             while (1) switch (_context.p = _context.n) {
               case 0:
@@ -11525,154 +11525,159 @@ if (factoryResetButton) {
                 showNotification('error', _errorMsg);
                 return _context.a(2);
               case 17:
-                try {
-                  factoryResetInProgress = true;
-                  if (typeof globalThis !== 'undefined') {
-                    try {
-                      globalThis.__cameraPowerPlannerFactoryResetting = true;
-                    } catch (flagError) {
-                      console.warn('Unable to flag factory reset on global scope', flagError);
-                    }
-                  }
-                  if (projectAutoSaveTimer) {
-                    clearTimeout(projectAutoSaveTimer);
-                    projectAutoSaveTimer = null;
-                  }
+                _context.p = 17;
+                factoryResetInProgress = true;
+                if (typeof globalThis !== 'undefined') {
                   try {
-                    stopPinkModeIconRotation();
-                    stopPinkModeAnimatedIcons();
-                  } catch (animationError) {
-                    console.warn('Failed to stop pink mode animations during factory reset', animationError);
+                    globalThis.__cameraPowerPlannerFactoryResetting = true;
+                  } catch (flagError) {
+                    console.warn('Unable to flag factory reset on global scope', flagError);
                   }
-                  clearAllData();
-                  try {
-                    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-                      eventName = 'cameraPowerPlannerFactoryReset';
-                      eventInstance = null;
-                      if (typeof window.CustomEvent === 'function') {
-                        eventInstance = new window.CustomEvent(eventName);
-                      } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
-                        eventInstance = document.createEvent('Event');
-                        eventInstance.initEvent(eventName, false, false);
-                      }
-                      if (eventInstance) {
-                        window.dispatchEvent(eventInstance);
-                      }
-                    }
-                  } catch (factoryResetEventError) {
-                    console.warn('Failed to dispatch factory reset event', factoryResetEventError);
-                  }
-                  try {
-                    resetPlannerStateAfterFactoryReset();
-                  } catch (resetError) {
-                    console.warn('Failed to reset planner state after factory reset', resetError);
-                  }
-                  try {
-                    setThemePreference(false, {
-                      persist: true
-                    });
-                  } catch (darkError) {
-                    console.warn('Failed to reset dark mode during factory reset', darkError);
-                  }
-                  try {
-                    highContrastEnabled = false;
-                    applyHighContrast(false);
-                    if (settingsHighContrast) {
-                      settingsHighContrast.checked = false;
-                    }
-                  } catch (contrastError) {
-                    console.warn('Failed to reset high contrast during factory reset', contrastError);
-                  }
-                  try {
-                    pinkModeEnabled = false;
-                    applyPinkMode(false);
-                    rememberSettingsPinkModeBaseline();
-                  } catch (pinkError) {
-                    console.warn('Failed to reset pink mode during factory reset', pinkError);
-                  }
-                  showAutoBackups = false;
-                  if (settingsShowAutoBackups) {
-                    settingsShowAutoBackups.checked = false;
-                  }
-                  try {
-                    accentColor = DEFAULT_ACCENT_COLOR;
-                    prevAccentColor = DEFAULT_ACCENT_COLOR;
-                    clearAccentColorOverrides();
-                    applyAccentColor(accentColor);
-                    if (accentColorInput) {
-                      accentColorInput.value = DEFAULT_ACCENT_COLOR;
-                    }
-                    if (typeof updateAccentColorResetButtonState === 'function') {
-                      updateAccentColorResetButtonState();
-                    }
-                  } catch (accentError) {
-                    console.warn('Failed to reset accent color during factory reset', accentError);
-                  }
-                  try {
-                    resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-                    if (resetMountVoltagePreferencesFn) {
-                      resetMountVoltagePreferencesFn({
-                        persist: true,
-                        triggerUpdate: true
-                      });
-                    } else {
-                      warnMissingMountVoltageHelper('resetMountVoltagePreferences');
-                    }
-                    updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-                    if (updateMountVoltageInputsFromStateFn) {
-                      updateMountVoltageInputsFromStateFn();
-                    } else {
-                      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
-                    }
-                    rememberSettingsMountVoltagesBaseline();
-                  } catch (voltageResetError) {
-                    console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
-                  }
-                  try {
-                    fontSize = '16';
-                    applyFontSizeSafe(fontSize);
-                    if (settingsFontSize) {
-                      settingsFontSize.value = fontSize;
-                    }
-                  } catch (fontSizeError) {
-                    console.warn('Failed to reset font size during factory reset', fontSizeError);
-                  }
-                  try {
-                    fontFamily = "'Ubuntu', sans-serif";
-                    applyFontFamilySafe(fontFamily);
-                    if (settingsFontFamily) {
-                      settingsFontFamily.value = fontFamily;
-                    }
-                  } catch (fontFamilyError) {
-                    console.warn('Failed to reset font family during factory reset', fontFamilyError);
-                  }
-                  if (settingsDialog) {
-                    settingsDialog.setAttribute('hidden', '');
-                  }
-                  successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
-                  showNotification('success', successMsg);
-                  setTimeout(function () {
-                    if (typeof window !== 'undefined' && window.location && window.location.reload) {
-                      window.location.reload();
-                    }
-                  }, 600);
-                } catch (error) {
-                  console.error('Factory reset failed', error);
-                  factoryResetInProgress = false;
-                  if (typeof globalThis !== 'undefined') {
-                    try {
-                      delete globalThis.__cameraPowerPlannerFactoryResetting;
-                    } catch (cleanupError) {
-                      console.warn('Unable to clear factory reset flag from global scope', cleanupError);
-                    }
-                  }
-                  _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-                  showNotification('error', _errorMsg2);
                 }
+                if (projectAutoSaveTimer) {
+                  clearTimeout(projectAutoSaveTimer);
+                  projectAutoSaveTimer = null;
+                }
+                try {
+                  stopPinkModeIconRotation();
+                  stopPinkModeAnimatedIcons();
+                } catch (animationError) {
+                  console.warn('Failed to stop pink mode animations during factory reset', animationError);
+                }
+                _context.n = 18;
+                return clearAllData();
               case 18:
+                try {
+                  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                    eventName = 'cameraPowerPlannerFactoryReset';
+                    eventInstance = null;
+                    if (typeof window.CustomEvent === 'function') {
+                      eventInstance = new window.CustomEvent(eventName);
+                    } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+                      eventInstance = document.createEvent('Event');
+                      eventInstance.initEvent(eventName, false, false);
+                    }
+                    if (eventInstance) {
+                      window.dispatchEvent(eventInstance);
+                    }
+                  }
+                } catch (factoryResetEventError) {
+                  console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+                }
+                try {
+                  resetPlannerStateAfterFactoryReset();
+                } catch (resetError) {
+                  console.warn('Failed to reset planner state after factory reset', resetError);
+                }
+                try {
+                  setThemePreference(false, {
+                    persist: true
+                  });
+                } catch (darkError) {
+                  console.warn('Failed to reset dark mode during factory reset', darkError);
+                }
+                try {
+                  highContrastEnabled = false;
+                  applyHighContrast(false);
+                  if (settingsHighContrast) {
+                    settingsHighContrast.checked = false;
+                  }
+                } catch (contrastError) {
+                  console.warn('Failed to reset high contrast during factory reset', contrastError);
+                }
+                try {
+                  pinkModeEnabled = false;
+                  applyPinkMode(false);
+                  rememberSettingsPinkModeBaseline();
+                } catch (pinkError) {
+                  console.warn('Failed to reset pink mode during factory reset', pinkError);
+                }
+                showAutoBackups = false;
+                if (settingsShowAutoBackups) {
+                  settingsShowAutoBackups.checked = false;
+                }
+                try {
+                  accentColor = DEFAULT_ACCENT_COLOR;
+                  prevAccentColor = DEFAULT_ACCENT_COLOR;
+                  clearAccentColorOverrides();
+                  applyAccentColor(accentColor);
+                  if (accentColorInput) {
+                    accentColorInput.value = DEFAULT_ACCENT_COLOR;
+                  }
+                  if (typeof updateAccentColorResetButtonState === 'function') {
+                    updateAccentColorResetButtonState();
+                  }
+                } catch (accentError) {
+                  console.warn('Failed to reset accent color during factory reset', accentError);
+                }
+                try {
+                  resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+                  if (resetMountVoltagePreferencesFn) {
+                    resetMountVoltagePreferencesFn({
+                      persist: true,
+                      triggerUpdate: true
+                    });
+                  } else {
+                    warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+                  }
+                  updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+                  if (updateMountVoltageInputsFromStateFn) {
+                    updateMountVoltageInputsFromStateFn();
+                  } else {
+                    warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+                  }
+                  rememberSettingsMountVoltagesBaseline();
+                } catch (voltageResetError) {
+                  console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
+                }
+                try {
+                  fontSize = '16';
+                  applyFontSizeSafe(fontSize);
+                  if (settingsFontSize) {
+                    settingsFontSize.value = fontSize;
+                  }
+                } catch (fontSizeError) {
+                  console.warn('Failed to reset font size during factory reset', fontSizeError);
+                }
+                try {
+                  fontFamily = "'Ubuntu', sans-serif";
+                  applyFontFamilySafe(fontFamily);
+                  if (settingsFontFamily) {
+                    settingsFontFamily.value = fontFamily;
+                  }
+                } catch (fontFamilyError) {
+                  console.warn('Failed to reset font family during factory reset', fontFamilyError);
+                }
+                if (settingsDialog) {
+                  settingsDialog.setAttribute('hidden', '');
+                }
+                successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
+                showNotification('success', successMsg);
+                setTimeout(function () {
+                  if (typeof window !== 'undefined' && window.location && window.location.reload) {
+                    window.location.reload();
+                  }
+                }, 600);
+                _context.n = 20;
+                break;
+              case 19:
+                _context.p = 19;
+                _t3 = _context.v;
+                console.error('Factory reset failed', _t3);
+                factoryResetInProgress = false;
+                if (typeof globalThis !== 'undefined') {
+                  try {
+                    delete globalThis.__cameraPowerPlannerFactoryResetting;
+                  } catch (cleanupError) {
+                    console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+                  }
+                }
+                _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+                showNotification('error', _errorMsg2);
+              case 20:
                 return _context.a(2);
             }
-          }, _callee, null, [[8, 10], [3, 5]]);
+          }, _callee, null, [[17, 19], [8, 10], [3, 5]]);
         }));
         function onConfirm() {
           return _onConfirm.apply(this, arguments);
@@ -12716,7 +12721,7 @@ function collectServiceWorkerRegistrationsForReload(_x4) {
 }
 function _collectServiceWorkerRegistrationsForReload() {
   _collectServiceWorkerRegistrationsForReload = _asyncToGenerator(_regenerator().m(function _callee4(serviceWorker) {
-    var registrations, pushRegistration, regs, reg, readyReg, _t6, _t7;
+    var registrations, pushRegistration, regs, reg, readyReg, _t7, _t8;
     return _regenerator().w(function (_context4) {
       while (1) switch (_context4.p = _context4.n) {
         case 0:
@@ -12773,15 +12778,15 @@ function _collectServiceWorkerRegistrationsForReload() {
           break;
         case 9:
           _context4.p = 9;
-          _t6 = _context4.v;
-          console.warn('Failed to await active service worker', _t6);
+          _t7 = _context4.v;
+          console.warn('Failed to await active service worker', _t7);
         case 10:
           _context4.n = 12;
           break;
         case 11:
           _context4.p = 11;
-          _t7 = _context4.v;
-          console.warn('Failed to query service worker registrations', _t7);
+          _t8 = _context4.v;
+          console.warn('Failed to query service worker registrations', _t8);
         case 12:
           return _context4.a(2, registrations);
       }
@@ -12794,7 +12799,7 @@ function clearCachesAndReload() {
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee7() {
-    var sessionNavigator, reloadFallback, offlineModule, beforeReloadHref, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t0, _t1, _t10;
+    var sessionNavigator, reloadFallback, offlineModule, beforeReloadHref, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t1, _t10, _t11;
     return _regenerator().w(function (_context7) {
       while (1) switch (_context7.p = _context7.n) {
         case 0:
@@ -12870,8 +12875,8 @@ function _clearCachesAndReload() {
           break;
         case 6:
           _context7.p = 6;
-          _t0 = _context7.v;
-          console.warn('Offline module reload failed, falling back to manual refresh', _t0);
+          _t1 = _context7.v;
+          console.warn('Offline module reload failed, falling back to manual refresh', _t1);
         case 7:
           uiCacheCleared = false;
           try {
@@ -12894,7 +12899,7 @@ function _clearCachesAndReload() {
           cacheCleanupPromise = Promise.resolve(false);
           if (serviceWorkerLike) {
             serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
-              var _registrations, _t8;
+              var _registrations, _t9;
               return _regenerator().w(function (_context5) {
                 while (1) switch (_context5.p = _context5.n) {
                   case 0:
@@ -12923,8 +12928,8 @@ function _clearCachesAndReload() {
                     return _context5.a(2, true);
                   case 4:
                     _context5.p = 4;
-                    _t8 = _context5.v;
-                    console.warn('Service worker cleanup failed', _t8);
+                    _t9 = _context5.v;
+                    console.warn('Service worker cleanup failed', _t9);
                     return _context5.a(2, false);
                 }
               }, _callee5, null, [[0, 4]]);
@@ -12932,7 +12937,7 @@ function _clearCachesAndReload() {
           }
           if (sessionCaches && typeof sessionCaches.keys === 'function') {
             cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee6() {
-              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t9;
+              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t0;
               return _regenerator().w(function (_context6) {
                 while (1) switch (_context6.p = _context6.n) {
                   case 0:
@@ -12976,8 +12981,8 @@ function _clearCachesAndReload() {
                     return _context6.a(2, removedAny);
                   case 5:
                     _context6.p = 5;
-                    _t9 = _context6.v;
-                    console.warn('Cache clear failed', _t9);
+                    _t0 = _context6.v;
+                    console.warn('Cache clear failed', _t0);
                     return _context6.a(2, false);
                 }
               }, _callee6, null, [[0, 5]]);
@@ -13005,8 +13010,8 @@ function _clearCachesAndReload() {
           break;
         case 10:
           _context7.p = 10;
-          _t1 = _context7.v;
-          console.warn('Service worker cleanup failed', _t1);
+          _t10 = _context7.v;
+          console.warn('Service worker cleanup failed', _t10);
         case 11:
           _context7.p = 11;
           if (controllerChangeWatcher && typeof controllerChangeWatcher.cancel === 'function') {
@@ -13041,8 +13046,8 @@ function _clearCachesAndReload() {
           break;
         case 15:
           _context7.p = 15;
-          _t10 = _context7.v;
-          console.warn('Cache clear failed', _t10);
+          _t11 = _context7.v;
+          console.warn('Cache clear failed', _t11);
         case 16:
           return _context7.a(2);
       }
@@ -14019,25 +14024,6 @@ if (helpButton && helpDialog) {
       closeHelp();
     }
   };
-  var helpMobileToggle = document.getElementById('helpMobileToggle');
-  var helpSidebar = helpDialog ? helpDialog.querySelector('.mockup-sidebar') : null;
-  if (helpMobileToggle && helpDialog) {
-    helpMobileToggle.addEventListener('click', function () {
-      helpDialog.classList.toggle('sidebar-open');
-    });
-    helpDialog.addEventListener('click', function (e) {
-      if (window.innerWidth <= 768 && helpDialog.classList.contains('sidebar-open') && !e.target.closest('.mockup-sidebar') && !e.target.closest('.help-mobile-toggle')) {
-        helpDialog.classList.remove('sidebar-open');
-      }
-    });
-    helpDialog.addEventListener('click', function (e) {
-      if (window.innerWidth <= 768 && e.target.closest('button') && helpDialog.classList.contains('sidebar-open')) {
-        if (e.target.closest('.help-topic-link') || e.target.closest('#helpQuickLinksList button')) {
-          helpDialog.classList.remove('sidebar-open');
-        }
-      }
-    });
-  }
   var hoverHelpActive = false;
   var hoverHelpTooltip;
   var hoverHelpCurrentTarget = null;

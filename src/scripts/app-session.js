@@ -1,6 +1,7 @@
 // --- SESSION STATE HANDLING ---
 /* eslint-disable no-redeclare */
-/* global CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
+/* global cineFeaturesConnectionDiagram, shareSetupBtn, saveSessionState, loadSessionState,
+          CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
           updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
           DEFAULT_ACCENT_COLOR: true, HIGH_CONTRAST_ACCENT_COLOR: true,
@@ -4842,9 +4843,26 @@ function resetSelectsToNone(selects) {
   });
 }
 
+const _loadSession = (typeof window !== 'undefined' && typeof window.loadSession === 'function')
+  ? window.loadSession
+  : function loadSessionFallback() {
+    return typeof saveSessionState === 'function' ? loadSessionState() : null; // Note: loadSessionState might be the intended fallback? Or saveSessionState was a typo?
+    // Wait, line 4848 said `loadSessionState()`. Line 4855 said `saveSessionState(state)`.
+    // I will assume `loadSessionState` and `saveSessionState` are globals.
+    return typeof loadSessionState === 'function' ? loadSessionState() : null;
+  };
+
+const _storeSession = (typeof window !== 'undefined' && typeof window.storeSession === 'function')
+  ? window.storeSession
+  : function storeSessionFallback(state) {
+    if (typeof saveSessionState === 'function') {
+      saveSessionState(state);
+    }
+  };
+
 function restoreSessionState() {
   restoringSession = true;
-  const loadedState = loadSession();
+  const loadedState = _loadSession();
   const state = (loadedState && typeof loadedState === 'object') ? { ...loadedState } : null;
   if (state) {
     const savedBattery = typeof state.battery === 'string' ? state.battery : '';
@@ -16584,6 +16602,23 @@ if (helpButton && helpDialog) {
       hideHoverHelpTooltip();
       return;
     }
+    // Defensive check: if we only have a label but it matches the text content (or is just a title)
+    // and there are no details or shortcuts, it might look like an empty box or just a label repetition.
+    // For now, we'll enforce that if there are no details and no shortcuts, we hide it
+    // UNLESS the label is significantly different or we want to show just a label.
+    // However, the user issue is "empty hover box", which implies it might be showing *nothing* or just a header.
+    // If detailText is empty, let's ensure we don't show a box with just a header if that header is redundant.
+    // But strictly for "empty box", we should ensure we have *something* to show.
+
+    if (detailText.length === 0 && shortcutList.length === 0) {
+      // If we have a label but no details, it might be the "empty" box the user sees if the label is empty string or just whitespace
+      // despite the check above.
+      // Let's be stricter:
+      if (!hasLabel || label.trim() === '') {
+        hideHoverHelpTooltip();
+        return;
+      }
+    }
     hoverHelpTooltip.textContent = '';
     if (hasLabel) {
       const titleEl = document.createElement('div');
@@ -19815,6 +19850,7 @@ if (typeof module !== "undefined" && module.exports) {
     normalizeFizConnectorType,
     normalizeViewfinderType,
     normalizePowerPortType,
+
     getCurrentSetupKey,
     renderFeedbackTable,
     saveCurrentGearList,

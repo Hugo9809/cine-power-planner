@@ -316,268 +316,6 @@ var _ref3 = pinkModeSupportApiRef || {},
   PINK_MODE_ICON_ANIMATION_CLASS = _ref3.PINK_MODE_ICON_ANIMATION_CLASS,
   PINK_MODE_ICON_ANIMATION_RESET_DELAY = _ref3.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
   PINK_MODE_ICON_FALLBACK_MARKUP = _ref3.PINK_MODE_ICON_FALLBACK_MARKUP;
-var VALID_ICON_FONTS = function createValidIconFontSet() {
-  if ((typeof ICON_FONT_KEYS === "undefined" ? "undefined" : _typeof(ICON_FONT_KEYS)) !== 'object' || !ICON_FONT_KEYS) {
-    return new Set();
-  }
-  var fonts = Object.values(ICON_FONT_KEYS).filter(function (font) {
-    return typeof font === 'string' && font;
-  });
-  return new Set(fonts);
-}();
-function toCodePointChar(value, radix) {
-  var codePoint = parseInt(value, radix);
-  if (!Number.isFinite(codePoint) || codePoint < 0) {
-    return '';
-  }
-  if (typeof String.fromCodePoint === 'function') {
-    try {
-      return String.fromCodePoint(codePoint);
-    } catch (rangeError) {
-      void rangeError;
-    }
-  }
-  if (codePoint <= 0xffff) {
-    return String.fromCharCode(codePoint);
-  }
-  return '';
-}
-function normalizeGlyphChar(char) {
-  if (typeof char !== 'string') {
-    return '';
-  }
-  var trimmed = char.trim();
-  if (!trimmed) {
-    return '';
-  }
-  var unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
-  if (unicodeMatch) {
-    var decoded = toCodePointChar(unicodeMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-  var unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
-  if (unicodeBraceMatch) {
-    var _decoded = toCodePointChar(unicodeBraceMatch[1], 16);
-    if (_decoded) {
-      return _decoded;
-    }
-  }
-  var hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
-  if (hexEntityMatch) {
-    var _decoded2 = toCodePointChar(hexEntityMatch[1], 16);
-    if (_decoded2) {
-      return _decoded2;
-    }
-  }
-  var decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
-  if (decimalEntityMatch) {
-    var _decoded3 = toCodePointChar(decimalEntityMatch[1], 10);
-    if (_decoded3) {
-      return _decoded3;
-    }
-  }
-  return trimmed;
-}
-function iconGlyph(char) {
-  var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
-  var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-  var normalizedChar = normalizeGlyphChar(char);
-  var glyph = {
-    char: normalizedChar,
-    font: normalizedFont
-  };
-  return typeof Object.freeze === 'function' ? Object.freeze(glyph) : glyph;
-}
-function resolveIconGlyph(glyph) {
-  if (!glyph) {
-    return {
-      char: '',
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  if (glyph.markup) {
-    var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    return {
-      markup: glyph.markup,
-      className: glyph.className || '',
-      font: ICON_FONT_KEYS.UICONS,
-      size: size
-    };
-  }
-  if (typeof glyph === 'string') {
-    return {
-      char: normalizeGlyphChar(glyph),
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  if (_typeof(glyph) === 'object') {
-    var char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
-    var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
-    var className = typeof glyph.className === 'string' ? glyph.className : '';
-    var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    if (glyph.markup) {
-      return {
-        markup: glyph.markup,
-        className: className,
-        font: fontKey,
-        size: _size
-      };
-    }
-    return {
-      char: char,
-      font: fontKey,
-      className: className,
-      size: _size
-    };
-  }
-  return {
-    char: '',
-    font: ICON_FONT_KEYS.UICONS,
-    className: '',
-    size: undefined
-  };
-}
-function applyIconGlyph(element, glyph) {
-  if (!element) return;
-  var resolved = resolveIconGlyph(glyph);
-  if (resolved.markup) {
-    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-    element.setAttribute('aria-hidden', 'true');
-    if (resolved.className) {
-      resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
-        return element.classList.add(cls);
-      });
-    }
-    element.removeAttribute('data-icon-font');
-    return;
-  }
-  var char = resolved.char || '';
-  element.textContent = char;
-  if (char) {
-    element.setAttribute('data-icon-font', resolved.font);
-  } else {
-    element.removeAttribute('data-icon-font');
-  }
-}
-function formatSvgCoordinate(value) {
-  if (!Number.isFinite(value)) return '0';
-  var rounded = Math.round(value * 100) / 100;
-  if (Number.isInteger(rounded)) return String(rounded);
-  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-}
-function positionSvgMarkup(markup, centerX, centerY) {
-  var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
-  if (typeof markup !== 'string') {
-    return {
-      markup: '',
-      x: '0',
-      y: '0'
-    };
-  }
-  var trimmed = markup.trim();
-  if (!trimmed) {
-    return {
-      markup: '',
-      x: '0',
-      y: '0'
-    };
-  }
-  var half = size / 2;
-  var x = formatSvgCoordinate(centerX);
-  var y = formatSvgCoordinate(centerY);
-  var width = formatSvgCoordinate(size);
-  var height = formatSvgCoordinate(size);
-  var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
-    var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
-    var additions = [];
-    if (!/(?:^|\s)width\s*=/i.test(attrText)) additions.push("width=\"".concat(width, "\""));
-    if (!/(?:^|\s)height\s*=/i.test(attrText)) additions.push("height=\"".concat(height, "\""));
-    additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
-    additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
-    attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
-    return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
-  });
-  return {
-    markup: cleaned,
-    x: x,
-    y: y
-  };
-}
-var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
-var ICON_GLYPHS = Object.freeze({
-  batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
-  batteryFull: iconGlyph("\uE1A9", ICON_FONT_KEYS.UICONS),
-  bolt: iconGlyph("\uF1F8", ICON_FONT_KEYS.ESSENTIAL),
-  plug: iconGlyph("\uEE75", ICON_FONT_KEYS.UICONS),
-  sliders: iconGlyph("\uF143", ICON_FONT_KEYS.ESSENTIAL),
-  screen: iconGlyph("\uF11D", ICON_FONT_KEYS.GADGET),
-  brightness: iconGlyph("\uE2B3", ICON_FONT_KEYS.UICONS),
-  wifi: iconGlyph("\uF4AC", ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
-  controller: iconGlyph("\uF117", ICON_FONT_KEYS.GADGET),
-  distance: iconGlyph("\uEFB9", ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph("\uEC2B", ICON_FONT_KEYS.UICONS),
-  viewfinder: iconGlyph("\uF114", ICON_FONT_KEYS.FILM),
-  camera: iconGlyph("\uE333", ICON_FONT_KEYS.UICONS),
-  trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
-  reload: iconGlyph("\uF202", ICON_FONT_KEYS.ESSENTIAL),
-  load: iconGlyph("\uE0E0", ICON_FONT_KEYS.UICONS),
-  installApp: iconGlyph("\uE9D4", ICON_FONT_KEYS.UICONS),
-  add: Object.freeze({
-    char: '+',
-    font: ICON_FONT_KEYS.TEXT,
-    className: 'icon-text'
-  }),
-  minus: Object.freeze({
-    char: '−',
-    font: ICON_FONT_KEYS.TEXT,
-    className: 'icon-text'
-  }),
-  arrowLeft: Object.freeze({
-    char: '←',
-    font: ICON_FONT_KEYS.TEXT,
-    className: 'icon-text'
-  }),
-  check: iconGlyph("\uE3D8", ICON_FONT_KEYS.UICONS),
-  fileExport: iconGlyph("\uE7AB", ICON_FONT_KEYS.UICONS),
-  fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
-  save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
-  share: iconGlyph("\uF219", ICON_FONT_KEYS.ESSENTIAL),
-  paperPlane: iconGlyph("\uED67", ICON_FONT_KEYS.UICONS),
-  magnet: iconGlyph("\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
-  codec: iconGlyph("\uE4CD", ICON_FONT_KEYS.UICONS),
-  timecode: iconGlyph("\uF10E", ICON_FONT_KEYS.FILM),
-  audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
-  audioOut: iconGlyph("\uF22F", ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
-  gearList: iconGlyph("\uE467", ICON_FONT_KEYS.UICONS),
-  contacts: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
-  feedback: iconGlyph("\uE791", ICON_FONT_KEYS.UICONS),
-  resetView: iconGlyph("\uEB6D", ICON_FONT_KEYS.UICONS),
-  pin: iconGlyph("\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph("\uF1FE", ICON_FONT_KEYS.UICONS),
-  moon: iconGlyph("\uEC7E", ICON_FONT_KEYS.UICONS),
-  circleX: iconGlyph("\uF131", ICON_FONT_KEYS.ESSENTIAL),
-  settingsGeneral: iconGlyph("\uE5A3", ICON_FONT_KEYS.UICONS),
-  settingsAutoGear: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
-  settingsAccessibility: iconGlyph("\uF392", ICON_FONT_KEYS.UICONS),
-  settingsBackup: iconGlyph("\uE5BD", ICON_FONT_KEYS.UICONS),
-  settingsData: iconGlyph("\uE5C7", ICON_FONT_KEYS.UICONS),
-  settingsAbout: iconGlyph("\uEA4F", ICON_FONT_KEYS.UICONS),
-  star: Object.freeze({
-    markup: STAR_ICON_SVG,
-    className: 'icon-svg favorite-star-icon'
-  }),
-  warning: iconGlyph("\uF26F", ICON_FONT_KEYS.ESSENTIAL)
-});
 function iconMarkup(glyph) {
   var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -859,7 +597,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var resolvedGlyph = glyph;
       if (typeof resolvedGlyph === 'undefined') {
         try {
-          if (_typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
+          if ((typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS && ICON_GLYPHS.save) {
             resolvedGlyph = ICON_GLYPHS.save;
           }
         } catch (glyphError) {
@@ -5150,7 +4888,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     force: true
   });
   function getBatteryPlateSupport(name) {
-    var cam = devices.cameras[name];
+    var cam = devices.cameras && devices.cameras[name];
     if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
     return cam.power.batteryPlateSupport.filter(Boolean);
   }
@@ -5268,7 +5006,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function isSelectedPlateNative(camName) {
     var plate = getSelectedPlate();
-    var cam = devices.cameras[camName];
+    var cam = (devices.cameras || {})[camName];
     if (!plate || !cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
     return cam.power.batteryPlateSupport.some(function (bp) {
       return bp.type === plate && bp.mount === 'native';
@@ -5390,7 +5128,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function cameraFizPort(camName, controllerPort) {
     var deviceName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-    var cam = devices.cameras[camName];
+    var cam = (devices.cameras || {})[camName];
     if (!cam || !Array.isArray(cam.fizConnectors) || cam.fizConnectors.length === 0) return 'LBUS';
     if (!controllerPort) return cam.fizConnectors[0].type;
     if (isArri(camName) && deviceName && !isArri(deviceName)) {
@@ -5613,7 +5351,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       populateSelect(batterySelect, getBatteriesByMount('Gold-Mount'), true);
       swaps = getHotswapsByMount('Gold-Mount');
     } else {
-      var bats = devices.batteries;
+      var bats = devices.batteries || {};
       if (!supportsB) {
         bats = Object.fromEntries(Object.entries(bats).filter(function (_ref15) {
           var _ref16 = _slicedToArray(_ref15, 2),
@@ -5853,7 +5591,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return v && v !== 'None';
     });
     var camName = cameraSelect.value;
-    var cam = devices.cameras[camName];
+    var cam = (devices.cameras || {})[camName];
     var isAmira = /Arri Amira/i.test(camName);
     var onlyCforceMiniPlus = motors.length > 0 && motors.every(function (n) {
       var lower = n.toLowerCase();
@@ -5933,7 +5671,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     var distance = distanceSelect.value;
     var camName = cameraSelect.value;
-    var cam = devices.cameras[camName];
+    var cam = (devices.cameras || {})[camName];
     var cameraHasLBUS = Array.isArray(cam === null || cam === void 0 ? void 0 : cam.fizConnectors) && cam.fizConnectors.some(function (fc) {
       return /LBUS/i.test(fc.type);
     });
@@ -6622,24 +6360,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var resolvedSaved = resolveLanguagePreference(savedLang);
     if (savedLang && resolvedSaved.matched) {
       currentLang = resolvedSaved.language;
-    } else if (typeof navigator !== "undefined") {
-      var navLangs = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language];
-      var _iterator2 = _createForOfIteratorHelper(navLangs),
-        _step2;
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var lang = _step2.value;
-          var resolvedNavigator = resolveLanguagePreference(lang);
-          if (resolvedNavigator.matched) {
-            currentLang = resolvedNavigator.language;
-            break;
-          }
-        }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
     }
   } catch (e) {
     console.warn("Could not load language from localStorage", e);
@@ -7120,7 +6840,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
               var label = texts[lang][navKey];
               if (label) {
                 if (navKey === 'contactsNav' && typeof setButtonLabelWithIconBinding === 'function' && (link === null || link === void 0 ? void 0 : link.tagName) === 'BUTTON') {
-                  setButtonLabelWithIconBinding(link, label, _typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts ? ICON_GLYPHS.contacts : iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS));
+                  setButtonLabelWithIconBinding(link, label, (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts ? ICON_GLYPHS.contacts : iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS));
                 } else {
                   link.textContent = label;
                 }
@@ -9882,26 +9602,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
                 avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
               }
-              if (avatarEditTitle && contactsTexts.avatarEditAction) {
-                avatarEditTitle.textContent = contactsTexts.avatarEditAction;
-              }
-              if (avatarEditInstructions && contactsTexts.avatarEditInstructions) {
-                avatarEditInstructions.textContent = contactsTexts.avatarEditInstructions;
-              }
               if (avatarEditZoomLabelElem && contactsTexts.avatarEditZoomLabel) {
                 avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
-              }
-              if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
-                setButtonLabelWithIconBinding(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
-                avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
-                avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
-                avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
-              }
-              if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
-                setButtonLabelWithIconBinding(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
-                avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
-                avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
-                avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
               }
               if (contactsCloseButton && contactsTexts.close) {
                 contactsCloseButton.textContent = contactsTexts.close;
@@ -10151,19 +9853,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var avatarOptionsDeleteButton = null;
   var avatarOptionsEditButton = null;
   var avatarOptionsChangeButton = null;
-  var avatarEditSection = null;
-  var avatarEditTitle = null;
-  var avatarEditInstructions = null;
   var avatarEditViewport = null;
   var avatarEditImage = null;
+  var avatarPlaceholder = null;
+  var avatarControls = null;
   var avatarEditZoomInput = null;
   var avatarEditZoomLabelElem = null;
-  var avatarEditCancelButton = null;
-  var avatarEditApplyButton = null;
   var avatarOptionsContext = null;
   var avatarEditState = null;
   var avatarEditLastViewportSize = 0;
-  var avatarDropZone = null;
   var avatarUploadInput = null;
   var avatarSaveButton = null;
   var avatarCancelButton = null;
@@ -10207,21 +9905,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarOptionsDescriptionElem = avatarOptionsDescriptionElem || document.getElementById('avatarOptionsDescription');
     avatarOptionsCloseButton = avatarOptionsCloseButton || document.getElementById('avatarOptionsClose');
     avatarOptionsCloseLabel = avatarOptionsCloseLabel || document.getElementById('avatarOptionsCloseLabel');
-    avatarOptionsPreview = avatarOptionsPreview || document.getElementById('avatarOptionsPreview');
-    avatarOptionsDeleteButton = avatarOptionsDeleteButton || document.getElementById('avatarDeleteButton');
-    avatarOptionsEditButton = avatarOptionsEditButton || document.getElementById('avatarEditButton');
-    avatarOptionsChangeButton = avatarOptionsChangeButton || document.getElementById('avatarChangeButton');
-    avatarEditSection = avatarEditSection || document.getElementById('avatarEditSection');
-    avatarEditTitle = avatarEditTitle || document.getElementById('avatarEditTitle');
-    avatarEditInstructions = avatarEditInstructions || document.getElementById('avatarEditInstructions');
     avatarEditViewport = avatarEditViewport || document.getElementById('avatarEditViewport');
     avatarEditImage = avatarEditImage || document.getElementById('avatarEditImage');
+    avatarPlaceholder = avatarPlaceholder || document.getElementById('avatarPlaceholder');
+    avatarControls = avatarControls || document.getElementById('avatarControls');
     avatarEditZoomInput = avatarEditZoomInput || document.getElementById('avatarEditZoom');
     avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
-    avatarEditCancelButton = avatarEditCancelButton || document.getElementById('avatarEditCancel');
-    avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
-    avatarDropZone = avatarDropZone || document.getElementById('avatarDropZone');
     avatarUploadInput = avatarUploadInput || document.getElementById('avatarUploadInput');
+    avatarOptionsDeleteButton = avatarOptionsDeleteButton || document.getElementById('avatarDeleteButton');
     avatarSaveButton = avatarSaveButton || document.getElementById('avatarSaveButton');
     avatarCancelButton = avatarCancelButton || document.getElementById('avatarCancelButton');
   }
@@ -10396,11 +10087,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
     var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
     var contextLabel = '';
-    var _iterator3 = _createForOfIteratorHelper(paths),
-      _step3;
+    var _iterator2 = _createForOfIteratorHelper(paths),
+      _step2;
     try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var path = _step3.value;
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var path = _step2.value;
         if (!path) continue;
         var resolved = getLocalizedPathText(path, '');
         if (resolved) {
@@ -10409,9 +10100,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
     } catch (err) {
-      _iterator3.e(err);
+      _iterator2.e(err);
     } finally {
-      _iterator3.f();
+      _iterator2.f();
     }
     if (!contextLabel && typeof fallbackContext === 'string') {
       contextLabel = fallbackContext;
@@ -10805,7 +10496,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var currentAvatar = typeof ((_avatarOptionsContext2 = avatarOptionsContext) === null || _avatarOptionsContext2 === void 0 ? void 0 : _avatarOptionsContext2.getAvatar) === 'function' ? avatarOptionsContext.getAvatar() : '';
     var fallbackName = typeof ((_avatarOptionsContext3 = avatarOptionsContext) === null || _avatarOptionsContext3 === void 0 ? void 0 : _avatarOptionsContext3.getName) === 'function' ? avatarOptionsContext.getName() : '';
     updateAvatarOptionsPreview(currentAvatar, fallbackName);
-    refreshAvatarOptionsActions();
+    updateAvatarOptionsPreview(currentAvatar, fallbackName);
   }
   function closeAvatarOptionsDialog() {
     if (!avatarOptionsDialog) return;
@@ -10826,7 +10517,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var fallbackName = typeof (context === null || context === void 0 ? void 0 : context.getName) === 'function' ? context.getName() : '';
     updateAvatarOptionsPreview(avatarValue, fallbackName);
     stopAvatarEditing();
-    refreshAvatarOptionsActions();
+    stopAvatarEditing();
     openDialog(avatarOptionsDialog);
     if (avatarOptionsChangeButton && !avatarOptionsChangeButton.disabled) {
       try {
@@ -10864,23 +10555,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var restoreHidden = false;
     var previousVisibility = '';
     var previousPointerEvents = '';
-    if (avatarEditSection && avatarEditSection.classList.contains('hidden')) {
+    if (avatarEditViewport && avatarEditViewport.classList.contains('hidden')) {
       restoreHidden = true;
-      previousVisibility = avatarEditSection.style.visibility || '';
-      previousPointerEvents = avatarEditSection.style.pointerEvents || '';
-      avatarEditSection.style.visibility = 'hidden';
-      avatarEditSection.style.pointerEvents = 'none';
-      avatarEditSection.classList.remove('hidden');
+      previousVisibility = avatarEditViewport.style.visibility || '';
+      previousPointerEvents = avatarEditViewport.style.pointerEvents || '';
+      avatarEditViewport.style.visibility = 'hidden';
+      avatarEditViewport.style.pointerEvents = 'none';
+      avatarEditViewport.classList.remove('hidden');
     }
     var viewportSize = 0;
     try {
       var viewportRect = avatarEditViewport.getBoundingClientRect();
       viewportSize = Math.round(Math.max(avatarEditViewport.offsetWidth || 0, viewportRect.width || 0, viewportRect.height || 0));
     } finally {
-      if (restoreHidden && avatarEditSection) {
-        avatarEditSection.classList.add('hidden');
-        avatarEditSection.style.visibility = previousVisibility;
-        avatarEditSection.style.pointerEvents = previousPointerEvents;
+      if (restoreHidden && avatarEditViewport) {
+        avatarEditViewport.classList.add('hidden');
+        avatarEditViewport.style.visibility = previousVisibility;
+        avatarEditViewport.style.pointerEvents = previousPointerEvents;
       }
     }
     if (!viewportSize && avatarEditLastViewportSize) {
@@ -10907,7 +10598,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     image.decoding = 'async';
     var mime = parseDataUrlMimeType(dataUrl);
     image.onload = function () {
-      var _avatarEditSection;
       if (!image.naturalWidth || !image.naturalHeight) {
         announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
         return;
@@ -10932,12 +10622,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         displayHeight: 0
       };
       avatarEditImage.src = dataUrl;
-      (_avatarEditSection = avatarEditSection) === null || _avatarEditSection === void 0 || _avatarEditSection.classList.remove('hidden');
+      if (avatarEditViewport) avatarEditViewport.classList.add('has-image');
+      if (avatarControls) avatarControls.classList.remove('hidden');
       if (avatarEditZoomInput) {
         avatarEditZoomInput.value = '100';
       }
       updateAvatarEditMetrics(avatarEditState);
-      refreshAvatarOptionsActions();
       try {
         avatarEditViewport.focus();
       } catch (error) {
@@ -10952,8 +10642,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function startAvatarEditing() {
     var _avatarOptionsContext4;
     var avatarValue = typeof ((_avatarOptionsContext4 = avatarOptionsContext) === null || _avatarOptionsContext4 === void 0 ? void 0 : _avatarOptionsContext4.getAvatar) === 'function' ? avatarOptionsContext.getAvatar() : '';
+    resolveContactsDomRefs();
+    if (avatarEditViewport) avatarEditViewport.classList.remove('has-image');
+    if (avatarControls) avatarControls.classList.add('hidden');
+    if (avatarEditImage) {
+      avatarEditImage.src = '';
+      avatarEditImage.removeAttribute('style');
+    }
     if (!avatarValue) {
-      announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
       return;
     }
     initializeAvatarEditState(avatarValue);
@@ -11116,7 +10812,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var avatarValue = typeof ((_avatarOptionsContext8 = avatarOptionsContext) === null || _avatarOptionsContext8 === void 0 ? void 0 : _avatarOptionsContext8.getAvatar) === 'function' ? avatarOptionsContext.getAvatar() : '';
     var fallbackName = typeof ((_avatarOptionsContext9 = avatarOptionsContext) === null || _avatarOptionsContext9 === void 0 ? void 0 : _avatarOptionsContext9.getName) === 'function' ? avatarOptionsContext.getName() : '';
     updateAvatarOptionsPreview(avatarValue, fallbackName);
-    refreshAvatarOptionsActions();
+    updateAvatarOptionsPreview(avatarValue, fallbackName);
     if (!avatarValue) {
       closeAvatarOptionsDialog();
     }
@@ -11139,7 +10835,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.remove('drag-over');
     var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
     if (file) {
       processAvatarFile(file);
@@ -11149,13 +10845,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.add('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.add('drag-over');
   }
   function handleAvatarDragLeave(event) {
     if (!event) return;
     event.preventDefault();
     event.stopPropagation();
-    if (avatarDropZone) avatarDropZone.classList.remove('drag-over');
+    if (avatarEditViewport) avatarEditViewport.classList.remove('drag-over');
   }
   function handleAvatarUpload(event) {
     var file = event.target && event.target.files && event.target.files[0];
@@ -11824,7 +11520,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.setAttribute('aria-label', avatarLabel);
     avatarButton.removeAttribute('title');
     avatarButton.removeAttribute('data-help');
-    avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
+    avatarButton.innerHTML = '';
     avatarContainer.appendChild(avatarButton);
     var avatarInput = document.createElement('input');
     avatarInput.type = 'file';
@@ -12106,7 +11802,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     container.addEventListener('drop', handleDrop);
   }
   function initializeContactsModule() {
-    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDeleteB, _avatarUploadInput, _avatarSaveButton, _avatarCancelButton, _avatarOptionsChangeB, _avatarOptionsEditBut, _avatarEditCancelButt, _avatarEditApplyButto, _avatarEditZoomInput, _avatarEditZoomInput2, _avatarEditViewport, _avatarEditViewport2, _avatarEditViewport3, _avatarEditViewport4, _avatarEditViewport5, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
+    var _avatarOptionsCloseBu, _avatarOptionsForm, _avatarOptionsDialog, _avatarOptionsDialog2, _avatarOptionsDialog3, _avatarOptionsDialog4, _avatarUploadInput, _avatarSaveButton, _avatarCancelButton, _avatarEditZoomInput, _avatarEditZoomInput2, _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
     resolveContactsDomRefs();
     if (contactsInitialized) return;
     contactsInitialized = true;
@@ -12215,32 +11911,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     (_avatarOptionsDialog2 = avatarOptionsDialog) === null || _avatarOptionsDialog2 === void 0 || _avatarOptionsDialog2.addEventListener('close', handleAvatarOptionsDialogClosed);
     (_avatarOptionsDialog3 = avatarOptionsDialog) === null || _avatarOptionsDialog3 === void 0 || _avatarOptionsDialog3.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
-    (_avatarOptionsDeleteB = avatarOptionsDeleteButton) === null || _avatarOptionsDeleteB === void 0 || _avatarOptionsDeleteB.addEventListener('click', handleAvatarDeleteAction);
-    if (avatarDropZone) {
-      avatarDropZone.addEventListener('dragenter', handleAvatarDragOver);
-      avatarDropZone.addEventListener('dragover', handleAvatarDragOver);
-      avatarDropZone.addEventListener('dragleave', handleAvatarDragLeave);
-      avatarDropZone.addEventListener('drop', handleAvatarDrop);
-      avatarDropZone.addEventListener('click', function () {
+    (_avatarOptionsDialog4 = avatarOptionsDialog) === null || _avatarOptionsDialog4 === void 0 || _avatarOptionsDialog4.addEventListener('pointerdown', handleAvatarOptionsDialogPointerDown);
+    if (avatarEditViewport) {
+      avatarEditViewport.addEventListener('dragenter', handleAvatarDragOver);
+      avatarEditViewport.addEventListener('dragover', handleAvatarDragOver);
+      avatarEditViewport.addEventListener('dragleave', handleAvatarDragLeave);
+      avatarEditViewport.addEventListener('drop', handleAvatarDrop);
+      avatarEditViewport.addEventListener('click', function () {
         return avatarUploadInput && avatarUploadInput.click();
       });
+      avatarEditViewport.addEventListener('pointerdown', handleAvatarEditPointerDown);
+      avatarEditViewport.addEventListener('pointermove', handleAvatarEditPointerMove);
+      avatarEditViewport.addEventListener('pointerup', handleAvatarEditPointerUp);
+      avatarEditViewport.addEventListener('pointercancel', handleAvatarEditPointerCancel);
+      avatarEditViewport.addEventListener('keydown', handleAvatarEditKeyDown);
     }
     (_avatarUploadInput = avatarUploadInput) === null || _avatarUploadInput === void 0 || _avatarUploadInput.addEventListener('change', handleAvatarUpload);
     (_avatarSaveButton = avatarSaveButton) === null || _avatarSaveButton === void 0 || _avatarSaveButton.addEventListener('click', handleAvatarSave);
     (_avatarCancelButton = avatarCancelButton) === null || _avatarCancelButton === void 0 || _avatarCancelButton.addEventListener('click', function () {
       return closeAvatarOptionsDialog();
     });
-    (_avatarOptionsChangeB = avatarOptionsChangeButton) === null || _avatarOptionsChangeB === void 0 || _avatarOptionsChangeB.addEventListener('click', handleAvatarChangeAction);
-    (_avatarOptionsEditBut = avatarOptionsEditButton) === null || _avatarOptionsEditBut === void 0 || _avatarOptionsEditBut.addEventListener('click', handleAvatarEditAction);
-    (_avatarEditCancelButt = avatarEditCancelButton) === null || _avatarEditCancelButt === void 0 || _avatarEditCancelButt.addEventListener('click', handleAvatarEditCancel);
-    (_avatarEditApplyButto = avatarEditApplyButton) === null || _avatarEditApplyButto === void 0 || _avatarEditApplyButto.addEventListener('click', applyAvatarEditChanges);
     (_avatarEditZoomInput = avatarEditZoomInput) === null || _avatarEditZoomInput === void 0 || _avatarEditZoomInput.addEventListener('input', handleAvatarEditZoomInputChange);
     (_avatarEditZoomInput2 = avatarEditZoomInput) === null || _avatarEditZoomInput2 === void 0 || _avatarEditZoomInput2.addEventListener('change', handleAvatarEditZoomInputChange);
-    (_avatarEditViewport = avatarEditViewport) === null || _avatarEditViewport === void 0 || _avatarEditViewport.addEventListener('pointerdown', handleAvatarEditPointerDown);
-    (_avatarEditViewport2 = avatarEditViewport) === null || _avatarEditViewport2 === void 0 || _avatarEditViewport2.addEventListener('pointermove', handleAvatarEditPointerMove);
-    (_avatarEditViewport3 = avatarEditViewport) === null || _avatarEditViewport3 === void 0 || _avatarEditViewport3.addEventListener('pointerup', handleAvatarEditPointerUp);
-    (_avatarEditViewport4 = avatarEditViewport) === null || _avatarEditViewport4 === void 0 || _avatarEditViewport4.addEventListener('pointercancel', handleAvatarEditPointerCancel);
-    (_avatarEditViewport5 = avatarEditViewport) === null || _avatarEditViewport5 === void 0 || _avatarEditViewport5.addEventListener('keydown', handleAvatarEditKeyDown);
     (_contactsCloseButton = contactsCloseButton) === null || _contactsCloseButton === void 0 || _contactsCloseButton.addEventListener('click', function () {
       return closeDialog(contactsDialog);
     });
@@ -12298,7 +11990,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.setAttribute('aria-label', avatarChangeLabel);
     avatarButton.removeAttribute('title');
     avatarButton.removeAttribute('data-help');
-    avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
+    avatarButton.innerHTML = '';
     avatarContainer.appendChild(avatarButton);
     var avatarFileInput = document.createElement('input');
     avatarFileInput.type = 'file';
@@ -15781,18 +15473,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!deviceSchema) return [];
     var parts = category.split('.');
     var node = deviceSchema;
-    var _iterator4 = _createForOfIteratorHelper(parts),
-      _step4;
+    var _iterator3 = _createForOfIteratorHelper(parts),
+      _step3;
     try {
-      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-        var p = _step4.value;
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var p = _step3.value;
         node = node && node[p];
         if (!node) return [];
       }
     } catch (err) {
-      _iterator4.e(err);
+      _iterator3.e(err);
     } finally {
-      _iterator4.f();
+      _iterator3.f();
     }
     return Array.isArray(node.attributes) ? node.attributes : [];
   }
@@ -15804,19 +15496,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var skip = function skip(attr) {
       return !attr || exclude.includes(attr) || seen.has(attr);
     };
-    var _iterator5 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
-      _step5;
+    var _iterator4 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
+      _step4;
     try {
-      for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-        var attr = _step5.value;
+      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+        var attr = _step4.value;
         if (skip(attr)) continue;
         seen.add(attr);
         attrs.push(attr);
       }
     } catch (err) {
-      _iterator5.e(err);
+      _iterator4.e(err);
     } finally {
-      _iterator5.f();
+      _iterator4.f();
     }
     if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
       for (var _i11 = 0, _Object$keys3 = Object.keys(data); _i11 < _Object$keys3.length; _i11++) {
@@ -15855,18 +15547,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var list = document.createElement('div');
     list.className = 'schema-attribute-list';
-    var _iterator6 = _createForOfIteratorHelper(attrs),
-      _step6;
+    var _iterator5 = _createForOfIteratorHelper(attrs),
+      _step5;
     try {
-      for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-        var attr = _step6.value;
+      for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+        var attr = _step5.value;
         var _value4 = data && data[attr] !== undefined ? data[attr] : undefined;
         list.appendChild(createSchemaField(category, attr, _value4));
       }
     } catch (err) {
-      _iterator6.e(err);
+      _iterator5.e(err);
     } finally {
-      _iterator6.f();
+      _iterator5.f();
     }
     dynamicFieldsDiv.appendChild(list);
   }
@@ -15933,11 +15625,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return !exclude.includes(attr);
     });
     var result = {};
-    var _iterator7 = _createForOfIteratorHelper(filteredAttrs),
-      _step7;
+    var _iterator6 = _createForOfIteratorHelper(filteredAttrs),
+      _step6;
     try {
-      for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-        var attr = _step7.value;
+      for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+        var attr = _step6.value;
         var el = document.getElementById("attr-".concat(attr));
         if (!el) {
           continue;
@@ -15987,9 +15679,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
     } catch (err) {
-      _iterator7.e(err);
+      _iterator6.e(err);
     } finally {
-      _iterator7.f();
+      _iterator6.f();
     }
     markCollectedDynamicAttributes(result, filteredAttrs);
     return result;

@@ -497,6 +497,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('clearMonitorVideoOutputs', clearMonitorVideoOutputs);
     ensureGlobalFunctionBinding('storeLoadedSetupState', storeLoadedSetupState);
     ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
+    ensureGlobalFunctionBinding('powerInputTypes', powerInputTypes);
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
@@ -12901,23 +12902,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             var baseDesc = value ? "".concat(label, ": ").concat(value) : label;
             var logic = describeRequirement(field, value);
             var desc = logic ? "".concat(baseDesc, " \u2013 ").concat(logic) : baseDesc;
-            box.setAttribute('title', desc);
-            box.setAttribute('data-help', desc);
+            if (desc && desc.trim()) {
+              box.setAttribute('title', desc);
+              box.setAttribute('data-help', desc);
+              box.setAttribute('aria-label', desc);
+            } else {
+              box.removeAttribute('title');
+              box.removeAttribute('data-help');
+              box.removeAttribute('aria-label');
+            }
             if (!box.hasAttribute('tabindex')) {
               box.setAttribute('tabindex', '0');
             }
             if (!box.hasAttribute('role')) {
               box.setAttribute('role', 'group');
             }
-            if (desc) {
-              box.setAttribute('aria-label', desc);
-            } else if (baseDesc) {
-              box.setAttribute('aria-label', baseDesc);
-            }
             box.addEventListener('keydown', handleRequirementBoxKeydown);
             box.querySelectorAll('.req-label, .req-value').forEach(function (el) {
-              el.setAttribute('title', desc);
-              el.setAttribute('data-help', desc);
+              if (desc && desc.trim()) {
+                el.setAttribute('title', desc);
+                el.setAttribute('data-help', desc);
+              } else {
+                el.removeAttribute('title');
+                el.removeAttribute('data-help');
+              }
             });
           });
           adjustGearListSelectWidths(projectRequirementsOutput);
@@ -13444,7 +13452,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function getAllPowerPortTypes() {
       var _devices$fiz, _devices$fiz2, _devices$fiz3;
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         return powerInputTypes(cam).forEach(function (t) {
           return types.add(t);
         });
@@ -13618,7 +13626,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var videoOutputOptions = ['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI'];
     function getAllFizConnectorTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         if (Array.isArray(cam.fizConnectors)) {
           cam.fizConnectors.forEach(function (fc) {
             if (fc && fc.type) types.add(fc.type);
@@ -14923,7 +14931,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllPlateTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         var _cam$power;
         var list = (_cam$power = cam.power) === null || _cam$power === void 0 ? void 0 : _cam$power.batteryPlateSupport;
         if (Array.isArray(list)) {
@@ -15054,9 +15062,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function clearBatteryPlates() {
       setBatteryPlatesLocal([]);
     }
+    if (typeof window !== 'undefined') {
+      window.clearBatteryPlates = clearBatteryPlates;
+    }
     function getAllViewfinderTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         if (Array.isArray(cam.viewfinder)) {
           cam.viewfinder.forEach(function (vf) {
             if (vf && vf.type) types.add(vf.type);
@@ -15067,7 +15078,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllViewfinderConnectors() {
       var conns = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         if (Array.isArray(cam.viewfinder)) {
           cam.viewfinder.forEach(function (vf) {
             if (vf && vf.connector) conns.add(vf.connector);
@@ -15202,7 +15213,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllMountTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         if (Array.isArray(cam.lensMount)) {
           cam.lensMount.forEach(function (lm) {
             if (lm && lm.type) types.add(lm.type);
@@ -15405,7 +15416,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllPowerDistTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         var _cam$power2;
         var list = (_cam$power2 = cam.power) === null || _cam$power2 === void 0 ? void 0 : _cam$power2.powerDistributionOutputs;
         if (Array.isArray(list)) {
@@ -15419,7 +15430,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var powerDistTypeOptions = getAllPowerDistTypes();
     function getAllPowerDistVoltages() {
       var volts = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         var _cam$power3;
         var list = (_cam$power3 = cam.power) === null || _cam$power3 === void 0 ? void 0 : _cam$power3.powerDistributionOutputs;
         if (Array.isArray(list)) {
@@ -15434,7 +15445,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllPowerDistCurrents() {
       var currents = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         var _cam$power4;
         var list = (_cam$power4 = cam.power) === null || _cam$power4 === void 0 ? void 0 : _cam$power4.powerDistributionOutputs;
         if (Array.isArray(list)) {
@@ -15640,7 +15651,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getAllTimecodeTypes() {
       var types = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
+      Object.values(devices.cameras || {}).forEach(function (cam) {
         var list = cam.timecode;
         if (Array.isArray(list)) {
           list.forEach(function (tc) {
@@ -16504,18 +16515,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (filterHelperScope && typeof filterHelperScope.applyFilters !== 'function') {
       filterHelperScope.applyFilters = applyFilters;
     }
-    populateSelect(cameraSelect, devices.cameras, true);
+    populateSelect(cameraSelect, devices.cameras || {}, true);
     populateMonitorSelect();
-    populateSelect(videoSelect, devices.video, true);
+    populateSelect(videoSelect, devices.video || {}, true);
     updateCageSelectOptions();
     motorSelects.forEach(function (sel) {
-      return populateSelect(sel, devices.fiz.motors, true);
+      return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
     });
     controllerSelects.forEach(function (sel) {
-      return populateSelect(sel, devices.fiz.controllers, true);
+      return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
     });
-    populateSelect(distanceSelect, devices.fiz.distance, true);
-    populateSelect(batterySelect, devices.batteries, true);
+    populateSelect(distanceSelect, devices.fiz && devices.fiz.distance || {}, true);
+    populateSelect(batterySelect, devices.batteries || {}, true);
     populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
     updateBatteryPlateVisibility();
     updateBatteryOptions();
@@ -17027,17 +17038,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       storeDevices(devices);
       refreshDeviceLists();
       updateMountTypeOptions();
-      populateSelect(cameraSelect, devices.cameras, true);
+      populateSelect(cameraSelect, devices.cameras || {}, true);
       populateMonitorSelect();
-      populateSelect(videoSelect, devices.video, true);
+      populateSelect(videoSelect, devices.video || {}, true);
       updateCageSelectOptions();
       motorSelects.forEach(function (sel) {
-        return populateSelect(sel, devices.fiz.motors, true);
+        return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
       });
       controllerSelects.forEach(function (sel) {
-        return populateSelect(sel, devices.fiz.controllers, true);
+        return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
       });
-      populateSelect(distanceSelect, devices.fiz.distance, true);
+      populateSelect(distanceSelect, devices.fiz && devices.fiz.distance || {}, true);
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();
       updateMotorConnectorOptions();

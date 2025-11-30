@@ -1,7 +1,6 @@
-
 (async function verifyTour() {
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
     const log = msg => console.log(`[VERIFY] ${msg}`);
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     function getElementByXpath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -18,14 +17,7 @@
         return false;
     }
 
-    async function waitFor(predicate, timeout = 5000) {
-        const start = Date.now();
-        while (Date.now() - start < timeout) {
-            if (predicate()) return true;
-            await sleep(200);
-        }
-        return false;
-    }
+
 
     // 1. Start Tour
     log('Starting Tour...');

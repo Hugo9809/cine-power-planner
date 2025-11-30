@@ -386,7 +386,8 @@ function outputToConsole(level, message, detail) {
       method.call(console, prefix, detail);
     }
   } catch (error) {
-    void error;
+    console.error('Service Worker activation failed:', error);
+    // Ensure we don't leave the SW in a broken state if possible
   }
 }
 
@@ -1114,6 +1115,7 @@ if (typeof self !== 'undefined') {
           }
           return response;
         } catch (error) {
+          console.error('Network request failed:', error);
           throw error;
         }
       })();

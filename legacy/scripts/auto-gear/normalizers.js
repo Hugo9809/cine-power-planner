@@ -22,9 +22,6 @@ function getAutoGearFallbackLanguage() {
   if (resolved) {
     return resolved;
   }
-  if (typeof navigator !== 'undefined' && typeof navigator.language === 'string' && navigator.language) {
-    return navigator.language.slice(0, 2).toLowerCase();
-  }
   return 'en';
 }
 function assignAutoGearLanguageFallback(scope, fallbackLanguage) {

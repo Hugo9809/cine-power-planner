@@ -10586,110 +10586,7 @@
         "1080p: up to 120 fps"
       ]
     },
-    "Leica SL3-S": {
-      "powerDrawWatts": 10,
-      "requiredImageCircleMm": 43.27,
-      "power": {
-        "input": {
-          "voltageRange": "7.2 (battery) / USB-C",
-          "type": [
-            "Battery Slot,USB-C"
-          ]
-        },
-        "batteryPlateSupport": [
-          {
-            "type": "Leica BP-SCL6",
-            "mount": "native",
-            "notes": ""
-          },
-          {
-            "type": "V-Mount",
-            "mount": "adapted",
-            "notes": ""
-          },
-          {
-            "type": "Gold-Mount",
-            "mount": "adapted",
-            "notes": ""
-          }
-        ],
-        "powerDistributionOutputs": [
-          {
-            "type": "USB-C",
-            "voltage": "",
-            "current": "",
-            "wattage": null,
-            "notes": "For charging or powering accessories"
-          }
-        ]
-      },
-      "videoOutputs": [
-        {
-          "type": "HDMI",
-          "notes": "",
-          "version": "2.1 Type A"
-        }
-      ],
-      "fizConnectors": [
-        {
-          "notes": "For camera control",
-          "type": "USB-C"
-        }
-      ],
-      "recordingMedia": [
-        {
-          "type": "SD Card",
-          "notes": "UHS-II"
-        },
-        {
-          "type": "CFexpress Type B",
-          "notes": ""
-        }
-      ],
-      "viewfinder": [
-        {
-          "resolution": "High-resolution",
-          "connector": "",
-          "notes": "",
-          "type": "OLED EVF"
-        },
-        {
-          "resolution": "",
-          "connector": "",
-          "notes": "",
-          "size": "Vari-angle touchscreen",
-          "type": "Integrated LCD monitor"
-        }
-      ],
-      "lensMount": [
-        {
-          "type": "L-Mount",
-          "mount": "native",
-          "notes": "Supports L-Mount electronic lens data"
-        }
-      ],
-      "timecode": [],
-      "weight_g": 768,
-      "recordingCodecs": [
-        "Apple ProRes 422 HQ (SSD)",
-        "H.265/HEVC",
-        "H.264/AVC"
-      ],
-      "sensorModes": [
-        "FF 3:2 Open Gate",
-        "FF 16:9"
-      ],
-      "resolutions": [
-        "6K",
-        "4K",
-        "1920x1080"
-      ],
-      "frameRates": [
-        "8K 10-bit: up to 30 fps",
-        "4K 10-bit: up to 60 fps",
-        "Full HD slow motion: up to 180 fps"
-      ]
-    },
+
     "Canon EOS R5 C": {
       "powerDrawWatts": 13.3,
       "requiredImageCircleMm": 43.27,
@@ -11468,7 +11365,12 @@
         "11K 2D",
         "10K 3D"
       ],
-      "notes": "11K Cinematic VR Camera. 8x Micro Four Thirds Sensors."
+      "notes": "11K Cinematic VR Camera. 8x Micro Four Thirds Sensors.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
     },
     "Insta360 Pro 2": {
       "powerDrawWatts": 60,
@@ -11492,7 +11394,12 @@
         "8K 3D",
         "8K 2D"
       ],
-      "notes": "8K Professional VR Camera. 6x F2.4 Fisheye Lenses."
+      "notes": "8K Professional VR Camera. 6x F2.4 Fisheye Lenses.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
     },
     "Insta360 ONE RS 1-Inch 360": {
       "powerDrawWatts": 10,
@@ -11515,7 +11422,12 @@
       "resolutions": [
         "6K 360"
       ],
-      "notes": "Dual 1-Inch Sensors. Co-engineered with Leica."
+      "notes": "Dual 1-Inch Sensors. Co-engineered with Leica.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
     },
     "Kandao Obsidian Pro": {
       "powerDrawWatts": 160,
@@ -11538,7 +11450,12 @@
       "resolutions": [
         "12K 3D"
       ],
-      "notes": "12K 3D VR Camera. 8x APS-C Sensors."
+      "notes": "12K 3D VR Camera. 8x APS-C Sensors.",
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
     },
     "None": {
       "powerDrawWatts": 0,

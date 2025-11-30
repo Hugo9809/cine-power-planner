@@ -2889,8 +2889,6 @@
 
     var setupDiagramContainer = resolveElementFromOptions(opts, 'setupDiagramContainer', 'diagramArea', 'setupDiagramContainer');
     var heroRuntimeTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroRuntime') : null;
-    var heroAvailablePowerTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroAvailablePower') : null;
-    var heroBatteryLabelTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroBatteryLabel') : null;
     var heroCurrent144Target = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroCurrent144') : null;
     var heroCurrent12Target = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroCurrent12') : null;
     var heroBatteryCountTarget = doc && typeof doc.getElementById === 'function' ? doc.getElementById('heroBatteryCount') : null;
@@ -3298,7 +3296,6 @@
     var checkFizControllerFn = resolveFunctionDependency('checkFizController');
     var checkArriCompatibilityFn = resolveFunctionDependency('checkArriCompatibility');
     var renderSetupDiagramFn = resolveFunctionDependency('renderSetupDiagram');
-    var refreshGearListIfVisibleFn = resolveFunctionDependency('refreshGearListIfVisible');
     var supportsBMountCameraFn = resolveFunctionDependency('supportsBMountCamera');
     var supportsGoldMountCameraFn = resolveFunctionDependency('supportsGoldMountCamera');
     var getCssVariableValueFn = resolveFunctionDependency('getCssVariableValue');

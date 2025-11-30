@@ -55,7 +55,7 @@
                     window.cineFeaturesOnboardingTour.stop();
                 }
             }
-        } catch (e) {
+        } catch {
             log("Onboarding overlay not found or timed out. Assuming skipped.");
         }
         await wait(1000);

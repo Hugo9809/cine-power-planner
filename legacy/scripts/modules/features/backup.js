@@ -705,6 +705,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return removed;
     });
   }
+  function clearBackupVault() {
+    var dbDeletionPromise = new Promise(function (resolve, reject) {
+      if (!isIndexedDBAvailable()) {
+        resolve(true);
+        return;
+      }
+      if (backupVaultDbPromise) {
+        backupVaultDbPromise.then(function (db) {
+          if (db && typeof db.close === 'function') {
+            try {
+              db.close();
+            } catch (closeError) {
+              console.warn('Failed to close backup vault DB before deletion', closeError);
+            }
+          }
+        }).catch(function () {});
+        backupVaultDbPromise = null;
+      }
+      try {
+        var request = indexedDB.deleteDatabase(BACKUP_VAULT_DB_NAME);
+        request.addEventListener('success', function () {
+          resolve(true);
+        });
+        request.addEventListener('error', function () {
+          console.warn('Failed to delete backup vault database', request.error);
+          withBackupVaultStore('readwrite', function (store) {
+            if (!store) return false;
+            return new Promise(function (clearResolve, clearReject) {
+              var clearRequest = store.clear();
+              clearRequest.onsuccess = function () {
+                return clearResolve(true);
+              };
+              clearRequest.onerror = function () {
+                return clearReject(clearRequest.error);
+              };
+            });
+          }).then(resolve).catch(reject);
+        });
+        request.addEventListener('blocked', function () {
+          console.warn('Backup vault database deletion blocked');
+        });
+      } catch (deleteError) {
+        reject(deleteError);
+      }
+    });
+    return Promise.all([dbDeletionPromise, writeFallbackVaultRecords([]), memoryBackupVault.list().then(function (list) {
+      return Promise.all(list.map(function (item) {
+        return memoryBackupVault.remove(item.id);
+      }));
+    })]).then(function () {
+      refreshBackupVaultFallbackMode();
+      backupVaultTransientRecords.clear();
+      return true;
+    }).catch(function (error) {
+      console.warn('clearBackupVault encountered errors', error);
+      return true;
+    });
+  }
   function dispatchBackupVaultEvent(type, detail) {
     if (!type) {
       return;
@@ -2267,7 +2325,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn('Unable to register cineFeatureBackup module.', error);
     }
   });
-  var globalExports = [['cineFeatureBackup', backupAPI], ['formatFullBackupFilename', formatFullBackupFilename], ['resolveSafeLocalStorage', resolveSafeLocalStorage], ['captureStorageSnapshot', captureStorageSnapshot], ['createSafeStorageReader', createSafeStorageReader], ['restoreSessionStorageSnapshot', restoreSessionStorageSnapshot], ['restoreLocalStorageSnapshot', restoreLocalStorageSnapshot], ['sanitizeBackupPayload', sanitizeBackupPayload], ['parseBackupDataString', parseBackupDataString], ['normalizeBackupDataSection', normalizeBackupDataSection], ['normalizeBackupDataValue', normalizeBackupDataValue], ['mergeBackupDataSections', mergeBackupDataSections], ['extractBackupSections', extractBackupSections], ['triggerBackupDownload', triggerBackupDownload], ['encodeBackupDataUrl', encodeBackupDataUrl], ['openBackupFallbackWindow', openBackupFallbackWindow], ['downloadBackupPayload', downloadBackupPayload], ['queueBackupPayloadForVault', queueBackupPayloadForVault], ['getQueuedBackupPayloads', getQueuedBackupPayloads], ['removeBackupVaultRecord', removeBackupVaultRecord], ['openQueuedBackupVaultWindow', openQueuedBackupVaultWindow], ['resolveQueuedBackupMessage', resolveQueuedBackupMessage], ['isBackupVaultFallbackActive', isBackupVaultFallbackActive], ['getBackupVaultFallbackState', getBackupVaultFallbackState], ['isAutoBackupName', isAutoBackupName], ['parseAutoBackupName', parseAutoBackupName], ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX], ['SESSION_AUTO_BACKUP_DELETION_PREFIX', SESSION_AUTO_BACKUP_DELETION_PREFIX]];
+  var globalExports = [['cineFeatureBackup', backupAPI], ['formatFullBackupFilename', formatFullBackupFilename], ['resolveSafeLocalStorage', resolveSafeLocalStorage], ['captureStorageSnapshot', captureStorageSnapshot], ['createSafeStorageReader', createSafeStorageReader], ['restoreSessionStorageSnapshot', restoreSessionStorageSnapshot], ['restoreLocalStorageSnapshot', restoreLocalStorageSnapshot], ['sanitizeBackupPayload', sanitizeBackupPayload], ['parseBackupDataString', parseBackupDataString], ['normalizeBackupDataSection', normalizeBackupDataSection], ['normalizeBackupDataValue', normalizeBackupDataValue], ['mergeBackupDataSections', mergeBackupDataSections], ['extractBackupSections', extractBackupSections], ['triggerBackupDownload', triggerBackupDownload], ['encodeBackupDataUrl', encodeBackupDataUrl], ['openBackupFallbackWindow', openBackupFallbackWindow], ['downloadBackupPayload', downloadBackupPayload], ['queueBackupPayloadForVault', queueBackupPayloadForVault], ['getQueuedBackupPayloads', getQueuedBackupPayloads], ['removeBackupVaultRecord', removeBackupVaultRecord], ['openQueuedBackupVaultWindow', openQueuedBackupVaultWindow], ['resolveQueuedBackupMessage', resolveQueuedBackupMessage], ['isBackupVaultFallbackActive', isBackupVaultFallbackActive], ['getBackupVaultFallbackState', getBackupVaultFallbackState], ['isAutoBackupName', isAutoBackupName], ['parseAutoBackupName', parseAutoBackupName], ['clearBackupVault', clearBackupVault], ['SESSION_AUTO_BACKUP_NAME_PREFIX', SESSION_AUTO_BACKUP_NAME_PREFIX], ['SESSION_AUTO_BACKUP_DELETION_PREFIX', SESSION_AUTO_BACKUP_DELETION_PREFIX]];
   globalExports.forEach(function (_ref27) {
     var _ref28 = _slicedToArray(_ref27, 2),
       name = _ref28[0],

@@ -3330,6 +3330,9 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
       }
     }
     storageKeys.forEach(function (key) {
+      if (typeof cineFeatureBackup !== 'undefined' && typeof cineFeatureBackup.isAutoBackupName === 'function' && cineFeatureBackup.isAutoBackupName(key)) {
+        return;
+      }
       try {
         var storedProject = loadProject(key);
         if (storedProject && storedProject.projectInfo) {
@@ -5106,13 +5109,19 @@ function collectAccessories() {
       gatherPower(devices.wirelessReceivers[rxName]);
     }
   }
-  motorSelects.forEach(function (sel) {
-    return gatherPower(devices.fiz.motors[sel.value]);
-  });
-  controllerSelects.forEach(function (sel) {
-    return gatherPower(devices.fiz.controllers[sel.value]);
-  });
-  gatherPower(devices.fiz.distance[distanceSelect.value]);
+  if (devices.fiz && devices.fiz.motors) {
+    motorSelects.forEach(function (sel) {
+      return gatherPower(devices.fiz.motors[sel.value]);
+    });
+  }
+  if (devices.fiz && devices.fiz.controllers) {
+    controllerSelects.forEach(function (sel) {
+      return gatherPower(devices.fiz.controllers[sel.value]);
+    });
+  }
+  if (devices.fiz && devices.fiz.distance) {
+    gatherPower(devices.fiz.distance[distanceSelect.value]);
+  }
   var fizCableDb = ((_acc$cables2 = acc.cables) === null || _acc$cables2 === void 0 ? void 0 : _acc$cables2.fiz) || {};
   var getFizConnectors = function getFizConnectors(data) {
     var list = [];
@@ -5158,9 +5167,10 @@ function collectAccessories() {
   }).filter(function (v) {
     return v && v !== 'None';
   }).map(function (name) {
+    var _devices$fiz;
     return {
       name: name,
-      data: devices.fiz.motors[name]
+      data: (_devices$fiz = devices.fiz) === null || _devices$fiz === void 0 || (_devices$fiz = _devices$fiz.motors) === null || _devices$fiz === void 0 ? void 0 : _devices$fiz[name]
     };
   }).filter(function (entry) {
     return entry.data;
@@ -5170,9 +5180,10 @@ function collectAccessories() {
   }).filter(function (v) {
     return v && v !== 'None';
   }).map(function (name) {
+    var _devices$fiz2;
     return {
       name: name,
-      data: devices.fiz.controllers[name]
+      data: (_devices$fiz2 = devices.fiz) === null || _devices$fiz2 === void 0 || (_devices$fiz2 = _devices$fiz2.controllers) === null || _devices$fiz2 === void 0 ? void 0 : _devices$fiz2[name]
     };
   }).filter(function (entry) {
     return entry.data;
@@ -14215,7 +14226,7 @@ function ensureGearListActions() {
   var deleteBtn = document.createElement('button');
   deleteBtn.id = 'deleteGearListBtn';
   deleteBtn.type = 'button';
-  deleteBtn.className = 'gear-list-action-btn';
+  deleteBtn.className = 'gear-list-action-btn danger';
   if (typeof setButtonLabelWithIconForSetups === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object') {
     setButtonLabelWithIconForSetups(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
   } else {

@@ -1921,9 +1921,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!lang && doc && doc.documentElement && typeof doc.documentElement.lang === 'string') {
       lang = doc.documentElement.lang;
     }
-    if (!lang && typeof navigator !== 'undefined' && navigator && typeof navigator.language === 'string') {
-      lang = navigator.language;
-    }
     if (typeof lang !== 'string' || !lang) {
       return 'en';
     }

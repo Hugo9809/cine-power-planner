@@ -51,11 +51,11 @@ function getAutoGearFallbackLanguage() {
     if (resolved) {
         return resolved;
     }
-    /* if (typeof navigator !== 'undefined' &&
+    if (typeof navigator !== 'undefined' &&
         typeof navigator.language === 'string' &&
         navigator.language) {
         return navigator.language.slice(0, 2).toLowerCase();
-    } */
+    }
     return 'en';
 }
 function assignAutoGearLanguageFallback(scope, fallbackLanguage) {
@@ -212,23 +212,23 @@ function parseAutoGearDraftNames(value) {
     var parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
     return parts
         .map(function (part) {
-            var segment = part.trim();
-            if (!segment)
+        var segment = part.trim();
+        if (!segment)
+            return null;
+        var signMatch = segment.match(/^([+-])\s*(.+)$/);
+        var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
+        var content = signMatch ? signMatch[2].trim() : segment;
+        if (!content)
+            return null;
+        var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
+        if (quantityMatch) {
+            var name_1 = quantityMatch[2].trim();
+            if (!name_1)
                 return null;
-            var signMatch = segment.match(/^([+-])\s*(.+)$/);
-            var listType = signMatch ? (signMatch[1] === '-' ? 'remove' : 'add') : null;
-            var content = signMatch ? signMatch[2].trim() : segment;
-            if (!content)
-                return null;
-            var quantityMatch = content.match(/^(\d+)\s*[x×]\s*(.+)$/i);
-            if (quantityMatch) {
-                var name_1 = quantityMatch[2].trim();
-                if (!name_1)
-                    return null;
-                return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
-            }
-            return { name: content, listType: listType };
-        })
+            return { name: name_1, quantity: normalizeAutoGearQuantity(quantityMatch[1]), listType: listType };
+        }
+        return { name: content, listType: listType };
+    })
         .filter(Boolean);
 }
 /**
@@ -1496,11 +1496,9 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     var normalized = normalizeAutoGearRule(rule);
     if (!normalized)
         return null;
-    var mapItems = function (items) {
-        return items
-            .map(autoGearItemSnapshot)
-            .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); });
-    };
+    var mapItems = function (items) { return items
+        .map(autoGearItemSnapshot)
+        .sort(function (a, b) { return autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)); }); };
     return {
         label: normalized.label || '',
         always: normalized.always ? 1 : 0,

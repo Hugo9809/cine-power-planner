@@ -12099,16 +12099,15 @@ body.dark-mode .requirement-box,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--button-icon-gap);
-  min-height: calc(var(--button-size) * 0.8);
-  line-height: var(--button-line-height);
-  padding-block: calc(var(--button-padding-block) + 2px);
-  padding-inline: max(calc(var(--button-link-padding-inline) - 4px), var(--spacing-sm));
+  gap: 0.3em;
+  min-height: unset;
+  line-height: 1;
+  padding: 0.125em 0.4em;
   border-radius: var(--border-radius);
   border: none;
   background: none;
   color: color-mix(in srgb, var(--text-color) 88%, var(--accent-color) 12%);
-  font-size: calc(var(--form-control-font-size) * 0.9);
+  font-size: 0.75rem;
   font-weight: inherit;
   letter-spacing: 0.01em;
   text-decoration: none;
@@ -13075,6 +13074,20 @@ body.dark-mode.pink-mode #gearListOutput h2,
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 45%, transparent);
 }
 
+#gearListActions .gear-list-action-btn.danger {
+  background: var(--button-danger-bg);
+  border-color: var(--button-danger-border);
+  color: var(--inverse-text-color);
+}
+
+#gearListActions .gear-list-action-btn.danger:hover,
+#gearListActions .gear-list-action-btn.danger:focus-visible {
+  background: color-mix(in srgb, var(--danger-color) 85%, black);
+  border-color: var(--danger-color);
+  color: var(--inverse-text-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger-color) 35%, transparent);
+}
+
 .gear-list-autosave-note--overlay {
   position: fixed;
   left: 50%;
@@ -13297,8 +13310,10 @@ body.dark-mode.pink-mode #gearListOutput h2,
 #sideMenu button[data-sidebar-action] {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
   padding: 8px 12px;
+  margin: 0;
   background: transparent;
   border: none;
   border-radius: 8px;

@@ -84,7 +84,7 @@
                 case 1: // Intro
                     // Just click Next
                     break;
-                case 2: // Profile (Proxy inputs)
+                case 2: { // Profile (Proxy inputs)
                     await waitFor('.onboarding-card');
                     const inputs = document.querySelectorAll('.onboarding-card .onboarding-field-input');
                     if (inputs.length >= 4) {
@@ -102,7 +102,8 @@
                         if (realName) realName.value = "Luca Zanner";
                     }
                     break;
-                case 3: // Preferences (Proxy inputs)
+                }
+                case 3: { // Preferences (Proxy inputs)
                     await waitFor('.onboarding-card');
                     log("Step 3: Interacting with Preferences proxy inputs...");
 
@@ -176,7 +177,8 @@
                         }
                     }
                     break;
-                case 4: // Project Name
+                }
+                case 4: { // Project Name
                     const setupName = await waitFor('#setupName');
                     setupName.value = "Gemini Test 123";
                     setupName.dispatchEvent(new Event('input'));
@@ -186,15 +188,17 @@
                         prodInput.dispatchEvent(new Event('input'));
                     }
                     break;
+                }
                 case 5: // Save Project
                     // Just click Next
                     break;
-                case 6: // Add Camera
+                case 6: { // Add Camera
                     const cameraSelect = await waitFor('#cameraSelect');
                     cameraSelect.value = "Arri Alexa 35";
                     cameraSelect.dispatchEvent(new Event('change'));
                     break;
-                case 7: // Add Monitoring
+                }
+                case 7: { // Add Monitoring
                     const monitorSelect = await waitFor('#monitorSelect');
                     monitorSelect.value = "SmallHD Ultra 7";
                     monitorSelect.dispatchEvent(new Event('change'));
@@ -222,12 +226,14 @@
                         controller.dispatchEvent(new Event('change'));
                     }
                     break;
-                case 8: // Select Battery
+                }
+                case 8: { // Select Battery
                     const batterySelect = await waitFor('#batterySelect');
                     batterySelect.value = "Bebob B290cine";
                     batterySelect.dispatchEvent(new Event('change'));
                     break;
-                case 14: // Runtime Feedback
+                }
+                case 14: { // Runtime Feedback
                     log("Step 14: Attempting to open Runtime Feedback...");
                     const feedbackBtn = await waitFor('#runtimeFeedbackBtn');
                     log(`Button found: ${feedbackBtn.id}, Visible: ${feedbackBtn.offsetParent !== null}`);
@@ -290,7 +296,8 @@
                         await wait(1000); // Wait for submission/close
                     }
                     break;
-                case 17: // Edit Device Data Add
+                }
+                case 17: { // Edit Device Data Add
                     log("Step 17: Adding new device...");
                     const categorySelect = await waitFor('#newCategory');
                     // Select 'Monitor' or similar if available, or just use first non-empty option
@@ -311,8 +318,9 @@
                     addBtn.click();
                     await wait(1000);
                     break;
+                }
 
-                case 18: // Edit Device Data Review
+                case 18: { // Edit Device Data Review
                     log("Step 18: Verifying new device...");
                     const deviceList = await waitFor('#deviceListContainer');
 
@@ -332,8 +340,9 @@
                         log("SUCCESS: New device found.");
                     }
                     break;
+                }
 
-                case 19: // Edit Device Data Edit
+                case 19: { // Edit Device Data Edit
                     log("Step 19: Editing the new device...");
                     const listContainer = await waitFor('#deviceListContainer');
                     const itemToEdit = Array.from(listContainer.querySelectorAll('.device-item, .device-row, li, div')).find(el => el.textContent.includes("Test Custom Monitor"));
@@ -360,13 +369,14 @@
                         log("WARNING: Device to edit not found.");
                     }
                     break;
+                }
 
                 case 20: // Own Gear Access
                     log("Step 20: Own Gear Access...");
                     await wait(500);
                     break;
 
-                case 21: // Own Gear Add Device
+                case 21: { // Own Gear Add Device
                     log("Step 21: Adding Own Gear...");
                     const ownName = document.querySelector('#ownGearName');
                     if (ownName && ownName.offsetParent) {
@@ -374,8 +384,9 @@
                         ownName.dispatchEvent(new Event('input'));
                     }
                     break;
+                }
 
-                case 22: // Project Requirements Access
+                case 22: { // Project Requirements Access
                     log("Step 22: Accessing Project Requirements...");
                     // Try to find the button if dialog is not open
                     let projDialog = document.querySelector('#projectDialog');
@@ -399,8 +410,9 @@
                     }
                     await waitFor('#projectDialog');
                     break;
+                }
 
-                case 23: // Project Requirements Brief
+                case 23: { // Project Requirements Brief
                     log("Step 23: Filling Project Brief...");
                     const prodCo = await waitFor('#productionCompany');
                     prodCo.value = "Test Production Co";
@@ -412,8 +424,9 @@
                         prodCity.dispatchEvent(new Event('input'));
                     }
                     break;
+                }
 
-                case 24: // Project Requirements Crew
+                case 24: { // Project Requirements Crew
                     log("Step 24: Adding Crew...");
                     const addCrewBtn = await waitFor('#addPersonBtn');
                     addCrewBtn.click();
@@ -444,8 +457,9 @@
                         }
                     }
                     break;
+                }
 
-                case 25: // Project Requirements Logistics
+                case 25: { // Project Requirements Logistics
                     log("Step 25: Adding Logistics...");
 
                     // Prep
@@ -490,13 +504,14 @@
                         }
                     }
                     break;
+                }
 
                 case 26: // Generate Gear & Requirements
                     log("Step 26: Generate Gear & Requirements...");
                     await wait(500);
                     break;
 
-                case 27: // Auto Gear Rules Access
+                case 27: { // Auto Gear Rules Access
                     log("Step 27: Accessing Auto Gear Rules...");
                     // Ensure settings dialog is open
                     let settingsDialog = document.querySelector('#settingsDialog');
@@ -515,8 +530,9 @@
                     autoGearTab.click();
                     await wait(500);
                     break;
+                }
 
-                case 28: // Auto Gear Rules Edit
+                case 28: { // Auto Gear Rules Edit
                     log("Step 28: Editing an Auto Gear Rule...");
                     const rulesList = await waitFor('#autoGearRulesList');
                     // Wait for rules to populate
@@ -544,8 +560,9 @@
                         log("WARNING: No rules found to edit. This is expected if list is empty.");
                     }
                     break;
+                }
 
-                case 29: // Auto Gear Rules Create
+                case 29: { // Auto Gear Rules Create
                     log("Step 29: Creating a new Auto Gear Rule...");
                     const addRuleBtn = await waitFor('#autoGearAddRule');
                     addRuleBtn.click();
@@ -584,6 +601,7 @@
                         log("WARNING: New rule not found in list.");
                     }
                     break;
+                }
             }
 
             const nextBtn = document.querySelector('.onboarding-next-button');

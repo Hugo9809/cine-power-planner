@@ -497,7 +497,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!date || Number.isNaN(date.getTime())) {
           return '';
         }
-        var locale = typeof currentLanguage === 'string' && currentLanguage ? currentLanguage : typeof navigator !== 'undefined' && navigator && navigator.language ? navigator.language : 'en';
+        var locale = typeof currentLanguage === 'string' && currentLanguage ? currentLanguage : 'en';
         var formatOptions = includeTime && !dateOnly ? {
           dateStyle: 'medium',
           timeStyle: 'short'

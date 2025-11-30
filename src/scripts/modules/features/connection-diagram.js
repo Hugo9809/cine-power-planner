@@ -463,9 +463,8 @@
     `;
     // Dark mode is now handled via CSS variables in style.css, so this can be minimal or empty
     // but we keep the media query for system preference fallback if needed, though variables are preferred.
-    const diagramCssDark = ``;
 
-    function getDiagramCss(includeDark = true) {
+    function getDiagramCss() {
       // We rely on CSS variables cascading from the body/container
       return diagramCssLight;
     }
@@ -1159,8 +1158,8 @@
         }
       }
       setupDiagramContainer.innerHTML = '';
-      if (popup) setupDiagramContainer.appendChild(popup);
       setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
+      if (popup) setupDiagramContainer.appendChild(popup);
 
       const popupEntries = {};
       const safeSummaryFn = getSafeGenerateConnectorSummary();

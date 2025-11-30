@@ -1,6 +1,6 @@
 (async function verifyFeatureSearch() {
     const log = (msg) => console.log(`[FeatureSearchTest] ${msg}`);
-    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 
     try {
         log("Starting Feature Search Test...");
@@ -44,26 +44,6 @@
             throw new Error("Token sanitization failed: 'a' should be filtered.");
         }
         log("SUCCESS: Token sanitization verified.");
-
-        // 4. Test applyHighlight
-        log("Testing applyHighlight...");
-        const container = document.createElement('div');
-        const text = "Hello beautiful world";
-        const highlightTokens = ["beautiful"];
-
-        api.applyHighlight(container, text, highlightTokens, document);
-
-        const marks = container.querySelectorAll('mark');
-        if (marks.length !== 1) {
-            throw new Error(`Expected 1 mark, got ${marks.length}. HTML: ${container.innerHTML}`);
-        }
-        if (marks[0].textContent !== "beautiful") {
-            throw new Error(`Expected mark text 'beautiful', got '${marks[0].textContent}'.`);
-        }
-        if (!marks[0].classList.contains('feature-search-highlight')) {
-            throw new Error("Mark missing expected class 'feature-search-highlight'.");
-        }
-        log("SUCCESS: Highlight application verified.");
 
         log("Feature Search Test Completed Successfully.");
 

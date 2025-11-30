@@ -25,7 +25,7 @@
 
         // 2. Wait for Overview Dialog
         log("Waiting for Overview Dialog...");
-        const overviewDialog = await waitFor('#overviewDialog[open]');
+        await waitFor('#overviewDialog[open]');
         log("Overview Dialog is open.");
         await wait(1000); // Wait for animations/render
 
@@ -36,7 +36,7 @@
 
         // 4. Wait for Print Options Dialog
         log("Waiting for Print Options Dialog...");
-        const optionsDialog = await waitFor('#printOptionsDialog[open]');
+        await waitFor('#printOptionsDialog[open]');
         log("Print Options Dialog is open.");
         await wait(1000);
 

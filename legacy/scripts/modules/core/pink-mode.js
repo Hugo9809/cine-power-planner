@@ -399,69 +399,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var pinkModeAssetTextCache = new Map();
         var pinkModeAssetTextPromiseCache = new Map();
-        function getPinkModeEmbeddedAssetStore() {
-          var scope = GLOBAL_SCOPE || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || null;
-          if (!scope) {
-            return null;
-          }
-          try {
-            var store = scope.cinePinkModeAnimatedIconData;
-            if (store && _typeof(store) === 'object') {
-              return store;
-            }
-          } catch (error) {
-            void error;
-          }
-          return null;
-        }
-        function resolvePinkModeEmbeddedAsset(key) {
-          if (typeof key !== 'string' || !key) {
-            return null;
-          }
-          var store = getPinkModeEmbeddedAssetStore();
-          if (!store) {
-            return null;
-          }
-          var candidates = [];
-          var registerCandidate = function registerCandidate(candidate) {
-            if (typeof candidate !== 'string' || !candidate) {
-              return;
-            }
-            if (candidates.indexOf(candidate) === -1) {
-              candidates.push(candidate);
-            }
-          };
-          registerCandidate(key);
-          var trimmed = key.replace(/^\.\/+/, '');
-          if (trimmed && trimmed !== key) {
-            registerCandidate(trimmed);
-          }
-          var decoded = decodePinkModeUriCandidate(key);
-          if (decoded) {
-            registerCandidate(decoded);
-          }
-          var encoded = encodeURI(key);
-          if (encoded && encoded !== key) {
-            registerCandidate(encoded);
-          }
-          if (trimmed) {
-            var encodedTrimmed = encodeURI(trimmed);
-            if (encodedTrimmed && encodedTrimmed !== trimmed) {
-              registerCandidate(encodedTrimmed);
-            }
-          }
-          for (var index = 0; index < candidates.length; index += 1) {
-            var candidate = candidates[index];
-            if (!Object.prototype.hasOwnProperty.call(store, candidate)) {
-              continue;
-            }
-            var value = store[candidate];
-            if (typeof value === 'string' && value) {
-              return value;
-            }
-          }
-          return null;
-        }
         function decodePinkModeUriCandidate(value) {
           if (typeof value !== 'string' || !value) {
             return null;
@@ -623,11 +560,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           if (pinkModeAssetTextCache.has(normalized)) {
             return Promise.resolve(pinkModeAssetTextCache.get(normalized));
-          }
-          var embedded = resolvePinkModeEmbeddedAsset(normalized);
-          if (typeof embedded === 'string') {
-            pinkModeAssetTextCache.set(normalized, embedded);
-            return Promise.resolve(embedded);
           }
           if (pinkModeAssetTextPromiseCache.has(normalized)) {
             return pinkModeAssetTextPromiseCache.get(normalized);
@@ -925,6 +857,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(PINK_MODE_ICON_FILES.map(createPinkModeIconImageMarkup).filter(Boolean));
         var PINK_MODE_ANIMATED_ICON_FILES = Object.freeze(['src/animations/cat.json', 'src/animations/cup.json', 'src/animations/cupcake.json', 'src/animations/flamingo.json', 'src/animations/float.json', 'src/animations/float-2.json', 'src/animations/fox.json', 'src/animations/heart.json', 'src/animations/horn.json', 'src/animations/invitation.json', 'src/animations/mask.json', 'src/animations/rainbow.json', 'src/animations/rocking-horse.json', 'src/animations/slippers.json', 'src/animations/sunglasses.json', 'src/animations/unicorn.json', 'animated icons 3/camera.json', 'animated icons 3/director-chair.json', 'animated icons 3/dog.json', 'animated icons 3/fox.json', 'animated icons 3/fox-2.json', 'animated icons 3/fox-3.json', 'animated icons 3/horse.json', 'animated icons 3/mountains.json', 'animated icons 3/movie-camera.json', 'animated icons 3/pinata.json', 'animated icons 3/script.json', 'animated icons 3/video-camera.json']);
+        function getPinkModeEmbeddedAssetStore() {
+          if (typeof window !== 'undefined' && window.pinkModeEmbeddedAssets) {
+            return window.pinkModeEmbeddedAssets;
+          }
+          if (typeof GLOBAL_SCOPE !== 'undefined' && GLOBAL_SCOPE.pinkModeEmbeddedAssets) {
+            return GLOBAL_SCOPE.pinkModeEmbeddedAssets;
+          }
+          return null;
+        }
         function collectPinkModeAnimatedIconFiles() {
           var seen = new Set();
           var collected = [];

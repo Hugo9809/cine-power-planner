@@ -80,6 +80,8 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
+
+console.log('app-core-new-1.js LOADED - DEBUG VERSION');
 const runtimeBootstrapExports = (function resolveRuntimeBootstrapExports() {
   if (typeof require === 'function') {
     try {
@@ -500,260 +502,25 @@ const {
   PINK_MODE_ICON_FALLBACK_MARKUP,
 } = pinkModeSupportApiRef || {};
 
-const VALID_ICON_FONTS = (function createValidIconFontSet() {
-  if (typeof ICON_FONT_KEYS !== 'object' || !ICON_FONT_KEYS) {
-    return new Set();
-  }
-  const fonts = Object.values(ICON_FONT_KEYS).filter(
-    font => typeof font === 'string' && font,
-  );
-  return new Set(fonts);
-})();
 
-function toCodePointChar(value, radix) {
-  const codePoint = parseInt(value, radix);
-  if (!Number.isFinite(codePoint) || codePoint < 0) {
-    return '';
-  }
-  if (typeof String.fromCodePoint === 'function') {
-    try {
-      return String.fromCodePoint(codePoint);
-    } catch (rangeError) {
-      void rangeError;
-    }
-  }
-  if (codePoint <= 0xffff) {
-    return String.fromCharCode(codePoint);
-  }
-  return '';
-}
 
-function normalizeGlyphChar(char) {
-  if (typeof char !== 'string') {
-    return '';
-  }
-  const trimmed = char.trim();
-  if (!trimmed) {
-    return '';
-  }
-  const unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
-  if (unicodeMatch) {
-    const decoded = toCodePointChar(unicodeMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-  const unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
-  if (unicodeBraceMatch) {
-    const decoded = toCodePointChar(unicodeBraceMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-  const hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
-  if (hexEntityMatch) {
-    const decoded = toCodePointChar(hexEntityMatch[1], 16);
-    if (decoded) {
-      return decoded;
-    }
-  }
-  const decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
-  if (decimalEntityMatch) {
-    const decoded = toCodePointChar(decimalEntityMatch[1], 10);
-    if (decoded) {
-      return decoded;
-    }
-  }
-  return trimmed;
-}
 
-function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
-  const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-  const normalizedChar = normalizeGlyphChar(char);
-  const glyph = {
-    char: normalizedChar,
-    font: normalizedFont,
-  };
-  return typeof Object.freeze === 'function' ? Object.freeze(glyph) : glyph;
-}
 
-function resolveIconGlyph(glyph) {
-  if (!glyph) {
-    return {
-      char: '',
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined,
-    };
-  }
-  if (glyph.markup) {
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    return {
-      markup: glyph.markup,
-      className: glyph.className || '',
-      font: ICON_FONT_KEYS.UICONS,
-      size,
-    };
-  }
-  if (typeof glyph === 'string') {
-    return {
-      char: normalizeGlyphChar(glyph),
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined,
-    };
-  }
-  if (typeof glyph === 'object') {
-    const char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
-    const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
-    const className = typeof glyph.className === 'string' ? glyph.className : '';
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    if (glyph.markup) {
-      return {
-        markup: glyph.markup,
-        className,
-        font: fontKey,
-        size,
-      };
-    }
-    return {
-      char,
-      font: fontKey,
-      className,
-      size,
-    };
-  }
-  return {
-    char: '',
-    font: ICON_FONT_KEYS.UICONS,
-    className: '',
-    size: undefined,
-  };
-}
 
-function applyIconGlyph(element, glyph) {
-  if (!element) return;
-  const resolved = resolveIconGlyph(glyph);
-  if (resolved.markup) {
-    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-    element.setAttribute('aria-hidden', 'true');
-    if (resolved.className) {
-      resolved.className
-        .split(/\s+/)
-        .filter(Boolean)
-        .forEach(cls => element.classList.add(cls));
-    }
-    element.removeAttribute('data-icon-font');
-    return;
-  }
-  const char = resolved.char || '';
-  element.textContent = char;
-  if (char) {
-    element.setAttribute('data-icon-font', resolved.font);
-  } else {
-    element.removeAttribute('data-icon-font');
-  }
-}
 
-function formatSvgCoordinate(value) {
-  if (!Number.isFinite(value)) return '0';
-  const rounded = Math.round(value * 100) / 100;
-  if (Number.isInteger(rounded)) return String(rounded);
-  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-}
 
-function positionSvgMarkup(markup, centerX, centerY, size = 24) {
-  if (typeof markup !== 'string') {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const trimmed = markup.trim();
-  if (!trimmed) {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const half = size / 2;
-  const x = formatSvgCoordinate(centerX);
-  const y = formatSvgCoordinate(centerY);
-  const width = formatSvgCoordinate(size);
-  const height = formatSvgCoordinate(size);
-  const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
-    let attrText = attrs
-      .replace(/\s+x\s*=\s*"[^"]*"/gi, '')
-      .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
-      .trim();
-    const additions = [];
-    if (!/(?:^|\s)width\s*=/i.test(attrText)) additions.push(`width="${width}"`);
-    if (!/(?:^|\s)height\s*=/i.test(attrText)) additions.push(`height="${height}"`);
-    additions.push(`x="-${formatSvgCoordinate(half)}"`);
-    additions.push(`y="-${formatSvgCoordinate(half)}"`);
-    attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
-    return attrText ? `<svg ${attrText}>` : '<svg>';
-  });
-  return { markup: cleaned, x, y };
-}
 
-const STAR_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z"
-      fill="currentColor"
-      stroke="currentColor"
-      stroke-width="0"
-    />
-  </svg>
-`.trim();
 
-const ICON_GLYPHS = Object.freeze({
-  batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
-  batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
-  bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
-  plug: iconGlyph('\uEE75', ICON_FONT_KEYS.UICONS),
-  sliders: iconGlyph('\uF143', ICON_FONT_KEYS.ESSENTIAL),
-  screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
-  brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
-  wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-  controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
-  distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph('\uEC2B', ICON_FONT_KEYS.UICONS),
-  viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
-  camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
-  trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
-  reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
-  load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
-  installApp: iconGlyph('\uE9D4', ICON_FONT_KEYS.UICONS),
-  add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  arrowLeft: Object.freeze({ char: '←', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
-  fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
-  fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
-  save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
-  share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
-  paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
-  magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
-  codec: iconGlyph('\uE4CD', ICON_FONT_KEYS.UICONS),
-  timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
-  audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
-  audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
-  gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
-  contacts: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
-  feedback: iconGlyph('\uE791', ICON_FONT_KEYS.UICONS),
-  resetView: iconGlyph('\uEB6D', ICON_FONT_KEYS.UICONS),
-  pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
-  moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
-  circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
-  settingsGeneral: iconGlyph('\uE5A3', ICON_FONT_KEYS.UICONS),
-  settingsAutoGear: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-  settingsAccessibility: iconGlyph('\uF392', ICON_FONT_KEYS.UICONS),
-  settingsBackup: iconGlyph('\uE5BD', ICON_FONT_KEYS.UICONS),
-  settingsData: iconGlyph('\uE5C7', ICON_FONT_KEYS.UICONS),
-  settingsAbout: iconGlyph('\uEA4F', ICON_FONT_KEYS.UICONS),
-  star: Object.freeze({ markup: STAR_ICON_SVG, className: 'icon-svg favorite-star-icon' }),
-  warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL),
-});
+
+
+
+
+
+
+
+
+
+
 
 function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
   if (!glyph) return '';
@@ -5329,7 +5096,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     };
 
-    scheduleLayoutInitialization();
+
   }
 
   // Use a Set for O(1) lookups when validating video output types
@@ -5597,472 +5364,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open');
   }
 
-  /**
-   * Memoize a normalisation function for repeated lookups.
-   *
-   * The provided function receives both the original trimmed string and a
-   * lowercase key. Results are cached to avoid recomputing normalisations for
-   * the same input.
-   *
-   * @param {(value: string, key: string) => string} fn - Function that performs
-   *   normalisation.
-   * @returns {(value: string) => string} Wrapped function with memoisation and
-   *   empty-string fallback for falsy inputs.
-   */
-  function memoizeNormalization(fn) {
-    const cache = new Map();
-    return value => {
-      if (!value) return '';
-      const str = String(value)
-        .replace(/[™®]/g, '')
-        .trim();
-      const key = str.toLowerCase();
-      if (!cache.has(key)) cache.set(key, fn(str, key));
-      return cache.get(key);
-    };
-  }
-
-  const VIDEO_TYPE_PATTERNS = [
-    { needles: ['12g'], value: '12G-SDI' },
-    { needles: ['6g'], value: '6G-SDI' },
-    { needles: ['3g'], value: '3G-SDI' },
-    // Accept both "HD-SDI" and "HD SDI" spellings
-    { needles: ['hd', 'sdi'], value: '3G-SDI' },
-    { needles: ['mini', 'bnc'], value: 'Mini BNC' },
-    { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
-    { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
-    { needles: ['hdmi'], value: 'HDMI' },
-    { needles: ['displayport'], value: 'DisplayPort' },
-    { needles: ['display', 'port'], value: 'DisplayPort' },
-    { needles: ['dp'], value: 'DisplayPort' }
-  ];
-
-  var normalizeVideoType = memoizeNormalization((_, key) => {
-    const match = VIDEO_TYPE_PATTERNS.find(({ needles }) =>
-      needles.every(n => key.includes(n))
-    );
-    return match ? match.value : '';
-  });
-
-  const FIZ_CONNECTOR_MAP = {
-    'lemo 4-pin (lbus)': 'LBUS (LEMO 4-pin)',
-    'lbus (lemo 4-pin)': 'LBUS (LEMO 4-pin)',
-    'lbus (4-pin lemo)': 'LBUS (LEMO 4-pin)',
-    'lbus (4-pin lemo for motors)': 'LBUS (LEMO 4-pin)',
-    '4-pin lemo (lbus)': 'LBUS (LEMO 4-pin)',
-    'lemo 4-pin': 'LEMO 4-pin',
-    '4-pin lemo': 'LEMO 4-pin',
-    'lemo 7-pin': 'LEMO 7-pin',
-    'lemo 7-pin 1b': 'LEMO 7-pin',
-    '7-pin lemo': 'LEMO 7-pin',
-    '7-pin lemo (lcs)': 'LEMO 7-pin (LCS)',
-    '7-pin lemo (cam)': 'LEMO 7-pin (CAM)',
-    'ext (lemo 7-pin)': 'EXT LEMO 7-pin',
-    'hirose 12pin': 'Hirose 12-pin',
-    '12-pin hirose': 'Hirose 12-pin',
-    '12pin broadcast connector': 'Hirose 12-pin',
-    'lens 12 pin': 'Hirose 12-pin',
-    'lens terminal 12-pin': 'Hirose 12-pin',
-    'lens terminal 12-pin jack': 'Hirose 12-pin',
-    'lens terminal': 'Hirose 12-pin',
-    'usb type-c': 'USB-C',
-    'usb-c': 'USB-C',
-    'usb-c (usb 3.2 / 3.1 gen 1)': 'USB-C',
-    'usb-c / gigabit ethernet (via adapter)': 'USB-C',
-    'active ef mount': 'Active EF mount',
-    'lanc (2.5mm stereo mini jack)': 'LANC',
-    '2.5 mm sub-mini (lanc)': 'LANC',
-    'remote a (2.5mm)': 'REMOTE A connector',
-    'remote control terminal': 'REMOTE A connector',
-    'remote 8 pin': 'REMOTE B connector'
-  };
-
-  function createMapNormalizer(map) {
-    return memoizeNormalization((str, key) => map[key] || str);
-  }
-
-  var normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
-
-  const VIEWFINDER_TYPE_MAP = {
-    'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'lcd touch panel': 'LCD touchscreen',
-    'lcd touchscreen': 'LCD touchscreen',
-    'native lcd capacitive touchscreen': 'LCD touchscreen',
-    'integrated touchscreen lcd': 'LCD touchscreen',
-    'free-angle lcd': 'Vari-angle LCD',
-    'lcd monitor (native)': 'Integrated LCD monitor',
-    'native lcd viewfinder': 'Integrated LCD monitor',
-    'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
-    'integrated main monitor': 'Integrated LCD monitor',
-    'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
-    'optional evf-v50': 'EVF-V50 (Optional)',
-    'optional oled viewfinder': 'OLED EVF (Optional)',
-    'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
-    'external backlit lcd status display': 'LCD status display',
-    'built-in fold-out lcd': 'Fold-out LCD',
-    'oled lvf (live view finder)': 'OLED EVF',
-    'lcd capacitive touchscreen': 'LCD touchscreen',
-    'lemo 26 pin': 'LEMO 26-pin port'
-  };
-
-  var normalizeViewfinderType = createMapNormalizer(VIEWFINDER_TYPE_MAP);
-
-  const POWER_PORT_TYPE_MAP = {
-    'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
-    'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
-    'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
-    'lemo 8-pin': 'Bat LEMO 8-pin',
-    '2-pin dc-input': '2-pin DC-IN',
-    'dc-': 'DC IN',
-    'dc': 'DC IN',
-    '2-pin xlr': 'XLR 2-pin',
-    '2-pin locking connector': 'LEMO 2-pin',
-    '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
-    '4-pin xlr / dc in 12v': 'XLR 4-pin',
-    '4-pin xlr / v-lock': 'XLR 4-pin',
-    'xlr 4-pin jack': 'XLR 4-pin',
-    'xlr 4-pin (main input)': 'XLR 4-pin',
-    'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
-    '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
-    'battery slot': 'Battery Slot',
-    'usb-c': 'USB-C',
-    'usb type-c': 'USB-C',
-    'usb-c pd': 'USB-C PD',
-    'usb-c (power delivery)': 'USB-C PD',
-    'usb-c pd,dc coupler': 'USB-C PD / DC Coupler',
-    'dc coupler': 'DC Coupler',
-    'dc coupler (dr-e6c)': 'DC Coupler',
-    'dc input': 'DC IN',
-    'dc barrel': 'DC Barrel',
-    'dc (barrel)': 'DC Barrel',
-    'locking dc barrel': 'DC Barrel',
-    'dc 24v terminal': 'DC Barrel',
-    'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
-    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN',
-    '6-pin 1b dc-,tb50': '6-pin 1B DC-IN'
-  };
-
-  const mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP);
-
-  function normalizePowerPortType(type) {
-    if (!type) return [];
-    const toArray = val => {
-      const normalized = mapPowerPortOne(val);
-      if (!normalized) return [];
-      return normalized
-        .split(/[/,]/)
-        .map(piece => mapPowerPortOne(piece.trim()))
-        .map(piece => (piece && piece.trim()) || '')
-        .filter(Boolean);
-    };
-    return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
-  }
-
-  function ensureList(list, defaults) {
-    if (!Array.isArray(list)) return [];
-    return list.map(item =>
-      typeof item === 'string'
-        ? { ...defaults, type: item }
-        : { ...defaults, ...(item || {}) }
-    );
-  }
-
-  function fixPowerInput(dev) {
-    if (!dev) return;
-    if (dev.powerInput && !dev.power?.input) {
-      dev.power = { ...(dev.power || {}), input: { type: normalizePowerPortType(dev.powerInput) } };
-      delete dev.powerInput;
-    }
-    const input = dev.power?.input;
-    if (!input) return;
-    const normalizeEntry = it => {
-      if (typeof it === 'string') {
-        return { type: normalizePowerPortType(it) };
-      }
-      if (it) {
-        const { portType: pType, type: tType, ...rest } = it;
-        const typeField = (!tType && pType) ? pType : tType;
-        return { ...rest, type: typeField ? normalizePowerPortType(typeField) : [] };
-      }
-      return { type: [] };
-    };
-    dev.power.input = Array.isArray(input) ? input.map(normalizeEntry) : normalizeEntry(input);
-  }
-
-  function applyFixPowerInput(collection) {
-    if (!collection || typeof collection !== 'object') return;
-    Object.values(collection).forEach(fixPowerInput);
-  }
+  const {
+    normalizeVideoType,
+    normalizeFizConnectorType,
+    normalizeViewfinderType,
+    normalizePowerPortType,
+    fixPowerInput,
+    applyFixPowerInput,
+    ensureList,
+    markDevicesNormalized,
+    hasNormalizedDevicesMarker,
+    unifyDevices,
+    normalizeDevicesForPersistence
+  } = (typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : (typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization) || {});
 
 
-  function hasNormalizedDevicesMarker(bundle) {
-    return Boolean(
-      bundle &&
-      Object.prototype.hasOwnProperty.call(bundle, NORMALIZED_FLAG_KEY) &&
-      bundle[NORMALIZED_FLAG_KEY]
-    );
-  }
 
-  function markDevicesNormalized(bundle) {
-    if (!bundle || typeof bundle !== 'object') {
-      return bundle;
-    }
-    try {
-      Object.defineProperty(bundle, NORMALIZED_FLAG_KEY, {
-        configurable: true,
-        enumerable: false,
-        value: true,
-        writable: true
-      });
-    } catch (defineNormalizedError) {
-      void defineNormalizedError;
-      bundle[NORMALIZED_FLAG_KEY] = true;
-    }
-    return bundle;
-  }
-
-
-  // Normalize various camera properties so downstream logic works with
-  // consistent structures and value formats.
-  function unifyDevices(devicesData, options) {
-    if (!devicesData || typeof devicesData !== 'object') return devicesData;
-    const force = Boolean(options && options.force);
-    if (!force && hasNormalizedDevicesMarker(devicesData)) {
-      return devicesData;
-    }
-    Object.values(devicesData.cameras || {}).forEach(cam => {
-      if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
-        delete cam.power.input.powerDrawWatts;
-      }
-      fixPowerInput(cam);
-      if (Array.isArray(cam.power?.batteryPlateSupport)) {
-        cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
-          if (typeof it === 'string') {
-            const m = it.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.*))?/);
-            const type = m ? m[1].trim() : it;
-            let mount = m && m[2] ? m[2].trim().toLowerCase() : '';
-            if (!mount) {
-              mount = /adapted|via adapter/i.test(it) ? 'adapted' : 'native';
-            } else if (/via adapter/i.test(mount)) {
-              mount = 'adapted';
-            }
-            const notes = m && m[3] ? m[3].trim() : (/via adapter/i.test(it) ? 'via adapter' : '');
-            return { type, mount, notes };
-          }
-          return {
-            type: it.type || '',
-            mount: (it.mount ? it.mount : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))).toLowerCase(),
-            notes: it.notes || ''
-          };
-        });
-      }
-      if (cam.power) {
-        cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, {
-          type: '',
-          voltage: '',
-          current: '',
-          wattage: null,
-          notes: ''
-        });
-      }
-      cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' }).flatMap(vo => {
-        const { count, ...rest } = vo || {};
-        const norm = normalizeVideoType(rest.type);
-        if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
-        const parsedCount = parseInt(count, 10);
-        const num = Number.isFinite(parsedCount) && parsedCount > 0 ? parsedCount : 1;
-        const base = { ...rest, type: norm, notes: rest.notes || '' };
-        return Array.from({ length: num }, () => ({ ...base }));
-      });
-      cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' }).map(fc => {
-        const { type, ...rest } = fc || {};
-        return { ...rest, type: normalizeFizConnectorType(type) };
-      });
-      cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' }).map(vf => {
-        const { type, ...rest } = vf || {};
-        return {
-          ...rest,
-          type: normalizeViewfinderType(type)
-        };
-      });
-      cam.recordingMedia = ensureList(cam.recordingMedia, { type: '', notes: '' }).map(m => {
-        let { type = '', notes = '' } = m || {};
-        const match = type.match(/^(.*?)(?:\((.*)\))?$/);
-        if (match) {
-          type = match[1].trim();
-          notes = notes || (match[2] ? match[2].trim() : '');
-        }
-        if (/^SD UHS-II$/i.test(type)) {
-          type = 'SD Card';
-          notes = notes ? `${notes}; UHS-II` : 'UHS-II';
-        } else if (/^SD \(UHS-II\/UHS-I\)$/i.test(type)) {
-          type = 'SD Card';
-          notes = 'UHS-II/UHS-I';
-        } else if (type === 'CFast 2.0 card slots') {
-          type = 'CFast 2.0';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'CFexpress Type B (Dual Slots)') {
-          type = 'CFexpress Type B';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'CFexpress Type B (via adapter)') {
-          type = 'CFexpress Type B';
-          notes = notes || 'via adapter';
-        } else if (/^SD UHS-II \(Dual Slots\)$/i.test(type)) {
-          type = 'SD Card';
-          notes = notes ? `${notes}; UHS-II (Dual Slots)` : 'UHS-II (Dual Slots)';
-        } else if (type === 'SD Card (Dual Slots)') {
-          type = 'SD Card';
-          notes = notes || 'Dual Slots';
-        } else if (type === 'SD card slot (for proxy/backup)') {
-          type = 'SD Card';
-          notes = notes || 'for proxy/backup';
-        }
-        return { type, notes };
-      });
-      cam.timecode = ensureList(cam.timecode, { type: '', notes: '' });
-      cam.lensMount = ensureList(cam.lensMount, { type: '', mount: 'native', notes: '' })
-        .map(lm => ({
-          type: lm.type,
-          mount: (lm.mount ? lm.mount.toLowerCase() : 'native'),
-          notes: lm.notes || ''
-        }))
-        .filter((lm, idx, arr) =>
-          idx === arr.findIndex(o => o.type === lm.type && o.mount === lm.mount && o.notes === lm.notes)
-        );
-    });
-
-    Object.values(devicesData.lenses || {}).forEach(lens => {
-      if (!lens || typeof lens !== 'object') return;
-      const normalizeMountEntry = (entry) => {
-        if (!entry) return null;
-        if (typeof entry === 'string') {
-          const trimmed = entry.trim();
-          if (!trimmed) return null;
-          return { type: trimmed, mount: 'native' };
-        }
-        const type = typeof entry.type === 'string' ? entry.type.trim() : '';
-        if (!type) return null;
-        const status = typeof entry.mount === 'string' ? entry.mount.trim().toLowerCase() : '';
-        return { type, mount: status === 'adapted' ? 'adapted' : 'native' };
-      };
-
-      const existingMountOptions = lens.mountOptions;
-      const normalizedOptions = [];
-
-      const pushNormalizedEntry = (entry) => {
-        const normalized = normalizeMountEntry(entry);
-        if (normalized) {
-          normalizedOptions.push(normalized);
-        }
-      };
-
-      if (Array.isArray(existingMountOptions)) {
-        existingMountOptions.forEach(pushNormalizedEntry);
-      } else if (existingMountOptions && typeof existingMountOptions === 'object') {
-        pushNormalizedEntry(existingMountOptions);
-      }
-
-      if (!normalizedOptions.length && Array.isArray(lens.lensMount)) {
-        lens.lensMount.forEach(pushNormalizedEntry);
-        delete lens.lensMount;
-      }
-
-      if (!normalizedOptions.length) {
-        const mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
-        if (mountType) {
-          pushNormalizedEntry({ type: mountType, mount: 'native' });
-        }
-      }
-
-      const dedupedOptions = [];
-      normalizedOptions.forEach(opt => {
-        if (!opt || !opt.type) return;
-        const mountState = opt.mount === 'adapted' ? 'adapted' : 'native';
-        const alreadyPresent = dedupedOptions.some(existing => (
-          existing.type === opt.type && existing.mount === mountState
-        ));
-        if (!alreadyPresent) {
-          dedupedOptions.push({ type: opt.type, mount: mountState });
-        }
-      });
-
-      const safeMountOptions = Array.isArray(dedupedOptions) ? dedupedOptions : [];
-      lens.mountOptions = safeMountOptions;
-
-      const mountOptions = Array.isArray(lens.mountOptions) ? lens.mountOptions : [];
-
-      if (mountOptions.length) {
-        const primary = mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
-          || mountOptions[0];
-        const primaryType = primary && primary.type ? primary.type : '';
-        if (primaryType) {
-          lens.mount = primaryType;
-        } else if (typeof lens.mount === 'string') {
-          lens.mount = lens.mount.trim();
-        }
-      } else if (typeof lens.mount === 'string') {
-        lens.mount = lens.mount.trim();
-        if (!lens.mount) {
-          delete lens.mount;
-        }
-      }
-    });
-
-    ['monitors', 'video', 'viewfinders'].forEach(key => {
-      applyFixPowerInput(devicesData[key]);
-    });
-
-    const fizGroups = devicesData.fiz || {};
-    ['motors', 'controllers', 'distance'].forEach(key => {
-      applyFixPowerInput(fizGroups[key]);
-    });
-
-    // Normalize FIZ motors
-    Object.values(devicesData.fiz?.motors || {}).forEach(m => {
-      if (!m) return;
-      if (m.connector && !m.fizConnector) {
-        m.fizConnector = m.connector;
-        delete m.connector;
-      }
-      if (m.fizConnector) {
-        m.fizConnector = normalizeFizConnectorType(m.fizConnector);
-      }
-    });
-
-    // Normalize FIZ controllers
-    Object.values(devicesData.fiz?.controllers || {}).forEach(c => {
-      if (!c) return;
-      if (c.FIZ_connector && !c.fizConnector && !c.fizConnectors) {
-        c.fizConnector = c.FIZ_connector;
-        delete c.FIZ_connector;
-      }
-      if (Array.isArray(c.fizConnectors)) {
-        c.fizConnectors = c.fizConnectors.map(fc => {
-          if (!fc) return { type: '' };
-          const type = normalizeFizConnectorType(fc.type || fc);
-          const notes = fc.notes || undefined;
-          return notes ? { type, notes } : { type };
-        });
-      } else if (c.fizConnector) {
-        const parts = String(c.fizConnector)
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean);
-        c.fizConnectors = parts.map(p => ({ type: normalizeFizConnectorType(p) }));
-        delete c.fizConnector;
-      } else {
-        c.fizConnectors = [];
-      }
-    });
-
-    markDevicesNormalized(devicesData);
-    return devicesData;
-  }
-
-  function normalizeDevicesForPersistence(devicesData) {
-    return unifyDevices(devicesData, { force: true });
-  }
 
   function resolveUpdateDevicesReferenceFunction() {
     let directReference = null;
@@ -8490,6 +7807,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         link.setAttribute("title", helpText);
         link.setAttribute("data-help", helpText);
       } else {
+        if (navKey === 'projectRequirementsNav') {
+          console.warn(`[Cine Power Planner] Missing help text for ${navKey} in lang ${lang}`);
+        }
         link.removeAttribute("title");
         link.removeAttribute("data-help");
       }
@@ -13034,7 +12354,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   function openAvatarOptionsDialog(context = null) {
+    console.log('openAvatarOptionsDialog called', context);
     resolveContactsDomRefs();
+    console.log('avatarOptionsDialog ref:', avatarOptionsDialog);
     if (!avatarOptionsDialog) return;
     avatarOptionsContext = context || null;
     const avatarValue = typeof context?.getAvatar === 'function' ? context.getAvatar() : '';
@@ -13712,6 +13034,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function handleUserProfileAvatarButtonClick() {
     const profile = getUserProfileSnapshot();
     const hasAvatar = Boolean(profile && profile.avatar);
+    console.log('handleUserProfileAvatarButtonClick', { hasAvatar, profile });
     if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
       try {
         userProfileAvatarInput.click();
@@ -14084,7 +13407,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.setAttribute('aria-label', avatarLabel);
     avatarButton.removeAttribute('title');
     avatarButton.removeAttribute('data-help');
-    avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
+    avatarButton.innerHTML = '';
     avatarContainer.appendChild(avatarButton);
     const avatarInput = document.createElement('input');
     avatarInput.type = 'file';
@@ -14374,9 +13697,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   function initializeContactsModule() {
+    console.log('initializeContactsModule called');
     resolveContactsDomRefs();
-    if (contactsInitialized) return;
-    contactsInitialized = true;
+
+    // Only return if we are fully initialized with critical elements
+    if (contactsInitialized && contactsList && userProfileAvatarButton) {
+      return;
+    }
+
+    console.log('initializeContactsModule running (re-init or first run)');
+
     contactsCache = loadStoredContacts();
     loadUserProfileState();
     populateUserProfileRoleSelect();
@@ -14384,6 +13714,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     updateContactPickers();
     applyUserProfileToDom();
 
+    console.log('userProfileAvatarButton found (first-run):', !!userProfileAvatarButton);
     if (userProfileNameInput) {
       userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
       userProfileNameInput.addEventListener('blur', handleUserProfileFieldBlur);
@@ -14521,6 +13852,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       event.preventDefault();
       openDialog(contactsDialog);
     });
+    if (contactsList && userProfileAvatarButton) {
+      contactsInitialized = true;
+    }
   }
 
   function createCrewRow(data = {}) {
@@ -14568,7 +13902,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.setAttribute('aria-label', avatarChangeLabel);
     avatarButton.removeAttribute('title');
     avatarButton.removeAttribute('data-help');
-    avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
+    avatarButton.innerHTML = '';
     avatarContainer.appendChild(avatarButton);
     const avatarFileInput = document.createElement('input');
     avatarFileInput.type = 'file';
@@ -21239,6 +20573,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       },
     },
   });
+  scheduleLayoutInitialization();
 
 }
 

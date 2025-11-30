@@ -1,4 +1,4 @@
-/* global CORE_GLOBAL_SCOPE, getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
+/* global cineFeatureBackup, CORE_GLOBAL_SCOPE, getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, filterDetailsStorage,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
@@ -4067,8 +4067,7 @@ function resolveOwnGearFeatureModuleForEditor() {
     || (typeof self !== 'undefined' && self)
     || (typeof global !== 'undefined' && global)
     || null;
-  if (scope && typeof scope.cineFeaturesOwnGear === 'object' && scope.cineFeaturesOwnGear) {
-    return scope.cineFeaturesOwnGear;
+  if (scope && typeof scope.cineFeaturesOwnGear !== 'undefined') {
   }
   if (typeof cineFeaturesOwnGear === 'object' && cineFeaturesOwnGear) {
     return cineFeaturesOwnGear;
@@ -14956,7 +14955,7 @@ function ensureGearListActions() {
   const deleteBtn = document.createElement('button');
   deleteBtn.id = 'deleteGearListBtn';
   deleteBtn.type = 'button';
-  deleteBtn.className = 'gear-list-action-btn';
+  deleteBtn.className = 'gear-list-action-btn danger';
   if (typeof setButtonLabelWithIconForSetups === 'function' && typeof ICON_GLYPHS === 'object') {
     setButtonLabelWithIconForSetups(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
   } else {

@@ -809,6 +809,7 @@
       })
     ]).then(() => {
       refreshBackupVaultFallbackMode();
+      backupVaultTransientRecords.clear();
       return true;
     }).catch(error => {
       console.warn('clearBackupVault encountered errors', error);
@@ -2713,58 +2714,7 @@
     },
   );
 
-  function clearBackupVault() {
-    const indexedPromise = withBackupVaultStore('readwrite', (store) => {
-      if (!store) {
-        return false;
-      }
-      return new Promise((resolve, reject) => {
-        try {
-          const request = store.clear();
-          request.addEventListener('success', () => {
-            resolve(true);
-          });
-          request.addEventListener('error', () => {
-            reject(request.error);
-          });
-        } catch (clearError) {
-          reject(clearError);
-        }
-      }).catch((error) => {
-        console.warn('Failed to clear backup vault IndexedDB', error);
-        return false;
-      });
-    }).catch((error) => {
-      console.warn('Backup vault clear failed', error);
-      return false;
-    });
 
-    const fallbackPromise = Promise.resolve().then(() => {
-      const { storage } = getBackupVaultFallbackStorage();
-      if (isStorageLike(storage)) {
-        try {
-          storage.removeItem(BACKUP_VAULT_FALLBACK_STORAGE_KEY);
-          fallbackStorageRecordCount = 0;
-          return true;
-        } catch (error) {
-          console.warn('Failed to clear fallback backup vault', error);
-          return false;
-        }
-      }
-      return false;
-    });
-
-    const memoryPromise = memoryBackupVault.list().then((entries) => {
-      const ids = entries.map(e => e.id);
-      return Promise.all(ids.map(id => memoryBackupVault.remove(id))).then(() => true);
-    });
-
-    return Promise.all([indexedPromise, fallbackPromise, memoryPromise]).then(() => {
-      backupVaultTransientRecords.clear();
-      refreshBackupVaultFallbackMode();
-      return true;
-    });
-  }
 
   const globalExports = [
     ['cineFeatureBackup', backupAPI],

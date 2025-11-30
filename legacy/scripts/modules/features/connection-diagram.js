@@ -1343,8 +1343,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       setupDiagramContainer.innerHTML = '';
-      if (popup) setupDiagramContainer.appendChild(popup);
       setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
+      if (popup) setupDiagramContainer.appendChild(popup);
       var popupEntries = {};
       var safeSummaryFn = getSafeGenerateConnectorSummary();
       Object.entries(nodeMap).forEach(function (_ref5) {
@@ -1820,8 +1820,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var top = 0;
         var pointer = lastPointerPosition;
         if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
-          left = pointer.x + margin;
-          top = pointer.y + margin;
+          left = pointer.x + 15;
+          top = pointer.y + 15;
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
               left = viewportWidth - popupRect.width - margin;

@@ -2,7 +2,7 @@
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
           resetMountVoltagePreferences, applyFocusScalePreference,
-          savePrintPreferences */
+          savePrintPreferences, clearBackupVault */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName, loadUserProfile, saveUserProfile */
 
 // Everything in this module is intentionally defensive. Persistent data keeps
@@ -8026,7 +8026,7 @@
         let key;
         try {
           key = storage.key(i);
-        } catch (e) {
+        } catch {
           continue;
         }
 
@@ -9077,7 +9077,7 @@
       onQuotaExceeded: (error, context = {}) => {
         // If we hit a quota limit while saving the session, try to clear out
         // old auto-backups or other non-essential data to make room.
-        const storage = context && context.storage ? context.storage : safeStorage;
+
 
         // 1. Try clearing the oldest auto-gear backup first
         if (typeof removeOldestAutoGearBackupEntry === 'function') {
@@ -14623,6 +14623,7 @@
   }
 
   // --- Clear All Stored Data ---
+  // --- Clear All Stored Data ---
   async function clearAllData() {
     const msg = "Error clearing storage:";
     // Use the shared project deletion helper so all in-memory project caches and
@@ -14657,13 +14658,72 @@
     }
 
     const safeStorage = getSafeLocalStorage();
+
+    // Aggressive cleanup: iterate over all keys and remove anything that looks like ours.
+    // This catches legacy backups, migration artifacts, and any keys not explicitly listed below.
+    const prefixes = [
+      'cameraPowerPlanner_',
+      'cinePowerPlanner_',
+      'cineBackupVault',
+      'cineRental',
+      'cine',
+      '__cine'
+    ];
+
+    const exactKeys = [
+      'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing',
+      'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language',
+      'iosPwaHelpShown', 'debugMode'
+    ];
+
+    const clearStorageAggressively = (storage, storageName) => {
+      if (!storage) return;
+      try {
+        const keysToRemove = [];
+        // Use a safe iteration method depending on what the storage object supports
+        const length = storage.length;
+        for (let i = 0; i < length; i++) {
+          const key = storage.key(i);
+          if (key) {
+            if (prefixes.some(p => key.startsWith(p)) ||
+              exactKeys.includes(key) ||
+              key.includes('__backup') ||
+              key.includes('legacyMigrationBackup')
+            ) {
+              keysToRemove.push(key);
+            }
+          }
+        }
+
+        keysToRemove.forEach(key => {
+          try {
+            storage.removeItem(key);
+          } catch (e) {
+            console.warn(`Failed to remove key ${key} from ${storageName}`, e);
+          }
+        });
+      } catch (e) {
+        console.warn(`Failed to iterate ${storageName}`, e);
+      }
+    };
+
+    clearStorageAggressively(safeStorage, 'safeLocalStorage');
+
+    if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
+      clearStorageAggressively(localStorage, 'localStorage');
+    }
+
+    if (typeof sessionStorage !== 'undefined') {
+      clearStorageAggressively(sessionStorage, 'sessionStorage');
+    }
+
+    // Explicitly clear known keys using the helper to ensure logging and safety
+    // This is redundant but safe, ensuring we definitely hit these keys even if iteration failed
     deleteFromStorage(safeStorage, 'cineBackupVaultFallbackRecords', msg);
     deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
-    // Favorites were added later and can be forgotten if not explicitly cleared.
-    // Ensure they are removed alongside other stored planner data.
     deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
@@ -14675,19 +14735,17 @@
     deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
-    deleteFromStorage(
-      safeStorage,
-      getCustomFontStorageKeyName(),
-      msg
-    );
+    deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
     deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
     deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
+
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
       deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
       deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
     }
+
     const preferenceKeys = [
       'darkMode',
       'pinkMode',
@@ -14707,13 +14765,6 @@
       deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
     });
 
-    const storageCandidates = collectUniqueStorages([
-      safeStorage,
-      typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null,
-      getWindowStorage('localStorage'),
-      typeof localStorage !== 'undefined' ? localStorage : null,
-    ]);
-
     const onboardingStorageKeys = [
       'cameraPowerPlanner_onboardingTutorial',
       'cinePowerPlanner_onboardingTutorial',
@@ -14729,6 +14780,13 @@
       }
     };
 
+    const storageCandidates = collectUniqueStorages([
+      safeStorage,
+      typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null,
+      getWindowStorage('localStorage'),
+      typeof localStorage !== 'undefined' ? localStorage : null,
+    ]);
+
     for (let index = 0; index < storageCandidates.length; index += 1) {
       clearOnboardingTutorialState(storageCandidates[index]);
     }
@@ -14741,117 +14799,6 @@
     for (let index = 0; index < sessionCandidates.length; index += 1) {
       clearOnboardingTutorialState(sessionCandidates[index]);
     }
-    const prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
-
-    const collectStorageKeys = (storage, predicate = () => true) => {
-      if (!storage) {
-        return [];
-      }
-
-      const keys = [];
-
-      if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-        for (let index = 0; index < storage.length; index += 1) {
-          let candidateKey = null;
-          try {
-            candidateKey = storage.key(index);
-          } catch (error) {
-            console.warn('Unable to inspect storage key during factory reset', error);
-          }
-          if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-            keys.push(candidateKey);
-          }
-        }
-        return keys;
-      }
-
-      if (typeof storage.keys === 'function') {
-        try {
-          const candidateKeys = storage.keys();
-          if (Array.isArray(candidateKeys)) {
-            candidateKeys.forEach((candidateKey) => {
-              if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-                keys.push(candidateKey);
-              }
-            });
-          }
-        } catch (error) {
-          console.warn('Unable to enumerate storage keys during factory reset', error);
-        }
-        return keys;
-      }
-
-      if (typeof storage.forEach === 'function') {
-        try {
-          storage.forEach((value, candidateKey) => {
-            if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-              keys.push(candidateKey);
-            }
-          });
-        } catch (error) {
-          console.warn('Unable to iterate storage entries during factory reset', error);
-        }
-        return keys;
-      }
-
-      return keys;
-    };
-
-    const deletePrefixedKeys = (storages) => {
-      storages.forEach((storage) => {
-        const keysToRemove = collectStorageKeys(
-          storage,
-          (candidateKey) => prefixedKeys.some(prefix => candidateKey.startsWith(prefix)),
-        );
-        if (!keysToRemove.length) {
-          return;
-        }
-        keysToRemove.forEach((key) => {
-          try {
-            deleteFromStorage(storage, key, msg);
-          } catch (error) {
-            console.warn('Unable to remove legacy storage key during factory reset', key, error);
-          }
-        });
-      });
-    };
-
-    deletePrefixedKeys(storageCandidates);
-    deletePrefixedKeys(sessionCandidates);
-
-    const clearStorages = (storages) => {
-      storages.forEach((storage) => {
-        if (!storage) {
-          return;
-        }
-        let cleared = false;
-        if (typeof storage.clear === 'function') {
-          try {
-            storage.clear();
-            cleared = true;
-          } catch (error) {
-            console.warn('Unable to clear storage during factory reset', error);
-          }
-        }
-        if (cleared) {
-          return;
-        }
-        const keysToRemove = collectStorageKeys(storage);
-        if (!keysToRemove.length) {
-          return;
-        }
-        keysToRemove.forEach((key) => {
-          try {
-            deleteFromStorage(storage, key, msg);
-          } catch (error) {
-            console.warn('Unable to remove storage key during factory reset', key, error);
-          }
-        });
-      });
-    };
-
-    clearStorages(storageCandidates);
-    clearStorages(sessionCandidates);
 
     try {
       const logging = GLOBAL_SCOPE && GLOBAL_SCOPE.cineLogging ? GLOBAL_SCOPE.cineLogging : null;

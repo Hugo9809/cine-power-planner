@@ -7,8 +7,7 @@
             const el = document.querySelector(selector);
             if (el) {
                 const style = window.getComputedStyle(el);
-                const isVisible = style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-                if (isVisible) return el;
+                if (style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0') return el;
             }
             await wait(100);
         }
@@ -55,7 +54,7 @@
                     window.cineFeaturesOnboardingTour.stop();
                 }
             }
-        } catch (e) {
+        } catch {
             log("Onboarding overlay not found or timed out. Assuming skipped.");
         }
         await wait(1000);
@@ -97,7 +96,6 @@
 
         // 5. Verify Persistence (Simulate by checking LocalStorage)
         log("Verifying Persistence in LocalStorage...");
-        const storedLang = localStorage.getItem('cine_language') || localStorage.getItem('language'); // Guessing key
         // Actually, let's check the app's specific storage key if known, or just rely on the fact that we changed it.
         // Since we can't easily reload the page in this script context without losing execution, 
         // we will assume if it's in localStorage, it will persist.

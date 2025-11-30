@@ -1,4 +1,4 @@
-/* global cineModuleBase */
+/* global cineModuleBase, cineCoreAppLocalizationAccessors */
 
 (function () {
     const GLOBAL_SCOPE = typeof window !== 'undefined' ? window : this;

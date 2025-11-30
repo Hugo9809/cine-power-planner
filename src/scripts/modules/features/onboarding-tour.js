@@ -1,4 +1,4 @@
-/* global cineModuleBase, getSafeLocalStorage, SAFE_LOCAL_STORAGE,
+/* global cineModuleBase, readAvatarFile, setAvatar, getSafeLocalStorage, SAFE_LOCAL_STORAGE,
           activateSettingsTab, openDialog, closeDialog, isDialogOpen */
 
 (function () {
@@ -1151,108 +1151,7 @@
     };
   }
 
-  function createAnyFieldCompletionRequirement(selectors, predicate, events) {
-    const normalizedSelectors = Array.isArray(selectors) ? selectors.slice() : [selectors];
-    const eventList = Array.isArray(events) && events.length ? events : ['change', 'input'];
-    const evaluator = typeof predicate === 'function'
-      ? predicate
-      : (value => Boolean(value && value !== 'None'));
 
-    return {
-      check() {
-        let elementFound = false;
-        for (let index = 0; index < normalizedSelectors.length; index += 1) {
-          const selector = normalizedSelectors[index];
-          if (!selector) {
-            continue;
-          }
-          const element = getElement(selector);
-          if (!element) {
-            continue;
-          }
-          elementFound = true;
-          try {
-            if (evaluator(getFieldValue(element), element)) {
-              return true;
-            }
-          } catch (error) {
-            safeWarn('cine.features.onboardingTour could not evaluate multi-field requirement.', error);
-          }
-        }
-        return !elementFound;
-      },
-      attach(context) {
-        const removers = [];
-        let elementFound = false;
-        const evaluate = () => {
-          let matches = false;
-          for (let index = 0; index < normalizedSelectors.length; index += 1) {
-            const selector = normalizedSelectors[index];
-            if (!selector) {
-              continue;
-            }
-            const element = getElement(selector);
-            if (!element) {
-              continue;
-            }
-            elementFound = true;
-            try {
-              if (evaluator(getFieldValue(element), element)) {
-                matches = true;
-                break;
-              }
-            } catch (error) {
-              safeWarn('cine.features.onboardingTour could not evaluate multi-field change.', error);
-            }
-          }
-          if (!elementFound) {
-            matches = true;
-          }
-          if (matches) {
-            if (typeof context.complete === 'function') {
-              context.complete();
-            }
-          } else if (typeof context.incomplete === 'function') {
-            context.incomplete();
-          }
-        };
-
-        for (let index = 0; index < normalizedSelectors.length; index += 1) {
-          const selector = normalizedSelectors[index];
-          if (!selector) {
-            continue;
-          }
-          const element = getElement(selector);
-          if (!element) {
-            continue;
-          }
-          elementFound = true;
-          const handler = () => {
-            evaluate();
-          };
-          for (let eventIndex = 0; eventIndex < eventList.length; eventIndex += 1) {
-            const eventName = eventList[eventIndex];
-            element.addEventListener(eventName, handler);
-            removers.push(() => {
-              element.removeEventListener(eventName, handler);
-            });
-          }
-        }
-
-        evaluate();
-
-        return () => {
-          for (let index = 0; index < removers.length; index += 1) {
-            try {
-              removers[index]();
-            } catch (error) {
-              safeWarn('cine.features.onboardingTour could not detach multi-field requirement.', error);
-            }
-          }
-        };
-      },
-    };
-  }
 
   function createClickCompletionRequirement(selectors, options) {
     const normalized = Array.isArray(selectors) ? selectors.slice() : [selectors];
@@ -5950,6 +5849,11 @@
         void error;
       }
     }
+    const avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-avatar-action';
+    avatarAction.textContent = resolveAvatarActionLabel(false);
+
     const handleAvatarActionClick = () => {
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {

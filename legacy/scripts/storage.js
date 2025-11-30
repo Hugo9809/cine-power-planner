@@ -4359,6 +4359,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         parsedValue = normalizedRawValue;
       }
     }
+    if (parsedValue && _typeof(parsedValue) === 'object' && (Array.isArray(parsedValue) && parsedValue.length === 0 || !Array.isArray(parsedValue) && Object.keys(parsedValue).length === 0)) {
+      return parsedValue;
+    }
     createStorageMigrationBackup(storage, key, parsedValue);
     return parsedValue;
   }
@@ -6825,6 +6828,88 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return true;
     };
+    var attemptStorageCleanup = function attemptStorageCleanup(storage, options) {
+      if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+        return {
+          success: false,
+          freed: 0
+        };
+      }
+      var _ref11 = options || {},
+        _ref11$skipKeys = _ref11.skipKeys,
+        skipKeys = _ref11$skipKeys === void 0 ? [] : _ref11$skipKeys;
+      var skipSet = new Set(skipKeys);
+      if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
+        skipSet.add(ACTIVE_PROJECT_COMPRESSION_HOLD_KEY);
+      }
+      var candidates = [];
+      var total = storage.length;
+      for (var i = 0; i < total; i += 1) {
+        var _key4 = void 0;
+        try {
+          _key4 = storage.key(i);
+        } catch (e) {
+          continue;
+        }
+        if (!_key4 || skipSet.has(_key4)) continue;
+        if (_key4.endsWith('__legacyMigrationBackup')) {
+          candidates.push({
+            key: _key4,
+            priority: 1,
+            size: 0
+          });
+          continue;
+        }
+        if (_key4.endsWith('__backup')) {
+          candidates.push({
+            key: _key4,
+            priority: 2,
+            size: 0
+          });
+          continue;
+        }
+        if (_key4 === DEVICE_SCHEMA_CACHE_KEY || _key4 === LEGACY_SCHEMA_CACHE_KEY) {
+          candidates.push({
+            key: _key4,
+            priority: 3,
+            size: 0
+          });
+          continue;
+        }
+      }
+      if (!candidates.length) {
+        return {
+          success: false,
+          freed: 0
+        };
+      }
+      candidates.sort(function (a, b) {
+        return a.priority - b.priority;
+      });
+      var freed = 0;
+      var cleaned = 0;
+      for (var _i3 = 0; _i3 < candidates.length; _i3 += 1) {
+        var candidate = candidates[_i3];
+        try {
+          var val = storage.getItem(candidate.key);
+          var size = val ? val.length : 0;
+          storage.removeItem(candidate.key);
+          clearCachedStorageEntry(storage, candidate.key);
+          freed += size;
+          cleaned += 1;
+          console.warn("[Storage Cleanup] Removed ".concat(candidate.key, " to free ").concat(size, " chars."));
+          if (freed > 50000) {
+            break;
+          }
+        } catch (e) {
+          console.warn("[Storage Cleanup] Failed to remove ".concat(candidate.key), e);
+        }
+      }
+      return {
+        success: cleaned > 0,
+        freed: freed
+      };
+    };
     var attemptHandleQuota = function attemptHandleQuota(error) {
       var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       if (!isQuotaExceededError(error)) {
@@ -6844,21 +6929,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           console.error("Error while handling quota exceed for ".concat(key).concat(scope), handlerError);
         }
       }
-      if (compressionSweepAttempted || enableCompressionSweep === false) {
-        return false;
+      if (!compressionSweepAttempted && enableCompressionSweep !== false) {
+        compressionSweepAttempted = true;
+        var skipKeys = [key];
+        if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
+          skipKeys.push(fallbackKey);
+        }
+        if (context && typeof context.backupKey === 'string' && context.backupKey) {
+          skipKeys.push(context.backupKey);
+        }
+        var sweepResult = attemptStorageCompressionSweep(storage, {
+          skipKeys: skipKeys
+        });
+        if (sweepResult && sweepResult.success) {
+          return true;
+        }
       }
-      compressionSweepAttempted = true;
-      var skipKeys = [key];
-      if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
-        skipKeys.push(fallbackKey);
+      var skipKeysCleanup = [key];
+      if (useBackup && typeof fallbackKey === 'string' && fallbackKey) {
+        skipKeysCleanup.push(fallbackKey);
       }
-      if (context && typeof context.backupKey === 'string' && context.backupKey) {
-        skipKeys.push(context.backupKey);
-      }
-      var sweepResult = attemptStorageCompressionSweep(storage, {
-        skipKeys: skipKeys
+      var cleanupResult = attemptStorageCleanup(storage, {
+        skipKeys: skipKeysCleanup
       });
-      return Boolean(sweepResult && sweepResult.success);
+      return Boolean(cleanupResult && cleanupResult.success);
     };
     var attempts = 0;
     var _loop3 = function _loop3() {
@@ -7145,10 +7239,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function deleteFromStorage(storage, key, errorMessage) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
     if (!storage) return;
-    var _ref11 = options || {},
-      _ref11$disableBackup = _ref11.disableBackup,
-      disableBackup = _ref11$disableBackup === void 0 ? false : _ref11$disableBackup,
-      backupKey = _ref11.backupKey;
+    var _ref12 = options || {},
+      _ref12$disableBackup = _ref12.disableBackup,
+      disableBackup = _ref12$disableBackup === void 0 ? false : _ref12$disableBackup,
+      backupKey = _ref12.backupKey;
     var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
     var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
     clearCachedStorageEntry(storage, key);
@@ -7652,12 +7746,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
     var normalizedState = normalizeLegacyLongGopStructure(state);
     var normalizedOptions = isPlainObject(options) ? options : {};
-    if (normalizedOptions.disableCompression === false) {
-      console.warn('saveSessionState compression override ignored. Session storage compression is disabled to protect user data.');
-    }
+    var disableCompression = normalizedOptions.disableCompression !== false;
     var saveOptions = _objectSpread(_objectSpread({}, normalizedOptions), {}, {
-      disableCompression: true,
-      forceCompressionOnQuota: false
+      disableCompression: disableCompression,
+      forceCompressionOnQuota: true,
+      onQuotaExceeded: function onQuotaExceeded(error) {
+        var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var storage = context && context.storage ? context.storage : safeStorage;
+        if (typeof removeOldestAutoGearBackupEntry === 'function') {
+          var backups = loadAutoGearBackups();
+          if (removeOldestAutoGearBackupEntry(backups)) {
+            console.warn('Removed oldest automatic gear backup to free up space for session state.');
+            return true;
+          }
+        }
+        if (typeof clearCachedPlannerDataForAutoGearBackups === 'function') {
+          if (clearCachedPlannerDataForAutoGearBackups()) {
+            console.warn('Cleared cached planner data to free up space for session state.');
+            return true;
+          }
+        }
+        return false;
+      }
     });
     saveJSONToStorage(safeStorage, SESSION_STATE_KEY, normalizedState, "Error saving session state to localStorage:", saveOptions);
   }
@@ -7858,10 +7968,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function updateSetups(callback) {
     var setups = loadSetups();
-    var _ref12 = callback(setups) || {},
-      result = _ref12.result,
-      _ref12$changed = _ref12.changed,
-      changed = _ref12$changed === void 0 ? true : _ref12$changed;
+    var _ref13 = callback(setups) || {},
+      result = _ref13.result,
+      _ref13$changed = _ref13.changed,
+      changed = _ref13$changed === void 0 ? true : _ref13$changed;
     if (changed) {
       saveSetups(setups);
     }
@@ -8146,10 +8256,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof label !== 'string') return '';
       return label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[:：]/g, '').replace(/[^a-zA-Z0-9]+/g, ' ').trim().toLowerCase();
     };
-    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref13) {
-      var _ref14 = _slicedToArray(_ref13, 2),
-        field = _ref14[0],
-        labels = _ref14[1];
+    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 2),
+        field = _ref15[0],
+        labels = _ref15[1];
       labels.forEach(function (label) {
         var normalized = normalize(label);
         if (normalized && !map.has(normalized)) {
@@ -8315,10 +8425,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (expanded.productionCompany) {
             valueToStore = expanded.productionCompany;
           }
-          Object.entries(expanded).forEach(function (_ref15) {
-            var _ref16 = _slicedToArray(_ref15, 2),
-              expandedField = _ref16[0],
-              expandedValue = _ref16[1];
+          Object.entries(expanded).forEach(function (_ref16) {
+            var _ref17 = _slicedToArray(_ref16, 2),
+              expandedField = _ref17[0],
+              expandedValue = _ref17[1];
             if (expandedField === 'productionCompany') {
               return;
             }
@@ -8342,10 +8452,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var clone = {};
-      Object.entries(value).forEach(function (_ref17) {
-        var _ref18 = _slicedToArray(_ref17, 2),
-          key = _ref18[0],
-          val = _ref18[1];
+      Object.entries(value).forEach(function (_ref18) {
+        var _ref19 = _slicedToArray(_ref18, 2),
+          key = _ref19[0],
+          val = _ref19[1];
         clone[key] = cloneProjectData(val);
       });
       return clone;
@@ -8507,10 +8617,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         fromSelections: true
       });
     }
-    Object.entries(info).forEach(function (_ref19) {
-      var _ref20 = _slicedToArray(_ref19, 2),
-        key = _ref20[0],
-        raw = _ref20[1];
+    Object.entries(info).forEach(function (_ref20) {
+      var _ref21 = _slicedToArray(_ref20, 2),
+        key = _ref21[0],
+        raw = _ref21[1];
       if (raw === null || raw === undefined) {
         return;
       }
@@ -8754,10 +8864,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sizeKeys = ['size', 'filterSize', 'format', 'dimension', 'dimensions', 'diameter'];
       var _size2 = '';
-      for (var _i3 = 0; _i3 < sizeKeys.length; _i3 += 1) {
-        var _key4 = sizeKeys[_i3];
-        if (typeof entry[_key4] === 'string') {
-          var _candidate2 = entry[_key4].trim();
+      for (var _i4 = 0; _i4 < sizeKeys.length; _i4 += 1) {
+        var _key5 = sizeKeys[_i4];
+        if (typeof entry[_key5] === 'string') {
+          var _candidate2 = entry[_key5].trim();
           if (_candidate2) {
             _size2 = _candidate2;
             break;
@@ -8770,11 +8880,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var valueKeys = ['values', 'value', 'strengths', 'strength', 'options', 'selected', 'selections', 'choices'];
       var _hasExplicitValues = false;
       var _values2 = [];
-      for (var _i4 = 0; _i4 < valueKeys.length; _i4 += 1) {
-        var _key5 = valueKeys[_i4];
-        if (Object.prototype.hasOwnProperty.call(entry, _key5)) {
+      for (var _i5 = 0; _i5 < valueKeys.length; _i5 += 1) {
+        var _key6 = valueKeys[_i5];
+        if (Object.prototype.hasOwnProperty.call(entry, _key6)) {
           _hasExplicitValues = true;
-          _values2 = normalizeImportedFilterValues(entry[_key5]);
+          _values2 = normalizeImportedFilterValues(entry[_key6]);
           break;
         }
       }
@@ -8846,10 +8956,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return serialized || '';
       }
       var _entries = [];
-      Object.entries(value).forEach(function (_ref21) {
-        var _ref22 = _slicedToArray(_ref21, 2),
-          key = _ref22[0],
-          candidate = _ref22[1];
+      Object.entries(value).forEach(function (_ref22) {
+        var _ref23 = _slicedToArray(_ref22, 2),
+          key = _ref23[0],
+          candidate = _ref23[1];
         var normalized = normalizeImportedFilterEntry(candidate, key);
         if (normalized) {
           _entries.push(normalized);
@@ -8904,10 +9014,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (isPlainObject(value)) {
         var nested = {};
-        Object.entries(value).forEach(function (_ref23) {
-          var _ref24 = _slicedToArray(_ref23, 2),
-            key = _ref24[0],
-            nestedValue = _ref24[1];
+        Object.entries(value).forEach(function (_ref24) {
+          var _ref25 = _slicedToArray(_ref24, 2),
+            key = _ref25[0],
+            nestedValue = _ref25[1];
           if (typeof key !== 'string' || !key) {
             return;
           }
@@ -8935,10 +9045,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return '';
     };
     var clone = {};
-    Object.entries(selectors).forEach(function (_ref25) {
-      var _ref26 = _slicedToArray(_ref25, 2),
-        id = _ref26[0],
-        value = _ref26[1];
+    Object.entries(selectors).forEach(function (_ref26) {
+      var _ref27 = _slicedToArray(_ref26, 2),
+        id = _ref27[0],
+        value = _ref27[1];
       if (typeof id !== 'string' || !id) {
         return;
       }
@@ -9337,10 +9447,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var derived = [];
-    Object.entries(source).forEach(function (_ref27) {
-      var _ref28 = _slicedToArray(_ref27, 2),
-        rawKey = _ref28[0],
-        rawValue = _ref28[1];
+    Object.entries(source).forEach(function (_ref28) {
+      var _ref29 = _slicedToArray(_ref28, 2),
+        rawKey = _ref29[0],
+        rawValue = _ref29[1];
       if (!isLikelyLensNameKey(rawKey)) {
         return;
       }
@@ -9815,8 +9925,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           }
         } else if (htmlSources.length) {
-          for (var _i5 = 0; _i5 < htmlSources.length; _i5 += 1) {
-            var _recovered = extractProjectInfoFromHtml(htmlSources[_i5]);
+          for (var _i6 = 0; _i6 < htmlSources.length; _i6 += 1) {
+            var _recovered = extractProjectInfoFromHtml(htmlSources[_i6]);
             if (_recovered) {
               var recoveredClone = cloneProjectInfo(_recovered) || {};
               var normalizedClone = cloneProjectInfo(normalizedProjectInfo) || {};
@@ -10152,13 +10262,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function readAllProjectsFromStorage() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref29 = options || {},
-      _ref29$forceRefresh = _ref29.forceRefresh,
-      forceRefresh = _ref29$forceRefresh === void 0 ? false : _ref29$forceRefresh,
-      _ref29$forMutation = _ref29.forMutation,
-      forMutation = _ref29$forMutation === void 0 ? false : _ref29$forMutation,
-      _ref29$skipAutoBackup = _ref29.skipAutoBackupExpansion,
-      skipAutoBackupExpansion = _ref29$skipAutoBackup === void 0 ? false : _ref29$skipAutoBackup;
+    var _ref30 = options || {},
+      _ref30$forceRefresh = _ref30.forceRefresh,
+      forceRefresh = _ref30$forceRefresh === void 0 ? false : _ref30$forceRefresh,
+      _ref30$forMutation = _ref30.forMutation,
+      forMutation = _ref30$forMutation === void 0 ? false : _ref30$forMutation,
+      _ref30$skipAutoBackup = _ref30.skipAutoBackupExpansion,
+      skipAutoBackupExpansion = _ref30$skipAutoBackup === void 0 ? false : _ref30$skipAutoBackup;
     applyLegacyStorageMigrations();
     var shouldUseCache = !skipAutoBackupExpansion;
     if (shouldUseCache && !forceRefresh) {
@@ -10358,9 +10468,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function persistAllProjects(projects) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref30 = options || {},
-      _ref30$skipCompressio = _ref30.skipCompression,
-      skipCompression = _ref30$skipCompressio === void 0 ? false : _ref30$skipCompressio;
+    var _ref31 = options || {},
+      _ref31$skipCompressio = _ref31.skipCompression,
+      skipCompression = _ref31$skipCompressio === void 0 ? false : _ref31$skipCompressio;
     var safeStorage = getSafeLocalStorage();
     enforceAutoBackupLimits(projects);
     var serializedProjects = serializeAutoBackupEntries(projects, {
@@ -10900,9 +11010,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var _importProject = ensureImporter();
       var count = 0;
-      entries.forEach(function (_ref31) {
-        var name = _ref31.name,
-          project = _ref31.project;
+      entries.forEach(function (_ref32) {
+        var name = _ref32.name,
+          project = _ref32.project;
         if (project === null || project === undefined) {
           return;
         }
@@ -10921,10 +11031,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(collection)) {
       var _importProject2 = ensureImporter();
-      Object.entries(collection).forEach(function (_ref32) {
-        var _ref33 = _slicedToArray(_ref32, 2),
-          name = _ref33[0],
-          proj = _ref33[1];
+      Object.entries(collection).forEach(function (_ref33) {
+        var _ref34 = _slicedToArray(_ref33, 2),
+          name = _ref34[0],
+          proj = _ref34[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
         _importProject2(typeof normalizedName === 'string' ? normalizedName : '', proj);
       });
@@ -10961,8 +11071,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (Array.isArray(plannerData)) {
       plannerData.forEach(function (entry) {
         if (Array.isArray(entry) && entry.length >= 2) {
-          var _key6 = entry[0];
-          if (typeof _key6 === "string" && _key6.toLowerCase().includes("project")) {
+          var _key7 = entry[0];
+          if (typeof _key7 === "string" && _key7.toLowerCase().includes("project")) {
             addCollection(entry[1]);
           }
           return;
@@ -11882,11 +11992,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _opts$skipNormalizati2 = opts.skipNormalization,
       skipNormalization = _opts$skipNormalizati2 === void 0 ? false : _opts$skipNormalizati2;
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
-    var _ref34 = skipNormalization ? {
+    var _ref35 = skipNormalization ? {
         normalized: safeBackups,
         changed: false
       } : normalizeLegacyLongGopBackups(safeBackups),
-      normalizedBackups = _ref34.normalized;
+      normalizedBackups = _ref35.normalized;
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
     var attemptedMigrationCleanup = false;
@@ -12299,164 +12409,147 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     saveJSONToStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, normalized, "Error saving automatic gear backup retention to localStorage:");
   }
   function clearAllData() {
-    var msg = "Error clearing storage:";
-    try {
-      deleteProject();
-    } catch (error) {
-      console.warn('Unable to clear stored projects during factory reset', error);
-    }
-    var safeStorage = getSafeLocalStorage();
-    deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
-    deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
-    deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
-    deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
-    if (typeof sessionStorage !== 'undefined') {
-      deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
-    }
-    var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
-    preferenceKeys.forEach(function (key) {
-      deleteFromStorage(safeStorage, key, msg, {
-        disableBackup: true
-      });
-    });
-    var storageCandidates = collectUniqueStorages([safeStorage, typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null, getWindowStorage('localStorage'), typeof localStorage !== 'undefined' ? localStorage : null]);
-    var onboardingStorageKeys = ['cameraPowerPlanner_onboardingTutorial', 'cinePowerPlanner_onboardingTutorial'];
-    var clearOnboardingTutorialState = function clearOnboardingTutorialState(storage) {
-      if (!storage) {
-        return;
-      }
-      for (var index = 0; index < onboardingStorageKeys.length; index += 1) {
-        var key = onboardingStorageKeys[index];
-        deleteFromStorage(storage, key, msg);
-      }
-    };
-    for (var index = 0; index < storageCandidates.length; index += 1) {
-      clearOnboardingTutorialState(storageCandidates[index]);
-    }
-    var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
-    for (var _index9 = 0; _index9 < sessionCandidates.length; _index9 += 1) {
-      clearOnboardingTutorialState(sessionCandidates[_index9]);
-    }
-    var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
-    var collectStorageKeys = function collectStorageKeys(storage) {
-      var predicate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
-        return true;
-      };
-      if (!storage) {
-        return [];
-      }
-      var keys = [];
-      if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-        for (var _index0 = 0; _index0 < storage.length; _index0 += 1) {
-          var candidateKey = null;
-          try {
-            candidateKey = storage.key(_index0);
-          } catch (error) {
-            console.warn('Unable to inspect storage key during factory reset', error);
-          }
-          if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-            keys.push(candidateKey);
-          }
-        }
-        return keys;
-      }
-      if (typeof storage.keys === 'function') {
-        try {
-          var candidateKeys = storage.keys();
-          if (Array.isArray(candidateKeys)) {
-            candidateKeys.forEach(function (candidateKey) {
-              if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-                keys.push(candidateKey);
-              }
-            });
-          }
-        } catch (error) {
-          console.warn('Unable to enumerate storage keys during factory reset', error);
-        }
-        return keys;
-      }
-      if (typeof storage.forEach === 'function') {
-        try {
-          storage.forEach(function (value, candidateKey) {
-            if (typeof candidateKey === 'string' && predicate(candidateKey)) {
-              keys.push(candidateKey);
+    return _clearAllData.apply(this, arguments);
+  }
+  function _clearAllData() {
+    _clearAllData = _asyncToGenerator(_regenerator().m(function _callee2() {
+      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, _t4;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.p = _context2.n) {
+          case 0:
+            msg = "Error clearing storage:";
+            try {
+              deleteProject();
+            } catch (error) {
+              console.warn('Unable to clear stored projects during factory reset', error);
             }
-          });
-        } catch (error) {
-          console.warn('Unable to iterate storage entries during factory reset', error);
+            _context2.p = 1;
+            clearVaultFn = null;
+            if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearBackupVault === 'function') {
+              clearVaultFn = GLOBAL_SCOPE.clearBackupVault;
+            } else if (typeof clearBackupVault === 'function') {
+              clearVaultFn = clearBackupVault;
+            } else if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && typeof GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault === 'function') {
+              clearVaultFn = GLOBAL_SCOPE.cineFeatureBackup.clearBackupVault;
+            }
+            if (!clearVaultFn) {
+              _context2.n = 2;
+              break;
+            }
+            _context2.n = 2;
+            return clearVaultFn();
+          case 2:
+            _context2.n = 4;
+            break;
+          case 3:
+            _context2.p = 3;
+            _t4 = _context2.v;
+            console.warn('Failed to clear backup vault during factory reset', _t4);
+          case 4:
+            safeStorage = getSafeLocalStorage();
+            prefixes = ['cameraPowerPlanner_', 'cinePowerPlanner_', 'cineBackupVault', 'cineRental', 'cine', '__cine'];
+            exactKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', 'debugMode'];
+            clearStorageAggressively = function clearStorageAggressively(storage, storageName) {
+              if (!storage) return;
+              try {
+                var keysToRemove = [];
+                var length = storage.length;
+                var _loop4 = function _loop4() {
+                  var key = storage.key(i);
+                  if (key) {
+                    if (prefixes.some(function (p) {
+                      return key.startsWith(p);
+                    }) || exactKeys.includes(key) || key.includes('__backup') || key.includes('legacyMigrationBackup')) {
+                      keysToRemove.push(key);
+                    }
+                  }
+                };
+                for (var i = 0; i < length; i++) {
+                  _loop4();
+                }
+                keysToRemove.forEach(function (key) {
+                  try {
+                    storage.removeItem(key);
+                  } catch (e) {
+                    console.warn("Failed to remove key ".concat(key, " from ").concat(storageName), e);
+                  }
+                });
+              } catch (e) {
+                console.warn("Failed to iterate ".concat(storageName), e);
+              }
+            };
+            clearStorageAggressively(safeStorage, 'safeLocalStorage');
+            if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
+              clearStorageAggressively(localStorage, 'localStorage');
+            }
+            if (typeof sessionStorage !== 'undefined') {
+              clearStorageAggressively(sessionStorage, 'sessionStorage');
+            }
+            deleteFromStorage(safeStorage, 'cineBackupVaultFallbackRecords', msg);
+            deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
+            deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
+            deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
+            if (typeof sessionStorage !== 'undefined') {
+              deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
+              deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
+              deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
+            }
+            preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
+            preferenceKeys.forEach(function (key) {
+              deleteFromStorage(safeStorage, key, msg, {
+                disableBackup: true
+              });
+            });
+            onboardingStorageKeys = ['cameraPowerPlanner_onboardingTutorial', 'cinePowerPlanner_onboardingTutorial'];
+            clearOnboardingTutorialState = function clearOnboardingTutorialState(storage) {
+              if (!storage) {
+                return;
+              }
+              for (var index = 0; index < onboardingStorageKeys.length; index += 1) {
+                var key = onboardingStorageKeys[index];
+                deleteFromStorage(storage, key, msg);
+              }
+            };
+            storageCandidates = collectUniqueStorages([safeStorage, typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null, getWindowStorage('localStorage'), typeof localStorage !== 'undefined' ? localStorage : null]);
+            for (index = 0; index < storageCandidates.length; index += 1) {
+              clearOnboardingTutorialState(storageCandidates[index]);
+            }
+            sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
+            for (_index0 = 0; _index0 < sessionCandidates.length; _index0 += 1) {
+              clearOnboardingTutorialState(sessionCandidates[_index0]);
+            }
+            try {
+              logging = GLOBAL_SCOPE && GLOBAL_SCOPE.cineLogging ? GLOBAL_SCOPE.cineLogging : null;
+              if (logging && typeof logging.clearHistory === 'function') {
+                logging.clearHistory({
+                  persist: false
+                });
+              }
+            } catch (loggingError) {
+              console.warn('Unable to clear logging history during factory reset', loggingError);
+            }
+          case 5:
+            return _context2.a(2);
         }
-        return keys;
-      }
-      return keys;
-    };
-    var deletePrefixedKeys = function deletePrefixedKeys(storages) {
-      storages.forEach(function (storage) {
-        var keysToRemove = collectStorageKeys(storage, function (candidateKey) {
-          return prefixedKeys.some(function (prefix) {
-            return candidateKey.startsWith(prefix);
-          });
-        });
-        if (!keysToRemove.length) {
-          return;
-        }
-        keysToRemove.forEach(function (key) {
-          try {
-            deleteFromStorage(storage, key, msg);
-          } catch (error) {
-            console.warn('Unable to remove legacy storage key during factory reset', key, error);
-          }
-        });
-      });
-    };
-    deletePrefixedKeys(storageCandidates);
-    deletePrefixedKeys(sessionCandidates);
-    var clearStorages = function clearStorages(storages) {
-      storages.forEach(function (storage) {
-        if (!storage) {
-          return;
-        }
-        var cleared = false;
-        if (typeof storage.clear === 'function') {
-          try {
-            storage.clear();
-            cleared = true;
-          } catch (error) {
-            console.warn('Unable to clear storage during factory reset', error);
-          }
-        }
-        if (cleared) {
-          return;
-        }
-        var keysToRemove = collectStorageKeys(storage);
-        if (!keysToRemove.length) {
-          return;
-        }
-        keysToRemove.forEach(function (key) {
-          try {
-            deleteFromStorage(storage, key, msg);
-          } catch (error) {
-            console.warn('Unable to remove storage key during factory reset', key, error);
-          }
-        });
-      });
-    };
-    clearStorages(storageCandidates);
-    clearStorages(sessionCandidates);
+      }, _callee2, null, [[1, 3]]);
+    }));
+    return _clearAllData.apply(this, arguments);
   }
   function readLocalStorageValue(key) {
     var storage = getSafeLocalStorage();
@@ -12575,8 +12668,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     if (hasSectionsContainer) {
       var candidateKeys = Object.keys(candidate);
-      for (var _index1 = 0; _index1 < candidateKeys.length; _index1 += 1) {
-        var key = candidateKeys[_index1];
+      for (var _index9 = 0; _index9 < candidateKeys.length; _index9 += 1) {
+        var key = candidateKeys[_index9];
         if (key === 'sections' || key === 'layout') {
           continue;
         }
@@ -12949,8 +13042,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var candidateKeys = ['value', 'retention', 'limit', 'count'];
-      for (var _i6 = 0; _i6 < candidateKeys.length; _i6 += 1) {
-        var key = candidateKeys[_i6];
+      for (var _i7 = 0; _i7 < candidateKeys.length; _i7 += 1) {
+        var key = candidateKeys[_i7];
         if (!Object.prototype.hasOwnProperty.call(value, key)) {
           continue;
         }
@@ -12980,10 +13073,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref35) {
-      var _ref36 = _slicedToArray(_ref35, 2),
-        key = _ref36[0],
-        val = _ref36[1];
+    Object.entries(value).forEach(function (_ref36) {
+      var _ref37 = _slicedToArray(_ref36, 2),
+        key = _ref37[0],
+        val = _ref37[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -13039,8 +13132,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
     }
-    for (var _i7 = 0; _i7 < variants.length; _i7 += 1) {
-      var _candidate1 = "".concat(variants[_i7]).concat(STORAGE_BACKUP_SUFFIX);
+    for (var _i8 = 0; _i8 < variants.length; _i8 += 1) {
+      var _candidate1 = "".concat(variants[_i8]).concat(STORAGE_BACKUP_SUFFIX);
       if (Object.prototype.hasOwnProperty.call(snapshot, _candidate1)) {
         return {
           key: _candidate1,
@@ -13049,8 +13142,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
     }
-    for (var _i8 = 0; _i8 < variants.length; _i8 += 1) {
-      var _candidate10 = "".concat(variants[_i8]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+    for (var _i9 = 0; _i9 < variants.length; _i9 += 1) {
+      var _candidate10 = "".concat(variants[_i9]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
       if (Object.prototype.hasOwnProperty.call(snapshot, _candidate10)) {
         return {
           key: _candidate10,
@@ -13373,9 +13466,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref37 = options || {},
-      _ref37$skipSnapshotCo = _ref37.skipSnapshotConversion,
-      skipSnapshotConversion = _ref37$skipSnapshotCo === void 0 ? false : _ref37$skipSnapshotCo;
+    var _ref38 = options || {},
+      _ref38$skipSnapshotCo = _ref38.skipSnapshotConversion,
+      skipSnapshotConversion = _ref38$skipSnapshotCo === void 0 ? false : _ref38$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {
