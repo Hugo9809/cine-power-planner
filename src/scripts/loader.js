@@ -12,7 +12,7 @@
  * side-effect free.
  */
 
-var CINE_LOADER_CACHE_BUSTER = Date.now();
+var CINE_LOADER_CACHE_BUSTER = Date.now(); // Force reload
 
 function resolveCriticalGlobalScope() {
   if (typeof globalThis !== 'undefined') {

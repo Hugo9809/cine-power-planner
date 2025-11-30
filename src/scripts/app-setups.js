@@ -15352,3 +15352,9 @@ if (typeof document !== 'undefined') {
   });
 }
 
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.saveCurrentGearList = saveCurrentGearList;
+  globalThis.doesProjectNameExist = doesProjectNameExist;
+  globalThis.resolveProjectStorageNameCollision = resolveProjectStorageNameCollision;
+}
