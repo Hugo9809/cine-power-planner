@@ -10688,9 +10688,7 @@ if (storageBackupNowControl) {
   storageBackupNowControl.addEventListener('click', createSettingsBackup);
 }
 
-const storagePersistenceRequestButton = typeof document !== 'undefined'
-  ? document.getElementById('storagePersistenceRequest')
-  : null;
+// storagePersistenceRequestButton already declared in app-core-new-1.js
 const storagePersistenceStatusEl = typeof document !== 'undefined'
   ? document.getElementById('storagePersistenceStatus')
   : null;

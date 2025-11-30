@@ -82,6 +82,16 @@
 
 
 console.log('app-core-new-1.js LOADED - DEBUG VERSION');
+
+// [Added by Agent] Ensure localization helpers are available
+const resolveDocumentDirection = (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.resolveDocumentDirection === 'function')
+  ? cineLocale.resolveDocumentDirection
+  : function fallbackResolveDocumentDirection(lang) { return 'ltr'; };
+
+const applyLocaleMetadata = (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.applyLocaleMetadata === 'function')
+  ? cineLocale.applyLocaleMetadata
+  : function fallbackApplyLocaleMetadata(target, lang, direction) { };
+
 const runtimeBootstrapExports = (function resolveRuntimeBootstrapExports() {
   if (typeof require === 'function') {
     try {
@@ -19154,6 +19164,14 @@ if (storageOpenBackupTabButton) {
   });
 }
 
+const AUTO_GEAR_CONDITION_KEYS = [
+  'always', 'scenarios', 'shootingDays', 'mattebox', 'cameraHandle',
+  'viewfinderExtension', 'deliveryResolution', 'videoDistribution',
+  'camera', 'ownGear', 'cameraWeight', 'monitor', 'tripodHeadBrand',
+  'tripodBowl', 'tripodTypes', 'tripodSpreader', 'crewPresent',
+  'crewAbsent', 'wireless', 'motors', 'controllers', 'distance'
+];
+
 var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   const section = autoGearConditionSections[key] || null;
   acc[key] = {
@@ -19987,6 +20005,9 @@ var autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden
 const dataHeading = document.getElementById("dataHeading");
 const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
+if (typeof globalThis !== 'undefined') {
+  globalThis.storageSummaryList = storageSummaryList;
+}
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 const storagePersistenceSection = document.getElementById("storagePersistence");
