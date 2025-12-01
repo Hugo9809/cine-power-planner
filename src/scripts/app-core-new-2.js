@@ -9401,10 +9401,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function updateStorageSummary() {
-      const storageSummaryList = document.getElementById('storageSummaryList');
-      if (!storageSummaryList) return;
-      while (storageSummaryList.firstChild) {
-        storageSummaryList.removeChild(storageSummaryList.firstChild);
+      const summaryListEl = document.getElementById('storageSummaryList');
+      if (!summaryListEl) return;
+      while (summaryListEl.firstChild) {
+        summaryListEl.removeChild(summaryListEl.firstChild);
       }
       const lang = resolveLanguageCode(currentLang);
       const langTexts = getLanguageTexts(lang);
@@ -9542,7 +9542,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ];
 
       items.forEach((item) => {
-        storageSummaryList.appendChild(createSummaryItemElement(item));
+        summaryListEl.appendChild(createSummaryItemElement(item));
       });
 
       applyStorageStatus(

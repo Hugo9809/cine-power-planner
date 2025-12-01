@@ -19189,6 +19189,9 @@ var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   }
   return acc;
 }, {});
+
+const AUTO_GEAR_UI_EXPORTS = (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_UI_HELPERS) || {};
+
 const refreshAutoGearShootingDaysValue =
   typeof AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue === 'function'
     ? AUTO_GEAR_UI_EXPORTS.refreshAutoGearShootingDaysValue
