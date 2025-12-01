@@ -10689,6 +10689,10 @@ if (storageBackupNowControl) {
 }
 
 // storagePersistenceRequestButton already declared in app-core-new-1.js
+const sessionStoragePersistenceRequestButton = typeof document !== 'undefined'
+  ? document.getElementById('storagePersistenceRequest')
+  : null;
+
 const storagePersistenceStatusEl = typeof document !== 'undefined'
   ? document.getElementById('storagePersistenceStatus')
   : null;
@@ -11919,26 +11923,26 @@ function renderStoragePersistenceStatus() {
   } else {
     storagePersistenceStatusEl.removeAttribute('data-help');
   }
-  if (storagePersistenceRequestButton) {
+  if (sessionStoragePersistenceRequestButton) {
     const shouldDisable = !storagePersistenceStatusEl
       || storagePersistenceState.supported === false
       || storagePersistenceState.persisted
       || storagePersistenceState.requestInFlight
       || storagePersistenceState.checking;
-    storagePersistenceRequestButton.disabled = shouldDisable;
-    storagePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+    sessionStoragePersistenceRequestButton.disabled = shouldDisable;
+    sessionStoragePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
     const requestLabel = langTexts.storagePersistenceRequest
       || fallbackTexts.storagePersistenceRequest
-      || storagePersistenceRequestButton.dataset.defaultLabel
-      || storagePersistenceRequestButton.textContent
+      || sessionStoragePersistenceRequestButton.dataset.defaultLabel
+      || sessionStoragePersistenceRequestButton.textContent
       || '';
     const requestHelp = langTexts.storagePersistenceRequestHelp
       || fallbackTexts.storagePersistenceRequestHelp
       || requestLabel;
     if (requestHelp) {
-      storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
-      storagePersistenceRequestButton.setAttribute('title', requestHelp);
-      storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('data-help', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('title', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('aria-label', requestHelp);
     }
   }
 
@@ -12101,7 +12105,7 @@ async function handleStoragePersistenceRequest(event) {
   if (event && typeof event.preventDefault === 'function') {
     event.preventDefault();
   }
-  if (!storagePersistenceRequestButton || storagePersistenceState.requestInFlight) {
+  if (!sessionStoragePersistenceRequestButton || storagePersistenceState.requestInFlight) {
     return;
   }
   const storageManager = getStorageManagerInstance();
@@ -12158,8 +12162,8 @@ async function handleStoragePersistenceRequest(event) {
   });
 }
 
-if (storagePersistenceRequestButton) {
-  storagePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
+if (sessionStoragePersistenceRequestButton) {
+  sessionStoragePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
 }
 
 if (storagePersistenceStatusEl) {

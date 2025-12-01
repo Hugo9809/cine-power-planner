@@ -19281,6 +19281,31 @@ function getAutoGearConditionConfig(key) {
   return null;
 }
 
+const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
+  always: 'Always include',
+  scenarios: 'Required scenarios',
+  shootingDays: 'Shooting days condition',
+  mattebox: 'Mattebox options',
+  cameraHandle: 'Camera handles',
+  viewfinderExtension: 'Viewfinder extension',
+  deliveryResolution: 'Delivery resolution',
+  videoDistribution: 'Video distribution',
+  camera: 'Camera',
+  ownGear: 'Own gear items',
+  cameraWeight: 'Camera weight',
+  monitor: 'Onboard monitor',
+  tripodHeadBrand: 'Tripod head brand',
+  tripodBowl: 'Tripod bowl size',
+  tripodTypes: 'Tripod types',
+  tripodSpreader: 'Tripod spreader',
+  crewPresent: 'Crew present',
+  crewAbsent: 'Crew absent',
+  wireless: 'Wireless transmitter',
+  motors: 'FIZ motors',
+  controllers: 'FIZ controllers',
+  distance: 'FIZ distance devices',
+};
+
 function getAutoGearConditionLabel(key) {
   const config = getAutoGearConditionConfig(key);
   if (config && config.label && typeof config.label.textContent === 'string') {

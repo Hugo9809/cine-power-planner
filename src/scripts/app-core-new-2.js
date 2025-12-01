@@ -9402,6 +9402,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function updateStorageSummary() {
       const summaryListEl = document.getElementById('storageSummaryList');
+      const storageSummaryEmpty = document.getElementById('storageSummaryEmpty');
       if (!summaryListEl) return;
       while (summaryListEl.firstChild) {
         summaryListEl.removeChild(summaryListEl.firstChild);
@@ -9575,7 +9576,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         langTexts,
       );
 
-      const storageSummaryEmpty = document.getElementById('storageSummaryEmpty');
+
       if (storageSummaryEmpty) {
         const hasData = Boolean(
           totalProjects
