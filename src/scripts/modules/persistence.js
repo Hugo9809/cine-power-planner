@@ -1092,6 +1092,10 @@
       clearUiCacheStorageEntries: createWrapper('clearUiCacheStorageEntries'),
       ensureCriticalStorageBackups: createWrapper('ensureCriticalStorageBackups'),
       getLastCriticalStorageGuardResult: createWrapper('getLastCriticalStorageGuardResult'),
+      saveSession: createWrapper('saveCurrentSession', 'saveSession'),
+      autoSaveSetup: createWrapper('autoSaveCurrentSetup', 'autoSaveSetup'),
+      proceed: createWrapper('handleRestoreRehearsalProceed', 'proceed'),
+      abort: createWrapper('handleRestoreRehearsalAbort', 'abort'),
     },
     autosave: {
       saveSession: createWrapper('saveCurrentSession', 'saveSession'),

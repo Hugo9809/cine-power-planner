@@ -45,7 +45,7 @@
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
           ensureContactForImportedOwner, setGearItemProvider,
-          dispatchGearProviderDataChanged */
+          dispatchGearProviderDataChanged, storagePersistenceRequestButton */
 // Keep a baseline set of match types so that the session search feature
 // continues to work even when globals have not been initialised yet (for
 // example during unit tests or offline restore flows).
@@ -10736,10 +10736,6 @@ const loggingCaptureErrorsInput = typeof document !== 'undefined'
   : null;
 const loggingPersistSessionInput = typeof document !== 'undefined'
   ? document.getElementById('loggingPersistSession')
-  : null;
-
-const storagePersistenceRequestButton = typeof document !== 'undefined'
-  ? document.getElementById('storagePersistenceRequestBtn')
   : null;
 
 const sessionLoggingExportButton = typeof document !== 'undefined'
