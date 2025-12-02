@@ -242,74 +242,74 @@ var CORE_RUNTIME_SHARED =
   (typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED)
     ? CORE_RUNTIME_SHARED
     : (function resolveCoreRuntimeShared() {
-        var shared = null;
+      var shared = null;
 
-        if (typeof resolveCoreSupportModule === 'function') {
-          shared = resolveCoreSupportModule(
-            'cineCoreRuntimeShared',
-            './modules/core/runtime-shared.js'
-          );
-        }
+      if (typeof resolveCoreSupportModule === 'function') {
+        shared = resolveCoreSupportModule(
+          'cineCoreRuntimeShared',
+          './modules/core/runtime-shared.js'
+        );
+      }
 
-        if (!shared) {
-          var loaderShared = requireCoreRuntimeModule(
-            'modules/core/runtime-shared.js',
-            {
-              primaryScope:
-                typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+      if (!shared) {
+        var loaderShared = requireCoreRuntimeModule(
+          'modules/core/runtime-shared.js',
+          {
+            primaryScope:
+              typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
                 CORE_GLOBAL_SCOPE &&
                 typeof CORE_GLOBAL_SCOPE === 'object'
-                  ? CORE_GLOBAL_SCOPE
-                  : null,
-            }
-          );
-          if (loaderShared && typeof loaderShared === 'object') {
-            shared = loaderShared;
+                ? CORE_GLOBAL_SCOPE
+                : null,
           }
+        );
+        if (loaderShared && typeof loaderShared === 'object') {
+          shared = loaderShared;
         }
+      }
 
-        if (shared) {
-          return shared;
-        }
+      if (shared) {
+        return shared;
+      }
 
-        var fallbackScopes = [
-          typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+      var fallbackScopes = [
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
           CORE_GLOBAL_SCOPE &&
           typeof CORE_GLOBAL_SCOPE === 'object'
-            ? CORE_GLOBAL_SCOPE
-            : null,
-          typeof globalThis !== 'undefined' && typeof globalThis === 'object'
-            ? globalThis
-            : null,
-          typeof window !== 'undefined' && typeof window === 'object'
-            ? window
-            : null,
-          typeof self !== 'undefined' && typeof self === 'object'
-            ? self
-            : null,
-          typeof global !== 'undefined' && typeof global === 'object'
-            ? global
-            : null,
-        ];
+          ? CORE_GLOBAL_SCOPE
+          : null,
+        typeof globalThis !== 'undefined' && typeof globalThis === 'object'
+          ? globalThis
+          : null,
+        typeof window !== 'undefined' && typeof window === 'object'
+          ? window
+          : null,
+        typeof self !== 'undefined' && typeof self === 'object'
+          ? self
+          : null,
+        typeof global !== 'undefined' && typeof global === 'object'
+          ? global
+          : null,
+      ];
 
-        for (var sharedIndex = 0; sharedIndex < fallbackScopes.length; sharedIndex += 1) {
-          var candidateScope = fallbackScopes[sharedIndex];
-          if (!candidateScope || typeof candidateScope !== 'object') {
-            continue;
-          }
-
-          try {
-            var candidateShared = candidateScope.cineCoreRuntimeShared;
-            if (candidateShared && typeof candidateShared === 'object') {
-              return candidateShared;
-            }
-          } catch (runtimeSharedLookupError) {
-            void runtimeSharedLookupError;
-          }
+      for (var sharedIndex = 0; sharedIndex < fallbackScopes.length; sharedIndex += 1) {
+        var candidateScope = fallbackScopes[sharedIndex];
+        if (!candidateScope || typeof candidateScope !== 'object') {
+          continue;
         }
 
-        return null;
-      })();
+        try {
+          var candidateShared = candidateScope.cineCoreRuntimeShared;
+          if (candidateShared && typeof candidateShared === 'object') {
+            return candidateShared;
+          }
+        } catch (runtimeSharedLookupError) {
+          void runtimeSharedLookupError;
+        }
+      }
+
+      return null;
+    })();
 
 function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
   if (
@@ -781,8 +781,8 @@ function createLocalRuntimeStateFallback(candidateScopes) {
       typeof fallbackValue === 'function'
         ? fallbackValue
         : function provideStaticFallback() {
-            return fallbackValue;
-          };
+          return fallbackValue;
+        };
 
     if (typeof name !== 'string' || !name) {
       try {
@@ -822,15 +822,15 @@ function createLocalRuntimeStateFallback(candidateScopes) {
       typeof fallbackValue === 'function'
         ? fallbackValue
         : function provideStaticFallback() {
-            return fallbackValue;
-          };
+          return fallbackValue;
+        };
 
     var validate =
       typeof validator === 'function'
         ? validator
         : function alwaysValid() {
-            return true;
-          };
+          return true;
+        };
 
     withEachScope(function applyNormaliser(scope) {
       try {
@@ -1098,17 +1098,17 @@ function getCoreRuntimeScopesSnapshot() {
 var CORE_PART2_RUNTIME_SCOPE =
   CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.ensurePrimaryScope === 'function'
     ? (function resolvePrimaryScopeWithShared() {
-        try {
-          return CORE_RUNTIME_SHARED.ensurePrimaryScope(
-            CORE_RUNTIME_STATE,
-            CORE_RUNTIME_CANDIDATE_SCOPES
-          );
-        } catch (sharedPrimaryScopeError) {
-          void sharedPrimaryScopeError;
-        }
+      try {
+        return CORE_RUNTIME_SHARED.ensurePrimaryScope(
+          CORE_RUNTIME_STATE,
+          CORE_RUNTIME_CANDIDATE_SCOPES
+        );
+      } catch (sharedPrimaryScopeError) {
+        void sharedPrimaryScopeError;
+      }
 
-        return null;
-      })()
+      return null;
+    })()
     : null;
 
 if (!CORE_PART2_RUNTIME_SCOPE && CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getPrimaryScope === 'function') {
@@ -1217,8 +1217,8 @@ function ensureGlobalFallback(name, fallbackValue) {
     typeof fallbackValue === 'function'
       ? fallbackValue
       : function provideStaticFallback() {
-          return fallbackValue;
-        };
+        return fallbackValue;
+      };
 
   var scopes = getCoreRuntimeScopesSnapshot();
   for (var index = 0; index < scopes.length; index += 1) {
@@ -1269,8 +1269,8 @@ function normaliseGlobalValue(name, validator, fallbackValue) {
     typeof fallbackValue === 'function'
       ? fallbackValue
       : function provideStaticFallback() {
-          return fallbackValue;
-        };
+        return fallbackValue;
+      };
 
   var scopes = getCoreRuntimeScopesSnapshot();
   for (var index = 0; index < scopes.length; index += 1) {
@@ -1359,14 +1359,14 @@ function ensureAutoGearGlobal(scope, name) {
       var binder = globalFn(
         'value',
         'if (typeof ' +
-          name +
-          " === 'undefined') { var " +
-          name +
-          " = value; } else { " +
-          name +
-          ' = value; }\n           return ' +
-          name +
-          ';',
+        name +
+        " === 'undefined') { var " +
+        name +
+        " = value; } else { " +
+        name +
+        ' = value; }\n           return ' +
+        name +
+        ';',
       );
       var appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
       binder(appliedValue);
@@ -1780,8 +1780,8 @@ function ensureCorePart2Placeholder(name, fallbackValue) {
     typeof fallbackValue === 'function'
       ? fallbackValue
       : function provideStaticFallback() {
-          return fallbackValue;
-        };
+        return fallbackValue;
+      };
 
   for (var index = 0; index < providers.length; index += 1) {
     var scope = providers[index];
@@ -1843,11 +1843,11 @@ function resolveInitialPart2Value(name) {
 }
 
 const autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
-let autoGearAutoPresetIdState =
+var autoGearAutoPresetIdState =
   typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
 
 const baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
-let baseAutoGearRulesState = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
+var baseAutoGearRulesState = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
 
 const autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
 let autoGearScenarioModeSelectRef =

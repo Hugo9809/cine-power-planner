@@ -12690,6 +12690,11 @@ if (restoreRehearsalInputEl) {
   });
 }
 
+if (typeof globalThis !== 'undefined') {
+  globalThis.applySharedSetup = applySharedSetup;
+  globalThis.applySharedSetupFromUrl = applySharedSetupFromUrl;
+}
+
 function resetPlannerStateAfterFactoryReset() {
   const suspendable =
     typeof suspendProjectPersistence === 'function'

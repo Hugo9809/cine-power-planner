@@ -35,9 +35,11 @@ function resolveAutoGearConditionKeys() {
     }
     return [];
 }
-var createDeferredAutoGearRefresher = function (functionName) { return function (selected) {
-    return callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
-}; };
+var createDeferredAutoGearRefresher = function (functionName) {
+    return function (selected) {
+        return callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
+    };
+};
 function focusAutoGearConditionPicker() {
     if (autoGearConditionSelect) {
         try {
@@ -93,4 +95,5 @@ if (typeof globalThis !== 'undefined') {
         : (globalThis.AUTO_GEAR_UI_HELPERS = {});
     Object.assign(target, AUTO_GEAR_UI_EXPORTS_BRIDGE);
     globalThis.AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS;
+    globalThis.AUTO_GEAR_UI_EXPORTS = AUTO_GEAR_UI_EXPORTS_BRIDGE;
 }

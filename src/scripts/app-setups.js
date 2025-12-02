@@ -3334,8 +3334,8 @@ if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
 
 function batteryPinsSufficient() {
   const batt = batterySelect && batterySelect.value;
-  if (!batt || batt === 'None' || !devices.batteries[batt]) return true;
-  const battData = devices.batteries[batt];
+  if (!batt || batt === 'None' || !(devices && devices.batteries && devices.batteries[batt])) return true;
+  const battData = (devices && devices.batteries) ? devices.batteries[batt] : null;
   const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
   if (!isFinite(totalCurrentLow)) return true;
   const pinLimit = parseBatteryCurrentLimit(battData.pinA);
@@ -3345,8 +3345,8 @@ function batteryPinsSufficient() {
 
 function alertPinExceeded() {
   const batt = batterySelect && batterySelect.value;
-  if (!batt || batt === 'None' || !devices.batteries[batt]) return;
-  const battData = devices.batteries[batt];
+  if (!batt || batt === 'None' || !(devices && devices.batteries && devices.batteries[batt])) return;
+  const battData = (devices && devices.batteries) ? devices.batteries[batt] : null;
   const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
   const pinLimit = parseBatteryCurrentLimit(battData.pinA);
   if (!Number.isFinite(pinLimit) || pinLimit <= 0) return;
@@ -5455,7 +5455,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
   const excludedCables = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
 
   if (batterySelect.value) {
-    const mount = devices.batteries[batterySelect.value]?.mount_type;
+    const mount = (devices && devices.batteries && devices.batteries[batterySelect.value])?.mount_type;
     if (acc.powerPlates) {
       for (const [name, plate] of Object.entries(acc.powerPlates)) {
         if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
