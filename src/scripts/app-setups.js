@@ -3425,8 +3425,9 @@ function submitProjectFormViaBackdrop() {
   projectForm.dispatchEvent(submitEvent);
 }
 
-if (projectDialogCloseBtn) {
-  projectDialogCloseBtn.addEventListener('click', () => {
+const localProjectDialogCloseBtn = typeof projectDialogCloseBtn !== 'undefined' ? projectDialogCloseBtn : document.getElementById('projectDialogClose');
+if (localProjectDialogCloseBtn) {
+  localProjectDialogCloseBtn.addEventListener('click', () => {
     if (projectCancelBtnRef) {
       projectCancelBtnRef.click();
     } else {

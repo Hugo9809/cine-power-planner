@@ -14347,6 +14347,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function checkSetupChanged() {
       if (!saveSetupBtn) return;
+      const setupNameInput = document.getElementById('setupName');
       const langTexts = texts[currentLang] || {};
       const fallbackTexts = texts.en || {};
       const saveLabel = langTexts.saveSetupBtn || fallbackTexts.saveSetupBtn || '';
@@ -17749,6 +17750,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             batteryTableElem: typeof batteryTableElem !== 'undefined' ? batteryTableElem : null,
             setupDiagramContainer:
               typeof setupDiagramContainer !== 'undefined' ? setupDiagramContainer : null,
+            connectionDiagram:
+              typeof connectionDiagram !== 'undefined' ? connectionDiagram : null
+          },
+          state: {
+            appState: typeof appState !== 'undefined' ? appState : {},
+            currentSetup: getCurrentSetupState()
           },
           motorSelects,
           controllerSelects,
@@ -17798,6 +17805,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } catch (error) {
         console.warn('cineResults.updateCalculations failed', error);
       }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.updateCalculations = updateCalculations;
+    } else if (typeof globalThis !== 'undefined') {
+      globalThis.updateCalculations = updateCalculations;
     }
 
     function getCurrentSetupKey() {

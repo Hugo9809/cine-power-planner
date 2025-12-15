@@ -2775,7 +2775,7 @@ const mergeImportedContactEntries = typeof resolvedMergeImportedContacts === 'fu
     added: Array.isArray(options?.imported) ? options.imported.length : 0,
     updated: 0
   });
-const createCrewRowSync = typeof resolvedCreateCrewRowSync === 'function'
+const localCreateCrewRowSync = typeof resolvedCreateCrewRowSync === 'function'
   ? resolvedCreateCrewRowSync
   : (rowState = {}, contact = {}) => ({ ...rowState, ...contact });
 
@@ -13262,8 +13262,8 @@ function applyContactToCrewRow(row, contact, options = {}) {
   if (!row || !contact) return;
   const { skipDirty = false, skipAnnouncement = false } = options || {};
   const snapshot = getCrewRowSnapshot(row) || {};
-  const merged = typeof createCrewRowSync === 'function'
-    ? createCrewRowSync(snapshot, contact)
+  const merged = typeof localCreateCrewRowSync === 'function'
+    ? localCreateCrewRowSync(snapshot, contact)
     : {
       role: contact.role || '',
       name: contact.name || '',
