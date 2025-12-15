@@ -198,13 +198,13 @@
   const detectGlobalScope =
     SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function'
       ? function detectWithUtils() {
-          try {
-            return SCOPE_UTILS.detectGlobalScope();
-          } catch (error) {
-            void error;
-          }
-          return baseDetectGlobalScope();
+        try {
+          return SCOPE_UTILS.detectGlobalScope();
+        } catch (error) {
+          void error;
         }
+        return baseDetectGlobalScope();
+      }
       : baseDetectGlobalScope;
 
   const tryRequire =
@@ -220,23 +220,23 @@
   const collectCandidateScopes =
     SCOPE_UTILS && typeof SCOPE_UTILS.collectCandidateScopes === 'function'
       ? function collectCandidateScopesWithUtils(primary, extras, detect) {
-          const detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
-          return SCOPE_UTILS.collectCandidateScopes(primary, extras, detectFn);
-        }
+        const detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
+        return SCOPE_UTILS.collectCandidateScopes(primary, extras, detectFn);
+      }
       : collectCandidateScopesFallback;
 
   const resolveFromScopes =
     SCOPE_UTILS && typeof SCOPE_UTILS.resolveFromScopes === 'function'
       ? function resolveWithUtils(propertyName, options) {
-          const settings = options ? cloneOptions(options) : {};
-          if (!settings.primaryScope) {
-            settings.primaryScope = LOCAL_SCOPE;
-          }
-          if (!settings.detect) {
-            settings.detect = detectGlobalScope;
-          }
-          return SCOPE_UTILS.resolveFromScopes(propertyName, settings) || null;
+        const settings = options ? cloneOptions(options) : {};
+        if (!settings.primaryScope) {
+          settings.primaryScope = LOCAL_SCOPE;
         }
+        if (!settings.detect) {
+          settings.detect = detectGlobalScope;
+        }
+        return SCOPE_UTILS.resolveFromScopes(propertyName, settings) || null;
+      }
       : resolveFromScopesFallback;
 
   function resolveScopeCollector() {
@@ -352,6 +352,7 @@
       }
 
       if (shouldBypass(value)) {
+        process.stdout.write(`architecture.js bypassed freeze for value: ${typeof value}\n`);
         return value;
       }
 
@@ -479,8 +480,8 @@
 
     const additionalScopes = Array.isArray(settings.additionalScopes)
       ? settings.additionalScopes.filter(function isObjectLike(value) {
-          return value && (typeof value === 'object' || typeof value === 'function');
-        })
+        return value && (typeof value === 'object' || typeof value === 'function');
+      })
       : [];
 
     const pendingQueueKey =
@@ -550,13 +551,13 @@
 
     const tryRequireImpl = tryRequireOverride
       ? function tryRequireWithOverride(modulePath) {
-          try {
-            return tryRequireOverride(modulePath);
-          } catch (error) {
-            void error;
-          }
-          return tryRequire(modulePath);
+        try {
+          return tryRequireOverride(modulePath);
+        } catch (error) {
+          void error;
         }
+        return tryRequire(modulePath);
+      }
       : tryRequire;
 
     let activeImmutability = null;
@@ -824,13 +825,13 @@
     const detectOverride = typeof settings.detectGlobalScope === 'function'
       ? settings.detectGlobalScope
       : function detectOverride() {
-          return customPrimaryScope || defaultInstance.detectGlobalScope();
-        };
+        return customPrimaryScope || defaultInstance.detectGlobalScope();
+      };
 
     const additionalScopes = Array.isArray(settings.additionalScopes)
       ? settings.additionalScopes.filter(function isObjectLike(value) {
-          return value && (typeof value === 'object' || typeof value === 'function');
-        })
+        return value && (typeof value === 'object' || typeof value === 'function');
+      })
       : [];
 
     const tryRequireOverride = typeof settings.tryRequire === 'function' ? settings.tryRequire : defaultInstance.tryRequire;

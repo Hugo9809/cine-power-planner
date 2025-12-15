@@ -258,6 +258,11 @@
       try {
         if (typeof Object.freeze === 'function') {
           Object.freeze(value);
+          if (!Object.isFrozen(value)) {
+            console.warn('immutability.js (Jest block): Object.freeze called but object is NOT frozen', value);
+          } else {
+            // console.log('immutability.js (Jest block): Object frozen successfully');
+          }
         }
       } catch (freezeError) {
         void freezeError;
@@ -329,12 +334,12 @@
       }
     }
 
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
-      }
+    try {
+      return Object.freeze(value);
+    } catch (freezeError) {
+      void freezeError;
+      return value;
+    }
   }
 
   function freezeArray(values) {

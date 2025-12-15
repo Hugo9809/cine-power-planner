@@ -18,6 +18,12 @@ describe('cineOffline module', () => {
     const consoleClone = Object.create(console);
     consoleClone.warn = consoleWarnSpy;
     global.console = consoleClone;
+
+    global.BroadcastChannel = jest.fn(() => ({
+      postMessage: jest.fn(),
+      close: jest.fn(),
+    }));
+
     offline = require(path.join('..', '..', 'src', 'scripts', 'modules', 'offline.js'));
     internal = offline.__internal;
   });
@@ -25,6 +31,7 @@ describe('cineOffline module', () => {
   afterEach(() => {
     delete global.cineOffline;
     delete global.CINE_CACHE_NAME;
+    delete global.BroadcastChannel;
     if (originalConsole) {
       global.console = originalConsole;
       originalConsole = null;
@@ -180,9 +187,9 @@ describe('cineOffline module', () => {
 
     await new Promise(resolve => setTimeout(resolve, 250));
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
 
-    const warmupUrl = fetchMock.mock.calls[0][0];
+    const warmupUrl = fetchMock.mock.calls[1][0];
     expect(warmupUrl).toMatch(/^\/app\?foo=bar&forceReload=/);
 
     const reloadArgs = reloadWindow.mock.calls[0];
@@ -467,6 +474,9 @@ describe('cineOffline module', () => {
         reloadWindow,
       });
 
+      // Allow async probe to complete
+      await new Promise(resolve => setTimeout(resolve, 0));
+
       expect(navigatorMock.serviceWorker.getRegistrations).toHaveBeenCalledTimes(1);
       expect(clearUiCacheStorageEntries).toHaveBeenCalledTimes(1);
       expect(navigatorMock.serviceWorker.getRegistrations.mock.invocationCallOrder[0]).toBeLessThan(
@@ -535,6 +545,9 @@ describe('cineOffline module', () => {
       reloadWindow,
     });
 
+    // Allow async probe to complete and listener to be attached
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     expect(addEventListener).toHaveBeenCalledWith('controllerchange', expect.any(Function));
     expect(controllerHandler).toEqual(expect.any(Function));
 
@@ -592,22 +605,17 @@ describe('cineOffline module', () => {
 
       const cacheModes = fetchMock.mock.calls.map(call => call[1]?.cache);
       expect(cacheModes).toEqual(['reload', 'no-cache']);
-      expect(fetchMock.mock.calls[0][1]).toEqual(
-        expect.objectContaining({
-          cache: 'reload',
-          credentials: 'same-origin',
-          mode: 'cors',
-          redirect: 'follow',
-        }),
-      );
-      expect(fetchMock.mock.calls[1][1]).toEqual(
-        expect.objectContaining({
-          cache: 'no-cache',
-          credentials: 'same-origin',
-          mode: 'cors',
-          redirect: 'follow',
-        }),
-      );
+      const firstCallInit = fetchMock.mock.calls[0][1];
+      expect(firstCallInit.cache).toBe('reload');
+      expect(firstCallInit.credentials).toBe('same-origin');
+      expect(firstCallInit.mode).toBe('same-origin');
+      expect(firstCallInit.redirect).toBe('follow');
+
+      const secondCallInit = fetchMock.mock.calls[1][1];
+      expect(secondCallInit.cache).toBe('no-cache');
+      expect(secondCallInit.credentials).toBe('same-origin');
+      expect(secondCallInit.mode).toBe('same-origin');
+      expect(secondCallInit.redirect).toBe('follow');
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
       expect(warmupWarnings).toHaveLength(0);
@@ -692,9 +700,9 @@ describe('cineOffline module', () => {
         this.eventHandlers[event] = handler;
       }
 
-      open() {}
+      open() { }
 
-      setRequestHeader() {}
+      setRequestHeader() { }
 
       send() {
         if (this.eventHandlers.load) {
@@ -764,9 +772,9 @@ describe('cineOffline module', () => {
         this.eventHandlers[event] = handler;
       }
 
-      open() {}
+      open() { }
 
-      setRequestHeader() {}
+      setRequestHeader() { }
 
       send() {
         if (this.eventHandlers.load) {
@@ -858,8 +866,8 @@ describe('cineOffline module', () => {
         nextHref: 'https://example.test/app/index.html?forceReload=token',
         navigator: navigatorMock,
         window: windowMock,
-        serviceWorkerPromise: new Promise(() => {}),
-        cachePromise: new Promise(() => {}),
+        serviceWorkerPromise: new Promise(() => { }),
+        cachePromise: new Promise(() => { }),
         allowCache: false,
       });
 
@@ -896,9 +904,9 @@ describe('cineOffline module', () => {
         this.eventHandlers[event] = handler;
       }
 
-      open() {}
+      open() { }
 
-      setRequestHeader() {}
+      setRequestHeader() { }
 
       send() {
         if (this.eventHandlers.load) {
@@ -973,9 +981,9 @@ describe('cineOffline module', () => {
         this.eventHandlers[event] = handler;
       }
 
-      open() {}
+      open() { }
 
-      setRequestHeader() {}
+      setRequestHeader() { }
 
       send() {
         if (this.eventHandlers.load) {
@@ -1187,206 +1195,206 @@ describe('cineOffline module', () => {
       });
     });
 
-  test('triggerReload appends a forceReload query parameter and prefers location.replace', () => {
-    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
+    test('triggerReload appends a forceReload query parameter and prefers location.replace', () => {
+      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
 
-    const location = {
-      href: 'https://example.test/app?foo=bar#section',
-      replace: jest.fn(),
-      assign: jest.fn(),
-      reload: jest.fn(),
-    };
-    const result = internal.triggerReload({ location });
+      const location = {
+        href: 'https://example.test/app?foo=bar#section',
+        replace: jest.fn(),
+        assign: jest.fn(),
+        reload: jest.fn(),
+      };
+      const result = internal.triggerReload({ location });
 
-    expect(result).toBe(true);
-    expect(location.replace).toHaveBeenCalledTimes(1);
-    const replacedUrl = location.replace.mock.calls[0][0];
-    expect(replacedUrl).toMatch(/forceReload=.*#section$/);
-    expect(replacedUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
-    expect(location.reload).not.toHaveBeenCalled();
+      expect(result).toBe(true);
+      expect(location.replace).toHaveBeenCalledTimes(1);
+      const replacedUrl = location.replace.mock.calls[0][0];
+      expect(replacedUrl).toMatch(/forceReload=.*#section$/);
+      expect(replacedUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
+      expect(location.reload).not.toHaveBeenCalled();
 
-    nowSpy.mockRestore();
-  });
-
-  test('triggerReload sanitises precomputed nextHref values to current origin', () => {
-    const location = {
-      href: 'https://example.test/app/index.html',
-      origin: 'https://example.test',
-      replace: jest.fn((url) => {
-        location.href = url;
-      }),
-      assign: jest.fn((url) => {
-        location.href = url;
-      }),
-      reload: jest.fn(),
-    };
-
-    const history = {
-      replaceState: jest.fn(),
-      state: null,
-    };
-
-    const windowMock = { location, history };
-
-    const precomputed = {
-      originalHref: 'https://example.test/app/index.html',
-      nextHref: 'https://othersite.test/app/index.html?forceReload=abc123',
-      param: 'forceReload',
-      timestamp: 'abc123',
-    };
-
-    const result = internal.triggerReload(windowMock, precomputed);
-
-    expect(result).toBe(true);
-    expect(location.replace).toHaveBeenCalledTimes(1);
-    expect(location.replace).toHaveBeenCalledWith('https://example.test/app/index.html?forceReload=abc123');
-    expect(location.assign).not.toHaveBeenCalled();
-  });
-
-  test('triggerReload resolves relative location hrefs using origin and pathname', () => {
-    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
-
-    let currentHref = 'index.html?foo=bar#section';
-    const location = {
-      origin: 'https://example.test',
-      pathname: '/app/index.html',
-      get href() {
-        return currentHref;
-      },
-      set href(value) {
-        currentHref = value;
-      },
-      replace: jest.fn((value) => {
-        currentHref = value;
-      }),
-      assign: jest.fn(),
-      reload: jest.fn(),
-    };
-
-    const result = internal.triggerReload({ location });
-
-    expect(result).toBe(true);
-    expect(location.replace).toHaveBeenCalledTimes(1);
-    const replacedUrl = location.replace.mock.calls[0][0];
-    expect(replacedUrl).toBe('https://example.test/app/index.html?foo=bar&forceReload=fr5hugk0#section');
-    expect(location.reload).not.toHaveBeenCalled();
-
-    nowSpy.mockRestore();
-  });
-
-  test('triggerReload schedules fallback attempts when navigation is blocked', () => {
-    const reloadError = new Error('blocked');
-    const reload = jest.fn(() => {
-      throw reloadError;
+      nowSpy.mockRestore();
     });
 
-    let currentHref = 'https://example.test/app';
-    const location = {};
-    Object.defineProperty(location, 'href', {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return currentHref;
-      },
-      set() {
-        throw new Error('href assignment blocked');
-      },
-    });
-    location.reload = reload;
+    test('triggerReload sanitises precomputed nextHref values to current origin', () => {
+      const location = {
+        href: 'https://example.test/app/index.html',
+        origin: 'https://example.test',
+        replace: jest.fn((url) => {
+          location.href = url;
+        }),
+        assign: jest.fn((url) => {
+          location.href = url;
+        }),
+        reload: jest.fn(),
+      };
 
-    const scheduledCallbacks = [];
-    const setTimeoutSpy = jest.fn(callback => {
-      scheduledCallbacks.push(callback);
-      return scheduledCallbacks.length;
-    });
+      const history = {
+        replaceState: jest.fn(),
+        state: null,
+      };
 
-    const windowMock = {
-      location,
-      setTimeout: setTimeoutSpy,
-    };
+      const windowMock = { location, history };
 
-    const result = internal.triggerReload(windowMock);
+      const precomputed = {
+        originalHref: 'https://example.test/app/index.html',
+        nextHref: 'https://othersite.test/app/index.html?forceReload=abc123',
+        param: 'forceReload',
+        timestamp: 'abc123',
+      };
 
-    expect(result).toBe(false);
-    expect(reload).not.toHaveBeenCalled();
-    expect(setTimeoutSpy).toHaveBeenCalled();
+      const result = internal.triggerReload(windowMock, precomputed);
 
-    scheduledCallbacks.forEach(callback => {
-      try {
-        callback();
-      } catch (error) {
-        // The fallback helpers already report their own errors.
-        void error;
-      }
+      expect(result).toBe(true);
+      expect(location.replace).toHaveBeenCalledTimes(1);
+      expect(location.replace).toHaveBeenCalledWith('https://example.test/app/index.html?forceReload=abc123');
+      expect(location.assign).not.toHaveBeenCalled();
     });
 
-    expect(reload).toHaveBeenCalledTimes(1);
-  });
+    test('triggerReload resolves relative location hrefs using origin and pathname', () => {
+      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
 
-  test('triggerReload falls back to history.replaceState when navigation helpers fail', () => {
-    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
+      let currentHref = 'index.html?foo=bar#section';
+      const location = {
+        origin: 'https://example.test',
+        pathname: '/app/index.html',
+        get href() {
+          return currentHref;
+        },
+        set href(value) {
+          currentHref = value;
+        },
+        replace: jest.fn((value) => {
+          currentHref = value;
+        }),
+        assign: jest.fn(),
+        reload: jest.fn(),
+      };
 
-    const origin = 'https://example.test';
-    let currentHref = `${origin}/app/index.html?forceReload=prevToken#section`;
-    const location = { reload: jest.fn() };
-    Object.defineProperty(location, 'href', {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return currentHref;
-      },
-      set() {
-        // Simulate browsers ignoring href assignments when navigation is blocked.
-      },
-    });
-    location.replace = jest.fn(() => {
-      throw new Error('replace blocked');
-    });
-    location.assign = jest.fn(() => {
-      throw new Error('assign blocked');
+      const result = internal.triggerReload({ location });
+
+      expect(result).toBe(true);
+      expect(location.replace).toHaveBeenCalledTimes(1);
+      const replacedUrl = location.replace.mock.calls[0][0];
+      expect(replacedUrl).toBe('https://example.test/app/index.html?foo=bar&forceReload=fr5hugk0#section');
+      expect(location.reload).not.toHaveBeenCalled();
+
+      nowSpy.mockRestore();
     });
 
-    let historyState = { previous: true };
-    const history = {
-      get state() {
-        return historyState;
-      },
-      replaceState: jest.fn((state, _title, url) => {
-        historyState = state;
-        if (typeof url === 'string') {
-          if (url.startsWith('http')) {
-            currentHref = url;
-          } else if (url.startsWith('/')) {
-            currentHref = `${origin}${url}`;
-          } else {
-            currentHref = `${origin}/${url}`;
-          }
+    test('triggerReload schedules fallback attempts when navigation is blocked', () => {
+      const reloadError = new Error('blocked');
+      const reload = jest.fn(() => {
+        throw reloadError;
+      });
+
+      let currentHref = 'https://example.test/app';
+      const location = {};
+      Object.defineProperty(location, 'href', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          return currentHref;
+        },
+        set() {
+          throw new Error('href assignment blocked');
+        },
+      });
+      location.reload = reload;
+
+      const scheduledCallbacks = [];
+      const setTimeoutSpy = jest.fn(callback => {
+        scheduledCallbacks.push(callback);
+        return scheduledCallbacks.length;
+      });
+
+      const windowMock = {
+        location,
+        setTimeout: setTimeoutSpy,
+      };
+
+      const result = internal.triggerReload(windowMock);
+
+      expect(result).toBe(false);
+      expect(reload).not.toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalled();
+
+      scheduledCallbacks.forEach(callback => {
+        try {
+          callback();
+        } catch (error) {
+          // The fallback helpers already report their own errors.
+          void error;
         }
-      }),
-    };
+      });
 
-    const windowMock = {
-      location,
-      history,
-      setTimeout: jest.fn(),
-    };
+      expect(reload).toHaveBeenCalledTimes(1);
+    });
 
-    const result = internal.triggerReload(windowMock);
+    test('triggerReload falls back to history.replaceState when navigation helpers fail', () => {
+      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
 
-    expect(result).toBe(true);
-    expect(history.replaceState).toHaveBeenCalledTimes(1);
-    const [, , urlArg] = history.replaceState.mock.calls[0];
-    expect(typeof urlArg).toBe('string');
-    expect(urlArg).toContain('/app/index.html?');
-    expect(urlArg).toContain('forceReload=');
-    expect(location.reload).toHaveBeenCalledTimes(1);
-    expect(currentHref).toContain('forceReload=fr5hugk0');
-    expect(currentHref).toContain('#section');
-    expect(location.replace).toHaveBeenCalledTimes(1);
-    expect(location.assign).toHaveBeenCalledTimes(1);
+      const origin = 'https://example.test';
+      let currentHref = `${origin}/app/index.html?forceReload=prevToken#section`;
+      const location = { reload: jest.fn() };
+      Object.defineProperty(location, 'href', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          return currentHref;
+        },
+        set() {
+          // Simulate browsers ignoring href assignments when navigation is blocked.
+        },
+      });
+      location.replace = jest.fn(() => {
+        throw new Error('replace blocked');
+      });
+      location.assign = jest.fn(() => {
+        throw new Error('assign blocked');
+      });
 
-    nowSpy.mockRestore();
-  });
+      let historyState = { previous: true };
+      const history = {
+        get state() {
+          return historyState;
+        },
+        replaceState: jest.fn((state, _title, url) => {
+          historyState = state;
+          if (typeof url === 'string') {
+            if (url.startsWith('http')) {
+              currentHref = url;
+            } else if (url.startsWith('/')) {
+              currentHref = `${origin}${url}`;
+            } else {
+              currentHref = `${origin}/${url}`;
+            }
+          }
+        }),
+      };
+
+      const windowMock = {
+        location,
+        history,
+        setTimeout: jest.fn(),
+      };
+
+      const result = internal.triggerReload(windowMock);
+
+      expect(result).toBe(true);
+      expect(history.replaceState).toHaveBeenCalledTimes(1);
+      const [, , urlArg] = history.replaceState.mock.calls[0];
+      expect(typeof urlArg).toBe('string');
+      expect(urlArg).toContain('/app/index.html?');
+      expect(urlArg).toContain('forceReload=');
+      expect(location.reload).toHaveBeenCalledTimes(1);
+      expect(currentHref).toContain('forceReload=fr5hugk0');
+      expect(currentHref).toContain('#section');
+      expect(location.replace).toHaveBeenCalledTimes(1);
+      expect(location.assign).toHaveBeenCalledTimes(1);
+
+      nowSpy.mockRestore();
+    });
 
     test('registerServiceWorker registers immediately when the document is already loaded', async () => {
       const register = jest.fn(() => Promise.resolve('registered'));

@@ -4167,8 +4167,6 @@
     },
   };
 
-  cleanupForceReloadArtifacts();
-
   freezeDeep(offlineAPI);
 
   informModuleGlobals('cineOffline', offlineAPI);

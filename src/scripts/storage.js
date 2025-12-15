@@ -13634,6 +13634,7 @@
       FULL_BACKUP_HISTORY_STORAGE_KEY,
       safeEntries,
       "Error saving full backup history to localStorage:",
+      { disableCompression: true },
     );
   }
 

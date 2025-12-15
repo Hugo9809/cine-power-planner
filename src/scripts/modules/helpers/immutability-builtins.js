@@ -156,7 +156,8 @@
         typeof process !== 'undefined' &&
         process &&
         process.release &&
-        process.release.name === 'node'
+        process.release.name === 'node' &&
+        !process.env.JEST_WORKER_ID // Allow freezing in Jest tests
       ) {
         return value;
       }

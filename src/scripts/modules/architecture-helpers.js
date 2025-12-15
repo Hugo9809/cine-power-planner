@@ -94,9 +94,9 @@
   const CORE_INSTANCE =
     ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function'
       ? ARCHITECTURE_CORE.createCore({
-          primaryScope: LOCAL_SCOPE,
-          pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
-        })
+        primaryScope: LOCAL_SCOPE,
+        pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
+      })
       : null;
 
   // Gathering candidate scopes upfront avoids repeated global probing. The
@@ -155,16 +155,16 @@
   const detectGlobalScope =
     ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
       ? function detectWithPreferred() {
-          try {
-            const detected = ARCHITECTURE.detectGlobalScope();
-            if (detected) {
-              return detected;
-            }
-          } catch (error) {
-            void error;
+        try {
+          const detected = ARCHITECTURE.detectGlobalScope();
+          if (detected) {
+            return detected;
           }
-          return detectWithArchitecture();
+        } catch (error) {
+          void error;
         }
+        return detectWithArchitecture();
+      }
       : detectWithArchitecture;
 
   const PRIMARY_SCOPE = detectGlobalScope();
@@ -470,6 +470,7 @@
       try {
         return Object.freeze(value);
       } catch (freezeError) {
+        console.warn('fallbackCreateImmutability (helpers): Object.freeze failed', freezeError);
         void freezeError;
         return value;
       }

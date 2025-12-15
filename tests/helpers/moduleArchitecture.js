@@ -11,6 +11,7 @@ function loadModule(request) {
   try {
     return modulesRequire(request);
   } catch (error) {
+    // console.error(`Error loading module ${request}:`, error);
     void error;
   }
 

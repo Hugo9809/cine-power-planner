@@ -27,11 +27,12 @@ function setupModuleHarness() {
   const freezeDeep = typeof architecture?.freezeDeep === 'function'
     ? architecture.freezeDeep
     : function freezeWithFallback(value, seen) {
-        if (typeof architectureHelpers?.freezeDeep === 'function') {
-          return architectureHelpers.freezeDeep(value, seen);
-        }
-        return value;
-      };
+      if (typeof architectureHelpers?.freezeDeep === 'function') {
+        const result = architectureHelpers.freezeDeep(value, seen);
+        return result;
+      }
+      return value;
+    };
 
   function resolveTargetRegistry(scope, explicit) {
     if (explicit && typeof explicit.register === 'function') {
