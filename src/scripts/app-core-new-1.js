@@ -2735,18 +2735,13 @@ const {
   createCrewRowSync: resolvedCreateCrewRowSync
 } = contactsListModule || {};
 
-const CONTACT_AVATAR_MAX_BYTES = resolvedContactAvatarMaxBytes;
-const CONTACT_AVATAR_MAX_SOURCE_BYTES = resolvedContactAvatarMaxSourceBytes;
-const CONTACT_AVATAR_MAX_DIMENSION = resolvedContactAvatarMaxDimension;
-const CONTACT_AVATAR_JPEG_QUALITY = resolvedContactAvatarJpegQuality;
-const CONTACT_AVATAR_JPEG_MIN_QUALITY = resolvedContactAvatarJpegMinQuality;
-const createProfileController = typeof resolvedCreateProfileController === 'function'
+const localCreateProfileController = typeof resolvedCreateProfileController === 'function'
   ? resolvedCreateProfileController
   : createFallbackProfileController;
-const estimateDataUrlSize = typeof resolvedEstimateDataUrlSize === 'function'
+const localEstimateDataUrlSize = typeof resolvedEstimateDataUrlSize === 'function'
   ? resolvedEstimateDataUrlSize
   : dataUrl => (typeof dataUrl === 'string' ? dataUrl.length : 0);
-const optimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'function'
+const localOptimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'function'
   ? resolvedOptimiseAvatarDataUrl
   : (dataUrl, _mime, onSuccess) => {
     if (typeof onSuccess === 'function') {
@@ -2754,10 +2749,10 @@ const optimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'function
     }
     return Promise.resolve(typeof dataUrl === 'string' ? dataUrl : '');
   };
-const readAvatarFile = typeof resolvedReadAvatarFile === 'function'
+const localReadAvatarFile = typeof resolvedReadAvatarFile === 'function'
   ? resolvedReadAvatarFile
   : () => Promise.reject(new Error('Avatar file reader unavailable'));
-const isSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function'
+const localIsSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function'
   ? resolvedIsSafeImageUrl
   : () => false;
 
@@ -12072,7 +12067,7 @@ function resolveContactsStorageKey() {
 var contactsCache = [];
 var contactsInitialized = false;
 
-const profileController = createProfileController({
+const profileController = localCreateProfileController({
   loadProfile: () => {
     try {
       return typeof loadUserProfile === 'function' ? loadUserProfile() : null;
@@ -12324,7 +12319,7 @@ function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) 
   while (visual.firstChild) {
     visual.removeChild(visual.firstChild);
   }
-  if (avatarValue && isSafeImageUrl(avatarValue)) {
+  if (avatarValue && localIsSafeImageUrl(avatarValue)) {
     const img = document.createElement('img');
     img.src = avatarValue;
     img.alt = '';
@@ -12827,7 +12822,7 @@ function handleAvatarUpload(event) {
 }
 
 function processAvatarFile(file) {
-  readAvatarFile(file, dataUrl => {
+  localReadAvatarFile(file, dataUrl => {
     const fallbackName = typeof avatarOptionsContext?.getName === 'function' ? avatarOptionsContext.getName() : '';
     updateAvatarOptionsPreview(dataUrl, fallbackName);
 
@@ -13146,7 +13141,7 @@ function handleUserProfileAvatarInputChange() {
   if (!file) {
     return;
   }
-  readAvatarFile(file, dataUrl => {
+  localReadAvatarFile(file, dataUrl => {
     const profile = getUserProfileSnapshot();
     assignUserProfileState({
       name: profile.name || '',
@@ -13231,7 +13226,7 @@ function handleCrewRowManualChange(row) {
 
 
 function handleAvatarFileSelection(row, file) {
-  readAvatarFile(
+  localReadAvatarFile(
     file,
     dataUrl => {
       setRowAvatar(row, dataUrl);
@@ -13687,7 +13682,7 @@ function createContactCard(contact) {
   avatarInput.addEventListener('change', () => {
     const [file] = avatarInput.files || [];
     if (!file) return;
-    readAvatarFile(file, dataUrl => {
+    localReadAvatarFile(file, dataUrl => {
       contact.avatar = dataUrl;
       updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
       persist();
@@ -13813,7 +13808,7 @@ function initializeContactsModule() {
 
   if (userProfileAvatarContainer) {
     enableAvatarDragAndDrop(userProfileAvatarContainer, (file) => {
-      readAvatarFile(file, dataUrl => {
+      localReadAvatarFile(file, dataUrl => {
         const profile = getUserProfileSnapshot();
         assignUserProfileState({
           name: profile.name || '',
