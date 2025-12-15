@@ -5601,7 +5601,7 @@ function supportsGoldMountCamera(name) {
 
 function getBatteriesByMount(mountType) {
   const out = {};
-  for (const [name, info] of Object.entries(devices.batteries)) {
+  for (const [name, info] of Object.entries(devices?.batteries || {})) {
     if (info && info.mount_type === mountType) out[name] = info;
   }
   return out;
