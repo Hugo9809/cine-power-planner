@@ -5165,7 +5165,7 @@ const VIDEO_OUTPUT_TYPES = new Set([
   'DisplayPort'
 ]);
 
-const NORMALIZED_FLAG_KEY = '__normalized';
+const CORE_NORMALIZED_FLAG_KEY = '__normalized';
 
 var DEFAULT_FILTER_SIZE = '4x5.65';
 const CORE_AUTO_BACKUP_NAMESPACE = (() => {

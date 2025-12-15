@@ -4515,6 +4515,12 @@
     writable: true
   });
 
+  exposeGlobal('updateCalculations', updateCalculations, {
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+
   registerOrQueueModule('cineResults', resultsAPI, {
     category: 'ui',
     description: 'Power summary localisation and runtime feedback coordination.',
