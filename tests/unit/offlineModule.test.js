@@ -44,6 +44,8 @@ describe('cineOffline module', () => {
       harness.teardown();
       harness = null;
     }
+    jest.clearAllTimers();
+    jest.useRealTimers();
   });
 
   function createStorageSpy() {
