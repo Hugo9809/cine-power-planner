@@ -37,6 +37,9 @@ describe('cineOffline module', () => {
       originalConsole = null;
     }
     consoleWarnSpy = null;
+    if (global.window) {
+      delete global.window;
+    }
     if (harness) {
       harness.teardown();
       harness = null;
