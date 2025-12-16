@@ -1542,6 +1542,11 @@
       };
 
       const onNodeTouchEnd = e => {
+        // Prevent popup from triggering from the Project Requirements section
+        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
+          return;
+        }
+
         const node = e.target.closest('.diagram-node');
         if (!node) {
           lastTapInfo = null;
@@ -1767,6 +1772,12 @@
       };
 
       const onNodeOver = e => {
+        // Prevent popup from triggering when hovering over the Project Requirements section
+        // This fixes an issue where the popup would appear empty over this section
+        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
+          return;
+        }
+
         updatePointerPosition(e);
         const node = e.target.closest('.diagram-node');
         if (!node || node === activePopupNode) return;
@@ -1844,6 +1855,11 @@
       };
 
       const onNodeDoubleClick = e => {
+        // Prevent interactions from the Project Requirements section
+        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
+          return;
+        }
+
         const node = e.target.closest('.diagram-node');
         if (!node) return;
         const nodeId = node.getAttribute('data-node');

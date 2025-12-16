@@ -111,6 +111,7 @@ strong {
 #overviewDialogContent *::after {
   box-shadow: none !important;
 }
+
 #overviewDialogContent,
 #overviewDialogContent.dark-mode {
   --surface-color: #fff;
@@ -153,6 +154,7 @@ body.pink-mode,
   fill: var(--diagram-node-fill);
   stroke: none;
 }
+
 #overviewDialogContent #setupDiagram text {
   fill: var(--text-color);
   font-family: 'Ubuntu', sans-serif;
@@ -163,35 +165,45 @@ body.pink-mode,
   font-style: normal;
   color: var(--text-color);
 }
+
 #overviewDialogContent #setupDiagram .node-icon[data-icon-font='essential'] {
   font-family: 'EssentialIconsV2', system-ui, sans-serif;
 }
+
 #overviewDialogContent #setupDiagram .node-icon[data-icon-font='text'] {
   font-family: 'Ubuntu', system-ui, sans-serif;
   font-weight: var(--font-weight-medium);
 }
+
 #overviewDialogContent #setupDiagram line,
 #overviewDialogContent #setupDiagram path.edge-path {
   stroke: var(--control-text);
 }
+
 #overviewDialogContent #setupDiagram path.power {
   stroke: var(--power-color);
 }
+
 #overviewDialogContent #setupDiagram path.video {
   stroke: var(--video-color);
 }
+
 #overviewDialogContent #setupDiagram path.fiz {
   stroke: var(--fiz-color);
 }
+
 #overviewDialogContent #setupDiagram .conn.red {
   fill: var(--power-color);
 }
+
 #overviewDialogContent #setupDiagram .conn.blue {
   fill: var(--video-color);
 }
+
 #overviewDialogContent #setupDiagram .conn.green {
   fill: var(--fiz-color);
 }
+
 #overviewDialogContent #setupDiagram marker polygon {
   fill: var(--control-text);
 }
@@ -211,7 +223,7 @@ body.pink-mode,
 }
 
 #overviewDialogContent h2,
-#overviewDialogContent .results-section > h2 {
+#overviewDialogContent .results-section>h2 {
   font-size: var(--font-size-h2);
   line-height: 1.3;
 }
@@ -266,7 +278,12 @@ p {
   display: none !important;
 }
 
-h2, h3, table, .device-block, .device-category, .requirement-box {
+h2,
+h3,
+table,
+.device-block,
+.device-category,
+.requirement-box {
   page-break-inside: avoid;
   break-inside: avoid;
 }
@@ -277,7 +294,7 @@ h2, h3, table, .device-block, .device-category, .requirement-box {
   background-color: #ffffff;
 }
 
-#overviewDialogContent .print-section > * {
+#overviewDialogContent .print-section>* {
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -325,10 +342,13 @@ h2, h3, table, .device-block, .device-category, .requirement-box {
   page-break-after: avoid;
 }
 
-table, th, td {
+table,
+th,
+td {
   word-break: break-word;
   hyphens: auto;
 }
+
 #overviewDialogContent section,
 #overviewDialogContent #diagramArea,
 #overviewDialogContent #diagramAreaOverview {
@@ -364,6 +384,7 @@ table, th, td {
   break-after: avoid-page;
   page-break-after: avoid;
 }
+
 #overviewDialogContent #setupDiagram {
   background: none !important;
   border: none !important;
@@ -371,6 +392,7 @@ table, th, td {
   page-break-inside: avoid;
   break-inside: avoid;
 }
+
 #overviewDialogContent #setupDiagram svg {
   width: 100% !important;
   max-width: none !important;
@@ -399,6 +421,7 @@ table, th, td {
 }
 
 @media print and (min-width: 240mm) {
+
   body,
   body.dark-mode {
     --font-size-base: 10pt;
@@ -415,6 +438,7 @@ table, th, td {
 }
 
 @media print and (min-width: 297mm) {
+
   body,
   body.dark-mode {
     --font-size-base: 10pt;
@@ -429,20 +453,24 @@ table, th, td {
     --section-padding: 1.1cm;
   }
 }
+
 #overviewDialogContent #setupDiagram #diagramArea,
 #overviewDialogContent #setupDiagram #diagramAreaOverview {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
 }
+
 #overviewDialogContent th {
   background-color: var(--control-bg) !important;
   font-weight: var(--font-weight-bold);
   color: var(--accent-color) !important;
 }
+
 #overviewDialogContent tr {
   background-color: var(--surface-color) !important;
 }
+
 #overviewDialogContent tr:nth-child(even) {
   background-color: var(--panel-bg) !important;
 }
@@ -543,6 +571,7 @@ body.dark-mode #overviewDialogContent .requirement-box {
   color: #000 !important;
   font-weight: var(--font-weight-medium);
 }
+
 #overviewDialogContent .gear-table td,
 #overviewDialogContent.dark-mode .gear-table td,
 body:not(.light-mode) .gear-table td {
@@ -632,7 +661,7 @@ body:not(.light-mode) .gear-table .auto-gear-item {
   box-shadow: none;
 }
 
-#overviewDialogContent .gear-table .gear-item select + select {
+#overviewDialogContent .gear-table .gear-item select+select {
   margin-left: 0.4em;
 }
 
@@ -771,6 +800,7 @@ body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Moni
 #overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: 1fr;
 }
+
 #overviewDialogContent .lens-info-categories {
   gap: 0.35rem;
 }
@@ -780,18 +810,29 @@ body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Moni
 }
 
 #overviewDialogContent .lens-info-grid {
-  display: inline-flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 0.2rem 0.4rem;
 }
 
 #overviewDialogContent .lens-info-grid .info-box {
-  width: auto;
+  width: 100%;
   max-width: 100%;
-  flex: 0 1 auto;
+  flex: none;
 }
 
 .page-break {
   break-before: page;
   page-break-before: always;
+}
+
+/* Force hide edit controls in print content */
+#overviewDialogContent .gear-rental-toggle,
+#overviewDialogContent .gear-edit-btn,
+#overviewDialogContent button,
+#overviewDialogContent .ui-only,
+.print-section .gear-rental-toggle,
+.print-section .gear-edit-btn,
+.print-section button {
+  display: none !important;
 }

@@ -62,8 +62,12 @@
         const title = sidebar.querySelector('.mockup-sidebar-header h2');
         if (title) title.textContent = getText('printPreview.title', 'Print & Export');
 
-        // Close Btn
-        if (state.elements.closeBtn) state.elements.closeBtn.setAttribute('aria-label', getText('printPreview.closeLabel', 'Close Preview'));
+        // Close/Back Btn
+        if (state.elements.closeBtn) {
+            state.elements.closeBtn.setAttribute('aria-label', getText('printPreview.backLabel', 'Back'));
+            const textSpan = state.elements.closeBtn.querySelector('.btn-text');
+            if (textSpan) textSpan.textContent = getText('printPreview.backLabel', 'Back');
+        }
 
         // Layout Mode
         const layoutTitle = sidebar.querySelector('.control-section:nth-child(2) .section-title');
@@ -94,9 +98,27 @@
         Object.entries(sectionLabels).forEach(([id, key]) => {
             const label = sidebar.querySelector(`label[for="${id}"]`);
             if (label) {
-                const textNode = Array.from(label.childNodes).find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+                // Try finding a direct text node
+                let textNode = Array.from(label.childNodes).find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+
+                // If not found, look for a span (common in styled checkboxes)
+                if (!textNode) {
+                    const span = label.querySelector('span:not(.slider)');
+                    if (span && span.textContent.trim().length > 0) {
+                        // Update the span's text directly
+                        span.textContent = getText(key, span.textContent.trim());
+                        return;
+                    }
+                }
+
                 if (textNode) {
-                    textNode.textContent = ' ' + getText(key, textNode.textContent.trim());
+                    // Wrap text in a relative span to ensure it sits above any absolute positioned inputs/pseudo-elements
+                    const newText = getText(key, textNode.textContent.trim());
+                    const span = document.createElement('span');
+                    span.style.position = 'relative';
+                    span.style.zIndex = '1';
+                    span.textContent = ' ' + newText;
+                    textNode.replaceWith(span);
                 }
             }
         });
@@ -161,7 +183,37 @@
         // Layout Toggle
         if (state.elements.layoutToggle) {
             state.elements.layoutToggle.addEventListener('change', (e) => {
-                state.preferences.layout = e.target.checked ? 'rental' : 'standard';
+                const isRental = e.target.checked;
+                state.preferences.layout = isRental ? 'rental' : 'standard';
+
+                // Automatically adjust section visibility based on layout mode
+                // Rental Mode: Show Project and Gear List only. Hide Devices, Diagram, Power/Battery.
+                if (isRental) {
+                    if (state.elements.sectionToggles.devices) state.elements.sectionToggles.devices.checked = false;
+                    if (state.elements.sectionToggles.diagram) state.elements.sectionToggles.diagram.checked = false;
+                    if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = true; // Use battery check for summary? User said incomplete. Let's keep it checked but content changes? 
+                    // User said: "it should only show the project requirements and gear list and hide everything else."
+                    // So hide battery too? "Power summary is also incomplete". Maybe they want it?
+                    // "It should only show the project requirements and gear list and hide everything else." -> This implies Power Summary should be hidden too.
+
+                    if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = false;
+
+                    state.preferences.sections.devices = false;
+                    state.preferences.sections.diagram = false;
+                    state.preferences.sections.battery = false;
+                } else {
+                    // Restore standard defaults
+                    if (state.elements.sectionToggles.devices) state.elements.sectionToggles.devices.checked = true;
+                    if (state.elements.sectionToggles.diagram) state.elements.sectionToggles.diagram.checked = true;
+                    if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = true;
+
+                    state.preferences.sections.devices = true;
+                    state.preferences.sections.diagram = true;
+                    state.preferences.sections.battery = true;
+                }
+
+                updateSectionVisibility(); // Update UI state (checkboxes) before render? 
+                // renderPreviewContent uses state.preferences.sections too.
                 renderPreviewContent();
             });
         }
@@ -321,6 +373,8 @@
 
         paper.innerHTML = ''; // Clear existing
 
+        const isRental = state.preferences.layout === 'rental';
+
         // 1. Header (Project Info)
         const header = document.createElement('div');
         header.className = 'preview-header';
@@ -345,7 +399,15 @@
         } else reqSection.innerHTML = '<p><em>' + getText('printPreview.generatedNoProjectRequirements', 'No project requirements data.') + '</em></p>';
         paper.appendChild(reqSection);
 
-        // 3. Device Selection (Rental Layout vs Standard)
+        // 3. Device Selection
+        // In Rental Mode, we hide this section by default (via toggle), but if it *is* enabled, 
+        // we might want to respect the "Rental Friendly Layout" (grouped grid) vs Standard.
+        // However, the user said "Rental friendly layout... should only show project requirements and gear list".
+        // So we might not render it at all if isRental is true to be safe, 
+        // OR rely on updateSectionVisibility hiding it.
+        // Let's render it but use the rental layout if sections.devices is true.
+        // But wait, the loop below appends it.
+
         const devSection = document.createElement('section');
         devSection.id = 'preview-section-devices';
         devSection.className = 'print-section';
@@ -396,7 +458,7 @@
         powerSection.innerHTML = '<h2>' + getText('printPreview.generatedPowerSummaryTitle', 'Power Summary') + '</h2>';
         powerSection.innerHTML += generatePowerSummary();
 
-        // Also append Battery Comparison Table if needed, or just the summary
+        // Also append Battery Comparison Table if needed
         const sourceBatteryTable = document.getElementById('batteryComparison');
         if (sourceBatteryTable) {
             const batteryClone = sourceBatteryTable.cloneNode(true);
@@ -415,7 +477,47 @@
         gearSection.innerHTML = '<h2>' + getText('printPreview.generatedGearListTitle', 'Gear List') + '</h2>';
         const sourceGear = document.getElementById('gearListOutput');
         if (sourceGear) {
-            gearSection.innerHTML += sourceGear.innerHTML;
+            // Clone first to manipulate
+            const clonedGear = sourceGear.cloneNode(true);
+
+            // Cleanup: Remove Edit buttons/toggles anywhere in the gear list
+            const interactives = clonedGear.querySelectorAll('.gear-rental-toggle, .gear-edit-btn, button, .ui-only');
+            interactives.forEach(el => el.remove());
+
+            if (isRental) {
+                // Filter: "Hide own gear and gear that is not provided by the rental house"
+                const items = clonedGear.querySelectorAll('.gear-item');
+                items.forEach(item => {
+                    const text = item.textContent || '';
+                    const attrs = item.getAttribute('data-gear-attributes') || '';
+                    const rentalNote = item.getAttribute('data-rental-note') || '';
+
+                    // Check for "Own Gear" markers
+                    const isOwnGear = text.includes('Own Gear') || attrs.includes('Own Gear') || rentalNote.includes('Own Gear');
+
+                    if (isOwnGear) {
+                        // Remove the item.
+                        // Items are often followed by <br> in the legacy format.
+                        const next = item.nextSibling;
+                        if (next && next.nodeName === 'BR') {
+                            next.remove();
+                        }
+                        item.remove();
+                    }
+                });
+
+                // Cleanup empty categories
+                const categories = clonedGear.querySelectorAll('tbody.category-group, .gear-category');
+                categories.forEach(cat => {
+                    // Check if it has any remaining gear items
+                    const hasItems = cat.querySelectorAll('.gear-item').length > 0;
+                    if (!hasItems) {
+                        cat.style.display = 'none';
+                    }
+                });
+            }
+
+            gearSection.appendChild(clonedGear);
         }
         paper.appendChild(gearSection);
 
@@ -431,9 +533,15 @@
             battery: 'preview-section-battery'
         };
 
+        const isRental = state.preferences.layout === 'rental';
+
         Object.entries(map).forEach(([key, id]) => {
             const el = document.getElementById(id);
             if (el) {
+                // Respect the preference, which we updated in the toggle listener
+                // But double check rental constraints?
+                // If the user manually re-enables a section in Rental Mode, should we allow it?
+                // Yes, flexibility is good. The Toggle preset handled the default state.
                 el.style.display = state.preferences.sections[key] ? 'block' : 'none';
             }
         });

@@ -1434,7 +1434,6 @@ function generatePrintableOverview(config = {}) {
     };
 
     processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
-    processLensesForOverview(lensSelectElement, 'category_lenses');
     processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
     processSelectForOverview(videoSelect, 'category_video', 'video'); // Original database uses 'video', not 'wirelessVideo'
     processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
@@ -1442,6 +1441,7 @@ function generatePrintableOverview(config = {}) {
     controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
     processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
     processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
+    processLensesForOverview(lensSelectElement, 'category_lenses');
 
     sectionOrder.forEach(key => {
         const heading = t[key] || key;
@@ -1458,7 +1458,10 @@ function generatePrintableOverview(config = {}) {
             : isLensList
                 ? 'device-block-grid two-column lens-device-grid'
                 : 'device-block-grid single-column';
-        deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
+
+        const categoryClasses = isLensList ? 'device-category device-category--full' : 'device-category';
+
+        deviceListHtml += `<div class="${categoryClasses}"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
     });
     deviceListHtml += '</div>';
     const deviceSectionHeading = deviceListHtml
