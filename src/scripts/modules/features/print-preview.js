@@ -139,8 +139,7 @@
             exportBtn: document.getElementById('printPreviewExportBtn'),
             printBtn: document.getElementById('printPreviewPrintBtn'),
 
-            // Trigger
-            generateOverviewBtn: document.getElementById('generateOverviewBtn')
+
         };
 
         return !!state.elements.modal;
@@ -149,16 +148,7 @@
     function bindEvents() {
         if (!state.elements.modal) return;
 
-        // Trigger Button
-        if (state.elements.generateOverviewBtn) {
-            // Remove existing listeners by cloning (optional, but safer if we want to override)
-            // For now, we'll just add the listener. If there's an existing one, it might run too.
-            // Given the user request, we probably want to ensure THIS opens.
-            state.elements.generateOverviewBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                openPreview();
-            });
-        }
+
 
         // Close Button
         if (state.elements.closeBtn) {
@@ -243,7 +233,16 @@
         const container = document.createElement('div');
         container.className = 'device-category-container';
 
-        // Parse the source HTML to find categories and devices
+        // Fix: Check for existing categories first (handling nested structure from overview.js)
+        const existingCategories = sourceDevs.querySelectorAll('.device-category');
+        if (existingCategories.length > 0) {
+            existingCategories.forEach(cat => {
+                container.appendChild(cat.cloneNode(true));
+            });
+            return container.outerHTML;
+        }
+
+        // Parse the source HTML to find categories and devices (Legacy flat structure support)
         // Assuming structure: <h3>Category</h3> ... <div class="device-block">...</div>
         // We need to group them.
 

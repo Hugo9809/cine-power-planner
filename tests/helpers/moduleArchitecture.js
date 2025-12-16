@@ -9,6 +9,8 @@ const modulesRequire = createRequire(RUNTIME_PATH);
 
 function loadModule(request) {
   try {
+    const fullPath = modulesRequire.resolve(request);
+    delete require.cache[fullPath];
     return modulesRequire(request);
   } catch (error) {
     // console.error(`Error loading module ${request}:`, error);

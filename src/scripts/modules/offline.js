@@ -1452,10 +1452,12 @@
     })();
 
     const executeWarmup = async () => {
+      const warmupWaitMs = typeof options.warmupWaitMs === 'number' ? options.warmupWaitMs : RELOAD_WARMUP_MAX_WAIT_MS;
+
       try {
         await Promise.allSettled([
-          awaitPromiseWithSoftTimeout(serviceWorkerPromise, RELOAD_WARMUP_MAX_WAIT_MS),
-          awaitPromiseWithSoftTimeout(cachePromise, RELOAD_WARMUP_MAX_WAIT_MS),
+          awaitPromiseWithSoftTimeout(serviceWorkerPromise, warmupWaitMs),
+          awaitPromiseWithSoftTimeout(cachePromise, warmupWaitMs),
         ]);
       } catch (error) {
         void error;
@@ -3899,6 +3901,7 @@
       serviceWorkerPromise: serviceWorkerCleanupPromise,
       cachePromise: cacheCleanupPromise,
       allowCache: true,
+      warmupWaitMs: typeof options.warmupWaitMs === 'number' ? options.warmupWaitMs : undefined,
     });
 
     const resolveWarmupPromise = (handle) => {
@@ -3976,12 +3979,14 @@
     let serviceWorkerStatusKnown = false;
 
     try {
+      const cleanupTimeoutMs = typeof options.cleanupTimeoutMs === 'number' ? options.cleanupTimeoutMs : FORCE_RELOAD_CLEANUP_TIMEOUT_MS;
+
       const serviceWorkerAwaitResult = await awaitPromiseWithSoftTimeout(
         gatePromise,
-        FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+        cleanupTimeoutMs,
         () => {
           safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
-            timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+            timeoutMs: cleanupTimeoutMs,
           });
         },
         (lateError) => {
