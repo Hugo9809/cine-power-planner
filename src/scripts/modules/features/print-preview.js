@@ -446,6 +446,15 @@
         // bindEvents() and localizeStaticContent() are called on init
         // We re-render content to ensure it's fresh
         renderPreviewContent();
+
+        // Use showModal for top-layer stacking
+        if (typeof state.elements.modal.showModal === 'function') {
+            // Check if already open to avoid error
+            if (!state.elements.modal.open) {
+                state.elements.modal.showModal();
+            }
+        }
+
         state.elements.modal.classList.remove('hidden');
         state.isOpen = true;
         document.body.style.overflow = 'hidden';
@@ -453,6 +462,14 @@
 
     function closePreview() {
         if (!state.elements.modal) return;
+
+        if (typeof state.elements.modal.close === 'function') {
+            // Check if open before closing to avoid error
+            if (state.elements.modal.open) {
+                state.elements.modal.close();
+            }
+        }
+
         state.elements.modal.classList.add('hidden');
         state.isOpen = false;
         document.body.style.overflow = '';

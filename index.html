@@ -343,81 +343,7 @@
     <section id="results">
       <h2 id="resultsHeading">Power Summary</h2>
 
-      <!-- Print Preview Modal -->
-      <div id="printPreviewModal" class="hidden">
-        <!-- Sidebar -->
-        <div class="mockup-sidebar">
-          <div class="mockup-sidebar-header">
-            <h2>Print & Export</h2>
-            <button id="closePrintPreviewBtn" class="close-preview-btn" aria-label="Close Preview">
-              <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE646;</span>
-            </button>
-          </div>
 
-          <div class="control-section">
-            <div class="section-title">Layout Mode</div>
-            <div class="control-row">
-              <label>Rental Friendly</label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="printLayoutRentalToggle" checked>
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--muted-text-color); line-height: 1.4;">
-              Optimizes layout for rental houses by grouping items by category.
-            </p>
-          </div>
-
-          <div class="control-section">
-            <div class="section-title">Sections</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="printSectionProject" checked
-                  style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                Project Requirements
-              </label>
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="printSectionDevices" checked
-                  style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                Device List
-              </label>
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="printSectionDiagram" checked
-                  style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                Power Diagram
-              </label>
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="printSectionGearList" checked
-                  style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                Gear List
-              </label>
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="printSectionBattery" checked
-                  style="width: 18px; height: 18px; accent-color: var(--accent-color);">
-                Battery Comparison
-              </label>
-            </div>
-          </div>
-
-          <div class="sidebar-footer">
-            <button id="printPreviewExportBtn" class="sidebar-btn btn-primary">
-              <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
-              Export PDF
-            </button>
-            <button id="printPreviewPrintBtn" class="sidebar-btn btn-secondary">
-              <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
-              Print
-            </button>
-          </div>
-        </div>
-
-        <!-- Preview Area -->
-        <div class="preview-area">
-          <div class="paper" id="printPreviewPaper">
-            <!-- Content will be injected here by JS -->
-          </div>
-        </div>
-      </div>
 
       <!-- Hero Section -->
       <div id="heroCard" class="power-hero hidden">
@@ -890,8 +816,7 @@
     <a id="privacyLink" href="legal/datenschutz-en.html">Privacy Policy</a>
   </footer>
 
-  <!-- Print Preview Modal -->
-  <div id="printPreviewModal" class="hidden">
+  <dialog id="printPreviewModal" class="print-preview-modal hidden">
     <!-- Sidebar -->
     <div class="mockup-sidebar">
       <div class="mockup-sidebar-header">
@@ -964,7 +889,7 @@
         <!-- Content will be injected here by print-preview.js -->
       </div>
     </div>
-  </div>
+  </dialog>
 
   <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden
     data-onboarding-anchor="settings">

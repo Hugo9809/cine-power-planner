@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
     try {
         // 1. Load the application
         console.log('Loading application...');
-        const appPath = path.resolve(__dirname, '../../index.html');
+        const appPath = path.resolve(__dirname, 'index.html');
         await page.goto(`file://${appPath}`);
 
         // Wait for app to be ready

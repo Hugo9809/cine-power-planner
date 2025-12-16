@@ -5,24 +5,29 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: none;
+    max-width: 100vw;
+    max-height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     z-index: 9999;
-    display: flex;
+    display: none;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
-#printPreviewModal:not(.hidden) {
+#printPreviewModal[open] {
+    display: flex;
     opacity: 1;
     pointer-events: auto;
 }
 
+/* Legacy support if .hidden is used for other logic, but [open] takes precedence for display */
 #printPreviewModal.hidden {
-    display: flex !important;
-    /* Override generic hidden to allow transition, handled by opacity */
     opacity: 0;
     pointer-events: none;
 }

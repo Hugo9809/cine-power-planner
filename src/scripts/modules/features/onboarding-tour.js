@@ -8468,6 +8468,17 @@
     }
   }
 
+  // Safely cleanup potential lingering attributes from previous sessions or crashes
+  if (DOCUMENT && DOCUMENT.documentElement) {
+    try {
+      if (typeof DOCUMENT.documentElement.hasAttribute === 'function' && DOCUMENT.documentElement.hasAttribute('data-onboarding-project-dialog')) {
+        DOCUMENT.documentElement.removeAttribute('data-onboarding-project-dialog');
+      }
+    } catch (cleanupError) {
+      void cleanupError;
+    }
+  }
+
   attachFactoryResetListeners();
 
   const moduleApi = clone({

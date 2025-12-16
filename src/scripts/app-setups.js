@@ -6021,6 +6021,55 @@ function collectProjectFormData() {
   return cloneProjectFormDataSnapshot(snapshot);
 }
 
+const PROJECT_FILTER_TYPES = [
+  "ND",
+  "ND Grad HE",
+  "ND Grad SE",
+  "ND Grad Reverse",
+  "Polarizer",
+  "Variable ND",
+  "Diopter",
+  "Optical Flat",
+  "Rota-Pola",
+  "Mist",
+  "Glimmerglass",
+  "Diffusion",
+  "Streak",
+  "Star",
+  "UV",
+  "IR",
+  "Color",
+  "Effect"
+];
+
+function populateFilterDropdown(extraTypes = []) {
+  const filterSelect = document.getElementById('filter');
+  if (!filterSelect) return;
+
+  const standardTypes = new Set(PROJECT_FILTER_TYPES);
+  if (Array.isArray(extraTypes)) {
+    extraTypes.forEach(t => {
+      if (t) standardTypes.add(t);
+    });
+  }
+
+  const sortedTypes = Array.from(standardTypes).sort();
+  const currentOptions = new Set(Array.from(filterSelect.options).map(o => o.value));
+  const missing = sortedTypes.filter(t => !currentOptions.has(t));
+
+  if (missing.length === 0 && filterSelect.options.length === sortedTypes.length) return;
+
+  filterSelect.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  sortedTypes.forEach(type => {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    fragment.appendChild(opt);
+  });
+  filterSelect.appendChild(fragment);
+}
+
 function populateProjectForm(info = {}) {
   if (!projectForm) return;
   projectForm.reset();
@@ -6270,6 +6319,7 @@ function populateProjectForm(info = {}) {
   setSliderBowlValue(info.sliderBowl || '');
   setEasyrigValue(info.easyrig || '');
   const filterTokens = parseFilterTokens(info.filter);
+  populateFilterDropdown(filterTokens.map(t => t.type));
   setMulti('filter', filterTokens.map(t => t.type));
   renderFilterDetails(filterTokens);
   filterTokens.forEach(({ type, size, values }) => {

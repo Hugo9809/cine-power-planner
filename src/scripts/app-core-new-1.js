@@ -12377,8 +12377,8 @@ function refreshAvatarOptionsActions() {
 
 function stopAvatarEditing(options = {}) {
   const { restoreFocus = false } = options || {};
-  if (avatarEditSection) {
-    avatarEditSection.classList.add('hidden');
+  if (avatarControls) {
+    avatarControls.classList.add('hidden');
   }
   if (avatarEditViewport) {
     try {
