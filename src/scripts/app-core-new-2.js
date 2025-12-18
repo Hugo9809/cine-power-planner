@@ -9675,6 +9675,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var featureSearchDropdown =
       typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
     var featureMap = new Map();
+    var actionMap = new Map();
     const featureSearchEntryIndex = new Map();
     const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
     const MAX_FEATURE_SEARCH_HISTORY = 50;
@@ -11545,15 +11546,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         helpTexts,
         entryType
       };
-      const existing = featureMap.get(baseKey);
+      const targetMap = entryType === 'action' ? actionMap : featureMap;
+      const existing = targetMap.get(baseKey);
       if (!existing) {
-        featureMap.set(baseKey, entry);
+        targetMap.set(baseKey, entry);
       } else if (Array.isArray(existing)) {
         if (!existing.some(item => item && item.element === element)) {
           existing.push(entry);
         }
       } else if (existing.element !== element) {
-        featureMap.set(baseKey, [existing, entry]);
+        targetMap.set(baseKey, [existing, entry]);
       }
       return entry;
     };
@@ -17187,10 +17189,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function populateMonitorSelect() {
+      const monitors = devices.monitors || {};
+      // Debug: Log monitor count
+      if (typeof console !== 'undefined') {
+        console.log('populateMonitorSelect: count=', Object.keys(monitors).length);
+      }
+
       const filtered = Object.fromEntries(
-        Object.entries(devices.monitors || {})
-          .filter(([, data]) => !(data.wirelessRX && !data.wirelessTx))
+        Object.entries(monitors)
+        // .filter(([, data]) => !(data.wirelessRX && !data.wirelessTx)) // Temporary disable filter
       );
+
       populateSelect(monitorSelect, filtered, true);
     }
 

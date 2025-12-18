@@ -689,6 +689,13 @@ function getPrintSectionConfig() {
             fallbackLabel: 'Power Summary',
         },
         {
+            id: 'battery',
+            selector: '.battery-comparison-section',
+            defaultVisible: true,
+            labelKey: 'rentalPrintSectionBattery',
+            fallbackLabel: 'Battery Comparison',
+        },
+        {
             id: 'diagram',
             selector: '#setupDiagram',
             defaultVisible: true,
@@ -701,13 +708,6 @@ function getPrintSectionConfig() {
             defaultVisible: true,
             labelKey: 'rentalPrintSectionGearList',
             fallbackLabel: 'Gear List',
-        },
-        {
-            id: 'battery',
-            selector: '.battery-comparison-section',
-            defaultVisible: true,
-            labelKey: 'rentalPrintSectionBattery',
-            fallbackLabel: 'Battery Comparison',
         },
     ];
 }

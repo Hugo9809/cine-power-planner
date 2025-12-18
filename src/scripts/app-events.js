@@ -5270,9 +5270,10 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
   populateSelect(cameraSelect, devices.cameras, true);
   populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
-  motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-  controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-  populateSelect(distanceSelect, devices.fiz.distance, true);
+  const fiz = devices.fiz || {};
+  motorSelects.forEach(sel => populateSelect(sel, fiz.motors, true));
+  controllerSelects.forEach(sel => populateSelect(sel, fiz.controllers, true));
+  populateSelect(distanceSelect, fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
   updateFizConnectorOptions();
   applyFilters();

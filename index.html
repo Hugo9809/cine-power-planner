@@ -147,8 +147,8 @@
       <li><a href="#setup-manager" data-nav-key="setupManageHeading">Project Overview</a></li>
       <li><a href="#setup-config" data-nav-key="deviceSelectionHeading">Configure Devices</a></li>
       <li><a href="#results" data-nav-key="resultsHeading">Power Summary</a></li>
-      <li><a href="#setupDiagram" data-nav-key="setupDiagramHeading">Connection Diagram</a></li>
       <li><a href="#batteryComparison" data-nav-key="batteryComparisonHeading">Battery Comparison</a></li>
+      <li><a href="#setupDiagram" data-nav-key="setupDiagramHeading">Connection Diagram</a></li>
       <li><a href="#projectRequirementsOutput" data-nav-key="projectRequirementsNav">Project Requirements</a></li>
       <li><a href="#gearListOutput" data-nav-key="gearListNav">Gear List</a></li>
       <li class="sidebar-divider" role="separator" aria-hidden="true"></li>
@@ -409,6 +409,14 @@
       </div>
     </section>
 
+    <section id="batteryComparison" class="battery-comparison-section">
+      <h2 id="batteryComparisonHeading">Battery Comparison</h2>
+      <p id="batteryComparisonDescription" class="section-description"></p>
+      <div id="batteryTableContainer" class="battery-table-container">
+        <table id="batteryTable"></table>
+      </div>
+    </section>
+
     <section id="setupDiagram">
       <h2 id="setupDiagramHeading">Connection Diagram</h2>
       <p id="compatWarning" class="status-message" role="status" aria-live="polite"></p>
@@ -442,14 +450,6 @@
     <section id="projectRequirementsOutput" class="hidden"></section>
 
     <section id="gearListOutput" class="hidden"></section>
-
-    <section id="batteryComparison" class="battery-comparison-section">
-      <h2 id="batteryComparisonHeading">Battery Comparison</h2>
-      <p id="batteryComparisonDescription" class="section-description"></p>
-      <div id="batteryTableContainer" class="battery-table-container">
-        <table id="batteryTable"></table>
-      </div>
-    </section>
 
     <button id="toggleDeviceManager" aria-controls="device-manager" aria-expanded="false">Edit Device Data…</button>
 
@@ -838,7 +838,7 @@
           </label>
         </div>
         <p style="font-size: 0.85rem; color: var(--muted-text-color); line-height: 1.4;">
-          Optimizes layout for rental houses by grouping items by category.
+          Optimizes layout for rental by grouping items by category.
         </p>
       </div>
 
@@ -3835,11 +3835,11 @@
             <li>
               The gear list editor’s
               <a class="help-link" href="#gearItemEditProvider" data-help-target="#gearItemEditProvider">Provided by</a>
-              menu automatically lists saved contacts alongside “Rental house” and “User”. Assigning a provider stamps
+              menu automatically lists saved contacts alongside “Rental” and “User”. Assigning a provider stamps
               the
               badge on the gear list, printed overviews and PDFs so teams know which items come from the crew versus
               rentals.
-              Rental house entries now sit inside a neutral gray box—or a pink highlight in pink mode—so the rental
+              Rental entries now sit inside a neutral gray box—or a pink highlight in pink mode—so the rental
               provider
               stays obvious across layouts.
             </li>
@@ -3933,7 +3933,7 @@
               <a class="help-link" href="#gearItemEditOwned" data-help-target="#gearItemEditOwnedContainer">Owned</a>
               toggle to sync that line with your inventory before adjusting the
               <a class="help-link" href="#gearItemEditRental" data-help-target="#gearItemEditRentalSection">exclude from
-                rental house</a>
+                rental</a>
               option without leaving the list. Use the
               <a class="help-link" href="#gearItemEditExtra" data-help-target="#gearItemEditExtraContainer">Temporary
                 extra gear</a>
@@ -3965,7 +3965,7 @@
               and gear:
               <ul>
                 <li><strong>Project Name</strong>, <strong>Production Company</strong>, <strong>Production Company
-                    Address</strong>, <strong>Rental House</strong>, <strong>DoP</strong>, <strong>Prep</strong>,
+                    Address</strong>, <strong>Rental</strong>, <strong>DoP</strong>, <strong>Prep</strong>,
                   <strong>Shooting</strong> and <strong>Return Days</strong> populate the printed header and can trigger
                   weather gear with outdoor scenarios.
                 </li>
@@ -5432,7 +5432,7 @@
             aria-labelledby="gearItemEditRentalLabel">
             <label class="gear-item-edit-checkbox" for="gearItemEditRental">
               <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
-              <span id="gearItemEditRentalLabel">Exclude from rental house</span>
+              <span id="gearItemEditRentalLabel">Exclude from rental</span>
             </label>
             <p id="gearItemEditRentalDescription" class="gear-item-edit-rental-description"></p>
           </section>
@@ -5524,7 +5524,7 @@
               </div>
             </div>
             <div class="form-row">
-              <label for="rentalHouse" id="rentalHouseLabel">Rental House:</label>
+              <label for="rentalHouse" id="rentalHouseLabel">Rental:</label>
               <input type="text" id="rentalHouse" name="rentalHouse" list="rentalHouseOptions"
                 autocomplete="organization" />
               <datalist id="rentalHouseOptions"></datalist>

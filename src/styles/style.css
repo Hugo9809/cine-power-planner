@@ -12010,13 +12010,13 @@ body.dark-mode .requirement-box,
 }
 
 .gear-table td {
-  padding: 4px 0;
+  padding: 2px 0;
   border-left: none;
   border-right: none;
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: var(--line-height-relaxed);
+  line-height: normal;
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -12283,7 +12283,15 @@ body.dark-mode .requirement-box,
 
 #gearListOutput .gear-table select {
   padding-block: 0;
-  padding-inline: 0.35rem;
+  padding-inline: 0.25rem;
+  height: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+#gearListOutput .category-group tr:last-child:not(:has(.gear-item)):not(:has(.gear-custom-item)):not(:has(select)) {
+  display: none;
 }
 
 .gear-cart-detail {
@@ -12337,7 +12345,7 @@ body.dark-mode .requirement-box,
 }
 
 #gearListOutput .gear-standard-items+.gear-custom-section {
-  margin-top: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 #gearListOutput .gear-standard-items .gear-item {
@@ -12794,6 +12802,8 @@ body.light-mode .gear-table strong,
 #gearListOutput h2,
 #gearListOutput h3 {
   color: var(--accent-color);
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
 }
 
 #gearListOutput h2 {
@@ -12895,6 +12905,11 @@ body.dark-mode.pink-mode #gearListOutput h2,
   min-width: 3.5rem;
   margin: 0;
   width: var(--gear-select-width, auto);
+  height: 1.25rem;
+  font-size: 0.85rem;
+  padding: 0 0.25rem;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 #gearListFilterDetails .filter-detail-size .select-wrapper select:focus-visible {

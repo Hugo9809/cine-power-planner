@@ -347,11 +347,28 @@
       }
     }
 
-    function openDetailDialogWithEntry(entry) {
+    function openDetailDialogWithEntry(entry, position = null) {
       ensureDetailDialogElements();
       if (!detailDialog || !detailDialogContent || !entry) return;
       const ownerDoc = detailDialog.ownerDocument || document;
       if (!ownerDoc) return;
+
+      const surface = detailDialog.querySelector('.modal-surface');
+      if (surface) {
+        if (position && typeof position.x === 'number' && typeof position.y === 'number') {
+          surface.style.visibility = 'hidden';
+          surface.style.position = 'absolute';
+          surface.style.margin = '0';
+          surface.style.left = '0';
+          surface.style.top = '0';
+        } else {
+          surface.style.position = '';
+          surface.style.margin = '';
+          surface.style.left = '';
+          surface.style.top = '';
+          surface.style.visibility = '';
+        }
+      }
 
       detailDialogContent.innerHTML = '';
       const wrapper = ownerDoc.createElement('div');
@@ -410,6 +427,43 @@
         }
       } else {
         detailDialog.setAttribute('open', '');
+      }
+
+      if (surface && position && typeof position.x === 'number' && typeof position.y === 'number') {
+        const viewportW = windowObj ? windowObj.innerWidth : (document.documentElement.clientWidth || 0);
+        const viewportH = windowObj ? windowObj.innerHeight : (document.documentElement.clientHeight || 0);
+        const rect = surface.getBoundingClientRect();
+
+        const GAP = 15;
+        const SCREEN_MARGIN = 20;
+
+        // Try bottom-right
+        let left = position.x + GAP;
+        let top = position.y + GAP;
+
+        // Flip horizontal if overflow
+        if (left + rect.width > viewportW - SCREEN_MARGIN) {
+          left = position.x - rect.width - GAP;
+        }
+        // Clamp left
+        if (left < SCREEN_MARGIN) left = SCREEN_MARGIN;
+        if (left + rect.width > viewportW - SCREEN_MARGIN) {
+          left = viewportW - rect.width - SCREEN_MARGIN;
+        }
+
+        // Flip vertical if overflow
+        if (top + rect.height > viewportH - SCREEN_MARGIN) {
+          top = position.y - rect.height - GAP;
+        }
+        // Clamp top
+        if (top < SCREEN_MARGIN) top = SCREEN_MARGIN;
+        if (top + rect.height > viewportH - SCREEN_MARGIN) {
+          top = viewportH - rect.height - SCREEN_MARGIN;
+        }
+
+        surface.style.left = `${Math.round(left)}px`;
+        surface.style.top = `${Math.round(top)}px`;
+        surface.style.visibility = '';
       }
     }
 
@@ -1774,7 +1828,7 @@
       const onNodeOver = e => {
         // Prevent popup from triggering when hovering over the Project Requirements section
         // This fixes an issue where the popup would appear empty over this section
-        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
+        if (e.target && e.target.closest && (e.target.closest('#projectRequirementsOutput') || e.target.closest('#batteryComparison'))) {
           return;
         }
 
@@ -1856,7 +1910,7 @@
 
       const onNodeDoubleClick = e => {
         // Prevent interactions from the Project Requirements section
-        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
+        if (e.target && e.target.closest && (e.target.closest('#projectRequirementsOutput') || e.target.closest('#batteryComparison'))) {
           return;
         }
 
@@ -1869,7 +1923,15 @@
         hidePopup();
         activePopupNode = null;
         activePopupEntry = null;
-        openDetailDialogWithEntry(entry);
+
+        let clickPos = null;
+        if (e.clientX !== undefined && e.clientY !== undefined) {
+          clickPos = { x: e.clientX, y: e.clientY };
+        } else if (lastPointerPosition) {
+          clickPos = { ...lastPointerPosition };
+        }
+
+        openDetailDialogWithEntry(entry, clickPos);
         e.stopPropagation();
         e.preventDefault();
       };

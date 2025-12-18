@@ -81,7 +81,7 @@
         }
 
         const rentalDesc = sidebar.querySelector('.control-section:nth-child(2) p');
-        if (rentalDesc) rentalDesc.textContent = getText('printPreview.layoutRentalDescription', 'Optimizes layout for rental houses by grouping items by category.');
+        if (rentalDesc) rentalDesc.textContent = getText('printPreview.layoutRentalDescription', 'Optimizes layout for rental by grouping items by category.');
 
         // Sections
         const sectionsTitle = sidebar.querySelector('.control-section:nth-child(3) .section-title');
@@ -485,7 +485,7 @@
             interactives.forEach(el => el.remove());
 
             if (isRental) {
-                // Filter: "Hide own gear and gear that is not provided by the rental house"
+                // Filter: "Hide own gear and gear that is not provided by the rental"
                 const items = clonedGear.querySelectorAll('.gear-item');
                 items.forEach(item => {
                     const text = item.textContent || '';

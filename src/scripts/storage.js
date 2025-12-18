@@ -9473,7 +9473,7 @@
       'País',
       'Paese',
     ],
-    rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
+    rentalHouse: ['Rental', 'Kameraverleih', 'Loueur', 'Noleggio', 'Verleih', 'Location', 'Rental House'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: [
       'Prep Days',

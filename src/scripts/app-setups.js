@@ -4003,7 +4003,7 @@ let ownGearNameCache = null;
 function getGearProviderTexts() {
   const textsForDialog = getGearItemEditTexts();
   return {
-    rental: textsForDialog.providerRental || 'Rental house',
+    rental: textsForDialog.providerRental || 'Rental',
     user: textsForDialog.providerUser || 'User',
     crewHeading: textsForDialog.providerCrewHeading || 'Crew',
     unknown: textsForDialog.providerUnknown || 'Custom provider',
@@ -7980,9 +7980,9 @@ function resolveGearListCustomText(key, fallback, replacements) {
 }
 
 function getGearListRentalToggleTexts(options = {}) {
-  const excludeLabel = resolveGearListCustomText('gearListExcludeRentalToggle', 'Exclude for rental house');
-  const includeLabel = resolveGearListCustomText('gearListIncludeRentalToggle', 'Include for rental house');
-  const fallbackNote = resolveGearListCustomText('gearListRentalNote', 'Rental house handles this item');
+  const excludeLabel = resolveGearListCustomText('gearListExcludeRentalToggle', 'Exclude for rental');
+  const includeLabel = resolveGearListCustomText('gearListIncludeRentalToggle', 'Include for rental');
+  const fallbackNote = resolveGearListCustomText('gearListRentalNote', 'Rental handles this item');
   const noteLabel = resolveRentalProviderNoteLabel({
     fallback: fallbackNote,
     rentalHouse: options && options.rentalHouse ? options.rentalHouse : undefined,
@@ -7999,10 +7999,10 @@ function buildRentalToggleMarkup(dataName, labels) {
   const texts = labels || getGearListRentalToggleTexts();
   const offLabel = typeof texts.excludeLabel === 'string' && texts.excludeLabel.trim()
     ? texts.excludeLabel
-    : 'Exclude for rental house';
+    : 'Exclude for rental';
   const onLabel = typeof texts.includeLabel === 'string' && texts.includeLabel.trim()
     ? texts.includeLabel
-    : 'Include for rental house';
+    : 'Include for rental';
   const safeOff = escapeHtml(offLabel);
   const safeOn = escapeHtml(onLabel);
   const safeDataName = escapeHtml(dataName || '');
@@ -9705,7 +9705,7 @@ function getGearItemEditTexts() {
     extraPeriodHelp: langTexts.gearListEditExtraPeriodHelp || fallbackTexts.gearListEditExtraPeriodHelp || '',
     providerLabel: langTexts.gearListEditProviderLabel || fallbackTexts.gearListEditProviderLabel || 'Provided by',
     providerHelp: langTexts.gearListEditProviderHelp || fallbackTexts.gearListEditProviderHelp || '',
-    providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental house',
+    providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental',
     providerUser: langTexts.gearListProviderUser || fallbackTexts.gearListProviderUser || 'User',
     providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
@@ -9730,9 +9730,9 @@ function getGearItemEditTexts() {
       || fallbackTexts.gearListEditCameraLinkDefaultLabel
       || 'Camera %s',
     cameraLinkBadgeLabel: langTexts.gearListCameraLinkBadgeLabel || fallbackTexts.gearListCameraLinkBadgeLabel || 'Linked to camera',
-    rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
+    rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental',
     rentalNote: resolveRentalProviderNoteLabel({
-      fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
+      fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental handles this item',
     }),
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
@@ -12307,7 +12307,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     }
   });
   addRow('Lens Support', formatItems(lensSupportItems));
-  addRow('Matte box + filter', [filterSelectHtml, formatItems(filterSelections)].filter(Boolean).join('<br>'));
+  addRow('Matte box + filter', [filterSelectHtml, formatItems(filterSelections)].filter(Boolean).join(''));
   const motorItems = [];
   const clmSpareAdded = { clm3: false, clm4: false, clm5: false };
   selectedNames.motors.forEach(name => {
@@ -12921,7 +12921,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${quantityAttr}${labelAttr}${attributesAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`
     );
   });
-  addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('<br>') : '');
+  addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('') : '');
   addRow('Chargers', formatItems(chargersAcc));
   addRow('Monitoring', monitoringItems);
   ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');

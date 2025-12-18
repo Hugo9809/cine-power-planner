@@ -201,9 +201,9 @@
   const NUMBER_WORD_PATTERN =
     NUMBER_WORD_BASE.size > 0
       ? new RegExp(
-          `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
-          'g',
-        )
+        `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
+        'g',
+      )
       : null;
 
   function normalizeNumberWords(str) {
@@ -1002,8 +1002,10 @@
             best = 3;
             break;
           }
-          if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
+          if (entryToken.startsWith(token)) {
             best = Math.max(best, 2);
+          } else if (token.startsWith(entryToken)) {
+            best = Math.max(best, 1.5);
           } else if (entryToken.includes(token) || token.includes(entryToken)) {
             best = Math.max(best, 1);
           } else {
@@ -1470,15 +1472,15 @@
     const safeWarn = typeof MODULE_BASE.safeWarn === 'function'
       ? MODULE_BASE.safeWarn
       : function fallbackWarn(message, error) {
-          if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-            return;
-          }
-          if (typeof error === 'undefined') {
-            console.warn(message);
-          } else {
-            console.warn(message, error);
-          }
-        };
+        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+          return;
+        }
+        if (typeof error === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, error);
+        }
+      };
 
     const MODULE_API = Object.freeze({
       FEATURE_SEARCH_FUZZY_MAX_DISTANCE,

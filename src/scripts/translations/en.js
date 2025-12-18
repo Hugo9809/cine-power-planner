@@ -11,7 +11,7 @@
         "closeLabel": "Close Preview",
         "layoutModeTitle": "Layout Mode",
         "layoutRentalLabel": "Rental Friendly",
-        "layoutRentalDescription": "Optimizes layout for rental houses by grouping items by category.",
+        "layoutRentalDescription": "Optimizes layout for rental by grouping items by category.",
         "sectionsTitle": "Sections",
         "sectionProject": "Project Requirements",
         "sectionDevices": "Device List",
@@ -277,7 +277,7 @@
         },
         "gearList": {
           "title": "Gear List",
-          "content": "Generate a comprehensive **Gear List** based on your configured devices. You can customize this list, add your own items, and export it for rental houses or crew."
+          "content": "Generate a comprehensive **Gear List** based on your configured devices. You can customize this list, add your own items, and export it for rental or crew."
         },
         "contacts": {
           "title": "Contacts",
@@ -1371,7 +1371,7 @@
         "productionCompanyPostalCodePlaceholder": "90001",
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
-        "rentalHouse": "Rental House:",
+        "rentalHouse": "Rental:",
         "crewHeading": "Crew",
         "prepLabel": "Prep Days:",
         "shootLabel": "Shooting Days:",
@@ -1494,7 +1494,7 @@
         "productionCompanyPostalCodePlaceholder": "90001",
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
-        "rentalHouse": "Rental House",
+        "rentalHouse": "Rental",
         "crew": "Crew",
         "prepDays": "Prep Days",
         "shootingDays": "Shooting Days",
@@ -1574,12 +1574,12 @@
       "gearListCartSelectorLabel": "Camera cart",
       "gearListCartConfigurationLabel": "Cart configuration",
       "gearListCartAccessoriesLabel": "Cart accessories",
-      "gearListExcludeRentalToggle": "Exclude for rental house",
-      "gearListIncludeRentalToggle": "Include for rental house",
-      "gearListRentalNote": "Rental house handles this item",
+      "gearListExcludeRentalToggle": "Exclude for rental",
+      "gearListIncludeRentalToggle": "Include for rental",
+      "gearListRentalNote": "Rental handles this item",
       "gearListEditProviderLabel": "Provided by",
-      "gearListEditProviderHelp": "Select who provides this item. Rental house stays the default unless the item is in your own gear list.",
-      "gearListProviderRental": "Rental house",
+      "gearListEditProviderHelp": "Select who provides this item. Rental stays the default unless the item is in your own gear list.",
+      "gearListProviderRental": "Rental",
       "gearListProviderUser": "User",
       "gearListProviderCrewHeading": "Crew",
       "gearListProviderUnknown": "Custom provider",
@@ -1609,7 +1609,7 @@
       "gearListExtraIndicatorOpen": "Temporary extra from %s",
       "gearListExtraIndicatorEnd": "Temporary extra until %s",
       "gearListExtraIndicatorNoPeriod": "Temporary extra",
-      "gearListEditRentalLabel": "Exclude from rental house",
+      "gearListEditRentalLabel": "Exclude from rental",
       "gearListEditSave": "Save",
       "gearListEditCancel": "Cancel",
       "gearListEditButton": "Edit gear item",
@@ -1661,7 +1661,7 @@
       "backToAppBtn": "Back to App",
       "printBtn": "Print",
       "exportPdfBtn": "Export PDF / Print",
-      "exportRentalPdfBtn": "Export PDF for Rental House",
+      "exportRentalPdfBtn": "Export PDF for Rental",
       "rentalPrintDialogTitle": "Export PDF / Print",
       "rentalPrintDialogDescription": "Choose what to include before exporting or printing.",
       "rentalPrintDialogSectionsLabel": "Sections to include",
@@ -1779,7 +1779,7 @@
                 {
                   "icon": "",
                   "title": "Project requirements ready to hand off",
-                  "body": "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on."
+                  "body": "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental, and production rely on."
                 },
                 {
                   "icon": "",

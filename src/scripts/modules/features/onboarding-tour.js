@@ -806,7 +806,7 @@
             icon: '\uE7AB',
             title: 'Project requirements ready to hand off',
             body:
-              'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.',
+              'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental, and production rely on.',
           },
         ],
         languageLabel: 'Choose your language',

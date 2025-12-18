@@ -16846,7 +16846,17 @@ if (helpButton && helpDialog) {
 
     const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    const featureOnlyMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    const actionMatch = findBestSearchMatch(actionMap, cleanKey, cleanTokens);
+    const featureMatch = (() => {
+      if (filterType === 'feature') return featureOnlyMatch;
+      if (filterType === 'action') return actionMatch;
+      if (!actionMatch) return featureOnlyMatch;
+      if (!featureOnlyMatch) return actionMatch;
+      if (actionMatch.score > featureOnlyMatch.score) return actionMatch;
+      if (featureOnlyMatch.score > actionMatch.score) return featureOnlyMatch;
+      return actionMatch;
+    })();
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
     const strongSearchMatchTypes =
@@ -19920,6 +19930,7 @@ if (typeof module !== "undefined" && module.exports) {
     },
     __featureSearchInternals: {
       featureMap,
+      actionMap,
       deviceMap,
       helpMap,
       featureSearchEntries,
