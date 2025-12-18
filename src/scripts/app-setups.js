@@ -11671,6 +11671,24 @@ function gearListGenerateHtmlImpl(info = {}) {
   delete projectInfo.viewfinderSettings;
   delete projectInfo.frameGuides;
   delete projectInfo.aspectMaskOpacity;
+  if (info.filter) {
+    const tokens = parseFilterTokens(info.filter);
+    if (tokens.length) {
+      const parts = tokens.map(t => {
+        const sizeStr = t.size && t.size !== '4x5.65' ? ` (${escapeHtml(t.size)})` : '';
+        const valsStr = t.values && t.values.length ? `: ${escapeHtml(t.values.join(', '))}` : '';
+        return `<span class="filter-req-token">${escapeHtml(t.type)}${sizeStr}${valsStr}</span>`;
+      });
+      projectInfo.filter = {
+        __html: parts.join('<br>'),
+        text: tokens.map(t => {
+          const sizeStr = t.size && t.size !== '4x5.65' ? ` (${t.size})` : '';
+          const valsStr = t.values && t.values.length ? `: ${t.values.join(', ')}` : '';
+          return `${t.type}${sizeStr}${valsStr}`;
+        }).join('\n')
+      };
+    }
+  }
   const projectTitleSource = safeGetCurrentProjectName(info.projectName || '') || info.projectName || '';
   const projectTitle = escapeHtml(projectTitleSource);
   const excludedFields = new Set([
@@ -11690,7 +11708,6 @@ function gearListGenerateHtmlImpl(info = {}) {
     'viewfinderSettings',
     'frameGuides',
     'aspectMaskOpacity',
-    'filter',
     'viewfinderEyeLeatherColor',
     'directorMonitor',
     'dopMonitor',
@@ -12059,13 +12076,17 @@ function gearListGenerateHtmlImpl(info = {}) {
         .map(m => {
           const type = m && m.type ? m.type : '';
           if (!type) return '';
+          const brand = m && m.brand ? m.brand.trim() : '';
           let size = '';
           if (m.notes) {
             const match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
             if (match) size = match[1].toUpperCase();
           }
           if (!size) size = sizeMap[type] || '512GB';
-          return `4x ${escapeHtml(size)} ${escapeHtml(type)}<br>2x ${escapeHtml(type)} reader with USB-C`;
+
+          const brandPrefix = brand ? `${escapeHtml(brand)} ` : '';
+          const description = `${brandPrefix}${escapeHtml(size)} ${escapeHtml(type)}`;
+          return `4x ${description}<br>2x ${escapeHtml(type)} reader with USB-C`;
         })
         .filter(Boolean)
         .join('<br>');
@@ -14352,9 +14373,6 @@ function saveCurrentGearList() {
       projectInfo: projectInfoSnapshot,
       gearListAndProjectRequirementsGenerated: gearListGenerated
     };
-    if (normalizedHtml) {
-      payload.gearList = normalizedHtml;
-    }
     if (powerSelectionSnapshot) {
       payload.powerSelection = powerSelectionSnapshot;
     }
@@ -14386,17 +14404,6 @@ function saveCurrentGearList() {
 
   const setup = existing || {};
   let changed = false;
-
-  const existingGearList = typeof setup.gearList === 'string' ? setup.gearList : '';
-  if (normalizedHtml) {
-    if (existingGearList !== normalizedHtml) {
-      setup.gearList = normalizedHtml;
-      changed = true;
-    }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
-    delete setup.gearList;
-    changed = true;
-  }
 
   if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
     setup.gearListAndProjectRequirementsGenerated = gearListGenerated;

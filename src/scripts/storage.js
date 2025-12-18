@@ -14709,7 +14709,7 @@
     const exactKeys = [
       'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing',
       'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language',
-      'iosPwaHelpShown', 'debugMode'
+      'iosPwaHelpShown', 'debugMode', 'customLogo'
     ];
 
     const clearStorageAggressively = (storage, storageName) => {
@@ -14843,6 +14843,16 @@
       }
     } catch (loggingError) {
       console.warn('Unable to clear logging history during factory reset', loggingError);
+    }
+
+    // Explicitly wipe window.name to reset onboarding tour skip flags and other
+    // session-specific transient state that might persist across reloads.
+    try {
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.name === 'string') {
+        GLOBAL_SCOPE.name = '';
+      }
+    } catch (windowNameError) {
+      console.warn('Unable to reset window.name during factory reset', windowNameError);
     }
   }
 

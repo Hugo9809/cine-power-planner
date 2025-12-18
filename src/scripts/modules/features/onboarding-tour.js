@@ -919,7 +919,7 @@
     projectRequirementsAccess: {
       title: 'Open Project Requirements from Generate',
       body:
-        'Close the Own Gear dialog with its footer button, then press Generate Gear List and Project Requirements to open the requirements form yourself. This keeps the workflow clear and confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.',
+        'Press Generate Gear List and Project Requirements to open the requirements form. This confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.',
     },
     projectRequirementsBrief: {
       title: 'Capture the project brief',
@@ -2646,8 +2646,7 @@
       },
       {
         key: 'projectRequirementsAccess',
-        highlight: ['#ownGearCloseButton', '#generateGearListBtn'],
-        ensureOwnGear: true,
+        highlight: '#generateGearListBtn',
       },
       {
         key: 'projectRequirementsBrief',
@@ -3004,6 +3003,22 @@
 
     if (step.key === 'editDeviceDataAdd') {
       activeStepAutomationCleanup = attachDeviceManagerNameAutofill();
+    } else if (step.key === 'projectRequirementsAccess') {
+      if (!ownGearDialogRef) {
+        ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+      }
+      if (ownGearDialogRef) {
+        if (typeof ownGearDialogRef.close === 'function') {
+          try {
+            ownGearDialogRef.close();
+          } catch (error) {
+            void error;
+          }
+        }
+        ownGearDialogRef.setAttribute('hidden', '');
+        ownGearDialogRef.removeAttribute('open');
+      }
+      autoOpenedOwnGear = false;
     }
   }
 

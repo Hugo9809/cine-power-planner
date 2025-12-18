@@ -13897,22 +13897,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           projectRequirementsOutput.classList.remove('hidden');
           const requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
           requirementBoxes.forEach(box => {
-            const label = box.querySelector('.req-label')?.textContent || '';
-            const value = box.querySelector('.req-value')?.textContent || '';
-            const field = box.getAttribute('data-field') || '';
-            const baseDesc = value ? `${label}: ${value}` : label;
-            const logic = describeRequirement(field, value);
-            const desc = logic ? `${baseDesc} – ${logic}` : baseDesc;
-
-            if (desc && desc.trim()) {
-              box.setAttribute('title', desc);
-              box.setAttribute('data-help', desc);
-              box.setAttribute('aria-label', desc);
-            } else {
-              box.removeAttribute('title');
-              box.removeAttribute('data-help');
-              box.removeAttribute('aria-label');
-            }
+            // Popup/Tooltip removal as per user request to prevent blocking buttons
+            box.removeAttribute('title');
+            box.removeAttribute('data-help');
 
             if (!box.hasAttribute('tabindex')) {
               box.setAttribute('tabindex', '0');
@@ -13923,13 +13910,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
             box.addEventListener('keydown', handleRequirementBoxKeydown);
             box.querySelectorAll('.req-label, .req-value').forEach(el => {
-              if (desc && desc.trim()) {
-                el.setAttribute('title', desc);
-                el.setAttribute('data-help', desc);
-              } else {
-                el.removeAttribute('title');
-                el.removeAttribute('data-help');
-              }
+              el.removeAttribute('title');
+              el.removeAttribute('data-help');
             });
           });
           adjustGearListSelectWidths(projectRequirementsOutput);
@@ -15871,7 +15853,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     // Build a row allowing the user to specify recording media details.
-    function createRecordingMediaRow(type = '', notes = '') {
+    function createRecordingMediaRow(type = '', notes = '', brand = '') {
       const row = document.createElement('div');
       row.className = 'form-row';
 
@@ -15898,9 +15880,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
 
+      const brandInput = document.createElement('input');
+      brandInput.type = 'text';
+      brandInput.placeholder = 'Brand';
+      brandInput.name = 'recordingMediaBrand';
+      brandInput.value = brand;
+      row.appendChild(createFieldWithLabel(brandInput, 'Brand'));
+
       const notesInput = document.createElement('input');
       notesInput.type = 'text';
-      notesInput.placeholder = 'Notes';
+      notesInput.placeholder = 'Notes (Size, Speed, etc.)';
       notesInput.name = 'recordingMediaNotes';
       notesInput.value = notes;
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
@@ -15937,8 +15926,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(item => {
-          const { type = '', notes = '' } = item || {};
-          cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
+          const { type = '', notes = '', brand = '' } = item || {};
+          cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes, brand));
         });
       } else {
         cameraMediaContainer.appendChild(createRecordingMediaRow());
@@ -15950,8 +15939,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
         .map(row => {
-          const [sel, notesInput] = row.querySelectorAll('select, input');
-          return { type: sel.value, notes: notesInput.value };
+          const [sel, brandInput, notesInput] = row.querySelectorAll('select, input');
+          return { type: sel.value, brand: brandInput.value, notes: notesInput.value };
         })
         .filter(m => m.type && m.type !== 'None');
     }
