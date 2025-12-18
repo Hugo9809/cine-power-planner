@@ -13912,6 +13912,12 @@ function initializeContactsModule() {
     closeDialog(contactsDialog);
   });
 
+  contactsDialog?.addEventListener('click', event => {
+    if (event.target === contactsDialog) {
+      closeDialog(contactsDialog);
+    }
+  });
+
   openContactsBtn?.addEventListener('click', event => {
     event.preventDefault();
     openDialog(contactsDialog);

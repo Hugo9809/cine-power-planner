@@ -434,7 +434,7 @@
         const viewportH = windowObj ? windowObj.innerHeight : (document.documentElement.clientHeight || 0);
         const rect = surface.getBoundingClientRect();
 
-        const GAP = 15;
+        const GAP = 5;
         const SCREEN_MARGIN = 20;
 
         // Try bottom-right
@@ -1596,10 +1596,7 @@
       };
 
       const onNodeTouchEnd = e => {
-        // Prevent popup from triggering from the Project Requirements section
-        if (e.target && e.target.closest && e.target.closest('#projectRequirementsOutput')) {
-          return;
-        }
+
 
         const node = e.target.closest('.diagram-node');
         if (!node) {
@@ -1707,8 +1704,8 @@
 
         if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
           // Position next to the mouse cursor
-          left = pointer.x + 15;
-          top = pointer.y + 15;
+          left = pointer.x + 5;
+          top = pointer.y + 5;
 
           // Keep within viewport bounds
           if (viewportWidth) {
@@ -1826,11 +1823,7 @@
       };
 
       const onNodeOver = e => {
-        // Prevent popup from triggering when hovering over the Project Requirements section
-        // This fixes an issue where the popup would appear empty over this section
-        if (e.target && e.target.closest && (e.target.closest('#projectRequirementsOutput') || e.target.closest('#batteryComparison'))) {
-          return;
-        }
+
 
         updatePointerPosition(e);
         const node = e.target.closest('.diagram-node');
@@ -1848,6 +1841,8 @@
       };
 
       const onNodeMove = e => {
+
+
         updatePointerPosition(e);
         if (!activePopupNode) return;
         if (popup && popup.classList.contains('diagram-popup--notice')) {
@@ -1909,10 +1904,7 @@
       };
 
       const onNodeDoubleClick = e => {
-        // Prevent interactions from the Project Requirements section
-        if (e.target && e.target.closest && (e.target.closest('#projectRequirementsOutput') || e.target.closest('#batteryComparison'))) {
-          return;
-        }
+
 
         const node = e.target.closest('.diagram-node');
         if (!node) return;

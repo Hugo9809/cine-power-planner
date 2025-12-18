@@ -9684,6 +9684,10 @@ body.light-mode #topBar select:focus-visible {
   display: inline-block;
 }
 
+#diagramArea {
+  overflow: hidden;
+}
+
 #diagramArea>* {
   flex: 0 0 auto;
 }
@@ -9865,7 +9869,7 @@ body.light-mode #topBar select:focus-visible {
   z-index: 10;
   --diagram-popup-columns: 1;
   --diagram-popup-min-column-width: 180px;
-  width: min(var(--diagram-popup-dynamic-width, 400px), calc(100vw - clamp(2rem, 4vw, 3rem)));
+  width: fit-content;
   max-width: min(var(--diagram-popup-dynamic-width, 400px), calc(100vw - clamp(2rem, 4vw, 3rem)));
   max-height: min(92vh, calc(100vh - clamp(2rem, 4vw, 3rem)));
   overflow: auto;
@@ -9991,7 +9995,7 @@ body.light-mode #topBar select:focus-visible {
 
 .diagram-popup[class*="diagram-popup--"] {
   --diagram-popup-dynamic-width: 520px;
-  width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
+  width: fit-content;
   max-width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
 }
 
@@ -10080,8 +10084,9 @@ body.light-mode #topBar select:focus-visible {
 
 
 .diagram-detail-dialog__surface {
-  padding: clamp(16px, 4vw, 24px);
-  width: min(640px, calc(100vw - 32px));
+  padding: clamp(12px, 2vw, 16px);
+  width: fit-content;
+  min-width: 280px;
   max-width: min(720px, calc(100vw - 32px));
   display: flex;
   flex-direction: column;
@@ -10104,14 +10109,16 @@ body.light-mode #topBar select:focus-visible {
 .diagram-detail-dialog__content .diagram-popup {
   position: static;
   display: block;
-  margin: 0 auto;
-  width: min(var(--diagram-popup-dynamic-width, 440px), 100%);
-  max-width: min(var(--diagram-popup-dynamic-width, 440px), 100%);
+  margin: 0;
+  width: fit-content;
+  min-width: 260px;
+  max-width: 100%;
 }
 
 .diagram-detail-dialog__content .diagram-popup--camera {
-  width: min(var(--diagram-popup-dynamic-width, 560px), 100%);
-  max-width: min(var(--diagram-popup-dynamic-width, 560px), 100%);
+  width: fit-content;
+  min-width: 320px;
+  max-width: 100%;
 }
 
 .diagram-detail-dialog__content .diagram-popup__layout {
@@ -12282,12 +12289,22 @@ body.dark-mode .requirement-box,
 }
 
 #gearListOutput .gear-table select {
-  padding-block: 0;
-  padding-inline: 0.25rem;
-  height: 1.25rem;
-  font-size: 0.85rem;
-  line-height: 1;
-  vertical-align: middle;
+  padding-block: 0 !important;
+  padding-inline: 0.25rem !important;
+  height: 1.25rem !important;
+  min-height: 1.25rem !important;
+  font-size: 0.85rem !important;
+  line-height: normal !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
+#gearListOutput .gear-item-text {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  line-height: normal !important;
 }
 
 #gearListOutput .category-group tr:last-child:not(:has(.gear-item)):not(:has(.gear-custom-item)):not(:has(select)) {
@@ -13154,9 +13171,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
   }
 
   #gearListOutput table,
-  #projectRequirementsOutput table,
-  #gearListOutput select,
-  #projectRequirementsOutput select {
+  #projectRequirementsOutput table {
     width: 100%;
     max-width: 100%;
   }

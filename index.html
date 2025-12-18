@@ -326,7 +326,7 @@
         <select id="batteryPlateSelect" aria-labelledby="batteryPlateLabel"></select>
       </div>
 
-      <div class="form-row">
+      <div class="form-row" id="batterySelectRow">
         <label for="batterySelect" id="batteryLabel">Battery:</label>
         <div class="select-wrapper">
           <select id="batterySelect" aria-labelledby="batteryLabel"></select>
@@ -347,7 +347,7 @@
 
       <!-- Hero Section -->
       <div id="heroCard" class="power-hero hidden">
-        <div class="hero-main-stat">
+        <div class="hero-main-stat" id="heroMainStat">
           <div class="power-draw-container">
             <span id="heroTotalDraw" class="hero-power-value">0 W</span>
             <span class="hero-power-divider">/</span>
@@ -361,11 +361,11 @@
             <span class="metric-label">Runtime</span>
             <span id="heroRuntime" class="metric-value">--</span>
           </div>
-          <div class="metric">
+          <div class="metric" id="metricCurrent144">
             <span class="metric-label">Current (14.4V)</span>
             <span id="heroCurrent144" class="metric-value">0.00 A</span>
           </div>
-          <div class="metric">
+          <div class="metric" id="metricCurrent12">
             <span class="metric-label">Current (12V)</span>
             <span id="heroCurrent12" class="metric-value">0.00 A</span>
           </div>

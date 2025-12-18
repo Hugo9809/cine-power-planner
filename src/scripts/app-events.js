@@ -4476,6 +4476,22 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
+
+    // Check if the category actually uses wattage
+    const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
+      ? getSchemaAttributesForCategory(categoryKey)
+      : [];
+    const hasWattage = schemaAttrs.includes('powerDrawWatts') || (deviceData && deviceData.powerDrawWatts !== undefined);
+
+    if (wattFieldDiv) {
+      wattFieldDiv.style.display = hasWattage ? "" : "none";
+    }
+
+    const hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA') || (deviceData && (deviceData.dtapA !== undefined || deviceData.pinA !== undefined));
+    if (dtapRow) {
+      dtapRow.style.display = hasDtap ? "" : "none";
+    }
+
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   }
 }
@@ -4674,6 +4690,21 @@ if (newCategorySelectElement) {
         );
       }
     } else {
+      // Check if the category uses wattage (e.g. for cages it should be hidden)
+      const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
+        ? getSchemaAttributesForCategory(val)
+        : [];
+      const hasWattage = schemaAttrs.includes('powerDrawWatts');
+
+      if (wattFieldDiv) {
+        wattFieldDiv.style.display = hasWattage ? "" : "none";
+      }
+
+      const hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA');
+      if (dtapRow) {
+        dtapRow.style.display = hasDtap ? "" : "none";
+      }
+
       buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
     }
     newWattInput.value = "";

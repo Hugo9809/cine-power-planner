@@ -2564,14 +2564,14 @@
       },
       {
         key: 'selectBattery',
-        highlight: '#batterySelect',
+        highlight: '#batterySelectRow',
       },
       {
         key: 'resultsTotalDraw',
         highlight: [
-          '#resultsTotalPowerRow',
-          '#resultsTotalCurrent144Row',
-          '#resultsTotalCurrent12Row',
+          '#heroMainStat',
+          '#metricCurrent144',
+          '#metricCurrent12',
         ],
       },
       {
@@ -2629,6 +2629,7 @@
         highlight: '#deviceListContainer',
         focus: '#deviceListContainer .edit-btn',
         ensureDeviceManager: true,
+        scrollToTop: true,
       },
       {
         key: 'ownGearAccess',
@@ -5649,6 +5650,7 @@
     const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    const avatarInput = DOCUMENT.getElementById('userProfileAvatarInput');
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
@@ -5758,6 +5760,27 @@
       }
     };
 
+    const readAvatarFile = (typeof GLOBAL_SCOPE.readAvatarFile === 'function')
+      ? GLOBAL_SCOPE.readAvatarFile
+      : (typeof GLOBAL_SCOPE.localReadAvatarFile === 'function' ? GLOBAL_SCOPE.localReadAvatarFile : null);
+
+    const setAvatar = (typeof GLOBAL_SCOPE.setAvatar === 'function')
+      ? GLOBAL_SCOPE.setAvatar
+      : (dataUrl) => {
+        if (typeof GLOBAL_SCOPE.assignUserProfileState === 'function') {
+          // Preserve existing name if possible
+          let currentName = '';
+          if (typeof GLOBAL_SCOPE.getUserProfileSnapshot === 'function') {
+            const snap = GLOBAL_SCOPE.getUserProfileSnapshot();
+            if (snap && snap.name) currentName = snap.name;
+          }
+          GLOBAL_SCOPE.assignUserProfileState({ avatar: dataUrl, name: currentName });
+          if (typeof GLOBAL_SCOPE.persistUserProfileState === 'function') {
+            GLOBAL_SCOPE.persistUserProfileState();
+          }
+        }
+      };
+
     if (avatarButton) {
       avatarButton.addEventListener('click', updateAvatarPreview);
       registerCleanup(() => {
@@ -5856,6 +5879,16 @@
     avatarAction.textContent = resolveAvatarActionLabel(false);
 
     const handleAvatarActionClick = () => {
+      // Priority: Try clicking the input directly, as the button might be hidden/unclickable
+      if (avatarInput && typeof avatarInput.click === 'function') {
+        try {
+          avatarInput.click();
+          return;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not trigger avatar input.', error);
+        }
+      }
+
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {
           avatarButton.click();
@@ -7496,7 +7529,13 @@
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
     const focusTarget = findUsableElement(focusCandidates);
-    if (
+    if (step.scrollToTop && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.scrollTo === 'function') {
+      try {
+        GLOBAL_SCOPE.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll to top.', error);
+      }
+    } else if (
       focusTarget
       && isHighlightElementUsable(focusTarget)
       && typeof focusTarget.scrollIntoView === 'function'
