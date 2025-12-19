@@ -1869,7 +1869,14 @@
       return;
     }
 
-    logHistory.push(entry);
+    try {
+      logHistory.push(entry);
+    } catch (pushError) {
+      // If the history array is somehow frozen or non-extensible, we silently drop the entry
+      // to avoid crashing the entire application.
+      void pushError;
+      return;
+    }
     applyLevelCounterDelta(retainedLevelCounters, entry.level, 1);
   }
 

@@ -4791,9 +4791,19 @@ function setSelectValue(select, value) {
   if (value === undefined) return;
   const normalized = value === null ? '' : value;
   select.value = normalized;
+
   if (select.value !== normalized) {
+    if (normalized !== '') {
+      select.dataset.pendingValue = normalized;
+    } else {
+      if (select.dataset.pendingValue) {
+        delete select.dataset.pendingValue;
+      }
+    }
+
     const options = Array.from(select.options || []);
     const noneOption = options.find(opt => opt.value === 'None');
+
     if (normalized === '' && !options.length) {
       select.value = '';
     } else if (normalized === '') {
@@ -4807,7 +4817,12 @@ function setSelectValue(select, value) {
     } else {
       select.selectedIndex = -1;
     }
+  } else {
+    if (select.dataset.pendingValue) {
+      delete select.dataset.pendingValue;
+    }
   }
+
   if (typeof updateFavoriteButton === 'function') {
     updateFavoriteButton(select);
   } else if (typeof enqueueCoreBootTask === 'function') {

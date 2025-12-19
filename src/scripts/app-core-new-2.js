@@ -17171,8 +17171,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // Populate dropdowns with device options
     function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
       if (!selectElem) return;
-      const previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
-      const hadSelection = selectElem.selectedIndex !== -1;
+      let previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
+      let hadSelection = selectElem.selectedIndex !== -1;
+
+      if (selectElem.dataset && selectElem.dataset.pendingValue) {
+        previousValue = selectElem.dataset.pendingValue;
+        hadSelection = true;
+      }
 
       // Ensure we always work with an object so Object.keys does not throw if
       // `optionsObj` is passed as `null`.
