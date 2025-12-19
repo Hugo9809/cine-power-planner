@@ -15047,10 +15047,10 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
 
   if (maxPowerTextElem) {
     // We can keep this or remove it since it's redundant with Hero
-    // User said "Remove redundent text from outside of the hero section".
+    // User said "Remove redundant text from outside of the hero section".
     // But "available power" might be useful context for the diagram.
     // Let's keep it minimal or remove if it duplicates the "140 W / 240 W" in Hero.
-    // The prompt said "Add the available power metric to the total power draw... Remove redundent text".
+    // The prompt said "Add the available power metric to the total power draw... Remove redundant text".
     // So likely we don't need it here anymore.
     maxPowerTextElem.textContent = "";
   }
@@ -20698,7 +20698,6 @@ if (typeof globalThis !== 'undefined') {
   globalThis.encodeSharedSetup = encodeSharedSetup;
   globalThis.decodeSharedSetup = decodeSharedSetup;
 }
-
 
 
 
