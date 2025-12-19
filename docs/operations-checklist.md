@@ -30,7 +30,7 @@ restore workflows protect every bit of user data.
    - [ ] Open **Settings → Data & Storage** and review the **Latest activity** timeline for stale saves, autosaves or backups.
    - [ ] Check the **Backup guardian** row; investigate any “waiting for first save” or issue count before continuing.【F:src/scripts/app-core-new-2.js†L8640-L8740】【F:src/scripts/storage.js†L2800-L2995】
    - [ ] If a banner appears stating **"1 backup saved in the local vault."** or **"{count} backups saved in the local vault."** beside the **Open local backup vault** action, open the vault and download every queued archive before moving on.
-   - [ ] Rehearse **Settings → Data & Storage → Open local backup vault** to export any deferred backups and confirm the banner clears before marking this step complete.
+   - [ ] Rehearse **Settings → Backup & Restore → Open local backup vault** (or use the banner action) to export any deferred backups and confirm the banner clears before marking this step complete.
 5. **Planner backup**
    - [ ] Navigate to **Settings → Backup & Restore → Backup**.
    - [ ] Save `planner-backup.json` to two physical media; record checksums.
