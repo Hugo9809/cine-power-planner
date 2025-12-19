@@ -414,26 +414,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function closeDetailDialog() {
       ensureDetailDialogElements();
       if (!detailDialog) return;
-      detailDialog.removeAttribute('open');
-      if (typeof detailDialog.close === 'function') {
-        if (detailDialog.open) {
-          detailDialog.close();
-        }
+
+      if (typeof detailDialog.close === 'function' && detailDialog.open) {
+        detailDialog.close();
       } else {
+        detailDialog.removeAttribute('open');
         if (detailDialogContent) {
           detailDialogContent.innerHTML = '';
         }
         detailDialog.removeAttribute('aria-labelledby');
         detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialog.classList.remove('diagram-detail-dialog--camera');
-        var surface = detailDialog.querySelector('.modal-surface');
-        if (surface) {
-          surface.style.position = '';
-          surface.style.margin = '';
-          surface.style.left = '';
-          surface.style.top = '';
-          surface.style.visibility = '';
-        }
+      }
+
+      var surface = detailDialog.querySelector('.modal-surface');
+      if (surface) {
+        surface.style.position = '';
+        surface.style.margin = '';
+        surface.style.left = '';
+        surface.style.top = '';
+        surface.style.visibility = '';
       }
     }
     function openDetailDialogWithEntry(entry) {
@@ -1164,8 +1164,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var b = chain[i + 1];
         var fromName = null;
         var toName = null;
-        if (a.startsWith('controller')) fromName = controllerNameMap.get(a);else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
-        if (b.startsWith('controller')) toName = controllerNameMap.get(b);else if (b.startsWith('motor')) toName = motorNameMap.get(b);
+        if (a.startsWith('controller')) fromName = controllerNameMap.get(a); else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
+        if (b.startsWith('controller')) toName = controllerNameMap.get(b); else if (b.startsWith('motor')) toName = motorNameMap.get(b);
         pushEdge({
           from: a,
           to: b,
@@ -1335,7 +1335,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           } else if (id.startsWith('controller')) {
             var _nodeMap$id;
             var _name = (((_nodeMap$id = nodeMap[id]) === null || _nodeMap$id === void 0 ? void 0 : _nodeMap$id.name) || '').toLowerCase();
-            if (/handle|grip/.test(_name)) icon = diagramIcons.handle;else icon = diagramIcons.controllers;
+            if (/handle|grip/.test(_name)) icon = diagramIcons.handle; else icon = diagramIcons.controllers;
           } else if (id === 'distance') {
             icon = diagramIcons.distance;
           }
@@ -1381,8 +1381,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       edges.forEach(function (edge) {
         var lines = edge.label ? wrapLabel(edge.label, EDGE_LABEL_WRAP) : [];
         var _computePath = computePath(edge.from, edge.to, edge.labelSpacing, _objectSpread(_objectSpread({}, edge), {}, {
-            labelLineCount: lines.length
-          })),
+          labelLineCount: lines.length
+        })),
           path = _computePath.path,
           labelX = _computePath.labelX,
           labelY = _computePath.labelY,
@@ -1634,7 +1634,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           apply();
           manualPositions = {};
           renderSetupDiagram();
-          if (scheduleProjectAutoSave) scheduleProjectAutoSave();else if (saveCurrentSession) saveCurrentSession();
+          if (scheduleProjectAutoSave) scheduleProjectAutoSave(); else if (saveCurrentSession) saveCurrentSession();
           if (checkSetupChanged) checkSetupChanged();
         };
       }
@@ -1794,7 +1794,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         dragActive = false;
         dragMovedDuringInteraction = false;
         renderSetupDiagram();
-        if (scheduleProjectAutoSave) scheduleProjectAutoSave();else if (saveCurrentSession) saveCurrentSession();
+        if (scheduleProjectAutoSave) scheduleProjectAutoSave(); else if (saveCurrentSession) saveCurrentSession();
         if (checkSetupChanged) checkSetupChanged();
         if (e.touches) e.preventDefault();
       };

@@ -10093,6 +10093,11 @@ body.light-mode #topBar select:focus-visible {
   flex-direction: column;
 }
 
+.diagram-detail-dialog__surface:has(.diagram-detail-dialog__content:empty) {
+  display: none;
+  visibility: hidden;
+}
+
 @supports (width: 100dvw) {
   .diagram-detail-dialog__surface {
     width: min(640px, calc(100dvw - 32px));

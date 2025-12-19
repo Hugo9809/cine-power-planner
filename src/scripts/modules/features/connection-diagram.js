@@ -345,27 +345,26 @@
     function closeDetailDialog() {
       ensureDetailDialogElements();
       if (!detailDialog) return;
-      detailDialog.removeAttribute('open');
-      if (typeof detailDialog.close === 'function') {
-        if (detailDialog.open) {
-          detailDialog.close();
-        }
+
+      if (typeof detailDialog.close === 'function' && detailDialog.open) {
+        detailDialog.close();
       } else {
+        detailDialog.removeAttribute('open');
         if (detailDialogContent) {
           detailDialogContent.innerHTML = '';
         }
         detailDialog.removeAttribute('aria-labelledby');
         detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialog.classList.remove('diagram-detail-dialog--camera');
+      }
 
-        const surface = detailDialog.querySelector('.modal-surface');
-        if (surface) {
-          surface.style.position = '';
-          surface.style.margin = '';
-          surface.style.left = '';
-          surface.style.top = '';
-          surface.style.visibility = '';
-        }
+      const surface = detailDialog.querySelector('.modal-surface');
+      if (surface) {
+        surface.style.position = '';
+        surface.style.margin = '';
+        surface.style.left = '';
+        surface.style.top = '';
+        surface.style.visibility = '';
       }
     }
 
