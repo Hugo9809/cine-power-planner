@@ -14703,7 +14703,8 @@
       'cineBackupVault',
       'cineRental',
       'cine',
-      '__cine'
+      '__cine',
+      '__storage'
     ];
 
     const exactKeys = [
@@ -14774,6 +14775,11 @@
     deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
     deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
+    deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
+    deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
+    deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
+    deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
+    deleteFromStorage(safeStorage, STORAGE_TEST_KEY, msg);
     deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
 
     if (typeof sessionStorage !== 'undefined') {
@@ -14853,6 +14859,29 @@
       }
     } catch (windowNameError) {
       console.warn('Unable to reset window.name during factory reset', windowNameError);
+    }
+
+    // Unregister Service Workers and clear Cache API for a total factory state.
+    try {
+      if (typeof navigator !== 'undefined' \u0026\u0026 navigator.serviceWorker) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
+    } catch (swError) {
+      console.warn('Failed to unregister service workers', swError);
+    }
+
+    try {
+      if (typeof caches !== 'undefined' \u0026\u0026 typeof caches.keys === 'function') {
+        const cacheKeys = await caches.keys();
+        for (const cacheKey of cacheKeys) {
+          await caches.delete(cacheKey);
+        }
+      }
+    } catch (cacheError) {
+      console.warn('Failed to clear cache storage', cacheError);
     }
   }
 

@@ -13078,8 +13078,11 @@ body.dark-mode.pink-mode #gearListOutput h2,
   color: var(--control-text);
   font-weight: var(--font-weight-medium);
   justify-content: flex-start;
-  padding-inline: calc(var(--button-padding-inline) * 0.9);
+  padding-inline: var(--button-padding-inline);
   min-width: 0;
+  height: var(--select-height);
+  display: inline-flex;
+  align-items: center;
 }
 
 #gearListActions .gear-list-action-btn .btn-icon {

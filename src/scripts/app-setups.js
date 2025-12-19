@@ -8095,6 +8095,59 @@ const CUSTOM_CATEGORY_SUGGESTION_SOURCES = {
   consumables: []
 };
 
+function applyGearItemNotesState(state) {
+  if (!gearListOutput) return;
+  const normalizedState = state && typeof state === 'object' ? state : {};
+  const spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
+  spans.forEach(span => {
+    const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
+    if (!name) return;
+    const note = normalizedState[name];
+    if (note !== undefined) {
+      span.setAttribute('data-gear-note', note);
+      if (typeof updateGearItemNoteElement === 'function') {
+        updateGearItemNoteElement(span, note);
+      }
+    }
+  });
+}
+
+function applyGearItemProvidersState(state) {
+  if (!gearListOutput) return;
+  const normalizedState = state && typeof state === 'object' ? state : {};
+  const spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
+  spans.forEach(span => {
+    const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
+    if (!name) return;
+    const providerInfo = normalizedState[name];
+    if (providerInfo && typeof providerInfo === 'object') {
+      if (typeof setGearItemProvider === 'function') {
+        setGearItemProvider(span, providerInfo.value, { label: providerInfo.label });
+      } else {
+        if (typeof providerInfo.value === 'string') span.setAttribute('data-gear-provider', providerInfo.value);
+        if (typeof providerInfo.label === 'string') span.setAttribute('data-gear-provider-label', providerInfo.label);
+      }
+    }
+  });
+}
+
+function applyGearItemOverridesState(state) {
+  if (!gearListOutput) return;
+  const normalizedState = state && typeof state === 'object' ? state : {};
+  const spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
+  spans.forEach(span => {
+    const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
+    if (!name) return;
+    const overrides = normalizedState[name];
+    if (overrides && typeof overrides === 'object') {
+      if (typeof applyGearItemData === 'function') {
+        applyGearItemData(span, overrides, { skipPreview: false });
+      }
+    }
+  });
+}
+
+
 function isSuggestionDeviceEntry(entry) {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
   return Object.values(entry).some(val => {
@@ -12662,7 +12715,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       : monitorsDb[defaultName] || monitorsDb[candidate] || null;
     const selectedSize = selectedMonitor?.screenSizeInches || '';
     const displayLabel = `${labelRole} Handheld Monitor`;
-    const sizeSpanHtml = `<span id="monitorSize${idSuffix}">${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;</span>`;
+    const sizeSpanHtml = `<span id="monitorSize${idSuffix}">(${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;)</span>`;
     const selectHtml = `<select id="gearList${idSuffix}Monitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
     const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     const attributeParts = [];
@@ -12741,7 +12794,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       ? dirDb[resolvedName].screenSizeInches
       : (dirDb[defaultName]?.screenSizeInches || dirDb[candidate]?.screenSizeInches || '');
     const displayLabel = `${role} Monitor`;
-    const sizeSpanHtml = `<span id="monitorSize${idSuffix}15">${escapeHtml(size ? String(size) : '')}&quot;</span>`;
+    const sizeSpanHtml = `<span id="monitorSize${idSuffix}15">(${escapeHtml(size ? String(size) : '')}&quot;)</span>`;
     const selectHtml = `<select id="gearList${idSuffix}Monitor15" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
     const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
     const attributeParts = [];
@@ -12819,7 +12872,7 @@ function gearListGenerateHtmlImpl(info = {}) {
       ? monitorsDb[resolvedName].screenSizeInches
       : (monitorsDb[defaultName]?.screenSizeInches || monitorsDb[candidate]?.screenSizeInches || '');
     const displayLabel = 'Focus Monitor';
-    const sizeSpanHtml = `<span id="monitorSizeFocus">${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;</span>`;
+    const sizeSpanHtml = `<span id="monitorSizeFocus">(${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;)</span>`;
     const selectHtml = `<select id="gearListFocusMonitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
     const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     const attributeParts = [];
@@ -13739,16 +13792,42 @@ function getGearListSelectors() {
     selectors.__customItems = customState;
   }
   if (gearListElement) {
-    const rentalState = {};
+    const itemOverrides = {};
     gearListElement.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
       const name = getGearItemDisplayName(span) || span.getAttribute('data-gear-name');
       if (!name) return;
-      if (span.getAttribute('data-rental-excluded') === 'true') {
-        rentalState[name] = true;
+
+      const overrides = {};
+      let hasData = false;
+
+      const checkAndPut = (attr, key, isBool = false) => {
+        const val = span.getAttribute(attr);
+        if (val !== null && val !== undefined && val !== '') {
+          overrides[key] = isBool ? (val === 'true') : val;
+          hasData = true;
+        }
+      };
+
+      checkAndPut('data-gear-quantity', 'quantity');
+      checkAndPut('data-gear-label', 'name');
+      checkAndPut('data-gear-attributes', 'attributes');
+      checkAndPut('data-gear-note', 'note');
+      checkAndPut('data-rental-excluded', 'rentalExcluded', true);
+      checkAndPut('data-gear-provider', 'providedBy');
+      checkAndPut('data-gear-provider-label', 'providerLabel');
+      checkAndPut('data-gear-extra', 'extra', true);
+      checkAndPut('data-gear-extra-start', 'extraStart');
+      checkAndPut('data-gear-extra-end', 'extraEnd');
+      checkAndPut('data-gear-camera-link', 'cameraLink');
+      checkAndPut('data-gear-camera-link-label', 'cameraLinkLabel');
+
+      if (hasData) {
+        itemOverrides[name] = overrides;
       }
     });
-    if (Object.keys(rentalState).length) {
-      selectors.__rentalExclusions = rentalState;
+
+    if (Object.keys(itemOverrides).length > 0) {
+      selectors.__gearItemOverrides = itemOverrides;
     }
   }
   return selectors;
@@ -13817,11 +13896,20 @@ function applyGearListSelectors(selectors) {
   };
 
   Object.entries(selectors).forEach(([id, value]) => {
-    if (id === '__customItems' || id === '__rentalExclusions') return;
+    if (
+      id === '__customItems'
+      || id === '__rentalExclusions'
+      || id === '__gearItemNotes'
+      || id === '__gearItemProviders'
+      || id === '__gearItemOverrides'
+    ) return;
     setSelectValue(id, value);
   });
   applyCustomItemsState(selectors.__customItems || {});
   applyRentalExclusionsState(selectors.__rentalExclusions || {});
+  applyGearItemNotesState(selectors.__gearItemNotes || {});
+  applyGearItemProvidersState(selectors.__gearItemProviders || {});
+  applyGearItemOverridesState(selectors.__gearItemOverrides || {});
 }
 
 function convertCustomItemsForStaticOutput(root) {
@@ -15307,7 +15395,7 @@ function bindGearListDirectorMonitorListener() {
         const monitorInfo = devices && devices.monitors && devices.monitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}`);
         if (span && monitorInfo && monitorInfo.screenSizeInches) {
-          span.textContent = `${monitorInfo.screenSizeInches}"`;
+          span.textContent = `(${monitorInfo.screenSizeInches}")`;
         }
         sel.dataset.autoGearManual = 'true';
         markProjectFormDataDirty();
@@ -15324,7 +15412,7 @@ function bindGearListDirectorMonitorListener() {
         const monitorInfo = devices && devices.directorMonitors && devices.directorMonitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}15`);
         if (span && monitorInfo && monitorInfo.screenSizeInches) {
-          span.textContent = `${monitorInfo.screenSizeInches}"`;
+          span.textContent = `(${monitorInfo.screenSizeInches}")`;
         }
         sel.dataset.autoGearManual = 'true';
         markProjectFormDataDirty();
