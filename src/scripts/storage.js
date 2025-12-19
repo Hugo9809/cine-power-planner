@@ -15662,14 +15662,24 @@
       return null;
     }
     if (typeof raw === 'string') {
-      const trimmed = raw.trim();
+      const decoded = decodeStoredValue(raw);
+      if (decoded === null) {
+        return null;
+      }
+      if (decoded === undefined) {
+        return undefined;
+      }
+      if (typeof decoded !== 'string') {
+        return decoded;
+      }
+      const trimmed = decoded.trim();
       if (!trimmed) {
         return '';
       }
       try {
         return JSON.parse(trimmed);
       } catch {
-        return raw;
+        return decoded;
       }
     }
     return raw;
@@ -15684,7 +15694,28 @@
       return null;
     }
     if (typeof raw === 'string') {
-      return raw;
+      const decoded = decodeStoredValue(raw);
+      if (decoded === null) {
+        return null;
+      }
+      if (decoded === undefined) {
+        return undefined;
+      }
+      if (typeof decoded === 'string') {
+        return decoded;
+      }
+      if (typeof decoded === 'number' || typeof decoded === 'boolean') {
+        return String(decoded);
+      }
+      if (Array.isArray(decoded) || (decoded && typeof decoded === 'object')) {
+        try {
+          return JSON.stringify(decoded);
+        } catch (serializationError) {
+          console.warn('Unable to serialize snapshot entry during import', entry && entry.key, serializationError);
+          return null;
+        }
+      }
+      return null;
     }
     if (typeof raw === 'number' || typeof raw === 'boolean') {
       return String(raw);
