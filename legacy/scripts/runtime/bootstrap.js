@@ -414,6 +414,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     setGridSnapState: setGridSnapState,
     applyLegacyGridSnapValue: applyLegacyGridSnapValue
   };
+  if ((typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE) {
+    if (!CORE_GLOBAL_SCOPE.fallbackRequireCoreRuntimeModule) {
+      CORE_GLOBAL_SCOPE.fallbackRequireCoreRuntimeModule = fallbackRequireCoreRuntimeModule;
+    }
+    if (!CORE_GLOBAL_SCOPE.exposeCoreRuntimeConstant) {
+      CORE_GLOBAL_SCOPE.exposeCoreRuntimeConstant = exposeCoreRuntimeConstant;
+    }
+  } else {
+    var primary = getPrimaryGlobalScope();
+    if (primary) {
+      if (!primary.fallbackRequireCoreRuntimeModule) {
+        primary.fallbackRequireCoreRuntimeModule = fallbackRequireCoreRuntimeModule;
+      }
+      if (!primary.exposeCoreRuntimeConstant) {
+        primary.exposeCoreRuntimeConstant = exposeCoreRuntimeConstant;
+      }
+    }
+  }
   if (typeof module !== 'undefined' && module) {
     try {
       module.exports = runtimeBootstrapExports;

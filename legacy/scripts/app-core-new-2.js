@@ -498,6 +498,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('storeLoadedSetupState', storeLoadedSetupState);
     ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
     ensureGlobalFunctionBinding('powerInputTypes', powerInputTypes);
+    ensureGlobalFunctionBinding('checkSetupChanged', checkSetupChanged);
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
@@ -8347,6 +8348,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var manualDate = manualInfo && isValidTimestamp(manualInfo.date) ? manualInfo.date : null;
       var autoDate = autoInfo && isValidTimestamp(autoInfo.date) ? autoInfo.date : null;
       var fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date) ? fullBackupInfo.date : null;
+      var storageSummaryList = document.getElementById('storageSummaryList');
       var connectivityState = typeof window !== 'undefined' && window && _typeof(window.cineConnectivityStatus) === 'object' ? window.cineConnectivityStatus : null;
       if (connectivityState) {
         var connectivityStatus = typeof connectivityState.status === 'string' ? connectivityState.status : null;
@@ -8505,9 +8507,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function updateStorageSummary() {
       var _texts$en194, _texts$en195, _texts$en196;
-      if (!storageSummaryList) return;
-      while (storageSummaryList.firstChild) {
-        storageSummaryList.removeChild(storageSummaryList.firstChild);
+      var summaryListEl = document.getElementById('storageSummaryList');
+      var storageSummaryEmpty = document.getElementById('storageSummaryEmpty');
+      if (!summaryListEl) return;
+      while (summaryListEl.firstChild) {
+        summaryListEl.removeChild(summaryListEl.firstChild);
       }
       var lang = resolveLanguageCode(currentLang);
       var langTexts = getLanguageTexts(lang);
@@ -8618,7 +8622,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         description: langTexts.storageKeyTotalSizeDesc || ''
       }];
       items.forEach(function (item) {
-        storageSummaryList.appendChild(createSummaryItemElement(item));
+        summaryListEl.appendChild(createSummaryItemElement(item));
       });
       applyStorageStatus(storageStatusLastProjectValue, manualInfo, lang, langTexts, manualProjectNames.length > 0);
       applyStorageStatus(storageStatusLastAutoBackupValue, autoInfo, lang, langTexts, autoBackupNames.length > 0);
@@ -8710,6 +8714,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var featureSearch = typeof document !== 'undefined' ? document.getElementById("featureSearch") : null;
     var featureSearchDropdown = typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
     var featureMap = new Map();
+    var actionMap = new Map();
     var featureSearchEntryIndex = new Map();
     var FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
     var MAX_FEATURE_SEARCH_HISTORY = 50;
@@ -10281,9 +10286,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         helpTexts: helpTexts,
         entryType: entryType
       };
-      var existing = featureMap.get(baseKey);
+      var targetMap = entryType === 'action' ? actionMap : featureMap;
+      var existing = targetMap.get(baseKey);
       if (!existing) {
-        featureMap.set(baseKey, entry);
+        targetMap.set(baseKey, entry);
       } else if (Array.isArray(existing)) {
         if (!existing.some(function (item) {
           return item && item.element === element;
@@ -10291,7 +10297,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           existing.push(entry);
         }
       } else if (existing.element !== element) {
-        featureMap.set(baseKey, [existing, entry]);
+        targetMap.set(baseKey, [existing, entry]);
       }
       return entry;
     };
@@ -11258,8 +11264,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee7(name, dataUrl) {
-        var _ref51,
-          _ref51$persist,
+        var _ref49,
+          _ref49$persist,
           persist,
           uniqueName,
           value,
@@ -11272,7 +11278,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.n) {
             case 0:
-              _ref51 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref51$persist = _ref51.persist, persist = _ref51$persist === void 0 ? true : _ref51$persist;
+              _ref49 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref49$persist = _ref49.persist, persist = _ref49$persist === void 0 ? true : _ref49$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -11563,6 +11569,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }();
     var supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
     var localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
+    var localFontsStatus = resolveGlobalElement('localFontsStatus', 'localFontsStatus');
     var localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
     var settingsFontFamily = typeof settingsFontFamily !== 'undefined' ? settingsFontFamily : resolveGlobalElement('settingsFontFamily', 'settingsFontFamily');
     var settingsFontSize = typeof settingsFontSize !== 'undefined' ? settingsFontSize : resolveGlobalElement('settingsFontSize', 'settingsFontSize');
@@ -12895,22 +12902,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           projectRequirementsOutput.classList.remove('hidden');
           var requirementBoxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
           requirementBoxes.forEach(function (box) {
-            var _box$querySelector, _box$querySelector2;
-            var label = ((_box$querySelector = box.querySelector('.req-label')) === null || _box$querySelector === void 0 ? void 0 : _box$querySelector.textContent) || '';
-            var value = ((_box$querySelector2 = box.querySelector('.req-value')) === null || _box$querySelector2 === void 0 ? void 0 : _box$querySelector2.textContent) || '';
-            var field = box.getAttribute('data-field') || '';
-            var baseDesc = value ? "".concat(label, ": ").concat(value) : label;
-            var logic = describeRequirement(field, value);
-            var desc = logic ? "".concat(baseDesc, " \u2013 ").concat(logic) : baseDesc;
-            if (desc && desc.trim()) {
-              box.setAttribute('title', desc);
-              box.setAttribute('data-help', desc);
-              box.setAttribute('aria-label', desc);
-            } else {
-              box.removeAttribute('title');
-              box.removeAttribute('data-help');
-              box.removeAttribute('aria-label');
-            }
+            box.removeAttribute('title');
+            box.removeAttribute('data-help');
             if (!box.hasAttribute('tabindex')) {
               box.setAttribute('tabindex', '0');
             }
@@ -12919,13 +12912,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
             box.addEventListener('keydown', handleRequirementBoxKeydown);
             box.querySelectorAll('.req-label, .req-value').forEach(function (el) {
-              if (desc && desc.trim()) {
-                el.setAttribute('title', desc);
-                el.setAttribute('data-help', desc);
-              } else {
-                el.removeAttribute('title');
-                el.removeAttribute('data-help');
-              }
+              el.removeAttribute('title');
+              el.removeAttribute('data-help');
             });
           });
           adjustGearListSelectWidths(projectRequirementsOutput);
@@ -13264,25 +13252,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       info.easyrig = getEasyrigValue();
       var projectInfo = deriveProjectInfo(info);
       var state = {
-        camera: cameraSelect.value,
-        monitor: monitorSelect.value,
-        video: videoSelect.value,
-        cage: cageSelect.value,
-        motors: motorSelects.map(function (sel) {
-          return sel.value;
-        }),
-        controllers: controllerSelects.map(function (sel) {
-          return sel.value;
-        }),
-        distance: distanceSelect.value,
-        batteryPlate: batteryPlateSelect.value,
-        battery: batterySelect.value,
-        batteryHotswap: hotswapSelect.value,
-        sliderBowl: info.sliderBowl,
-        easyrig: info.easyrig,
         projectInfo: projectInfo
       };
-      state.batteryPlate = normalizeBatteryPlateValue(state.batteryPlate, state.battery);
+      var addIfChanged = function addIfChanged(key, value) {
+        if (value === null || value === undefined) return;
+        if (typeof value === 'string') {
+          var trimmed = value.trim();
+          if (!trimmed || trimmed === 'None') return;
+          state[key] = trimmed;
+        } else if (Array.isArray(value)) {
+          var filtered = value.filter(function (v) {
+            return typeof v === 'string' && v.trim() && v !== 'None';
+          });
+          if (filtered.length) state[key] = filtered;
+        } else {
+          state[key] = value;
+        }
+      };
+      addIfChanged('camera', cameraSelect.value);
+      addIfChanged('monitor', monitorSelect.value);
+      addIfChanged('video', videoSelect.value);
+      addIfChanged('cage', cageSelect.value);
+      if (Array.isArray(motorSelects)) {
+        addIfChanged('motors', motorSelects.map(function (sel) {
+          return sel.value;
+        }));
+      }
+      if (Array.isArray(controllerSelects)) {
+        addIfChanged('controllers', controllerSelects.map(function (sel) {
+          return sel.value;
+        }));
+      }
+      addIfChanged('distance', distanceSelect.value);
+      addIfChanged('batteryPlate', normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value));
+      addIfChanged('battery', batterySelect.value);
+      addIfChanged('batteryHotswap', hotswapSelect.value);
+      addIfChanged('sliderBowl', info.sliderBowl);
+      addIfChanged('easyrig', info.easyrig);
       var projectRules = getProjectScopedAutoGearRules();
       if (projectRules && projectRules.length) {
         state.autoGearRules = projectRules;
@@ -13325,6 +13331,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function checkSetupChanged() {
       if (!saveSetupBtn) return;
+      var setupNameInput = document.getElementById('setupName');
       var langTexts = texts[currentLang] || {};
       var fallbackTexts = texts.en || {};
       var saveLabel = langTexts.saveSetupBtn || fallbackTexts.saveSetupBtn || '';
@@ -13495,7 +13502,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var saveCurrentSessionFn = typeof saveCurrentSession === 'function' ? saveCurrentSession : typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentSession === 'function' ? function () {
           return globalThis.saveCurrentSession.apply(globalThis, arguments);
         } : undefined;
-        var connectionDiagram = connectionDiagramModule.createConnectionDiagram({
+        var _connectionDiagram = connectionDiagramModule.createConnectionDiagram({
           document: document,
           window: window,
           navigator: navigator,
@@ -13581,37 +13588,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           ensureSvgHasAriaHidden: ensureSvgHasAriaHidden,
           formatSvgCoordinate: formatSvgCoordinate
         });
-        if (connectionDiagram && _typeof(connectionDiagram) === 'object') {
-          if (typeof connectionDiagram.renderSetupDiagram === 'function') {
-            renderSetupDiagram = connectionDiagram.renderSetupDiagram;
+        if (_connectionDiagram && _typeof(_connectionDiagram) === 'object') {
+          if (typeof _connectionDiagram.renderSetupDiagram === 'function') {
+            renderSetupDiagram = _connectionDiagram.renderSetupDiagram;
           }
-          if (typeof connectionDiagram.enableDiagramInteractions === 'function') {
-            enableDiagramInteractions = connectionDiagram.enableDiagramInteractions;
+          if (typeof _connectionDiagram.enableDiagramInteractions === 'function') {
+            enableDiagramInteractions = _connectionDiagram.enableDiagramInteractions;
           }
-          if (typeof connectionDiagram.updateDiagramLegend === 'function') {
-            updateDiagramLegend = connectionDiagram.updateDiagramLegend;
+          if (typeof _connectionDiagram.updateDiagramLegend === 'function') {
+            updateDiagramLegend = _connectionDiagram.updateDiagramLegend;
           }
-          if (typeof connectionDiagram.getDiagramManualPositions === 'function') {
-            getDiagramManualPositions = connectionDiagram.getDiagramManualPositions;
+          if (typeof _connectionDiagram.getDiagramManualPositions === 'function') {
+            getDiagramManualPositions = _connectionDiagram.getDiagramManualPositions;
           }
-          if (typeof connectionDiagram.setManualDiagramPositions === 'function') {
-            setManualDiagramPositions = connectionDiagram.setManualDiagramPositions;
+          if (typeof _connectionDiagram.setManualDiagramPositions === 'function') {
+            setManualDiagramPositions = _connectionDiagram.setManualDiagramPositions;
           }
-          if (typeof connectionDiagram.getDiagramCss === 'function') {
-            getDiagramCss = connectionDiagram.getDiagramCss;
+          if (typeof _connectionDiagram.getDiagramCss === 'function') {
+            getDiagramCss = _connectionDiagram.getDiagramCss;
           }
-          if (connectionDiagram.diagramConnectorIcons) {
-            diagramConnectorIcons = connectionDiagram.diagramConnectorIcons;
+          if (_connectionDiagram.diagramConnectorIcons) {
+            diagramConnectorIcons = _connectionDiagram.diagramConnectorIcons;
             if (typeof window !== 'undefined') window.diagramConnectorIcons = diagramConnectorIcons;else if (typeof globalThis !== 'undefined') globalThis.diagramConnectorIcons = diagramConnectorIcons;
           }
-          if (connectionDiagram.overviewSectionIcons) {
-            overviewSectionIcons = connectionDiagram.overviewSectionIcons;
+          if (_connectionDiagram.overviewSectionIcons) {
+            overviewSectionIcons = _connectionDiagram.overviewSectionIcons;
           }
-          if (connectionDiagram.diagramIcons) {
-            diagramIcons = connectionDiagram.diagramIcons;
+          if (_connectionDiagram.diagramIcons) {
+            diagramIcons = _connectionDiagram.diagramIcons;
           }
-          if (connectionDiagram.DIAGRAM_MONITOR_ICON) {
-            DIAGRAM_MONITOR_ICON = connectionDiagram.DIAGRAM_MONITOR_ICON;
+          if (_connectionDiagram.DIAGRAM_MONITOR_ICON) {
+            DIAGRAM_MONITOR_ICON = _connectionDiagram.DIAGRAM_MONITOR_ICON;
           }
         }
       } catch (diagramModuleError) {
@@ -14792,6 +14799,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function createRecordingMediaRow() {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       var notes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var brand = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
       var row = document.createElement('div');
       row.className = 'form-row';
       var select = document.createElement('select');
@@ -14816,9 +14824,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         select.value = '';
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
+      var brandInput = document.createElement('input');
+      brandInput.type = 'text';
+      brandInput.placeholder = 'Brand';
+      brandInput.name = 'recordingMediaBrand';
+      brandInput.value = brand;
+      row.appendChild(createFieldWithLabel(brandInput, 'Brand'));
       var notesInput = document.createElement('input');
       notesInput.type = 'text';
-      notesInput.placeholder = 'Notes';
+      notesInput.placeholder = 'Notes (Size, Speed, etc.)';
       notesInput.name = 'recordingMediaNotes';
       notesInput.value = notes;
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
@@ -14855,8 +14869,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             _ref31$type = _ref31.type,
             type = _ref31$type === void 0 ? '' : _ref31$type,
             _ref31$notes = _ref31.notes,
-            notes = _ref31$notes === void 0 ? '' : _ref31$notes;
-          cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
+            notes = _ref31$notes === void 0 ? '' : _ref31$notes,
+            _ref31$brand = _ref31.brand,
+            brand = _ref31$brand === void 0 ? '' : _ref31$brand;
+          cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes, brand));
         });
       } else {
         cameraMediaContainer.appendChild(createRecordingMediaRow());
@@ -14866,11 +14882,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(function (row) {
         var _row$querySelectorAll = row.querySelectorAll('select, input'),
-          _row$querySelectorAll2 = _slicedToArray(_row$querySelectorAll, 2),
+          _row$querySelectorAll2 = _slicedToArray(_row$querySelectorAll, 3),
           sel = _row$querySelectorAll2[0],
-          notesInput = _row$querySelectorAll2[1];
+          brandInput = _row$querySelectorAll2[1],
+          notesInput = _row$querySelectorAll2[2];
         return {
           type: sel.value,
+          brand: brandInput.value,
           notes: notesInput.value
         };
       }).filter(function (m) {
@@ -16105,11 +16123,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       restoreSelectSelection(selectElem, previousValue, hadSelection, includeNone);
     }
     function populateMonitorSelect() {
-      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref37) {
-        var _ref38 = _slicedToArray(_ref37, 2),
-          data = _ref38[1];
-        return !(data.wirelessRX && !data.wirelessTx);
-      }));
+      var monitors = devices.monitors || {};
+      if (typeof console !== 'undefined') {
+        console.log('populateMonitorSelect: count=', Object.keys(monitors).length);
+      }
+      var filtered = Object.fromEntries(Object.entries(monitors));
       populateSelect(monitorSelect, filtered, true);
     }
     function getCompatibleCagesForCamera(cameraName) {
@@ -16118,9 +16136,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!cameraName || cameraName === 'None') {
         return allCages;
       }
-      return Object.fromEntries(Object.entries(allCages).filter(function (_ref39) {
-        var _ref40 = _slicedToArray(_ref39, 2),
-          cage = _ref40[1];
+      return Object.fromEntries(Object.entries(allCages).filter(function (_ref37) {
+        var _ref38 = _slicedToArray(_ref37, 2),
+          cage = _ref38[1];
         if (!cage || _typeof(cage) !== 'object') {
           return true;
         }
@@ -16313,9 +16331,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       deviceLibrarySearchEntries.length = 0;
       deviceLibrarySearchMap.clear();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref41, categoryKey) {
-        var list = _ref41.list,
-          heading = _ref41.heading;
+      activeDeviceManagerLists.forEach(function (_ref39, categoryKey) {
+        var list = _ref39.list,
+          heading = _ref39.heading;
         if (!list) return;
         var categoryLabel = heading && heading.textContent ? heading.textContent.trim() : categoryKey;
         Array.from(list.querySelectorAll('li')).forEach(function (item) {
@@ -16423,8 +16441,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       });
       if (activeDeviceManagerLists instanceof Map) {
-        activeDeviceManagerLists.forEach(function (_ref42) {
-          var section = _ref42.section;
+        activeDeviceManagerLists.forEach(function (_ref40) {
+          var section = _ref40.section;
           if (!section) return;
           if (!normalized) {
             section.classList.remove('device-category--global-empty');
@@ -16501,9 +16519,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref43) {
-        var list = _ref43.list,
-          filterInput = _ref43.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref41) {
+        var list = _ref41.list,
+          filterInput = _ref41.filterInput;
         if (!list) return;
         var value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
@@ -16640,7 +16658,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             hotswapWarnElem: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
             batteryComparisonSection: typeof batteryComparisonSection !== 'undefined' ? batteryComparisonSection : null,
             batteryTableElem: typeof batteryTableElem !== 'undefined' ? batteryTableElem : null,
-            setupDiagramContainer: typeof setupDiagramContainer !== 'undefined' ? setupDiagramContainer : null
+            setupDiagramContainer: typeof setupDiagramContainer !== 'undefined' ? setupDiagramContainer : null,
+            connectionDiagram: typeof connectionDiagram !== 'undefined' ? connectionDiagram : null
+          },
+          state: {
+            appState: typeof appState !== 'undefined' ? appState : {},
+            currentSetup: getCurrentSetupState()
           },
           motorSelects: motorSelects,
           controllerSelects: controllerSelects,
@@ -16687,6 +16710,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } catch (error) {
         console.warn('cineResults.updateCalculations failed', error);
       }
+    }
+    if (typeof window !== 'undefined') {
+      window.updateCalculations = updateCalculations;
+    } else if (typeof globalThis !== 'undefined') {
+      globalThis.updateCalculations = updateCalculations;
     }
     function getCurrentSetupKey() {
       var safeSelectValue = function safeSelectValue(select) {
@@ -17231,9 +17259,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref44, categoryKey) {
-        var list = _ref44.list,
-          filterInput = _ref44.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref42, categoryKey) {
+        var list = _ref42.list,
+          filterInput = _ref42.filterInput;
         if (!list) return;
         renderDeviceList(categoryKey, list);
         var filterValue = filterInput ? filterInput.value : '';
@@ -17665,10 +17693,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }], ['storeLoadedSetupState', function () {
       return storeLoadedSetupState;
     }]];
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref45) {
-      var _ref46 = _slicedToArray(_ref45, 2),
-        exportName = _ref46[0],
-        getter = _ref46[1];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref43) {
+      var _ref44 = _slicedToArray(_ref43, 2),
+        exportName = _ref44[0],
+        getter = _ref44[1];
       try {
         var _value5 = getter();
         if (typeof _value5 !== 'undefined') {
@@ -17766,10 +17794,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
         cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'exportAutoGearPresets', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
-      Object.entries(MODULE_EXPORTS).forEach(function (_ref47) {
-        var _ref48 = _slicedToArray(_ref47, 2),
-          moduleName = _ref48[0],
-          exportNames = _ref48[1];
+      Object.entries(MODULE_EXPORTS).forEach(function (_ref45) {
+        var _ref46 = _slicedToArray(_ref45, 2),
+          moduleName = _ref46[0],
+          exportNames = _ref46[1];
         var moduleRef = scope[moduleName];
         if (!moduleRef || typeof moduleRef.install !== 'function') {
           return;
@@ -17811,10 +17839,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref49) {
-      var _ref50 = _slicedToArray(_ref49, 2),
-        name = _ref50[0],
-        value = _ref50[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref47) {
+      var _ref48 = _slicedToArray(_ref47, 2),
+        name = _ref48[0],
+        value = _ref48[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }

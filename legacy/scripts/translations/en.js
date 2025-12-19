@@ -12,7 +12,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "closeLabel": "Close Preview",
         "layoutModeTitle": "Layout Mode",
         "layoutRentalLabel": "Rental Friendly",
-        "layoutRentalDescription": "Optimizes layout for rental houses by grouping items by category.",
+        "layoutRentalDescription": "Optimizes layout for rental by grouping items by category.",
         "sectionsTitle": "Sections",
         "sectionProject": "Project Requirements",
         "sectionDevices": "Device List",
@@ -254,39 +254,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "helpTopics": {
         "projectManagement": {
           "title": "Project Management",
-          "content": "Manage your projects with ease. **Save** your work to keep it on your device. **Export** projects to share them with others or create backups. **Import** previously saved or shared projects to continue working. Use **Delete** to remove unwanted projects."
+          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
+        },
+        "saveShareBackup": {
+          "title": "Save, Share & Backup",
+          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). **Import Project** loads a file without overwriting your current setup until you confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
         },
         "deviceConfiguration": {
           "title": "Device Configuration",
-          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. The app automatically filters for compatible accessories based on your selections."
+          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
         },
         "powerCalculation": {
           "title": "Power Calculation",
-          "content": "The **Power Summary** shows the total power consumption of your rig. It calculates estimated runtime based on the selected battery. Watch out for **Pin Warnings** (if current exceeds limits) and **D-Tap Warnings** (if the battery plate doesn't support the load)."
+          "content": "The **Power Summary** shows the total power consumption of your rig and estimated runtime based on the selected battery and mount voltages. Watch for **Pin** and **D-Tap** warnings, and use the quick summary to explain results offline."
         },
         "connectionDiagram": {
           "title": "Connection Diagram",
-          "content": "The **Connection Diagram** visualizes how your devices are connected. It helps you verify your setup and ensures everything is routed correctly. You can zoom and pan to inspect details."
+          "content": "The **Connection Diagram** visualizes how devices are connected. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
         },
         "gearList": {
           "title": "Gear List",
-          "content": "Generate a comprehensive **Gear List** based on your configured devices. You can customize this list, add your own items, and export it for rental houses or crew."
+          "content": "Generate a detailed **Gear List** from devices and project requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
         },
         "contacts": {
           "title": "Contacts",
-          "content": "Save crew members in the **Contacts** section. You can reuse them across projects, making it easy to assign roles and keep track of your team."
+          "content": "Save crew members in **Contacts** or import vCards. Entries reuse across projects and flow into providers, backups and exports."
         },
         "ownGear": {
           "title": "Own Gear",
-          "content": "Track your personal inventory in **Own Gear**. Mark items you own so they are automatically identified in your gear lists."
+          "content": "Track your personal inventory in **Own Gear**. Mark items you own so gear list rows can be flagged and exported with those annotations."
         },
         "settings": {
           "title": "Settings",
-          "content": "Customize the app in **Settings**. Adjust the **Language**, toggle **Dark Mode** or **Pink Mode**, and manage **Backups** to keep your data safe."
+          "content": "Customize the planner in **Settings**. Adjust **Language**, themes, typography, branding and **Backup & Restore** safeguards, plus automatic gear rules and documentation tracking."
         },
         "offlineUse": {
           "title": "Offline Use",
-          "content": "Cine Power Planner works fully **Offline**. All data is stored locally on your device. You can continue working even without an internet connection."
+          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Confirm the offline indicator and keep exports, full backups and the local backup vault current before disconnecting."
         }
       },
       "documentationTrackerHelpStart": "Start Here & navigation",
@@ -1364,7 +1368,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "productionCompanyPostalCodePlaceholder": "90001",
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
-        "rentalHouse": "Rental House:",
+        "rentalHouse": "Rental:",
         "crewHeading": "Crew",
         "prepLabel": "Prep Days:",
         "shootLabel": "Shooting Days:",
@@ -1487,7 +1491,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "productionCompanyPostalCodePlaceholder": "90001",
         "productionCompanyCountry": "Country",
         "productionCompanyCountryPlaceholder": "United States",
-        "rentalHouse": "Rental House",
+        "rentalHouse": "Rental",
         "crew": "Crew",
         "prepDays": "Prep Days",
         "shootingDays": "Shooting Days",
@@ -1530,7 +1534,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "Producer": "Producer",
         "Production Manager": "Production Manager",
         "Director": "Director",
-        "Assistant Director": "Assistant Director",
+        "Assistant Director": "1st AD",
         "Production Assistant": "Production Assistant",
         "DoP": "DoP",
         "Camera Operator": "Camera Operator",
@@ -1541,13 +1545,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "2nd AC": "2nd AC",
         "DIT": "DIT",
         "Video Operator": "Video Operator",
-        "Key Gaffer": "Key Gaffer",
-        "Gaffer": "Gaffer",
-        "Best Boy Electric": "Oberbeleuchter-Assistent",
+        "Key Gaffer": "Gaffer",
+        "Gaffer": "Electric",
+        "Best Boy Electric": "Best Boy Electric",
         "Electrician": "Electrician",
         "Rigging Gaffer": "Rigging Gaffer",
         "Key Grip": "Key Grip",
-        "Best Boy Grip": "Key-Grip-Assistent",
+        "Best Boy Grip": "Best Boy Grip",
         "Grip": "Grip",
         "Dolly Grip": "Dolly Grip",
         "Rigging Grip": "Rigging Grip"
@@ -1567,12 +1571,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListCartSelectorLabel": "Camera cart",
       "gearListCartConfigurationLabel": "Cart configuration",
       "gearListCartAccessoriesLabel": "Cart accessories",
-      "gearListExcludeRentalToggle": "Exclude for rental house",
-      "gearListIncludeRentalToggle": "Include for rental house",
-      "gearListRentalNote": "Rental house handles this item",
+      "gearListExcludeRentalToggle": "Exclude for rental",
+      "gearListIncludeRentalToggle": "Include for rental",
+      "gearListRentalNote": "Rental handles this item",
       "gearListEditProviderLabel": "Provided by",
-      "gearListEditProviderHelp": "Select who provides this item. Rental house stays the default unless the item is in your own gear list.",
-      "gearListProviderRental": "Rental house",
+      "gearListEditProviderHelp": "Select who provides this item. Rental stays the default unless the item is in your own gear list.",
+      "gearListProviderRental": "Rental",
       "gearListProviderUser": "User",
       "gearListProviderCrewHeading": "Crew",
       "gearListProviderUnknown": "Custom provider",
@@ -1602,7 +1606,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "gearListExtraIndicatorOpen": "Temporary extra from %s",
       "gearListExtraIndicatorEnd": "Temporary extra until %s",
       "gearListExtraIndicatorNoPeriod": "Temporary extra",
-      "gearListEditRentalLabel": "Exclude from rental house",
+      "gearListEditRentalLabel": "Exclude from rental",
       "gearListEditSave": "Save",
       "gearListEditCancel": "Cancel",
       "gearListEditButton": "Edit gear item",
@@ -1654,7 +1658,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       "backToAppBtn": "Back to App",
       "printBtn": "Print",
       "exportPdfBtn": "Export PDF / Print",
-      "exportRentalPdfBtn": "Export PDF for Rental House",
+      "exportRentalPdfBtn": "Export PDF for Rental",
       "rentalPrintDialogTitle": "Export PDF / Print",
       "rentalPrintDialogDescription": "Choose what to include before exporting or printing.",
       "rentalPrintDialogSectionsLabel": "Sections to include",
@@ -1769,7 +1773,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }, {
                 "icon": "",
                 "title": "Project requirements ready to hand off",
-                "body": "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on."
+                "body": "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental, and production rely on."
               }, {
                 "icon": "",
                 "title": "Offline-first, subscription-free PWA",

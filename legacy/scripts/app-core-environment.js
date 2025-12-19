@@ -963,6 +963,15 @@ function createFallbackSafeGenerateConnectorSummary() {
     if (!device || _typeof(device) !== 'object') {
       return '';
     }
+    if (typeof generateConnectorSummary === 'function') {
+      try {
+        return generateConnectorSummary(device);
+      } catch (generatorError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('generateConnectorSummary failed, using fallback', generatorError);
+        }
+      }
+    }
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
     }

@@ -204,6 +204,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       try {
         if (typeof Object.freeze === 'function') {
           Object.freeze(value);
+          if (!Object.isFrozen(value)) {
+            console.warn('immutability.js (Jest block): Object.freeze called but object is NOT frozen', value);
+          } else {}
         }
       } catch (freezeError) {
         void freezeError;

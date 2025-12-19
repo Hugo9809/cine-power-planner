@@ -865,20 +865,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var FORCE_RELOAD_CONNECTIVITY_TIMEOUT_MS = 3500;
   var RELOAD_WARMUP_MAX_WAIT_MS = 180;
   var reloadWarmupFailureLogged = false;
-  function createDelay(ms) {
-    var waitMs = typeof ms === 'number' && ms >= 0 ? ms : 0;
-    if (typeof setTimeout !== 'function') {
-      return Promise.resolve();
-    }
-    return new Promise(function (resolve) {
-      try {
-        setTimeout(resolve, waitMs);
-      } catch (error) {
-        void error;
-        resolve();
-      }
-    });
-  }
   function settlePromise(promise) {
     if (!promise || typeof promise.then !== 'function') {
       return Promise.resolve(false);
@@ -1149,21 +1135,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }();
     var executeWarmup = function () {
       var _ref = _asyncToGenerator(_regenerator().m(function _callee2() {
-        var allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, initialCacheMode, fallbackCacheModes, index, cacheMode, suppressWarning, body, _t, _t2, _t3, _t4, _t5;
+        var warmupWaitMs, allowCachePopulation, buildRequestInit, performFetch, attemptXmlHttpWarmup, isAborted, response, firstError, shouldAttemptFetch, xmlHttpResult, fallbackResponse, fallbackError, initialCacheMode, fallbackCacheModes, index, cacheMode, suppressWarning, body, _t, _t2, _t3, _t4, _t5;
         return _regenerator().w(function (_context2) {
           while (1) switch (_context2.p = _context2.n) {
             case 0:
-              _context2.p = 0;
-              _context2.n = 1;
-              return Promise.allSettled([Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]), Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])]);
-            case 1:
-              _context2.n = 3;
-              break;
+              warmupWaitMs = typeof options.warmupWaitMs === 'number' ? options.warmupWaitMs : RELOAD_WARMUP_MAX_WAIT_MS;
+              _context2.p = 1;
+              _context2.n = 2;
+              return Promise.allSettled([awaitPromiseWithSoftTimeout(serviceWorkerPromise, warmupWaitMs), awaitPromiseWithSoftTimeout(cachePromise, warmupWaitMs)]);
             case 2:
-              _context2.p = 2;
+              _context2.n = 4;
+              break;
+            case 3:
+              _context2.p = 3;
               _t = _context2.v;
               void _t;
-            case 3:
+            case 4:
               allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
               buildRequestInit = function buildRequestInit() {
                 var overrides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1302,65 +1289,65 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               firstError = null;
               shouldAttemptFetch = !preferXmlHttpWarmup;
               if (!preferXmlHttpWarmup) {
-                _context2.n = 8;
+                _context2.n = 9;
                 break;
               }
-              _context2.p = 4;
-              _context2.n = 5;
+              _context2.p = 5;
+              _context2.n = 6;
               return attemptXmlHttpWarmup();
-            case 5:
+            case 6:
               xmlHttpResult = _context2.v;
               if (!(xmlHttpResult === true)) {
-                _context2.n = 6;
+                _context2.n = 7;
                 break;
               }
               return _context2.a(2, true);
-            case 6:
+            case 7:
               if (xmlHttpResult === false) {
                 shouldAttemptFetch = false;
               } else {
                 shouldAttemptFetch = true;
               }
-              _context2.n = 8;
+              _context2.n = 9;
               break;
-            case 7:
-              _context2.p = 7;
+            case 8:
+              _context2.p = 8;
               _t2 = _context2.v;
               void _t2;
               shouldAttemptFetch = true;
-            case 8:
+            case 9:
               if (!shouldAttemptFetch) {
-                _context2.n = 12;
-                break;
-              }
-              _context2.p = 9;
-              _context2.n = 10;
-              return performFetch();
-            case 10:
-              response = _context2.v;
-              _context2.n = 12;
-              break;
-            case 11:
-              _context2.p = 11;
-              _t3 = _context2.v;
-              firstError = _t3;
-            case 12:
-              if (response) {
-                _context2.n = 23;
-                break;
-              }
-              if (!isAborted()) {
                 _context2.n = 13;
                 break;
               }
-              return _context2.a(2, false);
+              _context2.p = 10;
+              _context2.n = 11;
+              return performFetch();
+            case 11:
+              response = _context2.v;
+              _context2.n = 13;
+              break;
+            case 12:
+              _context2.p = 12;
+              _t3 = _context2.v;
+              firstError = _t3;
             case 13:
-              if (!isAccessControlReloadWarmupError(firstError)) {
+              if (response) {
+                _context2.n = 24;
+                break;
+              }
+              if (!isAborted()) {
                 _context2.n = 14;
                 break;
               }
               return _context2.a(2, false);
             case 14:
+              if (!isAccessControlReloadWarmupError(firstError)) {
+                _context2.n = 15;
+                break;
+              }
+              return _context2.a(2, false);
+            case 15:
               fallbackResponse = null;
               fallbackError = firstError;
               initialCacheMode = allowCachePopulation ? 'reload' : 'no-store';
@@ -1371,82 +1358,82 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               fallbackCacheModes.push('no-store');
               fallbackCacheModes.push('default');
               index = 0;
-            case 15:
+            case 16:
               if (!(index < fallbackCacheModes.length && !fallbackResponse)) {
-                _context2.n = 20;
+                _context2.n = 21;
                 break;
               }
               cacheMode = fallbackCacheModes[index];
               if (!(cacheMode === initialCacheMode)) {
-                _context2.n = 16;
+                _context2.n = 17;
                 break;
               }
-              return _context2.a(3, 19);
-            case 16:
-              _context2.p = 16;
-              _context2.n = 17;
+              return _context2.a(3, 20);
+            case 17:
+              _context2.p = 17;
+              _context2.n = 18;
               return performFetch({
                 cache: cacheMode
               });
-            case 17:
+            case 18:
               fallbackResponse = _context2.v;
               fallbackError = null;
-              _context2.n = 19;
+              _context2.n = 20;
               break;
-            case 18:
-              _context2.p = 18;
+            case 19:
+              _context2.p = 19;
               _t4 = _context2.v;
               fallbackError = _t4 || fallbackError || firstError;
               fallbackResponse = null;
-            case 19:
-              index += 1;
-              _context2.n = 15;
-              break;
             case 20:
+              index += 1;
+              _context2.n = 16;
+              break;
+            case 21:
               if (fallbackResponse) {
-                _context2.n = 22;
+                _context2.n = 23;
                 break;
               }
               if (!isAborted()) {
-                _context2.n = 21;
+                _context2.n = 22;
                 break;
               }
               return _context2.a(2, false);
-            case 21:
+            case 22:
               suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
               if (!reloadWarmupFailureLogged && !suppressWarning) {
                 reloadWarmupFailureLogged = true;
                 safeWarn('Reload warmup fetch failed', fallbackError || firstError);
               }
               return _context2.a(2, false);
-            case 22:
-              response = fallbackResponse;
             case 23:
-              if (response) {
-                _context2.n = 24;
-                break;
-              }
-              return _context2.a(2, false);
+              response = fallbackResponse;
             case 24:
-              _context2.p = 24;
-              body = typeof response.clone === 'function' ? response.clone() : response;
-              if (!(body && typeof body.text === 'function' && body.bodyUsed !== true)) {
+              if (response) {
                 _context2.n = 25;
                 break;
               }
-              _context2.n = 25;
-              return body.text();
+              return _context2.a(2, false);
             case 25:
-              _context2.n = 27;
-              break;
+              _context2.p = 25;
+              body = typeof response.clone === 'function' ? response.clone() : response;
+              if (!(body && typeof body.text === 'function' && body.bodyUsed !== true)) {
+                _context2.n = 26;
+                break;
+              }
+              _context2.n = 26;
+              return body.text();
             case 26:
-              _context2.p = 26;
+              _context2.n = 28;
+              break;
+            case 27:
+              _context2.p = 27;
               _t5 = _context2.v;
               void _t5;
-            case 27:
+            case 28:
               return _context2.a(2, true);
           }
-        }, _callee2, null, [[24, 26], [16, 18], [9, 11], [4, 7], [0, 2]]);
+        }, _callee2, null, [[25, 27], [17, 19], [10, 12], [5, 8], [1, 3]]);
       }));
       return function executeWarmup() {
         return _ref.apply(this, arguments);
@@ -3374,6 +3361,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         serviceWorkersUnregistered,
         warmupFinishedBeforeReload,
         serviceWorkerStatusKnown,
+        cleanupTimeoutMs,
         serviceWorkerAwaitResult,
         gateResult,
         detail,
@@ -3507,7 +3495,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               nextHref: forceReloadUrl.nextHref,
               serviceWorkerPromise: serviceWorkerCleanupPromise,
               cachePromise: cacheCleanupPromise,
-              allowCache: true
+              allowCache: true,
+              warmupWaitMs: typeof options.warmupWaitMs === 'number' ? options.warmupWaitMs : undefined
             });
             resolveWarmupPromise = function resolveWarmupPromise(handle) {
               if (!handle || _typeof(handle) !== 'object') {
@@ -3571,10 +3560,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             warmupFinishedBeforeReload = false;
             serviceWorkerStatusKnown = false;
             _context0.p = 3;
+            cleanupTimeoutMs = typeof options.cleanupTimeoutMs === 'number' ? options.cleanupTimeoutMs : FORCE_RELOAD_CLEANUP_TIMEOUT_MS;
             _context0.n = 4;
-            return awaitPromiseWithSoftTimeout(gatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
+            return awaitPromiseWithSoftTimeout(gatePromise, cleanupTimeoutMs, function () {
               safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
-                timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
+                timeoutMs: cleanupTimeoutMs
               });
             }, function (lateError) {
               if (lateError && lateError.source === 'warmup') {

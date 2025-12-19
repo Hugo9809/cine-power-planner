@@ -4835,7 +4835,7 @@
           "mount": "native",
           "notes": "Optional plate"
         }, {
-          "type": "Gold Mount",
+          "type": "Gold-Mount",
           "mount": "native",
           "notes": "Optional plate"
         }],

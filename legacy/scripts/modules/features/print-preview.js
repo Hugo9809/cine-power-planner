@@ -69,7 +69,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!sidebar) return;
     var title = sidebar.querySelector('.mockup-sidebar-header h2');
     if (title) title.textContent = getText('printPreview.title', 'Print & Export');
-    if (state.elements.closeBtn) state.elements.closeBtn.setAttribute('aria-label', getText('printPreview.closeLabel', 'Close Preview'));
+    if (state.elements.closeBtn) {
+      state.elements.closeBtn.setAttribute('aria-label', getText('printPreview.backLabel', 'Back'));
+      var textSpan = state.elements.closeBtn.querySelector('.btn-text');
+      if (textSpan) textSpan.textContent = getText('printPreview.backLabel', 'Back');
+    }
     var layoutTitle = sidebar.querySelector('.control-section:nth-child(2) .section-title');
     if (layoutTitle) layoutTitle.textContent = getText('printPreview.layoutModeTitle', 'Layout Mode');
     var rentalLabel = sidebar.querySelector('label[for="printLayoutRentalToggle"]');
@@ -80,7 +84,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (textNode) textNode.textContent = getText('printPreview.layoutRentalLabel', 'Rental Friendly');
     }
     var rentalDesc = sidebar.querySelector('.control-section:nth-child(2) p');
-    if (rentalDesc) rentalDesc.textContent = getText('printPreview.layoutRentalDescription', 'Optimizes layout for rental houses by grouping items by category.');
+    if (rentalDesc) rentalDesc.textContent = getText('printPreview.layoutRentalDescription', 'Optimizes layout for rental by grouping items by category.');
     var sectionsTitle = sidebar.querySelector('.control-section:nth-child(3) .section-title');
     if (sectionsTitle) sectionsTitle.textContent = getText('printPreview.sectionsTitle', 'Sections');
     var sectionLabels = {
@@ -99,8 +103,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var _textNode = Array.from(label.childNodes).find(function (node) {
           return node.nodeType === 3 && node.textContent.trim().length > 0;
         });
+        if (!_textNode) {
+          var span = label.querySelector('span:not(.slider)');
+          if (span && span.textContent.trim().length > 0) {
+            span.textContent = getText(key, span.textContent.trim());
+            return;
+          }
+        }
         if (_textNode) {
-          _textNode.textContent = ' ' + getText(key, _textNode.textContent.trim());
+          var newText = getText(key, _textNode.textContent.trim());
+          var _span = document.createElement('span');
+          _span.style.position = 'relative';
+          _span.style.zIndex = '1';
+          _span.textContent = ' ' + newText;
+          _textNode.replaceWith(_span);
         }
       }
     });
@@ -132,19 +148,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         battery: document.getElementById('printSectionBattery')
       },
       exportBtn: document.getElementById('printPreviewExportBtn'),
-      printBtn: document.getElementById('printPreviewPrintBtn'),
-      generateOverviewBtn: document.getElementById('generateOverviewBtn')
+      printBtn: document.getElementById('printPreviewPrintBtn')
     };
     return !!state.elements.modal;
   }
   function bindEvents() {
     if (!state.elements.modal) return;
-    if (state.elements.generateOverviewBtn) {
-      state.elements.generateOverviewBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        openPreview();
-      });
-    }
     if (state.elements.closeBtn) {
       var newCloseBtn = state.elements.closeBtn.cloneNode(true);
       state.elements.closeBtn.parentNode.replaceChild(newCloseBtn, state.elements.closeBtn);
@@ -153,7 +162,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (state.elements.layoutToggle) {
       state.elements.layoutToggle.addEventListener('change', function (e) {
-        state.preferences.layout = e.target.checked ? 'rental' : 'standard';
+        var isRental = e.target.checked;
+        state.preferences.layout = isRental ? 'rental' : 'standard';
+        if (isRental) {
+          if (state.elements.sectionToggles.devices) state.elements.sectionToggles.devices.checked = false;
+          if (state.elements.sectionToggles.diagram) state.elements.sectionToggles.diagram.checked = false;
+          if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = true;
+          if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = false;
+          state.preferences.sections.devices = false;
+          state.preferences.sections.diagram = false;
+          state.preferences.sections.battery = false;
+        } else {
+          if (state.elements.sectionToggles.devices) state.elements.sectionToggles.devices.checked = true;
+          if (state.elements.sectionToggles.diagram) state.elements.sectionToggles.diagram.checked = true;
+          if (state.elements.sectionToggles.battery) state.elements.sectionToggles.battery.checked = true;
+          state.preferences.sections.devices = true;
+          state.preferences.sections.diagram = true;
+          state.preferences.sections.battery = true;
+        }
+        updateSectionVisibility();
         renderPreviewContent();
       });
     }
@@ -213,6 +240,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var container = document.createElement('div');
     container.className = 'device-category-container';
+    var existingCategories = sourceDevs.querySelectorAll('.device-category');
+    if (existingCategories.length > 0) {
+      existingCategories.forEach(function (cat) {
+        container.appendChild(cat.cloneNode(true));
+      });
+      return container.outerHTML;
+    }
     var children = Array.from(sourceDevs.children);
     var currentCategoryDiv = null;
     children.forEach(function (child) {
@@ -254,6 +288,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var paper = state.elements.paper;
     if (!paper) return;
     paper.innerHTML = '';
+    var isRental = state.preferences.layout === 'rental';
     var header = document.createElement('div');
     header.className = 'preview-header';
     var projectName = ((_document$getElementB6 = document.getElementById('setupName')) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.value) || 'Untitled Project';
@@ -325,7 +360,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     gearSection.innerHTML = '<h2>' + getText('printPreview.generatedGearListTitle', 'Gear List') + '</h2>';
     var sourceGear = document.getElementById('gearListOutput');
     if (sourceGear) {
-      gearSection.innerHTML += sourceGear.innerHTML;
+      var clonedGear = sourceGear.cloneNode(true);
+      var interactives = clonedGear.querySelectorAll('.gear-rental-toggle, .gear-edit-btn, button, .ui-only');
+      interactives.forEach(function (el) {
+        return el.remove();
+      });
+      if (isRental) {
+        var items = clonedGear.querySelectorAll('.gear-item');
+        items.forEach(function (item) {
+          var text = item.textContent || '';
+          var attrs = item.getAttribute('data-gear-attributes') || '';
+          var rentalNote = item.getAttribute('data-rental-note') || '';
+          var isOwnGear = text.includes('Own Gear') || attrs.includes('Own Gear') || rentalNote.includes('Own Gear');
+          if (isOwnGear) {
+            var next = item.nextSibling;
+            if (next && next.nodeName === 'BR') {
+              next.remove();
+            }
+            item.remove();
+          }
+        });
+        var categories = clonedGear.querySelectorAll('tbody.category-group, .gear-category');
+        categories.forEach(function (cat) {
+          var hasItems = cat.querySelectorAll('.gear-item').length > 0;
+          if (!hasItems) {
+            cat.style.display = 'none';
+          }
+        });
+      }
+      gearSection.appendChild(clonedGear);
     }
     paper.appendChild(gearSection);
     updateSectionVisibility();
@@ -352,12 +415,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!state.elements.modal) initializeDomReferences();
     if (!state.elements.modal) return;
     renderPreviewContent();
+    if (typeof state.elements.modal.showModal === 'function') {
+      if (!state.elements.modal.open) {
+        state.elements.modal.showModal();
+      }
+    }
     state.elements.modal.classList.remove('hidden');
     state.isOpen = true;
     document.body.style.overflow = 'hidden';
   }
   function closePreview() {
     if (!state.elements.modal) return;
+    if (typeof state.elements.modal.close === 'function') {
+      if (state.elements.modal.open) {
+        state.elements.modal.close();
+      }
+    }
     state.elements.modal.classList.add('hidden');
     state.isOpen = false;
     document.body.style.overflow = '';

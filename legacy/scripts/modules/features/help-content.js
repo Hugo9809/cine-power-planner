@@ -64,7 +64,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var localization = resolveLocalization(GLOBAL_SCOPE);
     if (!localization || typeof localization.getString !== 'function') return;
     list.innerHTML = '';
-    var topics = ['projectManagement', 'deviceConfiguration', 'powerCalculation', 'connectionDiagram', 'gearList', 'contacts', 'ownGear', 'settings', 'offlineUse'];
+    var topics = ['projectManagement', 'saveShareBackup', 'deviceConfiguration', 'powerCalculation', 'connectionDiagram', 'gearList', 'contacts', 'ownGear', 'settings', 'offlineUse'];
     var hasTopics = false;
     topics.forEach(function (topicKey) {
       var title = localization.getString("helpTopics.".concat(topicKey, ".title"));

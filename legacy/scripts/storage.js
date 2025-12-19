@@ -1,3 +1,4 @@
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
@@ -1613,7 +1614,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (cloneState.stack.has(input)) {
         if (!cloneState.reportedCycle && typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.');
+          try {
+            console.warn('Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.');
+          } catch (e) {
+            void e;
+          }
         }
         if (cloneState) {
           cloneState.reportedCycle = true;
@@ -5441,11 +5446,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return LEGACY_LONG_GOP_TOKEN_REGEX.test(key) ? 'long-gop' : key;
   }
-  function normalizeLegacyLongGopStructure(value) {
+  function normalizeLegacyLongGopStructure(value, visited) {
+    if (value === null || _typeof(value) !== 'object') {
+      return normalizeLegacyLongGopString(value);
+    }
+    var seen = visited || new WeakSet();
+    if (seen.has(value)) {
+      return value;
+    }
+    seen.add(value);
     if (Array.isArray(value)) {
       var changed = false;
       var normalizedArray = value.map(function (item) {
-        var normalizedItem = normalizeLegacyLongGopStructure(item);
+        var normalizedItem = normalizeLegacyLongGopStructure(item, seen);
         if (normalizedItem !== item) {
           changed = true;
         }
@@ -5459,7 +5472,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       Object.keys(value).forEach(function (key) {
         var normalizedKey = normalizeLegacyLongGopKey(key);
         var originalValue = value[key];
-        var normalizedValue = normalizeLegacyLongGopStructure(originalValue);
+        var normalizedValue = normalizeLegacyLongGopStructure(originalValue, seen);
         if (normalizedKey !== key || normalizedValue !== originalValue) {
           _changed = true;
         }
@@ -7790,25 +7803,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     if (!isPlainObject(data.fiz)) {
       data.fiz = {};
-      rawData.fiz = data.fiz;
       changed = true;
     }
     FIZ_COLLECTION_KEYS.forEach(function (key) {
-      var collection = ensureObject(data.fiz, key);
-      rawData.fiz[key] = collection;
+      ensureObject(data.fiz, key);
     });
     if (!isPlainObject(data.accessories)) {
       data.accessories = {};
-      rawData.accessories = data.accessories;
       changed = true;
     }
     ACCESSORY_COLLECTION_KEYS.forEach(function (key) {
-      var collection = ensureObject(data.accessories, key);
-      rawData.accessories[key] = collection;
+      ensureObject(data.accessories, key);
     });
     if (!Array.isArray(data.filterOptions)) {
       data.filterOptions = Array.isArray(rawData.filterOptions) ? rawData.filterOptions.slice() : [];
-      rawData.filterOptions = data.filterOptions;
       changed = true;
     }
     return {
@@ -8048,7 +8056,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     productionCompanyRegion: ['State / Province / Region', 'Bundesland / Region', 'État / Région / Département', 'Estado / Provincia / Región', 'Regione / Provincia / Stato'],
     productionCompanyPostalCode: ['Postal code', 'Postleitzahl', 'Code postal', 'Código postal', 'CAP'],
     productionCompanyCountry: ['Country', 'Land', 'Pays', 'País', 'Paese'],
-    rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
+    rentalHouse: ['Rental', 'Kameraverleih', 'Loueur', 'Noleggio', 'Verleih', 'Location', 'Rental House'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: ['Prep Days', 'Prep-Tage', 'Jours de préparation', 'Días de preparación', 'Giorni di preparazione'],
     shootingDays: ['Shooting Days', 'Drehtage', 'Jours de tournage', 'Días de rodaje', 'Giorni di riprese'],
@@ -10823,6 +10831,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function deleteProject(name) {
     if (name === undefined) {
       deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
+      invalidateProjectReadCache();
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
@@ -10858,6 +10867,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     removeProjectActivity(key);
     if (Object.keys(projects).length === 0) {
       deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
+      invalidateProjectReadCache();
     } else {
       persistAllProjects(projects);
     }
@@ -11579,7 +11589,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     ensurePreWriteMigrationBackup(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, safeEntries, "Error saving full backup history to localStorage:");
+    saveJSONToStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, safeEntries, "Error saving full backup history to localStorage:", {
+      disableCompression: true
+    });
   }
   var recordFullBackupHistoryEntry = function recordFullBackupHistoryEntry(entry) {
     var normalized = normalizeFullBackupHistoryEntry(entry);
@@ -11592,21 +11604,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     saveFullBackupHistory(trimmed);
     return trimmed;
   };
-  function normalizeImportedFullBackupHistory(value) {
+  function normalizeImportedFullBackupHistory(value, visited) {
     if (value === null || value === undefined) {
       return [];
+    }
+    var seen = visited || new WeakSet();
+    if (seen.has(value)) {
+      return [];
+    }
+    if (_typeof(value) === 'object') {
+      seen.add(value);
     }
     if (isMapLike(value)) {
       var converted = convertMapLikeToObject(value);
       if (converted) {
-        return normalizeImportedFullBackupHistory(Object.values(converted));
+        return normalizeImportedFullBackupHistory(Object.values(converted), seen);
       }
       return [];
     }
     if (typeof value === 'string') {
       var parsed = tryParseJSONLike(value);
       if (parsed.success) {
-        return normalizeImportedFullBackupHistory(parsed.parsed);
+        return normalizeImportedFullBackupHistory(parsed.parsed, seen);
       }
       var entry = normalizeFullBackupHistoryEntry(value);
       return entry ? [entry] : [];
@@ -11616,13 +11635,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       if (Array.isArray(value.history)) {
-        return normalizeImportedFullBackupHistory(value.history);
+        return normalizeImportedFullBackupHistory(value.history, seen);
       }
       if (Array.isArray(value.entries)) {
-        return normalizeImportedFullBackupHistory(value.entries);
+        return normalizeImportedFullBackupHistory(value.entries, seen);
       }
       if (Array.isArray(value.list)) {
-        return normalizeImportedFullBackupHistory(value.list);
+        return normalizeImportedFullBackupHistory(value.list, seen);
       }
       var _entry3 = normalizeFullBackupHistoryEntry(value);
       if (_entry3) {
@@ -11630,7 +11649,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var nestedValues = Object.values(value);
       if (nestedValues.length) {
-        return normalizeImportedFullBackupHistory(nestedValues);
+        return normalizeImportedFullBackupHistory(nestedValues, seen);
       }
     }
     return [];
@@ -11949,7 +11968,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         skipNormalization: true
       });
     }
-    return Array.isArray(normalizedRules) ? normalizedRules : [];
+    if (Array.isArray(normalizedRules)) {
+      var defaultsApplied = false;
+      var withDefaults = normalizedRules.map(function (rule) {
+        if (rule && _typeof(rule) === 'object' && typeof rule.enabled === 'undefined') {
+          defaultsApplied = true;
+          return _objectSpread(_objectSpread({}, rule), {}, {
+            enabled: true
+          });
+        }
+        return rule;
+      });
+      if (defaultsApplied) {
+        return withDefaults;
+      }
+      return normalizedRules;
+    }
+    return [];
   }
   function saveAutoGearRules(rules) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -12411,7 +12446,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _clearAllData() {
     _clearAllData = _asyncToGenerator(_regenerator().m(function _callee2() {
-      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, _t4;
+      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, registrations, _iterator, _step, registration, cacheKeys, _iterator2, _step2, cacheKey, _t4, _t5, _t6, _t7, _t8;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -12420,6 +12455,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               deleteProject();
             } catch (error) {
               console.warn('Unable to clear stored projects during factory reset', error);
+            }
+            invalidateProjectReadCache();
+            if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
+              AUTO_BACKUP_COMPRESSION_CACHE.clear();
+            }
+            if (Array.isArray(AUTO_BACKUP_COMPRESSION_CACHE_KEYS)) {
+              AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
             }
             _context2.p = 1;
             clearVaultFn = null;
@@ -12445,8 +12487,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             console.warn('Failed to clear backup vault during factory reset', _t4);
           case 4:
             safeStorage = getSafeLocalStorage();
-            prefixes = ['cameraPowerPlanner_', 'cinePowerPlanner_', 'cineBackupVault', 'cineRental', 'cine', '__cine'];
-            exactKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', 'debugMode'];
+            prefixes = ['cameraPowerPlanner_', 'cinePowerPlanner_', 'cineBackupVault', 'cineRental', 'cine', '__cine', '__storage'];
+            exactKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', 'debugMode', 'customLogo'];
             clearStorageAggressively = function clearStorageAggressively(storage, storageName) {
               if (!storage) return;
               try {
@@ -12502,6 +12544,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
             deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
             deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
+            deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
+            deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
+            deleteFromStorage(safeStorage, STORAGE_TEST_KEY, msg);
             deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
             if (typeof sessionStorage !== 'undefined') {
               deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
@@ -12542,10 +12589,100 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             } catch (loggingError) {
               console.warn('Unable to clear logging history during factory reset', loggingError);
             }
-          case 5:
+            try {
+              if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.name === 'string') {
+                GLOBAL_SCOPE.name = '';
+              }
+            } catch (windowNameError) {
+              console.warn('Unable to reset window.name during factory reset', windowNameError);
+            }
+            _context2.p = 5;
+            if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
+              _context2.n = 13;
+              break;
+            }
+            _context2.n = 6;
+            return navigator.serviceWorker.getRegistrations();
+          case 6:
+            registrations = _context2.v;
+            _iterator = _createForOfIteratorHelper(registrations);
+            _context2.p = 7;
+            _iterator.s();
+          case 8:
+            if ((_step = _iterator.n()).done) {
+              _context2.n = 10;
+              break;
+            }
+            registration = _step.value;
+            _context2.n = 9;
+            return registration.unregister();
+          case 9:
+            _context2.n = 8;
+            break;
+          case 10:
+            _context2.n = 12;
+            break;
+          case 11:
+            _context2.p = 11;
+            _t5 = _context2.v;
+            _iterator.e(_t5);
+          case 12:
+            _context2.p = 12;
+            _iterator.f();
+            return _context2.f(12);
+          case 13:
+            _context2.n = 15;
+            break;
+          case 14:
+            _context2.p = 14;
+            _t6 = _context2.v;
+            console.warn('Failed to unregister service workers', _t6);
+          case 15:
+            _context2.p = 15;
+            if (!(typeof caches !== 'undefined' && typeof caches.keys === 'function')) {
+              _context2.n = 23;
+              break;
+            }
+            _context2.n = 16;
+            return caches.keys();
+          case 16:
+            cacheKeys = _context2.v;
+            _iterator2 = _createForOfIteratorHelper(cacheKeys);
+            _context2.p = 17;
+            _iterator2.s();
+          case 18:
+            if ((_step2 = _iterator2.n()).done) {
+              _context2.n = 20;
+              break;
+            }
+            cacheKey = _step2.value;
+            _context2.n = 19;
+            return caches.delete(cacheKey);
+          case 19:
+            _context2.n = 18;
+            break;
+          case 20:
+            _context2.n = 22;
+            break;
+          case 21:
+            _context2.p = 21;
+            _t7 = _context2.v;
+            _iterator2.e(_t7);
+          case 22:
+            _context2.p = 22;
+            _iterator2.f();
+            return _context2.f(22);
+          case 23:
+            _context2.n = 25;
+            break;
+          case 24:
+            _context2.p = 24;
+            _t8 = _context2.v;
+            console.warn('Failed to clear cache storage', _t8);
+          case 25:
             return _context2.a(2);
         }
-      }, _callee2, null, [[1, 3]]);
+      }, _callee2, null, [[17, 21, 22, 23], [15, 24], [7, 11, 12, 13], [5, 14], [1, 3]]);
     }));
     return _clearAllData.apply(this, arguments);
   }
