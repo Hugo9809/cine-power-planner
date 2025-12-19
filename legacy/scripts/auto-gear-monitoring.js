@@ -6,6 +6,7 @@
   }
   var SCENARIO_SELECT_ID = 'autoGearScenarios';
   var MONITORING_SELECT_IDS = ['autoGearVideoDistribution', 'autoGearMonitor', 'autoGearWireless'];
+  var MONITORING_CONDITION_KEYS = ['videoDistribution', 'monitor', 'wireless'];
   var EDITOR_ID = 'autoGearEditor';
   var scenarioSelect = null;
   var scenarioObserver = null;
@@ -216,8 +217,23 @@
     }
     return false;
   }
+  function hasActiveMonitoringConditions() {
+    for (var i = 0; i < MONITORING_CONDITION_KEYS.length; i += 1) {
+      var key = MONITORING_CONDITION_KEYS[i];
+      if (typeof window !== 'undefined' && typeof window.isAutoGearConditionActive === 'function') {
+        if (window.isAutoGearConditionActive(key)) {
+          return true;
+        }
+      }
+      var section = document.getElementById('autoGearCondition-' + key);
+      if (section && !section.hidden && section.getAttribute('aria-hidden') !== 'true') {
+        return true;
+      }
+    }
+    return false;
+  }
   function applyVisibility() {
-    var shouldShow = scenarioTriggersMonitoring() || hasMonitoringSelections();
+    var shouldShow = scenarioTriggersMonitoring() || hasMonitoringSelections() || hasActiveMonitoringConditions();
     for (var i = 0; i < monitoringSelects.length; i += 1) {
       var data = monitoringSelects[i];
       if (!data.row || !data.select || !data.row.contains(data.select)) {

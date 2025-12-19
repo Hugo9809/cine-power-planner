@@ -383,6 +383,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       try {
         return Object.freeze(value);
       } catch (freezeError) {
+        console.warn('fallbackCreateImmutability (helpers): Object.freeze failed', freezeError);
         void freezeError;
         return value;
       }

@@ -290,6 +290,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return value;
       }
       if (shouldBypass(value)) {
+        process.stdout.write("architecture.js bypassed freeze for value: ".concat(_typeof(value), "\n"));
         return value;
       }
       if (seen.has(value)) {

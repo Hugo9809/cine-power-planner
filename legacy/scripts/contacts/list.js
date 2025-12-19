@@ -107,7 +107,7 @@ function parseVCard(text) {
     var _line$split = line.split(':'),
       _line$split2 = _toArray(_line$split),
       rawKey = _line$split2[0],
-      rawValueParts = _line$split2.slice(1);
+      rawValueParts = _arrayLikeToArray(_line$split2).slice(1);
     if (!rawValueParts.length) return;
     var keySegments = rawKey.split(';');
     var baseKey = (_keySegments$ = keySegments[0]) === null || _keySegments$ === void 0 ? void 0 : _keySegments$.toUpperCase();

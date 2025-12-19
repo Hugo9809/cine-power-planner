@@ -2012,17 +2012,17 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
     var setup = setups[setupName];
     if (setup) {
       setupNameInput.value = setupName;
-      cameraSelect.value = setup.camera;
+      cameraSelect.value = setup.camera || 'None';
       callEventsCoreFunction('updateRecordingMediaOptions');
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
-      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);
-      monitorSelect.value = setup.monitor;
-      videoSelect.value = setup.video;
+      applyBatteryPlateSelectionFromBattery(setup.battery || '', batteryPlateSelect.value);
+      monitorSelect.value = setup.monitor || 'None';
+      videoSelect.value = setup.video || 'None';
       if (typeof updateCageSelectOptions === 'function') {
-        updateCageSelectOptions(setup.cage);
+        updateCageSelectOptions(setup.cage || 'None');
       } else if (cageSelect) {
-        cageSelect.value = setup.cage || cageSelect.value;
+        cageSelect.value = setup.cage || 'None';
       }
       (setup.motors || []).forEach(function (val, i) {
         if (motorSelects[i]) motorSelects[i].value = val;
@@ -2030,10 +2030,10 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
       (setup.controllers || []).forEach(function (val, i) {
         if (controllerSelects[i]) controllerSelects[i].value = val;
       });
-      distanceSelect.value = setup.distance;
-      batterySelect.value = setup.battery;
-      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
-      hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
+      distanceSelect.value = setup.distance || 'None';
+      batterySelect.value = setup.battery || 'None';
+      applyBatteryPlateSelectionFromBattery(setup.battery || '', batteryPlateSelect ? batteryPlateSelect.value : '');
+      hotswapSelect.value = setup.batteryHotswap || 'None';
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
       var storedPowerApplied = false;
@@ -3843,6 +3843,15 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else {
     var watt = _typeof(deviceData) === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
+    var schemaAttrs = typeof getSchemaAttributesForCategory === 'function' ? getSchemaAttributesForCategory(categoryKey) : [];
+    var hasWattage = schemaAttrs.includes('powerDrawWatts') || deviceData && deviceData.powerDrawWatts !== undefined;
+    if (wattFieldDiv) {
+      wattFieldDiv.style.display = hasWattage ? "" : "none";
+    }
+    var hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA') || deviceData && (deviceData.dtapA !== undefined || deviceData.pinA !== undefined);
+    if (dtapRow) {
+      dtapRow.style.display = hasDtap ? "" : "none";
+    }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   }
 }
@@ -4035,6 +4044,15 @@ if (newCategorySelectElement) {
         buildDynamicFields("accessories.cables.".concat(effectiveSubcategory), {}, categoryExcludedAttrs["accessories.cables.".concat(effectiveSubcategory)] || []);
       }
     } else {
+      var schemaAttrs = typeof getSchemaAttributesForCategory === 'function' ? getSchemaAttributesForCategory(val) : [];
+      var hasWattage = schemaAttrs.includes('powerDrawWatts');
+      if (wattFieldDiv) {
+        wattFieldDiv.style.display = hasWattage ? "" : "none";
+      }
+      var hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA');
+      if (dtapRow) {
+        dtapRow.style.display = hasDtap ? "" : "none";
+      }
       buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
     }
     newWattInput.value = "";
@@ -4574,13 +4592,14 @@ addSafeEventListener(addDeviceBtn, "click", function (event) {
   populateSelect(cameraSelect, devices.cameras, true);
   populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
+  var fiz = devices.fiz || {};
   motorSelects.forEach(function (sel) {
-    return populateSelect(sel, devices.fiz.motors, true);
+    return populateSelect(sel, fiz.motors, true);
   });
   controllerSelects.forEach(function (sel) {
-    return populateSelect(sel, devices.fiz.controllers, true);
+    return populateSelect(sel, fiz.controllers, true);
   });
-  populateSelect(distanceSelect, devices.fiz.distance, true);
+  populateSelect(distanceSelect, fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
   updateFizConnectorOptions();
   applyFilters();

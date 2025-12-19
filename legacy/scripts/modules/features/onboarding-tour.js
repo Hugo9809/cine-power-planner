@@ -675,7 +675,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }, {
           icon: "\uE7AB",
           title: 'Project requirements ready to hand off',
-          body: 'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.'
+          body: 'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental, and production rely on.'
         }],
         languageLabel: 'Choose your language',
         languageHint: 'Switch languages now—the tutorial, help and exports update instantly across offline saves.',
@@ -764,7 +764,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     projectRequirementsAccess: {
       title: 'Open Project Requirements from Generate',
-      body: 'Close the Own Gear dialog with its footer button, then press Generate Gear List and Project Requirements to open the requirements form yourself. This keeps the workflow clear and confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.'
+      body: 'Press Generate Gear List and Project Requirements to open the requirements form. This confirms the dialog opens from the standard trigger while autosave and backups keep your data safe.'
     },
     projectRequirementsBrief: {
       title: 'Capture the project brief',
@@ -2214,10 +2214,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focus: '#monitorSelect'
     }, {
       key: 'selectBattery',
-      highlight: '#batterySelect'
+      highlight: '#batterySelectRow'
     }, {
       key: 'resultsTotalDraw',
-      highlight: ['#resultsTotalPowerRow', '#resultsTotalCurrent144Row', '#resultsTotalCurrent12Row']
+      highlight: ['#heroMainStat', '#metricCurrent144', '#metricCurrent12']
     }, {
       key: 'resultsBatteryPacks',
       highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryLifeUnit', '#runtimeAverageNote', '#batteryCountLabel', '#batteryCount']
@@ -2252,7 +2252,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: 'editDeviceDataEdit',
       highlight: '#deviceListContainer',
       focus: '#deviceListContainer .edit-btn',
-      ensureDeviceManager: true
+      ensureDeviceManager: true,
+      scrollToTop: true
     }, {
       key: 'ownGearAccess',
       highlight: '#sideMenu [data-sidebar-action="open-own-gear"]',
@@ -2266,8 +2267,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focus: '#ownGearName'
     }, {
       key: 'projectRequirementsAccess',
-      highlight: ['#ownGearCloseButton', '#generateGearListBtn'],
-      ensureOwnGear: true
+      highlight: '#generateGearListBtn'
     }, {
       key: 'projectRequirementsBrief',
       highlight: '#projectRequirementsBriefSection',
@@ -2576,6 +2576,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (step.key === 'editDeviceDataAdd') {
       activeStepAutomationCleanup = attachDeviceManagerNameAutofill();
+    } else if (step.key === 'projectRequirementsAccess') {
+      if (!ownGearDialogRef) {
+        ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+      }
+      if (ownGearDialogRef) {
+        if (typeof ownGearDialogRef.close === 'function') {
+          try {
+            ownGearDialogRef.close();
+          } catch (error) {
+            void error;
+          }
+        }
+        ownGearDialogRef.setAttribute('hidden', '');
+        ownGearDialogRef.removeAttribute('open');
+      }
+      autoOpenedOwnGear = false;
     }
   }
   function clearFrame() {
@@ -4846,6 +4862,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     var avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     var avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    var avatarInput = DOCUMENT.getElementById('userProfileAvatarInput');
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
@@ -4931,6 +4948,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (avatarButton) {
         var hasPhoto = avatarPreview.querySelector('img') !== null;
         avatarButton.textContent = resolveAvatarActionLabel(hasPhoto);
+      }
+    };
+    var readAvatarFile = typeof GLOBAL_SCOPE.readAvatarFile === 'function' ? GLOBAL_SCOPE.readAvatarFile : typeof GLOBAL_SCOPE.localReadAvatarFile === 'function' ? GLOBAL_SCOPE.localReadAvatarFile : null;
+    var setAvatar = typeof GLOBAL_SCOPE.setAvatar === 'function' ? GLOBAL_SCOPE.setAvatar : function (dataUrl) {
+      if (typeof GLOBAL_SCOPE.assignUserProfileState === 'function') {
+        var currentName = '';
+        if (typeof GLOBAL_SCOPE.getUserProfileSnapshot === 'function') {
+          var snap = GLOBAL_SCOPE.getUserProfileSnapshot();
+          if (snap && snap.name) currentName = snap.name;
+        }
+        GLOBAL_SCOPE.assignUserProfileState({
+          avatar: dataUrl,
+          name: currentName
+        });
+        if (typeof GLOBAL_SCOPE.persistUserProfileState === 'function') {
+          GLOBAL_SCOPE.persistUserProfileState();
+        }
       }
     };
     if (avatarButton) {
@@ -5025,6 +5059,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     avatarAction.className = 'onboarding-avatar-action';
     avatarAction.textContent = resolveAvatarActionLabel(false);
     var handleAvatarActionClick = function handleAvatarActionClick() {
+      if (avatarInput && typeof avatarInput.click === 'function') {
+        try {
+          avatarInput.click();
+          return;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not trigger avatar input.', error);
+        }
+      }
       if (avatarButton && typeof avatarButton.click === 'function') {
         try {
           avatarButton.click();
@@ -6467,7 +6509,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
     var focusTarget = findUsableElement(focusCandidates);
-    if (focusTarget && isHighlightElementUsable(focusTarget) && typeof focusTarget.scrollIntoView === 'function') {
+    if (step.scrollToTop && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.scrollTo === 'function') {
+      try {
+        GLOBAL_SCOPE.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll to top.', error);
+      }
+    } else if (focusTarget && isHighlightElementUsable(focusTarget) && typeof focusTarget.scrollIntoView === 'function') {
       try {
         focusTarget.scrollIntoView({
           behavior: 'smooth',
@@ -7333,6 +7384,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not attach document factory reset listener.', error);
       }
+    }
+  }
+  if (DOCUMENT && DOCUMENT.documentElement) {
+    try {
+      if (typeof DOCUMENT.documentElement.hasAttribute === 'function' && DOCUMENT.documentElement.hasAttribute('data-onboarding-project-dialog')) {
+        DOCUMENT.documentElement.removeAttribute('data-onboarding-project-dialog');
+      }
+    } catch (cleanupError) {
+      void cleanupError;
     }
   }
   attachFactoryResetListeners();

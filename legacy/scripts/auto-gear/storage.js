@@ -530,5 +530,4 @@ if (typeof module !== 'undefined' && module.exports) {
 if (typeof globalThis !== 'undefined') {
   var target = _typeof(globalThis.AUTO_GEAR_STORAGE_EXPORTS) === 'object' && globalThis.AUTO_GEAR_STORAGE_EXPORTS ? globalThis.AUTO_GEAR_STORAGE_EXPORTS : globalThis.AUTO_GEAR_STORAGE_EXPORTS = {};
   Object.assign(target, AUTO_GEAR_STORAGE_EXPORTS);
-  Object.assign(globalThis, AUTO_GEAR_STORAGE_EXPORTS);
 }

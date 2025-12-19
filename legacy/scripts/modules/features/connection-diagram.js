@@ -368,6 +368,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (category === 'fiz.distance') return 'diagram-popup--distance';
       return '';
     };
+    var isDetailDialogOpen = function isDetailDialogOpen() {
+      return Boolean(detailDialog && (detailDialog.open || detailDialog.hasAttribute('open')));
+    };
+    var isSetupDiagramInView = function isSetupDiagramInView() {
+      var _document$documentEle, _document$documentEle2;
+      var setupDiagramContainer = resolveSetupContainer();
+      if (!setupDiagramContainer || typeof setupDiagramContainer.getBoundingClientRect !== 'function') return false;
+      var rect = setupDiagramContainer.getBoundingClientRect();
+      var viewportW = windowObj ? windowObj.innerWidth : (document === null || document === void 0 || (_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+      var viewportH = windowObj ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+      if (!viewportW || !viewportH) return false;
+      return rect.bottom > 0 && rect.right > 0 && rect.top < viewportH && rect.left < viewportW;
+    };
     function ensureDetailDialogElements() {
       var dialogEl = getDiagramDetailDialog();
       var contentEl = getDiagramDetailContent();
@@ -389,6 +402,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (detailDialogContent) {
             detailDialogContent.innerHTML = '';
           }
+          detailDialog.removeAttribute('open');
           detailDialog.removeAttribute('aria-labelledby');
           detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
           detailDialog.classList.remove('diagram-detail-dialog--camera');
@@ -400,29 +414,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function closeDetailDialog() {
       ensureDetailDialogElements();
       if (!detailDialog) return;
+      detailDialog.removeAttribute('open');
       if (typeof detailDialog.close === 'function') {
         if (detailDialog.open) {
           detailDialog.close();
         }
       } else {
-        detailDialog.removeAttribute('open');
         if (detailDialogContent) {
           detailDialogContent.innerHTML = '';
         }
         detailDialog.removeAttribute('aria-labelledby');
         detailDialog.setAttribute('aria-label', detailDialogDefaultHeading);
         detailDialog.classList.remove('diagram-detail-dialog--camera');
+        var surface = detailDialog.querySelector('.modal-surface');
+        if (surface) {
+          surface.style.position = '';
+          surface.style.margin = '';
+          surface.style.left = '';
+          surface.style.top = '';
+          surface.style.visibility = '';
+        }
       }
     }
     function openDetailDialogWithEntry(entry) {
+      var position = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       ensureDetailDialogElements();
       if (!detailDialog || !detailDialogContent || !entry) return;
+      var content = typeof entry.content === 'string' ? entry.content.trim() : entry.content;
+      if (!content) {
+        closeDetailDialog();
+        return;
+      }
+      if (!isSetupDiagramInView()) {
+        closeDetailDialog();
+        return;
+      }
       var ownerDoc = detailDialog.ownerDocument || document;
       if (!ownerDoc) return;
+      var surface = detailDialog.querySelector('.modal-surface');
+      if (surface) {
+        if (position && typeof position.x === 'number' && typeof position.y === 'number') {
+          surface.style.visibility = 'hidden';
+          surface.style.position = 'absolute';
+          surface.style.margin = '0';
+          surface.style.left = '0';
+          surface.style.top = '0';
+        } else {
+          surface.style.position = '';
+          surface.style.margin = '';
+          surface.style.left = '';
+          surface.style.top = '';
+          surface.style.visibility = '';
+        }
+      }
       detailDialogContent.innerHTML = '';
       var wrapper = ownerDoc.createElement('div');
       wrapper.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
-      wrapper.innerHTML = entry.content || '';
+      wrapper.innerHTML = content;
       detailDialogContent.appendChild(wrapper);
       var closeButton = wrapper.querySelector('[data-diagram-popup-close]');
       if (closeButton) {
@@ -473,6 +521,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       } else {
         detailDialog.setAttribute('open', '');
+      }
+      if (surface && position && typeof position.x === 'number' && typeof position.y === 'number') {
+        var viewportW = windowObj ? windowObj.innerWidth : document.documentElement.clientWidth || 0;
+        var viewportH = windowObj ? windowObj.innerHeight : document.documentElement.clientHeight || 0;
+        var rect = surface.getBoundingClientRect();
+        var GAP = 5;
+        var SCREEN_MARGIN = 20;
+        var left = position.x + GAP;
+        var top = position.y + GAP;
+        if (left + rect.width > viewportW - SCREEN_MARGIN) {
+          left = position.x - rect.width - GAP;
+        }
+        if (left < SCREEN_MARGIN) left = SCREEN_MARGIN;
+        if (left + rect.width > viewportW - SCREEN_MARGIN) {
+          left = viewportW - rect.width - SCREEN_MARGIN;
+        }
+        if (top + rect.height > viewportH - SCREEN_MARGIN) {
+          top = position.y - rect.height - GAP;
+        }
+        if (top < SCREEN_MARGIN) top = SCREEN_MARGIN;
+        if (top + rect.height > viewportH - SCREEN_MARGIN) {
+          top = viewportH - rect.height - SCREEN_MARGIN;
+        }
+        surface.style.left = "".concat(Math.round(left), "px");
+        surface.style.top = "".concat(Math.round(top), "px");
+        surface.style.visibility = '';
       }
     }
     function normalizeDiagramPositionsInput(positions) {
@@ -1796,7 +1870,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       };
       var positionPopup = function positionPopup(nodeEl, entry) {
-        var _document$documentEle, _document$documentEle2;
+        var _document$documentEle3, _document$documentEle4;
         var repositionOnly = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         if (!popup || !nodeEl) return;
         var rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
@@ -1807,8 +1881,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
           popup.removeAttribute('hidden');
         }
-        var viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth) ? windowObj.innerWidth : (document === null || document === void 0 || (_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
-        var viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight) ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+        var viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth) ? windowObj.innerWidth : (document === null || document === void 0 || (_document$documentEle3 = document.documentElement) === null || _document$documentEle3 === void 0 ? void 0 : _document$documentEle3.clientWidth) || 0;
+        var viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight) ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle4 = document.documentElement) === null || _document$documentEle4 === void 0 ? void 0 : _document$documentEle4.clientHeight) || 0;
         if (!repositionOnly) {
           adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
         }
@@ -1818,8 +1892,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var top = 0;
         var pointer = lastPointerPosition;
         if (pointer && Number.isFinite(pointer.x) && Number.isFinite(pointer.y)) {
-          left = pointer.x + 15;
-          top = pointer.y + 15;
+          left = pointer.x + 5;
+          top = pointer.y + 5;
           if (viewportWidth) {
             if (left + popupRect.width > viewportWidth - margin) {
               left = viewportWidth - popupRect.width - margin;
@@ -2020,7 +2094,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         hidePopup();
         activePopupNode = null;
         activePopupEntry = null;
-        openDetailDialogWithEntry(entry);
+        var clickPos = null;
+        if (e.clientX !== undefined && e.clientY !== undefined) {
+          clickPos = {
+            x: e.clientX,
+            y: e.clientY
+          };
+        } else if (lastPointerPosition) {
+          clickPos = _objectSpread({}, lastPointerPosition);
+        }
+        openDetailDialogWithEntry(entry, clickPos);
         e.stopPropagation();
         e.preventDefault();
       };
@@ -2059,6 +2142,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (windowObj) {
         windowObj.addEventListener('resize', repositionActivePopup);
       }
+      var handleWindowScroll = function handleWindowScroll() {
+        if (!isDetailDialogOpen()) return;
+        if (!isSetupDiagramInView()) {
+          closeDetailDialog();
+        }
+      };
+      if (windowObj) {
+        windowObj.addEventListener('scroll', handleWindowScroll, {
+          passive: true
+        });
+      }
       cleanupDiagramInteractions = function cleanupDiagramInteractions() {
         svg.removeEventListener('mousedown', onSvgMouseDown);
         svg.removeEventListener('touchstart', onSvgMouseDown);
@@ -2092,6 +2186,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
+        }
+        if (windowObj) {
+          windowObj.removeEventListener('scroll', handleWindowScroll);
         }
         clearPendingDrag();
         dragId = null;

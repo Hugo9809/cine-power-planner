@@ -27,6 +27,12 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 var FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK = 'Force reload requires an internet connection. Try again once you are back online.';
+var actionMap = new Map();
+var featureMap = new Map();
+var deviceMap = new Map();
+var helpMap = new Map();
+var featureSearchEntries = [];
+var featureSearchDefaultOptions = [];
 function getSessionCloneScope() {
   if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
     return CORE_GLOBAL_SCOPE;
@@ -4174,6 +4180,9 @@ function restoreSessionState() {
           bindGearListEyeLeatherListener();
           bindGearListProGaffTapeListener();
           bindGearListDirectorMonitorListener();
+          if (storedProject && isPlainObject(storedProject.gearSelectors) && Object.keys(storedProject.gearSelectors).length && typeof applyGearListSelectors === 'function') {
+            applyGearListSelectors(storedProject.gearSelectors);
+          }
           if (state) {
             setSliderBowlValue(state.sliderBowl);
             setEasyrigValue(state.easyrig);
@@ -9412,7 +9421,7 @@ var storageBackupNowControl = typeof document !== 'undefined' ? document.getElem
 if (storageBackupNowControl) {
   storageBackupNowControl.addEventListener('click', createSettingsBackup);
 }
-var storagePersistenceRequestButton = typeof document !== 'undefined' ? document.getElementById('storagePersistenceRequest') : null;
+var sessionStoragePersistenceRequestButton = typeof document !== 'undefined' ? document.getElementById('storagePersistenceRequest') : null;
 var storagePersistenceStatusEl = typeof document !== 'undefined' ? document.getElementById('storagePersistenceStatus') : null;
 var loggingSectionEl = typeof document !== 'undefined' ? document.getElementById('loggingSection') : null;
 var loggingHistoryListEl = typeof document !== 'undefined' ? document.getElementById('loggingHistory') : null;
@@ -9422,13 +9431,13 @@ var loggingUnavailableEl = typeof document !== 'undefined' ? document.getElement
 var loggingLevelFilterEl = typeof document !== 'undefined' ? document.getElementById('loggingLevelFilter') : null;
 var loggingNamespaceFilterEl = typeof document !== 'undefined' ? document.getElementById('loggingNamespaceFilter') : null;
 var loggingNamespaceHelpEl = typeof document !== 'undefined' ? document.getElementById('loggingNamespaceFilterHelp') : null;
-var loggingExportButton = typeof document !== 'undefined' ? document.getElementById('loggingExportBtn') : null;
 var loggingHistoryLimitInput = typeof document !== 'undefined' ? document.getElementById('loggingHistoryLimit') : null;
 var loggingHistoryLimitHelpEl = typeof document !== 'undefined' ? document.getElementById('loggingHistoryLimitHelp') : null;
 var loggingConsoleOutputInput = typeof document !== 'undefined' ? document.getElementById('loggingConsoleOutput') : null;
 var loggingCaptureConsoleInput = typeof document !== 'undefined' ? document.getElementById('loggingCaptureConsole') : null;
 var loggingCaptureErrorsInput = typeof document !== 'undefined' ? document.getElementById('loggingCaptureErrors') : null;
 var loggingPersistSessionInput = typeof document !== 'undefined' ? document.getElementById('loggingPersistSession') : null;
+var sessionLoggingExportButton = typeof document !== 'undefined' ? document.getElementById('loggingExportBtn') : null;
 var storagePersistenceState = {
   supported: null,
   persisted: null,
@@ -9613,7 +9622,7 @@ function detachLoggingSubscriptions() {
   loggingState.unsubscribeConfig = null;
 }
 function setLoggingControlsDisabled(disabled) {
-  var inputs = [loggingLevelFilterEl, loggingNamespaceFilterEl, loggingHistoryLimitInput, loggingConsoleOutputInput, loggingCaptureConsoleInput, loggingCaptureErrorsInput, loggingPersistSessionInput, loggingExportButton];
+  var inputs = [loggingLevelFilterEl, loggingNamespaceFilterEl, loggingHistoryLimitInput, loggingConsoleOutputInput, loggingCaptureConsoleInput, loggingCaptureErrorsInput, loggingPersistSessionInput, sessionLoggingExportButton];
   inputs.forEach(function (input) {
     if (!input) return;
     input.disabled = !!disabled;
@@ -9757,10 +9766,10 @@ function exportLoggingHistory() {
   var unavailableMessage = langTexts && langTexts.loggingExportUnavailable || fallbackTexts && fallbackTexts.loggingExportUnavailable || '';
   var errorMessage = langTexts && langTexts.loggingExportError || fallbackTexts && fallbackTexts.loggingExportError || '';
   var successMessage = langTexts && langTexts.loggingExportSuccess || fallbackTexts && fallbackTexts.loggingExportSuccess || 'Diagnostics log exported.';
-  var shouldRestoreDisabled = loggingExportButton && !loggingExportButton.disabled;
-  if (loggingExportButton) {
-    loggingExportButton.disabled = true;
-    loggingExportButton.setAttribute('aria-disabled', 'true');
+  var shouldRestoreDisabled = sessionLoggingExportButton && !sessionLoggingExportButton.disabled;
+  if (sessionLoggingExportButton) {
+    sessionLoggingExportButton.disabled = true;
+    sessionLoggingExportButton.setAttribute('aria-disabled', 'true');
   }
   try {
     if (!logging || typeof logging.getHistory !== 'function') {
@@ -9876,9 +9885,9 @@ function exportLoggingHistory() {
     setLoggingStatusKey('loggingStatusExportFailed');
     scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
   } finally {
-    if (loggingExportButton && shouldRestoreDisabled) {
-      loggingExportButton.disabled = false;
-      loggingExportButton.setAttribute('aria-disabled', 'false');
+    if (sessionLoggingExportButton && shouldRestoreDisabled) {
+      sessionLoggingExportButton.disabled = false;
+      sessionLoggingExportButton.setAttribute('aria-disabled', 'false');
     }
   }
 }
@@ -10287,8 +10296,8 @@ function initializeLoggingPanel() {
   registerToggleHandler(loggingCaptureConsoleInput, 'captureConsole');
   registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
   registerToggleHandler(loggingPersistSessionInput, 'persistSession');
-  if (loggingExportButton) {
-    loggingExportButton.addEventListener('click', function () {
+  if (sessionLoggingExportButton) {
+    sessionLoggingExportButton.addEventListener('click', function () {
       exportLoggingHistory();
     });
   }
@@ -10410,16 +10419,16 @@ function renderStoragePersistenceStatus() {
   } else {
     storagePersistenceStatusEl.removeAttribute('data-help');
   }
-  if (storagePersistenceRequestButton) {
+  if (sessionStoragePersistenceRequestButton) {
     var shouldDisable = !storagePersistenceStatusEl || storagePersistenceState.supported === false || storagePersistenceState.persisted || storagePersistenceState.requestInFlight || storagePersistenceState.checking;
-    storagePersistenceRequestButton.disabled = shouldDisable;
-    storagePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
-    var requestLabel = langTexts.storagePersistenceRequest || fallbackTexts.storagePersistenceRequest || storagePersistenceRequestButton.dataset.defaultLabel || storagePersistenceRequestButton.textContent || '';
+    sessionStoragePersistenceRequestButton.disabled = shouldDisable;
+    sessionStoragePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+    var requestLabel = langTexts.storagePersistenceRequest || fallbackTexts.storagePersistenceRequest || sessionStoragePersistenceRequestButton.dataset.defaultLabel || sessionStoragePersistenceRequestButton.textContent || '';
     var requestHelp = langTexts.storagePersistenceRequestHelp || fallbackTexts.storagePersistenceRequestHelp || requestLabel;
     if (requestHelp) {
-      storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
-      storagePersistenceRequestButton.setAttribute('title', requestHelp);
-      storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('data-help', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('title', requestHelp);
+      sessionStoragePersistenceRequestButton.setAttribute('aria-label', requestHelp);
     }
   }
   if (typeof storagePersistenceStatusEl.dispatchEvent === 'function') {
@@ -10625,7 +10634,7 @@ function _handleStoragePersistenceRequest() {
           if (event && typeof event.preventDefault === 'function') {
             event.preventDefault();
           }
-          if (!(!storagePersistenceRequestButton || storagePersistenceState.requestInFlight)) {
+          if (!(!sessionStoragePersistenceRequestButton || storagePersistenceState.requestInFlight)) {
             _context3.n = 1;
             break;
           }
@@ -10705,8 +10714,8 @@ function _handleStoragePersistenceRequest() {
   }));
   return _handleStoragePersistenceRequest.apply(this, arguments);
 }
-if (storagePersistenceRequestButton) {
-  storagePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
+if (sessionStoragePersistenceRequestButton) {
+  sessionStoragePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
 }
 if (storagePersistenceStatusEl) {
   refreshStoragePersistenceStatus().catch(function (error) {
@@ -11149,6 +11158,10 @@ if (restoreRehearsalInputEl) {
     }
     runRestoreRehearsal(file);
   });
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.applySharedSetup = applySharedSetup;
+  globalThis.applySharedSetupFromUrl = applySharedSetupFromUrl;
 }
 function resetPlannerStateAfterFactoryReset() {
   var suspendable = typeof suspendProjectPersistence === 'function' && typeof resumeProjectPersistence === 'function';
@@ -14884,7 +14897,17 @@ if (helpButton && helpDialog) {
     var cleanTokens = searchTokens(clean);
     var helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     var deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    var featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    var featureOnlyMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    var actionMatch = findBestSearchMatch(actionMap, cleanKey, cleanTokens);
+    var featureMatch = function () {
+      if (filterType === 'feature') return featureOnlyMatch;
+      if (filterType === 'action') return actionMatch;
+      if (!actionMatch) return featureOnlyMatch;
+      if (!featureOnlyMatch) return actionMatch;
+      if (actionMatch.score > featureOnlyMatch.score) return actionMatch;
+      if (featureOnlyMatch.score > actionMatch.score) return featureOnlyMatch;
+      return actionMatch;
+    }();
     var helpScore = (helpMatch === null || helpMatch === void 0 ? void 0 : helpMatch.score) || 0;
     var deviceScore = (deviceMatch === null || deviceMatch === void 0 ? void 0 : deviceMatch.score) || 0;
     var strongSearchMatchTypes = typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' && STRONG_SEARCH_MATCH_TYPES instanceof Set ? STRONG_SEARCH_MATCH_TYPES : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
@@ -17742,6 +17765,7 @@ if (typeof module !== "undefined" && module.exports) {
     },
     __featureSearchInternals: {
       featureMap: featureMap,
+      actionMap: actionMap,
       deviceMap: deviceMap,
       helpMap: helpMap,
       featureSearchEntries: featureSearchEntries,

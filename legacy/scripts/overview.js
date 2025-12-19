@@ -600,6 +600,12 @@ function getPrintSectionConfig() {
     labelKey: 'rentalPrintSectionPower',
     fallbackLabel: 'Power Summary'
   }, {
+    id: 'battery',
+    selector: '.battery-comparison-section',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionBattery',
+    fallbackLabel: 'Battery Comparison'
+  }, {
     id: 'diagram',
     selector: '#setupDiagram',
     defaultVisible: true,
@@ -611,12 +617,6 @@ function getPrintSectionConfig() {
     defaultVisible: true,
     labelKey: 'rentalPrintSectionGearList',
     fallbackLabel: 'Gear List'
-  }, {
-    id: 'battery',
-    selector: '.battery-comparison-section',
-    defaultVisible: true,
-    labelKey: 'rentalPrintSectionBattery',
-    fallbackLabel: 'Battery Comparison'
   }];
 }
 function loadPrintPreferences() {
@@ -1360,7 +1360,6 @@ function generatePrintableOverview() {
     });
   };
   processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
-  processLensesForOverview(lensSelectElement, 'category_lenses');
   processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
   processSelectForOverview(videoSelect, 'category_video', 'video');
   processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
@@ -1372,6 +1371,7 @@ function generatePrintableOverview() {
   });
   processSelectForOverview(batterySelect, 'category_batteries', 'batteries');
   processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
+  processLensesForOverview(lensSelectElement, 'category_lenses');
   sectionOrder.forEach(function (key) {
     var heading = t[key] || key;
     var icon = overviewSectionIcons[key] || '';
@@ -1379,7 +1379,8 @@ function generatePrintableOverview() {
     var isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
     var isLensList = key === 'category_lenses';
     var gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : isLensList ? 'device-block-grid two-column lens-device-grid' : 'device-block-grid single-column';
-    deviceListHtml += "<div class=\"device-category\"><h3>".concat(iconHtml).concat(heading, "</h3><div class=\"").concat(gridClasses, "\">").concat(sections[key].join(''), "</div></div>");
+    var categoryClasses = isLensList ? 'device-category device-category--full' : 'device-category';
+    deviceListHtml += "<div class=\"".concat(categoryClasses, "\"><h3>").concat(iconHtml).concat(heading, "</h3><div class=\"").concat(gridClasses, "\">").concat(sections[key].join(''), "</div></div>");
   });
   deviceListHtml += '</div>';
   var deviceSectionHeading = deviceListHtml ? t.overviewDeviceSelectionHeading || t.deviceSelectionHeading || 'Device Selection' : '';

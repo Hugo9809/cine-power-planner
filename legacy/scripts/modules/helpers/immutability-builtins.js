@@ -86,7 +86,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (isImmutableBuiltin(value)) {
         return value;
       }
-      if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
+      if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node' && !process.env.JEST_WORKER_ID) {
         return value;
       }
       for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

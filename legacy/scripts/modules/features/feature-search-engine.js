@@ -493,8 +493,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 best = 3;
                 break;
               }
-              if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
+              if (entryToken.startsWith(token)) {
                 best = Math.max(best, 2);
+              } else if (token.startsWith(entryToken)) {
+                best = Math.max(best, 1.5);
               } else if (entryToken.includes(token) || token.includes(entryToken)) {
                 best = Math.max(best, 1);
               } else {

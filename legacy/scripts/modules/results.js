@@ -3483,6 +3483,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cineResults.updateCalculations could not render setup diagram.', error);
       }
     }
+    var refreshGearListIfVisibleFn = resolveFunctionDependency('refreshGearListIfVisible');
+    if (refreshGearListIfVisibleFn) {
+      try {
+        refreshGearListIfVisibleFn();
+      } catch (error) {
+        safeWarn('cineResults.updateCalculations could not refresh gear list.', error);
+      }
+    }
   }
   function setupRuntimeFeedback(options) {
     var opts = options || {};
@@ -3997,6 +4005,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.dependencies.renderTemperatureNote = renderTemperatureNote;
   }
   exposeGlobal('renderTemperatureNote', renderTemperatureNote, {
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+  exposeGlobal('updateCalculations', updateCalculations, {
     configurable: true,
     enumerable: false,
     writable: true
