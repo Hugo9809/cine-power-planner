@@ -37,9 +37,9 @@ fails when they drift. If it reports differences, regenerate the manifest with
    - In DevTools confirm `window.APP_VERSION`, `window.CPP_APP_VERSION` and
      `window.cinePowerPlanner.version` still report the expected release value
      while offline.
-4. **Autosave cadence check**
-   - Make >50 changes or wait 10 minutes to trigger autosave.
-   - Confirm the autosave ledger logs the run and the cache remains intact.
+4. **Auto-backup cadence check**
+   - Make >50 changes or wait 10 minutes to trigger the auto-backup cadence.
+   - Confirm the auto-backup ledger logs the run and the cache remains intact.
 5. **Backup/restore rehearsal**
    - Export a planner backup.
    - Clear application data (localStorage + caches).
@@ -57,7 +57,7 @@ fails when they drift. If it reports differences, regenerate the manifest with
 
 - Console log capturing cache install/activate messages.
 - Screenshot of service worker diagnostics (`navigator.serviceWorker` state).
-- Autosave ledger export showing offline run.
+- Auto-backup ledger export showing offline run.
 - Checksums for exported backups/bundles before and after cache reset.
 - Notes recorded in `docs/verification-log-template.md`.
 
