@@ -14,6 +14,45 @@
 
 var CINE_LOADER_CACHE_BUSTER = Date.now(); // Force reload
 
+var safeConsole = {
+  log: function () {
+    try {
+      if (typeof console !== 'undefined' && typeof console.log === 'function') {
+        console.log.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  warn: function () {
+    try {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  error: function () {
+    try {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  info: function () {
+    try {
+      if (typeof console !== 'undefined' && typeof console.info === 'function') {
+        console.info.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+};
+
 function resolveCriticalGlobalScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
@@ -3175,7 +3214,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           settings.onComplete();
         } catch (completeError) {
-          console.error('Parallel loader completion callback failed', completeError);
+          safeConsole.error('Parallel loader completion callback failed', completeError);
         }
       }
       return {
@@ -3196,7 +3235,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           settings.onComplete();
         } catch (callbackError) {
-          console.error('Parallel loader completion callback failed', callbackError);
+          safeConsole.error('Parallel loader completion callback failed', callbackError);
         }
       }
     }
@@ -3211,7 +3250,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           shouldAbort = settings.onError(context) === true;
         } catch (callbackError) {
-          console.error('Parallel loader error callback failed', callbackError);
+          safeConsole.error('Parallel loader error callback failed', callbackError);
         }
       }
 
@@ -3240,7 +3279,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
             }
 
             resetScriptRetryState(currentUrl);
-            console.log('Parallel script loaded:', currentUrl);
+            safeConsole.log('Parallel script loaded:', currentUrl);
 
             remaining -= 1;
             if (remaining <= 0) {
@@ -3271,7 +3310,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
             resetScriptRetryState(currentUrl);
 
-            console.error(
+            safeConsole.error(
               'Failed to load parallel script:',
               currentUrl,
               '→',
@@ -3332,7 +3371,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     var completed = false;
     var settings = options || {};
     var totalCount = Array.isArray(items) ? items.length : 0;
-    console.log('loadScriptsSequentially', items);
+    safeConsole.log('loadScriptsSequentially', items);
 
 
     function finalize() {
@@ -3340,12 +3379,12 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
 
-      console.log('Finalizing loader sequence');
+      safeConsole.log('Finalizing loader sequence');
       completed = true;
 
       flushAllScriptRetryState();
 
-      console.log('Dispatching cine-loader-complete');
+      safeConsole.log('Dispatching cine-loader-complete');
       dispatchLoaderEvent('cine-loader-complete');
 
 
@@ -3353,7 +3392,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           settings.onComplete();
         } catch (callbackError) {
-          console.error('Loader completion callback failed', callbackError);
+          safeConsole.error('Loader completion callback failed', callbackError);
         }
       }
     }
@@ -3368,14 +3407,14 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
 
-      console.log('loadScriptAtIndex', currentIndex, items[currentIndex]);
+      safeConsole.log('loadScriptAtIndex', currentIndex, items[currentIndex]);
 
 
       var currentItem = items[currentIndex];
 
       if (currentItem && typeof currentItem === 'object' && !Array.isArray(currentItem)) {
         if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
-          console.log('Starting parallel script block', currentItem.parallel.length, 'items');
+          safeConsole.log('Starting parallel script block', currentItem.parallel.length, 'items');
           loadScriptsInParallel(currentItem.parallel, {
             onError: function handleParallelError(context) {
               var shouldAbort = false;
@@ -3383,7 +3422,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
                 try {
                   shouldAbort = settings.onError(context) === true;
                 } catch (callbackError) {
-                  console.error('Loader error callback failed', callbackError);
+                  safeConsole.error('Loader error callback failed', callbackError);
                 }
               }
 
@@ -3398,7 +3437,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               if (aborted) {
                 return;
               }
-              console.log('Parallel script block finished');
+              safeConsole.log('Parallel script block finished');
               index = currentIndex + 1;
               loadScriptAtIndex(index);
             },
@@ -3459,7 +3498,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
         resetScriptRetryState(currentUrl);
 
-        console.error(
+        safeConsole.error(
           'Failed to load script:',
           currentUrl,
           '→',
@@ -3476,7 +3515,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               index: currentIndex,
             }) === true;
           } catch (callbackError) {
-            console.error('Loader error callback failed', callbackError);
+            safeConsole.error('Loader error callback failed', callbackError);
           }
         }
 
@@ -3767,7 +3806,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   }
 
   function loadScriptBundle(bundle, options) {
-    console.log('loadScriptBundle', bundle);
+    safeConsole.log('loadScriptBundle', bundle);
     if (!bundle || !bundle.core || bundle.core.length === 0) {
 
       if (bundle && bundle.deferred) {
