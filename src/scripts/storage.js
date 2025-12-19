@@ -14799,6 +14799,25 @@
       deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
     }
 
+    // Clear Service Worker Caches
+    if (typeof caches !== 'undefined') {
+      try {
+        const cacheKeys = await caches.keys();
+        await Promise.all(
+          cacheKeys.map(function (key) {
+            return caches.delete(key);
+          })
+        );
+        if (typeof console !== 'undefined' && typeof console.log === 'function') {
+          console.log('Storage reset: Service Worker caches cleared.');
+        }
+      } catch (cacheError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Storage reset: Failed to clear Service Worker caches.', cacheError);
+        }
+      }
+    }
+
     const preferenceKeys = [
       'darkMode',
       'pinkMode',

@@ -12,7 +12,7 @@
  * side-effect free.
  */
 
-var CINE_LOADER_CACHE_BUSTER = Date.now(); // Force reload
+var CINE_LOADER_CACHE_BUSTER = (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '1.0.0');
 
 var safeConsole = {
   log: function () {
