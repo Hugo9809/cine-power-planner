@@ -2168,6 +2168,9 @@ describe('clearAllData', () => {
     expect(getDecodedLocalStorageItem(CUSTOM_FONT_KEY)).toBeNull();
     expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBeNull();
 
+    // Verify cache invalidation
+    expect(loadProject('Proj')).toBeNull();
+
     expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBeNull();
     expect(getDecodedLocalStorageItem(backupKeyFor(SETUP_KEY))).toBeNull();
     expect(getDecodedLocalStorageItem(backupKeyFor(FEEDBACK_KEY))).toBeNull();

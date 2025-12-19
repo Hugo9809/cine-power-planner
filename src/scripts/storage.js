@@ -12739,6 +12739,7 @@
         PROJECT_STORAGE_KEY,
         "Error deleting project from localStorage:",
       );
+      invalidateProjectReadCache();
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
@@ -12774,6 +12775,7 @@
         PROJECT_STORAGE_KEY,
         "Error deleting project from localStorage:",
       );
+      invalidateProjectReadCache();
     } else {
       persistAllProjects(projects);
     }
@@ -14671,6 +14673,15 @@
       deleteProject();
     } catch (error) {
       console.warn('Unable to clear stored projects during factory reset', error);
+    }
+
+    // Explicitly invalidate caches regardless of deleteProject outcome
+    invalidateProjectReadCache();
+    if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
+      AUTO_BACKUP_COMPRESSION_CACHE.clear();
+    }
+    if (Array.isArray(AUTO_BACKUP_COMPRESSION_CACHE_KEYS)) {
+      AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
     }
 
     // Attempt to clear the backup vault (IndexedDB) if the backup module is available.
