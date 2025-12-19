@@ -877,6 +877,48 @@
       "documentationTrackerLocaleFrench": "README en français",
       "documentationTrackerLocaleItalian": "README en italien",
       "documentationTrackerHelpHeading": "Sujets du centre d'aide",
+      "helpTopics": {
+        "projectManagement": {
+          "title": "Gestion de projet",
+          "content": "Nommez vos projets et cliquez sur **Enregistrer** pour créer des instantanés dans Projets enregistrés. L'enregistrement automatique et les sauvegardes auto protègent les brouillons, et **Supprimer** crée d'abord une copie de sécurité."
+        },
+        "saveShareBackup": {
+          "title": "Enregistrer, partager & sauvegarder",
+          "content": "Utilisez **Exporter le projet** pour télécharger un JSON (incluez en option les règles automatiques et les marquages de matériel personnel). **Importer un projet** charge un fichier sans écraser votre configuration tant que vous ne confirmez pas l'enregistrement. **Sauvegarde & restauration** fournit des sauvegardes complètes, des répétitions de restauration, la comparaison de versions et le coffre local quand les téléchargements automatiques sont bloqués."
+        },
+        "deviceConfiguration": {
+          "title": "Configuration des appareils",
+          "content": "Commencez par une **Caméra**, puis ajoutez **Moniteurs**, **Émetteurs sans fil** et systèmes **FIZ**. Utilisez la bibliothèque d'appareils pour importer ou exporter du matériel personnalisé afin de conserver les modifications hors ligne."
+        },
+        "powerCalculation": {
+          "title": "Calcul de puissance",
+          "content": "Le **Résumé de puissance** montre la consommation totale et l'autonomie estimée selon la batterie et les tensions de monture. Surveillez les avertissements **Pin** et **D‑Tap**, et utilisez le résumé rapide pour expliquer les résultats hors ligne."
+        },
+        "connectionDiagram": {
+          "title": "Schéma de connexion",
+          "content": "Le **Schéma de connexion** visualise les branchements. Faites glisser pour organiser, zoomez/panoramique pour les détails et téléchargez des instantanés SVG ou JPG."
+        },
+        "gearList": {
+          "title": "Liste du matériel",
+          "content": "Générez une **liste du matériel** détaillée à partir des appareils et des exigences. Modifiez quantités, fournisseurs, extras temporaires et marquages de matériel personnel, puis imprimez ou exportez."
+        },
+        "contacts": {
+          "title": "Contacts",
+          "content": "Enregistrez l'équipe dans **Contacts** ou importez des vCards. Les entrées se réutilisent dans les projets, fournisseurs, sauvegardes et exports."
+        },
+        "ownGear": {
+          "title": "Matériel personnel",
+          "content": "Suivez votre inventaire dans **Matériel personnel**. Marquez les éléments pour que les listes et exports affichent ces annotations."
+        },
+        "settings": {
+          "title": "Paramètres",
+          "content": "Personnalisez **Langue**, thèmes, typographie, branding et **Sauvegarde & restauration**. Les règles automatiques et le suivi documentaire se trouvent aussi ici."
+        },
+        "offlineUse": {
+          "title": "Utilisation hors ligne",
+          "content": "Cine Power Planner fonctionne entièrement **hors ligne** avec des icônes, polices et aides locales. Vérifiez l'indicateur hors ligne et gardez exports, sauvegardes complètes et coffre local à jour avant de vous déconnecter."
+        }
+      },
       "documentationTrackerHelpStart": "Premiers pas et navigation",
       "documentationTrackerHelpSave": "Enregistrement, partage et exportations",
       "documentationTrackerHelpBackup": "Sauvegarde et exercices de restauration",

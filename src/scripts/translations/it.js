@@ -877,6 +877,48 @@
       "documentationTrackerLocaleFrench": "README francese",
       "documentationTrackerLocaleItalian": "README italiano",
       "documentationTrackerHelpHeading": "Argomenti dell'help center",
+      "helpTopics": {
+        "projectManagement": {
+          "title": "Gestione progetti",
+          "content": "Assegna un nome ai progetti e premi **Salva** per creare istantanee in Progetti salvati. Autosalvataggio e auto-backup proteggono le bozze e **Elimina** crea prima una copia di sicurezza."
+        },
+        "saveShareBackup": {
+          "title": "Salva, condividi e backup",
+          "content": "Usa **Esporta progetto** per scaricare un JSON (opzionalmente includi regole automatiche e marcature di attrezzatura propria). **Importa progetto** carica un file senza sovrascrivere finché non confermi il salvataggio. **Backup e ripristino** offre backup completi, prova di ripristino, confronto versioni e il caveau locale quando i download automatici sono bloccati."
+        },
+        "deviceConfiguration": {
+          "title": "Configurazione dispositivi",
+          "content": "Inizia con una **Camera**, poi aggiungi **Monitor**, **Trasmettitori wireless** e sistemi **FIZ**. Usa la libreria dispositivi per importare o esportare attrezzatura personalizzata così le modifiche offline restano disponibili."
+        },
+        "powerCalculation": {
+          "title": "Calcolo potenza",
+          "content": "Il **Riepilogo potenza** mostra consumo totale e autonomia stimata in base alla batteria e ai voltaggi di montaggio. Controlla gli avvisi **Pin** e **D‑Tap** e usa il riepilogo rapido per spiegare i risultati offline."
+        },
+        "connectionDiagram": {
+          "title": "Diagramma di connessione",
+          "content": "Il **Diagramma di connessione** mostra come sono collegati i dispositivi. Trascina per disporre i nodi, usa zoom e panoramica e scarica snapshot SVG o JPG."
+        },
+        "gearList": {
+          "title": "Gear list",
+          "content": "Genera una **Gear list** dettagliata da dispositivi e requisiti. Modifica quantità, fornitori, extra temporanei e marcature di proprietà, poi stampa o esporta."
+        },
+        "contacts": {
+          "title": "Contatti",
+          "content": "Salva la troupe in **Contatti** o importa vCard. Le voci si riutilizzano in progetti, fornitori, backup ed esportazioni."
+        },
+        "ownGear": {
+          "title": "Attrezzatura propria",
+          "content": "Traccia il tuo inventario in **Attrezzatura propria**. Segna gli articoli per far comparire le annotazioni nelle liste e nelle esportazioni."
+        },
+        "settings": {
+          "title": "Impostazioni",
+          "content": "Personalizza **Lingua**, temi, tipografia, branding e **Backup & ripristino**. Qui trovi anche le regole automatiche e il monitoraggio della documentazione."
+        },
+        "offlineUse": {
+          "title": "Uso offline",
+          "content": "Cine Power Planner funziona completamente **offline** con icone, font e aiuti locali. Controlla l'indicatore offline e mantieni esportazioni, backup completi e caveau locale aggiornati prima di disconnetterti."
+        }
+      },
       "documentationTrackerHelpStart": "Avvio e navigazione",
       "documentationTrackerHelpSave": "Salvataggio, condivisione ed esportazioni",
       "documentationTrackerHelpBackup": "Backup e prove di ripristino",

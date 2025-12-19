@@ -86,6 +86,7 @@
 
         const topics = [
             'projectManagement',
+            'saveShareBackup',
             'deviceConfiguration',
             'powerCalculation',
             'connectionDiagram',

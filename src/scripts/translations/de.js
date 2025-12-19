@@ -909,6 +909,48 @@
       "documentationTrackerLocaleFrench": "README auf Französisch",
       "documentationTrackerLocaleItalian": "README auf Italienisch",
       "documentationTrackerHelpHeading": "Hilfecenter-Themen",
+      "helpTopics": {
+        "projectManagement": {
+          "title": "Projektverwaltung",
+          "content": "Projekte benennen und mit **Speichern** als Schnappschuss in Gespeicherte Projekte ablegen. Autospeichern und Auto-Backups schützen Entwürfe; **Löschen** erstellt vorher eine Sicherheitskopie."
+        },
+        "saveShareBackup": {
+          "title": "Speichern, Teilen & Backup",
+          "content": "Mit **Projekt exportieren** lädst du ein JSON-Bundle herunter (optional automatische Gear-Regeln und Besitz-Markierungen). **Projekt importieren** lädt eine Datei, ohne dein aktuelles Setup zu überschreiben, bis du Speichern bestätigst. **Backup & Wiederherstellen** liefert Komplettsicherungen, Wiederherstellungsprobe, Versionsvergleich und den lokalen Backup-Tresor, wenn automatische Downloads blockiert werden."
+        },
+        "deviceConfiguration": {
+          "title": "Geräte konfigurieren",
+          "content": "Starte mit einer **Kamera** und ergänze **Monitore**, **Funkstrecken** und **FIZ**-Systeme. Nutze die Gerätebibliothek, um eigenes Gear zu importieren oder zu exportieren, damit Offline-Änderungen erhalten bleiben."
+        },
+        "powerCalculation": {
+          "title": "Leistungsberechnung",
+          "content": "Die **Power Summary** zeigt Gesamtverbrauch und Laufzeit basierend auf Akku und Montage-Spannungen. Achte auf **Pin**- und **D‑Tap**-Warnungen und nutze die Kurzfassung, um Ergebnisse offline zu erklären."
+        },
+        "connectionDiagram": {
+          "title": "Verbindungsdiagramm",
+          "content": "Das **Verbindungsdiagramm** zeigt die Geräteverkabelung. Ziehe Knoten zum Anordnen, zoome und schwenke für Details und lade SVG- oder JPG-Snapshots herunter."
+        },
+        "gearList": {
+          "title": "Gear-Liste",
+          "content": "Erstelle eine detaillierte **Gear-Liste** aus Geräten und Anforderungen. Bearbeite Mengen, Anbieter, temporäre Extras und Besitz-Markierungen, dann drucke oder exportiere sie."
+        },
+        "contacts": {
+          "title": "Kontakte",
+          "content": "Crew in **Kontakte** speichern oder vCards importieren. Einträge werden in Projekten, Anbietern, Backups und Exporten wiederverwendet."
+        },
+        "ownGear": {
+          "title": "Eigenes Equipment",
+          "content": "Eigenes Inventar in **Eigenes Equipment** verwalten. Markiere Eigentum, damit Gear-Listen diese Kennzeichnung auch im Export tragen."
+        },
+        "settings": {
+          "title": "Einstellungen",
+          "content": "Passe **Sprache**, Design, Typografie, Branding und **Backup & Wiederherstellen** an. Automatische Gear-Regeln und Dokumentations-Tracking befinden sich ebenfalls hier."
+        },
+        "offlineUse": {
+          "title": "Offline-Nutzung",
+          "content": "Cine Power Planner funktioniert vollständig **offline** mit lokal gespeicherten Icons, Fonts und Hilfe. Prüfe die Offline-Anzeige und halte Exporte, Voll-Backups und den lokalen Backup-Tresor aktuell."
+        }
+      },
       "documentationTrackerHelpStart": "Einstieg und Navigation",
       "documentationTrackerHelpSave": "Speichern, Teilen und Exportieren",
       "documentationTrackerHelpBackup": "Backup- und Restore-Übungen",
