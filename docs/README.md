@@ -14,7 +14,7 @@ Welcome to the Cine Power Planner documentation. This directory contains detaile
 - [Operations Checklist](operations-checklist.md): Step-by-step rehearsal for offline readiness.
 - [Offline Readiness Runbook](offline-readiness.md): Expanded guide for travel days and air-gapped sets.
 - [Data Protection Playbook](data-protection-playbook.md): Decision trees for updates and incident response.
-- [Emergency Recovery Playbook](emergency-recovery-playbook.md): (Placeholder) Steps for recovering from critical failures.
+- [Emergency Recovery Playbook](emergency-recovery-playbook.md): Steps for stabilizing data and recovering from critical failures.
 
 ## Verification & Auditing
 

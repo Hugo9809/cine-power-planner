@@ -26,10 +26,16 @@ drive without phoning home.
   **Compare versions** diff logs and verification packets make it easy to prove
   that save, share, import, backup and restore workflows protect every bit of
   user data—even when you never reconnect to the internet.
+- **Restore compatibility summaries.** Every restore runs a compatibility check
+  that lists missing sections and the pre-restore safety backup filename, so
+  crews can confirm what changed before promoting data back into live storage.
 - **Offline-first operation.** All icons, fonts, Uicons and helper scripts ship
   with the repo. Autosave, backup, restore, share and help systems run entirely
   on-device so crews can rehearse and operate in fully disconnected
   environments.
+- **Local backup vault resilience.** When automatic downloads are blocked, the
+  planner queues backups in a local vault and surfaces a banner action so
+  exports still happen offline without losing a snapshot.
 - **Synonym-aware global search.** Safety terms such as “trash”, “archive”,
   “safeguard”, “recover” or “rollback” now jump straight to delete, save,
   backup and restore tools so data protection remains effortless.
@@ -82,6 +88,8 @@ drive without phoning home.
 | Auto-save & auto-backup cadence | Rolling snapshots that capture in-flight edits. | Leave the project open—snapshots run every ~50 changes or 10 minutes. | `auto-backup-…` entries in the selector, plus the **Latest activity** timeline. |
 | Full planner backup | Every project, favorite, runtime feedback entry, automatic gear rule and preference. | **Settings → Backup & Restore → Backup** (or **Quick safeguards**). | `planner-backup.json`, backup history ledger exports and verification log attachments. |
 | Project bundle exports | Individual projects ready for handoff to another workstation. | **Export Project** from the selector. | `project-name.json` (or renamed `.cpproject`) files stored with checksum notes. |
+| Restore compatibility summary | Warns when a backup is missing modern data sections before promotion. | Restore via sandbox and review the compatibility alert before continuing. | Screenshot of the missing-sections summary and safety backup filename. |
+| Local backup vault queue | Captures auto-backups when the browser blocks downloads. | Use the banner action to open the local vault and export queued JSON files. | Vault export logs and archived queued backup files. |
 | Restore rehearsal sandbox | Confidence that imports and restores behave safely before touching live data. | **Settings → Backup & Restore → Restore rehearsal**. | Console capture of `window.__cineRuntimeIntegrity`, rehearsal notes and sandbox screenshots. |
 | Documentation & translation updates | Help center topics, localized READMEs and printable guides. | Follow the documentation maintenance checklist whenever behavior changes. | Updated docs in `docs/`, localized `README.*.md` files and signed verification packets. |
 
@@ -94,6 +102,7 @@ drive without phoning home.
 - **Verify help center resiliency.** Run the [Offline Help & Translation Verification](docs/offline-help-verification.md) drill whenever you touch help copy, documentation links or translations to confirm the overlay, search results and localized topics still load entirely from cached assets without risking user data.
 - **Audit power connector safety.** Pair the [Power Summary Warning Reference](docs/power-summary-warning-reference.md) with each Power Summary rehearsal to log connector limits, redundant backups and autosave/share alignment before distributing plans offline.
 - **Protect user data deliberately.** Follow the [Data Protection Playbook](docs/data-protection-playbook.md) when you scope changes, rehearse daily guardrails, prepare releases and respond to incidents. It consolidates the save/share/import/backup/restore routines, guard outputs and archival expectations so offline crews always preserve every project.
+- **Recover fast when incidents happen.** Keep the [Emergency Recovery Playbook](docs/emergency-recovery-playbook.md) with your offline bundles so crews can stabilize data, export queued backups, and rehearse restores without reconnecting to the network.
 - **Update documentation deliberately.** Use the [Documentation Update Checklist](docs/documentation-update-checklist.md) and [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every time you ship new behavior so help topics, translations and manuals stay in lockstep with the runtime.
 - **Log verification rehearsals.** Pair each release or workstation audit with the [Documentation Verification Packet](docs/documentation-verification-packet.md) and file copies of the [Verification Log Template](docs/verification-log-template.md) so every save/share/import/backup/restore drill is documented alongside the assets that shipped. Maintaining these records keeps help topics, translation notes and workflow screenshots provably in sync with the builds crews run offline.
 - **File a status snapshot.** Complete the [Documentation Status Report](docs/documentation-status-report-template.md) whenever you update help topics, translations or manuals. It captures which surfaces changed, the offline rehearsal evidence you gathered and where the backups plus verification logs now live so future audits can retrace the release without reconnecting to the network.
@@ -1256,4 +1265,3 @@ lz-string to compactly store projects in URLs and backups.
 ## License
 
 Distributed under the ISC license. See `package.json` for details.
-
