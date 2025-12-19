@@ -27,10 +27,16 @@ drive without phoning home.
   **Compare versions** diff logs and verification packets make it easy to prove
   that save, share, import, backup and restore workflows protect every bit of
   user data—even when you never reconnect to the internet.
+- **Restore compatibility summaries.** Every restore runs a compatibility check
+  that lists missing sections and the pre-restore safety backup filename, so
+  crews can confirm what changed before promoting data back into live storage.
 - **Offline-first operation.** All icons, fonts, Uicons and helper scripts ship
   with the repo. Autosave, backup, restore, share and help systems run entirely
   on-device so crews can rehearse and operate in fully disconnected
   environments.
+- **Local backup vault resilience.** When automatic downloads are blocked, the
+  planner queues backups in a local vault and surfaces a banner action so
+  exports still happen offline without losing a snapshot.
 - **Synonym-aware global search.** Safety terms such as “trash”, “archive”,
   “safeguard”, “recover” or “rollback” now jump straight to delete, save,
   backup and restore tools so data protection remains effortless.
@@ -106,6 +112,8 @@ tour:
 | Auto-save & auto-backup cadence | Rolling snapshots that capture in-flight edits. | Leave the project open—snapshots run every ~50 changes or 10 minutes. | `auto-backup-…` entries in the selector, plus the **Latest activity** timeline. |
 | Full planner backup | Every project, favorite, runtime feedback entry, automatic gear rule and preference. | **Settings → Backup & Restore → Backup** (or **Quick safeguards**). | `planner-backup.json`, backup history ledger exports and verification log attachments. |
 | Project bundle exports | Individual projects ready for handoff to another workstation. | **Export Project** from the selector. | `project-name.json` (or renamed `.cpproject`) files stored with checksum notes. |
+| Restore compatibility summary | Warns when a backup is missing modern data sections before promotion. | Restore via sandbox and review the compatibility alert before continuing. | Screenshot of the missing-sections summary and safety backup filename. |
+| Local backup vault queue | Captures auto-backups when the browser blocks downloads. | Use the banner action to open the local vault and export queued JSON files. | Vault export logs and archived queued backup files. |
 | Restore rehearsal sandbox | Confidence that imports and restores behave safely before touching live data. | **Settings → Backup & Restore → Restore rehearsal**. | Console capture of `window.__cineRuntimeIntegrity`, rehearsal notes and sandbox screenshots. |
 | Documentation & translation updates | Help center topics, localized READMEs and printable guides. | Follow the documentation maintenance checklist whenever behavior changes. | Updated docs in `docs/`, localized `README.*.md` files and signed verification packets.
 
@@ -139,6 +147,10 @@ tour:
   incidents. It consolidates the save/share/import/backup/restore routines,
   guard outputs and archival expectations so offline crews always preserve
   every project.
+- **Recover fast when incidents happen.** Keep the
+  [Emergency Recovery Playbook](docs/emergency-recovery-playbook.md) with your
+  offline bundles so crews can stabilize data, export queued backups, and
+  rehearse restores without reconnecting to the network.
 - **Update documentation deliberately.** Use the
   [Documentation Update Checklist](docs/documentation-update-checklist.md) and
   [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every
@@ -1536,4 +1548,3 @@ lz-string to compactly store projects in URLs and backups.
 ## License
 
 Distributed under the ISC license. See `package.json` for details.
-

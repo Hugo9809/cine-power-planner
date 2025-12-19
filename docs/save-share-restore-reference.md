@@ -144,6 +144,11 @@ workstations.
   other verification artifacts.
 - **Promotion safety:** Before promotion the runtime clones current live data to
   a timestamped backup slot. Reverting is always possible.
+- **Compatibility summary:** Each restore runs `verifyRestoredBackupIntegrity()`
+  to compare the incoming payload to the current data schema. If modern data
+  sections are missing, the restore alert includes a missing-section summary and
+  the safety backup filename created before import. Capture the alert text and
+  store it with the verification packet before promoting data.
 - **Verification:** After promotion, confirm autosave ledger logs the restore and
   manual save to cement the state.
 
