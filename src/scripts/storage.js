@@ -14863,7 +14863,7 @@
 
     // Unregister Service Workers and clear Cache API for a total factory state.
     try {
-      if (typeof navigator !== 'undefined' \u0026\u0026 navigator.serviceWorker) {
+      if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (const registration of registrations) {
           await registration.unregister();
@@ -14874,7 +14874,7 @@
     }
 
     try {
-      if (typeof caches !== 'undefined' \u0026\u0026 typeof caches.keys === 'function') {
+      if (typeof caches !== 'undefined' && typeof caches.keys === 'function') {
         const cacheKeys = await caches.keys();
         for (const cacheKey of cacheKeys) {
           await caches.delete(cacheKey);

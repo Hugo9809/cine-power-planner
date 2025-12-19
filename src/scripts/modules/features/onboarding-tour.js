@@ -1,4 +1,4 @@
-/* global cineModuleBase, readAvatarFile, setAvatar, getSafeLocalStorage, SAFE_LOCAL_STORAGE,
+/* global cineModuleBase, getSafeLocalStorage, SAFE_LOCAL_STORAGE,
           activateSettingsTab, openDialog, closeDialog, isDialogOpen */
 
 (function () {

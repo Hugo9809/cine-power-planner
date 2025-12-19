@@ -65,17 +65,8 @@ const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names])
       },
       rules: {
         'no-unused-vars': 'off',
-        ...(key === 'app-core'
-          ? {
-            'no-undef': 'off',
-            'no-redeclare': 'off',
-          }
-          : {}),
-        ...(key === 'app-setups'
-          ? {
-            'no-redeclare': 'off',
-          }
-          : {}),
+        'no-undef': 'off',
+        'no-redeclare': 'off',
       },
     }));
 });

@@ -199,6 +199,7 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 
 ## Novedades
 
+- **Base de datos de lentes ampliada** – se agregaron Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings y Zero Optik Canon Dream Primes (Rehoused) al catálogo offline.
 - **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
 - **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
 - **Registro de diagnósticos** – Abre **Configuración → Datos y almacenamiento** para ver el log en vivo, filtrar por nivel o namespace y ajustar retención, reflejo en consola, la captura de consola activada por defecto y captura de errores sin salir del planner.
@@ -537,7 +538,10 @@ npm run test:data
 
 Añade `--help` a cualquier comando para ver instrucciones y revisa los diffs generados antes de abrir un pull request. `npm run help` resume los scripts disponibles.
 
-> **Actualización del catálogo.** El catálogo de hand units de FIZ ahora incluye los controladores Nucleus-M y Nucleus-M II de Tilta junto con los hand wheels Nano y Nano II, la HU4 de Preston, la hand unit cPRO de cmotion, la hand unit MagNum de Chrosziel, la CTRL.3 de Teradek, las hand units Focus y Focus Pro de DJI más la RS Focus Wheel (2022), la hand control YMER-3 de Hedén, el controlador Pilot Pro de Freefly, la hand controller microRemote de Redrock y el handgrip MagicFIZ de SmallRig, para que el planificador pueda comparar más ecosistemas sin salir de la aplicación.
+> **Actualización del catálogo.** El catálogo de unidades de mano FIZ ahora incluye los controladores Nucleus-M y Nucleus-M II de Tilta junto con las ruedas de mano Nano y Nano II, el HU4 de Preston, la unidad de mano cPRO de cmotion, la unidad de mano MagNum de Chrosziel, el CTRL.3 de Teradek, las unidades de mano Focus y Focus Pro de DJI además de la RS Focus Wheel (2022), el control de mano YMER-3 de Hedén, el controlador de mano Pilot Pro de Freefly, el controlador de mano microRemote de Redrock y la empuñadura MagicFIZ de SmallRig para que los equipos offline puedan comparar más ecosistemas sin salir de la aplicación.
+>
+> **Expansión del catálogo de lentes.** La base de datos de lentes ahora incluye Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings y Zero Optik Canon Dream Primes (Rehoused) para que los directores de fotografía puedan planificar con una gama aún más amplia de ópticas modernas.
+
 
 ## Desarrollo
 

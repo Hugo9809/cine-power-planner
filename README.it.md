@@ -199,6 +199,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 
 ## Novità
 
+- **Database obiettivi ampliato** – aggiunti Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings e Zero Optik Canon Dream Primes (Rehoused) al catalogo offline.
 - **Confronto backup** – Seleziona salvataggi manuali o auto-backup, analizza i diff, aggiungi note e esporta un log prima di ripristinare o consegnare il materiale.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
 - **Registro diagnostico** – Apri **Impostazioni → Dati e archiviazione** per vedere il log in tempo reale, filtrare per livello o namespace e regolare conservazione, mirroring sulla console, la cattura della console attiva per impostazione predefinita e la cattura degli errori senza uscire dal planner.
@@ -539,6 +540,8 @@ npm run test:data
 Aggiungi `--help` a ogni comando per avere istruzioni e controlla i diff generati prima di aprire una pull request. `npm run help` riepiloga tutti gli script disponibili.
 
 > **Aggiornamento del catalogo.** Il catalogo delle hand unit FIZ ora elenca i controller Nucleus-M e Nucleus-M II di Tilta insieme alle hand wheel Nano e Nano II, la HU4 di Preston, la hand unit cPRO di cmotion, la hand unit MagNum di Chrosziel, la CTRL.3 di Teradek, le hand unit Focus e Focus Pro di DJI più la RS Focus Wheel (2022), la hand control YMER-3 di Hedén, il controller Pilot Pro di Freefly, la hand controller microRemote di Redrock e la handgrip MagicFIZ di SmallRig, così i pianificatori possono confrontare più ecosistemi offline senza uscire dall’app.
+>
+> **Espansione del catalogo obiettivi.** Il database degli obiettivi ora include Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings e Zero Optik Canon Dream Primes (Rehoused), in modo che i direttori della fotografia possano pianificare con una gamma ancora più ampia di vetri moderni.
 
 ## Sviluppo
 

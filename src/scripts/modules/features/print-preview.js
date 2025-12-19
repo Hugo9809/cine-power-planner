@@ -533,7 +533,7 @@
             battery: 'preview-section-battery'
         };
 
-        const isRental = state.preferences.layout === 'rental';
+
 
         Object.entries(map).forEach(([key, id]) => {
             const el = document.getElementById(id);

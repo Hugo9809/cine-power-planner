@@ -199,6 +199,7 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 
 ## Was ist neu
 
+- **Erweiterte Objektivdatenbank** – Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings und Zero Optik Canon Dream Primes (Rehoused) zum Offline-Katalog hinzugefügt.
 - **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
 - **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
 - **Diagnoseprotokoll-Steuerung** – Öffne **Einstellungen → Daten & Speicher**, sieh dir das laufende Log direkt im Planner an, filtere nach Stufe oder Namespace und passe Aufbewahrung, Konsolenspiegelung, die standardmäßig aktive Konsolenerfassung sowie Fehlererfassung ohne externe Tools an.
@@ -546,6 +547,9 @@ npm run test:data
 `npm run help` listet alle Skripte, `--help` liefert Details.
 
 > **Katalogaktualisierung.** Der FIZ-Handeinheitenkatalog enthält jetzt TILTAs Nucleus-M und Nucleus-M II gemeinsam mit den Nano- und Nano II-Handrädern, Prestons HU4, cmotions cPRO-Handeinheit, Chrosziels MagNum-Handeinheit, Teradeks CTRL.3, DJIs Focus- und Focus Pro-Handeinheiten plus dem RS Focus Wheel (2022), Hedéns YMER-3-Handeinheit, Freeflys Pilot Pro-Handcontroller, Redrocks microRemote-Handcontroller sowie SmallRigs MagicFIZ-Handgriff, sodass Teams offline mehr Systeme vergleichen können, ohne die App zu verlassen.
+>
+> **Erweiterung des Objektivkatalogs.** Die Objektivdatenbank enthält jetzt Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings und Zero Optik Canon Dream Primes (Rehoused), damit Cinematografen mit einer noch größeren Auswahl an modernen Objektiven planen können.
+
 
 ## Entwicklung
 

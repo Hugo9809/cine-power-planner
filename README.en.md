@@ -266,6 +266,7 @@ localization steps.
 
 ## What’s New
 
+- **Expanded Lens Database** – added Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings, and Zero Optik Canon Dream lenses to the offline catalog.
 - **Backup version comparisons** – pick any manual save or timestamped
   auto-backup to review diffs, add incident notes and export a log before you
   roll a change back or hand footage to post.
@@ -1110,6 +1111,8 @@ diffs before opening a pull request. `npm run help` prints a summary of all
 available scripts.
 
 > **Catalog update.** The FIZ hand unit catalog now lists Tilta's Nucleus-M and Nucleus-M II controllers alongside Nano and Nano II hand wheels, Preston's HU4, cmotion's cPRO hand unit, Chrosziel's MagNum hand unit, Teradek's CTRL.3, DJI's Focus and Focus Pro hand units plus the RS Focus Wheel (2022), Hedén's YMER-3 hand control, Freefly's Pilot Pro hand controller, Redrock's microRemote hand controller, and SmallRig's MagicFIZ handgrip so offline planners can compare more ecosystems without leaving the app.
+>
+> **Lens catalog expansion.** The lens database now includes Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings, and Zero Optik Canon Dream Primes (Rehoused) so cinematographers can plan with an even wider range of modern glass.
 
 ## Repository Layout & Offline Assets
 

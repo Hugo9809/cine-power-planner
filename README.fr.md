@@ -199,6 +199,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 
 ## Nouveautés
 
+- **Base de données d'objectifs élargie** – ajout des Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings et Zero Optik Canon Dream Primes (Rehoused) au catalogue hors ligne.
 - **Comparaison de sauvegardes** – Sélectionnez un enregistrement manuel ou un auto-backup, analysez les différences, ajoutez des notes d’incident et exportez un rapport avant toute restauration ou remise au montage.
 - **Simulations de restauration** – Chargez un backup complet ou un bundle projet dans une sandbox isolée pour vérifier le contenu sans toucher aux profils de production.
 - **Journal de diagnostics** – Ouvrez **Paramètres → Données & stockage** pour consulter le journal en direct, filtrer par niveau ou namespace et ajuster rétention, duplication console, capture console activée par défaut et capture des erreurs sans quitter le planner.
@@ -541,6 +542,8 @@ npm run test:data
 Ajoutez `--help` à n’importe quelle commande pour obtenir de l’aide et consultez les diffs générés avant d’ouvrir une pull request. `npm run help` récapitule les scripts disponibles.
 
 > **Mise à jour du catalogue.** Le catalogue des poignées FIZ inclut désormais les contrôleurs Nucleus-M et Nucleus-M II de Tilta ainsi que les molettes Nano et Nano II, la HU4 de Preston, la poignée cPRO de cmotion, la poignée MagNum de Chrosziel, la CTRL.3 de Teradek, les poignées Focus et Focus Pro de DJI plus la RS Focus Wheel (2022), la poignée YMER-3 de Hedén, le contrôleur Pilot Pro de Freefly, la poignée microRemote de Redrock et la poignée MagicFIZ de SmallRig afin de comparer davantage d’écosystèmes hors ligne sans quitter l’application.
+>
+> **Expansion du catalogue d'objectifs.** La base de données d'objectifs inclut désormais les Sirui 1.33x & 1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings et Zero Optik Canon Dream Primes (Rehoused), afin que les directeurs de la photographie puissent planifier avec une gamme encore plus large de verres modernes.
 
 ## Développement
 

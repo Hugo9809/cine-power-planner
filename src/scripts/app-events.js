@@ -1,3 +1,4 @@
+/* global getSchemaAttributesForCategory */
 // --- EVENT LISTENERS ---
 /* global CORE_GLOBAL_SCOPE, updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,

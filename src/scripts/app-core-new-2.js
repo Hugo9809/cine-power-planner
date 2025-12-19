@@ -12551,6 +12551,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
     const localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
+    var localFontsStatus = resolveGlobalElement('localFontsStatus', 'localFontsStatus');
     const localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
     var settingsFontFamily =
       typeof settingsFontFamily !== 'undefined'

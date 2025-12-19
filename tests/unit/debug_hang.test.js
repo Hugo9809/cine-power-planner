@@ -3,7 +3,7 @@ const { setupModuleHarness } = require('../helpers/moduleHarness');
 
 describe('Debug Hang Enhanced', () => {
     let offline;
-    let internal;
+
     let consoleWarnSpy;
     let harness;
     let originalConsole;
@@ -26,7 +26,7 @@ describe('Debug Hang Enhanced', () => {
 
         console.log('Requiring offline module...');
         offline = require(path.join('..', '..', 'src', 'scripts', 'modules', 'offline.js'));
-        internal = offline.__internal;
+
         console.log('BeforeEach complete');
     });
 

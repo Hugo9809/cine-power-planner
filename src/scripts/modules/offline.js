@@ -1081,22 +1081,7 @@
   const RELOAD_WARMUP_MAX_WAIT_MS = 180;
   let reloadWarmupFailureLogged = false;
 
-  function createDelay(ms) {
-    const waitMs = typeof ms === 'number' && ms >= 0 ? ms : 0;
 
-    if (typeof setTimeout !== 'function') {
-      return Promise.resolve();
-    }
-
-    return new Promise(resolve => {
-      try {
-        setTimeout(resolve, waitMs);
-      } catch (error) {
-        void error;
-        resolve();
-      }
-    });
-  }
 
   function settlePromise(promise) {
     if (!promise || typeof promise.then !== 'function') {

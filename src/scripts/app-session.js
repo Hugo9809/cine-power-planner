@@ -1,5 +1,4 @@
 // --- SESSION STATE HANDLING ---
-/* eslint-disable no-redeclare */
 /* global cineFeaturesConnectionDiagram, shareSetupBtn, saveSessionState, loadSessionState,
           CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
           updateCageSelectOptions, updateAccentColorResetButtonState,
@@ -41,7 +40,6 @@
           updateLensWorkflowCatalog, FOCUS_SCALE_STORAGE_KEY_NAME,
           contactsCache: true, sortContacts, saveContactsToStorage, renderContactsList,
           updateContactPickers, normalizeContactEntry, sanitizeContactValue */
-/* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
           ensureContactForImportedOwner, setGearItemProvider,
@@ -56,6 +54,13 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
+
+let actionMap = new Map();
+let featureMap = new Map();
+let deviceMap = new Map();
+let helpMap = new Map();
+let featureSearchEntries = [];
+let featureSearchDefaultOptions = [];
 
 // Determine which global scope we can use for deep cloning. The order mirrors
 // the environments the planner needs to support: main window first, followed by
@@ -16799,6 +16804,8 @@ if (helpButton && helpDialog) {
       startHoverHelp(); // activate tooltip mode
     });
   }
+
+
 
   const focusFeatureSearchInput = () => {
     if (!featureSearch) return;
