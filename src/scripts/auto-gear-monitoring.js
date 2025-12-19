@@ -265,7 +265,7 @@
   }
 
   // Decide if the selected scenario indicates monitoring gear. The check is a
-  // loose contains lookup to remain resilient to localisation changes.
+  // loose containment check to remain resilient to localisation changes.
   function scenarioTriggersMonitoring() {
     if (!scenarioSelect) {
       return false;
