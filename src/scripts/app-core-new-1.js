@@ -5564,7 +5564,15 @@ unifyDevices(devices, { force: true });
 function getBatteryPlateSupport(name) {
   const cam = devices.cameras && devices.cameras[name];
   if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
-  return cam.power.batteryPlateSupport.filter(Boolean);
+  return cam.power.batteryPlateSupport
+    .filter(Boolean)
+    .map(bp => {
+      if (!bp || typeof bp !== 'object') return bp;
+      if (bp.type === 'Gold Mount') {
+        return { ...bp, type: 'Gold-Mount' };
+      }
+      return bp;
+    });
 }
 
 function getSupportedBatteryPlates(name) {
