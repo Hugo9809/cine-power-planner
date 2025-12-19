@@ -37,6 +37,11 @@
     'autoGearMonitor',
     'autoGearWireless'
   ];
+  var MONITORING_CONDITION_KEYS = [
+    'videoDistribution',
+    'monitor',
+    'wireless'
+  ];
 
   // The editor container is observed so we can respond to async DOM updates
   // when the auto gear UI is swapped out or injected dynamically.
@@ -339,10 +344,35 @@
     return false;
   }
 
+  // Check if any monitoring-related condition sections are active. This keeps
+  // the rows visible when a user just enabled a monitoring condition or when
+  // offline restores unhide a condition section before the selects receive
+  // values.
+  function hasActiveMonitoringConditions() {
+    for (var i = 0; i < MONITORING_CONDITION_KEYS.length; i += 1) {
+      var key = MONITORING_CONDITION_KEYS[i];
+
+      if (typeof window !== 'undefined' && typeof window.isAutoGearConditionActive === 'function') {
+        if (window.isAutoGearConditionActive(key)) {
+          return true;
+        }
+      }
+
+      var section = document.getElementById('autoGearCondition-' + key);
+      if (section && !section.hidden && section.getAttribute('aria-hidden') !== 'true') {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // Apply the computed visibility state to every monitoring row. We resolve the
   // row lazily so that dynamically inserted selects are handled automatically.
   function applyVisibility() {
-    var shouldShow = scenarioTriggersMonitoring() || hasMonitoringSelections();
+    var shouldShow = scenarioTriggersMonitoring()
+      || hasMonitoringSelections()
+      || hasActiveMonitoringConditions();
 
     for (var i = 0; i < monitoringSelects.length; i += 1) {
       var data = monitoringSelects[i];
