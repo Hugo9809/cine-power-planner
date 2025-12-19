@@ -2614,9 +2614,8 @@
                 for custom gear.
               </li>
               <li>
-                Store exports on at least two locations (for example SSD + cloud sync) before updating browsers,
-                clearing
-                caches or installing on another computer, then verify restores from the
+                Store exports on at least two devices (for example two SSDs) before updating browsers, clearing caches
+                or installing on another computer, then verify restores from the
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"
                   data-help-highlight="#settingsDialog"><strong>Restore</strong></a>
                 panel while you still have the originals.
@@ -3723,8 +3722,10 @@
               to keep it as a regular project or return to your current setup without overwriting anything.
             </li>
             <li>
-              A full JSON export downloads automatically every hour with a name like “2024-05-12T14-00-00 full app
-              backup.json” so you always have an offline safety copy. Trigger another snapshot on demand with the manual
+              A full JSON export is prepared every hour with a name like “2024-05-12T14-00-00 full app backup.json” so
+              you always have an offline safety copy. If automatic downloads are blocked, the file is stored in the
+              local backup vault and a banner appears so you can export it with a click. Trigger another snapshot on
+              demand with the manual
               <a class="help-link button-link" href="#backupSettings" data-help-target="#backupSettings">Backup</a>
               button after major changes.
             </li>
@@ -4741,9 +4742,8 @@
                 Click
                 <a class="help-link button-link" href="#setup-manager" data-help-target="#shareSetupBtn"
                   data-help-highlight="#setup-manager"><em>Export Project</em></a>
-                and choose a secure file name. Include automatic gear rules when collaborators should inherit your
-                automation
-                presets.
+                and choose a secure file name. Include automatic gear rules and owned-gear markers when collaborators
+                should inherit your automation presets and inventory notes.
               </li>
               <li>
                 Store the downloaded JSON bundle wherever you keep backups or send it to teammates. It contains the
@@ -4834,9 +4834,10 @@
                 dropdown so you can load, review and rename them.
               </li>
               <li>
-                <strong>Hourly full-app backups</strong> download JSON archives (for example, “2024-06-15T14-00-00 full
+                <strong>Hourly full-app backups</strong> prepare JSON archives (for example, “2024-06-15T14-00-00 full
                 app backup.json”) that bundle every project, automatic gear rule, device edit, favorite and runtime log.
-                Keep at least two copies on separate drives so you always have an offline recovery point.
+                If the browser blocks auto-downloads, the file is stored in the local backup vault until you export it
+                manually. Keep at least two copies on separate drives so you always have an offline recovery point.
               </li>
               <li>
                 <strong>Restore safeguards</strong> run whenever you restore or perform a factory reset. The planner

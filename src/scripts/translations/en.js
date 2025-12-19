@@ -261,39 +261,43 @@
       "helpTopics": {
         "projectManagement": {
           "title": "Project Management",
-          "content": "Manage your projects with ease. **Save** your work to keep it on your device. **Export** projects to share them with others or create backups. **Import** previously saved or shared projects to continue working. Use **Delete** to remove unwanted projects."
+          "content": "Name projects and press **Save** to capture snapshots in Saved Projects. Autosave and auto-backups protect drafts, and Delete removes entries only after a safety snapshot is created."
+        },
+        "saveShareBackup": {
+          "title": "Save, Share & Backup",
+          "content": "Use **Export Project** to download a JSON bundle (optionally include automatic gear rules and owned-gear markers). **Import Project** loads a file without overwriting your current setup until you confirm Save. Use **Backup & Restore** for full-app backups, restore rehearsals, version comparisons, and the local backup vault when automatic downloads are blocked."
         },
         "deviceConfiguration": {
           "title": "Device Configuration",
-          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. The app automatically filters for compatible accessories based on your selections."
+          "content": "Build your rig by selecting devices. Start with a **Camera**, then add **Monitors**, **Wireless Transmitters**, and **FIZ** systems. Use the Device Library to import or export custom gear so offline edits stay with your projects."
         },
         "powerCalculation": {
           "title": "Power Calculation",
-          "content": "The **Power Summary** shows the total power consumption of your rig. It calculates estimated runtime based on the selected battery. Watch out for **Pin Warnings** (if current exceeds limits) and **D-Tap Warnings** (if the battery plate doesn't support the load)."
+          "content": "The **Power Summary** shows the total power consumption of your rig and estimated runtime based on the selected battery and mount voltages. Watch for **Pin** and **D-Tap** warnings, and use the quick summary to explain results offline."
         },
         "connectionDiagram": {
           "title": "Connection Diagram",
-          "content": "The **Connection Diagram** visualizes how your devices are connected. It helps you verify your setup and ensures everything is routed correctly. You can zoom and pan to inspect details."
+          "content": "The **Connection Diagram** visualizes how devices are connected. Drag to arrange nodes, zoom and pan to inspect details, and download SVG or JPG snapshots for sharing."
         },
         "gearList": {
           "title": "Gear List",
-          "content": "Generate a comprehensive **Gear List** based on your configured devices. You can customize this list, add your own items, and export it for rental or crew."
+          "content": "Generate a detailed **Gear List** from devices and project requirements. Edit quantities, providers, temporary extras and owned-gear badges, then print or export it for rental or crew."
         },
         "contacts": {
           "title": "Contacts",
-          "content": "Save crew members in the **Contacts** section. You can reuse them across projects, making it easy to assign roles and keep track of your team."
+          "content": "Save crew members in **Contacts** or import vCards. Entries reuse across projects and flow into providers, backups and exports."
         },
         "ownGear": {
           "title": "Own Gear",
-          "content": "Track your personal inventory in **Own Gear**. Mark items you own so they are automatically identified in your gear lists."
+          "content": "Track your personal inventory in **Own Gear**. Mark items you own so gear list rows can be flagged and exported with those annotations."
         },
         "settings": {
           "title": "Settings",
-          "content": "Customize the app in **Settings**. Adjust the **Language**, toggle **Dark Mode** or **Pink Mode**, and manage **Backups** to keep your data safe."
+          "content": "Customize the planner in **Settings**. Adjust **Language**, themes, typography, branding and **Backup & Restore** safeguards, plus automatic gear rules and documentation tracking."
         },
         "offlineUse": {
           "title": "Offline Use",
-          "content": "Cine Power Planner works fully **Offline**. All data is stored locally on your device. You can continue working even without an internet connection."
+          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Confirm the offline indicator and keep exports, full backups and the local backup vault current before disconnecting."
         }
       },
       "documentationTrackerHelpStart": "Start Here & navigation",

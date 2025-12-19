@@ -877,6 +877,48 @@
       "documentationTrackerLocaleFrench": "README en francés",
       "documentationTrackerLocaleItalian": "README en italiano",
       "documentationTrackerHelpHeading": "Temas del centro de ayuda",
+      "helpTopics": {
+        "projectManagement": {
+          "title": "Gestión de proyectos",
+          "content": "Ponle nombre a los proyectos y pulsa **Guardar** para crear instantáneas en Proyectos guardados. El guardado automático y las copias automáticas protegen los borradores, y **Eliminar** crea antes una copia de seguridad."
+        },
+        "saveShareBackup": {
+          "title": "Guardar, compartir y copias",
+          "content": "Usa **Exportar proyecto** para descargar un JSON (opcionalmente incluye reglas automáticas y marcas de equipo propio). **Importar proyecto** carga un archivo sin sobrescribir tu configuración actual hasta que confirmes Guardar. **Copia y restauración** ofrece copias completas, ensayo de restauración, comparación de versiones y la bóveda local cuando se bloquean las descargas automáticas."
+        },
+        "deviceConfiguration": {
+          "title": "Configuración de dispositivos",
+          "content": "Empieza con una **Cámara** y añade **Monitores**, **Transmisores inalámbricos** y sistemas **FIZ**. Usa la biblioteca de dispositivos para importar o exportar equipo personalizado y conservar los cambios offline."
+        },
+        "powerCalculation": {
+          "title": "Cálculo de energía",
+          "content": "El **Resumen de potencia** muestra el consumo total y la autonomía según la batería y los voltajes de montura. Vigila las advertencias de **Pin** y **D‑Tap** y utiliza el resumen rápido para explicar los resultados offline."
+        },
+        "connectionDiagram": {
+          "title": "Diagrama de conexiones",
+          "content": "El **Diagrama de conexiones** muestra cómo se conectan los dispositivos. Arrastra para ordenar, haz zoom y desplázate, y descarga instantáneas SVG o JPG para compartir."
+        },
+        "gearList": {
+          "title": "Lista de equipo",
+          "content": "Genera una **Lista de equipo** detallada a partir de dispositivos y requisitos. Edita cantidades, proveedores, extras temporales y marcas de equipo propio, luego imprime o exporta."
+        },
+        "contacts": {
+          "title": "Contactos",
+          "content": "Guarda contactos del equipo o importa vCards. Las entradas se reutilizan en proyectos, proveedores, copias y exportaciones."
+        },
+        "ownGear": {
+          "title": "Equipo propio",
+          "content": "Controla tu inventario en **Equipo propio**. Marca artículos para que las listas de equipo y exportaciones reflejen esas anotaciones."
+        },
+        "settings": {
+          "title": "Ajustes",
+          "content": "Ajusta **Idioma**, temas, tipografía, branding y **Copia y restauración**. Las reglas automáticas y el seguimiento de documentación también están aquí."
+        },
+        "offlineUse": {
+          "title": "Uso sin conexión",
+          "content": "Cine Power Planner funciona totalmente **sin conexión** con iconos, fuentes y ayuda locales. Confirma el indicador offline y mantén exportaciones, copias completas y la bóveda local al día antes de desconectarte."
+        }
+      },
       "documentationTrackerHelpStart": "Introducción y navegación",
       "documentationTrackerHelpSave": "Guardado, compartición y exportaciones",
       "documentationTrackerHelpBackup": "Copias de seguridad y ensayos de restauración",
