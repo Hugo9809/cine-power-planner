@@ -2476,24 +2476,24 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
     const setup = setups[setupName];
     if (setup) {
       setupNameInput.value = setupName;
-      cameraSelect.value = setup.camera;
+      cameraSelect.value = setup.camera || 'None';
       callEventsCoreFunction('updateRecordingMediaOptions');
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
-      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);
-      monitorSelect.value = setup.monitor;
-      videoSelect.value = setup.video;
+      applyBatteryPlateSelectionFromBattery(setup.battery || '', batteryPlateSelect.value);
+      monitorSelect.value = setup.monitor || 'None';
+      videoSelect.value = setup.video || 'None';
       if (typeof updateCageSelectOptions === 'function') {
-        updateCageSelectOptions(setup.cage);
+        updateCageSelectOptions(setup.cage || 'None');
       } else if (cageSelect) {
-        cageSelect.value = setup.cage || cageSelect.value;
+        cageSelect.value = setup.cage || 'None';
       }
       (setup.motors || []).forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
       (setup.controllers || []).forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
-      distanceSelect.value = setup.distance;
-      batterySelect.value = setup.battery;
-      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
-      hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
+      distanceSelect.value = setup.distance || 'None';
+      batterySelect.value = setup.battery || 'None';
+      applyBatteryPlateSelectionFromBattery(setup.battery || '', batteryPlateSelect ? batteryPlateSelect.value : '');
+      hotswapSelect.value = setup.batteryHotswap || 'None';
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
       let storedPowerApplied = false;

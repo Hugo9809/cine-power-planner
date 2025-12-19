@@ -3691,19 +3691,37 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
   const normalizedPlate = readPowerSelectValue(batteryPlateSelect);
   const normalizedHotswap = readPowerSelectValue(hotswapSelect);
 
-  const currentSetup = {
-    setupName,
-    camera: cameraSelect.value,
-    monitor: monitorSelect.value,
-    video: videoSelect.value,
-    cage: cageSelect.value,
-    motors: motorSelects.map(sel => sel.value),
-    controllers: controllerSelects.map(sel => sel.value),
-    distance: distanceSelect.value,
-    batteryPlate: normalizeBatteryPlateValue(normalizedPlate, normalizedBattery),
-    battery: normalizedBattery,
-    batteryHotswap: normalizedHotswap
+  const currentSetup = { setupName };
+  const addIfChanged = (key, value) => {
+    if (value === null || value === undefined) return;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed || trimmed === 'None') return;
+      currentSetup[key] = trimmed;
+    } else if (Array.isArray(value)) {
+      const filtered = value.filter(v => typeof v === 'string' && v.trim() && v !== 'None');
+      if (filtered.length) currentSetup[key] = filtered;
+    } else {
+      currentSetup[key] = value;
+    }
   };
+
+  addIfChanged('camera', cameraSelect.value);
+  addIfChanged('monitor', monitorSelect.value);
+  addIfChanged('video', videoSelect.value);
+  addIfChanged('cage', cageSelect.value);
+
+  if (Array.isArray(motorSelects)) {
+    addIfChanged('motors', motorSelects.map(sel => sel.value));
+  }
+  if (Array.isArray(controllerSelects)) {
+    addIfChanged('controllers', controllerSelects.map(sel => sel.value));
+  }
+
+  addIfChanged('distance', distanceSelect.value);
+  addIfChanged('batteryPlate', normalizeBatteryPlateValue(normalizedPlate, normalizedBattery));
+  addIfChanged('battery', normalizedBattery);
+  addIfChanged('batteryHotswap', normalizedHotswap);
 
   const sharedPowerSelection = getPowerSelectionSnapshot();
   if (sharedPowerSelection) {

@@ -14264,21 +14264,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       info.easyrig = getEasyrigValue();
       const projectInfo = deriveProjectInfo(info);
       const state = {
-        camera: cameraSelect.value,
-        monitor: monitorSelect.value,
-        video: videoSelect.value,
-        cage: cageSelect.value,
-        motors: motorSelects.map(sel => sel.value),
-        controllers: controllerSelects.map(sel => sel.value),
-        distance: distanceSelect.value,
-        batteryPlate: batteryPlateSelect.value,
-        battery: batterySelect.value,
-        batteryHotswap: hotswapSelect.value,
-        sliderBowl: info.sliderBowl,
-        easyrig: info.easyrig,
         projectInfo
       };
-      state.batteryPlate = normalizeBatteryPlateValue(state.batteryPlate, state.battery);
+
+      const addIfChanged = (key, value) => {
+        if (value === null || value === undefined) return;
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (!trimmed || trimmed === 'None') return;
+          state[key] = trimmed;
+        } else if (Array.isArray(value)) {
+          const filtered = value.filter(v => typeof v === 'string' && v.trim() && v !== 'None');
+          if (filtered.length) state[key] = filtered;
+        } else {
+          state[key] = value;
+        }
+      };
+
+      addIfChanged('camera', cameraSelect.value);
+      addIfChanged('monitor', monitorSelect.value);
+      addIfChanged('video', videoSelect.value);
+      addIfChanged('cage', cageSelect.value);
+
+      if (Array.isArray(motorSelects)) {
+        addIfChanged('motors', motorSelects.map(sel => sel.value));
+      }
+      if (Array.isArray(controllerSelects)) {
+        addIfChanged('controllers', controllerSelects.map(sel => sel.value));
+      }
+
+      addIfChanged('distance', distanceSelect.value);
+      addIfChanged('batteryPlate', normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value));
+      addIfChanged('battery', batterySelect.value);
+      addIfChanged('batteryHotswap', hotswapSelect.value);
+      addIfChanged('sliderBowl', info.sliderBowl);
+      addIfChanged('easyrig', info.easyrig);
       const projectRules = getProjectScopedAutoGearRules();
       if (projectRules && projectRules.length) {
         state.autoGearRules = projectRules;
