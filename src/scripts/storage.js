@@ -12826,18 +12826,12 @@
         }
       }
 
+      const filteredCandidates = candidates.filter((name) => name);
       const fallback = typeof fallbackName === "string" && fallbackName.trim()
         ? fallbackName.trim()
         : defaultName;
 
-      if (candidates.includes("") && !normalizedNames.has("")) {
-        usedNames.add("");
-        normalizedNames.add("");
-        saveProject("", normalizedProject, { skipCompression: true });
-        return;
-      }
-
-      const baseName = candidates.find((candidate) => candidate) || fallback;
+      const baseName = filteredCandidates[0] || fallback;
       const normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
       const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
         ? generateImportedProjectName(baseName, usedNames, normalizedNames)
@@ -12887,7 +12881,7 @@
       }
 
       const importProject = ensureImporter();
-      importProject("", collection, fallbackLabel);
+      importProject(fallbackLabel, collection, fallbackLabel);
       return true;
     }
 
@@ -12943,7 +12937,13 @@
       const importProject = ensureImporter();
       Object.entries(collection).forEach(([name, proj]) => {
         const normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
-        importProject(typeof normalizedName === 'string' ? normalizedName : '', proj);
+        importProject(
+          typeof normalizedName === 'string' && normalizedName
+            ? normalizedName
+            : fallbackLabel,
+          proj,
+          fallbackLabel,
+        );
       });
       return true;
     }
