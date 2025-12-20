@@ -3463,11 +3463,13 @@ if (projectForm) {
       alertPinExceeded();
       return;
     }
+    const gearMods = collectCurrentGearModifications();
     const info = collectProjectFormData();
     currentProjectInfo = info;
     ensureZoomRemoteSetup(info);
     const html = gearListGenerateHtmlImpl(info);
     displayGearAndRequirements(html);
+    applyCurrentGearModifications(gearMods);
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();
@@ -8783,16 +8785,30 @@ function ensureGearItemCameraLinkIndicator(element) {
   assist.setAttribute('data-camera-link-assist', 'true');
   assist.textContent = textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
   indicator.appendChild(assist);
-  const reference = element.querySelector('.gear-item-note')
-    || element.querySelector('.gear-item-provider')
-    || element.querySelector('.gear-item-extra-indicator')
-    || element.querySelector('.gear-item-edit-btn')
-    || element.querySelector('.gear-custom-item-actions')
-    || element.querySelector('.gear-custom-remove-btn');
-  if (reference) {
-    element.insertBefore(indicator, reference);
+
+  const summary = element.classList && element.classList.contains('gear-custom-item')
+    ? element.querySelector('.gear-custom-item-summary')
+    : null;
+
+  if (summary) {
+    const summaryNote = summary.querySelector('.gear-item-note');
+    if (summaryNote) {
+      summary.insertBefore(indicator, summaryNote);
+    } else {
+      summary.appendChild(indicator);
+    }
   } else {
-    element.appendChild(indicator);
+    const reference = element.querySelector('.gear-item-note')
+      || element.querySelector('.gear-item-provider')
+      || element.querySelector('.gear-item-extra-indicator')
+      || element.querySelector('.gear-item-edit-btn')
+      || element.querySelector('.gear-custom-item-actions')
+      || element.querySelector('.gear-custom-remove-btn');
+    if (reference) {
+      element.insertBefore(indicator, reference);
+    } else {
+      element.appendChild(indicator);
+    }
   }
   return indicator;
 }
@@ -10513,7 +10529,7 @@ function handleGearItemEditDialogBackdropPointerDown(event) {
   }
   event.preventDefault();
   event.stopPropagation();
-  handleGearItemEditDialogCancel(event);
+  handleGearItemEditFormSubmit(event);
 }
 
 let gearItemEditDialogBound = false;
@@ -11763,6 +11779,7 @@ function gearListGenerateHtmlImpl(info = {}) {
   const projectTitleSource = safeGetCurrentProjectName(info.projectName || '') || info.projectName || '';
   const projectTitle = escapeHtml(projectTitleSource);
   const excludedFields = new Set([
+    'filter',
     'cameraHandle',
     'viewfinderExtension',
     'mattebox',
@@ -13585,7 +13602,8 @@ function gearListGenerateHtmlImpl(info = {}) {
 }
 
 
-function gearListGetCurrentHtmlImpl() {
+function gearListGetCurrentHtmlImpl(options = {}) {
+  const isForPersistence = options.forPersistence === true || options.isForPersistence === true;
   const scope = getGlobalScope();
   const lastCombined = scope && typeof scope.__cineLastGearListHtml === 'string'
     ? scope.__cineLastGearListHtml
@@ -13751,7 +13769,9 @@ function gearListGetCurrentHtmlImpl() {
         input.setAttribute('value', input.value);
       }
     });
-    convertCustomItemsForStaticOutput(clone);
+    if (!isForPersistence) {
+      convertCustomItemsForStaticOutput(clone);
+    }
     const table = clone.querySelector('.gear-table');
     gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
   }
@@ -14269,12 +14289,26 @@ function resolveProjectStorageNameCollision(baseName) {
   if (!normalizedExisting.has(normalizedCandidate)) {
     return { name: trimmed, changed: false };
   }
-  let suffix = 2;
-  let candidate = `${trimmed} (${suffix})`;
+
+  let baseNamePart = trimmed;
+  let startSuffix = 1;
+
+  const suffixMatch = trimmed.match(/^(.*)\s+\((\d+)\)$/);
+  if (suffixMatch) {
+    baseNamePart = suffixMatch[1];
+    const parsed = parseInt(suffixMatch[2], 10);
+    if (!isNaN(parsed)) {
+      startSuffix = parsed;
+    }
+  }
+
+  let nextSuffix = startSuffix + 1;
+  let candidate = `${baseNamePart} (${nextSuffix})`;
   let normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
+
   while (normalizedExisting.has(normalizedCandidateWithSuffix)) {
-    suffix += 1;
-    candidate = `${trimmed} (${suffix})`;
+    nextSuffix += 1;
+    candidate = `${baseNamePart} (${nextSuffix})`;
     normalizedCandidateWithSuffix = candidate.trim().toLowerCase();
   }
   return { name: candidate, changed: true };
@@ -14306,7 +14340,7 @@ function doesProjectNameExist(name) {
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   if (isProjectPersistenceSuspended()) return;
-  const html = gearListGetCurrentHtmlImpl();
+  const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
   const normalizedHtml = typeof html === 'string' ? html.trim() : '';
   const gearListGenerated = Boolean(normalizedHtml);
   const info = projectForm ? collectProjectFormData() : {};
@@ -14477,6 +14511,7 @@ function saveCurrentGearList() {
     }
     const payload = {
       projectInfo: projectInfoSnapshot,
+      gearList: normalizedHtml,
       gearListAndProjectRequirementsGenerated: gearListGenerated
     };
     if (powerSelectionSnapshot) {
@@ -14513,6 +14548,11 @@ function saveCurrentGearList() {
 
   if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
     setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
+    changed = true;
+  }
+
+  if (setup.gearList !== normalizedHtml) {
+    setup.gearList = normalizedHtml;
     changed = true;
   }
 
@@ -15066,6 +15106,108 @@ function updateAutoGearHighlightToggleButton() {
     toggle.setAttribute('aria-disabled', 'true');
   }
   updateAutoGearRuleBadges(gearListOutput);
+}
+
+/**
+ * Collects manual user modifications from the currently visible gear list.
+ * This includes custom items and changes made to standard items via the edit menu.
+ * @returns {Object} An object containing items (map by name) and customItems (array).
+ */
+function collectCurrentGearModifications() {
+  if (!gearListOutput) return { items: {}, customItems: [] };
+
+  const mods = {
+    items: {},
+    customItems: []
+  };
+
+  try {
+    // 1. Collect custom items
+    const customItemNodes = gearListOutput.querySelectorAll('.gear-custom-item');
+    customItemNodes.forEach(item => {
+      const categoryKey = item.getAttribute('data-gear-custom-entry');
+      const section = item.closest('.gear-custom-section');
+      const categoryLabel = section ? section.getAttribute('data-gear-custom-category') : '';
+      if (typeof getGearItemData === 'function') {
+        const data = getGearItemData(item);
+        mods.customItems.push({ categoryKey, categoryLabel, data });
+      }
+    });
+
+    // 2. Collect manual modifications for standard items
+    const standardItemNodes = gearListOutput.querySelectorAll('.gear-item:not(.gear-custom-item)');
+    standardItemNodes.forEach(item => {
+      if (typeof getGearItemData === 'function' && typeof getGearItemResetDefaults === 'function') {
+        const data = getGearItemData(item);
+        const original = getGearItemResetDefaults(item);
+        const key = original.name; // Use the original name to match back later
+
+        if (!key) return;
+
+        const isModified =
+          data.quantity !== original.quantity ||
+          data.name !== original.name ||
+          data.attributes !== original.attributes ||
+          Boolean(data.note) ||
+          Boolean(data.rentalExcluded) ||
+          (data.providedBy && data.providedBy !== (typeof guessDefaultProvider === 'function' ? guessDefaultProvider(data.name) : '')) ||
+          (data.cameraLink && data.cameraLink !== 'A' && !isPrimaryCameraItem(item));
+
+        if (isModified) {
+          mods.items[key] = data;
+        }
+      }
+    });
+  } catch (error) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('Failed to collect current gear list modifications', error);
+    }
+  }
+
+  return mods;
+}
+
+/**
+ * Applies collected manual user modifications back to the gear list.
+ * @param {Object} mods The modifications collected by collectCurrentGearModifications.
+ */
+function applyCurrentGearModifications(mods) {
+  if (!gearListOutput || !mods) return;
+
+  try {
+    // 1. Re-add custom items
+    if (Array.isArray(mods.customItems)) {
+      mods.customItems.forEach(custom => {
+        if (typeof addCustomItemEntry === 'function') {
+          addCustomItemEntry(
+            custom.categoryKey,
+            custom.categoryLabel,
+            custom.data,
+            { skipPersist: true, skipEditDialog: true, skipFocus: true }
+          );
+        }
+      });
+    }
+
+    // 2. Apply modifications to standard items
+    if (mods.items && Object.keys(mods.items).length) {
+      const standardItemNodes = gearListOutput.querySelectorAll('.gear-item:not(.gear-custom-item)');
+      standardItemNodes.forEach(item => {
+        const current = typeof getGearItemData === 'function' ? getGearItemData(item) : null;
+        const name = current ? current.name : null;
+        if (name && mods.items[name]) {
+          const modData = mods.items[name];
+          if (typeof applyGearItemData === 'function') {
+            applyGearItemData(item, modData, { skipPreview: false });
+          }
+        }
+      });
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('Failed to apply gear list modifications', error);
+    }
+  }
 }
 
 function ensureGearListActions() {

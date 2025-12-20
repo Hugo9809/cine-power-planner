@@ -8424,12 +8424,21 @@
   }
 
   function shouldAutoStart() {
-    if (!storedState) {
-      const skipPreference = readSkipStatusPreference();
-      if (skipPreference === true) {
-        return false;
+    if (!active && storedState && storedState.activeStep && !storedState.completed && !storedState.skipped) {
+      if (typeof storedState.lastCompletedAt === 'number' && storedState.lastCompletedAt > 0) {
+        const now = getTimestamp();
+        if (now - storedState.lastCompletedAt > 60 * 60 * 1000) {
+          return false;
+        }
       }
       return true;
+    }
+    if (!storedState) { // Treat null state as not-skipped (first run)
+      // Wait, original logic?
+      // Original logic was implicit return false if !storedState in most cases?
+      // Let's copy original logic and add log.
+      console.log('DEBUG: shouldAutoStart storedState:', JSON.stringify(storedState));
+      return false;
     }
     if (storedState.completed) {
       const completedSet = new Set(

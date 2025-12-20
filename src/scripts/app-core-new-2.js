@@ -10180,14 +10180,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         typeof entry === 'string'
           ? entry
           : entry.optionLabel || entry.display || '';
-      const type = typeof entry === 'string' ? 'feature' : entry.type || 'feature';
-      const typeKey = FEATURE_SEARCH_TYPE_LABEL_KEYS[type];
-      const typeLabel = typeKey ? getLocalizedText(typeKey) : '';
+
       const detail =
         typeof entry === 'object' && entry !== null
           ? normalizeFeatureSearchDetail(entry.detail)
           : '';
-      let label = typeLabel ? `${typeLabel} · ${baseLabel}` : baseLabel || value;
+
+      // Simplify label: remove type prefix to reduce noise
+      let label = baseLabel || value;
+
       if (detail) {
         label = `${label} — ${detail}`;
       }
@@ -10394,9 +10395,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     const FEATURE_SEARCH_TYPE_PRIORITIES = {
-      feature: 3,
-      action: 4,
-      device: 3,
+      feature: 8,
+      action: 10,
+      device: 6,
       help: 1
     };
 
@@ -10695,6 +10696,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!a) return 1;
       if (!b) return -1;
       if (b.priority !== a.priority) return b.priority - a.priority;
+      // Prioritise by type (Action > Feature > Device > Help) immediately after match quality
+      if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
       }
@@ -15901,19 +15904,63 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
 
-      const brandInput = document.createElement('input');
-      brandInput.type = 'text';
-      brandInput.placeholder = 'Brand';
-      brandInput.name = 'recordingMediaBrand';
-      brandInput.value = brand;
-      row.appendChild(createFieldWithLabel(brandInput, 'Brand'));
+      const brands = (typeof devices !== 'undefined' && devices.recordingMediaBrands) || [];
+      const sizes = (typeof devices !== 'undefined' && devices.recordingMediaSizes) || [];
 
-      const notesInput = document.createElement('input');
-      notesInput.type = 'text';
-      notesInput.placeholder = 'Notes (Size, Speed, etc.)';
-      notesInput.name = 'recordingMediaNotes';
-      notesInput.value = notes;
-      row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+      // Try to separate size from notes if possible, otherwise treat whole note as size context
+      // For simple restoration, we treat the 'notes' field as the size value.
+      const sizeValue = notes || '';
+
+      const brandSelect = document.createElement('select');
+      brandSelect.className = 'recording-media-brand-select';
+      brandSelect.name = 'recordingMediaBrand';
+      addEmptyOption(brandSelect);
+      brands.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b;
+        brandSelect.appendChild(opt);
+      });
+      if (brand && !brands.includes(brand)) {
+        const opt = document.createElement('option');
+        opt.value = brand;
+        opt.textContent = brand;
+        opt.dataset.custom = 'true';
+        brandSelect.appendChild(opt);
+      }
+      brandSelect.value = brand;
+      row.appendChild(createFieldWithLabel(brandSelect, 'Brand'));
+
+      const sizeSelect = document.createElement('select');
+      sizeSelect.className = 'recording-media-size-select';
+      sizeSelect.name = 'recordingMediaSize';
+      addEmptyOption(sizeSelect);
+      sizes.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sizeSelect.appendChild(opt);
+      });
+
+      // If the current size/note value isn't in our standard list, add it as a custom option
+      if (sizeValue && !sizes.includes(sizeValue)) {
+        const opt = document.createElement('option');
+        opt.value = sizeValue;
+        opt.textContent = sizeValue;
+        opt.dataset.custom = 'true';
+        sizeSelect.appendChild(opt);
+      }
+      sizeSelect.value = sizeValue;
+      row.appendChild(createFieldWithLabel(sizeSelect, 'Size'));
+
+      // Optional extra notes input
+      const extraNotesInput = document.createElement('input');
+      extraNotesInput.type = 'text';
+      extraNotesInput.placeholder = 'Extra details...';
+      extraNotesInput.className = 'recording-media-extra-notes';
+      // We don't populate this from 'notes' because 'notes' is consumed by sizeSelect. 
+      // This is for *new* additions.
+      row.appendChild(createFieldWithLabel(extraNotesInput, 'Notes'));
 
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
@@ -15960,10 +16007,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
         .map(row => {
-          const [sel, brandInput, notesInput] = row.querySelectorAll('select, input');
-          return { type: sel.value, brand: brandInput.value, notes: notesInput.value };
+          const typeSel = row.querySelector('.recording-media-select');
+          const brandSel = row.querySelector('.recording-media-brand-select');
+          const sizeSel = row.querySelector('.recording-media-size-select');
+          const extraInput = row.querySelector('.recording-media-extra-notes');
+
+          if (!typeSel) return null;
+
+          const type = typeSel.value;
+          const brand = brandSel ? brandSel.value : '';
+          const size = sizeSel ? sizeSel.value : '';
+          const extra = extraInput ? extraInput.value : '';
+
+          // Combine size and extra notes
+          let finalNotes = size;
+          if (extra) {
+            finalNotes = finalNotes ? finalNotes + ' ' + extra : extra;
+          }
+
+          return { type, brand, notes: finalNotes };
         })
-        .filter(m => m.type && m.type !== 'None');
+        .filter(m => m && m.type && m.type !== 'None');
     }
 
     writeCoreScopeValue('getRecordingMedia', getRecordingMedia);

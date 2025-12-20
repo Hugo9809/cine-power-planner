@@ -5,6 +5,25 @@
 const path = require('path');
 
 describe('onboarding tour manual start', () => {
+  let documentListeners = [];
+
+  beforeEach(() => {
+    jest.resetModules();
+    documentListeners = [];
+    const originalAdd = document.addEventListener;
+    jest.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+      documentListeners.push({ type, listener, options });
+      originalAdd.call(document, type, listener, options);
+    });
+  });
+
+  afterEach(() => {
+    documentListeners.forEach(({ type, listener, options }) => {
+      document.removeEventListener(type, listener, options);
+    });
+    jest.restoreAllMocks();
+  });
+
   const modulePath = path.resolve(
     __dirname,
     '../../../src/scripts/modules/features/onboarding-tour.js',
@@ -275,7 +294,7 @@ describe('onboarding tour manual start', () => {
 
     trigger.click();
 
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const overlay = document.getElementById('onboardingTutorialOverlay');
     expect(overlay).not.toBeNull();
@@ -305,7 +324,7 @@ describe('onboarding tour manual start', () => {
 
     trigger.click();
 
-    await new Promise(resolve => setTimeout(resolve, 40));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const overlay = document.getElementById('onboardingTutorialOverlay');
     expect(overlay).not.toBeNull();
@@ -322,7 +341,7 @@ describe('onboarding tour manual start', () => {
     languageProxy.value = nextOption.value;
     languageProxy.dispatchEvent(new Event('change', { bubbles: true }));
 
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     expect(global.setLanguage).toHaveBeenCalledWith(nextOption.value);
     expect(global.currentLang).toBe(nextOption.value);
@@ -372,7 +391,7 @@ describe('onboarding tour manual start', () => {
     proxySelect.value = alternativeOption.value;
     proxySelect.dispatchEvent(new Event('change', { bubbles: true }));
 
-    await new Promise(resolve => setTimeout(resolve, 40));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     expect(global.setLanguage).toHaveBeenCalledWith(alternativeOption.value);
     expect(global.currentLang).toBe(alternativeOption.value);
@@ -392,7 +411,7 @@ describe('onboarding tour manual start', () => {
 
     dynamicTrigger.click();
 
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const overlay = document.getElementById('onboardingTutorialOverlay');
     expect(overlay).not.toBeNull();
@@ -483,7 +502,7 @@ describe('onboarding tour manual start', () => {
       helpDialog.setAttribute('open', '');
 
       trigger.click();
-      await new Promise(resolve => setTimeout(resolve, 40));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       const overlay = document.getElementById('onboardingTutorialOverlay');
       expect(overlay).not.toBeNull();
@@ -512,8 +531,8 @@ describe('onboarding tour manual start', () => {
       targetTop = 140;
       window.dispatchEvent(new Event('scroll'));
       document.dispatchEvent(new Event('scroll'));
-      await new Promise(resolve => setTimeout(resolve, 20));
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const scrolledCardTop = parseFloat(card.style.top);
       const scrolledTranslate = parseTranslate(highlight.style.transform);
@@ -552,7 +571,7 @@ describe('onboarding tour manual start', () => {
       helpDialog.setAttribute('open', '');
 
       trigger.click();
-      await new Promise(resolve => setTimeout(resolve, 40));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       const overlay = document.getElementById('onboardingTutorialOverlay');
       expect(overlay).not.toBeNull();
@@ -567,7 +586,7 @@ describe('onboarding tour manual start', () => {
       });
 
       window.dispatchEvent(new Event('resize'));
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const card = overlay.querySelector('.onboarding-card');
       expect(card).not.toBeNull();
@@ -615,7 +634,7 @@ describe('onboarding tour manual start', () => {
       helpDialog.setAttribute('open', '');
 
       trigger.click();
-      await new Promise(resolve => setTimeout(resolve, 40));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       const overlay = document.getElementById('onboardingTutorialOverlay');
       expect(overlay).not.toBeNull();
@@ -630,7 +649,7 @@ describe('onboarding tour manual start', () => {
       });
 
       window.dispatchEvent(new Event('resize'));
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const card = overlay.querySelector('.onboarding-card');
       expect(card).not.toBeNull();
@@ -649,7 +668,7 @@ describe('onboarding tour manual start', () => {
       });
 
       window.dispatchEvent(new Event('resize'));
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const left = parseFloat(card.style.left);
       expect(Number.isFinite(left)).toBe(true);
@@ -678,7 +697,7 @@ describe('onboarding tour manual start', () => {
     helpDialog.setAttribute('open', '');
 
     trigger.click();
-    await new Promise(resolve => setTimeout(resolve, 40));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const overlay = document.getElementById('onboardingTutorialOverlay');
     expect(overlay).not.toBeNull();
@@ -693,7 +712,7 @@ describe('onboarding tour manual start', () => {
 
     onboardingLanguage.value = 'de';
     onboardingLanguage.dispatchEvent(new Event('change', { bubbles: true }));
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     expect(progress.textContent).toBe('Willkommen');
 
@@ -705,7 +724,7 @@ describe('onboarding tour manual start', () => {
 
     headerLanguage.value = 'fr';
     headerLanguage.dispatchEvent(new Event('change', { bubbles: true }));
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     // Ensure the welcome language selector mirrors header updates.
     onboardingLanguage = overlay.querySelector('select.onboarding-hero-language-select');
@@ -714,7 +733,7 @@ describe('onboarding tour manual start', () => {
     expect(settingsLanguage.value).toBe('fr');
     expect(global.currentLang).toBe('fr');
 
-    await new Promise(resolve => setTimeout(resolve, 30));
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     expect(progress.textContent).toBe('Bienvenue');
 

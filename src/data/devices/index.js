@@ -59,6 +59,7 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./cages.js');
   require('./carts.js');
   require('./gearList.js');
+  require('./recordingMedia.js');
   require('./wirelessReceivers.js');
   require('./audio.js');
   require('./lights.js');

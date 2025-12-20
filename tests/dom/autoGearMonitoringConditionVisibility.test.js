@@ -1,4 +1,3 @@
-const path = require('path');
 
 function stubReadyState(value) {
   const descriptor = Object.getOwnPropertyDescriptor(document, 'readyState');

@@ -6346,6 +6346,7 @@ function checkArriCompatibility() {
   } else if (
     distance &&
     distance !== 'None' &&
+    !/DJI LiDAR/i.test(distance) &&
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
     msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'distanceControllerWarning', '');

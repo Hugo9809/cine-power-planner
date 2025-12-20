@@ -514,7 +514,7 @@
         ]
       }
     },
-    "DJI Transmission (TX)": {
+    "DJI Video Transmission TX": {
       "powerDrawWatts": 11,
       "weight_g": 350,
       "videoInputs": [
@@ -526,9 +526,6 @@
         }
       ],
       "videoOutputs": [
-        {
-          "type": "HDMI"
-        },
         {
           "type": "3G-SDI"
         }
@@ -1128,46 +1125,43 @@
       },
       "weight_g": 212
     },
-    "DJI Video Transmitter": {
-      "powerDrawWatts": 11,
+    "DJI SDR Transmitter": {
+      "powerDrawWatts": 8.2,
       "videoInputs": [
         {
-          "type": "HDMI"
+          "type": "HDMI",
+          "notes": "1080p60"
         },
         {
-          "type": "3G-SDI"
-        }
-      ],
-      "videoOutputs": [
-        {
           "type": "3G-SDI",
-          "notes": "Loop-out"
+          "notes": "1080p60"
         }
       ],
-      "frequency": "2.4/5.8 GHz",
-      "latencyMs": "Ultra-low",
+      "videoOutputs": [],
+      "frequency": "SDR / 2.4 / 5.8 GHz",
+      "latencyMs": "35ms",
       "power": {
         "input": [
           {
-            "notes": "6-18V",
+            "notes": "6.8-17.2V",
             "type": [
-              "DC Barrel"
-            ]
-          },
-          {
-            "type": [
-              "WB37"
+              "USB-C (PD)"
             ]
           },
           {
             "type": [
               "NP-F"
             ],
-            "notes": "Optional adapter"
+            "notes": "6.8-8.4V"
+          },
+          {
+            "type": [
+              "Gimbal Power"
+            ]
           }
         ]
       },
-      "weight_g": 350
+      "weight_g": 145
     }
   };
 

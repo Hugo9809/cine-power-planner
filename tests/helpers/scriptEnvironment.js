@@ -212,7 +212,10 @@ function setupScriptEnvironment(options = {}) {
     loadSetup: jest.fn(),
     deleteSetup: jest.fn(),
     loadFavorites: jest.fn(() => ({})),
-    saveFavorites: jest.fn()
+    saveFavorites: jest.fn(),
+    unifyDevices: jest.fn(),
+    fixPowerInput: jest.fn(),
+    ensureList: jest.fn()
   };
 
   if (options.devices) {

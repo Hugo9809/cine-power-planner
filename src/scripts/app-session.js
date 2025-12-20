@@ -304,8 +304,7 @@ function applySetLanguage(languageCode, options = {}) {
   }
 
   try {
-    setLanguageFn(languageCode);
-    return true;
+    return setLanguageFn(languageCode);
   } catch (setLanguageError) {
     if (!options?.silent && typeof console !== 'undefined' && typeof console.error === 'function') {
       console.error('applySetLanguage: setLanguage execution failed', setLanguageError);
@@ -7576,13 +7575,13 @@ if (settingsButton && settingsDialog) {
     });
   }
 
-  const applySettingsAndCloseDialog = () => {
+  const applySettingsAndCloseDialog = async () => {
     if (!settingsDialog) {
       return;
     }
 
     if (settingsLanguage) {
-      applySetLanguage(settingsLanguage.value);
+      await applySetLanguage(settingsLanguage.value);
       if (typeof populateUserButtonDropdowns === 'function') {
         try {
           populateUserButtonDropdowns();
@@ -12285,7 +12284,7 @@ function handleRestoreSettingsInputChange() {
   const previousSelection = captureSetupSelection();
   let restoreMutated = false;
 
-  const finalizeRestore = () => {
+  const finalizeRestore = async () => {
     try {
       restoreSettingsInput.value = '';
     } catch (resetError) {
@@ -12293,7 +12292,7 @@ function handleRestoreSettingsInputChange() {
     }
   };
 
-  const revertAfterFailure = () => {
+  const revertAfterFailure = async () => {
     try {
       restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
     } catch (restoreError) {
@@ -12335,7 +12334,7 @@ function handleRestoreSettingsInputChange() {
     }
     if (restoredPreferences.language) {
       try {
-        applySetLanguage(restoredPreferences.language);
+        await applySetLanguage(restoredPreferences.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -12356,7 +12355,7 @@ function handleRestoreSettingsInputChange() {
     finalizeRestore();
   };
 
-  const processBackupPayload = (rawPayload) => {
+  const processBackupPayload = async (rawPayload) => {
     try {
       const sanitizedPayload = sanitizeBackupPayload(rawPayload);
       if (!sanitizedPayload || !sanitizedPayload.trim()) {
@@ -12448,7 +12447,7 @@ function handleRestoreSettingsInputChange() {
         settingsShowAutoBackups.checked = showAutoBackups;
       }
       if (restoredPreferenceState.language) {
-        applySetLanguage(restoredPreferenceState.language);
+        await applySetLanguage(restoredPreferenceState.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -12493,7 +12492,7 @@ function handleRestoreSettingsInputChange() {
     } catch (err) {
       if (restoreMutated) {
         try {
-          revertAfterFailure();
+          await revertAfterFailure();
         } catch (revertError) {
           console.warn('Failed to restore previous state after restore error', revertError);
         }
@@ -15076,6 +15075,7 @@ if (helpButton && helpDialog) {
 
   const focusFeatureElement = element => {
     if (!element) return;
+    if (typeof element.closest !== 'function') return;
 
     ensureFeatureSearchVisibility(element);
 

@@ -1,3 +1,4 @@
+/* global APP_VERSION */
 /*
  * Ensure critical core runtime globals always exist before the loader
  * initialises the rest of the application. Some browsers, notably older
@@ -3855,6 +3856,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           'src/data/devices/chargers.js',
           'src/data/devices/cages.js',
           'src/data/devices/gearList.js',
+          'src/data/devices/recordingMedia.js',
           'src/data/devices/wirelessReceivers.js',
           'src/scripts/translations/en.js',
           'src/vendor/lz-string.min.js',
@@ -3948,6 +3950,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           'legacy/data/devices/chargers.js',
           'legacy/data/devices/cages.js',
           'legacy/data/devices/gearList.js',
+          'src/data/devices/recordingMedia.js',
           'legacy/data/devices/wirelessReceivers.js',
         ]
       },
