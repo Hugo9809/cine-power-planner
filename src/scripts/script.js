@@ -30,6 +30,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/mount-voltage.js',
     'modules/core/experience.js',
     'modules/logging.js',
+    'modules/device-normalization.js',
     'modules/features/help.js',
     'modules/features/help-content.js',
     'modules/features/contacts.js',

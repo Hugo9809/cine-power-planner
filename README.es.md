@@ -205,10 +205,15 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 ## Novedades
 
 - **Base de datos de lentes ampliada** – se agregaron Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings y Zero Optik Canon Dream Primes (Rehoused) al catálogo offline.
+- **Vista previa de impresión rediseñada** – una nueva experiencia de impresión basada en una barra lateral que ofrece vistas previas en tiempo real, ajustes de diseño y controles de exportación a PDF directamente en el planificador.
+- **Paleta de comandos mejorada** – presione `Ctrl+K` (o `⌘K`) para acceder a un centro de comandos para acciones rápidas como crear proyectos, cambiar al modo oscuro, agregar dispositivos o saltar a funciones específicas.
+- **Fotos de contacto interactivas** – arrastre y suelte archivos de imagen directamente en las tarjetas de contacto para actualizar los avatares al instante, con nuevas herramientas de recorte y vista previa.
+- **Refactorización del Modo Rosa** – disfrute de animaciones más fluidas y un efecto de "lluvia de iconos" más robusto al usar el tema Rosa, ahora con mejor rendimiento y confiabilidad.
 - **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
 - **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
 - **Registro de diagnósticos** – Abre **Configuración → Datos y almacenamiento** para ver el log en vivo, filtrar por nivel o namespace y ajustar retención, reflejo en consola, la captura de consola activada por defecto y captura de errores sin salir del planner.
 - **Libro de historial de copias** – Cada descarga de copia completa registra su marca de tiempo y nombre de archivo localmente. Revísalo en **Configuración → Datos y almacenamiento** o exporta el registro junto con tus archivos para demostrar retención sin conexión.
+- **Preferencias de trípode inteligentes** – las reglas automáticas de equipo ahora respetan las preferencias específicas de trípode y cabezal, asegurando que su hardware favorito sea sugerido según el peso de la cámara y el escenario.
 - **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
 - **Panel de cobertura de reglas** – Resume la cobertura por escenario, los disparadores duplicados, los cambios netos, los escenarios apilados, los conflictos y los requisitos sin cubrir dentro de Reglas automáticas de equipo, aplica filtros de foco sin conexión y comparte los mismos datos en exportaciones e impresiones.
 - **Panel de datos y almacenamiento** – Audita proyectos, listas, equipos personalizados, favoritos y comentarios de autonomía desde Configuración y estima el tamaño del backup.

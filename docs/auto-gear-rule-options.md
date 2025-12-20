@@ -26,11 +26,16 @@ machines.
    activate composite builders so overlapping presets stay deterministic.
 3. **Option triggers.** Handles, distribution choices and monitor options inject
    or remove accessories whenever their toggles change.
-4. **Helper rules.** Tripod, onboard monitor and viewfinder helpers run on every
-   update so supporting hardware is never omitted.
-5. **Validation sweep.** Payloads are checked against the schema inventory. Any
-   unknown field is dropped and logged before persistence to prevent imports
-   from older builds from corrupting new presets.
+- **Mattebox builders** (`buildMatteboxAutoGearRules` and `buildDefaultMatteboxAutoGearRules`) – add specific mattebox rods, plates and accessories based on the selected camera body and lens family.
+- **Tripod Configuration** (`buildTripodAutoGearRules`) – resolves specific tripod heads, bowls and spreaders based on the project configurations.
+- **Smart Tripod Preferences** (`buildTripodPreferenceAutoGearRules`) – respects user-defined tripod and head combinations. This builder calculates the expected rig weight and cross-references it with your preferred tripod systems to ensure the correct support hardware is suggested for each scenario.
+- **Onboard Monitoring** (`buildOnboardMonitorRiggingAutoGearRules`) – injects Noga arms, monitor plates and power cables tailored to the specific monitor model and positioning toggle.
+- **Video Distribution** (`buildVideoDistributionAutoRules` and `buildDefaultVideoDistributionAutoGearRules`) – ensures transmitters, receivers and cabling are accounted for based on individual choices or defaults from the project brief.
+- **Motor Control** (`buildMotorHandUnitAutoGearRules` and `buildAutoGearAnyMotorRule`) – adds hand units, motor kits and cabling when wireless FIZ scenarios are active.
+- **Camera Handles & Rigging** (`buildCameraHandleAutoRules`) – injects top handles, side grips and cage accessories based on the selected handle configuration.
+- **Viewfinder Systems** (`buildViewfinderExtensionAutoRules` and `buildArriViewfinderBracketRules`) – adds viewfinder brackets, extensions and cables based on the camera body and extension selection.
+- **Consumables** (`buildFiveDayConsumablesAutoGearRule`) – automatically adds standard consumables (tape, markers, canned air) to the gear list for productions over five days.
+- **Global Rules** (`buildAlwaysAutoGearRule`) – captures items that should be present in every gear list regardless of scenario.
 
 ## Storage & audit safeguards
 

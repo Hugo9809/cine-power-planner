@@ -75,13 +75,8 @@
  * This repetition is deliberate: it ensures the diff remains stable by
  * keeping the similarity score below Git's rename detection threshold.
  * Do not trim these notes unless the tooling issue has been resolved.
- * This repetition is deliberate: it ensures the diff remains stable by
- * keeping the similarity score below Git's rename detection threshold.
- * Do not trim these notes unless the tooling issue has been resolved.
  */
 
-
-console.log('app-core-new-1.js LOADED - DEBUG VERSION');
 
 // [Added by Agent] Ensure localization helpers are available
 var localResolveDocumentDirection = (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.resolveDocumentDirection === 'function')
@@ -209,27 +204,27 @@ const TEMPERATURE_UNITS_FALLBACK = Object.freeze({
   celsius: 'celsius',
 });
 
+// Move device normalization helpers to top level to avoid TDZ and scope issues
+const {
+  normalizeVideoType,
+  normalizeFizConnectorType,
+  normalizeViewfinderType,
+  normalizePowerPortType,
+  fixPowerInput,
+  applyFixPowerInput,
+  ensureList,
+  markDevicesNormalized,
+  hasNormalizedDevicesMarker,
+  unifyDevices,
+  normalizeDevicesForPersistence,
+} = (typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : (typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization) || {});
+
+if (typeof window !== 'undefined') {
+  window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+}
+
 const CORE_TEMPERATURE_UNITS = (function resolveTemperatureUnits() {
   const candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
-
-  // Moved from lower down to avoid TDZ issues
-  const {
-    normalizeVideoType,
-    normalizeFizConnectorType,
-    normalizeViewfinderType,
-    normalizePowerPortType,
-    fixPowerInput,
-    applyFixPowerInput,
-    ensureList,
-    markDevicesNormalized,
-    hasNormalizedDevicesMarker,
-    unifyDevices,
-    normalizeDevicesForPersistence
-  } = (typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : (typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization) || {});
-
-  if (typeof window !== 'undefined') {
-    window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
-  }
 
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const scope = candidateScopes[index];
@@ -11241,6 +11236,7 @@ async function setLanguage(lang) {
     }
     setLabelText(riggingHeadingElem, 'riggingHeading');
     setLabelText(requiredScenariosLabel, 'requiredScenarios');
+    updateRequiredScenariosTranslations(lang);
     setLabelText(cameraHandleLabel, 'cameraHandle');
     setLabelText(viewfinderExtensionLabel, 'viewfinderExtension');
     setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
@@ -14689,6 +14685,21 @@ function createStorageRequirementRow(data = {}) {
     markProjectFormDataDirty();
   }
   return row;
+}
+
+
+function updateRequiredScenariosTranslations(lang) {
+  const select = document.getElementById("requiredScenarios");
+  if (!select) return;
+  const currentTexts = texts[lang] || {};
+  const scenarios = currentTexts.scenarios || {};
+  const fallback = texts.en && texts.en.scenarios ? texts.en.scenarios : {};
+
+  Array.from(select.options).forEach(option => {
+    const key = option.value;
+    const translated = scenarios[key] || fallback[key] || option.value;
+    option.textContent = translated;
+  });
 }
 
 function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {

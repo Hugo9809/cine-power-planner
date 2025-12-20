@@ -429,6 +429,9 @@ localization steps.
 - **Redesigned Print Preview** – a new sidebar-based print experience brings real-time previews, layout settings and PDF export controls directly into the planner so you can fine-tune reports without guessing.
 - **Enhanced Command Palette** – press `Cmd+K` (or `Ctrl+K`) to access a command center for quick actions like creating projects, toggling dark mode, adding devices or jumping to specific features.
 - **Interactive Contact Photos** – drag and drop image files directly onto contact cards to update avatars instantly, with new cropping and preview tools to keep your crew roster looking professional.
+- **Documentation Update Tracker** – a new section in Settings to track translation coverage, help topics and print guides for every release, complete with archiving and verification notes.
+- **Local Font Uploads** – upload your own SVG or font files to the planner so your custom titles and branding look identical on every offline workstation.
+- **Accessibility Enhancements** – new settings for high contrast, reduced motion and relaxed spacing make the planner more comfortable to use during long prep days.
 - **Pink Mode Refactor** – enjoy smoother animations and a more robust "icon rain" effect when using the Pink theme, now with improved performance and reliability.
 - **Backup version comparisons** – pick any manual save or timestamped
   auto-backup to review diffs, add incident notes and export a log before you
@@ -444,6 +447,7 @@ localization steps.
   timestamp and filename locally. Review counts in **Settings → Data & Storage**
   or export the log alongside your archives so you can prove retention while
   staying offline.
+- **Smart Tripod Preferences** – automatic gear rules now respect specific tripod and head preferences, ensuring your favorite supporting hardware is suggested based on the camera rig weight and scenario.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.

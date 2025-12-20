@@ -491,6 +491,9 @@
     globalScope.cineDeviceNormalization = {
         unifyDevices,
         normalizeDevicesForPersistence,
+        markDevicesNormalized,
+        hasNormalizedDevicesMarker,
+        fixPowerInput,
         // Expose helpers if needed for testing or advanced usage
         normalizeVideoType,
         normalizeFizConnectorType,
@@ -501,6 +504,7 @@
     // Expose individual functions for backward compatibility if needed
     globalScope.unifyDevices = unifyDevices;
     globalScope.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+    globalScope.markDevicesNormalized = markDevicesNormalized;
 
     if (typeof module !== 'undefined' && module && module.exports) {
         module.exports = globalScope.cineDeviceNormalization;

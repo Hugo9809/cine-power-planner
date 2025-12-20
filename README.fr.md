@@ -205,10 +205,15 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 ## Nouveautés
 
 - **Base de données d'objectifs élargie** – ajout des Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings et Zero Optik Canon Dream Primes (Rehoused) au catalogue hors ligne.
+- **Aperçu avant impression repensé** – une nouvelle expérience d'impression basée sur une barre latérale offrant des aperçus en temps réel, des ajustements de mise en page et des contrôles d'exportation PDF directement dans le planner.
+- **Palette de commandes améliorée** – appuyez sur `Ctrl+K` (o `⌘K`) pour accéder à un centre de commande pour des actions rapides comme la création de projet, le basculement en mode sombre, l'ajout d'appareils ou le saut vers des fonctionnalités spécifiques.
+- **Photos de contact interactives** – glissez-déposez des fichiers image directement sur les fiches de contact pour mettre à jour les avatars instantanément, avec de nouveaux outils de recadrage et d'aperçu.
+- **Refonte du Mode Rose** – profitez d'animations plus fluides et d'un effet "pluie d'icônes" plus robuste lors de l'utilisation du thème Rose, désormais avec de meilleures performances et fiabilité.
 - **Comparaison de sauvegardes** – Sélectionnez un enregistrement manuel ou un auto-backup, analysez les différences, ajoutez des notes d’incident et exportez un rapport avant toute restauration ou remise au montage.
 - **Simulations de restauration** – Chargez un backup complet ou un bundle projet dans une sandbox isolée pour vérifier le contenu sans toucher aux profils de production.
 - **Journal de diagnostics** – Ouvrez **Paramètres → Données & stockage** pour consulter le journal en direct, filtrer par niveau ou namespace et ajuster rétention, duplication console, capture console activée par défaut et capture des erreurs sans quitter le planner.
 - **Journal d’historique des sauvegardes** – Chaque téléchargement de backup complet enregistre localement l’horodatage et le nom de fichier. Consultez-le dans **Paramètres → Données & stockage** ou exportez le journal avec vos archives pour prouver la conservation hors ligne.
+- **Préférences de trépied intelligentes** – les règles automatiques de matériel respectent désormais les préférences spécifiques de trépied et de tête, garantissant que votre matériel préféré soit suggéré en fonction du poids de la caméra et du scénario.
 - **Règles automatiques de matériel** – Définissez des ajouts/suppressions déclenchés par scénario avec contrôle d’import/export et backups horodatés.
 - **Tableau de couverture des règles** – Résume la couverture par scénario, les déclencheurs dupliqués, les bilans nets, les scénarios superposés, les conflits et les exigences non couvertes depuis Règles automatiques, applique des filtres de focus hors ligne et partage les mêmes informations via exports et impressions.
 - **Tableau de bord données & stockage** – Auditez projets, listes, matériels personnalisés, favoris et retours d’autonomie directement depuis Paramètres et estimez la taille du backup.

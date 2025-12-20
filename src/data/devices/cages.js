@@ -1650,6 +1650,28 @@
       "verified_source": "https://woodencamera.com/products/elite-accessory-system-sony-burano",
       "handle_extension_compatible": true
     },
+    "Arri KK.0050115 Pro Cine Set for Sony Burano": {
+      "brand": "ARRI",
+      "kNumber": "KK.0050115",
+      "compatible": [
+        "Sony Burano"
+      ],
+      "material": "aluminum",
+      "weight_g": null,
+      "mounting_points": [
+        "1/4\"-20",
+        "3/8\"-16",
+        "M4",
+        "ARRI rosette",
+        "15mm LWS",
+        "NATO rail"
+      ],
+      "top_handle_included": true,
+      "side_plates": true,
+      "notes": "Modular system with top cheese plate, side brackets, and 15mm LWS baseplate (BPA-5).",
+      "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories",
+      "handle_extension_compatible": true
+    },
     "SmallRig Advanced Cage Kit for RED Komodo-X (4335)": {
       "brand": "SmallRig",
       "compatible": [

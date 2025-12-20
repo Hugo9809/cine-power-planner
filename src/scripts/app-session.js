@@ -403,13 +403,13 @@ let slowMotionRecordingFrameRateHint;
 let slowMotionRecordingFrameRateOptionsList;
 
 const SESSION_DEEP_CLONE =
-  CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
+  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
     ? CORE_GLOBAL_SCOPE.__cineDeepClone
     : sessionCreateResilientDeepClone(getSessionCloneScope());
 
 // Cache the resolved deep clone helper globally so other modules (and legacy
 // entry points) can reuse the exact same logic without duplicating work.
-if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
   try {
     CORE_GLOBAL_SCOPE.__cineDeepClone = SESSION_DEEP_CLONE;
   } catch (sessionDeepCloneError) {
@@ -19856,7 +19856,7 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
 
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
+  const SESSION_API = {
     APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : APP_VERSION,
     closeSideMenu,
     openSideMenu,
@@ -20030,13 +20030,61 @@ if (typeof module !== "undefined" && module.exports) {
     resetPlannerStateAfterFactoryReset,
     __autoGearInternals: {
       buildDefaultVideoDistributionAutoGearRules,
-      buildVideoDistributionAutoRules,
+      buildVideoDistributionAutoRules: (function () {
+        if (typeof buildVideoDistributionAutoRules !== 'undefined') {
+          return buildVideoDistributionAutoRules;
+        }
+        if (typeof globalThis !== 'undefined' && globalThis.buildVideoDistributionAutoRules) {
+          return globalThis.buildVideoDistributionAutoRules;
+        }
+        if (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) {
+          return window.buildVideoDistributionAutoRules;
+        }
+        if (typeof global !== 'undefined' && global.buildVideoDistributionAutoRules) {
+          return global.buildVideoDistributionAutoRules;
+        }
+        return undefined;
+      })(),
       buildAutoGearRulesFromBaseInfo,
       seedAutoGearRulesFromCurrentProject,
       clearAutoGearDefaultsSeeded,
     },
   };
+  module.exports = SESSION_API;
 }
+
+(function () {
+  const SESSION_API = typeof module !== "undefined" && module.exports ? module.exports : {};
+
+  const SCOPE = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
+  if (SCOPE && typeof SCOPE === 'object') {
+    const EXPOSE_LIST = [
+      'createSettingsBackup',
+      'handleRestoreRehearsalProceed',
+      'handleRestoreRehearsalAbort',
+      'downloadSharedProject',
+      'encodeSharedSetup',
+      'decodeSharedSetup',
+      'applySharedSetup',
+      'applySharedSetupFromUrl'
+    ];
+
+    EXPOSE_LIST.forEach(key => {
+      const value = SESSION_API[key];
+      if (typeof value === 'function' && typeof SCOPE[key] !== 'function') {
+        try {
+          SCOPE[key] = value;
+        } catch (e) {
+          void e;
+        }
+      }
+    });
+
+    if (typeof SESSION_API.__autoGearInternals === 'object' && SESSION_API.__autoGearInternals) {
+      SCOPE.__autoGearInternals = SESSION_API.__autoGearInternals;
+    }
+  }
+})();
 
 function fallbackParseVoltageValue(value, fallback) {
   const toNumeric = candidate => {

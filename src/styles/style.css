@@ -12078,8 +12078,8 @@ body.dark-mode .requirement-box,
   border: 1px solid color-mix(in srgb, var(--panel-border) 65%, var(--accent-color) 35%);
   background: color-mix(in srgb, var(--panel-bg) 88%, var(--accent-color) 12%);
   color: color-mix(in srgb, var(--text-color) 88%, var(--accent-color) 12%);
-  font-size: 0.85rem;
-  line-height: var(--line-height-supporting, 1.4);
+  font-size: 0.75rem;
+  line-height: 1.2;
   letter-spacing: 0.01em;
   word-break: break-word;
   white-space: normal;
@@ -12113,15 +12113,15 @@ body.dark-mode .requirement-box,
   align-items: center;
   justify-content: center;
   gap: 0.3em;
-  min-height: unset;
-  line-height: 1;
+  min-height: 1.5rem;
+  line-height: 1.2;
   padding: 0.125em 0.4em;
   border-radius: var(--border-radius);
   border: none;
-  background: none;
-  color: color-mix(in srgb, var(--text-color) 88%, var(--accent-color) 12%);
+  background: color-mix(in srgb, var(--control-bg) 78%, var(--surface-color) 22%);
+  color: color-mix(in srgb, var(--text-color) 92%, var(--neutral-color) 8%);
   font-size: 0.75rem;
-  font-weight: inherit;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.01em;
   text-decoration: none;
   text-align: center;
@@ -12130,58 +12130,26 @@ body.dark-mode .requirement-box,
   box-shadow: none;
 }
 
-.gear-item-provider[data-provider-type='rental'] {
-  background: color-mix(in srgb, var(--control-bg) 78%, var(--surface-color) 22%);
-  border: none;
-  color: color-mix(in srgb, var(--text-color) 92%, var(--neutral-color) 8%);
-  font-weight: var(--font-weight-semibold);
-  box-shadow: none;
-}
-
-.dark-mode #gearListOutput .gear-item-provider {
-  border-color: transparent;
-  background: none;
-  color: color-mix(in srgb, var(--text-color) 92%, var(--accent-color) 8%);
-  box-shadow: none;
-}
-
-.dark-mode .gear-item-provider[data-provider-type='rental'] {
+.dark-mode #gearListOutput .gear-item-provider,
+.dark-mode .gear-item-provider {
   background: color-mix(in srgb, var(--control-bg) 70%, var(--surface-color) 30%);
   border: none;
   color: color-mix(in srgb, var(--text-color) 94%, var(--neutral-color) 6%);
   box-shadow: none;
 }
 
-.dark-mode #gearListOutput .gear-item-provider[data-provider-type='rental'] {
-  background: color-mix(in srgb, var(--control-bg) 70%, var(--surface-color) 30%);
-  border: none;
-  color: color-mix(in srgb, var(--text-color) 94%, var(--neutral-color) 6%);
-  box-shadow: none;
-}
-
-.pink-mode .gear-item-provider[data-provider-type='rental'] {
+.pink-mode .gear-item-provider,
+.pink-mode #gearListOutput .gear-item-provider {
   background: color-mix(in srgb, var(--accent-color) 78%, var(--surface-color) 22%);
   border: none;
   color: color-mix(in srgb, var(--inverse-text-color) 90%, var(--accent-color) 10%);
   box-shadow: none;
 }
 
-.pink-mode #gearListOutput .gear-item-provider[data-provider-type='rental'] {
-  background: color-mix(in srgb, var(--accent-color) 78%, var(--surface-color) 22%);
-  border: none;
-  color: color-mix(in srgb, var(--inverse-text-color) 90%, var(--accent-color) 10%);
-  box-shadow: none;
-}
-
-.dark-mode.pink-mode .gear-item-provider[data-provider-type='rental'],
-.pink-mode .dark-mode .gear-item-provider[data-provider-type='rental'] {
-  color: color-mix(in srgb, var(--text-color) 92%, var(--inverse-text-color) 8%);
-  border: none;
-  box-shadow: none;
-}
-
-.dark-mode.pink-mode #gearListOutput .gear-item-provider[data-provider-type='rental'],
-.pink-mode .dark-mode #gearListOutput .gear-item-provider[data-provider-type='rental'] {
+.dark-mode.pink-mode .gear-item-provider,
+.pink-mode .dark-mode .gear-item-provider,
+.dark-mode.pink-mode #gearListOutput .gear-item-provider,
+.pink-mode .dark-mode #gearListOutput .gear-item-provider {
   color: color-mix(in srgb, var(--text-color) 92%, var(--inverse-text-color) 8%);
   border: none;
   box-shadow: none;
@@ -13817,4 +13785,24 @@ body.menu-open #menuOverlay {
 
 .danger-ghost:hover {
   background: color-mix(in srgb, var(--danger-color) 10%, transparent);
+}
+
+/* Pink Mode Redesign Animations */
+.pink-mode-floating-icon {
+  position: fixed;
+  z-index: 100000;
+  pointer-events: none;
+  width: 120px;
+  height: 120px;
+  contain: layout paint style;
+  will-change: transform, top;
+}
+
+body.pink-mode-active {
+    --accent-color: #ff69b4;
+    --link-color: #ff69b4;
+    --icon-color: var(--accent-color);
+    --logo-accent-color: #f255a8;
+    --logo-background-color: #f255a8;
+    --logo-center-color: #ffffff;
 }

@@ -71,37 +71,37 @@
 
   const safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function'
     ? function warnWithBase(message, detail) {
-        try {
-          MODULE_BASE.safeWarn(message, detail);
-        } catch (error) {
-          void error;
-        }
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          try {
-            if (typeof detail === 'undefined') {
-              console.warn(message);
-            } else {
-              console.warn(message, detail);
-            }
-          } catch (consoleError) {
-            void consoleError;
-          }
-        }
+      try {
+        MODULE_BASE.safeWarn(message, detail);
+      } catch (error) {
+        void error;
       }
-    : function fallbackWarn(message, detail) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
-        }
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
         try {
           if (typeof detail === 'undefined') {
             console.warn(message);
           } else {
             console.warn(message, detail);
           }
-        } catch (error) {
-          void error;
+        } catch (consoleError) {
+          void consoleError;
         }
-      };
+      }
+    }
+    : function fallbackWarn(message, detail) {
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      try {
+        if (typeof detail === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, detail);
+        }
+      } catch (error) {
+        void error;
+      }
+    };
 
   const safeError = function safeError(message, detail) {
     try {
@@ -413,6 +413,10 @@
         safeError(integrityError.message, integrityError);
       }
       if (shouldThrow) {
+        if (typeof console !== 'undefined' && normalizedResult && Array.isArray(normalizedResult.missing)) {
+          console.log('INTEGRITY CHECK FAILED. Missing requirements:', JSON.stringify(normalizedResult.missing, null, 2));
+          console.error('Integrity Check Failed. Missing requirements:', JSON.stringify(normalizedResult.missing, null, 2));
+        }
         throw integrityError;
       }
     }

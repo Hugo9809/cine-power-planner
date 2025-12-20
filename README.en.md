@@ -276,6 +276,10 @@ localization steps.
 ## What’s New
 
 - **Expanded Lens Database** – added Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings, and Zero Optik Canon Dream lenses to the offline catalog.
+- **Redesigned Print Preview** – a new sidebar-based print experience brings real-time previews, layout settings and PDF export controls directly into the planner so you can fine-tune reports without guessing.
+- **Enhanced Command Palette** – press `Cmd+K` (or `Ctrl+K`) to access a command center for quick actions like creating projects, toggling dark mode, adding devices or jumping to specific features.
+- **Interactive Contact Photos** – drag and drop image files directly onto contact cards to update avatars instantly, with new cropping and preview tools to keep your crew roster looking professional.
+- **Pink Mode Refactor** – enjoy smoother animations and a more robust "icon rain" effect when using the Pink theme, now with improved performance and reliability.
 - **Backup version comparisons** – pick any manual save or timestamped
   auto-backup to review diffs, add incident notes and export a log before you
   roll a change back or hand footage to post.
@@ -290,6 +294,7 @@ localization steps.
   timestamp and filename locally. Review counts in **Settings → Data & Storage**
   or export the log alongside your archives so you can prove retention while
   staying offline.
+- **Smart Tripod Preferences** – automatic gear rules now respect specific tripod and head preferences, ensuring your favorite supporting hardware is suggested based on the camera rig weight and scenario.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.
@@ -303,6 +308,8 @@ localization steps.
   results on `window.__cineRuntimeIntegrity` and exposes
   `window.cineRuntime.verifyCriticalFlows()` so crews can confirm save/share/
   restore gateways and runtime feedback persistence before leaving for set.
+  Use `window.cineRuntime.inspectModuleConnections()` to audit how modules are
+  linked through the registry without mutating cached data.
 - **Autosave status overlay** – mirror the latest autosave note inside the
   settings dialog so crews see background activity while rehearsing recovery
   drills.

@@ -17269,10 +17269,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     function populateMonitorSelect() {
       const monitors = devices.monitors || {};
-      // Debug: Log monitor count
-      if (typeof console !== 'undefined') {
-        console.log('populateMonitorSelect: count=', Object.keys(monitors).length);
-      }
 
       const filtered = Object.fromEntries(
         Object.entries(monitors)

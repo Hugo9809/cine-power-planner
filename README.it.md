@@ -205,10 +205,15 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 ## Novità
 
 - **Database obiettivi ampliato** – aggiunti Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings e Zero Optik Canon Dream Primes (Rehoused) al catalogo offline.
+- **Anteprima di stampa riprogettata** – una nuova esperienza di stampa basata su una barra laterale che offre anteprime in tempo reale, regolazioni del layout e controlli di esportazione PDF direttamente nel planner.
+- **Tavolozza dei comandi migliorata** – premi `Ctrl+K` (o `⌘K`) per accedere a un centro comandi per azioni rapide come la creazione di progetti, il passaggio alla modalità scura, l'aggiunta di dispositivi o il salto verso funzionalità specifiche.
+- **Foto di contatto interattive** – trascina e rilascia i file immagine direttamente sulle schede di contatto per aggiornare istantaneamente gli avatar, con nuovi strumenti di ritaglio e anteprima.
+- **Refactoring della Modalità Rosa** – goditi animazioni più fluide e un effetto "pioggia di icone" più robusto quando usi il tema Rosa, ora con migliori prestazioni e affidabilità.
 - **Confronto backup** – Seleziona salvataggi manuali o auto-backup, analizza i diff, aggiungi note e esporta un log prima di ripristinare o consegnare il materiale.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
 - **Registro diagnostico** – Apri **Impostazioni → Dati e archiviazione** per vedere il log in tempo reale, filtrare per livello o namespace e regolare conservazione, mirroring sulla console, la cattura della console attiva per impostazione predefinita e la cattura degli errori senza uscire dal planner.
 - **Registro storico dei backup** – Ogni download del backup completo salva localmente timestamp e nome file. Controllalo in **Impostazioni → Dati e archiviazione** o esporta il registro insieme agli archivi per dimostrare la conservazione offline.
+- **Preferenze treppiede intelligenti** – le regole automatiche per l'attrezzatura ora rispettano le preferenze specifiche di treppiede e testa, garantendo che l'hardware preferito venga suggerito in base al peso della fotocamera e allo scenario.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
 - **Dashboard di copertura regole** – Riassume la copertura per scenario, i trigger duplicati, le variazioni nette, gli scenari sovrapposti, i conflitti e i requisiti non coperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
 - **Dashboard dati e archiviazione** – Audita progetti, liste, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente da Impostazioni e stima la dimensione del backup.

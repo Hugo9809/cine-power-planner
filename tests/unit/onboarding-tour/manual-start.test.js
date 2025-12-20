@@ -6,10 +6,60 @@ const path = require('path');
 
 describe('onboarding tour manual start', () => {
   let documentListeners = [];
+  let globalListeners = [];
+  let createdObservers = [];
+  let timeoutHandles = [];
+  let animationFrameHandles = [];
+  const RealMutationObserver = global.MutationObserver;
+  const originalSetTimeout = global.setTimeout;
+  const originalRequestAnimationFrame = global.requestAnimationFrame;
+  const originalGlobalAdd = global.addEventListener;
+  const originalGlobalRemove = global.removeEventListener;
 
   beforeEach(() => {
     jest.resetModules();
     documentListeners = [];
+    globalListeners = [];
+    createdObservers = [];
+    timeoutHandles = [];
+    animationFrameHandles = [];
+
+    jest.spyOn(global, 'addEventListener').mockImplementation((type, listener, options) => {
+      globalListeners.push({ type, listener, options });
+      originalGlobalAdd.call(global, type, listener, options);
+    });
+
+    jest.spyOn(global, 'removeEventListener').mockImplementation((type, listener, options) => {
+      originalGlobalRemove.call(global, type, listener, options);
+    });
+
+    jest.spyOn(global, 'setTimeout').mockImplementation((cb, delay) => {
+      const handle = originalSetTimeout(cb, delay);
+      timeoutHandles.push(handle);
+      return handle;
+    });
+
+    jest.spyOn(global, 'requestAnimationFrame').mockImplementation((cb) => {
+      const handle = originalRequestAnimationFrame(cb);
+      animationFrameHandles.push(handle);
+      return handle;
+    });
+
+    global.MutationObserver = class MockMutationObserver {
+      constructor(callback) {
+        this.instance = new RealMutationObserver(callback);
+        createdObservers.push(this.instance);
+      }
+      observe(...args) {
+        this.instance.observe(...args);
+      }
+      disconnect() {
+        this.instance.disconnect();
+      }
+      takeRecords() {
+        return this.instance.takeRecords();
+      }
+    };
     const originalAdd = document.addEventListener;
     jest.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
       documentListeners.push({ type, listener, options });
@@ -18,9 +68,41 @@ describe('onboarding tour manual start', () => {
   });
 
   afterEach(() => {
+    timeoutHandles.forEach(h => clearTimeout(h));
+    animationFrameHandles.forEach(h => cancelAnimationFrame(h));
+
+    globalListeners.forEach(({ type, listener, options }) => {
+      global.removeEventListener(type, listener, options);
+    });
+
+    if (createdObservers) {
+      createdObservers.forEach(observer => {
+        try {
+          observer.disconnect();
+        } catch (e) {
+          void e;
+        }
+      });
+    }
+    if (RealMutationObserver) {
+      global.MutationObserver = RealMutationObserver;
+    }
     documentListeners.forEach(({ type, listener, options }) => {
       document.removeEventListener(type, listener, options);
     });
+    if (global.window) {
+      global.window.name = '';
+    }
+    delete global.localStorage;
+    delete global.sessionStorage;
+    delete global.SAFE_LOCAL_STORAGE;
+    delete global.getSafeLocalStorage;
+    delete global.currentLang;
+    delete global.texts;
+    delete global.cineModuleBase;
+    delete global.cineFeaturesOnboardingTour;
+
+    document.body.innerHTML = '';
     jest.restoreAllMocks();
   });
 
@@ -111,49 +193,6 @@ describe('onboarding tour manual start', () => {
       delete global.sessionStorage;
     }
 
-    const globalEventListeners = new Map();
-    global.addEventListener = (type, listener) => {
-      if (!type || typeof listener !== 'function') {
-        return;
-      }
-      const bucket = globalEventListeners.get(type) || [];
-      bucket.push(listener);
-      globalEventListeners.set(type, bucket);
-    };
-    global.removeEventListener = (type, listener) => {
-      if (!type || typeof listener !== 'function') {
-        return;
-      }
-      const bucket = globalEventListeners.get(type);
-      if (!bucket) {
-        return;
-      }
-      const index = bucket.indexOf(listener);
-      if (index !== -1) {
-        bucket.splice(index, 1);
-      }
-      if (!bucket.length) {
-        globalEventListeners.delete(type);
-      }
-    };
-    global.dispatchEvent = event => {
-      if (!event || !event.type) {
-        return false;
-      }
-      const bucket = globalEventListeners.get(event.type);
-      if (!bucket || !bucket.length) {
-        return true;
-      }
-      bucket.slice().forEach(listener => {
-        try {
-          listener.call(global, event);
-        } catch (error) {
-          void error;
-        }
-      });
-      return !event.defaultPrevented;
-    };
-
     global.cineModuleBase = {
       safeWarn: jest.fn(),
       freezeDeep: value => value,
@@ -173,8 +212,6 @@ describe('onboarding tour manual start', () => {
       }
       return typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open');
     };
-    global.requestAnimationFrame = cb => setTimeout(() => cb(Date.now()), 0);
-    global.cancelAnimationFrame = handle => clearTimeout(handle);
 
     let currentReadyState = options.readyState || 'complete';
     Object.defineProperty(document, 'readyState', {
@@ -658,7 +695,8 @@ describe('onboarding tour manual start', () => {
       expect(inlineSizeValue).toBe('');
       const measuredWidth = 296;
 
-      card.getBoundingClientRect = () => ({
+      const currentCard = overlay.querySelector('.onboarding-card');
+      currentCard.getBoundingClientRect = () => ({
         width: measuredWidth,
         height: 420,
         top: 0,
@@ -668,9 +706,9 @@ describe('onboarding tour manual start', () => {
       });
 
       window.dispatchEvent(new Event('resize'));
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      const left = parseFloat(card.style.left);
+      const left = parseFloat(currentCard.style.left);
       expect(Number.isFinite(left)).toBe(true);
       expect(left).toBeCloseTo(16, 1);
     } finally {
@@ -742,7 +780,7 @@ describe('onboarding tour manual start', () => {
     nextButton.click();
     await new Promise(resolve => setTimeout(resolve, 60));
 
-    expect(progress.textContent).toBe('Étape 1 sur 32');
+    expect(progress.textContent).toBe('Étape 1 sur 35');
   });
 
   test('auto start honors skipped state refreshed during initialization', () => {

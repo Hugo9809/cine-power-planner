@@ -655,6 +655,12 @@
     return value;
   }
 
+  /**
+   * The sequence of step keys for the guided onboarding tour.
+   * Steps are displayed in this specific order to guide the user through
+   * the core setup, power analysis, and reporting features.
+   * @type {string[]}
+   */
   const DEFAULT_STEP_KEYS = [
     'intro',
     'userProfile',
@@ -776,6 +782,26 @@
     return selectors;
   }
 
+  /**
+   * The localized content for each step in the onboarding tour.
+   * Each entry corresponds to a key in DEFAULT_STEP_KEYS.
+   * @type {Object<string, {
+   *   title: string,
+   *   body: string,
+   *   hero?: {
+   *     heading: string,
+   *     subheading: string,
+   *     summary: string,
+   *     badgeIcon: string,
+   *     badgeLabel: string,
+   *     badgeDescription: string,
+   *     highlights: Array<{icon: string, title: string, body: string}>,
+   *     languageLabel: string,
+   *     languageHint: string,
+   *     offlineSummary: string
+   *   }
+   * }>}
+   */
   const DEFAULT_STEP_TEXTS = {
     intro: {
       title: '',
@@ -934,7 +960,7 @@
     projectRequirementsLogistics: {
       title: 'Log lenses, rigging and monitoring plans',
       body:
-        'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.',
+        'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box, tripod and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.',
     },
     generateGearAndRequirements: {
       title: 'Save and rebuild the outputs',
@@ -944,7 +970,7 @@
     autoGearRulesAccess: {
       title: 'Open Automatic Gear Rules',
       body:
-        'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves.',
+        'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules (including smart tripod logic that references your head/legs preference) and safety backups stored with your offline saves.',
     },
     autoGearRulesEdit: {
       title: 'Edit stock automatic gear rules',
@@ -5576,7 +5602,23 @@
     let languageTargetObserver = null;
     if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
       try {
-        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver(() => {
+        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver((mutations) => {
+          let hasExternalMutations = false;
+          if (mutations && typeof mutations[Symbol.iterator] === 'function') {
+            for (const mutation of mutations) {
+              if (mutation.target !== languageProxy && !languageProxy.contains(mutation.target)) {
+                hasExternalMutations = true;
+                break;
+              }
+            }
+          } else {
+            hasExternalMutations = true;
+          }
+
+          if (!hasExternalMutations) {
+            return;
+          }
+
           const previousCount = languageTargets.length;
           discoverLanguageTargets();
           if (!languageTargets.length) {

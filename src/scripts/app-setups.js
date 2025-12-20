@@ -7005,6 +7005,37 @@ function renderAutoGearSpanContextNotes(span) {
   contextNode.textContent = text;
 }
 
+
+function adjustSelectWidth(selectElement) {
+  if (!selectElement) return;
+
+  const option = selectElement.options[selectElement.selectedIndex];
+  const text = option ? option.text : '';
+  const tempSpan = document.createElement('span');
+
+  // Copy relevant styles to ensure accurate measurement
+  const computedStyle = window.getComputedStyle(selectElement);
+  tempSpan.style.fontFamily = computedStyle.fontFamily;
+  tempSpan.style.fontSize = computedStyle.fontSize;
+  tempSpan.style.fontWeight = computedStyle.fontWeight;
+  tempSpan.style.letterSpacing = computedStyle.letterSpacing;
+  tempSpan.style.textTransform = computedStyle.textTransform; // inherit text-transform if proper casing is needed
+
+  tempSpan.style.visibility = 'hidden';
+  tempSpan.style.position = 'absolute';
+  tempSpan.style.whiteSpace = 'pre';
+
+  tempSpan.textContent = text;
+
+  document.body.appendChild(tempSpan);
+  const width = tempSpan.getBoundingClientRect().width;
+  document.body.removeChild(tempSpan);
+
+  // Add padding for the arrow icon and internal spacing.
+  // 2em is usually sufficient for standard select inputs.
+  selectElement.style.width = `calc(${width}px + 2.5em)`;
+}
+
 function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
   if (!span || !normalizedItem) return;
   const name = normalizedItem.name ? normalizedItem.name.trim() : '';
@@ -7017,8 +7048,11 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     (span.classList && span.classList.contains('gear-item-rental-excluded'))
     || span.getAttribute?.('data-rental-excluded') === 'true'
   );
-  while (span.firstChild) {
-    span.removeChild(span.firstChild);
+  const hasInternalSelectors = !!span.querySelector('select, input');
+  if (!hasInternalSelectors) {
+    while (span.firstChild) {
+      span.removeChild(span.firstChild);
+    }
   }
   span.classList.add('gear-item');
   span.classList.add('auto-gear-item');
@@ -7044,10 +7078,14 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
   } else {
     span.removeAttribute('title');
   }
-  const displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
-  span.appendChild(document.createTextNode(`${quantity}x ${displayName}`));
-  if (normalizedItem.screenSize) {
-    span.appendChild(document.createTextNode(` - ${normalizedItem.screenSize}`));
+  if (!hasInternalSelectors) {
+    const displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
+    span.appendChild(document.createTextNode(`${quantity}x ${displayName}`));
+    if (normalizedItem.screenSize) {
+      span.appendChild(document.createTextNode(` - ${normalizedItem.screenSize}`));
+    }
+  } else {
+    updateSpanCountInPlace(span, quantity);
   }
   if (span.dataset) {
     if (normalizedItem.ownGearId) {
@@ -7067,7 +7105,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
   const selectorType = normalizedItem.selectorType || 'none';
   const selectorDefault = normalizedItem.selectorDefault || '';
   const selectorLabel = getAutoGearSelectorLabel(selectorType);
-  if (selectorType && selectorType !== 'none') {
+  if (!hasInternalSelectors && selectorType && selectorType !== 'none') {
     if (normalizedItem.selectorEnabled) {
       const options = getAutoGearSelectorOptions(selectorType, normalizedItem);
       const sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
@@ -7118,6 +7156,15 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
       wrapper.appendChild(select);
       span.appendChild(document.createTextNode(' - '));
       span.appendChild(wrapper);
+
+      // Adjust width initially and on change
+      // We use requestAnimationFrame to ensure styles (like fonts) are applied before measuring
+      requestAnimationFrame(() => {
+        adjustSelectWidth(select);
+      });
+      select.addEventListener('change', () => {
+        adjustSelectWidth(select);
+      });
     } else if (selectorDefault) {
       const formattedDefault = formatAutoGearSelectorDisplayValue(selectorType, selectorDefault);
       span.appendChild(document.createTextNode(` - ${selectorLabel}: ${formattedDefault}`));
@@ -7198,7 +7245,9 @@ function addAutoGearItem(cell, item, rule) {
         applyAutoGearRuleColors(span, rule);
         refreshAutoGearRuleBadge(span);
       } else {
-        configureAutoGearSpan(span, normalizedItem, quantity, rule);
+        const currentCount = getSpanCount(span);
+        const totalCount = currentCount + quantity;
+        configureAutoGearSpan(span, normalizedItem, totalCount, rule);
       }
       return;
     }
@@ -7212,24 +7261,43 @@ function addAutoGearItem(cell, item, rule) {
 }
 
 function ensureAutoGearCategory(table, category) {
-  const rawCategory = category && category.trim() ? category.trim() : '';
+  const rawCategory = category && typeof category === 'string' ? category.trim() : String(category ?? '').trim();
+  const normalizedTarget = rawCategory.toLowerCase();
   const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
+
   const existing = Array.from(table.querySelectorAll('tbody.category-group')).find(body => {
     if (body.dataset) {
-      if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-        return body.dataset.autoCategory === rawCategory;
-      }
-      if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
-        return body.dataset.gearTableCategory === rawCategory;
-      }
+      const autoCat = (body.dataset.autoCategory || '').trim().toLowerCase();
+      if (normalizedTarget && autoCat === normalizedTarget) return true;
+
+      const tableCat = (body.dataset.gearTableCategory || '').trim().toLowerCase();
+      if (normalizedTarget && tableCat === normalizedTarget) return true;
     }
+
+    // Fallback to attributes
+    const attrAutoCat = (body.getAttribute('data-auto-category') || '').trim().toLowerCase();
+    if (normalizedTarget && attrAutoCat === normalizedTarget) return true;
+
+    const attrTableCat = (body.getAttribute('data-gear-table-category') || '').trim().toLowerCase();
+    if (normalizedTarget && attrTableCat === normalizedTarget) return true;
+
     const headerCell = body.querySelector('.category-row td');
     if (!headerCell) return false;
-    const storedLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
-    if (rawCategory) {
-      return storedLabel === rawCategory;
+
+    const attrLabel = (headerCell.getAttribute('data-gear-category-label') || '').trim().toLowerCase();
+    if (normalizedTarget && attrLabel === normalizedTarget) return true;
+
+    // Strip trailing '+' which often comes from the 'Add custom item' button textContent
+    let textLabel = headerCell.textContent.trim();
+    if (textLabel.endsWith('+')) {
+      textLabel = textLabel.substring(0, textLabel.length - 1).trim();
     }
-    return body.classList.contains('auto-gear-category') || storedLabel === label;
+    const normalizedTextLabel = textLabel.toLowerCase();
+
+    if (normalizedTarget) {
+      return normalizedTextLabel === normalizedTarget;
+    }
+    return body.classList.contains('auto-gear-category') || normalizedTextLabel === label.toLowerCase();
   });
   if (existing) {
     const cell = existing.querySelector('tr:not(.category-row) td');
@@ -7259,35 +7327,60 @@ function ensureAutoGearCategory(table, category) {
 
 function findAutoGearCategoryCell(table, category) {
   if (!table) return null;
-  const rawCategory = category && category.trim() ? category.trim() : '';
+  const rawCategory = category && typeof category === 'string' ? category.trim() : String(category ?? '').trim();
+  const normalizedTarget = rawCategory.toLowerCase();
   const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
+
   const bodies = Array.from(table.querySelectorAll('tbody.category-group'));
   for (const body of bodies) {
     if (body.dataset) {
-      if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-        if (body.dataset.autoCategory === rawCategory) {
-          const cell = body.querySelector('tr:not(.category-row) td');
-          if (cell) return cell;
-        }
-        continue;
-      }
-      if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
-        if (body.dataset.gearTableCategory === rawCategory) {
-          const cell = body.querySelector('tr:not(.category-row) td');
-          if (cell) return cell;
-        }
-        continue;
-      }
-    }
-    const headerCell = body.querySelector('.category-row td');
-    if (!headerCell) continue;
-    const headerLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
-    if (rawCategory) {
-      if (headerLabel === rawCategory) {
+      const autoCat = (body.dataset.autoCategory || '').trim().toLowerCase();
+      if (normalizedTarget && autoCat === normalizedTarget) {
         const cell = body.querySelector('tr:not(.category-row) td');
         if (cell) return cell;
       }
-    } else if (body.classList.contains('auto-gear-category') || headerLabel === label) {
+
+      const tableCat = (body.dataset.gearTableCategory || '').trim().toLowerCase();
+      if (normalizedTarget && tableCat === normalizedTarget) {
+        const cell = body.querySelector('tr:not(.category-row) td');
+        if (cell) return cell;
+      }
+    }
+
+    // Fallback to attributes
+    const attrAutoCat = (body.getAttribute('data-auto-category') || '').trim().toLowerCase();
+    if (normalizedTarget && attrAutoCat === normalizedTarget) {
+      const cell = body.querySelector('tr:not(.category-row) td');
+      if (cell) return cell;
+    }
+
+    const attrTableCat = (body.getAttribute('data-gear-table-category') || '').trim().toLowerCase();
+    if (normalizedTarget && attrTableCat === normalizedTarget) {
+      const cell = body.querySelector('tr:not(.category-row) td');
+      if (cell) return cell;
+    }
+
+    const headerCell = body.querySelector('.category-row td');
+    if (!headerCell) continue;
+
+    const attrLabel = (headerCell.getAttribute('data-gear-category-label') || '').trim().toLowerCase();
+    if (normalizedTarget && attrLabel === normalizedTarget) {
+      const cell = body.querySelector('tr:not(.category-row) td');
+      if (cell) return cell;
+    }
+
+    let textLabel = headerCell.textContent.trim();
+    if (textLabel.endsWith('+')) {
+      textLabel = textLabel.substring(0, textLabel.length - 1).trim();
+    }
+    const normalizedTextLabel = textLabel.toLowerCase();
+
+    if (normalizedTarget) {
+      if (normalizedTextLabel === normalizedTarget) {
+        const cell = body.querySelector('tr:not(.category-row) td');
+        if (cell) return cell;
+      }
+    } else if (body.classList.contains('auto-gear-category') || normalizedTextLabel === label.toLowerCase()) {
       const cell = body.querySelector('tr:not(.category-row) td');
       if (cell) return cell;
     }
@@ -11544,6 +11637,32 @@ function gearListGenerateHtmlImpl(info = {}) {
     );
   }
   const filterSelectHtml = buildFilterSelectHtml(parsedFilters, filterEntries);
+  if (info.mattebox) {
+    const mb = info.mattebox.trim();
+    if (mb === 'Swing Away') {
+      filterSelections.push('ARRI LMB 4x5 Pro Set');
+      filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
+      filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+    } else if (mb === 'Rod based') {
+      filterSelections.push('ARRI LMB 4x5 15mm LWS Set 3-Stage');
+      filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
+      filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+      filterSelections.push('ARRI LMB 4x5 Side Flags');
+      filterSelections.push('ARRI LMB Flag Holders');
+      filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
+      filterSelections.push('ARRI LMB Accessory Adapter');
+      filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
+    } else if (mb === 'Clamp On') {
+      filterSelections.push('ARRI LMB 4x5 Clamp-On (3-Stage)');
+      filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+      filterSelections.push('ARRI LMB 4x5 Side Flags');
+      filterSelections.push('ARRI LMB Flag Holders');
+      filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
+      filterSelections.push('ARRI LMB Accessory Adapter');
+      filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
+      filterSelections.push('ARRI LMB 4x5 Clamp Adapter Set Pro');
+    }
+  }
   if (info.mattebox && !needsSwingAway) {
     const matteboxSelection = info.mattebox.toLowerCase();
     if (matteboxSelection.includes('clamp')) {
@@ -11872,7 +11991,18 @@ function gearListGenerateHtmlImpl(info = {}) {
       return { base: potentialBase, ctx: potentialCtx };
     };
 
-    arr.filter(Boolean).map(addArriKNumber).forEach(rawItem => {
+    arr.filter(Boolean).forEach(sourceItem => {
+      let rawItem = sourceItem;
+      try {
+        if (typeof addArriKNumber === 'function') {
+          const withK = addArriKNumber(sourceItem);
+          if (typeof withK === 'string' && withK.trim()) {
+            rawItem = withK;
+          }
+        }
+      } catch (e) {
+        // Fallback to sourceItem
+      }
       const item = rawItem.trim();
       if (!item) return;
       const quantityMatch = item.match(/^(\d+)x\s+(.*)$/);

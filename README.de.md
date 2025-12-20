@@ -205,10 +205,15 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 ## Was ist neu
 
 - **Erweiterte Objektivdatenbank** – Sirui 1.33x/1.6x Anamorphics, NiSi Athena Cine Primes, Kinefinity Mavo Primes, Spirit Lab Pure Primes, Ancient Optics & Petzval Rehousings und Zero Optik Canon Dream Primes (Rehoused) zum Offline-Katalog hinzugefügt.
+- **Überarbeitete Druckvorschau** – ein neues, Seitenleisten-basiertes Druckerlebnis mit Echtzeit-Vorschau, Layouteinstellungen und PDF-Exportsteuerungen direkt im Planner, damit Berichte präzise angepasst werden können.
+- **Erweiterte Befehlspalette** – drücke `Strg+K` (oder `⌘K`), um auf das Befehlszentrum für schnelle Aktionen wie Projekterstellung, Dunkelmodus-Umschaltung, Hinzufügen von Geräten oder Springen zu bestimmten Funktionen zuzugreifen.
+- **Interaktive Kontaktfotos** – ziehe Bilddateien per Drag & Drop direkt auf Kontaktkarten, um Avatare sofort zu aktualisieren, inkl. neuer Werkzeuge zum Zuschneiden und zur Vorschau.
+- **Pink-Modus Refactor** – genieße flüssigere Animationen und einen robusteren „Icon-Regen“ bei Verwendung des Pink-Designs, jetzt mit verbesserter Leistung und Zuverlässigkeit.
 - **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
 - **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
 - **Diagnoseprotokoll-Steuerung** – Öffne **Einstellungen → Daten & Speicher**, sieh dir das laufende Log direkt im Planner an, filtere nach Stufe oder Namespace und passe Aufbewahrung, Konsolenspiegelung, die standardmäßig aktive Konsolenerfassung sowie Fehlererfassung ohne externe Tools an.
 - **Backup-Verlaufsprotokoll** – Jeder Vollbackup-Download speichert Zeitstempel und Dateinamen lokal. In **Einstellungen → Daten & Speicher** kannst du die Zählung prüfen oder das Protokoll zusammen mit deinen Archiven exportieren, um Offline-Aufbewahrung nachzuweisen.
+- **Intelligente Stativ-Präferenzen** – automatische Ausrüstungsregeln berücksichtigen jetzt spezifische Stativ- und Kopf-Präferenzen, damit Ihre bevorzugte Hardware basierend auf Kamera-Gewicht und Szenario vorgeschlagen wird.
 - **Automatische Gear-Regeln** – Definiere szenariobasierte Ergänzungen oder Entfernungen mit Import/Export-Kontrollen und zeitgesteuerten Backups.
 - **Regelabdeckungs-Dashboard** – Fasse Abdeckungsgrad, doppelte Auslöser, Netto-Zu-/Abgänge, gestapelte Szenarien, Konflikte und ungedeckte Anforderungen direkt in den automatischen Gear-Regeln zusammen, setze Fokus-Filter offline und gib dieselben Einblicke in Exporten und Druckansichten weiter.
 - **Daten- & Speicher-Dashboard** – Prüfe gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeitfeedback direkt in den Einstellungen und schätze die Backup-Größe.
@@ -252,11 +257,6 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
 - **Offline-freundliche Geräte.** Laptops/Tablets sollten dauerhaften Speicher erlauben. Starte die App einmal online, damit der Service Worker alle Assets cacht, und übe den Offline-Reload vor der Reise.
 - **Ausreichender lokaler Speicher.** Große Produktionen erzeugen viele Projekte, Backups und Gerätelisten. Beobachte den Speicherplatz deines Browserprofils und exportiere regelmäßig auf redundante Medien.
 - **Keine externen Abhängigkeiten.** Alle Icons, Fonts und Hilfsskripte liegen im Repository. Kopiere Ordner wie `animated icons 3/` und lokale Uicons mit, damit Optik und Scripts identisch bleiben.
-
-- **Überarbeitete Druckvorschau**: Sidebar-basiertes Druckerlebnis mit Echtzeit-Vorschau.
-- **Erweiterte Befehlspalette**: `Cmd+K` / `Strg+K` für Schnellaktionen.
-- **Interaktive Kontaktfotos**: Avatar-Verwaltung per Drag-and-Drop.
-- **Pink Mode Refactor**: Verbesserte Animationen und Icon-Regen.
 
 ### Frühere Updates
 ## Speicher-, Teil- & Import-Drill

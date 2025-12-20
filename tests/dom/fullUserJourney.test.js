@@ -28,7 +28,7 @@ describe('full user journey regression', () => {
     }
 
     if (typeof URL.revokeObjectURL === 'function') {
-      revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+      revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
     } else {
       patchedRevokeObjectURL = true;
       URL.revokeObjectURL = jest.fn();
