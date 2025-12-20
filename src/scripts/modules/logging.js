@@ -1950,6 +1950,22 @@
     return result;
   }
 
+  function safeArrayPush(target, value) {
+    if (!Array.isArray(target)) {
+      return false;
+    }
+    try {
+      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+        return false;
+      }
+      target.push(value);
+      return true;
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
+
   function getConsoleLevelForMethod(method) {
     if (method === 'error') {
       return 'error';
@@ -2053,12 +2069,12 @@
       const value = rawArgs[index];
       const valueType = typeof value;
       if (valueType === 'string') {
-        messageParts.push(value);
+        safeArrayPush(messageParts, value);
       } else if (valueType === 'number' || valueType === 'boolean') {
-        messageParts.push(String(value));
+        safeArrayPush(messageParts, String(value));
       } else if (valueType === 'symbol') {
         try {
-          messageParts.push(value.toString());
+          safeArrayPush(messageParts, value.toString());
         } catch (symbolError) {
           void symbolError;
         }
@@ -2196,7 +2212,7 @@
         }
       }
 
-      errorEntries.push(entry);
+      safeArrayPush(errorEntries, entry);
     }
 
     const contextMeta = { channel: 'console', method: method || 'log' };
@@ -2655,15 +2671,15 @@
       const prefix = prefixParts.join(' ');
       const consoleArgs = [`${prefix} ${entry.message}`];
       if (detail !== undefined) {
-        consoleArgs.push(detail);
+        safeArrayPush(consoleArgs, detail);
       } else if (entry.detail !== null) {
-        consoleArgs.push(entry.detail);
+        safeArrayPush(consoleArgs, entry.detail);
       }
       if (entry.meta !== null) {
-        consoleArgs.push({ meta: entry.meta });
+        safeArrayPush(consoleArgs, { meta: entry.meta });
       }
       if (origin) {
-        consoleArgs.push({ origin });
+        safeArrayPush(consoleArgs, { origin });
       }
       invokeConsoleMethod(methodName, consoleArgs);
     }

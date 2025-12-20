@@ -6153,8 +6153,10 @@ if (monitoringConfigurationSelect) {
 if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
 }
-if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
-if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+if (typeof updateBatteryOptions === 'function') {
+  if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
+  if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+}
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
 forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
@@ -20242,4 +20244,3 @@ function handleMountVoltageInputChange() {
   const values = collectMountVoltageFormValues();
   applySessionMountVoltagePreferences(values, { persist: true, triggerUpdate: true });
 }
-
