@@ -895,9 +895,14 @@
           void iconSpan.offsetWidth; // trigger reflow
           iconSpan.classList.add('pink-mode-icon-pop');
 
+          const requestId = Date.now() + Math.random();
+          iconSpan._lottieRequestId = requestId;
+
           icons.ensurePinkModeLottieRuntime()
             .then((lottie) => {
               if (!lottie) return;
+              // Check if request is stale
+              if (iconSpan._lottieRequestId !== requestId) return;
               if (!iconSpan || !document.body.contains(button)) return;
 
               try {
@@ -915,17 +920,14 @@
                   lottieContainer.style.left = '0';
                   lottieContainer.style.zIndex = '2';
                   iconSpan.appendChild(lottieContainer);
-                  console.log('[setToggleIcon] Appended new lottieContainer to iconSpan', iconSpan);
                   iconSpan.style.position = 'relative';
+                  // Ensure inline-block so it holds dimensions if possible
+                  if (getComputedStyle(iconSpan).display === 'inline') {
+                    iconSpan.style.display = 'inline-block';
+                  }
                 } else {
-                  console.log('[setToggleIcon] Found existing lottieContainer, clearing innerHTML');
                   lottieContainer.innerHTML = '';
                 }
-                console.log('[setToggleIcon] lottieContainer state after creation/clear', {
-                  exists: !!lottieContainer,
-                  parent: lottieContainer.parentElement,
-                  isConnected: lottieContainer.isConnected
-                });
 
                 const animConfig = {
                   container: lottieContainer,
@@ -940,8 +942,8 @@
                   animConfig.path = glyphConfig.lottiePath;
                 }
 
-                console.log('[setToggleIcon] Calling lottie.loadAnimation with config:', animConfig);
                 const anim = lottie.loadAnimation(animConfig);
+                // Store anim on container to destroy later if needed, though we destroy by rebuilding
                 iconSpan._lottieAnim = anim;
 
                 const hideFallback = () => {
@@ -951,8 +953,19 @@
                     setTimeout(() => {
                       if (oldFallback.style.opacity === '0') {
                         oldFallback.style.display = 'none';
+                        // Switch lottie to relative so it takes space in flow
+                        if (lottieContainer) {
+                          lottieContainer.style.position = 'relative';
+                          lottieContainer.style.top = '';
+                          lottieContainer.style.left = '';
+                        }
                       }
                     }, 200);
+                  } else if (lottieContainer) {
+                    // No fallback to hide, just ensure position
+                    lottieContainer.style.position = 'relative';
+                    lottieContainer.style.top = '';
+                    lottieContainer.style.left = '';
                   }
                 };
 
@@ -972,7 +985,9 @@
                 anim.addEventListener('data_failed', handleFailure);
                 anim.addEventListener('error', handleFailure);
 
-              } catch (err) { /* ignore */ }
+              } catch (err) {
+                console.warn('Lottie runtime error', err);
+              }
             })
             .catch(() => { /* ignore */ });
         };
@@ -1006,6 +1021,9 @@
             if (newSvg) {
               newSvg.classList.add('icon-fallback');
               newSvg.style.transition = 'opacity 0.2s ease';
+              // Ensure fallback is behind lottie (z-index)
+              newSvg.style.position = 'relative';
+              newSvg.style.zIndex = '1';
               iconSpan.prepend(newSvg);
             }
           }
