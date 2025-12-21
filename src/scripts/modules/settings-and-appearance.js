@@ -986,7 +986,7 @@
                 anim.addEventListener('error', handleFailure);
 
               } catch (err) {
-                console.warn('Lottie runtime error', err);
+                /* ignore */
               }
             })
             .catch(() => { /* ignore */ });

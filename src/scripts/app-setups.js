@@ -14039,6 +14039,7 @@ function applyGearListSelectors(selectors) {
     const sel = document.getElementById(id);
     if (!sel) return;
     if (sel.multiple) {
+      if (!sel.options) return;
       const values = Array.isArray(value)
         ? value.map(item => (typeof item === 'string' ? item : String(item ?? '')))
         : [typeof value === 'string' ? value : String(value ?? '')];
