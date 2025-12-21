@@ -889,9 +889,12 @@
       iconSpan.className = classNames.join(' ');
 
       if ((glyphConfig.lottiePath || glyphConfig.lottieData) && typeof icons.ensurePinkModeLottieRuntime === 'function') {
-        // 1. Ensure fallback is present initially
-        if (glyphConfig.markup && (!iconSpan.innerHTML || iconSpan.innerHTML === '')) {
-          iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
+        if (glyphConfig.markup) {
+          const markup = ensureSvgHasAriaHidden(glyphConfig.markup);
+          // Only replace if content is different to avoid flicker/reflow if unnecessary
+          if (iconSpan.innerHTML.indexOf(markup.slice(0, 20)) === -1) {
+            iconSpan.innerHTML = markup;
+          }
         }
 
         // Mark existing SVG as fallback for potential removal
@@ -915,9 +918,7 @@
             try {
               // 2. Create a dedicated container for Lottie to coexist with fallback during load
               let lottieContainer = iconSpan.querySelector('.lottie-container');
-              if (lottieContainer) {
-                lottieContainer.innerHTML = ''; // Clear previous
-              } else {
+              if (!lottieContainer) {
                 lottieContainer = doc.createElement('div');
                 lottieContainer.className = 'lottie-container';
                 lottieContainer.style.width = '100%';
@@ -925,7 +926,11 @@
                 lottieContainer.style.display = 'flex';
                 lottieContainer.style.justifyContent = 'center';
                 lottieContainer.style.alignItems = 'center';
+                // If fallback exists, we might want to overlay or append. 
+                // Appending is safer for layout flow usually.
                 iconSpan.appendChild(lottieContainer);
+              } else {
+                lottieContainer.innerHTML = ''; // Clear previous
               }
 
               const animConfig = {
