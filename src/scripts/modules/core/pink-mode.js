@@ -317,6 +317,188 @@
         }
 
         function createFallbackSupport() {
+          const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
+
+          const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
+            'src/animations/flamingo.json',
+            'src/animations/unicorn.json',
+            'src/animations/pink-mode/camera.json',
+            'src/animations/pink-mode/director-chair.json',
+            'src/animations/pink-mode/dog.json',
+            'src/animations/pink-mode/fox-2.json',
+            'src/animations/pink-mode/fox-3.json',
+            'src/animations/pink-mode/fox.json',
+            'src/animations/pink-mode/horse.json',
+            'src/animations/pink-mode/mountains.json',
+            'src/animations/pink-mode/movie-camera.json',
+            'src/animations/pink-mode/pinata.json',
+            'src/animations/pink-mode/script.json',
+            'src/animations/pink-mode/video-camera.json'
+          ]);
+
+          function createSafeResolvedPromise(value) {
+            if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
+              return Promise.resolve(value);
+            }
+            return {
+              then: (cb) => createSafeResolvedPromise(cb ? cb(value) : value),
+              catch: () => this
+            };
+          }
+
+          function ensurePinkModeLottieRuntime() {
+            if (GLOBAL_SCOPE.lottie) return createSafeResolvedPromise(GLOBAL_SCOPE.lottie);
+            if (GLOBAL_SCOPE.bodymovin) return createSafeResolvedPromise(GLOBAL_SCOPE.bodymovin);
+
+            if (typeof document === 'undefined') return createSafeResolvedPromise(null);
+
+            if (document.querySelector('script[data-loader="pink-mode-lottie"]')) {
+              return new Promise(resolve => {
+                const s = document.querySelector('script[data-loader="pink-mode-lottie"]');
+                if (s.dataset.loaded === 'true') resolve(GLOBAL_SCOPE.lottie);
+                else s.addEventListener('load', () => resolve(GLOBAL_SCOPE.lottie), { once: true });
+              });
+            }
+
+            return new Promise((resolve) => {
+              const script = document.createElement('script');
+              script.src = 'src/vendor/lottie.min.js';
+              script.async = true;
+              script.setAttribute('data-loader', 'pink-mode-lottie');
+              script.onload = () => {
+                script.dataset.loaded = 'true';
+                resolve(GLOBAL_SCOPE.lottie);
+              };
+              script.onerror = () => {
+                resolve(null);
+              };
+              document.head.appendChild(script);
+            });
+          }
+
+          class FloatingIcon {
+            constructor(manager, x, y, iconData) {
+              this.manager = manager;
+              this.element = document.createElement('div');
+              this.element.className = 'pink-mode-floating-icon';
+              this.element.style.left = x + 'px';
+              this.element.style.top = y + 'px';
+              this.element.style.position = 'fixed';
+              this.element.style.width = '100px';
+              this.element.style.height = '100px';
+              this.element.style.pointerEvents = 'none';
+              this.element.style.zIndex = '10000';
+
+              document.body.appendChild(this.element);
+
+              ensurePinkModeLottieRuntime().then(lottie => {
+                if (this.destroyed) return;
+                this.anim = lottie.loadAnimation({
+                  container: this.element,
+                  renderer: 'svg',
+                  loop: true,
+                  autoplay: true,
+                  animationData: iconData
+                });
+              });
+
+              this.posY = y;
+              this.speed = 1 + Math.random() * 2;
+              this.tick = this.tick.bind(this);
+              requestAnimationFrame(this.tick);
+            }
+
+            tick() {
+              if (!this.element.parentNode) return;
+              this.posY += this.speed;
+              this.element.style.top = this.posY + 'px';
+              if (this.posY > window.innerHeight) {
+                this.destroy();
+              } else {
+                requestAnimationFrame(this.tick);
+              }
+            }
+
+            destroy() {
+              this.destroyed = true;
+              if (this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
+              }
+              if (this.anim) {
+                this.anim.destroy();
+              }
+            }
+          }
+
+          class PinkModeManager {
+            constructor() {
+              this.active = false;
+              this.icons = [];
+              this.combo = 0;
+            }
+
+            activate() {
+              this.active = true;
+              document.body.classList.add('pink-mode-active');
+            }
+
+            deactivate() {
+              this.active = false;
+              document.body.classList.remove('pink-mode-active');
+              this.icons.forEach(i => i.destroy());
+              this.icons = [];
+            }
+
+            triggerRain() {
+              console.log('Rain triggered!');
+              for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                  this.spawnRandomIcon();
+                }, i * 200);
+              }
+            }
+
+            spawnRandomIcon() {
+              if (!this.active) return;
+
+              const iconFile = PINK_MODE_ANIMATED_ICON_FILES[Math.floor(Math.random() * PINK_MODE_ANIMATED_ICON_FILES.length)];
+
+              if (GLOBAL_SCOPE.cinePinkModeAnimatedIconData && GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]) {
+                try {
+                  const iconData = JSON.parse(GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile]);
+                  this.spawnIconWithData(iconData);
+                } catch (e) {
+                  // ignore
+                }
+                return;
+              }
+
+              if (typeof fetch === 'function') {
+                fetch(iconFile)
+                  .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                  })
+                  .then(data => {
+                    if (!GLOBAL_SCOPE.cinePinkModeAnimatedIconData) GLOBAL_SCOPE.cinePinkModeAnimatedIconData = {};
+                    GLOBAL_SCOPE.cinePinkModeAnimatedIconData[iconFile] = JSON.stringify(data);
+                    this.spawnIconWithData(data);
+                  })
+                  .catch(() => { });
+              }
+            }
+
+            spawnIconWithData(iconData) {
+              if (!iconData || !this.active) return;
+              const x = Math.random() * window.innerWidth;
+              const y = -150;
+              const icon = new FloatingIcon(this, x, y, iconData);
+              this.icons.push(icon);
+            }
+          }
+
+          const manager = new PinkModeManager();
+
           const HORSE_SVG_MARKUP = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z" fill="#805333" /><path d="m30.18 42.82c1.073 2.7 2.6 9.993 3.357 13.8a2 2 0 0 1-1.964 2.38h-28.573a2 2 0 0 1-2-2v-18c0-2.55 10.03-22.11 23.99-23.87Z" fill="#a56a43" /><path d="m55.67 48.46-6.34 2.97a6 6 0 0 1-7.98-2.88l-.25-.54-.76-1.6a4.956 4.956 0 0 0-4.68-2.87c-.22.01-.44.02-.66.02a16.019 16.019 0 0 1-8.28-29.66c-1.81-2.97-3.45-8.03 2.03-12.49a2.1 2.1 0 0 1 2.5 0c4.23 3.45 4.21 7.25 3.16 10.17a16 16 0 0 1 15.91 11.36l5.31 11.31 2.92 6.22a6.008 6.008 0 0 1-2.88 7.99Z" fill="#cb8252" /><circle cx="42" cy="26" r="3" fill="#2c2f38" /><circle cx="54" cy="43" r="1" fill="#805333" /><path d="m58.55 40.47-2.92-6.22-14.53 13.76.25.54a6 6 0 0 0 7.98 2.88l6.34-2.97a6.008 6.008 0 0 0 2.88-7.99Zm-4.55 3.53a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z" fill="#cf976a" /><circle cx="41" cy="25" r="1.25" fill="#ecf0f1" /></svg>';
           const HORN_MARKUP = '<path d="M44 19 L56 5 L49 22 Z" fill="#ffd700" />';
           const UNICORN_BASE_MARKUP = HORSE_SVG_MARKUP.replace('</svg>', HORN_MARKUP + '</svg>');
@@ -350,80 +532,25 @@
             onSequence: Object.freeze(PINK_MODE_TOGGLE_SEQUENCE),
           });
 
-          const fallbackMarkup = Object.freeze([]);
-
-          function ensureSvgHasAriaHidden(markup) {
-            return typeof markup === 'string' ? markup.trim() : '';
-          }
-
-          function noop() { }
-
-          function returnFalse() {
-            return false;
-          }
-
-          function getNull() {
-            return null;
-          }
-
-          function getZero() {
-            return 0;
-          }
-
-          function ensurePinkModeLottieRuntime() {
-            const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
-            if (GLOBAL_SCOPE && GLOBAL_SCOPE.lottie) return createSafeResolvedPromise(GLOBAL_SCOPE.lottie);
-            if (GLOBAL_SCOPE && GLOBAL_SCOPE.bodymovin) return createSafeResolvedPromise(GLOBAL_SCOPE.bodymovin);
-
-            if (typeof document === 'undefined') return createSafeResolvedPromise(null);
-
-            if (document.querySelector('script[data-loader="pink-mode-lottie"]')) {
-              return new Promise(resolve => {
-                const s = document.querySelector('script[data-loader="pink-mode-lottie"]');
-                if (s.dataset.loaded === 'true') resolve(GLOBAL_SCOPE.lottie);
-                else s.addEventListener('load', () => resolve(GLOBAL_SCOPE.lottie), { once: true });
-              });
-            }
-
-            return new Promise((resolve) => {
-              const script = document.createElement('script');
-              script.src = 'src/vendor/lottie.min.js';
-              script.async = true;
-              script.setAttribute('data-loader', 'pink-mode-lottie');
-              script.onload = () => {
-                script.dataset.loaded = 'true';
-                resolve(GLOBAL_SCOPE.lottie);
-              };
-              script.onerror = () => {
-                resolve(null);
-              };
-              document.head.appendChild(script);
-            });
-          }
-
           return {
             pinkModeIcons: fallbackIcons,
-            ensureSvgHasAriaHidden,
-            setPinkModeIconSequence: returnFalse,
-            loadPinkModeIconsFromFiles() {
-              return createSafeResolvedPromise(fallbackIcons);
-            },
+            ensureSvgHasAriaHidden: (markup) => typeof markup === 'string' ? markup.trim() : '',
+            setPinkModeIconSequence: () => false,
+            loadPinkModeIconsFromFiles() { return createSafeResolvedPromise(fallbackIcons); },
             ensurePinkModeLottieRuntime,
-            resolvePinkModeLottieRuntime() {
-              return ensurePinkModeLottieRuntime();
-            },
-            startPinkModeAnimatedIcons: noop,
-            stopPinkModeAnimatedIcons: noop,
-            triggerPinkModeIconRain: noop,
-            startPinkModeIconPreload: noop,
-            getPinkModeIconRotationTimer: getNull,
-            setPinkModeIconRotationTimer: noop,
-            getPinkModeIconIndex: getZero,
-            setPinkModeIconIndex: noop,
+            resolvePinkModeLottieRuntime() { return ensurePinkModeLottieRuntime(); },
+            startPinkModeAnimatedIcons: () => manager.activate(),
+            stopPinkModeAnimatedIcons: () => manager.deactivate(),
+            triggerPinkModeIconRain: () => manager.triggerRain(),
+            startPinkModeIconPreload: () => { },
+            getPinkModeIconRotationTimer: () => null,
+            setPinkModeIconRotationTimer: () => { },
+            getPinkModeIconIndex: () => 0,
+            setPinkModeIconIndex: () => { },
             PINK_MODE_ICON_INTERVAL_MS: 30000,
             PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-pop',
             PINK_MODE_ICON_ANIMATION_RESET_DELAY: 450,
-            PINK_MODE_ICON_FALLBACK_MARKUP: fallbackMarkup,
+            PINK_MODE_ICON_FALLBACK_MARKUP: [],
           };
         }
 
