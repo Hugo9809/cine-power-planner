@@ -1,3 +1,9 @@
+(function () {
+  if (typeof window !== 'undefined') {
+    if (!window.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = function () { return null; };
+    if (!window.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
+  }
+})();
 /*
  * Cine Power Planner runtime split (part 1 of 2).
  *
@@ -3009,47 +3015,8 @@ function resolveAutoGearBackupRetentionDefault() {
   return fallbackNormalized === null ? minValue : fallbackNormalized;
 }
 
-let localeSortCollator = null;
-function localeSort(a, b) {
-  const stringA =
-    typeof a === 'string'
-      ? a
-      : a && typeof a.toString === 'function'
-        ? a.toString()
-        : '';
-  const stringB =
-    typeof b === 'string'
-      ? b
-      : b && typeof b.toString === 'function'
-        ? b.toString()
-        : '';
+// localeSort is now provided by legacy-globals-shim.js
 
-  if (!localeSortCollator) {
-    try {
-      localeSortCollator =
-        typeof Intl !== 'undefined' && typeof Intl.Collator === 'function'
-          ? new Intl.Collator(undefined, { sensitivity: 'base', numeric: false })
-          : false;
-    } catch (collatorError) {
-      localeSortCollator = false;
-      void collatorError;
-    }
-  }
-
-  if (localeSortCollator && typeof localeSortCollator.compare === 'function') {
-    return localeSortCollator.compare(stringA, stringB);
-  }
-
-  try {
-    return stringA.localeCompare(stringB, undefined, { sensitivity: 'base' });
-  } catch (localeCompareError) {
-    void localeCompareError;
-  }
-
-  if (stringA < stringB) return -1;
-  if (stringA > stringB) return 1;
-  return 0;
-}
 
 const AUTO_GEAR_BACKUPS_KEY = resolveAutoGearStorageKey(
   'AUTO_GEAR_BACKUPS_STORAGE_KEY',
@@ -19297,7 +19264,8 @@ var autoGearConditionRefreshers = {
   controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
   distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
 };
-var autoGearActiveConditions = new Set();
+var autoGearActiveConditions = (typeof window !== 'undefined' && window.autoGearActiveConditions) || new Set();
+if (typeof window !== 'undefined' && !window.autoGearActiveConditions) window.autoGearActiveConditions = autoGearActiveConditions;
 
 function getAutoGearConditionConfig(key) {
   if (!key) return null;

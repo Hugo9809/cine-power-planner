@@ -51,19 +51,90 @@
     if (!window.projectDialogCloseBtn) window.projectDialogCloseBtn = document.getElementById("projectDialogClose");
     if (!window.setupNameInput) window.setupNameInput = document.getElementById("setupName");
 
+    // Project Management UI (restored from app-core-new-1.js)
+    if (!window.setupSelect) window.setupSelect = document.getElementById("setupSelect");
+    if (!window.saveSetupBtn) window.saveSetupBtn = document.getElementById("saveSetupBtn");
+    if (!window.deleteSetupBtn) window.deleteSetupBtn = document.getElementById("deleteSetupBtn");
+    if (!window.shareSetupBtn) window.shareSetupBtn = document.getElementById("shareSetupBtn");
+
+    if (!window.sharedLinkInput) window.sharedLinkInput = document.getElementById("sharedLinkInput");
+    if (!window.applySharedLinkBtn) window.applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
+    if (!window.shareLinkMessage) window.shareLinkMessage = document.getElementById("shareLinkMessage");
+
     // Missing Global State Variables
     if (typeof window.showAutoBackups === "undefined") window.showAutoBackups = false;
 
     // Missing UI Elements
-    if (typeof window.autoGearAddRuleBtn === "undefined") window.autoGearAddRuleBtn = null;
-    if (typeof window.autoGearConditionAddButton === "undefined") window.autoGearConditionAddButton = null;
-    // Missing UI Elements
-    if (typeof window.autoGearAddRuleBtn === "undefined") window.autoGearAddRuleBtn = null;
-    if (typeof window.autoGearConditionAddButton === "undefined") window.autoGearConditionAddButton = null;
-    if (typeof window.autoGearScenarioBaseSelect === "undefined") window.autoGearScenarioBaseSelect = null;
+    if (typeof window.autoGearAddRuleBtn === "undefined") window.autoGearAddRuleBtn = document.getElementById("autoGearAddRuleBtn");
+    if (typeof window.autoGearConditionAddButton === "undefined") window.autoGearConditionAddButton = document.getElementById("autoGearConditionAddBtn");
+
+    if (typeof window.autoGearScenarioBaseSelect === "undefined") window.autoGearScenarioBaseSelect = document.getElementById("autoGearScenarioBaseSelect");
+
+    // Missing UI Selects
+    if (!window.batteryPlateSelect) window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
+    if (!window.hotswapSelect) window.hotswapSelect = document.getElementById("batteryHotswapSelect");
 
     // Missing State Objects
     if (!window.autoGearActiveConditions) window.autoGearActiveConditions = new Set();
 
-    console.log("Legacy globals shim executed. Global UI references restored.");
+    // Share/Export Dialog mappings for app-setups.js
+    if (!window.shareDialog) window.shareDialog = document.getElementById("shareDialog");
+    if (!window.shareForm) window.shareForm = document.getElementById("shareForm");
+    if (!window.shareFilename) window.shareFilename = document.getElementById("shareFilename");
+    if (!window.shareFilenameInput) window.shareFilenameInput = window.shareFilename || document.getElementById("shareFilename");
+    if (!window.shareFilenameMessage) window.shareFilenameMessage = document.getElementById("shareFilenameMessage");
+    if (!window.shareIncludeAutoGear) window.shareIncludeAutoGear = document.getElementById("shareIncludeAutoGear");
+    if (!window.shareIncludeAutoGearCheckbox) window.shareIncludeAutoGearCheckbox = window.shareIncludeAutoGear || document.getElementById("shareIncludeAutoGear");
+    if (!window.shareIncludeAutoGearLabel) window.shareIncludeAutoGearLabel = document.getElementById("shareIncludeAutoGearLabel");
+    if (!window.shareIncludeAutoGearLabelElem) window.shareIncludeAutoGearLabelElem = window.shareIncludeAutoGearLabel || document.getElementById("shareIncludeAutoGearLabel");
+    if (!window.shareIncludeOwnedGear) window.shareIncludeOwnedGear = document.getElementById("shareIncludeOwnedGear");
+    if (!window.shareIncludeOwnedGearCheckbox) window.shareIncludeOwnedGearCheckbox = window.shareIncludeOwnedGear || document.getElementById("shareIncludeOwnedGear");
+    if (!window.shareIncludeOwnedGearLabel) window.shareIncludeOwnedGearLabel = document.getElementById("shareIncludeOwnedGearLabel");
+    if (!window.shareIncludeOwnedGearLabelElem) window.shareIncludeOwnedGearLabelElem = window.shareIncludeOwnedGearLabel || document.getElementById("shareIncludeOwnedGearLabel");
+    if (!window.shareCancelBtn) window.shareCancelBtn = document.getElementById("shareCancelBtn");
+    if (!window.shareConfirmBtn) window.shareConfirmBtn = document.getElementById("shareConfirmBtn");
+
+    // Import Dialog mappings for app-setups.js
+    if (!window.sharedImportDialog) window.sharedImportDialog = document.getElementById("sharedImportDialog");
+    if (!window.sharedImportForm) window.sharedImportForm = document.getElementById("sharedImportForm");
+    if (!window.sharedImportModeSelect) window.sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
+    if (!window.sharedImportCancelBtn) window.sharedImportCancelBtn = document.getElementById("sharedImportCancelBtn");
+    if (!window.sharedImportConfirmBtn) window.sharedImportConfirmBtn = document.getElementById("sharedImportConfirmBtn");
+
+    // Sorting Helper (moved from app-core-new-1.js to allow early use in auto-gear modules)
+    if (!window.localeSort) {
+        let localeSortCollator = null;
+        window.localeSort = function localeSort(a, b) {
+            const stringA = typeof a === 'string' ? a : (a && typeof a.toString === 'function' ? a.toString() : '');
+            const stringB = typeof b === 'string' ? b : (b && typeof b.toString === 'function' ? b.toString() : '');
+            if (!localeSortCollator) {
+                try {
+                    localeSortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+                } catch (e) {
+                    localeSortCollator = false;
+                }
+            }
+            if (localeSortCollator && typeof localeSortCollator.compare === 'function') {
+                return localeSortCollator.compare(stringA, stringB);
+            }
+            return stringA.localeCompare(stringB);
+        };
+    }
+
+    // Pink Mode Shims
+    if (typeof window.cineCorePinkModeSupport !== 'undefined') {
+        const pm = window.cineCorePinkModeSupport;
+        if (!window.resolvePinkModeLottieRuntime && pm.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = pm.resolvePinkModeLottieRuntime;
+        if (!window.ensurePinkModeLottieRuntime && pm.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = pm.ensurePinkModeLottieRuntime;
+    }
+
+    // Unconditional Fallbacks to prevent TypeError/ReferenceError
+    if (typeof window.resolvePinkModeLottieRuntime !== 'function') {
+        window.resolvePinkModeLottieRuntime = function () { return null; };
+    }
+    if (typeof window.ensurePinkModeLottieRuntime !== 'function') {
+        window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
+    }
+
+    console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
 })();

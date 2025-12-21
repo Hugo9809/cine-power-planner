@@ -143,13 +143,13 @@
   const detectGlobalScope =
     ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.detectGlobalScope === 'function'
       ? function detectWithContext() {
-          try {
-            return ENVIRONMENT_CONTEXT.detectGlobalScope();
-          } catch (error) {
-            void error;
-          }
-          return fallbackDetectGlobalScope();
+        try {
+          return ENVIRONMENT_CONTEXT.detectGlobalScope();
+        } catch (error) {
+          void error;
         }
+        return fallbackDetectGlobalScope();
+      }
       : fallbackDetectGlobalScope;
 
   const PRIMARY_SCOPE =
@@ -1036,6 +1036,10 @@
     list() {
       return listRegistryKeys(controllerRegistry);
     },
+    has(name) {
+      const normalized = normalizeName(name);
+      return controllerRegistry.has(normalized);
+    },
   });
 
   const interactionsAPI = freezeDeep({
@@ -1063,6 +1067,10 @@
     list() {
       return listRegistryKeys(interactionRegistry);
     },
+    has(name) {
+      const normalized = normalizeName(name);
+      return interactionRegistry.has(normalized);
+    },
   });
 
   const orchestrationAPI = freezeDeep({
@@ -1089,6 +1097,10 @@
     },
     list() {
       return listRegistryKeys(orchestrationRegistry);
+    },
+    has(name) {
+      const normalized = normalizeName(name);
+      return orchestrationRegistry.has(normalized);
     },
   });
 
@@ -1192,60 +1204,67 @@
   const helpAPI = resolvedHelpModule && resolvedHelpModule.help
     ? resolvedHelpModule.help
     : freezeDeep({
-        register(name, value) {
-          const normalized = typeof name === 'string' ? name.trim() : '';
-          if (!normalized) {
-            throw new TypeError('cineUi registry names must be non-empty strings.');
-          }
+      register(name, value) {
+        const normalized = typeof name === 'string' ? name.trim() : '';
+        if (!normalized) {
+          throw new TypeError('cineUi registry names must be non-empty strings.');
+        }
 
-          if (typeof value === 'function') {
-            fallbackHelpRegistry.set(normalized, value);
-            return value;
-          }
+        if (typeof value === 'function') {
+          fallbackHelpRegistry.set(normalized, value);
+          return value;
+        }
 
-          if (typeof value !== 'string') {
-            throw new TypeError(`cineUi help entry "${normalized}" must be a string or function.`);
-          }
+        if (typeof value !== 'string') {
+          throw new TypeError(`cineUi help entry "${normalized}" must be a string or function.`);
+        }
 
-          const text = value.trim();
-          if (!text) {
-            throw new Error(`cineUi help entry "${normalized}" cannot be empty.`);
-          }
+        const text = value.trim();
+        if (!text) {
+          throw new Error(`cineUi help entry "${normalized}" cannot be empty.`);
+        }
 
-          const resolver = function helpStringResolver() {
-            return text;
-          };
+        const resolver = function helpStringResolver() {
+          return text;
+        };
 
-          fallbackHelpRegistry.set(normalized, resolver);
-          return resolver;
-        },
-        get(name) {
-          const normalized = typeof name === 'string' ? name.trim() : '';
-          if (!normalized) {
-            throw new TypeError('cineUi registry names must be non-empty strings.');
-          }
-          return fallbackHelpRegistry.get(normalized) || null;
-        },
-        resolve(name, ...args) {
-          const resolver = this.get(name);
-          if (typeof resolver !== 'function') {
-            throw new Error(`cineUi help entry "${name}" is not registered.`);
-          }
-          return resolver.apply(null, args);
-        },
-        list() {
-          return Array.from(fallbackHelpRegistry.keys()).sort();
-        },
-      });
+        fallbackHelpRegistry.set(normalized, resolver);
+        return resolver;
+      },
+      get(name) {
+        const normalized = typeof name === 'string' ? name.trim() : '';
+        if (!normalized) {
+          throw new TypeError('cineUi registry names must be non-empty strings.');
+        }
+        return fallbackHelpRegistry.get(normalized) || null;
+      },
+      resolve(name, ...args) {
+        const resolver = this.get(name);
+        if (typeof resolver !== 'function') {
+          throw new Error(`cineUi help entry "${name}" is not registered.`);
+        }
+        return resolver.apply(null, args);
+      },
+      list() {
+        if (typeof listRegistryKeys === 'function') {
+          return listRegistryKeys(fallbackHelpRegistry);
+        }
+        return Array.from(fallbackHelpRegistry.keys()).sort();
+      },
+      has(name) {
+        const normalized = typeof name === 'string' ? name.trim() : '';
+        return normalized ? fallbackHelpRegistry.has(normalized) : false;
+      },
+    });
 
   const helpModuleInternals = resolvedHelpModule && resolvedHelpModule.__internal
     ? resolvedHelpModule.__internal
     : freezeDeep({
-        helpRegistry: fallbackHelpRegistry,
-        clearRegistries() {
-          fallbackHelpRegistry.clear();
-        },
-      });
+      helpRegistry: fallbackHelpRegistry,
+      clearRegistries() {
+        fallbackHelpRegistry.clear();
+      },
+    });
 
   function clearRegistries() {
     controllerRegistry.clear();

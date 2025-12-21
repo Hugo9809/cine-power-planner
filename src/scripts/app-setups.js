@@ -4995,7 +4995,9 @@ function registerSetupsCineUi() {
   return true;
 }
 
-registerSetupsCineUi();
+console.log('Registering setups with cineUi...');
+const result = registerSetupsCineUi();
+console.log('Setups registration status:', result);
 
 // Open feedback dialog and handle submission
 const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;

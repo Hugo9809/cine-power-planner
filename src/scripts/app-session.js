@@ -1,3 +1,8 @@
+(function () {
+  if (typeof window !== 'undefined') {
+    if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
+  }
+})();
 // --- SESSION STATE HANDLING ---
 /* global cineFeaturesConnectionDiagram, shareSetupBtn, saveSessionState, loadSessionState,
           CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
@@ -6058,6 +6063,7 @@ function getTrackedPowerSelects() {
     batteryPlateSelect,
   ].filter(Boolean);
 }
+if (typeof window !== 'undefined') window.getTrackedPowerSelects = getTrackedPowerSelects;
 
 function getTrackedPowerSelectsWithSetup() {
   const selects = getTrackedPowerSelects();
@@ -6067,6 +6073,7 @@ function getTrackedPowerSelectsWithSetup() {
   }
   return selects;
 }
+if (typeof window !== 'undefined') window.getTrackedPowerSelectsWithSetup = getTrackedPowerSelectsWithSetup;
 
 function forEachTrackedSelect(collection, handler) {
   if (!collection || typeof handler !== 'function') {
