@@ -217,16 +217,9 @@
     );
   }
 
-  function normalizeMatteboxOption(value) {
-    const helper = resolveAutoGearHelperFunction('normalizeMatteboxOptionValue');
-    if (typeof helper === 'function') {
-      try {
-        return helper.call(GLOBAL_SCOPE, value);
-      } catch (error) {
-        logMissingAutoGearHelper('normalizeMatteboxOptionValue', error);
-      }
-    }
+  ensureFallbackAutoGearHelper('getMatteboxFallbackLabel', getFallbackMatteboxLabel);
 
+  function fallbackNormalizeMatteboxOptionValue(value) {
     if (typeof value !== 'string') {
       return '';
     }
@@ -242,6 +235,21 @@
     }
 
     return trimmed;
+  }
+
+  ensureFallbackAutoGearHelper('normalizeMatteboxOptionValue', fallbackNormalizeMatteboxOptionValue);
+
+  function normalizeMatteboxOption(value) {
+    const helper = resolveAutoGearHelperFunction('normalizeMatteboxOptionValue');
+    if (typeof helper === 'function') {
+      try {
+        return helper.call(GLOBAL_SCOPE, value);
+      } catch (error) {
+        logMissingAutoGearHelper('normalizeMatteboxOptionValue', error);
+      }
+    }
+
+    return fallbackNormalizeMatteboxOptionValue(value);
   }
 
   function normalizeVideoDistributionOption(value) {
