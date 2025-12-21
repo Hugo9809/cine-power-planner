@@ -6601,6 +6601,15 @@ const appearanceContext = {
           : null) || sessionStopPinkModeAnimatedIcons;
       return typeof impl === 'function' ? impl(...args) : undefined;
     },
+    get ensurePinkModeLottieRuntime() {
+      if (typeof window !== 'undefined' && typeof window.cineCorePinkModeSupport === 'object' && typeof window.cineCorePinkModeSupport.ensurePinkModeLottieRuntime === 'function') {
+        return window.cineCorePinkModeSupport.ensurePinkModeLottieRuntime;
+      }
+      if (typeof window !== 'undefined' && typeof window.ensurePinkModeLottieRuntime === 'function') {
+        return window.ensurePinkModeLottieRuntime;
+      }
+      return null;
+    },
     triggerPinkModeIconRain: (...args) => {
       const impl =
         (typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function'
