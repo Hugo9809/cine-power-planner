@@ -6576,8 +6576,17 @@ const appearanceContext = {
   icons: {
     registry: typeof ICON_GLYPHS === 'object' ? ICON_GLYPHS : null,
     applyIconGlyph: typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
-    ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
-    pinkModeIcons: typeof pinkModeIcons === 'object' ? pinkModeIcons : null,
+    get ensureSvgHasAriaHidden() {
+      if (typeof ensureSvgHasAriaHidden === 'function') return ensureSvgHasAriaHidden;
+      if (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function') return window.ensureSvgHasAriaHidden;
+      return null;
+    },
+    get pinkModeIcons() {
+      if (typeof pinkModeIcons === 'object' && pinkModeIcons) return pinkModeIcons;
+      if (typeof window !== 'undefined' && window.pinkModeIcons) return window.pinkModeIcons;
+      if (typeof globalThis !== 'undefined' && globalThis.pinkModeIcons) return globalThis.pinkModeIcons;
+      return null;
+    },
     startPinkModeAnimatedIcons: (...args) => {
       const impl =
         (typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function'

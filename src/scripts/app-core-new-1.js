@@ -631,6 +631,13 @@ exposeCoreRuntimeConstant('positionSvgMarkup', positionSvgMarkup);
 exposeCoreRuntimeConstant('iconMarkup', iconMarkup);
 exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
 
+exposeCoreRuntimeConstant('pinkModeIcons', pinkModeIcons);
+exposeCoreRuntimeConstant('setPinkModeIconSequence', setPinkModeIconSequence);
+exposeCoreRuntimeConstant('ensureSvgHasAriaHidden', ensureSvgHasAriaHidden);
+exposeCoreRuntimeConstant('startPinkModeAnimatedIcons', startPinkModeAnimatedIcons);
+exposeCoreRuntimeConstant('stopPinkModeAnimatedIcons', stopPinkModeAnimatedIcons);
+exposeCoreRuntimeConstant('triggerPinkModeIconRain', triggerPinkModeIconRain);
+
 // Runtime candidate scope helpers provided by app-core-runtime-candidate-scopes.js
 
 const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
