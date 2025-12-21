@@ -5928,7 +5928,7 @@ function updateViewfinderSettingsVisibility() {
     } else {
       viewfinderSettingsRow.classList.add('hidden');
       const vfSelect = document.getElementById('viewfinderSettings');
-      if (vfSelect) {
+      if (vfSelect && vfSelect.options) {
         Array.from(vfSelect.options).forEach(o => { o.selected = false; });
       }
     }
@@ -6065,7 +6065,7 @@ function updateBatteryOptions() {
   }
 
   populateSelect(hotswapSelect, swaps, true);
-  if (Array.from(batterySelect.options).some(o => o.value === current)) {
+  if (batterySelect.options && Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
   }
   if (typeof updateFavoriteButton === 'function') {
@@ -6077,7 +6077,7 @@ function updateBatteryOptions() {
       }
     });
   }
-  if (Array.from(hotswapSelect.options).some(o => o.value === currentSwap)) {
+  if (hotswapSelect.options && Array.from(hotswapSelect.options).some(o => o.value === currentSwap)) {
     hotswapSelect.value = currentSwap;
   }
   if (typeof updateFavoriteButton === 'function') {
@@ -8076,7 +8076,7 @@ async function setLanguage(lang) {
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
   setButtonLabelWithIconBinding(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
   // Update the "-- New Setup --" option text
-  if (setupSelect.options.length > 0) {
+  if (setupSelect && setupSelect.options && setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
   }
   checkSetupChanged();
@@ -8542,9 +8542,11 @@ async function setLanguage(lang) {
     toggleDeviceBtn.setAttribute("aria-expanded", "true");
   }
   // Update newCategory select option texts
-  Array.from(newCategorySelect.options).forEach(opt => {
-    opt.textContent = getCategoryLabel(opt.value, lang);
-  });
+  if (newCategorySelect.options) {
+    Array.from(newCategorySelect.options).forEach(opt => {
+      opt.textContent = getCategoryLabel(opt.value, lang);
+    });
+  }
   // Update "None" option text in all dropdowns
   const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
   document.querySelectorAll('select option[value="None"]').forEach(opt => {
@@ -14497,7 +14499,7 @@ function updateStorageVariantOptions(select, type, selectedValue) {
     select.appendChild(option);
   });
   if (previous) {
-    const hasMatch = Array.from(select.options).some(opt => opt.value === previous);
+    const hasMatch = select.options && Array.from(select.options).some(opt => opt.value === previous);
     if (!hasMatch) {
       const fallback = document.createElement('option');
       fallback.value = previous;
@@ -14693,11 +14695,13 @@ function updateRequiredScenariosTranslations(lang) {
   const scenarios = currentTexts.scenarios || {};
   const fallback = texts.en && texts.en.scenarios ? texts.en.scenarios : {};
 
-  Array.from(select.options).forEach(option => {
-    const key = option.value;
-    const translated = scenarios[key] || fallback[key] || option.value;
-    option.textContent = translated;
-  });
+  if (select.options) {
+    Array.from(select.options).forEach(option => {
+      const key = option.value;
+      const translated = scenarios[key] || fallback[key] || option.value;
+      option.textContent = translated;
+    });
+  }
 }
 
 function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {
@@ -14738,10 +14742,12 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
     || 'Remove';
 
   document.querySelectorAll('#storageNeedsContainer .storage-type').forEach(select => {
+    if (!select.options) return;
     const firstOption = select.options[0];
     if (firstOption) firstOption.textContent = typePlaceholder;
   });
   document.querySelectorAll('#storageNeedsContainer .storage-variant').forEach(select => {
+    if (!select.options) return;
     const firstOption = select.options[0];
     if (firstOption) firstOption.textContent = variantPlaceholder;
   });
@@ -14776,8 +14782,8 @@ if (addReturnBtn) {
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
   const bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
-  const headOpts = tripodHeadBrandSelect ? Array.from(tripodHeadBrandSelect.options) : [];
-  const bowlOpts = tripodBowlSelect ? Array.from(tripodBowlSelect.options) : [];
+  const headOpts = (tripodHeadBrandSelect && tripodHeadBrandSelect.options) ? Array.from(tripodHeadBrandSelect.options) : [];
+  const bowlOpts = (tripodBowlSelect && tripodBowlSelect.options) ? Array.from(tripodBowlSelect.options) : [];
   headOpts.forEach(o => { o.hidden = false; });
   bowlOpts.forEach(o => { o.hidden = false; });
   if (headBrand === 'OConnor') {
@@ -14988,7 +14994,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   }
 
   // Battery Label
-  if (heroBatteryLabel && batterySelect) {
+  if (heroBatteryLabel && batterySelect && batterySelect.options) {
     const selectedOption = batterySelect.options[batterySelect.selectedIndex];
     const batteryName = selectedOption ? selectedOption.text : '';
     heroBatteryLabel.textContent = `Camera Setup draws ${total.toFixed(0)}W from the ${availableWatt.toFixed(0)}W available on the ${batteryName}`;
@@ -16373,7 +16379,7 @@ function populateCategoryOptions() {
 
   // Include any categories present in the device database that were not in the schema
   if (typeof devices === 'object') {
-    const existing = new Set(Array.from(newCategorySelect.options).map(o => o.value));
+    const existing = new Set(newCategorySelect.options ? Array.from(newCategorySelect.options).map(o => o.value) : []);
     const addIfMissing = (val) => { if (!existing.has(val)) { addOpt(val); existing.add(val); } };
     for (const [key, obj] of Object.entries(devices)) {
       if (key === 'accessories') {
