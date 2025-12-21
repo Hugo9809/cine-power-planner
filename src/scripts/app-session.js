@@ -55,6 +55,17 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
 
+var hotswapSelect =
+  typeof hotswapSelect !== 'undefined'
+    ? hotswapSelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('batteryHotswapSelect')
+      : null;
+
+if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hotswapSelect === 'undefined') {
+  globalThis.hotswapSelect = hotswapSelect;
+}
+
 let actionMap = new Map();
 let featureMap = new Map();
 let deviceMap = new Map();
