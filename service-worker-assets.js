@@ -94,6 +94,7 @@
   "./legacy/scripts/globals-bootstrap.js",
   "./legacy/scripts/globals-legacy-shim.js",
   "./legacy/scripts/globalthis-polyfill.js",
+  "./legacy/scripts/legacy-globals-shim.js",
   "./legacy/scripts/legacy-shims.js",
   "./legacy/scripts/legal-topbar.js",
   "./legacy/scripts/loader.js",

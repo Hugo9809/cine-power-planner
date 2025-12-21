@@ -92,6 +92,18 @@ function loadRuntime() {
 
   const resolvedScriptPath = resolveScriptPath();
 
+  const legacyShimPath = path.join(SCRIPTS_DIR, 'legacy-globals-shim.js');
+  if (fs.existsSync(legacyShimPath)) {
+    try {
+      if (require.cache[legacyShimPath]) {
+        delete require.cache[legacyShimPath];
+      }
+      require(legacyShimPath);
+    } catch (shimError) {
+      console.warn('Failed to load legacy shim in test runtime', shimError);
+    }
+  }
+
   if (require.cache[resolvedScriptPath]) {
     delete require.cache[resolvedScriptPath];
   }

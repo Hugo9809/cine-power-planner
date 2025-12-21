@@ -110,7 +110,7 @@
             if (!localeSortCollator) {
                 try {
                     localeSortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-                } catch (e) {
+                } catch {
                     localeSortCollator = false;
                 }
             }
@@ -126,6 +126,10 @@
         const pm = window.cineCorePinkModeSupport;
         if (!window.resolvePinkModeLottieRuntime && pm.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = pm.resolvePinkModeLottieRuntime;
         if (!window.ensurePinkModeLottieRuntime && pm.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = pm.ensurePinkModeLottieRuntime;
+
+        if (!window.setPinkModeIconSequence && pm.setPinkModeIconSequence) window.setPinkModeIconSequence = pm.setPinkModeIconSequence;
+        if (!window.loadPinkModeIconsFromFiles && pm.loadPinkModeIconsFromFiles) window.loadPinkModeIconsFromFiles = pm.loadPinkModeIconsFromFiles;
+        if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined' && pm.PINK_MODE_ICON_FALLBACK_MARKUP) window.PINK_MODE_ICON_FALLBACK_MARKUP = pm.PINK_MODE_ICON_FALLBACK_MARKUP;
     }
 
     // Unconditional Fallbacks to prevent TypeError/ReferenceError
@@ -134,6 +138,15 @@
     }
     if (typeof window.ensurePinkModeLottieRuntime !== 'function') {
         window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
+    }
+    if (typeof window.setPinkModeIconSequence !== 'function') {
+        window.setPinkModeIconSequence = function () { };
+    }
+    if (typeof window.loadPinkModeIconsFromFiles !== 'function') {
+        window.loadPinkModeIconsFromFiles = function () { return Promise.resolve(); };
+    }
+    if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined') {
+        window.PINK_MODE_ICON_FALLBACK_MARKUP = [];
     }
 
     console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
