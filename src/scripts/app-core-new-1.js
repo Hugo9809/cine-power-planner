@@ -518,7 +518,6 @@ if (!pinkModeSupportApiRef && typeof require === 'function') {
 
 const {
   pinkModeIcons,
-  ensureSvgHasAriaHidden: rawEnsureSvgHasAriaHidden,
   setPinkModeIconSequence,
   loadPinkModeIconsFromFiles,
   ensurePinkModeLottieRuntime,
@@ -536,11 +535,12 @@ const {
   PINK_MODE_ICON_FALLBACK_MARKUP,
 } = pinkModeSupportApiRef || {};
 
-const ensureSvgHasAriaHidden = typeof rawEnsureSvgHasAriaHidden === 'function'
-  ? rawEnsureSvgHasAriaHidden
-  : (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function'
-    ? window.ensureSvgHasAriaHidden
-    : function (m) { return m || ''; });
+let ensureSvgHasAriaHidden = function (m) { return m || ''; };
+if (pinkModeSupportApiRef && typeof pinkModeSupportApiRef.ensureSvgHasAriaHidden === 'function') {
+  ensureSvgHasAriaHidden = pinkModeSupportApiRef.ensureSvgHasAriaHidden;
+} else if (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function') {
+  ensureSvgHasAriaHidden = window.ensureSvgHasAriaHidden;
+}
 
 
 

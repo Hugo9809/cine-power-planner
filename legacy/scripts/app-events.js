@@ -4096,7 +4096,9 @@ if (newCategorySelectElement) {
     clearViewfinderVideoInputs();
     clearViewfinderVideoOutputs();
     clearBatteryPlates();
-    clearRecordingMedia();
+    if (typeof clearRecordingMedia === 'function') {
+      clearRecordingMedia();
+    }
     clearLensMounts();
     clearLensDeviceMountOptions();
     if (lensFocusScaleSelect) {

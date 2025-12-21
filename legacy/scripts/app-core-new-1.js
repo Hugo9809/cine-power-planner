@@ -330,7 +330,6 @@ if (!pinkModeSupportApiRef && typeof require === 'function') {
 }
 var _ref4 = pinkModeSupportApiRef || {},
   pinkModeIcons = _ref4.pinkModeIcons,
-  ensureSvgHasAriaHidden = _ref4.ensureSvgHasAriaHidden,
   setPinkModeIconSequence = _ref4.setPinkModeIconSequence,
   loadPinkModeIconsFromFiles = _ref4.loadPinkModeIconsFromFiles,
   ensurePinkModeLottieRuntime = _ref4.ensurePinkModeLottieRuntime,
@@ -346,6 +345,14 @@ var _ref4 = pinkModeSupportApiRef || {},
   PINK_MODE_ICON_ANIMATION_CLASS = _ref4.PINK_MODE_ICON_ANIMATION_CLASS,
   PINK_MODE_ICON_ANIMATION_RESET_DELAY = _ref4.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
   PINK_MODE_ICON_FALLBACK_MARKUP = _ref4.PINK_MODE_ICON_FALLBACK_MARKUP;
+var ensureSvgHasAriaHidden = function ensureSvgHasAriaHidden(m) {
+  return m || '';
+};
+if (pinkModeSupportApiRef && typeof pinkModeSupportApiRef.ensureSvgHasAriaHidden === 'function') {
+  ensureSvgHasAriaHidden = pinkModeSupportApiRef.ensureSvgHasAriaHidden;
+} else if (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function') {
+  ensureSvgHasAriaHidden = window.ensureSvgHasAriaHidden;
+}
 function iconMarkup(glyph) {
   var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;

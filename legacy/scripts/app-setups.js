@@ -5853,7 +5853,9 @@ function populateProjectForm() {
   setVal('tripodBowl', info.tripodBowl);
   setMulti('tripodTypes', info.tripodTypes);
   setVal('tripodSpreader', info.tripodSpreader);
-  setSliderBowlValue(info.sliderBowl || '');
+  if (typeof setSliderBowlValue === 'function') {
+    setSliderBowlValue(info.sliderBowl || '');
+  }
   setEasyrigValue(info.easyrig || '');
   var filterTokens = parseFilterTokens(info.filter);
   populateFilterDropdown(filterTokens.map(function (t) {

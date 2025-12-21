@@ -6338,7 +6338,9 @@ function populateProjectForm(info = {}) {
   setVal('tripodBowl', info.tripodBowl);
   setMulti('tripodTypes', info.tripodTypes);
   setVal('tripodSpreader', info.tripodSpreader);
-  setSliderBowlValue(info.sliderBowl || '');
+  if (typeof setSliderBowlValue === 'function') {
+    setSliderBowlValue(info.sliderBowl || '');
+  }
   setEasyrigValue(info.easyrig || '');
   const filterTokens = parseFilterTokens(info.filter);
   populateFilterDropdown(filterTokens.map(t => t.type));
