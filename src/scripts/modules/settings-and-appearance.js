@@ -892,7 +892,8 @@
         if (glyphConfig.markup) {
           const markup = ensureSvgHasAriaHidden(glyphConfig.markup);
           // Only replace if content is different to avoid flicker/reflow if unnecessary
-          if (iconSpan.innerHTML.indexOf(markup.slice(0, 20)) === -1) {
+          // We check the whole markup now because Horse and Unicorn share identical headers
+          if (!iconSpan.innerHTML.includes(markup)) {
             iconSpan.innerHTML = markup;
           }
         }
@@ -1474,6 +1475,8 @@
       // Force local sequence to ensure Unicorns appear regardless of external module state
       const sequence = FALLBACK_SEQUENCE;
 
+      console.log('Pink Mode Rotation Start. Sequence Length:', sequence ? sequence.length : 'undefined');
+
       if (!sequence.length) {
         // Fallback to off icon if somehow even fallback sequence is empty
         applyPinkModeIcon(icons.pinkModeIcons ? icons.pinkModeIcons.off : null, { animate: false });
@@ -1686,7 +1689,7 @@
       }
 
       triggerRain() {
-        // console.log('Rain triggered (Local Manager)!');
+        console.log('Rain triggered (Local Manager)!');
         for (let i = 0; i < 20; i++) {
           setTimeout(() => {
             this.spawnRandomIcon();
@@ -1715,6 +1718,7 @@
         }
 
         if (typeof fetch === 'function') {
+          console.log('Fetching icon:', iconFile);
           fetch(iconFile)
             .then(response => {
               if (!response.ok) throw new Error('Network response was not ok');
@@ -1725,7 +1729,7 @@
               scope.cinePinkModeAnimatedIconData[iconFile] = JSON.stringify(data);
               this.spawnIconWithData(data);
             })
-            .catch(() => { });
+            .catch((err) => { console.error('Pink Mode Fetch Error:', err); });
         }
       }
 
