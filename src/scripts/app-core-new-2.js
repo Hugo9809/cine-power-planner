@@ -18603,6 +18603,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       fontSize,
       fontFamily,
       normalizeSearchValue,
+      clearRecordingMedia,
+      setSliderBowlValue,
     };
 
 
@@ -19100,6 +19102,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       globalThis.projectDialogCloseBtn = projectDialogCloseBtn;
       globalThis.projectCancelBtn = projectCancelBtn;
       globalThis.renderSetupDiagram = renderSetupDiagram;
+      globalThis.clearRecordingMedia = clearRecordingMedia;
+      globalThis.setSliderBowlValue = setSliderBowlValue;
     } else if (typeof window !== 'undefined') {
       window.checkSetupChanged = checkSetupChanged;
       window.updateCalculations = updateCalculations;
@@ -19107,6 +19111,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.projectDialogCloseBtn = projectDialogCloseBtn;
       window.projectCancelBtn = projectCancelBtn;
       window.renderSetupDiagram = renderSetupDiagram;
+      window.clearRecordingMedia = clearRecordingMedia;
+      window.setSliderBowlValue = setSliderBowlValue;
     }
   }
 

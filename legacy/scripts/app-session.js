@@ -22,6 +22,11 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+(function () {
+  if (typeof window !== 'undefined') {
+    if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
+  }
+})();
 var FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
@@ -5021,6 +5026,7 @@ function getTrackedPowerSelects() {
   var maybeHotswap = typeof hotswapSelect === 'undefined' ? null : hotswapSelect;
   return [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, maybeHotswap, batteryPlateSelect].filter(Boolean);
 }
+if (typeof window !== 'undefined') window.getTrackedPowerSelects = getTrackedPowerSelects;
 function getTrackedPowerSelectsWithSetup() {
   var selects = getTrackedPowerSelects();
   var maybeSetup = typeof setupSelect === 'undefined' ? null : setupSelect;
@@ -5029,6 +5035,7 @@ function getTrackedPowerSelectsWithSetup() {
   }
   return selects;
 }
+if (typeof window !== 'undefined') window.getTrackedPowerSelectsWithSetup = getTrackedPowerSelectsWithSetup;
 function forEachTrackedSelect(collection, handler) {
   if (!collection || typeof handler !== 'function') {
     return;

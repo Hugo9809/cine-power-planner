@@ -854,6 +854,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     list: function list() {
       return listRegistryKeys(controllerRegistry);
+    },
+    has: function has(name) {
+      var normalized = normalizeName(name);
+      return controllerRegistry.has(normalized);
     }
   });
   var interactionsAPI = freezeDeep({
@@ -883,6 +887,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     list: function list() {
       return listRegistryKeys(interactionRegistry);
+    },
+    has: function has(name) {
+      var normalized = normalizeName(name);
+      return interactionRegistry.has(normalized);
     }
   });
   var orchestrationAPI = freezeDeep({
@@ -912,6 +920,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     list: function list() {
       return listRegistryKeys(orchestrationRegistry);
+    },
+    has: function has(name) {
+      var normalized = normalizeName(name);
+      return orchestrationRegistry.has(normalized);
     }
   });
   function resolveHelpModule(scope) {
@@ -1042,7 +1054,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return resolver.apply(null, args);
     },
     list: function list() {
+      if (typeof listRegistryKeys === 'function') {
+        return listRegistryKeys(fallbackHelpRegistry);
+      }
       return Array.from(fallbackHelpRegistry.keys()).sort();
+    },
+    has: function has(name) {
+      var normalized = typeof name === 'string' ? name.trim() : '';
+      return normalized ? fallbackHelpRegistry.has(normalized) : false;
     }
   });
   var helpModuleInternals = resolvedHelpModule && resolvedHelpModule.__internal ? resolvedHelpModule.__internal : freezeDeep({

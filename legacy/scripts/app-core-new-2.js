@@ -15822,7 +15822,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setTimecodes([]);
     }
     function getFavoriteValues(id) {
-      var favs = loadFavorites();
+      var favs = typeof loadFavorites === 'function' ? loadFavorites() : {};
       return Array.isArray(favs[id]) ? favs[id] : [];
     }
     var FAVORITE_BUTTON_BY_SELECT = new WeakMap();
@@ -17417,7 +17417,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setEasyrigValue: setEasyrigValue,
       fontSize: fontSize,
       fontFamily: fontFamily,
-      normalizeSearchValue: normalizeSearchValue
+      normalizeSearchValue: normalizeSearchValue,
+      clearRecordingMedia: clearRecordingMedia,
+      setSliderBowlValue: setSliderBowlValue
     };
     var ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [['setBatteryPlates', function () {
       return setBatteryPlatesLocal;
@@ -17924,6 +17926,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       globalThis.projectDialogCloseBtn = projectDialogCloseBtn;
       globalThis.projectCancelBtn = projectCancelBtn;
       globalThis.renderSetupDiagram = renderSetupDiagram;
+      globalThis.clearRecordingMedia = clearRecordingMedia;
+      globalThis.setSliderBowlValue = setSliderBowlValue;
     } else if (typeof window !== 'undefined') {
       window.checkSetupChanged = checkSetupChanged;
       window.updateCalculations = updateCalculations;
@@ -17931,6 +17935,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.projectDialogCloseBtn = projectDialogCloseBtn;
       window.projectCancelBtn = projectCancelBtn;
       window.renderSetupDiagram = renderSetupDiagram;
+      window.clearRecordingMedia = clearRecordingMedia;
+      window.setSliderBowlValue = setSliderBowlValue;
     }
   }
   var corePart2ExecutedViaRunner = typeof CORE_PART1_RUNNER === 'function' ? CORE_PART1_RUNNER(corePart2Runtime) : false;

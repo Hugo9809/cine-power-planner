@@ -164,6 +164,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       element.removeAttribute('data-icon-font');
     }
   }
+  function iconMarkup(glyph, className) {
+    var resolved = resolveIconGlyph(glyph);
+    var parts = [];
+    if (resolved.className) parts.push(resolved.className);
+    if (className) parts.push(className);
+    var finalClass = parts.join(' ');
+    if (resolved.markup) {
+      var svg = ensureSvgHasAriaHidden(resolved.markup);
+      if (finalClass) {
+        if (svg.indexOf('class="') !== -1) {
+          svg = svg.replace('class="', "class=\"".concat(finalClass, " "));
+        } else {
+          svg = svg.replace('<svg', "<svg class=\"".concat(finalClass, "\""));
+        }
+      }
+      return svg;
+    }
+    var fontAttr = resolved.char ? "data-icon-font=\"".concat(resolved.font, "\"") : '';
+    return "<span class=\"icon-glyph ".concat(finalClass, "\" aria-hidden=\"true\" ").concat(fontAttr, ">").concat(resolved.char, "</span>");
+  }
   function formatSvgCoordinate(value) {
     if (!Number.isFinite(value)) return '0';
     var rounded = Math.round(value * 100) / 100;
@@ -291,6 +311,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     iconGlyph: iconGlyph,
     resolveIconGlyph: resolveIconGlyph,
     applyIconGlyph: applyIconGlyph,
+    iconMarkup: iconMarkup,
     formatSvgCoordinate: formatSvgCoordinate,
     positionSvgMarkup: positionSvgMarkup,
     STAR_ICON_SVG: STAR_ICON_SVG,
@@ -299,6 +320,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   globalScope.iconGlyph = iconGlyph;
   globalScope.resolveIconGlyph = resolveIconGlyph;
   globalScope.applyIconGlyph = applyIconGlyph;
+  globalScope.iconMarkup = iconMarkup;
   globalScope.formatSvgCoordinate = formatSvgCoordinate;
   globalScope.positionSvgMarkup = positionSvgMarkup;
   globalScope.STAR_ICON_SVG = STAR_ICON_SVG;

@@ -2,6 +2,7 @@
   if (typeof window !== 'undefined') {
     if (!window.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = function () { return null; };
     if (!window.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
+    if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) { return m; };
   }
 })();
 /*
@@ -517,11 +518,11 @@ if (!pinkModeSupportApiRef && typeof require === 'function') {
 
 const {
   pinkModeIcons,
-  ensureSvgHasAriaHidden,
+  ensureSvgHasAriaHidden: rawEnsureSvgHasAriaHidden,
   setPinkModeIconSequence,
   loadPinkModeIconsFromFiles,
   ensurePinkModeLottieRuntime,
-  resolvePinkModeLottieRuntime,
+  resolvePinkModeLottieRuntime: localResolvePinkModeLottieRuntime,
   startPinkModeAnimatedIcons,
   stopPinkModeAnimatedIcons,
   triggerPinkModeIconRain,
@@ -534,6 +535,12 @@ const {
   PINK_MODE_ICON_ANIMATION_RESET_DELAY,
   PINK_MODE_ICON_FALLBACK_MARKUP,
 } = pinkModeSupportApiRef || {};
+
+const ensureSvgHasAriaHidden = typeof rawEnsureSvgHasAriaHidden === 'function'
+  ? rawEnsureSvgHasAriaHidden
+  : (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function'
+    ? window.ensureSvgHasAriaHidden
+    : function (m) { return m || ''; });
 
 
 
@@ -2045,7 +2052,12 @@ function resolveAppVersionValue() {
 
 var APP_VERSION = resolveAppVersionValue();
 
-resolvePinkModeLottieRuntime();
+if (typeof localResolvePinkModeLottieRuntime === 'function') {
+  localResolvePinkModeLottieRuntime();
+} else if (typeof window.resolvePinkModeLottieRuntime === 'function') {
+  window.resolvePinkModeLottieRuntime();
+}
+
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 
@@ -4626,8 +4638,8 @@ function setupResponsiveControls() {
   relocate();
 }
 
-const OWN_GEAR_SOURCE_CATALOG = 'catalog';
-const OWN_GEAR_SOURCE_CUSTOM = 'custom';
+var OWN_GEAR_SOURCE_CATALOG = 'catalog';
+var OWN_GEAR_SOURCE_CUSTOM = 'custom';
 
 let ownGearStoreModuleCache = null;
 let ownGearStoreInstance = null;
@@ -5595,8 +5607,8 @@ function getBatteryMountType(batteryName) {
   return mount || '';
 }
 
-let batteryPlateRow;
-let batteryPlateSelect;
+var batteryPlateRow;
+var batteryPlateSelect;
 
 function normalizeBatteryPlateValue(plateValue, batteryName) {
   const normalizedPlate = typeof plateValue === 'string' ? plateValue.trim() : '';
@@ -16450,7 +16462,7 @@ var viewfinderBrightnessInput = document.getElementById("viewfinderBrightness");
 var viewfinderWattInput = document.getElementById("viewfinderWatt");
 var viewfinderVoltageInput = document.getElementById("viewfinderVoltage");
 var viewfinderPortTypeInput = document.getElementById("viewfinderPortType");
-const viewfinderVideoInputsContainer = document.getElementById("viewfinderVideoInputsContainer");
+var viewfinderVideoInputsContainer = document.getElementById("viewfinderVideoInputsContainer");
 const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideoOutputsContainer");
 var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
 var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
@@ -18159,10 +18171,10 @@ const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
 const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
 var iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
 
-let installBannerSetupComplete = false;
-let currentInstallGuidePlatform = null;
-let lastActiveBeforeInstallGuide = null;
-let lastActiveBeforeIosHelp = null;
+var installBannerSetupComplete = false;
+var currentInstallGuidePlatform = null;
+var lastActiveBeforeInstallGuide = null;
+var lastActiveBeforeIosHelp = null;
 
 function parseRgbComponent(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {

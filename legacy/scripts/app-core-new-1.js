@@ -20,6 +20,19 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+(function () {
+  if (typeof window !== 'undefined') {
+    if (!window.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = function () {
+      return null;
+    };
+    if (!window.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = function () {
+      return Promise.resolve(null);
+    };
+    if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) {
+      return m;
+    };
+  }
+})();
 var localResolveDocumentDirection = typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.resolveDocumentDirection === 'function' ? cineLocale.resolveDocumentDirection : function fallbackResolveDocumentDirection(lang) {
   return 'ltr';
 };
@@ -127,7 +140,7 @@ var _ref2 = typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormaliza
   fixPowerInput = _ref2.fixPowerInput,
   applyFixPowerInput = _ref2.applyFixPowerInput,
   ensureList = _ref2.ensureList,
-  markDevicesNormalized = _ref2.markDevicesNormalized,
+  localMarkDevicesNormalized = _ref2.markDevicesNormalized,
   hasNormalizedDevicesMarker = _ref2.hasNormalizedDevicesMarker,
   unifyDevices = _ref2.unifyDevices,
   normalizeDevicesForPersistence = _ref2.normalizeDevicesForPersistence;
@@ -321,7 +334,7 @@ var _ref4 = pinkModeSupportApiRef || {},
   setPinkModeIconSequence = _ref4.setPinkModeIconSequence,
   loadPinkModeIconsFromFiles = _ref4.loadPinkModeIconsFromFiles,
   ensurePinkModeLottieRuntime = _ref4.ensurePinkModeLottieRuntime,
-  resolvePinkModeLottieRuntime = _ref4.resolvePinkModeLottieRuntime,
+  localResolvePinkModeLottieRuntime = _ref4.resolvePinkModeLottieRuntime,
   startPinkModeAnimatedIcons = _ref4.startPinkModeAnimatedIcons,
   stopPinkModeAnimatedIcons = _ref4.stopPinkModeAnimatedIcons,
   triggerPinkModeIconRain = _ref4.triggerPinkModeIconRain,
@@ -1453,7 +1466,11 @@ function resolveAppVersionValue() {
   return '0.0.0';
 }
 var APP_VERSION = resolveAppVersionValue();
-resolvePinkModeLottieRuntime();
+if (typeof localResolvePinkModeLottieRuntime === 'function') {
+  localResolvePinkModeLottieRuntime();
+} else if (typeof window.resolvePinkModeLottieRuntime === 'function') {
+  window.resolvePinkModeLottieRuntime();
+}
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 function resolveInstallBannerGlobalScope() {
@@ -2233,35 +2250,6 @@ function resolveAutoGearBackupRetentionDefault() {
   var fallbackNormalized = normalize(AUTO_GEAR_RETENTION_DEFAULT_FALLBACK);
   return fallbackNormalized === null ? minValue : fallbackNormalized;
 }
-var localeSortCollator = null;
-function localeSort(a, b) {
-  var stringA = typeof a === 'string' ? a : a && typeof a.toString === 'function' ? a.toString() : '';
-  var stringB = typeof b === 'string' ? b : b && typeof b.toString === 'function' ? b.toString() : '';
-  if (!localeSortCollator) {
-    try {
-      localeSortCollator = typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(undefined, {
-        sensitivity: 'base',
-        numeric: false
-      }) : false;
-    } catch (collatorError) {
-      localeSortCollator = false;
-      void collatorError;
-    }
-  }
-  if (localeSortCollator && typeof localeSortCollator.compare === 'function') {
-    return localeSortCollator.compare(stringA, stringB);
-  }
-  try {
-    return stringA.localeCompare(stringB, undefined, {
-      sensitivity: 'base'
-    });
-  } catch (localeCompareError) {
-    void localeCompareError;
-  }
-  if (stringA < stringB) return -1;
-  if (stringA > stringB) return 1;
-  return 0;
-}
 var AUTO_GEAR_BACKUPS_KEY = resolveAutoGearStorageKey('AUTO_GEAR_BACKUPS_STORAGE_KEY', 'cameraPowerPlanner_autoGearBackups');
 var AUTO_GEAR_PRESETS_KEY = resolveAutoGearStorageKey('AUTO_GEAR_PRESETS_STORAGE_KEY', 'cameraPowerPlanner_autoGearPresets');
 var AUTO_GEAR_ACTIVE_PRESET_KEY = resolveAutoGearStorageKey('AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY', 'cameraPowerPlanner_autoGearActivePreset');
@@ -2660,6 +2648,7 @@ function clearProjectAutoGearRules() {
 function getProjectScopedAutoGearRules() {
   return projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
 }
+if (typeof window !== 'undefined') window.getProjectScopedAutoGearRules = getProjectScopedAutoGearRules;
 function usingProjectAutoGearRules() {
   return Array.isArray(projectScopedAutoGearRules) && projectScopedAutoGearRules.length > 0;
 }
@@ -4371,7 +4360,7 @@ function resolveUpdateDevicesReferenceFunction() {
 }
 if (window.defaultDevices === undefined) {
   window.defaultDevices = CORE_DEEP_CLONE(devices);
-  markDevicesNormalized(window.defaultDevices);
+  localMarkDevicesNormalized(window.defaultDevices);
   unifyDevices(window.defaultDevices);
 }
 var storedDevices = loadDeviceData();
@@ -16465,7 +16454,8 @@ var autoGearConditionRefreshers = {
   controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
   distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions')
 };
-var autoGearActiveConditions = new Set();
+var autoGearActiveConditions = typeof window !== 'undefined' && window.autoGearActiveConditions || new Set();
+if (typeof window !== 'undefined' && !window.autoGearActiveConditions) window.autoGearActiveConditions = autoGearActiveConditions;
 function getAutoGearConditionConfig(key) {
   if (!key) return null;
   if (Object.prototype.hasOwnProperty.call(autoGearConditionConfigs, key)) {

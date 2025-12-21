@@ -6,7 +6,6 @@
   }
   var viewfinderSettingsRow = document.getElementById('viewfinderSettingsRow');
   var viewfinderExtensionRow = document.getElementById('viewfinderExtensionRow');
-  var monitoringConfigurationUserChanged = false;
   globalScope.viewfinderSettingsRow = viewfinderSettingsRow;
   globalScope.viewfinderExtensionRow = viewfinderExtensionRow;
   globalScope.monitoringConfigurationUserChanged = false;

@@ -2436,12 +2436,12 @@ function gearListGetSafeHtmlSectionsImpl(html) {
     return fallbackResult;
   }
   try {
-    var result = splitter(normalizedHtml);
-    if (!result || _typeof(result) !== 'object') {
+    var _result = splitter(normalizedHtml);
+    if (!_result || _typeof(_result) !== 'object') {
       return fallbackResult;
     }
-    var projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
-    var gearHtml = typeof result.gearHtml === 'string' ? result.gearHtml : projectHtml ? '' : normalizedHtml;
+    var projectHtml = typeof _result.projectHtml === 'string' ? _result.projectHtml : '';
+    var gearHtml = typeof _result.gearHtml === 'string' ? _result.gearHtml : projectHtml ? '' : normalizedHtml;
     return {
       projectHtml: projectHtml,
       gearHtml: gearHtml
@@ -4482,7 +4482,9 @@ function registerSetupsCineUi() {
   registerSetupsCineUiInternal(cineUi);
   return true;
 }
-registerSetupsCineUi();
+console.log('Registering setups with cineUi...');
+var result = registerSetupsCineUi();
+console.log('Setups registration status:', result);
 var cineResultsModule = (typeof cineResults === "undefined" ? "undefined" : _typeof(cineResults)) === 'object' ? cineResults : null;
 if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'function') {
   cineResultsModule.setupRuntimeFeedback({
@@ -9482,9 +9484,9 @@ function findDeviceRecordByName(rawName) {
       if (!isPlainObjectValue(value)) {
         continue;
       }
-      var _result = _search(value, path.concat(key));
-      if (_result) {
-        return _result;
+      var _result2 = _search(value, path.concat(key));
+      if (_result2) {
+        return _result2;
       }
     }
     return null;
