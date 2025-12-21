@@ -1471,12 +1471,11 @@
         { className: 'icon-svg pink-mode-icon', markup: UNICORN_3_MARKUP, lottiePath: 'src/animations/rainbow.json' }
       ];
 
-      const sequence = Array.isArray(icons.pinkModeIcons && icons.pinkModeIcons.onSequence) && icons.pinkModeIcons.onSequence.length > 0
-        ? icons.pinkModeIcons.onSequence
-        : FALLBACK_SEQUENCE;
+      // Force local sequence to ensure Unicorns appear regardless of external module state
+      const sequence = FALLBACK_SEQUENCE;
 
       if (!sequence.length) {
-        // Fallback to horse if somehow even fallback failed
+        // Fallback to off icon if somehow even fallback sequence is empty
         applyPinkModeIcon(icons.pinkModeIcons ? icons.pinkModeIcons.off : null, { animate: false });
         return;
       }
@@ -1562,7 +1561,192 @@
       return pinkModeIconPressTimestamps.length;
     }
 
+    // --- INTERNAL PINK MODE MANAGER IMPLEMENTATION ---
+    // Inlined to guarantee functionality regardless of external module loading state.
+
+    const PINK_MODE_ANIMATED_ICON_FILES = [
+      'src/animations/flamingo.json',
+      'src/animations/unicorn.json',
+      'src/animations/pink-mode/camera.json',
+      'src/animations/pink-mode/director-chair.json',
+      'src/animations/pink-mode/dog.json',
+      'src/animations/pink-mode/fox-2.json',
+      'src/animations/pink-mode/fox-3.json',
+      'src/animations/pink-mode/fox.json',
+      'src/animations/pink-mode/horse.json',
+      'src/animations/pink-mode/mountains.json',
+      'src/animations/pink-mode/movie-camera.json',
+      'src/animations/pink-mode/pinata.json',
+      'src/animations/pink-mode/script.json',
+      'src/animations/pink-mode/video-camera.json'
+    ];
+
+    function ensureLocalPinkModeLottieRuntime() {
+      // Use global scope detection compatible with the app
+      let scope = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
+      if (scope.lottie) return Promise.resolve(scope.lottie);
+      if (scope.bodymovin) return Promise.resolve(scope.bodymovin);
+
+      if (typeof document === 'undefined') return Promise.resolve(null);
+
+      if (document.querySelector('script[data-loader="pink-mode-lottie"]')) {
+        return new Promise(resolve => {
+          const s = document.querySelector('script[data-loader="pink-mode-lottie"]');
+          if (s.dataset.loaded === 'true') resolve(scope.lottie);
+          else s.addEventListener('load', () => resolve(scope.lottie), { once: true });
+        });
+      }
+
+      return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'src/vendor/lottie.min.js';
+        script.async = true;
+        script.setAttribute('data-loader', 'pink-mode-lottie');
+        script.onload = () => {
+          script.dataset.loaded = 'true';
+          resolve(scope.lottie);
+        };
+        script.onerror = () => {
+          resolve(null);
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    class LocalFloatingIcon {
+      constructor(manager, x, y, iconData) {
+        this.manager = manager;
+        this.element = document.createElement('div');
+        this.element.className = 'pink-mode-floating-icon';
+        this.element.style.left = x + 'px';
+        this.element.style.top = y + 'px';
+        this.element.style.position = 'fixed';
+        this.element.style.width = '100px';
+        this.element.style.height = '100px';
+        this.element.style.pointerEvents = 'none';
+        this.element.style.zIndex = '10000';
+
+        document.body.appendChild(this.element);
+
+        ensureLocalPinkModeLottieRuntime().then(lottie => {
+          if (this.destroyed) return;
+          this.anim = lottie.loadAnimation({
+            container: this.element,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            animationData: iconData
+          });
+        });
+
+        this.posY = y;
+        this.speed = 1 + Math.random() * 2;
+        this.tick = this.tick.bind(this);
+        requestAnimationFrame(this.tick);
+      }
+
+      tick() {
+        if (!this.element.parentNode) return;
+        this.posY += this.speed;
+        this.element.style.top = this.posY + 'px';
+        if (this.posY > window.innerHeight) {
+          this.destroy();
+        } else {
+          requestAnimationFrame(this.tick);
+        }
+      }
+
+      destroy() {
+        this.destroyed = true;
+        if (this.element.parentNode) {
+          this.element.parentNode.removeChild(this.element);
+        }
+        if (this.anim) {
+          this.anim.destroy();
+        }
+      }
+    }
+
+    class LocalPinkModeManager {
+      constructor() {
+        this.active = false;
+        this.icons = [];
+      }
+
+      activate() {
+        this.active = true;
+        document.body.classList.add('pink-mode-active');
+      }
+
+      deactivate() {
+        this.active = false;
+        document.body.classList.remove('pink-mode-active');
+        this.icons.forEach(i => i.destroy());
+        this.icons = [];
+      }
+
+      triggerRain() {
+        // console.log('Rain triggered (Local Manager)!');
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            this.spawnRandomIcon();
+          }, i * 200);
+        }
+      }
+
+      spawnRandomIcon() {
+        if (!this.active && !this.rainOverride) {
+          // If triggered by button press (rain), we might want to allow it even if not fully active? 
+          // Usually Rain implies active.
+        }
+
+        const iconFile = PINK_MODE_ANIMATED_ICON_FILES[Math.floor(Math.random() * PINK_MODE_ANIMATED_ICON_FILES.length)];
+        let scope = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {}));
+
+        // Try to get from global cache first
+        if (scope.cinePinkModeAnimatedIconData && scope.cinePinkModeAnimatedIconData[iconFile]) {
+          try {
+            const iconData = JSON.parse(scope.cinePinkModeAnimatedIconData[iconFile]);
+            this.spawnIconWithData(iconData);
+          } catch (e) {
+            //   console.error(e);
+          }
+          return;
+        }
+
+        if (typeof fetch === 'function') {
+          fetch(iconFile)
+            .then(response => {
+              if (!response.ok) throw new Error('Network response was not ok');
+              return response.json();
+            })
+            .then(data => {
+              if (!scope.cinePinkModeAnimatedIconData) scope.cinePinkModeAnimatedIconData = {};
+              scope.cinePinkModeAnimatedIconData[iconFile] = JSON.stringify(data);
+              this.spawnIconWithData(data);
+            })
+            .catch(() => { });
+        }
+      }
+
+      spawnIconWithData(iconData) {
+        if (!iconData) return;
+        const x = Math.random() * window.innerWidth;
+        const y = -150;
+        const icon = new LocalFloatingIcon(this, x, y, iconData);
+        this.icons.push(icon);
+      }
+    }
+
+    const localPinkModeManager = new LocalPinkModeManager();
+
+
     function triggerPinkModeIconRain() {
+      // Force temporary activation for rain if not active
+      localPinkModeManager.rainOverride = true;
+      localPinkModeManager.triggerRain();
+      setTimeout(() => { localPinkModeManager.rainOverride = false; }, 5000);
+
       if (typeof icons.triggerPinkModeIconRain === 'function') {
         try {
           icons.triggerPinkModeIconRain();
@@ -1588,6 +1772,20 @@
       }
 
       triggerPinkModeIconRain();
+    }
+
+    function startPinkModeAnimatedIcons() {
+      localPinkModeManager.activate();
+      if (typeof icons.startPinkModeAnimatedIcons === 'function') {
+        icons.startPinkModeAnimatedIcons();
+      }
+    }
+
+    function stopPinkModeAnimatedIcons() {
+      localPinkModeManager.deactivate();
+      if (typeof icons.stopPinkModeAnimatedIcons === 'function') {
+        icons.stopPinkModeAnimatedIcons();
+      }
     }
 
     function startPinkModeAnimatedIconRotation() {
