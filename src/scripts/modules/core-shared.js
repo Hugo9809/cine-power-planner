@@ -1118,7 +1118,6 @@
   }
 
   const APP_VERSION = resolveAppVersion() || '0.0.0';
-  if (typeof console !== 'undefined') console.log('core-shared resolved APP_VERSION:', APP_VERSION);
 
   const shared = freezeDeep({
     APP_VERSION,

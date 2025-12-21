@@ -1,4 +1,4 @@
-const path = require('path');
+
 const { JSDOM } = require('jsdom');
 
 const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {

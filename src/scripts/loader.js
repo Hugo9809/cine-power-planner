@@ -3914,6 +3914,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/own-gear/view.js',
       'src/scripts/contacts/profile.js',
       'src/scripts/contacts/list.js',
+      'src/scripts/legacy-globals-shim.js',
       'src/scripts/app-events.js',
       'src/scripts/app-setups.js',
       'src/scripts/app-session.js',

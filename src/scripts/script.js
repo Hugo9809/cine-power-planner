@@ -83,9 +83,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
       }
     }
   } catch (error) {
+    void error;
     // console.warn('Unable to read package.json version', error);
   }
-  console.log('Script builder read APP_VERSION:', appVersion);
 
   const nodePrelude = [
     `var APP_VERSION = '${appVersion}';`,

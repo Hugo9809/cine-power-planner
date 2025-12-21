@@ -413,9 +413,7 @@
       const integrityError = new Error(`cineRuntime integrity verification failed during startup. Missing: ${missingInfo}`);
       integrityError.details = normalizedResult || null;
 
-      if (typeof console !== 'undefined') {
-        console.error('Integrity failure details:', missingInfo);
-      }
+
 
       if (warnOnFailure) {
         safeError(integrityError.message, integrityError);

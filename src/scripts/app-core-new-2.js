@@ -16901,7 +16901,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function getFavoriteValues(id) {
-      const favs = loadFavorites();
+      const favs = typeof loadFavorites === 'function' ? loadFavorites() : {};
       return Array.isArray(favs[id]) ? favs[id] : [];
     }
 

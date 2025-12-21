@@ -1,5 +1,5 @@
 
-const path = require('path');
+
 
 try {
     console.log('Attempting to require app-session.js...');

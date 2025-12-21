@@ -13,7 +13,7 @@
     // These were local variables in the bundle, but might be needed globally or by the functions below
     var viewfinderSettingsRow = document.getElementById('viewfinderSettingsRow');
     var viewfinderExtensionRow = document.getElementById('viewfinderExtensionRow');
-    var monitoringConfigurationUserChanged = false;
+
 
     // Expose them to global scope just in case other parts look for them
     globalScope.viewfinderSettingsRow = viewfinderSettingsRow;
