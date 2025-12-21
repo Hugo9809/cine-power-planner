@@ -6581,6 +6581,11 @@ const appearanceContext = {
       if (typeof window !== 'undefined' && typeof window.ensureSvgHasAriaHidden === 'function') return window.ensureSvgHasAriaHidden;
       return null;
     },
+    get ensurePinkModeLottieRuntime() {
+      if (typeof ensurePinkModeLottieRuntime === 'function') return ensurePinkModeLottieRuntime;
+      if (typeof window !== 'undefined' && typeof window.ensurePinkModeLottieRuntime === 'function') return window.ensurePinkModeLottieRuntime;
+      return null;
+    },
     get pinkModeIcons() {
       if (typeof pinkModeIcons === 'object' && pinkModeIcons) return pinkModeIcons;
       if (typeof window !== 'undefined' && window.pinkModeIcons) return window.pinkModeIcons;
@@ -6600,15 +6605,6 @@ const appearanceContext = {
           ? window.stopPinkModeAnimatedIcons
           : null) || sessionStopPinkModeAnimatedIcons;
       return typeof impl === 'function' ? impl(...args) : undefined;
-    },
-    get ensurePinkModeLottieRuntime() {
-      if (typeof window !== 'undefined' && typeof window.cineCorePinkModeSupport === 'object' && typeof window.cineCorePinkModeSupport.ensurePinkModeLottieRuntime === 'function') {
-        return window.cineCorePinkModeSupport.ensurePinkModeLottieRuntime;
-      }
-      if (typeof window !== 'undefined' && typeof window.ensurePinkModeLottieRuntime === 'function') {
-        return window.ensurePinkModeLottieRuntime;
-      }
-      return null;
     },
     triggerPinkModeIconRain: (...args) => {
       const impl =

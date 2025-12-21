@@ -1632,7 +1632,7 @@
         document.body.appendChild(this.element);
 
         ensureLocalPinkModeLottieRuntime().then(lottie => {
-          if (this.destroyed) return;
+          if (this.destroyed || !lottie) return;
           this.anim = lottie.loadAnimation({
             container: this.element,
             renderer: 'svg',

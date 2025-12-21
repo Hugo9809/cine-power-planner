@@ -1,7 +1,5 @@
 (function () {
   if (typeof window !== 'undefined') {
-    if (!window.resolvePinkModeLottieRuntime) window.resolvePinkModeLottieRuntime = function () { return null; };
-    if (!window.ensurePinkModeLottieRuntime) window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
     if (!window.ensureSvgHasAriaHidden) window.ensureSvgHasAriaHidden = function (m) { return m; };
   }
 })();
@@ -634,6 +632,8 @@ exposeCoreRuntimeConstant('ICON_GLYPHS', ICON_GLYPHS);
 exposeCoreRuntimeConstant('pinkModeIcons', pinkModeIcons);
 exposeCoreRuntimeConstant('setPinkModeIconSequence', setPinkModeIconSequence);
 exposeCoreRuntimeConstant('ensureSvgHasAriaHidden', ensureSvgHasAriaHidden);
+exposeCoreRuntimeConstant('ensurePinkModeLottieRuntime', ensurePinkModeLottieRuntime);
+exposeCoreRuntimeConstant('resolvePinkModeLottieRuntime', localResolvePinkModeLottieRuntime);
 exposeCoreRuntimeConstant('startPinkModeAnimatedIcons', startPinkModeAnimatedIcons);
 exposeCoreRuntimeConstant('stopPinkModeAnimatedIcons', stopPinkModeAnimatedIcons);
 exposeCoreRuntimeConstant('triggerPinkModeIconRain', triggerPinkModeIconRain);
