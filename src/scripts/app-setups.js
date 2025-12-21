@@ -13778,7 +13778,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
     if (editBtn) editBtn.remove();
     ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
       const sel = clone.querySelector(`#gearList${role}Monitor`);
-      if (sel) {
+      if (sel && sel.options) {
         const originalSel = originalRoot ? originalRoot.querySelector(`#gearList${role}Monitor`) : null;
         const val = originalSel ? originalSel.value : sel.value;
         Array.from(sel.options).forEach(opt => {
@@ -13792,7 +13792,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
     });
     ['Director', 'Combo', 'Dop'].forEach(role => {
       const sel = clone.querySelector(`#gearList${role}Monitor15`);
-      if (sel) {
+      if (sel && sel.options) {
         const originalSel = originalRoot ? originalRoot.querySelector(`#gearList${role}Monitor15`) : null;
         const val = originalSel ? originalSel.value : sel.value;
         Array.from(sel.options).forEach(opt => {
@@ -13805,7 +13805,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
       }
     });
     const cageSel = clone.querySelector('#gearListCage');
-    if (cageSel) {
+    if (cageSel && cageSel.options) {
       const originalSel = originalRoot ? originalRoot.querySelector('#gearListCage') : null;
       const val = originalSel ? originalSel.value : cageSel.value;
       Array.from(cageSel.options).forEach(opt => {
@@ -13817,7 +13817,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
       });
     }
     const easyrigSel = clone.querySelector('#gearListEasyrig');
-    if (easyrigSel) {
+    if (easyrigSel && easyrigSel.options) {
       const originalSel = originalRoot ? originalRoot.querySelector('#gearListEasyrig') : null;
       const val = originalSel ? originalSel.value : easyrigSel.value;
       Array.from(easyrigSel.options).forEach(opt => {
@@ -13829,7 +13829,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
       });
     }
     const sliderSel = clone.querySelector('#gearListSliderBowl');
-    if (sliderSel) {
+    if (sliderSel && sliderSel.options) {
       const originalSel = originalRoot ? originalRoot.querySelector('#gearListSliderBowl') : null;
       const val = originalSel ? originalSel.value : sliderSel.value;
       Array.from(sliderSel.options).forEach(opt => {
@@ -13842,7 +13842,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
     }
     const monitorBatterySelects = clone.querySelectorAll('select[data-monitor-battery-key]');
     monitorBatterySelects.forEach(sel => {
-      if (!sel.id) return;
+      if (!sel.id || !sel.options) return;
       const originalSel = originalRoot ? originalRoot.querySelector(`#${sel.id}`) : null;
       const val = originalSel ? originalSel.value : sel.value;
       Array.from(sel.options).forEach(opt => {
@@ -13854,7 +13854,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
       });
     });
     const eyeSel = clone.querySelector('#gearListEyeLeatherColor');
-    if (eyeSel) {
+    if (eyeSel && eyeSel.options) {
       const originalSel = originalRoot ? originalRoot.querySelector('#gearListEyeLeatherColor') : null;
       const val = originalSel ? originalSel.value : eyeSel.value;
       Array.from(eyeSel.options).forEach(opt => {
@@ -13867,7 +13867,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
     }
     [1, 2].forEach(i => {
       const colorSel = clone.querySelector(`#gearListProGaffColor${i}`);
-      if (colorSel) {
+      if (colorSel && colorSel.options) {
         const originalSel = originalRoot ? originalRoot.querySelector(`#gearListProGaffColor${i}`) : null;
         const val = originalSel ? originalSel.value : colorSel.value;
         Array.from(colorSel.options).forEach(opt => {
@@ -13879,7 +13879,7 @@ function gearListGetCurrentHtmlImpl(options = {}) {
         });
       }
       const widthSel = clone.querySelector(`#gearListProGaffWidth${i}`);
-      if (widthSel) {
+      if (widthSel && widthSel.options) {
         const originalSel = originalRoot ? originalRoot.querySelector(`#gearListProGaffWidth${i}`) : null;
         const val = originalSel ? originalSel.value : widthSel.value;
         Array.from(widthSel.options).forEach(opt => {

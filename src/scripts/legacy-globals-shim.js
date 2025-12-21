@@ -132,22 +132,5 @@
         if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined' && pm.PINK_MODE_ICON_FALLBACK_MARKUP) window.PINK_MODE_ICON_FALLBACK_MARKUP = pm.PINK_MODE_ICON_FALLBACK_MARKUP;
     }
 
-    // Unconditional Fallbacks to prevent TypeError/ReferenceError
-    if (typeof window.resolvePinkModeLottieRuntime !== 'function') {
-        window.resolvePinkModeLottieRuntime = function () { return null; };
-    }
-    if (typeof window.ensurePinkModeLottieRuntime !== 'function') {
-        window.ensurePinkModeLottieRuntime = function () { return Promise.resolve(null); };
-    }
-    if (typeof window.setPinkModeIconSequence !== 'function') {
-        window.setPinkModeIconSequence = function () { };
-    }
-    if (typeof window.loadPinkModeIconsFromFiles !== 'function') {
-        window.loadPinkModeIconsFromFiles = function () { return Promise.resolve(); };
-    }
-    if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined') {
-        window.PINK_MODE_ICON_FALLBACK_MARKUP = [];
-    }
-
     console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
 })();

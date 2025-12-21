@@ -157,7 +157,8 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
       },
       resolvePinkModeLottieRuntime() {
         const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
-        return (GLOBAL_SCOPE && (GLOBAL_SCOPE.lottie || GLOBAL_SCOPE.bodymovin)) || null;
+        const lottie = (GLOBAL_SCOPE && (GLOBAL_SCOPE.lottie || GLOBAL_SCOPE.bodymovin)) || null;
+        return ensureSafePromise(lottie);
       },
       startPinkModeAnimatedIcons: noop,
       stopPinkModeAnimatedIcons: noop,
