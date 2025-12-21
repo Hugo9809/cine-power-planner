@@ -115,7 +115,7 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
 
     function identity(value) { return value; }
 
-    return Object.freeze({
+    const api = Object.freeze({
       pinkModeIcons: fallbackIcons,
       ensureSvgHasAriaHidden: identity,
       setPinkModeIconSequence: noop,
@@ -140,6 +140,30 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
       PINK_MODE_ICON_ANIMATION_RESET_DELAY: 90,
       PINK_MODE_ICON_FALLBACK_MARKUP: '',
     });
+
+    const scope =
+      (typeof globalThis !== 'undefined' && globalThis) ||
+      (typeof window !== 'undefined' && window) ||
+      (typeof self !== 'undefined' && self) ||
+      (typeof global !== 'undefined' && global);
+
+    if (scope && typeof scope === 'object') {
+      try {
+        if (!scope.cineCorePinkModeSupport) {
+          scope.cineCorePinkModeSupport = api;
+        }
+        if (!scope.pinkModeIcons) {
+          scope.pinkModeIcons = api.pinkModeIcons;
+        }
+        if (!scope.startPinkModeAnimatedIcons) {
+          scope.startPinkModeAnimatedIcons = api.startPinkModeAnimatedIcons;
+        }
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    return api;
   }
 
   const resolverOptions = {
