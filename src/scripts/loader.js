@@ -1733,7 +1733,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         if (scope.CORE_GLOBAL_SCOPE) {
           candidates.push(scope.CORE_GLOBAL_SCOPE);
         }
-        if (scope.DEVICE_GLOBAL_SCOPE) {
+        if (typeof scope.DEVICE_GLOBAL_SCOPE !== 'undefined' && scope.DEVICE_GLOBAL_SCOPE) {
           candidates.push(scope.DEVICE_GLOBAL_SCOPE);
         }
       }

@@ -6076,6 +6076,7 @@ function populateFilterDropdown(extraTypes = []) {
   }
 
   const sortedTypes = Array.from(standardTypes).sort();
+  if (!filterSelect.options) return;
   const currentOptions = new Set(Array.from(filterSelect.options).map(o => o.value));
   const missing = sortedTypes.filter(t => !currentOptions.has(t));
 
@@ -6129,9 +6130,11 @@ function populateProjectForm(info = {}) {
     const field = projectForm.querySelector(`[name="${name}"]`);
     if (!field || values === undefined) return;
     const arr = Array.isArray(values) ? values : (values ? values.split(',').map(v => v.trim()) : []);
-    Array.from(field.options).forEach(opt => {
-      opt.selected = arr.includes(opt.value);
-    });
+    if (field.options) {
+      Array.from(field.options).forEach(opt => {
+        opt.selected = arr.includes(opt.value);
+      });
+    }
   };
 
   populateRecordingResolutionDropdown(info.recordingResolution);
@@ -6352,9 +6355,11 @@ function populateProjectForm(info = {}) {
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
     if (valSel) {
       const arr = Array.isArray(values) ? values : [];
-      Array.from(valSel.options).forEach(opt => {
-        opt.selected = arr.includes(opt.value);
-      });
+      if (valSel.options) {
+        Array.from(valSel.options).forEach(opt => {
+          opt.selected = arr.includes(opt.value);
+        });
+      }
     }
   });
 
@@ -15463,7 +15468,7 @@ function ensureGearListActions() {
         }
         if (storageId) {
           syncGearListFilterValue(storageId, target.value, target.checked);
-        } else if (sel) {
+        } else if (sel && sel.options) {
           const opt = Array.from(sel.options).find(opt => opt.value === target.value);
           if (opt) opt.selected = target.checked;
           sel.dispatchEvent(new Event('change'));
