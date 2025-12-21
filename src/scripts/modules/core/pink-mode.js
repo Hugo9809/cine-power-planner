@@ -33,20 +33,20 @@
         const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
         const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-          'src/animations/flamingo.json',
-          'src/animations/unicorn.json',
-          'src/animations/pink-mode/camera.json',
-          'src/animations/pink-mode/director-chair.json',
-          'src/animations/pink-mode/dog.json',
-          'src/animations/pink-mode/fox-2.json',
-          'src/animations/pink-mode/fox-3.json',
-          'src/animations/pink-mode/fox.json',
-          'src/animations/pink-mode/horse.json',
-          'src/animations/pink-mode/mountains.json',
-          'src/animations/pink-mode/movie-camera.json',
-          'src/animations/pink-mode/pinata.json',
-          'src/animations/pink-mode/script.json',
-          'src/animations/pink-mode/video-camera.json'
+          '/src/animations/flamingo.json',
+          '/src/animations/unicorn.json',
+          '/src/animations/pink-mode/camera.json',
+          '/src/animations/pink-mode/director-chair.json',
+          '/src/animations/pink-mode/dog.json',
+          '/src/animations/pink-mode/fox-2.json',
+          '/src/animations/pink-mode/fox-3.json',
+          '/src/animations/pink-mode/fox.json',
+          '/src/animations/pink-mode/horse.json',
+          '/src/animations/pink-mode/mountains.json',
+          '/src/animations/pink-mode/movie-camera.json',
+          '/src/animations/pink-mode/pinata.json',
+          '/src/animations/pink-mode/script.json',
+          '/src/animations/pink-mode/video-camera.json'
         ]);
 
         function ensurePinkModeLottieRuntime() {
@@ -64,7 +64,7 @@
 
           return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = 'src/vendor/lottie.min.js';
+            script.src = '/src/vendor/lottie.min.js';
             script.async = true;
             script.setAttribute('data-loader', 'pink-mode-lottie');
             script.onload = () => {
@@ -320,20 +320,20 @@
           const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
           const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-            'src/animations/flamingo.json',
-            'src/animations/unicorn.json',
-            'src/animations/pink-mode/camera.json',
-            'src/animations/pink-mode/director-chair.json',
-            'src/animations/pink-mode/dog.json',
-            'src/animations/pink-mode/fox-2.json',
-            'src/animations/pink-mode/fox-3.json',
-            'src/animations/pink-mode/fox.json',
-            'src/animations/pink-mode/horse.json',
-            'src/animations/pink-mode/mountains.json',
-            'src/animations/pink-mode/movie-camera.json',
-            'src/animations/pink-mode/pinata.json',
-            'src/animations/pink-mode/script.json',
-            'src/animations/pink-mode/video-camera.json'
+            '/src/animations/flamingo.json',
+            '/src/animations/unicorn.json',
+            '/src/animations/pink-mode/camera.json',
+            '/src/animations/pink-mode/director-chair.json',
+            '/src/animations/pink-mode/dog.json',
+            '/src/animations/pink-mode/fox-2.json',
+            '/src/animations/pink-mode/fox-3.json',
+            '/src/animations/pink-mode/fox.json',
+            '/src/animations/pink-mode/horse.json',
+            '/src/animations/pink-mode/mountains.json',
+            '/src/animations/pink-mode/movie-camera.json',
+            '/src/animations/pink-mode/pinata.json',
+            '/src/animations/pink-mode/script.json',
+            '/src/animations/pink-mode/video-camera.json'
           ]);
 
           function createSafeResolvedPromise(value) {
@@ -362,7 +362,7 @@
 
             return new Promise((resolve) => {
               const script = document.createElement('script');
-              script.src = 'src/vendor/lottie.min.js';
+              script.src = '/src/vendor/lottie.min.js';
               script.async = true;
               script.setAttribute('data-loader', 'pink-mode-lottie');
               script.onload = () => {

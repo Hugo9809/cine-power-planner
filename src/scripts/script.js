@@ -69,6 +69,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-new-1.js',
     'app-core-localization-accessors.js',
     'app-core-new-2.js',
+    'modules/settings-and-appearance.js',
     'app-events.js',
     'app-setups.js',
     'app-session.js'

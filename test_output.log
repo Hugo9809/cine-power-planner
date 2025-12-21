@@ -1,0 +1,470 @@
+
+> cine-power-planner@1.0.45 test
+> npm run check:pink-mode-icons && npm run build:auto-gear && npm run lint && npm run check-consistency && npm run test:jest tests/dom/pinkMode.test.js
+
+
+> cine-power-planner@1.0.45 check:pink-mode-icons
+> node tools/generatePinkModeAnimatedIcons.js --check
+
+Pink mode animated icon store is up to date.
+
+> cine-power-planner@1.0.45 build:auto-gear
+> tsc -p tsconfig.auto-gear.json
+
+
+> cine-power-planner@1.0.45 lint
+> eslint .
+
+
+> cine-power-planner@1.0.45 check-consistency
+> node tools/checkConsistency.js
+
+All devices have required fields.
+Service worker asset manifest is up to date.
+
+> cine-power-planner@1.0.45 test:jest
+> node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand tests/dom/pinkMode.test.js
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at log (src/scripts/legacy-globals-shim.js:135:13)
+
+  console.log
+    Script Wrapper Running
+
+      at vm (src/scripts/script.js:12:9)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    DEBUG: PINK MODE MODULE LOADED
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    DEBUG: pinkModeToggle FOUND
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.error
+    DEBUG_PINK_MODE: REAL_false_BODY_YES
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at Proxy.originalFn (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Object.error (tests/dom/pinkMode.test.js:44:72)
+
+  console.log
+    Legacy globals shim executed. Global UI references and localeSort restored.
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    Script Wrapper Running
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    mount-voltage.js: refreshTotalCurrentLabels defined
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.warn
+    Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at src/scripts/script.js:74264:13
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at src/scripts/script.js:94915:13
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.log
+    DEBUG: PINK MODE MODULE LOADED
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.warn
+    cineUi help "saveSetup" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at safeWarn (src/scripts/script.js:750:7)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120338:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "saveSetup" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at Object.safeWarn (src/scripts/script.js:750:7)
+      at safeWarn (src/scripts/script.js:1343:23)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120338:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "saveSetup" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at Object.safeWarn (src/scripts/script.js:750:7)
+      at apply (src/scripts/modules/architecture.js:726:28)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120338:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "saveSetup" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/architecture-kernel.js:585:17)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:697:25)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120338:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at safeWarn (src/scripts/script.js:750:7)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120347:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at Object.safeWarn (src/scripts/script.js:750:7)
+      at safeWarn (src/scripts/script.js:1343:23)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120347:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at safeWarnImpl (src/scripts/script.js:361:17)
+      at Object.safeWarn (src/scripts/script.js:750:7)
+      at apply (src/scripts/modules/architecture.js:726:28)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:688:36)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120347:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.warn
+    cineUi help "autoBackupBeforeDeletion" was replaced. Using the latest registration.
+
+      61 |       return undefined;
+      62 |     }
+    > 63 |     return originalFn(...args);
+         |            ^
+      64 |   };
+      65 | };
+      66 |
+
+      at console.originalFn [as warn] (tests/setup/jest.setup.js:63:12)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at invokeConsoleMethod (src/scripts/script.js:25430:17)
+      at Proxy.consoleProxy (src/scripts/script.js:25725:18)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+      at Proxy.apply (src/scripts/modules/base.js:91:28)
+      at warn (src/scripts/modules/architecture-kernel.js:585:17)
+      at Object.apply [as safeWarn] (src/scripts/modules/architecture-kernel.js:697:25)
+      at Object.baseSafeWarn [as safeWarn] (src/scripts/script.js:2409:23)
+      at warnWithBase (src/scripts/script.js:48647:23)
+      at warnDuplicate (src/scripts/script.js:48927:7)
+      at Object.register (src/scripts/script.js:48939:11)
+      at registerEventsCineUiInternal (src/scripts/script.js:120347:19)
+      at enqueueCineUiRegistration (src/scripts/script.js:139942:7)
+      at src/scripts/script.js:118222:1
+      at Object.call (src/scripts/script.js:137:11)
+      at require (tests/helpers/runtimeLoader.js:111:22)
+      at loadRuntime (tests/helpers/scriptEnvironment.js:240:13)
+      at isolateModules (tests/helpers/scriptEnvironment.js:238:8)
+      at Object.setupScriptEnvironment (tests/dom/pinkMode.test.js:7:15)
+
+  console.log
+    Registering setups with cineUi...
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    Setups registration status: true
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+  console.log
+    DEBUG: pinkModeToggle FOUND
+
+      at Proxy.cineSafeConsoleGuard (src/scripts/script.js:1541:28)
+
+FAIL dom tests/dom/pinkMode.test.js (6.83 s)
+  Pink Mode Functionality
+    ✕ Toggling Pink Mode activates class and updates storage (6500 ms)
+    ✓ Lottie runtime is accessible (231 ms)
+
+  ● Pink Mode Functionality › Toggling Pink Mode activates class and updates storage
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "REAL_true_BODY_YES"
+    Received: "REAL_false_BODY_YES"
+
+      43 |         // Check active class
+      44 |         if (window.__DEBUG_PINK_MODE !== 'REAL_true_BODY_YES') console.error('DEBUG_PINK_MODE:', window.__DEBUG_PINK_MODE);
+    > 45 |         expect(window.__DEBUG_PINK_MODE).toBe('REAL_true_BODY_YES');
+         |                                          ^
+      46 |         expect(document.body.classList.contains('pink-mode')).toBe(true);
+      47 |         expect(localStorage.getItem('cameraPowerPlanner_pinkMode')).toBe('true');
+      48 |
+
+      at Object.toBe (tests/dom/pinkMode.test.js:45:42)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 passed, 2 total
+Snapshots:   0 total
+Time:        7.028 s
+Ran all test suites matching tests/dom/pinkMode.test.js.
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 passed, 2 total
+Snapshots:   0 total
+Time:        7.03 s
+Ran all test suites matching tests/dom/pinkMode.test.js.

@@ -79,8 +79,8 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
       .replace(/#cf976a/g, '#9ec5fe'); // Light blue
 
     const PINK_MODE_TOGGLE_SEQUENCE = [
-      { className: 'icon-svg pink-mode-icon', markup: UNICORN_1_MARKUP, lottiePath: 'src/animations/horn.json' },
-      { className: 'icon-svg pink-mode-icon', markup: UNICORN_2_MARKUP, lottiePath: 'src/animations/unicorn.json' },
+      { className: 'icon-svg pink-mode-icon', markup: UNICORN_1_MARKUP, lottiePath: 'src/animations/unicorn.json' },
+      { className: 'icon-svg pink-mode-icon', markup: UNICORN_2_MARKUP, lottiePath: 'src/animations/horn.json' },
       { className: 'icon-svg pink-mode-icon', markup: UNICORN_3_MARKUP, lottiePath: 'src/animations/rainbow.json' }
     ];
 

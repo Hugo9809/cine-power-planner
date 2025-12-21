@@ -874,7 +874,7 @@
       if (iconSpan._lottieAnim) {
         try {
           iconSpan._lottieAnim.destroy();
-        } catch (e) { /* ignore */ }
+        } catch { /* ignore */ }
         iconSpan._lottieAnim = null;
       }
 
@@ -985,7 +985,7 @@
                 anim.addEventListener('data_failed', handleFailure);
                 anim.addEventListener('error', handleFailure);
 
-              } catch (err) {
+              } catch {
                 /* ignore */
               }
             })
@@ -1409,25 +1409,7 @@
       }
     }
 
-    function startPinkModeAnimatedIcons() {
-      if (typeof icons.startPinkModeAnimatedIcons === 'function') {
-        try {
-          icons.startPinkModeAnimatedIcons();
-        } catch (error) {
-          safeWarn('cineSettingsAppearance: startPinkModeAnimatedIcons failed.', error);
-        }
-      }
-    }
 
-    function stopPinkModeAnimatedIcons() {
-      if (typeof icons.stopPinkModeAnimatedIcons === 'function') {
-        try {
-          icons.stopPinkModeAnimatedIcons();
-        } catch (error) {
-          safeWarn('cineSettingsAppearance: stopPinkModeAnimatedIcons failed.', error);
-        }
-      }
-    }
 
     function applyPinkModeIcon(iconConfig, options) {
       if (!iconConfig) {
@@ -1617,20 +1599,20 @@
     // Inlined to guarantee functionality regardless of external module loading state.
 
     const PINK_MODE_ANIMATED_ICON_FILES = [
-      'src/animations/flamingo.json',
-      'src/animations/unicorn.json',
-      'src/animations/pink-mode/camera.json',
-      'src/animations/pink-mode/director-chair.json',
-      'src/animations/pink-mode/dog.json',
-      'src/animations/pink-mode/fox-2.json',
-      'src/animations/pink-mode/fox-3.json',
-      'src/animations/pink-mode/fox.json',
-      'src/animations/pink-mode/horse.json',
-      'src/animations/pink-mode/mountains.json',
-      'src/animations/pink-mode/movie-camera.json',
-      'src/animations/pink-mode/pinata.json',
-      'src/animations/pink-mode/script.json',
-      'src/animations/pink-mode/video-camera.json'
+      '/src/animations/flamingo.json',
+      '/src/animations/unicorn.json',
+      '/src/animations/pink-mode/camera.json',
+      '/src/animations/pink-mode/director-chair.json',
+      '/src/animations/pink-mode/dog.json',
+      '/src/animations/pink-mode/fox-2.json',
+      '/src/animations/pink-mode/fox-3.json',
+      '/src/animations/pink-mode/fox.json',
+      '/src/animations/pink-mode/horse.json',
+      '/src/animations/pink-mode/mountains.json',
+      '/src/animations/pink-mode/movie-camera.json',
+      '/src/animations/pink-mode/pinata.json',
+      '/src/animations/pink-mode/script.json',
+      '/src/animations/pink-mode/video-camera.json'
     ];
 
     function ensureLocalPinkModeLottieRuntime() {
@@ -1651,7 +1633,7 @@
 
       return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = 'src/vendor/lottie.min.js';
+        script.src = '/src/vendor/lottie.min.js';
         script.async = true;
         script.setAttribute('data-loader', 'pink-mode-lottie');
         script.onload = () => {
@@ -1760,7 +1742,7 @@
           try {
             const iconData = JSON.parse(scope.cinePinkModeAnimatedIconData[iconFile]);
             this.spawnIconWithData(iconData);
-          } catch (e) {
+          } catch {
             //   console.error(e);
           }
           return;

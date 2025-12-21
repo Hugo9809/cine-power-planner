@@ -60,6 +60,20 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
 
+var pinkModeToggle =
+  typeof pinkModeToggle !== 'undefined'
+    ? pinkModeToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('pinkModeToggle')
+      : null;
+
+var darkModeToggle =
+  typeof darkModeToggle !== 'undefined'
+    ? darkModeToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('darkModeToggle')
+      : null;
+
 var hotswapSelect =
   typeof hotswapSelect !== 'undefined'
     ? hotswapSelect
@@ -7371,9 +7385,13 @@ rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
-if (pinkModeToggle) {
-  pinkModeToggle.addEventListener('click', () => {
-    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (event) => {
+    if (!event || !event.target) return;
+    const toggle = event.target.closest('#pinkModeToggle');
+    if (toggle) {
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+    }
   });
 }
 
