@@ -17982,6 +17982,7 @@ function applyDynamicFieldValues(target, category, exclude = []) {
   return writableTarget;
 }
 var languageSelect = document.getElementById("languageSelect");
+var settingsTablist = document.getElementById("settingsTablist");
 var pinkModeToggle = document.getElementById("pinkModeToggle");
 var pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
 var darkModeToggle = document.getElementById("darkModeToggle");
@@ -18749,7 +18750,7 @@ if (settingsButtonIcon) {
 if (settingsDialog) {
   settingsDialog.setAttribute('data-allow-hover-help', '');
 }
-const settingsTablist = document.getElementById('settingsTablist');
+// settingsTablist defined globally above
 const settingsTabButtons = settingsTablist
   ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
   : [];

@@ -447,6 +447,27 @@
             const target = scope.cineCorePinkModeSupport || {};
             Object.assign(target, api);
             scope.cineCorePinkModeSupport = target;
+
+            // Expose legacy globals expected by app-core-new-1.js
+            const legacyGlobals = [
+              'setPinkModeIconSequence',
+              'loadPinkModeIconsFromFiles',
+              'pinkModeIcons',
+              'ensureSvgHasAriaHidden',
+              'ensurePinkModeLottieRuntime',
+              'resolvePinkModeLottieRuntime',
+              'startPinkModeAnimatedIcons',
+              'stopPinkModeAnimatedIcons',
+              'triggerPinkModeIconRain',
+              'startPinkModeIconPreload',
+              'PINK_MODE_ICON_FALLBACK_MARKUP'
+            ];
+
+            legacyGlobals.forEach(key => {
+              if (api[key] !== undefined) {
+                scope[key] = api[key];
+              }
+            });
           } catch (pinkModeSupportAssignError) {
             void pinkModeSupportAssignError;
           }
