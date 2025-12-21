@@ -22,11 +22,18 @@ describe('Pink Mode Functionality', () => {
 
         // Ensure requestAnimationFrame is available (some jsdom versions might miss it or we want to control it)
         global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+
+        // Mock global fetch for icon files
+        global.fetch = jest.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({})
+        }));
     });
 
     afterEach(() => {
         env?.cleanup();
         delete global.lottie;
+        delete global.fetch;
     });
 
     test('Toggling Pink Mode activates class and updates storage', async () => {
@@ -76,8 +83,8 @@ describe('Pink Mode Functionality', () => {
             // We expect it to FAIL currently if the user says it is broken.
             // So this assertion should verify the broken state or pass if I fixed it.
             // The user wants me to fix it. So if this fails, I have confirmed the bug.
-            // expect(icons.length).toBeGreaterThan(0);
-            console.log('TEST: Skipping rain icon assertion (known issue, focused on Activation)');
+            expect(icons.length).toBeGreaterThan(0);
+            // console.log('TEST: Skipping rain icon assertion (known issue, focused on Activation)');
         } else {
             throw new Error('triggerPinkModeIconRain is not defined on window');
         }

@@ -6,14 +6,11 @@ const ANIMATION_DIRECTORIES = [path.join('src', 'animations'), 'animated icons 3
 const PINK_MODE_SOURCE_PATH = path.join('src', 'scripts', 'modules', 'core', 'pink-mode.js');
 
 function normalizeAssetPath(relativePath) {
+  const parts = relativePath.split(path.sep).join('/').split('/');
+  const filtered = parts.filter(p => p !== '' && p !== '.');
   return (
     './' +
-    relativePath
-      .split(path.sep)
-      .join('/')
-      .split('/')
-      .map(segment => encodeURIComponent(segment))
-      .join('/')
+    filtered.map(segment => encodeURIComponent(segment)).join('/')
   );
 }
 
