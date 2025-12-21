@@ -6155,7 +6155,7 @@ if (monitorSelect) {
 }
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
 if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
-if (typeof hotswapSelect !== 'undefined' && hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
+if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
 forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
 forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });

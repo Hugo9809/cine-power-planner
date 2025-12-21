@@ -409,6 +409,12 @@
     if (!normalizedResult || normalizedResult.ok !== true) {
       const integrityError = new Error('cineRuntime integrity verification failed during startup.');
       integrityError.details = normalizedResult || null;
+      if (typeof process !== 'undefined' && process.stdout) {
+        process.stdout.write('\n\n=== INTEGRITY CHECK FAILURE ===\n');
+        process.stdout.write(JSON.stringify(normalizedResult, null, 2));
+        process.stdout.write('\n===============================\n\n');
+      }
+
       if (warnOnFailure) {
         safeError(integrityError.message, integrityError);
       }

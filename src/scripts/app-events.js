@@ -3948,10 +3948,7 @@ function toggleDeviceManagerSection() {
 }
 
 // Toggle device manager visibility
-const safeToggleDeviceBtn = (typeof toggleDeviceBtn !== 'undefined' ? toggleDeviceBtn : document.getElementById('toggleDeviceBtn'));
-if (safeToggleDeviceBtn) {
-  addSafeEventListener(safeToggleDeviceBtn, 'click', toggleDeviceManagerSection);
-}
+addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
 
 function getEventsLanguageTexts() {
   const scope =
