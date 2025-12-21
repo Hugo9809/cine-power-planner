@@ -893,7 +893,14 @@
         iconSpan.removeAttribute('data-icon-font');
         icons.ensurePinkModeLottieRuntime()
           .then((lottie) => {
-            if (!lottie || !iconSpan || !document.body.contains(button)) return; // Safety check
+            if (!lottie) {
+              // Fallback to markup if lottie runtime is missing/null
+              if (glyphConfig.markup && iconSpan) {
+                iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
+              }
+              return;
+            }
+            if (!iconSpan || !document.body.contains(button)) return; // Safety check
             try {
               iconSpan._lottieAnim = lottie.loadAnimation({
                 container: iconSpan,
