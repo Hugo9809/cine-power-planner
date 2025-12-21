@@ -1146,6 +1146,7 @@
       applySharedSetup: createWrapper('applySharedSetup'),
       applySharedSetupFromUrl: createWrapper('applySharedSetupFromUrl'),
     },
+
     __internal: freezeDeep({
       listBindings,
       inspectBinding(name, options) {

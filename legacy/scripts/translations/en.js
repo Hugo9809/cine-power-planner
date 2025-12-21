@@ -1402,8 +1402,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "lensSelectionsHint": "Selections update as you add or remove lenses.",
         "lensRemoveLabel": "Remove {lens}",
         "lensMountLabel": "Mount",
-        "riggingHeading": "Rigging",
-        "requiredScenarios": "What required scenarios do we have for this shoot?",
+        "riggingHeading": "Rigging & Mounting",
+        "requiredScenarios": "Shooting Scenarios & Environments",
         "cameraHandle": "Camera Handle:",
         "viewfinderExtension": "Viewfinder Extension:",
         "viewfinderExtensionNone": "No",
@@ -1555,6 +1555,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         "Grip": "Grip",
         "Dolly Grip": "Dolly Grip",
         "Rigging Grip": "Rigging Grip"
+      },
+      "scenarios": {
+        "Indoor": "Indoor",
+        "Outdoor": "Outdoor",
+        "Studio": "Studio",
+        "Tripod": "Tripod",
+        "Handheld": "Handheld",
+        "Easyrig": "Easyrig",
+        "Cine Saddle": "Cine Saddle",
+        "Steadybag": "Steadybag",
+        "Dolly": "Dolly",
+        "Slider": "Slider",
+        "Steadicam": "Steadicam",
+        "Gimbal": "Gimbal",
+        "Trinity": "Trinity",
+        "Rollcage": "Rollcage",
+        "Car Mount": "Car Mount",
+        "Jib": "Jib",
+        "Undersling mode": "Undersling Mode",
+        "Crane": "Crane",
+        "Remote Head": "Remote Head",
+        "Extreme cold (snow)": "Extreme Cold (Snow)",
+        "Extreme rain": "Extreme Rain",
+        "Extreme heat": "Extreme Heat",
+        "Rain Machine": "Rain Machine",
+        "Slow Motion": "Slow Motion",
+        "Battery Belt": "Battery Belt"
       },
       "gearListNoteLabel": "Note:",
       "gearListAutosaveNote": "Autosaved after each rig tweak so the offline gear manifest mirrors your latest camera build.",
@@ -1886,7 +1913,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           },
           "autoGearRulesAccess": {
             "title": "Open Automatic Gear Rules",
-            "body": "Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves."
+            "body": "Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules (including smart tripod logic that references your head/legs preference) and safety backups stored with your offline saves."
           },
           "autoGearRulesEdit": {
             "title": "Edit stock automatic gear rules",

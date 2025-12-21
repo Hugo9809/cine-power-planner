@@ -540,6 +540,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   globalScope.cineDeviceNormalization = {
     unifyDevices: unifyDevices,
     normalizeDevicesForPersistence: normalizeDevicesForPersistence,
+    markDevicesNormalized: markDevicesNormalized,
+    hasNormalizedDevicesMarker: hasNormalizedDevicesMarker,
+    fixPowerInput: fixPowerInput,
     normalizeVideoType: normalizeVideoType,
     normalizeFizConnectorType: normalizeFizConnectorType,
     normalizeViewfinderType: normalizeViewfinderType,
@@ -547,6 +550,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   };
   globalScope.unifyDevices = unifyDevices;
   globalScope.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+  globalScope.markDevicesNormalized = markDevicesNormalized;
   if (typeof module !== 'undefined' && module && module.exports) {
     module.exports = globalScope.cineDeviceNormalization;
   }

@@ -1,3 +1,4 @@
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -776,7 +777,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     projectRequirementsLogistics: {
       title: 'Log lenses, rigging and monitoring plans',
-      body: 'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.'
+      body: 'Work down the remaining sections—camera specs, lens workflow, rigging scenarios, storage/media counts, matte box, tripod and monitoring preferences. Each field feeds automatic gear rules, storage math and monitoring assignments so the generated checklist reflects the full shoot plan.'
     },
     generateGearAndRequirements: {
       title: 'Save and rebuild the outputs',
@@ -784,7 +785,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     autoGearRulesAccess: {
       title: 'Open Automatic Gear Rules',
-      body: 'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves.'
+      body: 'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules (including smart tripod logic that references your head/legs preference) and safety backups stored with your offline saves.'
     },
     autoGearRulesEdit: {
       title: 'Edit stock automatic gear rules',
@@ -4783,7 +4784,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var languageTargetObserver = null;
     if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
       try {
-        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver(function () {
+        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver(function (mutations) {
+          var hasExternalMutations = false;
+          if (mutations && typeof mutations[Symbol.iterator] === 'function') {
+            var _iterator = _createForOfIteratorHelper(mutations),
+              _step;
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                var mutation = _step.value;
+                if (mutation.target !== languageProxy && !languageProxy.contains(mutation.target)) {
+                  hasExternalMutations = true;
+                  break;
+                }
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
+          } else {
+            hasExternalMutations = true;
+          }
+          if (!hasExternalMutations) {
+            return;
+          }
           var previousCount = languageTargets.length;
           discoverLanguageTargets();
           if (!languageTargets.length) {
@@ -7288,12 +7312,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     applyHelpButtonLabel();
   }
   function shouldAutoStart() {
-    if (!storedState) {
-      var _skipPreference = readSkipStatusPreference();
-      if (_skipPreference === true) {
-        return false;
+    if (!active && storedState && storedState.activeStep && !storedState.completed && !storedState.skipped) {
+      if (typeof storedState.lastCompletedAt === 'number' && storedState.lastCompletedAt > 0) {
+        var now = getTimestamp();
+        if (now - storedState.lastCompletedAt > 60 * 60 * 1000) {
+          return false;
+        }
       }
       return true;
+    }
+    if (!storedState) {
+      console.log('DEBUG: shouldAutoStart storedState:', JSON.stringify(storedState));
+      return false;
     }
     if (storedState.completed) {
       var completedSet = new Set(Array.isArray(storedState.completedSteps) ? storedState.completedSteps : []);

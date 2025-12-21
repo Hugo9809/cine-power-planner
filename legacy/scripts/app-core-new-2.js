@@ -9169,11 +9169,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var value = typeof entry === 'string' ? entry : entry.display;
       if (!value) return null;
       var baseLabel = typeof entry === 'string' ? entry : entry.optionLabel || entry.display || '';
-      var type = typeof entry === 'string' ? 'feature' : entry.type || 'feature';
-      var typeKey = FEATURE_SEARCH_TYPE_LABEL_KEYS[type];
-      var typeLabel = typeKey ? getLocalizedText(typeKey) : '';
       var detail = _typeof(entry) === 'object' && entry !== null ? normalizeFeatureSearchDetail(entry.detail) : '';
-      var label = typeLabel ? "".concat(typeLabel, " \xB7 ").concat(baseLabel) : baseLabel || value;
+      var label = baseLabel || value;
       if (detail) {
         label = "".concat(label, " \u2014 ").concat(detail);
       }
@@ -9379,9 +9376,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       exactKey: 6
     };
     var FEATURE_SEARCH_TYPE_PRIORITIES = {
-      feature: 3,
-      action: 4,
-      device: 3,
+      feature: 8,
+      action: 10,
+      device: 6,
       help: 1
     };
     var FEATURE_SEARCH_FILTER_ALIASES = new Map([['feature', 'feature'], ['features', 'feature'], ['setting', 'feature'], ['settings', 'feature'], ['action', 'action'], ['actions', 'action'], ['command', 'action'], ['commands', 'action'], ['device', 'device'], ['devices', 'device'], ['gear', 'device'], ['equipment', 'device'], ['help', 'help'], ['doc', 'help'], ['docs', 'help'], ['guide', 'help'], ['guides', 'help'], ['support', 'help'], ['recent', 'recent'], ['recents', 'recent'], ['recently', 'recent'], ['history', 'recent'], ['histories', 'recent'], ['frequent', 'recent'], ['frequently', 'recent']]);
@@ -9567,6 +9564,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!a) return 1;
       if (!b) return -1;
       if (b.priority !== a.priority) return b.priority - a.priority;
+      if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
       }
@@ -14824,18 +14822,52 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         select.value = '';
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
-      var brandInput = document.createElement('input');
-      brandInput.type = 'text';
-      brandInput.placeholder = 'Brand';
-      brandInput.name = 'recordingMediaBrand';
-      brandInput.value = brand;
-      row.appendChild(createFieldWithLabel(brandInput, 'Brand'));
-      var notesInput = document.createElement('input');
-      notesInput.type = 'text';
-      notesInput.placeholder = 'Notes (Size, Speed, etc.)';
-      notesInput.name = 'recordingMediaNotes';
-      notesInput.value = notes;
-      row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+      var brands = typeof devices !== 'undefined' && devices.recordingMediaBrands || [];
+      var sizes = typeof devices !== 'undefined' && devices.recordingMediaSizes || [];
+      var sizeValue = notes || '';
+      var brandSelect = document.createElement('select');
+      brandSelect.className = 'recording-media-brand-select';
+      brandSelect.name = 'recordingMediaBrand';
+      addEmptyOption(brandSelect);
+      brands.forEach(function (b) {
+        var opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b;
+        brandSelect.appendChild(opt);
+      });
+      if (brand && !brands.includes(brand)) {
+        var _opt = document.createElement('option');
+        _opt.value = brand;
+        _opt.textContent = brand;
+        _opt.dataset.custom = 'true';
+        brandSelect.appendChild(_opt);
+      }
+      brandSelect.value = brand;
+      row.appendChild(createFieldWithLabel(brandSelect, 'Brand'));
+      var sizeSelect = document.createElement('select');
+      sizeSelect.className = 'recording-media-size-select';
+      sizeSelect.name = 'recordingMediaSize';
+      addEmptyOption(sizeSelect);
+      sizes.forEach(function (s) {
+        var opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sizeSelect.appendChild(opt);
+      });
+      if (sizeValue && !sizes.includes(sizeValue)) {
+        var _opt2 = document.createElement('option');
+        _opt2.value = sizeValue;
+        _opt2.textContent = sizeValue;
+        _opt2.dataset.custom = 'true';
+        sizeSelect.appendChild(_opt2);
+      }
+      sizeSelect.value = sizeValue;
+      row.appendChild(createFieldWithLabel(sizeSelect, 'Size'));
+      var extraNotesInput = document.createElement('input');
+      extraNotesInput.type = 'text';
+      extraNotesInput.placeholder = 'Extra details...';
+      extraNotesInput.className = 'recording-media-extra-notes';
+      row.appendChild(createFieldWithLabel(extraNotesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
       configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
@@ -14881,18 +14913,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     writeCoreScopeValue('setRecordingMedia', setRecordingMediaLocal);
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll = row.querySelectorAll('select, input'),
-          _row$querySelectorAll2 = _slicedToArray(_row$querySelectorAll, 3),
-          sel = _row$querySelectorAll2[0],
-          brandInput = _row$querySelectorAll2[1],
-          notesInput = _row$querySelectorAll2[2];
+        var typeSel = row.querySelector('.recording-media-select');
+        var brandSel = row.querySelector('.recording-media-brand-select');
+        var sizeSel = row.querySelector('.recording-media-size-select');
+        var extraInput = row.querySelector('.recording-media-extra-notes');
+        if (!typeSel) return null;
+        var type = typeSel.value;
+        var brand = brandSel ? brandSel.value : '';
+        var size = sizeSel ? sizeSel.value : '';
+        var extra = extraInput ? extraInput.value : '';
+        var finalNotes = size;
+        if (extra) {
+          finalNotes = finalNotes ? finalNotes + ' ' + extra : extra;
+        }
         return {
-          type: sel.value,
-          brand: brandInput.value,
-          notes: notesInput.value
+          type: type,
+          brand: brand,
+          notes: finalNotes
         };
       }).filter(function (m) {
-        return m.type && m.type !== 'None';
+        return m && m.type && m.type !== 'None';
       });
     }
     writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
@@ -15062,11 +15102,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll3 = row.querySelectorAll('select, input'),
-          _row$querySelectorAll4 = _slicedToArray(_row$querySelectorAll3, 3),
-          typeSel = _row$querySelectorAll4[0],
-          mountSel = _row$querySelectorAll4[1],
-          notesInput = _row$querySelectorAll4[2];
+        var _row$querySelectorAll = row.querySelectorAll('select, input'),
+          _row$querySelectorAll2 = _slicedToArray(_row$querySelectorAll, 3),
+          typeSel = _row$querySelectorAll2[0],
+          mountSel = _row$querySelectorAll2[1],
+          notesInput = _row$querySelectorAll2[2];
         return {
           type: typeSel.value,
           mount: mountSel.value,
@@ -15151,10 +15191,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         connSelect.appendChild(opt);
       });
       if (connector && !viewfinderConnectorOptions.includes(connector)) {
-        var _opt = document.createElement('option');
-        _opt.value = connector;
-        _opt.textContent = connector;
-        connSelect.appendChild(_opt);
+        var _opt3 = document.createElement('option');
+        _opt3.value = connector;
+        _opt3.textContent = connector;
+        connSelect.appendChild(_opt3);
       }
       connSelect.value = connector;
       row.appendChild(createFieldWithLabel(connSelect, 'Connector'));
@@ -15210,12 +15250,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getViewfinders() {
       return Array.from(viewfinderContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll5 = row.querySelectorAll('select, input'),
-          _row$querySelectorAll6 = _slicedToArray(_row$querySelectorAll5, 4),
-          typeSelect = _row$querySelectorAll6[0],
-          resInput = _row$querySelectorAll6[1],
-          connSelect = _row$querySelectorAll6[2],
-          notesInput = _row$querySelectorAll6[3];
+        var _row$querySelectorAll3 = row.querySelectorAll('select, input'),
+          _row$querySelectorAll4 = _slicedToArray(_row$querySelectorAll3, 4),
+          typeSelect = _row$querySelectorAll4[0],
+          resInput = _row$querySelectorAll4[1],
+          connSelect = _row$querySelectorAll4[2],
+          notesInput = _row$querySelectorAll4[3];
         return {
           type: typeSelect.value,
           resolution: resInput.value,
@@ -15363,10 +15403,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     writeCoreScopeValue('setLensMounts', setLensMounts);
     function getLensMounts() {
       return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll7 = row.querySelectorAll('select'),
-          _row$querySelectorAll8 = _slicedToArray(_row$querySelectorAll7, 2),
-          typeSel = _row$querySelectorAll8[0],
-          mountSel = _row$querySelectorAll8[1];
+        var _row$querySelectorAll5 = row.querySelectorAll('select'),
+          _row$querySelectorAll6 = _slicedToArray(_row$querySelectorAll5, 2),
+          typeSel = _row$querySelectorAll6[0],
+          mountSel = _row$querySelectorAll6[1];
         return {
           type: typeSel.value,
           mount: mountSel.value
@@ -15560,10 +15600,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         voltSelect.appendChild(opt);
       });
       if (voltage && !powerDistVoltageOptions.includes(voltage)) {
-        var _opt2 = document.createElement('option');
-        _opt2.value = voltage;
-        _opt2.textContent = voltage;
-        voltSelect.appendChild(_opt2);
+        var _opt4 = document.createElement('option');
+        _opt4.value = voltage;
+        _opt4.textContent = voltage;
+        voltSelect.appendChild(_opt4);
       }
       voltSelect.value = voltage;
       row.appendChild(createFieldWithLabel(voltSelect, 'Voltage'));
@@ -15578,10 +15618,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         currSelect.appendChild(opt);
       });
       if (current && !powerDistCurrentOptions.includes(current)) {
-        var _opt3 = document.createElement('option');
-        _opt3.value = current;
-        _opt3.textContent = current;
-        currSelect.appendChild(_opt3);
+        var _opt5 = document.createElement('option');
+        _opt5.value = current;
+        _opt5.textContent = current;
+        currSelect.appendChild(_opt5);
       }
       currSelect.value = current;
       row.appendChild(createFieldWithLabel(currSelect, 'Current'));
@@ -15646,13 +15686,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getPowerDistribution() {
       return Array.from(powerDistContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll9 = row.querySelectorAll('select, input'),
-          _row$querySelectorAll0 = _slicedToArray(_row$querySelectorAll9, 5),
-          typeSel = _row$querySelectorAll0[0],
-          voltSel = _row$querySelectorAll0[1],
-          currSel = _row$querySelectorAll0[2],
-          wattInput = _row$querySelectorAll0[3],
-          notesInput = _row$querySelectorAll0[4];
+        var _row$querySelectorAll7 = row.querySelectorAll('select, input'),
+          _row$querySelectorAll8 = _slicedToArray(_row$querySelectorAll7, 5),
+          typeSel = _row$querySelectorAll8[0],
+          voltSel = _row$querySelectorAll8[1],
+          currSel = _row$querySelectorAll8[2],
+          wattInput = _row$querySelectorAll8[3],
+          notesInput = _row$querySelectorAll8[4];
         return {
           type: typeSel.value,
           voltage: voltSel.value,
@@ -15766,10 +15806,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getTimecodes() {
       return Array.from(timecodeContainer.querySelectorAll('.form-row')).map(function (row) {
-        var _row$querySelectorAll1 = row.querySelectorAll('select, input'),
-          _row$querySelectorAll10 = _slicedToArray(_row$querySelectorAll1, 2),
-          typeSel = _row$querySelectorAll10[0],
-          notesInput = _row$querySelectorAll10[1];
+        var _row$querySelectorAll9 = row.querySelectorAll('select, input'),
+          _row$querySelectorAll0 = _slicedToArray(_row$querySelectorAll9, 2),
+          typeSel = _row$querySelectorAll0[0],
+          notesInput = _row$querySelectorAll0[1];
         return {
           type: typeSel.value,
           notes: notesInput.value
@@ -16098,6 +16138,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!selectElem) return;
       var previousValue = typeof selectElem.value === 'string' ? selectElem.value : '';
       var hadSelection = selectElem.selectedIndex !== -1;
+      if (selectElem.dataset && selectElem.dataset.pendingValue) {
+        previousValue = selectElem.dataset.pendingValue;
+        hadSelection = true;
+      }
       var opts = optionsObj && _typeof(optionsObj) === "object" ? optionsObj : {};
       selectElem.innerHTML = "";
       if (includeNone) {
@@ -16124,9 +16168,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function populateMonitorSelect() {
       var monitors = devices.monitors || {};
-      if (typeof console !== 'undefined') {
-        console.log('populateMonitorSelect: count=', Object.keys(monitors).length);
-      }
       var filtered = Object.fromEntries(Object.entries(monitors));
       populateSelect(monitorSelect, filtered, true);
     }
@@ -16537,12 +16578,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     populateMonitorSelect();
     populateSelect(videoSelect, devices.video || {}, true);
     updateCageSelectOptions();
-    motorSelects.forEach(function (sel) {
-      return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
-    });
-    controllerSelects.forEach(function (sel) {
-      return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
-    });
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(function (sel) {
+        return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
+      });
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(function (sel) {
+        return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
+      });
+    }
     populateSelect(distanceSelect, devices.fiz && devices.fiz.distance || {}, true);
     populateSelect(batterySelect, devices.batteries || {}, true);
     populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
@@ -16551,12 +16596,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect].forEach(function (sel) {
       return attachSelectSearch(sel);
     });
-    motorSelects.forEach(function (sel) {
-      return attachSelectSearch(sel);
-    });
-    controllerSelects.forEach(function (sel) {
-      return attachSelectSearch(sel);
-    });
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(function (sel) {
+        return attachSelectSearch(sel);
+      });
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(function (sel) {
+        return attachSelectSearch(sel);
+      });
+    }
     if (cameraSelect) {
       cameraSelect.addEventListener('change', function () {
         updateRecordingMediaOptions();
@@ -16622,12 +16671,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         sel.selectedIndex = 0;
       }
     });
-    motorSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
-    controllerSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(function (sel) {
+        if (sel.options.length) sel.value = "None";
+      });
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(function (sel) {
+        if (sel.options.length) sel.value = "None";
+      });
+    }
     function updateCalculations() {
       var cineResultsModule = (typeof cineResults === "undefined" ? "undefined" : _typeof(cineResults)) === 'object' ? cineResults : null;
       var runModuleUpdate = cineResultsModule && typeof cineResultsModule.updateCalculations === 'function' ? cineResultsModule.updateCalculations : null;
@@ -17070,12 +17123,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video || {}, true);
       updateCageSelectOptions();
-      motorSelects.forEach(function (sel) {
-        return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
-      });
-      controllerSelects.forEach(function (sel) {
-        return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
-      });
+      if (Array.isArray(motorSelects)) {
+        motorSelects.forEach(function (sel) {
+          return populateSelect(sel, devices.fiz && devices.fiz.motors || {}, true);
+        });
+      }
+      if (Array.isArray(controllerSelects)) {
+        controllerSelects.forEach(function (sel) {
+          return populateSelect(sel, devices.fiz && devices.fiz.controllers || {}, true);
+        });
+      }
       populateSelect(distanceSelect, devices.fiz && devices.fiz.distance || {}, true);
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();

@@ -658,9 +658,9 @@
       }],
       "weight_g": 4300,
       "recordingCodecs": ["X-OCN XT/ST/LT", "Apple ProRes 4444 XQ/4444/422 HQ (to 4K)"],
-      "sensorModes": ["6K 3:2 Open Gate", "6K 17:9", "S35 4K"],
-      "resolutions": ["6048×4032 (6K 3:2)", "4096×2160 (DCI 4K)", "3840×2160 (UHD)", "1920×1080 (HD)"],
-      "frameRates": ["8.6K full-frame: up to 60 fps", "5.8K Super 35: up to 90 fps", "4K 17:9: up to 120 fps", "2K 17:9: up to 120 fps"]
+      "sensorModes": ["8.6K 3:2 Open Gate (8K Sensor)", "8.2K 17:9 (8K Sensor)", "7.6K 16:9 (8K Sensor)", "5.8K 6:5 Anamorphic (8K Sensor)", "5.8K 17:9 (8K Sensor)", "6K 3:2 Open Gate (6K Sensor)", "6K 17:9 (6K Sensor)", "6K 2.39:1 (6K Sensor)", "5.7K 16:9 (6K Sensor)", "4K 4:3 Anamorphic (6K Sensor)", "4K 6:5 Anamorphic (6K Sensor)", "4K 17:9 (6K Sensor)"],
+      "resolutions": ["8640x5760 (8.6K 3:2)", "8192x4320 (8.2K 17:9)", "7680x4320 (7.6K 16:9)", "6048x4032 (6K 3:2)", "5792x4854 (5.8K 6:5)", "5652x3190 (5.7K 16:9)", "4096x3024 (4K 4:3)", "4096x2160 (DCI 4K)", "3840x2160 (UHD)", "1920x1080 (HD)"],
+      "frameRates": ["8.6K 3:2: up to 30 fps", "8.2K 17:9: up to 60 fps", "5.8K S35 (8K Sensor): up to 90 fps", "6K 3:2: up to 60 fps", "6K 17:9: up to 72 fps", "6K 2.39:1: up to 90 fps", "4K 17:9 (6K Sensor): up to 110 fps"]
     },
     "Sony Venice": {
       "powerDrawWatts": 60,
@@ -874,9 +874,9 @@
       }],
       "weight_g": 2400,
       "recordingCodecs": ["X-OCN LT (16-bit)", "XAVC H Intra HQ", "XAVC H Intra SQ", "XAVC H Long", "XAVC Intra", "XAVC Long"],
-      "sensorModes": ["Full Frame 8.6K 3:2 (Open Gate)", "Full Frame 8.2K 17:9", "Super 35 5.8K"],
-      "resolutions": ["8632x4856", "8192x4320", "5792x3056", "4096x2160", "3840x2160", "1920x1080"],
-      "frameRates": ["8.6K full-frame: up to 60 fps", "6K 17:9: up to 60 fps", "6K 2.39: up to 100 fps", "4K 17:9: up to 120 fps"]
+      "sensorModes": ["Full Frame 8.6K 16:9", "Full Frame 8.6K 17:9", "Full Frame Crop 6K 16:9", "Full Frame Crop 6K 17:9", "Super 35 5.8K 16:9", "Super 35 5.8K 17:9", "Super 35 4K 17:9", "Super 35 4K 16:9"],
+      "resolutions": ["8632x4856", "8632x4552", "8192x4320", "6052x3404", "6052x3192", "5760x3240", "5760x3036", "4096x2160", "3840x2160", "1920x1080"],
+      "frameRates": ["8.6K Full Frame: up to 30 fps", "6K Full Frame Crop: up to 60 fps", "5.8K Super 35: up to 60 fps", "4K Super 35 Crop: up to 120 fps"]
     },
     "Sony FX3": {
       "powerDrawWatts": 9,

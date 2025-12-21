@@ -830,57 +830,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var persistenceAPI = {
     bindings: {
-      saveSession: function saveSession() {
-        return GLOBAL_SCOPE.saveCurrentSession && GLOBAL_SCOPE.saveCurrentSession.apply(this, arguments);
-      },
-      autoSaveSetup: function autoSaveSetup() {
-        return GLOBAL_SCOPE.autoSaveCurrentSetup && GLOBAL_SCOPE.autoSaveCurrentSetup.apply(this, arguments);
-      },
-      saveGearList: function saveGearList() {
-        return GLOBAL_SCOPE.saveCurrentGearList && GLOBAL_SCOPE.saveCurrentGearList.apply(this, arguments);
-      },
-      restoreSessionState: function restoreSessionState() {
-        return GLOBAL_SCOPE.restoreSessionState && GLOBAL_SCOPE.restoreSessionState.apply(this, arguments);
-      },
-      collectFullBackupData: function collectFullBackupData() {
-        return GLOBAL_SCOPE.collectFullBackupData && GLOBAL_SCOPE.collectFullBackupData.apply(this, arguments);
-      },
-      createSettingsBackup: function createSettingsBackup() {
-        return GLOBAL_SCOPE.createSettingsBackup && GLOBAL_SCOPE.createSettingsBackup.apply(this, arguments);
-      },
-      captureStorageSnapshot: function captureStorageSnapshot() {
-        return GLOBAL_SCOPE.captureStorageSnapshot && GLOBAL_SCOPE.captureStorageSnapshot.apply(this, arguments);
-      },
-      sanitizeBackupPayload: function sanitizeBackupPayload() {
-        return GLOBAL_SCOPE.sanitizeBackupPayload && GLOBAL_SCOPE.sanitizeBackupPayload.apply(this, arguments);
-      },
-      autoBackup: function autoBackup() {
-        return GLOBAL_SCOPE.autoBackup && GLOBAL_SCOPE.autoBackup.apply(this, arguments);
-      },
-      formatFullBackupFilename: function formatFullBackupFilename() {
-        return GLOBAL_SCOPE.formatFullBackupFilename && GLOBAL_SCOPE.formatFullBackupFilename.apply(this, arguments);
-      },
-      downloadPayload: function downloadPayload() {
-        return GLOBAL_SCOPE.downloadPayload && GLOBAL_SCOPE.downloadPayload.apply(this, arguments);
-      },
-      recordFullBackupHistoryEntry: function recordFullBackupHistoryEntry() {
-        return GLOBAL_SCOPE.recordFullBackupHistoryEntry && GLOBAL_SCOPE.recordFullBackupHistoryEntry.apply(this, arguments);
-      },
-      encodeSharedSetup: function encodeSharedSetup() {
-        return GLOBAL_SCOPE.encodeSharedSetup && GLOBAL_SCOPE.encodeSharedSetup.apply(this, arguments);
-      },
-      decodeSharedSetup: function decodeSharedSetup() {
-        return GLOBAL_SCOPE.decodeSharedSetup && GLOBAL_SCOPE.decodeSharedSetup.apply(this, arguments);
-      },
-      applySharedSetup: function applySharedSetup() {
-        return GLOBAL_SCOPE.applySharedSetup && GLOBAL_SCOPE.applySharedSetup.apply(this, arguments);
-      },
-      applySharedSetupFromUrl: function applySharedSetupFromUrl() {
-        return GLOBAL_SCOPE.applySharedSetupFromUrl && GLOBAL_SCOPE.applySharedSetupFromUrl.apply(this, arguments);
-      },
-      downloadProject: function downloadProject() {
-        return GLOBAL_SCOPE.downloadProject && GLOBAL_SCOPE.downloadProject.apply(this, arguments);
-      }
+      saveSession: createWrapper('saveCurrentSession', 'saveSession'),
+      autoSaveSetup: createWrapper('autoSaveCurrentSetup', 'autoSaveSetup'),
+      saveGearList: createWrapper('saveCurrentGearList', 'saveGearList'),
+      restoreSessionState: createWrapper('restoreSessionState'),
+      collectFullBackupData: createWrapper('collectFullBackupData'),
+      createSettingsBackup: createWrapper('createSettingsBackup'),
+      captureStorageSnapshot: createWrapper('captureStorageSnapshot'),
+      sanitizeBackupPayload: createWrapper('sanitizeBackupPayload'),
+      autoBackup: createWrapper('autoBackup'),
+      formatFullBackupFilename: createWrapper('formatFullBackupFilename'),
+      downloadPayload: createWrapper('downloadBackupPayload', 'downloadPayload'),
+      recordFullBackupHistoryEntry: createWrapper('recordFullBackupHistoryEntry'),
+      encodeSharedSetup: createWrapper('encodeSharedSetup'),
+      decodeSharedSetup: createWrapper('decodeSharedSetup'),
+      applySharedSetup: createWrapper('applySharedSetup'),
+      applySharedSetupFromUrl: createWrapper('applySharedSetupFromUrl'),
+      downloadProject: createWrapper('downloadSharedProject', 'downloadProject'),
+      saveProject: createWrapper('saveProject'),
+      proceed: createWrapper('handleRestoreRehearsalProceed', 'proceed'),
+      abort: createWrapper('handleRestoreRehearsalAbort', 'abort')
     },
     storage: {
       loadDeviceData: createWrapper('loadDeviceData'),

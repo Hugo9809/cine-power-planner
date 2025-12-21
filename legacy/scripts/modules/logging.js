@@ -1572,7 +1572,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!entry) {
       return;
     }
-    logHistory.push(entry);
+    try {
+      logHistory.push(entry);
+    } catch (pushError) {
+      void pushError;
+      return;
+    }
     applyLevelCounterDelta(retainedLevelCounters, entry.level, 1);
   }
   function appendEntry(entry) {
@@ -1637,6 +1642,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       result[index] = value[index];
     }
     return result;
+  }
+  function safeArrayPush(target, value) {
+    if (!Array.isArray(target)) {
+      return false;
+    }
+    try {
+      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+        return false;
+      }
+      target.push(value);
+      return true;
+    } catch (error) {
+      void error;
+    }
+    return false;
   }
   function getConsoleLevelForMethod(method) {
     if (method === 'error') {
@@ -1723,12 +1743,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var value = rawArgs[index];
       var valueType = _typeof(value);
       if (valueType === 'string') {
-        messageParts.push(value);
+        safeArrayPush(messageParts, value);
       } else if (valueType === 'number' || valueType === 'boolean') {
-        messageParts.push(String(value));
+        safeArrayPush(messageParts, String(value));
       } else if (valueType === 'symbol') {
         try {
-          messageParts.push(value.toString());
+          safeArrayPush(messageParts, value.toString());
         } catch (symbolError) {
           void symbolError;
         }
@@ -1846,7 +1866,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           entry.stackTruncated = true;
         }
       }
-      errorEntries.push(entry);
+      safeArrayPush(errorEntries, entry);
     }
     var contextMeta = {
       channel: 'console',
@@ -2255,17 +2275,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var prefix = prefixParts.join(' ');
       var consoleArgs = ["".concat(prefix, " ").concat(entry.message)];
       if (detail !== undefined) {
-        consoleArgs.push(detail);
+        safeArrayPush(consoleArgs, detail);
       } else if (entry.detail !== null) {
-        consoleArgs.push(entry.detail);
+        safeArrayPush(consoleArgs, entry.detail);
       }
       if (entry.meta !== null) {
-        consoleArgs.push({
+        safeArrayPush(consoleArgs, {
           meta: entry.meta
         });
       }
       if (origin) {
-        consoleArgs.push({
+        safeArrayPush(consoleArgs, {
           origin: origin
         });
       }

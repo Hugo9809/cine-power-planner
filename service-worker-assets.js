@@ -299,6 +299,7 @@
   "./src/scripts/globals-bootstrap.js",
   "./src/scripts/globals-legacy-shim.js",
   "./src/scripts/globalthis-polyfill.js",
+  "./src/scripts/legacy-shims.js",
   "./src/scripts/legal-topbar.js",
   "./src/scripts/loader.js",
   "./src/scripts/loading-indicator-bootstrap.js",

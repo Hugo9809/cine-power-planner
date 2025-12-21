@@ -1,11 +1,11 @@
 var _excluded = ["parsed", "timestamp"];
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
-function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
@@ -27,6 +27,10 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 var FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK = 'Force reload requires an internet connection. Try again once you are back online.';
+var hotswapSelect = typeof hotswapSelect !== 'undefined' ? hotswapSelect : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('batteryHotswapSelect') : null;
+if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hotswapSelect === 'undefined') {
+  globalThis.hotswapSelect = hotswapSelect;
+}
 var actionMap = new Map();
 var featureMap = new Map();
 var deviceMap = new Map();
@@ -233,8 +237,7 @@ function applySetLanguage(languageCode) {
     return false;
   }
   try {
-    setLanguageFn(languageCode);
-    return true;
+    return setLanguageFn(languageCode);
   } catch (setLanguageError) {
     if (!(options !== null && options !== void 0 && options.silent) && typeof console !== 'undefined' && typeof console.error === 'function') {
       console.error('applySetLanguage: setLanguage execution failed', setLanguageError);
@@ -309,8 +312,8 @@ var slowMotionAspectRatioSelect;
 var slowMotionRecordingFrameRateInput;
 var slowMotionRecordingFrameRateHint;
 var slowMotionRecordingFrameRateOptionsList;
-var SESSION_DEEP_CLONE = CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function' ? CORE_GLOBAL_SCOPE.__cineDeepClone : sessionCreateResilientDeepClone(getSessionCloneScope());
-if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+var SESSION_DEEP_CLONE = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function' ? CORE_GLOBAL_SCOPE.__cineDeepClone : sessionCreateResilientDeepClone(getSessionCloneScope());
+if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
   try {
     CORE_GLOBAL_SCOPE.__cineDeepClone = SESSION_DEEP_CLONE;
   } catch (sessionDeepCloneError) {
@@ -3926,6 +3929,13 @@ function setSelectValue(select, value) {
   var normalized = value === null ? '' : value;
   select.value = normalized;
   if (select.value !== normalized) {
+    if (normalized !== '') {
+      select.dataset.pendingValue = normalized;
+    } else {
+      if (select.dataset.pendingValue) {
+        delete select.dataset.pendingValue;
+      }
+    }
     var options = Array.from(select.options || []);
     var noneOption = options.find(function (opt) {
       return opt.value === 'None';
@@ -3942,6 +3952,10 @@ function setSelectValue(select, value) {
       select.value = 'None';
     } else {
       select.selectedIndex = -1;
+    }
+  } else {
+    if (select.dataset.pendingValue) {
+      delete select.dataset.pendingValue;
     }
   }
   if (typeof updateFavoriteButton === 'function') {
@@ -5104,8 +5118,10 @@ if (monitoringConfigurationSelect) {
 if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
 }
-if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
-if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+if (typeof updateBatteryOptions === 'function') {
+  if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
+  if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+}
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 forEachTrackedSelect(motorSelects, function (sel) {
   if (sel) sel.addEventListener('change', updateCalculations);
@@ -6462,157 +6478,178 @@ if (settingsButton && settingsDialog) {
       settingsDialog.setAttribute('hidden', '');
     });
   }
-  var applySettingsAndCloseDialog = function applySettingsAndCloseDialog() {
-    if (!settingsDialog) {
-      return;
-    }
-    if (settingsLanguage) {
-      applySetLanguage(settingsLanguage.value);
-      if (typeof populateUserButtonDropdowns === 'function') {
-        try {
-          populateUserButtonDropdowns();
-        } catch (userButtonError) {
-          console.warn('Failed to refresh user button selectors after language change', userButtonError);
+  var applySettingsAndCloseDialog = function () {
+    var _ref7 = _asyncToGenerator(_regenerator().m(function _callee() {
+      var enabled, _enabled, _enabled2, autoGearShowBackupsToggle, color, cameraPalette, normalizedPalette, colorEntries, selectedTemperatureUnit, size, family, file, reader;
+      return _regenerator().w(function (_context) {
+        while (1) switch (_context.n) {
+          case 0:
+            if (settingsDialog) {
+              _context.n = 1;
+              break;
+            }
+            return _context.a(2);
+          case 1:
+            if (!settingsLanguage) {
+              _context.n = 3;
+              break;
+            }
+            _context.n = 2;
+            return applySetLanguage(settingsLanguage.value);
+          case 2:
+            if (typeof populateUserButtonDropdowns === 'function') {
+              try {
+                populateUserButtonDropdowns();
+              } catch (userButtonError) {
+                console.warn('Failed to refresh user button selectors after language change', userButtonError);
+              }
+            }
+          case 3:
+            if (settingsDarkMode) {
+              setThemePreference(settingsDarkMode.checked, {
+                persist: true
+              });
+            }
+            if (settingsPinkMode) {
+              persistPinkModePreference(settingsPinkMode.checked);
+            }
+            if (settingsHighContrast) {
+              enabled = settingsHighContrast.checked;
+              applyHighContrast(enabled);
+              try {
+                localStorage.setItem('highContrast', enabled);
+              } catch (e) {
+                console.warn('Could not save high contrast preference', e);
+              }
+            }
+            if (settingsReduceMotion) {
+              _enabled = settingsReduceMotion.checked;
+              applyReduceMotion(_enabled);
+              try {
+                localStorage.setItem('reduceMotion', _enabled);
+              } catch (e) {
+                console.warn('Could not save reduce motion preference', e);
+              }
+            }
+            if (settingsRelaxedSpacing) {
+              _enabled2 = settingsRelaxedSpacing.checked;
+              applyRelaxedSpacing(_enabled2);
+              try {
+                localStorage.setItem('relaxedSpacing', _enabled2);
+              } catch (e) {
+                console.warn('Could not save relaxed spacing preference', e);
+              }
+            }
+            if (settingsShowAutoBackups) {
+              applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+            }
+            autoGearShowBackupsToggle = typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('autoGearShowBackups') : null;
+            if (autoGearShowBackupsToggle) {
+              callSessionCoreFunction('setAutoGearBackupsVisible', [Boolean(autoGearShowBackupsToggle.checked)]);
+            }
+            if (accentColorInput) {
+              color = accentColorInput.value;
+              if (!document.body.classList.contains('pink-mode')) {
+                applyAccentColor(color);
+              }
+              try {
+                if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
+                  localStorage.removeItem('accentColor');
+                } else {
+                  localStorage.setItem('accentColor', color);
+                }
+              } catch (e) {
+                console.warn('Could not save accent color', e);
+              }
+              accentColor = color;
+              prevAccentColor = color;
+              if (typeof updateAccentColorResetButtonState === 'function') {
+                updateAccentColorResetButtonState();
+              }
+            }
+            cameraPalette = collectCameraColorInputValues();
+            normalizedPalette = applyCameraLetterColors(cameraPalette);
+            colorEntries = getCameraColorInputElements();
+            colorEntries.forEach(function (entry) {
+              var normalized = normalizedPalette[entry.letter];
+              if (normalized) {
+                entry.element.value = normalized;
+              }
+            });
+            if (settingsTemperatureUnit) {
+              selectedTemperatureUnit = typeof settingsTemperatureUnit.value === 'string' ? settingsTemperatureUnit.value : 'celsius';
+              applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
+              rememberSettingsTemperatureUnitBaseline();
+            }
+            if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+              if (typeof applyFocusScalePreference === 'function') {
+                applyFocusScalePreference(settingsFocusScale.value);
+              }
+              rememberSettingsFocusScaleBaseline();
+              sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
+            }
+            applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
+              persist: true,
+              triggerUpdate: true
+            });
+            rememberSettingsMountVoltagesBaseline();
+            if (settingsFontSize) {
+              size = settingsFontSize.value;
+              applyFontSizeSafe(size);
+              try {
+                localStorage.setItem('fontSize', size);
+              } catch (e) {
+                console.warn('Could not save font size', e);
+              }
+              fontSize = size;
+            }
+            if (settingsFontFamily) {
+              family = settingsFontFamily.value;
+              applyFontFamilySafe(family);
+              try {
+                localStorage.setItem('fontFamily', family);
+              } catch (e) {
+                console.warn('Could not save font family', e);
+              }
+              fontFamily = family;
+            }
+            if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
+              file = settingsLogo.files[0];
+              if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+                reader = new FileReader();
+                reader.onload = function () {
+                  try {
+                    localStorage.setItem('customLogo', reader.result);
+                  } catch (e) {
+                    console.warn('Could not save custom logo', e);
+                  }
+                  renderSettingsLogoPreview(reader.result);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+                if (settingsLogo) settingsLogo.value = '';
+                safeLoadStoredLogoPreview();
+              }
+            }
+            closeAutoGearEditor();
+            collapseBackupDiffSection();
+            rememberSettingsPinkModeBaseline();
+            rememberSettingsTemperatureUnitBaseline();
+            rememberSettingsFocusScaleBaseline();
+            rememberSettingsShowAutoBackupsBaseline();
+            rememberSettingsMountVoltagesBaseline();
+            closeDialog(settingsDialog);
+            settingsDialog.setAttribute('hidden', '');
+          case 4:
+            return _context.a(2);
         }
-      }
-    }
-    if (settingsDarkMode) {
-      setThemePreference(settingsDarkMode.checked, {
-        persist: true
-      });
-    }
-    if (settingsPinkMode) {
-      persistPinkModePreference(settingsPinkMode.checked);
-    }
-    if (settingsHighContrast) {
-      var enabled = settingsHighContrast.checked;
-      applyHighContrast(enabled);
-      try {
-        localStorage.setItem('highContrast', enabled);
-      } catch (e) {
-        console.warn('Could not save high contrast preference', e);
-      }
-    }
-    if (settingsReduceMotion) {
-      var _enabled = settingsReduceMotion.checked;
-      applyReduceMotion(_enabled);
-      try {
-        localStorage.setItem('reduceMotion', _enabled);
-      } catch (e) {
-        console.warn('Could not save reduce motion preference', e);
-      }
-    }
-    if (settingsRelaxedSpacing) {
-      var _enabled2 = settingsRelaxedSpacing.checked;
-      applyRelaxedSpacing(_enabled2);
-      try {
-        localStorage.setItem('relaxedSpacing', _enabled2);
-      } catch (e) {
-        console.warn('Could not save relaxed spacing preference', e);
-      }
-    }
-    if (settingsShowAutoBackups) {
-      applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
-    }
-    var autoGearShowBackupsToggle = typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('autoGearShowBackups') : null;
-    if (autoGearShowBackupsToggle) {
-      callSessionCoreFunction('setAutoGearBackupsVisible', [Boolean(autoGearShowBackupsToggle.checked)]);
-    }
-    if (accentColorInput) {
-      var color = accentColorInput.value;
-      if (!document.body.classList.contains('pink-mode')) {
-        applyAccentColor(color);
-      }
-      try {
-        if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
-          localStorage.removeItem('accentColor');
-        } else {
-          localStorage.setItem('accentColor', color);
-        }
-      } catch (e) {
-        console.warn('Could not save accent color', e);
-      }
-      accentColor = color;
-      prevAccentColor = color;
-      if (typeof updateAccentColorResetButtonState === 'function') {
-        updateAccentColorResetButtonState();
-      }
-    }
-    var cameraPalette = collectCameraColorInputValues();
-    var normalizedPalette = applyCameraLetterColors(cameraPalette);
-    var colorEntries = getCameraColorInputElements();
-    colorEntries.forEach(function (entry) {
-      var normalized = normalizedPalette[entry.letter];
-      if (normalized) {
-        entry.element.value = normalized;
-      }
-    });
-    if (settingsTemperatureUnit) {
-      var selectedTemperatureUnit = typeof settingsTemperatureUnit.value === 'string' ? settingsTemperatureUnit.value : 'celsius';
-      applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
-      rememberSettingsTemperatureUnitBaseline();
-    }
-    if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-      if (typeof applyFocusScalePreference === 'function') {
-        applyFocusScalePreference(settingsFocusScale.value);
-      }
-      rememberSettingsFocusScaleBaseline();
-      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
-    }
-    applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
-      persist: true,
-      triggerUpdate: true
-    });
-    rememberSettingsMountVoltagesBaseline();
-    if (settingsFontSize) {
-      var size = settingsFontSize.value;
-      applyFontSizeSafe(size);
-      try {
-        localStorage.setItem('fontSize', size);
-      } catch (e) {
-        console.warn('Could not save font size', e);
-      }
-      fontSize = size;
-    }
-    if (settingsFontFamily) {
-      var family = settingsFontFamily.value;
-      applyFontFamilySafe(family);
-      try {
-        localStorage.setItem('fontFamily', family);
-      } catch (e) {
-        console.warn('Could not save font family', e);
-      }
-      fontFamily = family;
-    }
-    if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
-      var file = settingsLogo.files[0];
-      if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
-        var reader = new FileReader();
-        reader.onload = function () {
-          try {
-            localStorage.setItem('customLogo', reader.result);
-          } catch (e) {
-            console.warn('Could not save custom logo', e);
-          }
-          renderSettingsLogoPreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-        if (settingsLogo) settingsLogo.value = '';
-        safeLoadStoredLogoPreview();
-      }
-    }
-    closeAutoGearEditor();
-    collapseBackupDiffSection();
-    rememberSettingsPinkModeBaseline();
-    rememberSettingsTemperatureUnitBaseline();
-    rememberSettingsFocusScaleBaseline();
-    rememberSettingsShowAutoBackupsBaseline();
-    rememberSettingsMountVoltagesBaseline();
-    closeDialog(settingsDialog);
-    settingsDialog.setAttribute('hidden', '');
-  };
+      }, _callee);
+    }));
+    return function applySettingsAndCloseDialog() {
+      return _ref7.apply(this, arguments);
+    };
+  }();
   if (settingsSave) {
     settingsSave.addEventListener('click', function () {
       applySettingsAndCloseDialog();
@@ -7820,10 +7857,10 @@ function collectBackupDiffOptions() {
         }
       }
       return localeSort(a.label, b.label);
-    }).map(function (_ref7) {
-      var parsed = _ref7.parsed,
-        timestamp = _ref7.timestamp,
-        option = _objectWithoutProperties(_ref7, _excluded);
+    }).map(function (_ref8) {
+      var parsed = _ref8.parsed,
+        timestamp = _ref8.timestamp,
+        option = _objectWithoutProperties(_ref8, _excluded);
       return option;
     });
     options.push.apply(options, _toConsumableArray(setupOptions));
@@ -8463,9 +8500,9 @@ function renderBackupDiffEntries(entries) {
   }
   backupDiffListContainerEl.hidden = false;
   var decoratedEntries = sortDiffEntries(entries);
-  decoratedEntries.forEach(function (_ref8) {
-    var entry = _ref8.entry,
-      pathText = _ref8.pathText;
+  decoratedEntries.forEach(function (_ref9) {
+    var entry = _ref9.entry,
+      pathText = _ref9.pathText;
     if (!entry) {
       return;
     }
@@ -9150,11 +9187,11 @@ function applyBackupFallbacks(target, diagnostics) {
   if (!target || _typeof(target) !== 'object') {
     return;
   }
-  backupFallbackLoaders.forEach(function (_ref9) {
-    var key = _ref9.key,
-      loader = _ref9.loader,
-      loaderName = _ref9.loaderName,
-      isValid = _ref9.isValid;
+  backupFallbackLoaders.forEach(function (_ref0) {
+    var key = _ref0.key,
+      loader = _ref0.loader,
+      loaderName = _ref0.loaderName,
+      isValid = _ref0.isValid;
     var currentValue = target[key];
     if (isValid(currentValue)) {
       return;
@@ -9457,9 +9494,9 @@ var storagePersistenceState = {
 var storagePersistenceCheckToken = 0;
 function logStoragePersistenceEstimateUpdate() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _ref0 = options || {},
-    _ref0$fromRequest = _ref0.fromRequest,
-    fromRequest = _ref0$fromRequest === void 0 ? false : _ref0$fromRequest;
+  var _ref1 = options || {},
+    _ref1$fromRequest = _ref1.fromRequest,
+    fromRequest = _ref1$fromRequest === void 0 ? false : _ref1$fromRequest;
   var quota = typeof storagePersistenceState.quota === 'number' && Number.isFinite(storagePersistenceState.quota) ? storagePersistenceState.quota : null;
   if (quota === null) {
     return;
@@ -10499,10 +10536,10 @@ function refreshStoragePersistenceStatus() {
   return _refreshStoragePersistenceStatus.apply(this, arguments);
 }
 function _refreshStoragePersistenceStatus() {
-  _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee2() {
+  _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee6() {
     var options,
-      _ref31,
-      _ref31$fromRequest,
+      _ref35,
+      _ref35$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -10511,20 +10548,20 @@ function _refreshStoragePersistenceStatus() {
       usageValue,
       quotaValue,
       estimate,
-      _args2 = arguments,
-      _t4,
-      _t5;
-    return _regenerator().w(function (_context2) {
-      while (1) switch (_context2.p = _context2.n) {
+      _args6 = arguments,
+      _t7,
+      _t8;
+    return _regenerator().w(function (_context6) {
+      while (1) switch (_context6.p = _context6.n) {
         case 0:
-          options = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {};
+          options = _args6.length > 0 && _args6[0] !== undefined ? _args6[0] : {};
           if (storagePersistenceStatusEl) {
-            _context2.n = 1;
+            _context6.n = 1;
             break;
           }
-          return _context2.a(2);
+          return _context6.a(2);
         case 1:
-          _ref31 = options || {}, _ref31$fromRequest = _ref31.fromRequest, fromRequest = _ref31$fromRequest === void 0 ? false : _ref31$fromRequest;
+          _ref35 = options || {}, _ref35$fromRequest = _ref35.fromRequest, fromRequest = _ref35$fromRequest === void 0 ? false : _ref35$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -10533,14 +10570,14 @@ function _refreshStoragePersistenceStatus() {
           renderStoragePersistenceStatus();
           storageManager = getStorageManagerInstance();
           if (storageManager) {
-            _context2.n = 3;
+            _context6.n = 3;
             break;
           }
           if (!(checkToken !== storagePersistenceCheckToken)) {
-            _context2.n = 2;
+            _context6.n = 2;
             break;
           }
-          return _context2.a(2);
+          return _context6.a(2);
         case 2:
           storagePersistenceState.supported = false;
           storagePersistenceState.persisted = false;
@@ -10551,38 +10588,38 @@ function _refreshStoragePersistenceStatus() {
             storagePersistenceState.lastRequestDenied = true;
           }
           renderStoragePersistenceStatus();
-          return _context2.a(2);
+          return _context6.a(2);
         case 3:
           supportsPersist = typeof storageManager.persist === 'function';
           storagePersistenceState.supported = supportsPersist;
           persistedValue = storagePersistenceState.persisted;
           if (!(typeof storageManager.persisted === 'function')) {
-            _context2.n = 7;
+            _context6.n = 7;
             break;
           }
-          _context2.p = 4;
-          _context2.n = 5;
+          _context6.p = 4;
+          _context6.n = 5;
           return storageManager.persisted();
         case 5:
-          persistedValue = _context2.v;
-          _context2.n = 7;
+          persistedValue = _context6.v;
+          _context6.n = 7;
           break;
         case 6:
-          _context2.p = 6;
-          _t4 = _context2.v;
-          console.warn('Unable to determine persistent storage state', _t4);
+          _context6.p = 6;
+          _t7 = _context6.v;
+          console.warn('Unable to determine persistent storage state', _t7);
         case 7:
           usageValue = storagePersistenceState.usage;
           quotaValue = storagePersistenceState.quota;
           if (!(typeof storageManager.estimate === 'function')) {
-            _context2.n = 11;
+            _context6.n = 11;
             break;
           }
-          _context2.p = 8;
-          _context2.n = 9;
+          _context6.p = 8;
+          _context6.n = 9;
           return storageManager.estimate();
         case 9:
-          estimate = _context2.v;
+          estimate = _context6.v;
           if (estimate && _typeof(estimate) === 'object') {
             if (typeof estimate.usage === 'number' && Number.isFinite(estimate.usage)) {
               usageValue = estimate.usage;
@@ -10591,18 +10628,18 @@ function _refreshStoragePersistenceStatus() {
               quotaValue = estimate.quota;
             }
           }
-          _context2.n = 11;
+          _context6.n = 11;
           break;
         case 10:
-          _context2.p = 10;
-          _t5 = _context2.v;
-          console.warn('Unable to estimate storage usage', _t5);
+          _context6.p = 10;
+          _t8 = _context6.v;
+          console.warn('Unable to estimate storage usage', _t8);
         case 11:
           if (!(checkToken !== storagePersistenceCheckToken)) {
-            _context2.n = 12;
+            _context6.n = 12;
             break;
           }
-          return _context2.a(2);
+          return _context6.a(2);
         case 12:
           storagePersistenceState.persisted = Boolean(persistedValue);
           storagePersistenceState.usage = typeof usageValue === 'number' && Number.isFinite(usageValue) ? usageValue : null;
@@ -10616,9 +10653,9 @@ function _refreshStoragePersistenceStatus() {
           });
           renderStoragePersistenceStatus();
         case 13:
-          return _context2.a(2);
+          return _context6.a(2);
       }
-    }, _callee2, null, [[8, 10], [4, 6]]);
+    }, _callee6, null, [[8, 10], [4, 6]]);
   }));
   return _refreshStoragePersistenceStatus.apply(this, arguments);
 }
@@ -10626,47 +10663,47 @@ function handleStoragePersistenceRequest(_x3) {
   return _handleStoragePersistenceRequest.apply(this, arguments);
 }
 function _handleStoragePersistenceRequest() {
-  _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee3(event) {
-    var storageManager, supportsPersist, granted, alreadyGranted, result, _t6;
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.p = _context3.n) {
+  _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee7(event) {
+    var storageManager, supportsPersist, granted, alreadyGranted, result, _t9;
+    return _regenerator().w(function (_context7) {
+      while (1) switch (_context7.p = _context7.n) {
         case 0:
           if (event && typeof event.preventDefault === 'function') {
             event.preventDefault();
           }
           if (!(!sessionStoragePersistenceRequestButton || storagePersistenceState.requestInFlight)) {
-            _context3.n = 1;
+            _context7.n = 1;
             break;
           }
-          return _context3.a(2);
+          return _context7.a(2);
         case 1:
           storageManager = getStorageManagerInstance();
           storagePersistenceState.requestAttempted = true;
           supportsPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
           if (supportsPersist) {
-            _context3.n = 2;
+            _context7.n = 2;
             break;
           }
           storagePersistenceState.supported = supportsPersist;
           storagePersistenceState.lastRequestDenied = true;
           storagePersistenceState.lastError = null;
           renderStoragePersistenceStatus();
-          return _context3.a(2);
+          return _context7.a(2);
         case 2:
           storagePersistenceState.requestInFlight = true;
           storagePersistenceState.lastError = null;
           renderStoragePersistenceStatus();
           granted = false;
           alreadyGranted = false;
-          _context3.p = 3;
+          _context7.p = 3;
           if (!(typeof requestPersistentStorage === 'function')) {
-            _context3.n = 5;
+            _context7.n = 5;
             break;
           }
-          _context3.n = 4;
+          _context7.n = 4;
           return requestPersistentStorage();
         case 4:
-          result = _context3.v;
+          result = _context7.v;
           if (result && typeof result.supported === 'boolean') {
             storagePersistenceState.supported = result.supported;
           }
@@ -10680,21 +10717,21 @@ function _handleStoragePersistenceRequest() {
             storagePersistenceState.lastError = result.error;
             console.warn('Persistent storage request error', result.error);
           }
-          _context3.n = 7;
+          _context7.n = 7;
           break;
         case 5:
-          _context3.n = 6;
+          _context7.n = 6;
           return storageManager.persist();
         case 6:
-          granted = _context3.v;
+          granted = _context7.v;
         case 7:
-          _context3.n = 9;
+          _context7.n = 9;
           break;
         case 8:
-          _context3.p = 8;
-          _t6 = _context3.v;
-          storagePersistenceState.lastError = _t6;
-          console.warn('Persistent storage request failed', _t6);
+          _context7.p = 8;
+          _t9 = _context7.v;
+          storagePersistenceState.lastError = _t9;
+          console.warn('Persistent storage request failed', _t9);
         case 9:
           storagePersistenceState.requestInFlight = false;
           storagePersistenceState.lastRequestDenied = !(granted || alreadyGranted);
@@ -10708,9 +10745,9 @@ function _handleStoragePersistenceRequest() {
             console.warn('Persistent storage status refresh failed', error);
           });
         case 10:
-          return _context3.a(2);
+          return _context7.a(2);
       }
-    }, _callee3, null, [[3, 8]]);
+    }, _callee7, null, [[3, 8]]);
   }));
   return _handleStoragePersistenceRequest.apply(this, arguments);
 }
@@ -10795,211 +10832,274 @@ function handleRestoreSettingsInputChange() {
   var storedSessionSnapshot = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
   var previousSelection = captureSetupSelection();
   var restoreMutated = false;
-  var finalizeRestore = function finalizeRestore() {
-    try {
-      restoreSettingsInput.value = '';
-    } catch (resetError) {
-      void resetError;
-    }
-  };
-  var revertAfterFailure = function revertAfterFailure() {
-    try {
-      restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
-    } catch (restoreError) {
-      console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
-    }
-    try {
-      restoreSessionStorageSnapshot(storedSessionSnapshot);
-    } catch (sessionError) {
-      console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
-    }
-    try {
-      safeLoadStoredLogoPreview();
-    } catch (logoError) {
-      console.warn('Failed to refresh logo preview after restore failure', logoError);
-    }
-    try {
-      syncAutoGearRulesFromStorage();
-    } catch (rulesError) {
-      console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
-    }
-    var restoredPreferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-    var restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
-    showAutoBackups = restoredPreferences.showAutoBackups;
-    try {
-      populateSetupSelect();
-    } catch (populateError) {
-      console.warn('Failed to repopulate setup selector after restore failure', populateError);
-    }
-    restoreSetupSelection(previousSelection, showAutoBackups);
-    if (settingsShowAutoBackups) {
-      try {
-        settingsShowAutoBackups.checked = showAutoBackups;
-      } catch (checkboxError) {
-        console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
-      }
-    }
-    if (restoredPreferences.language) {
-      try {
-        applySetLanguage(restoredPreferences.language);
-        if (typeof populateUserButtonDropdowns === 'function') {
-          try {
-            populateUserButtonDropdowns();
-          } catch (userButtonError) {
-            console.warn('Failed to refresh user button selectors after restoring language', userButtonError);
-          }
+  var finalizeRestore = function () {
+    var _ref10 = _asyncToGenerator(_regenerator().m(function _callee2() {
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
+          case 0:
+            try {
+              restoreSettingsInput.value = '';
+            } catch (resetError) {
+              void resetError;
+            }
+          case 1:
+            return _context2.a(2);
         }
-      } catch (languageError) {
-        console.warn('Failed to restore language after restore failure', languageError);
-      }
-    }
-  };
+      }, _callee2);
+    }));
+    return function finalizeRestore() {
+      return _ref10.apply(this, arguments);
+    };
+  }();
+  var revertAfterFailure = function () {
+    var _ref11 = _asyncToGenerator(_regenerator().m(function _callee3() {
+      var restoredPreferenceReader, restoredPreferences, _t;
+      return _regenerator().w(function (_context3) {
+        while (1) switch (_context3.p = _context3.n) {
+          case 0:
+            try {
+              restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
+            } catch (restoreError) {
+              console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+            }
+            try {
+              restoreSessionStorageSnapshot(storedSessionSnapshot);
+            } catch (sessionError) {
+              console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+            }
+            try {
+              safeLoadStoredLogoPreview();
+            } catch (logoError) {
+              console.warn('Failed to refresh logo preview after restore failure', logoError);
+            }
+            try {
+              syncAutoGearRulesFromStorage();
+            } catch (rulesError) {
+              console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+            }
+            restoredPreferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+            restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
+            showAutoBackups = restoredPreferences.showAutoBackups;
+            try {
+              populateSetupSelect();
+            } catch (populateError) {
+              console.warn('Failed to repopulate setup selector after restore failure', populateError);
+            }
+            restoreSetupSelection(previousSelection, showAutoBackups);
+            if (settingsShowAutoBackups) {
+              try {
+                settingsShowAutoBackups.checked = showAutoBackups;
+              } catch (checkboxError) {
+                console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
+              }
+            }
+            if (!restoredPreferences.language) {
+              _context3.n = 4;
+              break;
+            }
+            _context3.p = 1;
+            _context3.n = 2;
+            return applySetLanguage(restoredPreferences.language);
+          case 2:
+            if (typeof populateUserButtonDropdowns === 'function') {
+              try {
+                populateUserButtonDropdowns();
+              } catch (userButtonError) {
+                console.warn('Failed to refresh user button selectors after restoring language', userButtonError);
+              }
+            }
+            _context3.n = 4;
+            break;
+          case 3:
+            _context3.p = 3;
+            _t = _context3.v;
+            console.warn('Failed to restore language after restore failure', _t);
+          case 4:
+            return _context3.a(2);
+        }
+      }, _callee3, null, [[1, 3]]);
+    }));
+    return function revertAfterFailure() {
+      return _ref11.apply(this, arguments);
+    };
+  }();
   var handleRestoreError = function handleRestoreError(error) {
     console.warn('Restore failed', error);
     showNotification('error', restoreFailureMessage);
     alert(restoreFailureMessage);
     finalizeRestore();
   };
-  var processBackupPayload = function processBackupPayload(rawPayload) {
-    try {
-      var sanitizedPayload = sanitizeBackupPayload(rawPayload);
-      if (!sanitizedPayload || !sanitizedPayload.trim()) {
-        throw new Error('Backup payload empty');
-      }
-      var parsed = JSON.parse(sanitizedPayload);
-      var _extractBackupSection2 = extractBackupSections(parsed),
-        restoredSettings = _extractBackupSection2.settings,
-        restoredSession = _extractBackupSection2.sessionStorage,
-        data = _extractBackupSection2.data,
-        fileVersion = _extractBackupSection2.fileVersion;
-      var hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
-      var hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
-      var hasDataEntries = data && Object.keys(data).length > 0;
-      if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
-        throw new Error('Backup missing recognized sections');
-      }
-      var normalizedFileVersion = normalizeVersionValue(fileVersion);
-      var normalizedAppVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
-      if (normalizedFileVersion !== normalizedAppVersion) {
-        var compatibilityMessage = buildRestoreVersionCompatibilityMessage({
-          langTexts: langTexts,
-          fallbackTexts: fallbackTexts,
-          fileVersion: normalizedFileVersion,
-          targetVersion: normalizedAppVersion,
-          data: data,
-          settingsSnapshot: restoredSettings,
-          sessionSnapshot: restoredSession,
-          backupFileName: backupFileName
-        });
-        alert(compatibilityMessage);
-      }
-      if (restoredSettings && _typeof(restoredSettings) === 'object') {
-        if (safeStorage && typeof safeStorage.setItem === 'function') {
-          restoreMutated = true;
-          Object.entries(restoredSettings).forEach(function (_ref1) {
-            var _ref10 = _slicedToArray(_ref1, 2),
-              k = _ref10[0],
-              v = _ref10[1];
-            if (typeof k !== 'string') return;
-            try {
-              if (v === null || v === undefined) {
-                if (typeof safeStorage.removeItem === 'function') {
-                  safeStorage.removeItem(k);
-                }
-              } else {
-                safeStorage.setItem(k, String(v));
-              }
-            } catch (storageError) {
-              console.warn('Failed to restore storage entry', k, storageError);
+  var processBackupPayload = function () {
+    var _ref12 = _asyncToGenerator(_regenerator().m(function _callee4(rawPayload) {
+      var sanitizedPayload, parsed, _extractBackupSection2, restoredSettings, restoredSession, data, fileVersion, hasSettings, hasSessionEntries, hasDataEntries, normalizedFileVersion, normalizedAppVersion, compatibilityMessage, preferenceReader, restoredPreferenceState, verificationResult, successMessage, alertSegments, _t2, _t3;
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.p = _context4.n) {
+          case 0:
+            _context4.p = 0;
+            sanitizedPayload = sanitizeBackupPayload(rawPayload);
+            if (!(!sanitizedPayload || !sanitizedPayload.trim())) {
+              _context4.n = 1;
+              break;
             }
-          });
+            throw new Error('Backup payload empty');
+          case 1:
+            parsed = JSON.parse(sanitizedPayload);
+            _extractBackupSection2 = extractBackupSections(parsed), restoredSettings = _extractBackupSection2.settings, restoredSession = _extractBackupSection2.sessionStorage, data = _extractBackupSection2.data, fileVersion = _extractBackupSection2.fileVersion;
+            hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
+            hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
+            hasDataEntries = data && Object.keys(data).length > 0;
+            if (!(!hasSettings && !hasSessionEntries && !hasDataEntries)) {
+              _context4.n = 2;
+              break;
+            }
+            throw new Error('Backup missing recognized sections');
+          case 2:
+            normalizedFileVersion = normalizeVersionValue(fileVersion);
+            normalizedAppVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+            if (normalizedFileVersion !== normalizedAppVersion) {
+              compatibilityMessage = buildRestoreVersionCompatibilityMessage({
+                langTexts: langTexts,
+                fallbackTexts: fallbackTexts,
+                fileVersion: normalizedFileVersion,
+                targetVersion: normalizedAppVersion,
+                data: data,
+                settingsSnapshot: restoredSettings,
+                sessionSnapshot: restoredSession,
+                backupFileName: backupFileName
+              });
+              alert(compatibilityMessage);
+            }
+            if (restoredSettings && _typeof(restoredSettings) === 'object') {
+              if (safeStorage && typeof safeStorage.setItem === 'function') {
+                restoreMutated = true;
+                Object.entries(restoredSettings).forEach(function (_ref13) {
+                  var _ref14 = _slicedToArray(_ref13, 2),
+                    k = _ref14[0],
+                    v = _ref14[1];
+                  if (typeof k !== 'string') return;
+                  try {
+                    if (v === null || v === undefined) {
+                      if (typeof safeStorage.removeItem === 'function') {
+                        safeStorage.removeItem(k);
+                      }
+                    } else {
+                      safeStorage.setItem(k, String(v));
+                    }
+                  } catch (storageError) {
+                    console.warn('Failed to restore storage entry', k, storageError);
+                  }
+                });
+              }
+            }
+            if (restoredSession && typeof sessionStorage !== 'undefined') {
+              restoreMutated = true;
+              Object.entries(restoredSession).forEach(function (_ref15) {
+                var _ref16 = _slicedToArray(_ref15, 2),
+                  key = _ref16[0],
+                  value = _ref16[1];
+                try {
+                  sessionStorage.setItem(key, value);
+                } catch (sessionError) {
+                  console.warn('Failed to restore sessionStorage entry', key, sessionError);
+                }
+              });
+            }
+            try {
+              safeLoadStoredLogoPreview();
+            } catch (logoError) {
+              console.warn('Failed to refresh logo preview after restore', logoError);
+            }
+            if (data && typeof importAllData === 'function') {
+              restoreMutated = true;
+              importAllData(data);
+            }
+            try {
+              syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
+            } catch (rulesError) {
+              console.warn('Failed to sync automatic gear rules after restore', rulesError);
+            }
+            preferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+            restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
+            showAutoBackups = restoredPreferenceState.showAutoBackups;
+            populateSetupSelect();
+            restoreSetupSelection(previousSelection, showAutoBackups);
+            if (settingsShowAutoBackups) {
+              settingsShowAutoBackups.checked = showAutoBackups;
+            }
+            if (!restoredPreferenceState.language) {
+              _context4.n = 4;
+              break;
+            }
+            _context4.n = 3;
+            return applySetLanguage(restoredPreferenceState.language);
+          case 3:
+            if (typeof populateUserButtonDropdowns === 'function') {
+              try {
+                populateUserButtonDropdowns();
+              } catch (userButtonError) {
+                console.warn('Failed to refresh user button selectors after applying restored preferences', userButtonError);
+              }
+            }
+          case 4:
+            if (restoredSession && typeof sessionStorage !== 'undefined') {
+              Object.entries(restoredSession).forEach(function (_ref17) {
+                var _ref18 = _slicedToArray(_ref17, 2),
+                  key = _ref18[0],
+                  value = _ref18[1];
+                try {
+                  sessionStorage.setItem(key, value);
+                } catch (sessionError) {
+                  console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
+                }
+              });
+            }
+            verificationResult = null;
+            try {
+              verificationResult = verifyRestoredBackupIntegrity(data);
+            } catch (verificationError) {
+              console.warn('Restore verification execution failed', verificationError);
+              verificationResult = null;
+            }
+            if (verificationResult && verificationResult.notificationType && verificationResult.notificationMessage) {
+              showNotification(verificationResult.notificationType, verificationResult.notificationMessage);
+            }
+            successMessage = texts[currentLang].restoreSuccess;
+            alertSegments = [successMessage];
+            if (verificationResult && verificationResult.alertMessage) {
+              alertSegments.push(verificationResult.alertMessage);
+            }
+            alert(alertSegments.join('\n\n'));
+            finalizeRestore();
+            _context4.n = 10;
+            break;
+          case 5:
+            _context4.p = 5;
+            _t2 = _context4.v;
+            if (!restoreMutated) {
+              _context4.n = 9;
+              break;
+            }
+            _context4.p = 6;
+            _context4.n = 7;
+            return revertAfterFailure();
+          case 7:
+            _context4.n = 9;
+            break;
+          case 8:
+            _context4.p = 8;
+            _t3 = _context4.v;
+            console.warn('Failed to restore previous state after restore error', _t3);
+          case 9:
+            handleRestoreError(_t2);
+          case 10:
+            return _context4.a(2);
         }
-      }
-      if (restoredSession && typeof sessionStorage !== 'undefined') {
-        restoreMutated = true;
-        Object.entries(restoredSession).forEach(function (_ref11) {
-          var _ref12 = _slicedToArray(_ref11, 2),
-            key = _ref12[0],
-            value = _ref12[1];
-          try {
-            sessionStorage.setItem(key, value);
-          } catch (sessionError) {
-            console.warn('Failed to restore sessionStorage entry', key, sessionError);
-          }
-        });
-      }
-      try {
-        safeLoadStoredLogoPreview();
-      } catch (logoError) {
-        console.warn('Failed to refresh logo preview after restore', logoError);
-      }
-      if (data && typeof importAllData === 'function') {
-        restoreMutated = true;
-        importAllData(data);
-      }
-      try {
-        syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
-      } catch (rulesError) {
-        console.warn('Failed to sync automatic gear rules after restore', rulesError);
-      }
-      var preferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-      var restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
-      showAutoBackups = restoredPreferenceState.showAutoBackups;
-      populateSetupSelect();
-      restoreSetupSelection(previousSelection, showAutoBackups);
-      if (settingsShowAutoBackups) {
-        settingsShowAutoBackups.checked = showAutoBackups;
-      }
-      if (restoredPreferenceState.language) {
-        applySetLanguage(restoredPreferenceState.language);
-        if (typeof populateUserButtonDropdowns === 'function') {
-          try {
-            populateUserButtonDropdowns();
-          } catch (userButtonError) {
-            console.warn('Failed to refresh user button selectors after applying restored preferences', userButtonError);
-          }
-        }
-      }
-      if (restoredSession && typeof sessionStorage !== 'undefined') {
-        Object.entries(restoredSession).forEach(function (_ref13) {
-          var _ref14 = _slicedToArray(_ref13, 2),
-            key = _ref14[0],
-            value = _ref14[1];
-          try {
-            sessionStorage.setItem(key, value);
-          } catch (sessionError) {
-            console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
-          }
-        });
-      }
-      var verificationResult = null;
-      try {
-        verificationResult = verifyRestoredBackupIntegrity(data);
-      } catch (verificationError) {
-        console.warn('Restore verification execution failed', verificationError);
-        verificationResult = null;
-      }
-      if (verificationResult && verificationResult.notificationType && verificationResult.notificationMessage) {
-        showNotification(verificationResult.notificationType, verificationResult.notificationMessage);
-      }
-      var successMessage = texts[currentLang].restoreSuccess;
-      var alertSegments = [successMessage];
-      if (verificationResult && verificationResult.alertMessage) {
-        alertSegments.push(verificationResult.alertMessage);
-      }
-      alert(alertSegments.join('\n\n'));
-      finalizeRestore();
-    } catch (err) {
-      if (restoreMutated) {
-        try {
-          revertAfterFailure();
-        } catch (revertError) {
-          console.warn('Failed to restore previous state after restore error', revertError);
-        }
-      }
-      handleRestoreError(err);
-    }
-  };
+      }, _callee4, null, [[6, 8], [0, 5]]);
+    }));
+    return function processBackupPayload(_x4) {
+      return _ref12.apply(this, arguments);
+    };
+  }();
   var attemptTextFallback = function attemptTextFallback(reason) {
     if (!file || typeof file.text !== 'function') {
       return false;
@@ -11351,15 +11451,15 @@ function resetPlannerStateAfterFactoryReset() {
   }
 }
 window.cineShowConfirmDialog = function (options) {
-  var _ref15 = options || {},
-    title = _ref15.title,
-    message = _ref15.message,
-    confirmLabel = _ref15.confirmLabel,
-    cancelLabel = _ref15.cancelLabel,
-    onConfirm = _ref15.onConfirm,
-    onCancel = _ref15.onCancel,
-    _ref15$danger = _ref15.danger,
-    danger = _ref15$danger === void 0 ? false : _ref15$danger;
+  var _ref19 = options || {},
+    title = _ref19.title,
+    message = _ref19.message,
+    confirmLabel = _ref19.confirmLabel,
+    cancelLabel = _ref19.cancelLabel,
+    onConfirm = _ref19.onConfirm,
+    onCancel = _ref19.onCancel,
+    _ref19$danger = _ref19.danger,
+    danger = _ref19$danger === void 0 ? false : _ref19$danger;
   var dialog = document.getElementById('appConfirmDialog');
   var titleEl = document.getElementById('appConfirmTitle');
   var messageEl = document.getElementById('appConfirmMessage');
@@ -11418,18 +11518,18 @@ if (factoryResetButton) {
       cancelLabel: langTexts.cancel || 'Cancel',
       danger: true,
       onConfirm: function () {
-        var _onConfirm = _asyncToGenerator(_regenerator().m(function _callee() {
-          var errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2, _t3;
-          return _regenerator().w(function (_context) {
-            while (1) switch (_context.p = _context.n) {
+        var _onConfirm = _asyncToGenerator(_regenerator().m(function _callee5() {
+          var errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t4, _t5, _t6;
+          return _regenerator().w(function (_context5) {
+            while (1) switch (_context5.p = _context5.n) {
               case 0:
                 if (!(typeof performSettingsBackup !== 'function')) {
-                  _context.n = 1;
+                  _context5.n = 1;
                   break;
                 }
                 errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
                 showNotification('error', errorMsg);
-                return _context.a(2);
+                return _context5.a(2);
               case 1:
                 backupResult = null;
                 try {
@@ -11438,36 +11538,36 @@ if (factoryResetButton) {
                   console.error('Backup before factory reset failed', error);
                 }
                 if (!(!backupResult || !backupResult.fileName)) {
-                  _context.n = 2;
+                  _context5.n = 2;
                   break;
                 }
                 backupFailedMsg = langTexts.factoryResetBackupFailed || 'Backup failed. Data was not deleted.';
                 showNotification('error', backupFailedMsg);
-                return _context.a(2);
+                return _context5.a(2);
               case 2:
                 downloadPermissionState = 'unknown';
                 finalDownloadPermissionState = 'unknown';
                 downloadResult = backupResult.downloadResult;
                 permissionMonitor = downloadResult && downloadResult.permission ? downloadResult.permission : null;
                 if (!(permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function')) {
-                  _context.n = 6;
+                  _context5.n = 6;
                   break;
                 }
-                _context.p = 3;
-                _context.n = 4;
+                _context5.p = 3;
+                _context5.n = 4;
                 return permissionMonitor.initial;
               case 4:
-                downloadPermissionState = _context.v;
-                _context.n = 6;
+                downloadPermissionState = _context5.v;
+                _context5.n = 6;
                 break;
               case 5:
-                _context.p = 5;
-                _t = _context.v;
-                console.warn('Failed to inspect automatic download permission before factory reset', _t);
+                _context5.p = 5;
+                _t4 = _context5.v;
+                console.warn('Failed to inspect automatic download permission before factory reset', _t4);
                 downloadPermissionState = 'unknown';
               case 6:
                 if (!(downloadPermissionState === 'denied')) {
-                  _context.n = 7;
+                  _context5.n = 7;
                   break;
                 }
                 deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
@@ -11475,7 +11575,7 @@ if (factoryResetButton) {
                 if (typeof alert === 'function') {
                   alert(deniedMsg);
                 }
-                return _context.a(2);
+                return _context5.a(2);
               case 7:
                 if (downloadPermissionState === 'prompt') {
                   waitMsg = langTexts.factoryResetAwaitDownload || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
@@ -11485,36 +11585,36 @@ if (factoryResetButton) {
                   }
                 }
                 if (!(permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function')) {
-                  _context.n = 12;
+                  _context5.n = 12;
                   break;
                 }
-                _context.p = 8;
-                _context.n = 9;
+                _context5.p = 8;
+                _context5.n = 9;
                 return permissionMonitor.ready;
               case 9:
-                finalDownloadPermissionState = _context.v;
-                _context.n = 11;
+                finalDownloadPermissionState = _context5.v;
+                _context5.n = 11;
                 break;
               case 10:
-                _context.p = 10;
-                _t2 = _context.v;
-                console.warn('Failed to await automatic download permission before factory reset', _t2);
+                _context5.p = 10;
+                _t5 = _context5.v;
+                console.warn('Failed to await automatic download permission before factory reset', _t5);
                 finalDownloadPermissionState = 'unknown';
               case 11:
-                _context.n = 13;
+                _context5.n = 13;
                 break;
               case 12:
                 finalDownloadPermissionState = downloadPermissionState;
               case 13:
                 if (!(downloadPermissionState === 'prompt')) {
-                  _context.n = 15;
+                  _context5.n = 15;
                   break;
                 }
                 if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
                   finalDownloadPermissionState = 'unknown';
                 }
                 if (!(finalDownloadPermissionState !== 'granted')) {
-                  _context.n = 14;
+                  _context5.n = 14;
                   break;
                 }
                 _deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
@@ -11522,13 +11622,13 @@ if (factoryResetButton) {
                 if (typeof alert === 'function') {
                   alert(_deniedMsg);
                 }
-                return _context.a(2);
+                return _context5.a(2);
               case 14:
-                _context.n = 16;
+                _context5.n = 16;
                 break;
               case 15:
                 if (!(finalDownloadPermissionState === 'denied')) {
-                  _context.n = 16;
+                  _context5.n = 16;
                   break;
                 }
                 _deniedMsg2 = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
@@ -11536,17 +11636,17 @@ if (factoryResetButton) {
                 if (typeof alert === 'function') {
                   alert(_deniedMsg2);
                 }
-                return _context.a(2);
+                return _context5.a(2);
               case 16:
                 if (!(typeof clearAllData !== 'function')) {
-                  _context.n = 17;
+                  _context5.n = 17;
                   break;
                 }
                 _errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
                 showNotification('error', _errorMsg);
-                return _context.a(2);
+                return _context5.a(2);
               case 17:
-                _context.p = 17;
+                _context5.p = 17;
                 factoryResetInProgress = true;
                 if (typeof globalThis !== 'undefined') {
                   try {
@@ -11565,7 +11665,7 @@ if (factoryResetButton) {
                 } catch (animationError) {
                   console.warn('Failed to stop pink mode animations during factory reset', animationError);
                 }
-                _context.n = 18;
+                _context5.n = 18;
                 return clearAllData();
               case 18:
                 try {
@@ -11679,12 +11779,12 @@ if (factoryResetButton) {
                     window.location.reload();
                   }
                 }, 600);
-                _context.n = 20;
+                _context5.n = 20;
                 break;
               case 19:
-                _context.p = 19;
-                _t3 = _context.v;
-                console.error('Factory reset failed', _t3);
+                _context5.p = 19;
+                _t6 = _context5.v;
+                console.error('Factory reset failed', _t6);
                 factoryResetInProgress = false;
                 if (typeof globalThis !== 'undefined') {
                   try {
@@ -11696,9 +11796,9 @@ if (factoryResetButton) {
                 _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
                 showNotification('error', _errorMsg2);
               case 20:
-                return _context.a(2);
+                return _context5.a(2);
             }
-          }, _callee, null, [[17, 19], [8, 10], [3, 5]]);
+          }, _callee5, null, [[17, 19], [8, 10], [3, 5]]);
         }));
         function onConfirm() {
           return _onConfirm.apply(this, arguments);
@@ -11795,9 +11895,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref16) {
-    var scope = _ref16.scope,
-      label = _ref16.label;
+  scopeCandidates.forEach(function (_ref20) {
+    var scope = _ref20.scope,
+      label = _ref20.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -12737,20 +12837,20 @@ function observeServiceWorkerControllerChangeForSession(navigatorLike) {
     }
   };
 }
-function collectServiceWorkerRegistrationsForReload(_x4) {
+function collectServiceWorkerRegistrationsForReload(_x5) {
   return _collectServiceWorkerRegistrationsForReload.apply(this, arguments);
 }
 function _collectServiceWorkerRegistrationsForReload() {
-  _collectServiceWorkerRegistrationsForReload = _asyncToGenerator(_regenerator().m(function _callee4(serviceWorker) {
-    var registrations, pushRegistration, regs, reg, readyReg, _t7, _t8;
-    return _regenerator().w(function (_context4) {
-      while (1) switch (_context4.p = _context4.n) {
+  _collectServiceWorkerRegistrationsForReload = _asyncToGenerator(_regenerator().m(function _callee8(serviceWorker) {
+    var registrations, pushRegistration, regs, reg, readyReg, _t0, _t1;
+    return _regenerator().w(function (_context8) {
+      while (1) switch (_context8.p = _context8.n) {
         case 0:
           if (serviceWorker) {
-            _context4.n = 1;
+            _context8.n = 1;
             break;
           }
-          return _context4.a(2, []);
+          return _context8.a(2, []);
         case 1:
           registrations = [];
           pushRegistration = function pushRegistration(registration) {
@@ -12758,60 +12858,60 @@ function _collectServiceWorkerRegistrationsForReload() {
               registrations.push(registration);
             }
           };
-          _context4.p = 2;
+          _context8.p = 2;
           if (!(typeof serviceWorker.getRegistrations === 'function')) {
-            _context4.n = 4;
+            _context8.n = 4;
             break;
           }
-          _context4.n = 3;
+          _context8.n = 3;
           return serviceWorker.getRegistrations();
         case 3:
-          regs = _context4.v;
+          regs = _context8.v;
           if (Array.isArray(regs)) {
             regs.forEach(pushRegistration);
           }
-          _context4.n = 10;
+          _context8.n = 10;
           break;
         case 4:
           if (!(typeof serviceWorker.getRegistration === 'function')) {
-            _context4.n = 6;
+            _context8.n = 6;
             break;
           }
-          _context4.n = 5;
+          _context8.n = 5;
           return serviceWorker.getRegistration();
         case 5:
-          reg = _context4.v;
+          reg = _context8.v;
           pushRegistration(reg);
-          _context4.n = 10;
+          _context8.n = 10;
           break;
         case 6:
           if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-            _context4.n = 10;
+            _context8.n = 10;
             break;
           }
-          _context4.p = 7;
-          _context4.n = 8;
+          _context8.p = 7;
+          _context8.n = 8;
           return serviceWorker.ready;
         case 8:
-          readyReg = _context4.v;
+          readyReg = _context8.v;
           pushRegistration(readyReg);
-          _context4.n = 10;
+          _context8.n = 10;
           break;
         case 9:
-          _context4.p = 9;
-          _t7 = _context4.v;
-          console.warn('Failed to await active service worker', _t7);
+          _context8.p = 9;
+          _t0 = _context8.v;
+          console.warn('Failed to await active service worker', _t0);
         case 10:
-          _context4.n = 12;
+          _context8.n = 12;
           break;
         case 11:
-          _context4.p = 11;
-          _t8 = _context4.v;
-          console.warn('Failed to query service worker registrations', _t8);
+          _context8.p = 11;
+          _t1 = _context8.v;
+          console.warn('Failed to query service worker registrations', _t1);
         case 12:
-          return _context4.a(2, registrations);
+          return _context8.a(2, registrations);
       }
-    }, _callee4, null, [[7, 9], [2, 11]]);
+    }, _callee8, null, [[7, 9], [2, 11]]);
   }));
   return _collectServiceWorkerRegistrationsForReload.apply(this, arguments);
 }
@@ -12819,18 +12919,18 @@ function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
-  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee7() {
-    var sessionNavigator, reloadFallback, offlineModule, beforeReloadHref, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t1, _t10, _t11;
-    return _regenerator().w(function (_context7) {
-      while (1) switch (_context7.p = _context7.n) {
+  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee1() {
+    var sessionNavigator, reloadFallback, offlineModule, beforeReloadHref, sessionCaches, serviceWorkerLike, serviceWorkerRegistrationsPromise, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, controllerChangeWatcher, serviceWorkerGatePromise, win, _t12, _t13, _t14;
+    return _regenerator().w(function (_context1) {
+      while (1) switch (_context1.p = _context1.n) {
         case 0:
           sessionNavigator = typeof navigator !== 'undefined' ? navigator : undefined;
           if (!isNavigatorExplicitlyOffline(sessionNavigator)) {
-            _context7.n = 1;
+            _context1.n = 1;
             break;
           }
           announceForceReloadOfflineNotice();
-          return _context7.a(2, {
+          return _context1.a(2, {
             blocked: true,
             reason: 'offline'
           });
@@ -12849,17 +12949,17 @@ function _clearCachesAndReload() {
           serviceWorkerLike = sessionNavigator && sessionNavigator.serviceWorker ? sessionNavigator.serviceWorker : null;
           serviceWorkerRegistrationsPromise = serviceWorkerLike ? collectServiceWorkerRegistrationsForReload(serviceWorkerLike) : Promise.resolve([]);
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context7.n = 7;
+            _context1.n = 7;
             break;
           }
-          _context7.p = 2;
+          _context1.p = 2;
           reloadAttempt = offlineModule.reloadApp({
             window: window,
             navigator: sessionNavigator,
             caches: sessionCaches,
             onOfflineReloadBlocked: announceForceReloadOfflineNotice
           });
-          _context7.n = 3;
+          _context1.n = 3;
           return awaitPromiseWithSoftTimeout(reloadAttempt, OFFLINE_RELOAD_TIMEOUT_MS, function () {
             console.warn('Offline module reload timed out; continuing with manual fallback after soft timeout.', {
               timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS
@@ -12868,36 +12968,36 @@ function _clearCachesAndReload() {
             console.warn('Offline module reload promise rejected after timeout', lateError);
           });
         case 3:
-          _yield$awaitPromiseWi = _context7.v;
+          _yield$awaitPromiseWi = _context1.v;
           timedOut = _yield$awaitPromiseWi.timedOut;
           result = _yield$awaitPromiseWi.result;
           if (timedOut) {
-            _context7.n = 5;
+            _context1.n = 5;
             break;
           }
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
-            _context7.n = 5;
+            _context1.n = 5;
             break;
           }
-          _context7.n = 4;
+          _context1.n = 4;
           return waitForReloadNavigation(beforeReloadHref).catch(function () {
             return false;
           });
         case 4:
-          navigationObserved = _context7.v;
+          navigationObserved = _context1.v;
           if (!navigationObserved) {
-            _context7.n = 5;
+            _context1.n = 5;
             break;
           }
-          return _context7.a(2);
+          return _context1.a(2);
         case 5:
-          _context7.n = 7;
+          _context1.n = 7;
           break;
         case 6:
-          _context7.p = 6;
-          _t1 = _context7.v;
-          console.warn('Offline module reload failed, falling back to manual refresh', _t1);
+          _context1.p = 6;
+          _t12 = _context1.v;
+          console.warn('Offline module reload failed, falling back to manual refresh', _t12);
         case 7:
           uiCacheCleared = false;
           try {
@@ -12919,23 +13019,23 @@ function _clearCachesAndReload() {
           serviceWorkerCleanupPromise = Promise.resolve(false);
           cacheCleanupPromise = Promise.resolve(false);
           if (serviceWorkerLike) {
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
-              var _registrations, _t9;
-              return _regenerator().w(function (_context5) {
-                while (1) switch (_context5.p = _context5.n) {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee9() {
+              var _registrations, _t10;
+              return _regenerator().w(function (_context9) {
+                while (1) switch (_context9.p = _context9.n) {
                   case 0:
-                    _context5.p = 0;
-                    _context5.n = 1;
+                    _context9.p = 0;
+                    _context9.n = 1;
                     return serviceWorkerRegistrationsPromise;
                   case 1:
-                    _registrations = _context5.v;
+                    _registrations = _context9.v;
                     if (_registrations.length) {
-                      _context5.n = 2;
+                      _context9.n = 2;
                       break;
                     }
-                    return _context5.a(2, false);
+                    return _context9.a(2, false);
                   case 2:
-                    _context5.n = 3;
+                    _context9.n = 3;
                     return Promise.all(_registrations.map(function (reg) {
                       if (!reg || typeof reg.unregister !== 'function') {
                         return Promise.resolve(false);
@@ -12946,32 +13046,32 @@ function _clearCachesAndReload() {
                       });
                     }));
                   case 3:
-                    return _context5.a(2, true);
+                    return _context9.a(2, true);
                   case 4:
-                    _context5.p = 4;
-                    _t9 = _context5.v;
-                    console.warn('Service worker cleanup failed', _t9);
-                    return _context5.a(2, false);
+                    _context9.p = 4;
+                    _t10 = _context9.v;
+                    console.warn('Service worker cleanup failed', _t10);
+                    return _context9.a(2, false);
                 }
-              }, _callee5, null, [[0, 4]]);
+              }, _callee9, null, [[0, 4]]);
             }))();
           }
           if (sessionCaches && typeof sessionCaches.keys === 'function') {
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee6() {
-              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t0;
-              return _regenerator().w(function (_context6) {
-                while (1) switch (_context6.p = _context6.n) {
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee0() {
+              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t11;
+              return _regenerator().w(function (_context0) {
+                while (1) switch (_context0.p = _context0.n) {
                   case 0:
-                    _context6.p = 0;
-                    _context6.n = 1;
+                    _context0.p = 0;
+                    _context0.n = 1;
                     return sessionCaches.keys();
                   case 1:
-                    keys = _context6.v;
+                    keys = _context0.v;
                     if (!(!Array.isArray(keys) || !keys.length)) {
-                      _context6.n = 2;
+                      _context0.n = 2;
                       break;
                     }
-                    return _context6.a(2, false);
+                    return _context0.a(2, false);
                   case 2:
                     explicitName = resolveCineCacheNameForReload();
                     lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
@@ -12979,13 +13079,13 @@ function _clearCachesAndReload() {
                       return isRelevantCacheKeyForReload(key, explicitName, lowerExplicit);
                     });
                     if (relevantKeys.length) {
-                      _context6.n = 3;
+                      _context0.n = 3;
                       break;
                     }
-                    return _context6.a(2, false);
+                    return _context0.a(2, false);
                   case 3:
                     removedAny = false;
-                    _context6.n = 4;
+                    _context0.n = 4;
                     return Promise.all(relevantKeys.map(function (key) {
                       if (!key || typeof sessionCaches.delete !== 'function') {
                         return Promise.resolve(false);
@@ -12999,14 +13099,14 @@ function _clearCachesAndReload() {
                       });
                     }));
                   case 4:
-                    return _context6.a(2, removedAny);
+                    return _context0.a(2, removedAny);
                   case 5:
-                    _context6.p = 5;
-                    _t0 = _context6.v;
-                    console.warn('Cache clear failed', _t0);
-                    return _context6.a(2, false);
+                    _context0.p = 5;
+                    _t11 = _context0.v;
+                    console.warn('Cache clear failed', _t11);
+                    return _context0.a(2, false);
                 }
-              }, _callee6, null, [[0, 5]]);
+              }, _callee0, null, [[0, 5]]);
             }))();
           }
           controllerChangeWatcher = null;
@@ -13017,8 +13117,8 @@ function _clearCachesAndReload() {
               serviceWorkerGatePromise = Promise.race([serviceWorkerCleanupPromise, controllerChangeWatcher.promise]);
             }
           }
-          _context7.p = 8;
-          _context7.n = 9;
+          _context1.p = 8;
+          _context1.n = 9;
           return awaitPromiseWithSoftTimeout(serviceWorkerGatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
             console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
               timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -13027,14 +13127,14 @@ function _clearCachesAndReload() {
             console.warn('Service worker cleanup failed after reload triggered', lateError);
           });
         case 9:
-          _context7.n = 11;
+          _context1.n = 11;
           break;
         case 10:
-          _context7.p = 10;
-          _t10 = _context7.v;
-          console.warn('Service worker cleanup failed', _t10);
+          _context1.p = 10;
+          _t13 = _context1.v;
+          console.warn('Service worker cleanup failed', _t13);
         case 11:
-          _context7.p = 11;
+          _context1.p = 11;
           if (controllerChangeWatcher && typeof controllerChangeWatcher.cancel === 'function') {
             try {
               controllerChangeWatcher.cancel();
@@ -13042,7 +13142,7 @@ function _clearCachesAndReload() {
               void controllerCleanupError;
             }
           }
-          return _context7.f(11);
+          return _context1.f(11);
         case 12:
           try {
             if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
@@ -13059,20 +13159,20 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          _context7.p = 13;
-          _context7.n = 14;
+          _context1.p = 13;
+          _context1.n = 14;
           return cacheCleanupPromise;
         case 14:
-          _context7.n = 16;
+          _context1.n = 16;
           break;
         case 15:
-          _context7.p = 15;
-          _t11 = _context7.v;
-          console.warn('Cache clear failed', _t11);
+          _context1.p = 15;
+          _t14 = _context1.v;
+          console.warn('Cache clear failed', _t14);
         case 16:
-          return _context7.a(2);
+          return _context1.a(2);
       }
-    }, _callee7, null, [[13, 15], [8, 10, 11, 12], [2, 6]]);
+    }, _callee1, null, [[13, 15], [8, 10, 11, 12], [2, 6]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -13306,6 +13406,7 @@ if (helpButton && helpDialog) {
   };
   var focusFeatureElement = function focusFeatureElement(element) {
     if (!element) return;
+    if (typeof element.closest !== 'function') return;
     ensureFeatureSearchVisibility(element);
     var settingsSection = element.closest('#settingsDialog');
     var settingsPanel = element.closest('.settings-panel');
@@ -13523,8 +13624,8 @@ if (helpButton && helpDialog) {
       }
       hiddenItems.sort(function (a, b) {
         return a.index - b.index;
-      }).forEach(function (_ref17) {
-        var node = _ref17.node;
+      }).forEach(function (_ref21) {
+        var node = _ref21.node;
         return fragment.appendChild(node);
       });
       if (fragment.childNodes.length) {
@@ -13558,10 +13659,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref18) {
-      var section = _ref18.section,
-        listItem = _ref18.listItem,
-        button = _ref18.button;
+    helpQuickLinkItems.forEach(function (_ref22) {
+      var section = _ref22.section,
+        listItem = _ref22.listItem,
+        button = _ref22.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -13594,9 +13695,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref19) {
-      var button = _ref19.button,
-        label = _ref19.label;
+    helpQuickLinkItems.forEach(function (_ref23) {
+      var button = _ref23.button,
+        label = _ref23.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -13807,11 +13908,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref20 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref20.totalCount,
-      visibleCount = _ref20.visibleCount,
-      hasQuery = _ref20.hasQuery,
-      queryText = _ref20.queryText;
+    var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref24.totalCount,
+      visibleCount = _ref24.visibleCount,
+      hasQuery = _ref24.hasQuery,
+      queryText = _ref24.queryText;
     var hideAssist = function hideAssist() {
       if (!helpResultsAssist) return;
       helpResultsAssist.textContent = '';
@@ -14366,11 +14467,11 @@ if (helpButton && helpDialog) {
       return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref21 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref21$includeTextCon = _ref21.includeTextContent,
-        includeTextContent = _ref21$includeTextCon === void 0 ? false : _ref21$includeTextCon,
-        _ref21$preferTextAsLa = _ref21.preferTextAsLabel,
-        preferTextAsLabel = _ref21$preferTextAsLa === void 0 ? false : _ref21$preferTextAsLa;
+      var _ref25 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref25$includeTextCon = _ref25.includeTextContent,
+        includeTextContent = _ref25$includeTextCon === void 0 ? false : _ref25$includeTextCon,
+        _ref25$preferTextAsLa = _ref25.preferTextAsLabel,
+        preferTextAsLabel = _ref25$preferTextAsLa === void 0 ? false : _ref25$preferTextAsLa;
       if (!element) return;
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
@@ -14402,9 +14503,9 @@ if (helpButton && helpDialog) {
       }
     };
     var applyFromIds = function applyFromIds(ids) {
-      var _ref22 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref22$preferTextAsLa = _ref22.preferTextAsLabel,
-        preferTextAsLabel = _ref22$preferTextAsLa === void 0 ? false : _ref22$preferTextAsLa;
+      var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref26$preferTextAsLa = _ref26.preferTextAsLabel,
+        preferTextAsLabel = _ref26$preferTextAsLa === void 0 ? false : _ref26$preferTextAsLa;
       if (!ids) return;
       ids.split(/\s+/).map(function (id) {
         return id.trim();
@@ -15267,9 +15368,9 @@ if (helpButton && helpDialog) {
       }
     };
     var setActiveDropdownOption = function setActiveDropdownOption(index) {
-      var _ref23 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref23$focusOption = _ref23.focusOption,
-        focusOption = _ref23$focusOption === void 0 ? false : _ref23$focusOption;
+      var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref27$focusOption = _ref27.focusOption,
+        focusOption = _ref27$focusOption === void 0 ? false : _ref27$focusOption;
       var options = getDropdownOptions();
       if (!options.length) {
         if (featureSearch && featureSearch.hasAttribute('aria-activedescendant')) {
@@ -15656,10 +15757,10 @@ function getRequiredScenarioOptionEntries() {
     }
     options.set(value, value);
   });
-  return Array.from(options.entries()).map(function (_ref24) {
-    var _ref25 = _slicedToArray(_ref24, 2),
-      value = _ref25[0],
-      label = _ref25[1];
+  return Array.from(options.entries()).map(function (_ref28) {
+    var _ref29 = _slicedToArray(_ref28, 2),
+      value = _ref29[0],
+      label = _ref29[1];
     return {
       value: value,
       label: label
@@ -16072,7 +16173,7 @@ function populateLensDropdown() {
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
   for (var _index19 = 0; _index19 < lensNames.length; _index19 += 1) {
-    var _ref26, _lens$minFocusMeters;
+    var _ref30, _lens$minFocusMeters;
     var name = lensNames[_index19];
     var opt = document.createElement('option');
     opt.value = name;
@@ -16089,7 +16190,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref26 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref26 !== void 0 ? _ref26 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref30 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref30 !== void 0 ? _ref30 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
@@ -16367,9 +16468,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     return a[0].localeCompare(b[0]);
   });
   return {
-    values: sortedEntries.map(function (_ref27) {
-      var _ref28 = _slicedToArray(_ref27, 1),
-        value = _ref28[0];
+    values: sortedEntries.map(function (_ref31) {
+      var _ref32 = _slicedToArray(_ref31, 1),
+        value = _ref32[0];
       return value;
     }),
     metadata: new Map(sortedEntries)
@@ -16880,11 +16981,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref29) {
-    var type = _ref29.type,
-      _ref29$size = _ref29.size,
-      size = _ref29$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref29$size,
-      values = _ref29.values;
+  filters.forEach(function (_ref33) {
+    var type = _ref33.type,
+      _ref33$size = _ref33.size,
+      size = _ref33$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref33$size,
+      values = _ref33.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -17504,8 +17605,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref30) {
-    var type = _ref30.type;
+  filters.forEach(function (_ref34) {
+    var type = _ref34.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -17662,7 +17763,7 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
   finalizeInitialLoadingIndicator();
 }
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
+  var SESSION_API = {
     APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : APP_VERSION,
     closeSideMenu: closeSideMenu,
     openSideMenu: openSideMenu,
@@ -17843,18 +17944,55 @@ if (typeof module !== "undefined" && module.exports) {
     promptForSharedFilename: promptForSharedFilename,
     downloadSharedProject: downloadSharedProject,
     confirmAutoGearSelection: confirmAutoGearSelection,
+    handleRestoreRehearsalProceed: handleRestoreRehearsalProceed,
+    handleRestoreRehearsalAbort: handleRestoreRehearsalAbort,
     configureSharedImportOptions: configureSharedImportOptions,
     resolveSharedImportMode: resolveSharedImportMode,
     resetPlannerStateAfterFactoryReset: resetPlannerStateAfterFactoryReset,
     __autoGearInternals: {
       buildDefaultVideoDistributionAutoGearRules: buildDefaultVideoDistributionAutoGearRules,
-      buildVideoDistributionAutoRules: buildVideoDistributionAutoRules,
+      buildVideoDistributionAutoRules: function () {
+        if (typeof buildVideoDistributionAutoRules !== 'undefined') {
+          return buildVideoDistributionAutoRules;
+        }
+        if (typeof globalThis !== 'undefined' && globalThis.buildVideoDistributionAutoRules) {
+          return globalThis.buildVideoDistributionAutoRules;
+        }
+        if (typeof window !== 'undefined' && window.buildVideoDistributionAutoRules) {
+          return window.buildVideoDistributionAutoRules;
+        }
+        if (typeof global !== 'undefined' && global.buildVideoDistributionAutoRules) {
+          return global.buildVideoDistributionAutoRules;
+        }
+        return undefined;
+      }(),
       buildAutoGearRulesFromBaseInfo: buildAutoGearRulesFromBaseInfo,
       seedAutoGearRulesFromCurrentProject: seedAutoGearRulesFromCurrentProject,
       clearAutoGearDefaultsSeeded: clearAutoGearDefaultsSeeded
     }
   };
+  module.exports = SESSION_API;
 }
+(function () {
+  var SESSION_API = typeof module !== "undefined" && module.exports ? module.exports : {};
+  var SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {};
+  if (SCOPE && _typeof(SCOPE) === 'object') {
+    var EXPOSE_LIST = ['saveCurrentSession', 'autoSaveCurrentSetup', 'createSettingsBackup', 'handleRestoreRehearsalProceed', 'handleRestoreRehearsalAbort', 'downloadSharedProject', 'encodeSharedSetup', 'decodeSharedSetup', 'applySharedSetup', 'applySharedSetupFromUrl'];
+    EXPOSE_LIST.forEach(function (key) {
+      var value = SESSION_API[key];
+      if (typeof value === 'function' && typeof SCOPE[key] !== 'function') {
+        try {
+          SCOPE[key] = value;
+        } catch (e) {
+          void e;
+        }
+      }
+    });
+    if (_typeof(SESSION_API.__autoGearInternals) === 'object' && SESSION_API.__autoGearInternals) {
+      SCOPE.__autoGearInternals = SESSION_API.__autoGearInternals;
+    }
+  }
+})();
 function fallbackParseVoltageValue(value, fallback) {
   var toNumeric = function toNumeric(candidate) {
     if (typeof candidate === 'number') {

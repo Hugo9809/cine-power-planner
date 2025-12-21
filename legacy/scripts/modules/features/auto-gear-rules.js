@@ -160,6 +160,39 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallback(value);
   }
+  function getFallbackMatteboxLabel(value) {
+    if (value === '__none__') {
+      var activeLang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+      var textSource = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[activeLang] || texts.en || {} : {};
+      return textSource.autoGearMatteboxNone || 'No mattebox selected';
+    }
+    return typeof value === 'string' ? value : '';
+  }
+  function getSafeMatteboxFallbackLabel(value) {
+    return invokeAutoGearLabelHelper('getMatteboxFallbackLabel', getFallbackMatteboxLabel, value);
+  }
+  function normalizeMatteboxOption(value) {
+    var helper = resolveAutoGearHelperFunction('normalizeMatteboxOptionValue');
+    if (typeof helper === 'function') {
+      try {
+        return helper.call(GLOBAL_SCOPE, value);
+      } catch (error) {
+        logMissingAutoGearHelper('normalizeMatteboxOptionValue', error);
+      }
+    }
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') {
+      return '__none__';
+    }
+    return trimmed;
+  }
   function normalizeVideoDistributionOption(value) {
     var helper = resolveAutoGearHelperFunction('normalizeVideoDistributionOptionValue');
     if (typeof helper === 'function') {
@@ -925,6 +958,437 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return rules;
   }
+  function buildBatteryAutoRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = typeof batterySelect !== 'undefined' ? batterySelect : document.getElementById('battery');
+    if (!select || !select.options) return [];
+    var optionValues = [];
+    Array.from(select.options).forEach(function (opt) {
+      var val = typeof opt.value === 'string' ? opt.value.trim() : '';
+      if (val && val !== 'None') optionValues.push(val);
+    });
+    if (!optionValues.length) return [];
+    var currentSelection = baseInfo && typeof baseInfo.battery === 'string' ? baseInfo.battery.trim() : '';
+    var rules = [];
+    optionValues.forEach(function (val) {
+      var variantInfo;
+      var diff;
+      if (val === currentSelection) {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          battery: ''
+        });
+        var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var variantMap = parseGearTableForAutoRules(variantHtml);
+        if (!variantMap) return;
+        diff = diffGearTableMaps(variantMap, baselineMap);
+      } else {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          battery: val
+        });
+        var _variantHtml2 = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var _variantMap2 = parseGearTableForAutoRules(_variantHtml2);
+        if (!_variantMap2) return;
+        diff = diffGearTableMaps(baselineMap, _variantMap2);
+      }
+      if (!diff || !diff.add.length && !diff.remove.length) return;
+      rules.push({
+        id: generateAutoGearId('rule'),
+        label: "Battery: ".concat(val),
+        scenarios: [],
+        battery: [val],
+        add: cloneAutoGearItems(diff.add),
+        remove: cloneAutoGearItems(diff.remove)
+      });
+    });
+    return rules;
+  }
+  function buildDistanceAutoRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = typeof distanceSelect !== 'undefined' ? distanceSelect : document.getElementById('distance');
+    if (!select || !select.options) return [];
+    var optionValues = [];
+    Array.from(select.options).forEach(function (opt) {
+      var val = typeof opt.value === 'string' ? opt.value.trim() : '';
+      if (val && val !== 'None') optionValues.push(val);
+    });
+    if (!optionValues.length) return [];
+    var currentSelection = baseInfo && typeof baseInfo.distance === 'string' ? baseInfo.distance.trim() : '';
+    var rules = [];
+    optionValues.forEach(function (val) {
+      var variantInfo;
+      var diff;
+      if (val === currentSelection) {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          distance: ''
+        });
+        var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var variantMap = parseGearTableForAutoRules(variantHtml);
+        if (!variantMap) return;
+        diff = diffGearTableMaps(variantMap, baselineMap);
+      } else {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          distance: val
+        });
+        var _variantHtml3 = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var _variantMap3 = parseGearTableForAutoRules(_variantHtml3);
+        if (!_variantMap3) return;
+        diff = diffGearTableMaps(baselineMap, _variantMap3);
+      }
+      if (!diff || !diff.add.length && !diff.remove.length) return;
+      rules.push({
+        id: generateAutoGearId('rule'),
+        label: "Distance: ".concat(val),
+        scenarios: [],
+        distance: [val],
+        add: cloneAutoGearItems(diff.add),
+        remove: cloneAutoGearItems(diff.remove)
+      });
+    });
+    return rules;
+  }
+  function buildHotswapAutoRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = typeof hotswapSelect !== 'undefined' ? hotswapSelect : document.getElementById('hotswap');
+    if (!select || !select.options) return [];
+    var optionValues = [];
+    Array.from(select.options).forEach(function (opt) {
+      var val = typeof opt.value === 'string' ? opt.value.trim() : '';
+      if (val && val !== 'None') optionValues.push(val);
+    });
+    if (!optionValues.length) return [];
+    var currentSelection = baseInfo && typeof baseInfo.hotswap === 'string' ? baseInfo.hotswap.trim() : '';
+    var rules = [];
+    optionValues.forEach(function (val) {
+      var variantInfo;
+      var diff;
+      if (val === currentSelection) {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          hotswap: ''
+        });
+        var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var variantMap = parseGearTableForAutoRules(variantHtml);
+        if (!variantMap) return;
+        diff = diffGearTableMaps(variantMap, baselineMap);
+      } else {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          hotswap: val
+        });
+        var _variantHtml4 = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var _variantMap4 = parseGearTableForAutoRules(_variantHtml4);
+        if (!_variantMap4) return;
+        diff = diffGearTableMaps(baselineMap, _variantMap4);
+      }
+      if (!diff || !diff.add.length && !diff.remove.length) return;
+      rules.push({
+        id: generateAutoGearId('rule'),
+        label: "Hotswap: ".concat(val),
+        scenarios: [],
+        hotswap: [val],
+        add: cloneAutoGearItems(diff.add),
+        remove: cloneAutoGearItems(diff.remove)
+      });
+    });
+    return rules;
+  }
+  function buildBatteryPlateAutoRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = typeof batteryPlateSelect !== 'undefined' ? batteryPlateSelect : document.getElementById('batteryPlate');
+    if (!select || !select.options) return [];
+    var optionValues = [];
+    Array.from(select.options).forEach(function (opt) {
+      var val = typeof opt.value === 'string' ? opt.value.trim() : '';
+      if (val && val !== 'None') optionValues.push(val);
+    });
+    if (!optionValues.length) return [];
+    var currentSelection = baseInfo && typeof baseInfo.batteryPlate === 'string' ? baseInfo.batteryPlate.trim() : '';
+    var rules = [];
+    optionValues.forEach(function (val) {
+      var variantInfo;
+      var diff;
+      if (val === currentSelection) {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          batteryPlate: ''
+        });
+        var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var variantMap = parseGearTableForAutoRules(variantHtml);
+        if (!variantMap) return;
+        diff = diffGearTableMaps(variantMap, baselineMap);
+      } else {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          batteryPlate: val
+        });
+        var _variantHtml5 = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var _variantMap5 = parseGearTableForAutoRules(_variantHtml5);
+        if (!_variantMap5) return;
+        diff = diffGearTableMaps(baselineMap, _variantMap5);
+      }
+      if (!diff || !diff.add.length && !diff.remove.length) return;
+      rules.push({
+        id: generateAutoGearId('rule'),
+        label: "Battery Plate: ".concat(val),
+        scenarios: [],
+        batteryPlate: [val],
+        add: cloneAutoGearItems(diff.add),
+        remove: cloneAutoGearItems(diff.remove)
+      });
+    });
+    return rules;
+  }
+  function buildCageAutoRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = typeof cageSelect !== 'undefined' ? cageSelect : document.getElementById('cage');
+    if (!select || !select.options) return [];
+    var optionValues = [];
+    Array.from(select.options).forEach(function (opt) {
+      var val = typeof opt.value === 'string' ? opt.value.trim() : '';
+      if (val && val !== 'None') optionValues.push(val);
+    });
+    if (!optionValues.length) return [];
+    var currentSelection = baseInfo && typeof baseInfo.cage === 'string' ? baseInfo.cage.trim() : '';
+    var rules = [];
+    optionValues.forEach(function (val) {
+      var variantInfo;
+      var diff;
+      if (val === currentSelection) {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          cage: ''
+        });
+        var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var variantMap = parseGearTableForAutoRules(variantHtml);
+        if (!variantMap) return;
+        diff = diffGearTableMaps(variantMap, baselineMap);
+      } else {
+        variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+          cage: val
+        });
+        var _variantHtml6 = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var _variantMap6 = parseGearTableForAutoRules(_variantHtml6);
+        if (!_variantMap6) return;
+        diff = diffGearTableMaps(baselineMap, _variantMap6);
+      }
+      if (!diff || !diff.add.length && !diff.remove.length) return;
+      rules.push({
+        id: generateAutoGearId('rule'),
+        label: "Cage: ".concat(val),
+        scenarios: [],
+        mattebox: [],
+        cameraHandle: [],
+        viewfinderExtension: [],
+        videoDistribution: [],
+        cage: [val],
+        add: cloneAutoGearItems(diff.add),
+        remove: cloneAutoGearItems(diff.remove)
+      });
+    });
+    return rules;
+  }
+  function buildTripodAutoGearRules(baseInfo, baselineMap) {
+    if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var brand = baseInfo && typeof baseInfo.tripodHeadBrand === 'string' ? baseInfo.tripodHeadBrand.trim() : '';
+    var bowl = baseInfo && typeof baseInfo.tripodBowl === 'string' ? baseInfo.tripodBowl.trim() : '';
+    var rules = [];
+    if (brand && bowl && brand !== 'None' && bowl !== 'None') {
+      var variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+        tripodHeadBrand: '',
+        tripodBowl: ''
+      });
+      var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+        requiredScenarios: ''
+      }));
+      var variantMap = parseGearTableForAutoRules(variantHtml);
+      if (variantMap) {
+        var diff = diffGearTableMaps(variantMap, baselineMap);
+        if (diff.add.length || diff.remove.length) {
+          rules.push({
+            id: generateAutoGearId('rule'),
+            label: "Tripod Head: ".concat(brand, " (").concat(bowl, ")"),
+            scenarios: [],
+            mattebox: [],
+            cameraHandle: [],
+            viewfinderExtension: [],
+            videoDistribution: [],
+            tripodHeadBrand: [brand],
+            tripodBowl: [bowl],
+            add: cloneAutoGearItems(diff.add),
+            remove: cloneAutoGearItems(diff.remove)
+          });
+        }
+      }
+    }
+    var spreader = baseInfo && typeof baseInfo.tripodSpreader === 'string' ? baseInfo.tripodSpreader.trim() : '';
+    if (spreader && spreader !== 'None') {
+      var _variantInfo2 = _objectSpread(_objectSpread({}, baseInfo), {}, {
+        tripodSpreader: ''
+      });
+      var _variantHtml7 = generateGearListHtml(_objectSpread(_objectSpread({}, _variantInfo2), {}, {
+        requiredScenarios: ''
+      }));
+      var _variantMap7 = parseGearTableForAutoRules(_variantHtml7);
+      if (_variantMap7) {
+        var _diff = diffGearTableMaps(_variantMap7, baselineMap);
+        if (_diff.add.length || _diff.remove.length) {
+          rules.push({
+            id: generateAutoGearId('rule'),
+            label: "Tripod Spreader: ".concat(spreader),
+            scenarios: [],
+            mattebox: [],
+            cameraHandle: [],
+            viewfinderExtension: [],
+            videoDistribution: [],
+            tripodSpreader: [spreader],
+            add: cloneAutoGearItems(_diff.add),
+            remove: cloneAutoGearItems(_diff.remove)
+          });
+        }
+      }
+    }
+    var types = extractAutoGearSelections(baseInfo && baseInfo.tripodTypes);
+    types.forEach(function (t) {
+      var others = types.filter(function (val) {
+        return val !== t;
+      });
+      var variantInfo = _objectSpread(_objectSpread({}, baseInfo), {}, {
+        tripodTypes: others.join(', ')
+      });
+      var variantHtml = generateGearListHtml(_objectSpread(_objectSpread({}, variantInfo), {}, {
+        requiredScenarios: ''
+      }));
+      var variantMap = parseGearTableForAutoRules(variantHtml);
+      if (variantMap) {
+        var _diff2 = diffGearTableMaps(variantMap, baselineMap);
+        if (_diff2.add.length || _diff2.remove.length) {
+          rules.push({
+            id: generateAutoGearId('rule'),
+            label: "Tripod Type: ".concat(t),
+            scenarios: [],
+            mattebox: [],
+            cameraHandle: [],
+            viewfinderExtension: [],
+            videoDistribution: [],
+            tripodTypes: [t],
+            add: cloneAutoGearItems(_diff2.add),
+            remove: cloneAutoGearItems(_diff2.remove)
+          });
+        }
+      }
+    });
+    return rules;
+  }
+  function buildTripodPreferenceAutoGearRules() {
+    var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var brand = typeof baseInfo.tripodHeadBrand === 'string' ? baseInfo.tripodHeadBrand.trim() : '';
+    var bowl = typeof baseInfo.tripodBowl === 'string' ? baseInfo.tripodBowl.trim() : '';
+    if (!brand || !bowl) return [];
+    var normalizedBrand = normalizeAutoGearTriggerValue(brand);
+    var normalizedBowl = normalizeAutoGearTriggerValue(bowl);
+    if (!normalizedBrand || !normalizedBowl) return [];
+    var combos = [{
+      brand: "O'Connor",
+      entries: [{
+        bowl: '100mm bowl',
+        item: "O'Connor Ultimate 1040 Fluid-Head 100mm bowl"
+      }, {
+        bowl: '150mm bowl',
+        item: "O'Connor Ultimate 2560 Fluid-Head 150mm bowl"
+      }, {
+        bowl: 'Mitchell Mount',
+        item: "O'Connor Ultimate 2560 Fluid-Head Mitchell Mount"
+      }]
+    }, {
+      brand: 'Sachtler',
+      entries: [{
+        bowl: '75mm bowl',
+        item: 'Sachtler aktiv8 head 75mm bowl'
+      }, {
+        bowl: '100mm bowl',
+        item: 'Sachtler aktiv18T head 100mm bowl'
+      }, {
+        bowl: '150mm bowl',
+        item: 'Sachtler Cine 30 head 150mm bowl'
+      }, {
+        bowl: 'Mitchell Mount',
+        item: 'Sachtler Cine 30 head Mitchell mount'
+      }]
+    }];
+    var matchedBrand = combos.find(function (entry) {
+      return normalizeAutoGearTriggerValue(entry.brand) === normalizedBrand;
+    });
+    if (!matchedBrand) return [];
+    var matchingEntries = matchedBrand.entries.filter(function (entry) {
+      return normalizeAutoGearTriggerValue(entry.bowl) === normalizedBowl;
+    });
+    if (!matchingEntries.length) return [];
+    return matchingEntries.map(function (entry) {
+      var itemName = entry.item;
+      var contextNotes = ['Tripod preferences'];
+      return {
+        id: generateAutoGearId('rule'),
+        label: "Tripod head: ".concat(itemName),
+        scenarios: [],
+        mattebox: [],
+        cameraHandle: [],
+        viewfinderExtension: [],
+        videoDistribution: [],
+        camera: [],
+        monitor: [],
+        tripodHeadBrand: [matchedBrand.brand],
+        tripodBowl: [entry.bowl],
+        tripodTypes: [],
+        tripodSpreader: [],
+        crewPresent: [],
+        crewAbsent: [],
+        wireless: [],
+        motors: [],
+        controllers: [],
+        distance: [],
+        add: [{
+          id: generateAutoGearId('item'),
+          name: itemName,
+          category: 'Grip',
+          quantity: 1,
+          screenSize: '',
+          selectorType: 'tripodHeadBrand',
+          selectorDefault: itemName,
+          selectorEnabled: true,
+          notes: '',
+          contextNotes: contextNotes
+        }],
+        remove: []
+      };
+    });
+  }
   function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
     if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
       return [];
@@ -1016,92 +1480,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }],
       remove: []
     }];
-  }
-  function buildTripodPreferenceAutoGearRules() {
-    var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var brand = typeof baseInfo.tripodHeadBrand === 'string' ? baseInfo.tripodHeadBrand.trim() : '';
-    var bowl = typeof baseInfo.tripodBowl === 'string' ? baseInfo.tripodBowl.trim() : '';
-    if (!brand || !bowl) return [];
-    var normalizedBrand = normalizeAutoGearTriggerValue(brand);
-    var normalizedBowl = normalizeAutoGearTriggerValue(bowl);
-    if (!normalizedBrand || !normalizedBowl) return [];
-    var combos = [{
-      brand: "O'Connor",
-      entries: [{
-        bowl: '100mm bowl',
-        item: "O'Connor Ultimate 1040 Fluid-Head 100mm bowl"
-      }, {
-        bowl: '150mm bowl',
-        item: "O'Connor Ultimate 2560 Fluid-Head 150mm bowl"
-      }, {
-        bowl: 'Mitchell Mount',
-        item: "O'Connor Ultimate 2560 Fluid-Head Mitchell Mount"
-      }]
-    }, {
-      brand: 'Sachtler',
-      entries: [{
-        bowl: '75mm bowl',
-        item: 'Sachtler aktiv8 head 75mm bowl'
-      }, {
-        bowl: '100mm bowl',
-        item: 'Sachtler aktiv18T head 100mm bowl'
-      }, {
-        bowl: '150mm bowl',
-        item: 'Sachtler Cine 30 head 150mm bowl'
-      }, {
-        bowl: 'Mitchell Mount',
-        item: 'Sachtler Cine 30 head Mitchell mount'
-      }]
-    }];
-    var matchedBrand = combos.find(function (entry) {
-      return normalizeAutoGearTriggerValue(entry.brand) === normalizedBrand;
-    });
-    if (!matchedBrand) return [];
-    var matchingEntries = matchedBrand.entries.filter(function (entry) {
-      return normalizeAutoGearTriggerValue(entry.bowl) === normalizedBowl;
-    });
-    if (!matchingEntries.length) return [];
-    return matchingEntries.map(function (entry) {
-      var itemName = entry.item;
-      var contextNotes = ['Tripod preferences'];
-      return {
-        id: generateAutoGearId('rule'),
-        label: "Tripod head: ".concat(itemName),
-        scenarios: [],
-        mattebox: [],
-        cameraHandle: [],
-        viewfinderExtension: [],
-        deliveryResolution: [],
-        videoDistribution: [],
-        camera: [],
-        cameraWeight: null,
-        monitor: [],
-        tripodHeadBrand: [matchedBrand.brand],
-        tripodBowl: [entry.bowl],
-        tripodTypes: [],
-        tripodSpreader: [],
-        crewPresent: [],
-        crewAbsent: [],
-        wireless: [],
-        motors: [],
-        controllers: [],
-        distance: [],
-        shootingDays: null,
-        add: [{
-          id: generateAutoGearId('item'),
-          name: itemName,
-          category: 'Grip',
-          quantity: 1,
-          screenSize: '',
-          selectorType: 'tripodHeadBrand',
-          selectorDefault: itemName,
-          selectorEnabled: true,
-          notes: '',
-          contextNotes: contextNotes
-        }],
-        remove: []
-      };
-    });
   }
   var ARRI_VIEWFINDER_BRACKET_NAME = 'ARRI K2.74000.0 VEB-3 Viewfinder Extension Bracket';
   var ARRI_VIEWFINDER_BRACKET_CATEGORY = 'Camera Support';
@@ -1218,7 +1596,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return rules;
   }
-  function buildDefaultVideoDistributionAutoGearRules() {
+  function buildDefaultVideoDistributionRules() {
     var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
       return [];
@@ -1347,39 +1725,67 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return generatedRules;
   }
   function buildDefaultMatteboxAutoGearRules() {
-    var category = 'Matte box + filter';
-    var createItems = function createItems(names) {
-      return names.map(function (name) {
-        return {
-          id: generateAutoGearId('item'),
-          name: name,
-          category: category,
-          quantity: 1
-        };
+    return [];
+  }
+  function buildMatteboxAutoGearRules() {
+    var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+      return [];
+    }
+    var select = document.getElementById('mattebox');
+    if (!select) return [];
+    var optionValues = [];
+    var seen = new Set();
+    Array.from(select.options || []).forEach(function (option) {
+      if (!option) return;
+      var rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+      var normalized = normalizeMatteboxOption(rawValue);
+      if (!normalized || normalized === '__none__') return;
+      if (seen.has(normalized)) return;
+      seen.add(normalized);
+      optionValues.push(rawValue);
+    });
+    if (!optionValues.length) return [];
+    var baseProjectInfo = _objectSpread({}, baseInfo || {});
+    delete baseProjectInfo.mattebox;
+    var emptyHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseProjectInfo), {}, {
+      requiredScenarios: ''
+    }));
+    var emptyMap = parseGearTableForAutoRules(emptyHtml);
+    if (!emptyMap) return [];
+    var generatedRules = [];
+    var handledTriggers = new Set();
+    optionValues.forEach(function (rawValue) {
+      var trimmed = typeof rawValue === 'string' ? rawValue.trim() : '';
+      if (!trimmed) return;
+      var normalized = normalizeMatteboxOption(trimmed);
+      if (!normalized || handledTriggers.has(normalized)) return;
+      handledTriggers.add(normalized);
+      var infoForSelection = _objectSpread(_objectSpread({}, baseInfo || {}), {}, {
+        mattebox: trimmed
       });
-    };
-    return [{
-      id: generateAutoGearId('rule'),
-      label: 'Mattebox: Swing Away',
-      scenarios: [],
-      mattebox: ['Swing Away'],
-      add: createItems(['ARRI LMB 4x5 Pro Set', 'ARRI LMB 19mm Studio Rod Adapter', 'ARRI LMB 4x5 / LMB-6 Tray Catcher']),
-      remove: []
-    }, {
-      id: generateAutoGearId('rule'),
-      label: 'Mattebox: Rod based',
-      scenarios: [],
-      mattebox: ['Rod based'],
-      add: createItems(['ARRI LMB 4x5 15mm LWS Set 3-Stage', 'ARRI LMB 19mm Studio Rod Adapter', 'ARRI LMB 4x5 / LMB-6 Tray Catcher', 'ARRI LMB 4x5 Side Flags', 'ARRI LMB Flag Holders', 'ARRI LMB 4x5 Set of Mattes spherical', 'ARRI LMB Accessory Adapter', 'ARRI Anti-Reflection Frame 4x5.65']),
-      remove: []
-    }, {
-      id: generateAutoGearId('rule'),
-      label: 'Mattebox: Clamp On',
-      scenarios: [],
-      mattebox: ['Clamp On'],
-      add: createItems(['ARRI LMB 4x5 Clamp-On (3-Stage)', 'ARRI LMB 4x5 / LMB-6 Tray Catcher', 'ARRI LMB 4x5 Side Flags', 'ARRI LMB Flag Holders', 'ARRI LMB 4x5 Set of Mattes spherical', 'ARRI LMB Accessory Adapter', 'ARRI Anti-Reflection Frame 4x5.65', 'ARRI LMB 4x5 Clamp Adapter Set Pro']),
-      remove: []
-    }];
+      var selectionHtml = generateGearListHtml(_objectSpread(_objectSpread({}, infoForSelection), {}, {
+        requiredScenarios: ''
+      }));
+      var selectionMap = parseGearTableForAutoRules(selectionHtml);
+      if (!selectionMap) return;
+      var diff = diffGearTableMaps(emptyMap, selectionMap);
+      var additions = cloneAutoGearItems(diff.add);
+      var removals = cloneAutoGearItems(diff.remove);
+      if (!additions.length && !removals.length) return;
+      generatedRules.push({
+        id: generateAutoGearId('rule'),
+        label: getSafeMatteboxFallbackLabel(trimmed),
+        scenarios: [],
+        mattebox: [trimmed],
+        cameraHandle: [],
+        viewfinderExtension: [],
+        videoDistribution: [],
+        add: additions,
+        remove: removals
+      });
+    });
+    return generatedRules;
   }
   function resolveHandUnitCompatibilityMaps() {
     var groups = null;
@@ -1919,6 +2325,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(function (rule) {
         return rules.push(rule);
       });
+      buildMatteboxAutoGearRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildCageAutoRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildTripodAutoGearRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildBatteryAutoRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildDistanceAutoRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildHotswapAutoRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
+      buildBatteryPlateAutoRules(baseInfo, baselineMap).forEach(function (rule) {
+        return rules.push(rule);
+      });
       var existingSignatures = new Set(rules.map(autoGearRuleSignature).filter(function (signature) {
         return typeof signature === 'string' && signature;
       }));
@@ -1933,7 +2360,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           existingSignatures.add(signature);
         });
       };
-      appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
+      appendUniqueRules(buildDefaultVideoDistributionRules(baseInfo));
       appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
       appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
       appendUniqueRules(buildArriViewfinderBracketRules(baseInfo));
@@ -2160,7 +2587,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     buildVideoDistributionAutoRules: buildVideoDistributionAutoRules,
     buildOnboardMonitorRiggingAutoGearRules: buildOnboardMonitorRiggingAutoGearRules,
     buildTripodPreferenceAutoGearRules: buildTripodPreferenceAutoGearRules,
-    buildDefaultVideoDistributionAutoGearRules: buildDefaultVideoDistributionAutoGearRules,
+    buildDefaultVideoDistributionAutoGearRules: buildDefaultVideoDistributionRules,
     buildDefaultMatteboxAutoGearRules: buildDefaultMatteboxAutoGearRules,
     buildAutoGearAnyMotorRule: buildAutoGearAnyMotorRule,
     buildAlwaysAutoGearRule: buildAlwaysAutoGearRule,
@@ -2183,7 +2610,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn('Unable to register cineFeatureAutoGearRules module.', error);
     }
   });
-  var globalExports = [['cineFeatureAutoGearRules', autoGearRulesAPI], ['cloneAutoGearItems', cloneAutoGearItems], ['cloneAutoGearRuleItem', cloneAutoGearRuleItem], ['cloneAutoGearRule', cloneAutoGearRule], ['cloneAutoGearRules', cloneAutoGearRules], ['setFactoryAutoGearRulesSnapshot', setFactoryAutoGearRulesSnapshot], ['ensureDefaultMatteboxAutoGearRules', ensureDefaultMatteboxAutoGearRules], ['captureAutoGearSeedContext', captureAutoGearSeedContext], ['buildAutoGearRulesFromBaseInfo', buildAutoGearRulesFromBaseInfo], ['buildArriViewfinderBracketRules', buildArriViewfinderBracketRules], ['computeFactoryAutoGearRules', computeFactoryAutoGearRules], ['seedAutoGearRulesFromCurrentProject', seedAutoGearRulesFromCurrentProject], ['resetAutoGearRulesToFactoryAdditions', resetAutoGearRulesToFactoryAdditions], ['factoryAutoGearRulesSnapshot', null], ['factoryAutoGearSeedContext', null]];
+  var globalExports = [['cineFeatureAutoGearRules', autoGearRulesAPI], ['buildDefaultVideoDistributionAutoGearRules', buildDefaultVideoDistributionRules], ['buildVideoDistributionAutoRules', buildVideoDistributionAutoRules], ['buildTripodPreferenceAutoGearRules', buildTripodPreferenceAutoGearRules], ['cloneAutoGearItems', cloneAutoGearItems], ['cloneAutoGearRuleItem', cloneAutoGearRuleItem], ['cloneAutoGearRule', cloneAutoGearRule], ['cloneAutoGearRules', cloneAutoGearRules], ['setFactoryAutoGearRulesSnapshot', setFactoryAutoGearRulesSnapshot], ['ensureDefaultMatteboxAutoGearRules', ensureDefaultMatteboxAutoGearRules], ['captureAutoGearSeedContext', captureAutoGearSeedContext], ['buildAutoGearRulesFromBaseInfo', buildAutoGearRulesFromBaseInfo], ['buildArriViewfinderBracketRules', buildArriViewfinderBracketRules], ['computeFactoryAutoGearRules', computeFactoryAutoGearRules], ['seedAutoGearRulesFromCurrentProject', seedAutoGearRulesFromCurrentProject], ['resetAutoGearRulesToFactoryAdditions', resetAutoGearRulesToFactoryAdditions], ['factoryAutoGearRulesSnapshot', null], ['factoryAutoGearSeedContext', null]];
   globalExports.forEach(function (_ref3) {
     var _ref4 = _slicedToArray(_ref3, 2),
       name = _ref4[0],

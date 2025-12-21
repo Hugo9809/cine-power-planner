@@ -1,5 +1,43 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var CINE_LOADER_CACHE_BUSTER = Date.now();
+var CINE_LOADER_CACHE_BUSTER = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '1.0.0';
+var safeConsole = {
+  log: function log() {
+    try {
+      if (typeof console !== 'undefined' && typeof console.log === 'function') {
+        console.log.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  warn: function warn() {
+    try {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  error: function error() {
+    try {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  },
+  info: function info() {
+    try {
+      if (typeof console !== 'undefined' && typeof console.info === 'function') {
+        console.info.apply(console, arguments);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+};
 function resolveCriticalGlobalScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
@@ -2688,7 +2726,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           settings.onComplete();
         } catch (completeError) {
-          console.error('Parallel loader completion callback failed', completeError);
+          safeConsole.error('Parallel loader completion callback failed', completeError);
         }
       }
       return {
@@ -2707,7 +2745,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           settings.onComplete();
         } catch (callbackError) {
-          console.error('Parallel loader completion callback failed', callbackError);
+          safeConsole.error('Parallel loader completion callback failed', callbackError);
         }
       }
     }
@@ -2720,7 +2758,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         try {
           shouldAbort = settings.onError(context) === true;
         } catch (callbackError) {
-          console.error('Parallel loader error callback failed', callbackError);
+          safeConsole.error('Parallel loader error callback failed', callbackError);
         }
       }
       if (shouldAbort) {
@@ -2744,7 +2782,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               return;
             }
             resetScriptRetryState(currentUrl);
-            console.log('Parallel script loaded:', currentUrl);
+            safeConsole.log('Parallel script loaded:', currentUrl);
             remaining -= 1;
             if (remaining <= 0) {
               finalizeParallel();
@@ -2769,7 +2807,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               return;
             }
             resetScriptRetryState(currentUrl);
-            console.error('Failed to load parallel script:', currentUrl, '→', resolvedUrl, event && event.error);
+            safeConsole.error('Failed to load parallel script:', currentUrl, '→', resolvedUrl, event && event.error);
             handleError({
               event: event,
               url: currentUrl,
@@ -2822,21 +2860,21 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     var completed = false;
     var settings = options || {};
     var totalCount = Array.isArray(items) ? items.length : 0;
-    console.log('loadScriptsSequentially', items);
+    safeConsole.log('loadScriptsSequentially', items);
     function finalize() {
       if (completed) {
         return;
       }
-      console.log('Finalizing loader sequence');
+      safeConsole.log('Finalizing loader sequence');
       completed = true;
       flushAllScriptRetryState();
-      console.log('Dispatching cine-loader-complete');
+      safeConsole.log('Dispatching cine-loader-complete');
       dispatchLoaderEvent('cine-loader-complete');
       if (typeof settings.onComplete === 'function') {
         try {
           settings.onComplete();
         } catch (callbackError) {
-          console.error('Loader completion callback failed', callbackError);
+          safeConsole.error('Loader completion callback failed', callbackError);
         }
       }
     }
@@ -2848,11 +2886,11 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         finalize();
         return;
       }
-      console.log('loadScriptAtIndex', currentIndex, items[currentIndex]);
+      safeConsole.log('loadScriptAtIndex', currentIndex, items[currentIndex]);
       var currentItem = items[currentIndex];
       if (currentItem && _typeof(currentItem) === 'object' && !Array.isArray(currentItem)) {
         if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
-          console.log('Starting parallel script block', currentItem.parallel.length, 'items');
+          safeConsole.log('Starting parallel script block', currentItem.parallel.length, 'items');
           loadScriptsInParallel(currentItem.parallel, {
             onError: function handleParallelError(context) {
               var shouldAbort = false;
@@ -2860,7 +2898,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
                 try {
                   shouldAbort = settings.onError(context) === true;
                 } catch (callbackError) {
-                  console.error('Loader error callback failed', callbackError);
+                  safeConsole.error('Loader error callback failed', callbackError);
                 }
               }
               if (shouldAbort) {
@@ -2873,7 +2911,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               if (aborted) {
                 return;
               }
-              console.log('Parallel script block finished');
+              safeConsole.log('Parallel script block finished');
               index = currentIndex + 1;
               loadScriptAtIndex(index);
             }
@@ -2924,7 +2962,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           return;
         }
         resetScriptRetryState(currentUrl);
-        console.error('Failed to load script:', currentUrl, '→', resolvedUrl, event && event.error);
+        safeConsole.error('Failed to load script:', currentUrl, '→', resolvedUrl, event && event.error);
         var shouldAbort = false;
         if (typeof settings.onError === 'function') {
           try {
@@ -2934,7 +2972,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
               index: currentIndex
             }) === true;
           } catch (callbackError) {
-            console.error('Loader error callback failed', callbackError);
+            safeConsole.error('Loader error callback failed', callbackError);
           }
         }
         if (shouldAbort) {
@@ -3186,7 +3224,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return state.promise;
   }
   function loadScriptBundle(bundle, options) {
-    console.log('loadScriptBundle', bundle);
+    safeConsole.log('loadScriptBundle', bundle);
     if (!bundle || !bundle.core || bundle.core.length === 0) {
       if (bundle && bundle.deferred) {
         scheduleDeferredScripts(bundle.deferred);
@@ -3215,14 +3253,14 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   }
   var modernScriptBundle = {
     core: ['src/scripts/globalthis-polyfill.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/data/devices/index.js', {
-      parallel: ['src/data/rental-houses.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/translations/en.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js']
-    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/runtime.js', 'src/scripts/modules/core/localization.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-loader-hook.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/bootstrap.js', 'src/scripts/modules/app-core/pink-mode.js', 'src/scripts/modules/app-core/localization.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-runtime-helpers.js', 'src/scripts/runtime/bootstrap.js', 'src/scripts/app-core-environment.js', 'src/scripts/modules/icons.js', 'src/scripts/modules/device-normalization.js', 'src/scripts/app-core-bootstrap.js', 'src/scripts/app-core-runtime-shared.js', 'src/scripts/app-core-pink-mode.js', 'src/scripts/app-core-runtime-candidate-scopes.js', 'src/scripts/app-core-runtime-global-tools.js', 'src/scripts/app-core-ui-helpers.js', 'src/scripts/app-core-runtime-ui.js', 'src/scripts/auto-gear/normalizers.js', 'src/scripts/auto-gear/storage.js', 'src/scripts/auto-gear/ui.js', 'src/scripts/own-gear/store.js', 'src/scripts/own-gear/view.js', 'src/scripts/contacts/profile.js', 'src/scripts/contacts/list.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+      parallel: ['src/data/rental-houses.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/recordingMedia.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/translations/en.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/runtime-environment-helpers.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js']
+    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/runtime.js', 'src/scripts/modules/core/localization.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/legacy-shims.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-loader-hook.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/bootstrap.js', 'src/scripts/modules/core/pink-mode.js', 'src/scripts/modules/app-core/localization.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-runtime-helpers.js', 'src/scripts/runtime/bootstrap.js', 'src/scripts/app-core-environment.js', 'src/scripts/modules/icons.js', 'src/scripts/modules/device-normalization.js', 'src/scripts/app-core-bootstrap.js', 'src/scripts/app-core-runtime-shared.js', 'src/scripts/app-core-runtime-candidate-scopes.js', 'src/scripts/app-core-runtime-global-tools.js', 'src/scripts/app-core-ui-helpers.js', 'src/scripts/app-core-runtime-ui.js', 'src/scripts/auto-gear/normalizers.js', 'src/scripts/auto-gear/storage.js', 'src/scripts/auto-gear/ui.js', 'src/scripts/own-gear/store.js', 'src/scripts/own-gear/view.js', 'src/scripts/contacts/profile.js', 'src/scripts/contacts/list.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
     deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js', 'src/scripts/modules/features/onboarding-tour.js']
   };
   var legacyScriptBundle = {
     core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/rental-houses.js', {
-      parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js']
-    }, 'legacy/scripts/storage.js', 'src/scripts/translations/en.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/runtime-environment-helpers.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime.js', 'legacy/scripts/modules/core/localization-runtime-environment.js', 'legacy/scripts/modules/core/pink-mode.js', 'legacy/scripts/modules/core/device-schema.js', 'legacy/scripts/modules/core/project-intelligence.js', 'legacy/scripts/modules/core/persistence-guard.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/core/experience.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/settings-and-appearance.js', 'legacy/scripts/app-core-auto-gear-ui.js', 'legacy/scripts/modules/features/auto-gear-rules.js', 'legacy/scripts/modules/features/connection-diagram.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-loader-hook.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/modules/app-core/bootstrap.js', 'legacy/scripts/modules/app-core/pink-mode.js', 'legacy/scripts/modules/app-core/localization.js', 'legacy/scripts/modules/app-core/runtime.js', 'legacy/scripts/modules/app-core/settings-documentation-tracker.js', 'legacy/scripts/app-core-text.js', 'legacy/scripts/app-core-runtime-scopes.js', 'legacy/scripts/app-core-runtime-support.js', 'legacy/scripts/app-core-runtime-helpers.js', 'legacy/scripts/runtime/bootstrap.js', 'legacy/scripts/app-core-environment.js', 'legacy/scripts/app-core-bootstrap.js', 'legacy/scripts/app-core-runtime-shared.js', 'legacy/scripts/app-core-pink-mode.js', 'legacy/scripts/app-core-runtime-candidate-scopes.js', 'legacy/scripts/app-core-runtime-global-tools.js', 'legacy/scripts/app-core-ui-helpers.js', 'legacy/scripts/app-core-localization-accessors.js', 'src/scripts/auto-gear/normalizers.js', 'legacy/scripts/auto-gear/storage.js', 'legacy/scripts/auto-gear/ui.js', 'legacy/scripts/own-gear/store.js', 'legacy/scripts/own-gear/view.js', 'legacy/scripts/contacts/profile.js', 'legacy/scripts/contacts/list.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/restore-verification.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/script.js'],
+      parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'src/data/devices/recordingMedia.js', 'legacy/data/devices/wirelessReceivers.js']
+    }, 'legacy/scripts/storage.js', 'src/scripts/translations/en.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/runtime-environment-helpers.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime.js', 'legacy/scripts/modules/core/localization-runtime-environment.js', 'legacy/scripts/modules/core/pink-mode.js', 'legacy/scripts/modules/core/device-schema.js', 'legacy/scripts/modules/core/project-intelligence.js', 'legacy/scripts/modules/core/persistence-guard.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/core/experience.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/settings-and-appearance.js', 'legacy/scripts/app-core-auto-gear-ui.js', 'legacy/scripts/modules/features/auto-gear-rules.js', 'legacy/scripts/modules/features/connection-diagram.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-loader-hook.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/modules/app-core/bootstrap.js', 'legacy/scripts/modules/app-core/pink-mode.js', 'legacy/scripts/modules/app-core/localization.js', 'legacy/scripts/modules/app-core/runtime.js', 'legacy/scripts/modules/app-core/settings-documentation-tracker.js', 'legacy/scripts/app-core-text.js', 'legacy/scripts/app-core-runtime-scopes.js', 'legacy/scripts/app-core-runtime-support.js', 'legacy/scripts/app-core-runtime-helpers.js', 'legacy/scripts/runtime/bootstrap.js', 'legacy/scripts/app-core-environment.js', 'legacy/scripts/app-core-bootstrap.js', 'legacy/scripts/app-core-runtime-shared.js', 'legacy/scripts/app-core-pink-mode.js', 'legacy/scripts/app-core-runtime-candidate-scopes.js', 'legacy/scripts/app-core-runtime-global-tools.js', 'legacy/scripts/app-core-ui-helpers.js', 'legacy/scripts/app-core-localization-accessors.js', 'src/scripts/auto-gear/normalizers.js', 'legacy/scripts/auto-gear/storage.js', 'legacy/scripts/auto-gear/ui.js', 'legacy/scripts/own-gear/store.js', 'legacy/scripts/own-gear/view.js', 'legacy/scripts/modules/device-normalization.js', 'legacy/scripts/contacts/profile.js', 'legacy/scripts/contacts/list.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/restore-verification.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/script.js'],
     deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js', 'legacy/scripts/modules/features/onboarding-tour.js']
   };
   function startLoading() {

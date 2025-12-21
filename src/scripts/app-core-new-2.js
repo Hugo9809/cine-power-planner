@@ -17707,8 +17707,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     populateMonitorSelect();
     populateSelect(videoSelect, devices.video || {}, true);
     updateCageSelectOptions();
-    motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
-    controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+    }
     populateSelect(distanceSelect, (devices.fiz && devices.fiz.distance) || {}, true);
     populateSelect(batterySelect, devices.batteries || {}, true);
     populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
@@ -17718,8 +17722,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // Enable search inside dropdowns
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
       .forEach(sel => attachSelectSearch(sel));
-    motorSelects.forEach(sel => attachSelectSearch(sel));
-    controllerSelects.forEach(sel => attachSelectSearch(sel));
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(sel => attachSelectSearch(sel));
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(sel => attachSelectSearch(sel));
+    }
 
     if (cameraSelect) {
       cameraSelect.addEventListener('change', () => {
@@ -17792,8 +17800,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     });
 
     // FIZ Dropdowns
-    motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    }
 
     // Calculation function delegates to cineResults module for power and runtime processing
     function updateCalculations() {
@@ -18276,8 +18288,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video || {}, true);
       updateCageSelectOptions();
-      motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
-      controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+      if (Array.isArray(motorSelects)) {
+        motorSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.motors) || {}, true));
+      }
+      if (Array.isArray(controllerSelects)) {
+        controllerSelects.forEach(sel => populateSelect(sel, (devices.fiz && devices.fiz.controllers) || {}, true));
+      }
       populateSelect(distanceSelect, (devices.fiz && devices.fiz.distance) || {}, true);
       populateSelect(batterySelect, devices.batteries, true);
 

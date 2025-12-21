@@ -143,13 +143,13 @@
   const detectGlobalScope =
     ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.detectGlobalScope === 'function'
       ? function detectWithContext() {
-          try {
-            return ENVIRONMENT_CONTEXT.detectGlobalScope();
-          } catch (error) {
-            void error;
-          }
-          return fallbackDetectGlobalScope();
+        try {
+          return ENVIRONMENT_CONTEXT.detectGlobalScope();
+        } catch (error) {
+          void error;
         }
+        return fallbackDetectGlobalScope();
+      }
       : fallbackDetectGlobalScope;
 
   const PRIMARY_SCOPE =
@@ -921,28 +921,28 @@
       : typeof autoGearWeightScope.normalizeAutoGearWeightOperator === 'function'
         ? autoGearWeightScope.normalizeAutoGearWeightOperator
         : function normalizeAutoGearWeightOperator(value) {
-            if (typeof value !== 'string') return 'greater';
-            const normalized = value.trim().toLowerCase();
-            if (!normalized) return 'greater';
-            if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
-              return 'greater';
-            }
-            if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
-              return 'less';
-            }
-            if (
-              normalized === '=' ||
-              normalized === '==' ||
-              normalized === 'equal' ||
-              normalized === 'equals' ||
-              normalized === 'exactly' ||
-              normalized === 'match' ||
-              normalized === 'matches'
-            ) {
-              return 'equal';
-            }
+          if (typeof value !== 'string') return 'greater';
+          const normalized = value.trim().toLowerCase();
+          if (!normalized) return 'greater';
+          if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
             return 'greater';
-          });
+          }
+          if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
+            return 'less';
+          }
+          if (
+            normalized === '=' ||
+            normalized === '==' ||
+            normalized === 'equal' ||
+            normalized === 'equals' ||
+            normalized === 'exactly' ||
+            normalized === 'match' ||
+            normalized === 'matches'
+          ) {
+            return 'equal';
+          }
+          return 'greater';
+        });
 
   const normalizeAutoGearWeightValue =
     (autoGearWeightHelpers && typeof autoGearWeightHelpers.normalizeAutoGearWeightValue === 'function'
@@ -950,22 +950,22 @@
       : typeof autoGearWeightScope.normalizeAutoGearWeightValue === 'function'
         ? autoGearWeightScope.normalizeAutoGearWeightValue
         : function normalizeAutoGearWeightValue(value) {
-            if (typeof value === 'number' && Number.isFinite(value)) {
-              const rounded = Math.round(value);
-              return rounded >= 0 ? rounded : null;
-            }
-            if (typeof value === 'string') {
-              const trimmed = value.trim();
-              if (!trimmed) return null;
-              const sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
-              if (!sanitized) return null;
-              const parsed = Number.parseFloat(sanitized);
-              if (!Number.isFinite(parsed)) return null;
-              const rounded = Math.round(parsed);
-              return rounded >= 0 ? rounded : null;
-            }
-            return null;
-          });
+          if (typeof value === 'number' && Number.isFinite(value)) {
+            const rounded = Math.round(value);
+            return rounded >= 0 ? rounded : null;
+          }
+          if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (!trimmed) return null;
+            const sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
+            if (!sanitized) return null;
+            const parsed = Number.parseFloat(sanitized);
+            if (!Number.isFinite(parsed)) return null;
+            const rounded = Math.round(parsed);
+            return rounded >= 0 ? rounded : null;
+          }
+          return null;
+        });
 
   const normalizeAutoGearCameraWeightCondition =
     (autoGearWeightHelpers && typeof autoGearWeightHelpers.normalizeAutoGearCameraWeightCondition === 'function'
@@ -973,8 +973,8 @@
       : typeof autoGearWeightScope.normalizeAutoGearCameraWeightCondition === 'function'
         ? autoGearWeightScope.normalizeAutoGearCameraWeightCondition
         : function normalizeAutoGearCameraWeightCondition() {
-            return null;
-          });
+          return null;
+        });
 
   const formatAutoGearWeight =
     (autoGearWeightHelpers && typeof autoGearWeightHelpers.formatAutoGearWeight === 'function'
@@ -982,16 +982,16 @@
       : typeof autoGearWeightScope.formatAutoGearWeight === 'function'
         ? autoGearWeightScope.formatAutoGearWeight
         : function formatAutoGearWeight(value) {
-            if (!Number.isFinite(value)) return '';
-            try {
-              if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-                return new Intl.NumberFormat().format(value);
-              }
-            } catch (error) {
-              void error;
+          if (!Number.isFinite(value)) return '';
+          try {
+            if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+              return new Intl.NumberFormat().format(value);
             }
-            return String(value);
-          });
+          } catch (error) {
+            void error;
+          }
+          return String(value);
+        });
 
   const getAutoGearCameraWeightOperatorLabel =
     (autoGearWeightHelpers && typeof autoGearWeightHelpers.getAutoGearCameraWeightOperatorLabel === 'function'
@@ -999,23 +999,23 @@
       : typeof autoGearWeightScope.getAutoGearCameraWeightOperatorLabel === 'function'
         ? autoGearWeightScope.getAutoGearCameraWeightOperatorLabel
         : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-            const textsForLang = langTexts || {};
-            const fallbackTexts = (autoGearWeightScope && autoGearWeightScope.texts && autoGearWeightScope.texts.en) || {};
-            const normalized = normalizeAutoGearWeightOperator(operator);
-            if (normalized === 'less') {
-              return textsForLang.autoGearCameraWeightOperatorLess
-                || fallbackTexts.autoGearCameraWeightOperatorLess
-                || 'Lighter than';
-            }
-            if (normalized === 'equal') {
-              return textsForLang.autoGearCameraWeightOperatorEqual
-                || fallbackTexts.autoGearCameraWeightOperatorEqual
-                || 'Exactly';
-            }
-            return textsForLang.autoGearCameraWeightOperatorGreater
-              || fallbackTexts.autoGearCameraWeightOperatorGreater
-              || 'Heavier than';
-          });
+          const textsForLang = langTexts || {};
+          const fallbackTexts = (autoGearWeightScope && autoGearWeightScope.texts && autoGearWeightScope.texts.en) || {};
+          const normalized = normalizeAutoGearWeightOperator(operator);
+          if (normalized === 'less') {
+            return textsForLang.autoGearCameraWeightOperatorLess
+              || fallbackTexts.autoGearCameraWeightOperatorLess
+              || 'Lighter than';
+          }
+          if (normalized === 'equal') {
+            return textsForLang.autoGearCameraWeightOperatorEqual
+              || fallbackTexts.autoGearCameraWeightOperatorEqual
+              || 'Exactly';
+          }
+          return textsForLang.autoGearCameraWeightOperatorGreater
+            || fallbackTexts.autoGearCameraWeightOperatorGreater
+            || 'Heavier than';
+        });
 
   const formatAutoGearCameraWeight =
     (autoGearWeightHelpers && typeof autoGearWeightHelpers.formatAutoGearCameraWeight === 'function'
@@ -1023,11 +1023,11 @@
       : typeof autoGearWeightScope.formatAutoGearCameraWeight === 'function'
         ? autoGearWeightScope.formatAutoGearCameraWeight
         : function formatAutoGearCameraWeight(condition, langTexts) {
-            if (!condition || !Number.isFinite(condition.value)) return '';
-            const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
-            const formattedValue = formatAutoGearWeight(condition.value);
-            return `${label} ${formattedValue} g`;
-          });
+          if (!condition || !Number.isFinite(condition.value)) return '';
+          const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+          const formattedValue = formatAutoGearWeight(condition.value);
+          return `${label} ${formattedValue} g`;
+        });
 
   function resolveLzString() {
     if (GLOBAL_SCOPE && GLOBAL_SCOPE.LZString) {
@@ -1118,6 +1118,7 @@
   }
 
   const APP_VERSION = resolveAppVersion() || '0.0.0';
+  if (typeof console !== 'undefined') console.log('core-shared resolved APP_VERSION:', APP_VERSION);
 
   const shared = freezeDeep({
     APP_VERSION,

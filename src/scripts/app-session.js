@@ -20038,6 +20038,8 @@ if (typeof module !== "undefined" && module.exports) {
     promptForSharedFilename,
     downloadSharedProject,
     confirmAutoGearSelection,
+    handleRestoreRehearsalProceed,
+    handleRestoreRehearsalAbort,
     configureSharedImportOptions,
     resolveSharedImportMode,
     resetPlannerStateAfterFactoryReset,
@@ -20072,6 +20074,8 @@ if (typeof module !== "undefined" && module.exports) {
   const SCOPE = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
   if (SCOPE && typeof SCOPE === 'object') {
     const EXPOSE_LIST = [
+      'saveCurrentSession',
+      'autoSaveCurrentSetup',
       'createSettingsBackup',
       'handleRestoreRehearsalProceed',
       'handleRestoreRehearsalAbort',

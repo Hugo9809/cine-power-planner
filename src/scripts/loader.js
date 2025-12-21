@@ -4007,6 +4007,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/auto-gear/ui.js',
       'legacy/scripts/own-gear/store.js',
       'legacy/scripts/own-gear/view.js',
+      'legacy/scripts/modules/device-normalization.js',
       'legacy/scripts/contacts/profile.js',
       'legacy/scripts/contacts/list.js',
       'legacy/scripts/app-core-new-1.js',

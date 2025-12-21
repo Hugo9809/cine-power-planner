@@ -10911,18 +10911,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           candidates.push(info.projectName.trim());
         }
       }
+      var filteredCandidates = candidates.filter(function (name) {
+        return name;
+      });
       var fallback = typeof fallbackName === "string" && fallbackName.trim() ? fallbackName.trim() : defaultName;
-      if (candidates.includes("") && !normalizedNames.has("")) {
-        usedNames.add("");
-        normalizedNames.add("");
-        saveProject("", normalizedProject, {
-          skipCompression: true
-        });
-        return;
-      }
-      var baseName = candidates.find(function (candidate) {
-        return candidate;
-      }) || fallback;
+      var baseName = filteredCandidates[0] || fallback;
       var normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
       var uniqueName = normalizedBase && normalizedNames.has(normalizedBase) ? generateImportedProjectName(baseName, usedNames, normalizedNames) : generateUniqueName(baseName, usedNames, normalizedNames);
       saveProject(uniqueName, normalizedProject, {
@@ -10981,7 +10974,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return importProjectCollection(parsed.parsed, ensureImporter, fallbackLabel);
       }
       var importProject = ensureImporter();
-      importProject("", collection, fallbackLabel);
+      importProject(fallbackLabel, collection, fallbackLabel);
       return true;
     }
     if (isMapLike(collection)) {
@@ -11044,7 +11037,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           name = _ref34[0],
           proj = _ref34[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
-        _importProject2(typeof normalizedName === 'string' ? normalizedName : '', proj);
+        _importProject2(typeof normalizedName === 'string' && normalizedName ? normalizedName : fallbackLabel, proj, fallbackLabel);
       });
       return true;
     }
@@ -12446,7 +12439,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _clearAllData() {
     _clearAllData = _asyncToGenerator(_regenerator().m(function _callee2() {
-      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, registrations, _iterator, _step, registration, cacheKeys, _iterator2, _step2, cacheKey, _t4, _t5, _t6, _t7, _t8;
+      var msg, clearVaultFn, safeStorage, prefixes, exactKeys, clearStorageAggressively, cacheKeys, preferenceKeys, onboardingStorageKeys, clearOnboardingTutorialState, storageCandidates, index, sessionCandidates, _index0, logging, registrations, _iterator, _step, registration, _cacheKeys, _iterator2, _step2, cacheKey, _t4, _t5, _t6, _t7, _t8, _t9;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -12555,6 +12548,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               deleteFromStorage(sessionStorage, '__cineLoggingHistory', msg);
               deleteFromStorage(sessionStorage, '__cineLoggingConfig', msg);
             }
+            if (!(typeof caches !== 'undefined')) {
+              _context2.n = 9;
+              break;
+            }
+            _context2.p = 5;
+            _context2.n = 6;
+            return caches.keys();
+          case 6:
+            cacheKeys = _context2.v;
+            _context2.n = 7;
+            return Promise.all(cacheKeys.map(function (key) {
+              return caches.delete(key);
+            }));
+          case 7:
+            if (typeof console !== 'undefined' && typeof console.log === 'function') {
+              console.log('Storage reset: Service Worker caches cleared.');
+            }
+            _context2.n = 9;
+            break;
+          case 8:
+            _context2.p = 8;
+            _t5 = _context2.v;
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Storage reset: Failed to clear Service Worker caches.', _t5);
+            }
+          case 9:
             preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', CAMERA_COLOR_STORAGE_KEY, PRINT_PREFERENCES_STORAGE_KEY];
             preferenceKeys.forEach(function (key) {
               deleteFromStorage(safeStorage, key, msg, {
@@ -12596,93 +12615,93 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             } catch (windowNameError) {
               console.warn('Unable to reset window.name during factory reset', windowNameError);
             }
-            _context2.p = 5;
+            _context2.p = 10;
             if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-              _context2.n = 13;
+              _context2.n = 18;
               break;
             }
-            _context2.n = 6;
+            _context2.n = 11;
             return navigator.serviceWorker.getRegistrations();
-          case 6:
+          case 11:
             registrations = _context2.v;
             _iterator = _createForOfIteratorHelper(registrations);
-            _context2.p = 7;
+            _context2.p = 12;
             _iterator.s();
-          case 8:
+          case 13:
             if ((_step = _iterator.n()).done) {
-              _context2.n = 10;
+              _context2.n = 15;
               break;
             }
             registration = _step.value;
-            _context2.n = 9;
+            _context2.n = 14;
             return registration.unregister();
-          case 9:
-            _context2.n = 8;
-            break;
-          case 10:
-            _context2.n = 12;
-            break;
-          case 11:
-            _context2.p = 11;
-            _t5 = _context2.v;
-            _iterator.e(_t5);
-          case 12:
-            _context2.p = 12;
-            _iterator.f();
-            return _context2.f(12);
-          case 13:
-            _context2.n = 15;
-            break;
           case 14:
-            _context2.p = 14;
-            _t6 = _context2.v;
-            console.warn('Failed to unregister service workers', _t6);
+            _context2.n = 13;
+            break;
           case 15:
-            _context2.p = 15;
+            _context2.n = 17;
+            break;
+          case 16:
+            _context2.p = 16;
+            _t6 = _context2.v;
+            _iterator.e(_t6);
+          case 17:
+            _context2.p = 17;
+            _iterator.f();
+            return _context2.f(17);
+          case 18:
+            _context2.n = 20;
+            break;
+          case 19:
+            _context2.p = 19;
+            _t7 = _context2.v;
+            console.warn('Failed to unregister service workers', _t7);
+          case 20:
+            _context2.p = 20;
             if (!(typeof caches !== 'undefined' && typeof caches.keys === 'function')) {
-              _context2.n = 23;
+              _context2.n = 28;
               break;
             }
-            _context2.n = 16;
+            _context2.n = 21;
             return caches.keys();
-          case 16:
-            cacheKeys = _context2.v;
-            _iterator2 = _createForOfIteratorHelper(cacheKeys);
-            _context2.p = 17;
+          case 21:
+            _cacheKeys = _context2.v;
+            _iterator2 = _createForOfIteratorHelper(_cacheKeys);
+            _context2.p = 22;
             _iterator2.s();
-          case 18:
+          case 23:
             if ((_step2 = _iterator2.n()).done) {
-              _context2.n = 20;
+              _context2.n = 25;
               break;
             }
             cacheKey = _step2.value;
-            _context2.n = 19;
+            _context2.n = 24;
             return caches.delete(cacheKey);
-          case 19:
-            _context2.n = 18;
-            break;
-          case 20:
-            _context2.n = 22;
-            break;
-          case 21:
-            _context2.p = 21;
-            _t7 = _context2.v;
-            _iterator2.e(_t7);
-          case 22:
-            _context2.p = 22;
-            _iterator2.f();
-            return _context2.f(22);
-          case 23:
-            _context2.n = 25;
-            break;
           case 24:
-            _context2.p = 24;
-            _t8 = _context2.v;
-            console.warn('Failed to clear cache storage', _t8);
+            _context2.n = 23;
+            break;
           case 25:
+            _context2.n = 27;
+            break;
+          case 26:
+            _context2.p = 26;
+            _t8 = _context2.v;
+            _iterator2.e(_t8);
+          case 27:
+            _context2.p = 27;
+            _iterator2.f();
+            return _context2.f(27);
+          case 28:
+            _context2.n = 30;
+            break;
+          case 29:
+            _context2.p = 29;
+            _t9 = _context2.v;
+            console.warn('Failed to clear cache storage', _t9);
+          case 30:
             return _context2.a(2);
         }
-      }, _callee2, null, [[17, 21, 22, 23], [15, 24], [7, 11, 12, 13], [5, 14], [1, 3]]);
+      }, _callee2, null, [[22, 26, 27, 28], [20, 29], [12, 16, 17, 18], [10, 19], [5, 8], [1, 3]]);
     }));
     return _clearAllData.apply(this, arguments);
   }
@@ -13357,14 +13376,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     if (typeof raw === 'string') {
-      var trimmed = raw.trim();
+      var decoded = decodeStoredValue(raw);
+      if (decoded === null) {
+        return null;
+      }
+      if (decoded === undefined) {
+        return undefined;
+      }
+      if (typeof decoded !== 'string') {
+        return decoded;
+      }
+      var trimmed = decoded.trim();
       if (!trimmed) {
         return '';
       }
       try {
         return JSON.parse(trimmed);
       } catch (_unused3) {
-        return raw;
+        return decoded;
       }
     }
     return raw;
@@ -13378,7 +13407,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     if (typeof raw === 'string') {
-      return raw;
+      var decoded = decodeStoredValue(raw);
+      if (decoded === null) {
+        return null;
+      }
+      if (decoded === undefined) {
+        return undefined;
+      }
+      if (typeof decoded === 'string') {
+        return decoded;
+      }
+      if (typeof decoded === 'number' || typeof decoded === 'boolean') {
+        return String(decoded);
+      }
+      if (Array.isArray(decoded) || decoded && _typeof(decoded) === 'object') {
+        try {
+          return JSON.stringify(decoded);
+        } catch (serializationError) {
+          console.warn('Unable to serialize snapshot entry during import', entry && entry.key, serializationError);
+          return null;
+        }
+      }
+      return null;
     }
     if (typeof raw === 'number' || typeof raw === 'boolean') {
       return String(raw);

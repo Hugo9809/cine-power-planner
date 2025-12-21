@@ -63,6 +63,16 @@ var EVENTS_UI_HELPERS = function resolveUiHelpersForEvents() {
   return {};
 }();
 var DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
+var toggleDeviceBtn = typeof toggleDeviceBtn !== 'undefined' ? toggleDeviceBtn : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('toggleDeviceManager') : null;
+var deviceManagerSection = typeof deviceManagerSection !== 'undefined' ? deviceManagerSection : typeof document !== 'undefined' && typeof document.getElementById === 'function' ? document.getElementById('device-manager') : null;
+if (typeof globalThis !== 'undefined') {
+  if (toggleDeviceBtn && typeof globalThis.toggleDeviceBtn === 'undefined') {
+    globalThis.toggleDeviceBtn = toggleDeviceBtn;
+  }
+  if (deviceManagerSection && typeof globalThis.deviceManagerSection === 'undefined') {
+    globalThis.deviceManagerSection = deviceManagerSection;
+  }
+}
 var STORAGE_HELPERS_FOR_EVENTS = function resolveStorageHelpersForEvents() {
   var resolved = {};
   var assignHelper = function assignHelper(source, key) {

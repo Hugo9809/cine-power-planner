@@ -73,7 +73,25 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-setups.js',
     'app-session.js'
   ];
+  let appVersion = '0.0.0';
+  try {
+    const pkgPath = path.resolve(__dirname, '../../package.json');
+    if (fs.existsSync(pkgPath)) {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      if (pkg && pkg.version) {
+        appVersion = pkg.version;
+      }
+    }
+  } catch (error) {
+    // console.warn('Unable to read package.json version', error);
+  }
+  console.log('Script builder read APP_VERSION:', appVersion);
+
   const nodePrelude = [
+    `var APP_VERSION = '${appVersion}';`,
+    `var CPP_APP_VERSION = '${appVersion}';`,
+    `if (typeof globalThis !== 'undefined') { globalThis.APP_VERSION = '${appVersion}'; globalThis.CPP_APP_VERSION = '${appVersion}'; }`,
+    `if (typeof window !== 'undefined') { window.APP_VERSION = '${appVersion}'; window.CPP_APP_VERSION = '${appVersion}'; }`,
     "var __cineGlobal = typeof globalThis !== 'undefined' ? globalThis : (typeof global !== 'undefined' ? global : this);",
     "var window = __cineGlobal.window || __cineGlobal;",
     "if (!__cineGlobal.window) __cineGlobal.window = window;",

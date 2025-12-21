@@ -407,12 +407,14 @@
     attachIntegrity(targetScope, normalizedResult);
 
     if (!normalizedResult || normalizedResult.ok !== true) {
-      const integrityError = new Error('cineRuntime integrity verification failed during startup.');
+      const missingInfo = normalizedResult && Array.isArray(normalizedResult.missing)
+        ? JSON.stringify(normalizedResult.missing)
+        : 'unknown';
+      const integrityError = new Error(`cineRuntime integrity verification failed during startup. Missing: ${missingInfo}`);
       integrityError.details = normalizedResult || null;
-      if (typeof process !== 'undefined' && process.stdout) {
-        process.stdout.write('\n\n=== INTEGRITY CHECK FAILURE ===\n');
-        process.stdout.write(JSON.stringify(normalizedResult, null, 2));
-        process.stdout.write('\n===============================\n\n');
+
+      if (typeof console !== 'undefined') {
+        console.error('Integrity failure details:', missingInfo);
       }
 
       if (warnOnFailure) {

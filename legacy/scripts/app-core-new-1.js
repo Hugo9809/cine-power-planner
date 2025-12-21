@@ -20,7 +20,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-console.log('app-core-new-1.js LOADED - DEBUG VERSION');
 var localResolveDocumentDirection = typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale.resolveDocumentDirection === 'function' ? cineLocale.resolveDocumentDirection : function fallbackResolveDocumentDirection(lang) {
   return 'ltr';
 };
@@ -120,23 +119,23 @@ var TEMPERATURE_UNITS_FALLBACK = Object.freeze({
   fahrenheit: 'fahrenheit',
   celsius: 'celsius'
 });
+var _ref2 = typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization || {},
+  normalizeVideoType = _ref2.normalizeVideoType,
+  normalizeFizConnectorType = _ref2.normalizeFizConnectorType,
+  normalizeViewfinderType = _ref2.normalizeViewfinderType,
+  normalizePowerPortType = _ref2.normalizePowerPortType,
+  fixPowerInput = _ref2.fixPowerInput,
+  applyFixPowerInput = _ref2.applyFixPowerInput,
+  ensureList = _ref2.ensureList,
+  markDevicesNormalized = _ref2.markDevicesNormalized,
+  hasNormalizedDevicesMarker = _ref2.hasNormalizedDevicesMarker,
+  unifyDevices = _ref2.unifyDevices,
+  normalizeDevicesForPersistence = _ref2.normalizeDevicesForPersistence;
+if (typeof window !== 'undefined') {
+  window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
+}
 var CORE_TEMPERATURE_UNITS = function resolveTemperatureUnits() {
   var candidateScopes = TEMPERATURE_SCOPE_CANDIDATES;
-  var _ref2 = typeof cineDeviceNormalization !== 'undefined' ? cineDeviceNormalization : typeof globalThis !== 'undefined' && globalThis.cineDeviceNormalization || {},
-    normalizeVideoType = _ref2.normalizeVideoType,
-    normalizeFizConnectorType = _ref2.normalizeFizConnectorType,
-    normalizeViewfinderType = _ref2.normalizeViewfinderType,
-    normalizePowerPortType = _ref2.normalizePowerPortType,
-    fixPowerInput = _ref2.fixPowerInput,
-    applyFixPowerInput = _ref2.applyFixPowerInput,
-    ensureList = _ref2.ensureList,
-    markDevicesNormalized = _ref2.markDevicesNormalized,
-    hasNormalizedDevicesMarker = _ref2.hasNormalizedDevicesMarker,
-    unifyDevices = _ref2.unifyDevices,
-    normalizeDevicesForPersistence = _ref2.normalizeDevicesForPersistence;
-  if (typeof window !== 'undefined') {
-    window.normalizeDevicesForPersistence = normalizeDevicesForPersistence;
-  }
   for (var index = 0; index < candidateScopes.length; index += 1) {
     var scope = candidateScopes[index];
     try {
@@ -5239,7 +5238,7 @@ function checkArriCompatibility() {
     return clmRegex.test(m);
   })) {
     msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'arriRIA1Warning', '');
-  } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF || builtInController)) {
+  } else if (distance && distance !== 'None' && !/DJI LiDAR/i.test(distance) && !(usesUMC4 || usesRIA1 || usesRF || builtInController)) {
     msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'distanceControllerWarning', '');
   } else if (onlyMasterGrip && !usesRF) {
     msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE_SAFE), 'masterGripWirelessWarning', '');
@@ -8950,6 +8949,7 @@ function _setLanguage() {
             }
             setLabelText(riggingHeadingElem, 'riggingHeading');
             setLabelText(requiredScenariosLabel, 'requiredScenarios');
+            updateRequiredScenariosTranslations(lang);
             setLabelText(cameraHandleLabel, 'cameraHandle');
             setLabelText(viewfinderExtensionLabel, 'viewfinderExtension');
             setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
@@ -12230,6 +12230,18 @@ function createStorageRequirementRow() {
     markProjectFormDataDirty();
   }
   return row;
+}
+function updateRequiredScenariosTranslations(lang) {
+  var select = document.getElementById("requiredScenarios");
+  if (!select) return;
+  var currentTexts = texts[lang] || {};
+  var scenarios = currentTexts.scenarios || {};
+  var fallback = texts.en && texts.en.scenarios ? texts.en.scenarios : {};
+  Array.from(select.options).forEach(function (option) {
+    var key = option.value;
+    var translated = scenarios[key] || fallback[key] || option.value;
+    option.textContent = translated;
+  });
 }
 function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {
   var headingText = projectFormTexts.storageHeading || fallbackProjectForm.storageHeading || 'Storage & Media';

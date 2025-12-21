@@ -349,12 +349,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     attachIntegrity(targetScope, normalizedResult);
     if (!normalizedResult || normalizedResult.ok !== true) {
-      var integrityError = new Error('cineRuntime integrity verification failed during startup.');
+      var missingInfo = normalizedResult && Array.isArray(normalizedResult.missing) ? JSON.stringify(normalizedResult.missing) : 'unknown';
+      var integrityError = new Error("cineRuntime integrity verification failed during startup. Missing: ".concat(missingInfo));
       integrityError.details = normalizedResult || null;
+      if (typeof console !== 'undefined') {
+        console.error('Integrity failure details:', missingInfo);
+      }
       if (warnOnFailure) {
         safeError(integrityError.message, integrityError);
       }
       if (shouldThrow) {
+        if (typeof console !== 'undefined') {
+          console.log('INTEGRITY CHECK FAILURE DETAILS:', JSON.stringify(normalizedResult, null, 2));
+        }
         throw integrityError;
       }
     }

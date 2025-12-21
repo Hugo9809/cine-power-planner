@@ -21,6 +21,96 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
+  function installSafeConsoleGuards(scope) {
+    var targetScope = scope || fallbackDetectGlobalScope();
+    if (!targetScope || _typeof(targetScope) !== 'object' && typeof targetScope !== 'function') {
+      return;
+    }
+    var consoleRef = null;
+    try {
+      consoleRef = targetScope.console || null;
+    } catch (error) {
+      consoleRef = null;
+      void error;
+    }
+    if (!consoleRef || _typeof(consoleRef) !== 'object' && typeof consoleRef !== 'function') {
+      return;
+    }
+    var methods = ['log', 'warn', 'error', 'info', 'debug'];
+    var originals = null;
+    try {
+      originals = consoleRef.__cineSafeConsoleOriginals || null;
+    } catch (error) {
+      originals = null;
+      void error;
+    }
+    if (!originals || _typeof(originals) !== 'object') {
+      originals = {};
+      try {
+        Object.defineProperty(consoleRef, '__cineSafeConsoleOriginals', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: originals
+        });
+      } catch (defineError) {
+        try {
+          consoleRef.__cineSafeConsoleOriginals = originals;
+        } catch (assignError) {
+          void assignError;
+        }
+        void defineError;
+      }
+    }
+    var _loop = function _loop() {
+        var method = methods[index];
+        var candidate = null;
+        try {
+          candidate = consoleRef[method];
+        } catch (error) {
+          candidate = null;
+          void error;
+        }
+        if (typeof candidate !== 'function') {
+          return 0;
+        }
+        if (candidate && candidate.__cineSafeConsoleGuard) {
+          return 0;
+        }
+        if (!Object.prototype.hasOwnProperty.call(originals, method)) {
+          originals[method] = candidate;
+        }
+        var guarded = function cineSafeConsoleGuard() {
+          try {
+            return candidate.apply(consoleRef, arguments);
+          } catch (error) {
+            void error;
+          }
+          return undefined;
+        };
+        try {
+          Object.defineProperty(guarded, '__cineSafeConsoleGuard', {
+            configurable: true,
+            enumerable: false,
+            writable: false,
+            value: true
+          });
+        } catch (defineError) {
+          guarded.__cineSafeConsoleGuard = true;
+          void defineError;
+        }
+        try {
+          consoleRef[method] = guarded;
+        } catch (error) {
+          void error;
+        }
+      },
+      _ret;
+    for (var index = 0; index < methods.length; index += 1) {
+      _ret = _loop();
+      if (_ret === 0) continue;
+    }
+  }
   function resolveScopeCollector() {
     if (typeof require === 'function') {
       try {
@@ -536,6 +626,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  installSafeConsoleGuards(LOCAL_SCOPE);
   var RESOLVED_KERNEL = resolveArchitectureKernel(LOCAL_SCOPE);
   var ACTIVE_KERNEL = RESOLVED_KERNEL || createFallbackKernel(LOCAL_SCOPE);
   function detectGlobalScope() {

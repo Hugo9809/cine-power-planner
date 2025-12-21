@@ -422,28 +422,25 @@
         }]
       }
     },
-    "DJI Transmission (RX)": {
-      "powerDrawWatts": 9,
-      "weight_g": 350,
+    "DJI SDR Receiver": {
+      "powerDrawWatts": 8.2,
+      "weight_g": 145,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"
       }, {
         "type": "3G-SDI"
       }],
-      "frequency": "2.4000-2.4835 GHz (Non-DFS), 5.470-5.725 GHz (DFS), 5.725-5.850 GHz (Non-DFS)",
-      "latencyMs": "< 60ms",
+      "frequency": "SDR / 2.4 / 5.8 GHz",
+      "latencyMs": "35ms",
       "power": {
         "input": {
-          "type": "DC Barrel",
-          "voltageRange": "6-18",
-          "notes": "Coaxial power input"
+          "type": "USB-C (PD)",
+          "voltageRange": "6.8-17.2",
+          "notes": "PD or DC"
         },
         "batteryPlateSupport": [{
           "type": "NP-F",
-          "mount": "integrated"
-        }, {
-          "type": "DJI WB37",
           "mount": "integrated"
         }]
       }
@@ -822,7 +819,7 @@
       },
       "weight_g": 727
     },
-    "DJI Video Receiver": {
+    "DJI Video Transmission RX": {
       "powerDrawWatts": 9,
       "videoInputs": [],
       "videoOutputs": [{
