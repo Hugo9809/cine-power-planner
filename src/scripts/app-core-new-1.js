@@ -507,6 +507,16 @@ const SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule(
 
 let pinkModeSupportApiRef = typeof PINK_MODE_SUPPORT_API !== 'undefined' ? PINK_MODE_SUPPORT_API : null;
 
+if (!pinkModeSupportApiRef) {
+  if (typeof cineCorePinkModeSupport !== 'undefined') {
+    pinkModeSupportApiRef = cineCorePinkModeSupport;
+  } else if (typeof window !== 'undefined' && window.cineCorePinkModeSupport) {
+    pinkModeSupportApiRef = window.cineCorePinkModeSupport;
+  } else if (typeof globalThis !== 'undefined' && globalThis.cineCorePinkModeSupport) {
+    pinkModeSupportApiRef = globalThis.cineCorePinkModeSupport;
+  }
+}
+
 if (!pinkModeSupportApiRef && typeof require === 'function') {
   try {
     const pinkModeModule = require('./app-core-pink-mode.js');
@@ -8587,14 +8597,15 @@ async function setLanguage(lang) {
       texts[lang].settingsHeadingHelp || texts[lang].settingsHeading
     );
   }
-  if (settingsTablist) {
+  const settingsTablistRef = document.getElementById("settingsTablist");
+  if (settingsTablistRef) {
     const sectionsLabel =
       texts[lang].settingsSectionsLabel ||
       texts.en?.settingsSectionsLabel ||
-      settingsTablist.getAttribute('aria-label') ||
+      settingsTablistRef.getAttribute('aria-label') ||
       texts[lang].settingsHeading ||
       'Settings sections';
-    settingsTablist.setAttribute('aria-label', sectionsLabel);
+    settingsTablistRef.setAttribute('aria-label', sectionsLabel);
   }
   const getSettingsTabLabelText = button => {
     if (!button || typeof button !== 'object') return '';
