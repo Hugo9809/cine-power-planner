@@ -179,6 +179,29 @@
         }
     }
 
+    function iconMarkup(glyph, className) {
+        const resolved = resolveIconGlyph(glyph);
+        const parts = [];
+        if (resolved.className) parts.push(resolved.className);
+        if (className) parts.push(className);
+        const finalClass = parts.join(' ');
+
+        if (resolved.markup) {
+            let svg = ensureSvgHasAriaHidden(resolved.markup);
+            if (finalClass) {
+                if (svg.indexOf('class="') !== -1) {
+                    svg = svg.replace('class="', `class="${finalClass} `);
+                } else {
+                    svg = svg.replace('<svg', `<svg class="${finalClass}"`);
+                }
+            }
+            return svg;
+        }
+
+        const fontAttr = resolved.char ? `data-icon-font="${resolved.font}"` : '';
+        return `<span class="icon-glyph ${finalClass}" aria-hidden="true" ${fontAttr}>${resolved.char}</span>`;
+    }
+
     function formatSvgCoordinate(value) {
         if (!Number.isFinite(value)) return '0';
         const rounded = Math.round(value * 100) / 100;
@@ -296,6 +319,7 @@
         iconGlyph,
         resolveIconGlyph,
         applyIconGlyph,
+        iconMarkup,
         formatSvgCoordinate,
         positionSvgMarkup,
         STAR_ICON_SVG,
@@ -308,6 +332,7 @@
     globalScope.iconGlyph = iconGlyph;
     globalScope.resolveIconGlyph = resolveIconGlyph;
     globalScope.applyIconGlyph = applyIconGlyph;
+    globalScope.iconMarkup = iconMarkup;
     globalScope.formatSvgCoordinate = formatSvgCoordinate;
     globalScope.positionSvgMarkup = positionSvgMarkup;
     globalScope.STAR_ICON_SVG = STAR_ICON_SVG;

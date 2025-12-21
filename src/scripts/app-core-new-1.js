@@ -213,7 +213,7 @@ const {
   fixPowerInput,
   applyFixPowerInput,
   ensureList,
-  markDevicesNormalized,
+  markDevicesNormalized: localMarkDevicesNormalized,
   hasNormalizedDevicesMarker,
   unifyDevices,
   normalizeDevicesForPersistence,
@@ -3529,6 +3529,7 @@ function clearProjectAutoGearRules() {
 function getProjectScopedAutoGearRules() {
   return projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
 }
+if (typeof window !== 'undefined') window.getProjectScopedAutoGearRules = getProjectScopedAutoGearRules;
 
 function usingProjectAutoGearRules() {
   return Array.isArray(projectScopedAutoGearRules) && projectScopedAutoGearRules.length > 0;
@@ -5517,7 +5518,7 @@ function resolveUpdateDevicesReferenceFunction() {
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
   window.defaultDevices = CORE_DEEP_CLONE(devices);
-  markDevicesNormalized(window.defaultDevices);
+  localMarkDevicesNormalized(window.defaultDevices);
   unifyDevices(window.defaultDevices);
 }
 

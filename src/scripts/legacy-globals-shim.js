@@ -5,6 +5,8 @@
     if (typeof window === 'undefined') return;
 
     // Restore critical globals previously in app-core-new-1.js
+    // Executed immediately so subsequent scripts (app-events.js, app-session.js) find these variables defined.
+    // Even if getElementById returns null (DOM not ready), defining them as null on window prevents ReferenceErrors.
 
     if (!window.cameraSelect) window.cameraSelect = document.getElementById("cameraSelect");
     if (!window.monitorSelect) window.monitorSelect = document.getElementById("monitorSelect");
@@ -36,7 +38,6 @@
     if (!window.lensSelect) window.lensSelect = document.getElementById("lenses");
 
     // Export Button (used in app-events.js)
-    // Based on index.html: <button id="exportDataBtn">...Export Database</button>
     if (!window.exportBtn) window.exportBtn = document.getElementById("exportDataBtn");
 
     // Other globals found in app-core-new-1.js that might be needed
@@ -48,6 +49,21 @@
 
     // Dialogs
     if (!window.projectDialogCloseBtn) window.projectDialogCloseBtn = document.getElementById("projectDialogClose");
+    if (!window.setupNameInput) window.setupNameInput = document.getElementById("setupName");
+
+    // Missing Global State Variables
+    if (typeof window.showAutoBackups === "undefined") window.showAutoBackups = false;
+
+    // Missing UI Elements
+    if (typeof window.autoGearAddRuleBtn === "undefined") window.autoGearAddRuleBtn = null;
+    if (typeof window.autoGearConditionAddButton === "undefined") window.autoGearConditionAddButton = null;
+    // Missing UI Elements
+    if (typeof window.autoGearAddRuleBtn === "undefined") window.autoGearAddRuleBtn = null;
+    if (typeof window.autoGearConditionAddButton === "undefined") window.autoGearConditionAddButton = null;
+    if (typeof window.autoGearScenarioBaseSelect === "undefined") window.autoGearScenarioBaseSelect = null;
+
+    // Missing State Objects
+    if (!window.autoGearActiveConditions) window.autoGearActiveConditions = new Set();
 
     console.log("Legacy globals shim executed. Global UI references restored.");
 })();

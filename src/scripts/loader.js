@@ -3880,7 +3880,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/core/mount-voltage.js',
       'src/scripts/modules/core/experience.js',
       'src/scripts/legacy-shims.js',
-      'src/scripts/legacy-globals-shim.js',
+
       'src/scripts/modules/logging.js',
       'src/scripts/modules/settings-and-appearance.js',
       'src/scripts/modules/features/auto-gear-rules.js',
@@ -3916,6 +3916,9 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/contacts/profile.js',
       'src/scripts/contacts/list.js',
       'src/scripts/legacy-globals-shim.js',
+      'src/scripts/app-core-new-1.js',
+      'src/scripts/app-core-new-2.js',
+
       'src/scripts/app-events.js',
       'src/scripts/app-setups.js',
       'src/scripts/app-session.js',
