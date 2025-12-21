@@ -525,6 +525,10 @@
 
     function localRequire(request) {
       if (typeof request === 'string') {
+        if (MODULE_FACTORIES[request]) {
+          return loadModule(request);
+        }
+
         let normalized = null;
         if (request.startsWith('./modules/core/')) {
           normalized = request.slice(2);
@@ -537,7 +541,11 @@
           return loadModule(normalized);
         }
       }
-      return require(request);
+
+      if (typeof require === 'function') {
+        return require(request);
+      }
+      return null;
     }
 
     factory(module, module.exports, localRequire);
