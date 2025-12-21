@@ -413,9 +413,8 @@
         safeError(integrityError.message, integrityError);
       }
       if (shouldThrow) {
-        if (typeof console !== 'undefined' && normalizedResult && Array.isArray(normalizedResult.missing)) {
-          console.log('INTEGRITY CHECK FAILED. Missing requirements:', JSON.stringify(normalizedResult.missing, null, 2));
-          console.error('Integrity Check Failed. Missing requirements:', JSON.stringify(normalizedResult.missing, null, 2));
+        if (typeof console !== 'undefined') {
+          console.log('INTEGRITY CHECK FAILURE DETAILS:', JSON.stringify(normalizedResult, null, 2));
         }
         throw integrityError;
       }

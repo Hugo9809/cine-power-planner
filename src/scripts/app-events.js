@@ -3948,7 +3948,10 @@ function toggleDeviceManagerSection() {
 }
 
 // Toggle device manager visibility
-addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
+const safeToggleDeviceBtn = (typeof toggleDeviceBtn !== 'undefined' ? toggleDeviceBtn : document.getElementById('toggleDeviceBtn'));
+if (safeToggleDeviceBtn) {
+  addSafeEventListener(safeToggleDeviceBtn, 'click', toggleDeviceManagerSection);
+}
 
 function getEventsLanguageTexts() {
   const scope =
@@ -5548,3 +5551,28 @@ addSafeEventListener(importFileInput, "change", (event) => {
 });
 
 
+// Ensure UI events are registered once the UI registry is available
+if (typeof registerEventsCineUi === 'function') {
+  const tryRegister = () => {
+    if (resolveCineUi()) {
+      registerEventsCineUi();
+      return true;
+    }
+    return false;
+  };
+
+  if (!tryRegister()) {
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('cine-ui-ready', tryRegister, { once: true });
+    } else if (typeof globalThis !== 'undefined' && globalThis.addEventListener) {
+      globalThis.addEventListener('cine-ui-ready', tryRegister, { once: true });
+    }
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    registerEventsCineUi,
+    // Export others if needed for testing, but mostly we need this one
+  };
+}
