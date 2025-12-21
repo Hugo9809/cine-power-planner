@@ -333,89 +333,89 @@
 
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? function freezeWithBase(value) {
-        try {
-          return MODULE_BASE.freezeDeep(value);
-        } catch (error) {
-          void error;
-        }
-        return value;
+      try {
+        return MODULE_BASE.freezeDeep(value);
+      } catch (error) {
+        void error;
       }
+      return value;
+    }
     : function identity(value) {
-        return value;
-      };
+      return value;
+    };
 
   const safeWarn = typeof MODULE_BASE.safeWarn === 'function'
     ? function warnWithBase(message, detail) {
-        try {
-          MODULE_BASE.safeWarn(message, detail);
-        } catch (error) {
-          void error;
-        }
+      try {
+        MODULE_BASE.safeWarn(message, detail);
+      } catch (error) {
+        void error;
       }
+    }
     : function fallbackSafeWarn(message, detail) {
-        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
-          return;
+      if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+        return;
+      }
+      try {
+        if (typeof detail === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, detail);
         }
-        try {
-          if (typeof detail === 'undefined') {
-            console.warn(message);
-          } else {
-            console.warn(message, detail);
-          }
-        } catch (error) {
-          void error;
-        }
-      };
+      } catch (error) {
+        void error;
+      }
+    };
 
   const informModuleGlobals = typeof MODULE_BASE.informModuleGlobals === 'function'
     ? function informWithBase(name, api) {
-        try {
-          MODULE_BASE.informModuleGlobals(name, api);
-        } catch (error) {
-          void error;
-        }
+      try {
+        MODULE_BASE.informModuleGlobals(name, api);
+      } catch (error) {
+        void error;
       }
-    : function noopInform() {};
+    }
+    : function noopInform() { };
 
   const registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function registerWithBase(name, api, metadata, onError) {
-        try {
-          MODULE_BASE.registerOrQueueModule(name, api, metadata, onError);
-        } catch (error) {
-          if (typeof onError === 'function') {
-            try {
-              onError(error);
-            } catch (handlerError) {
-              void handlerError;
-            }
-          } else {
-            safeWarn('cineSettingsAppearance: Unable to register module.', error);
+      try {
+        MODULE_BASE.registerOrQueueModule(name, api, metadata, onError);
+      } catch (error) {
+        if (typeof onError === 'function') {
+          try {
+            onError(error);
+          } catch (handlerError) {
+            void handlerError;
           }
+        } else {
+          safeWarn('cineSettingsAppearance: Unable to register module.', error);
         }
       }
-    : function fallbackRegister() {};
+    }
+    : function fallbackRegister() { };
 
   const exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function exposeWithBase(name, value, options) {
-        try {
-          return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
-        } catch (error) {
-          void error;
-          return false;
-        }
-      }
-    : function fallbackExpose(name, value) {
-        if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
-          return false;
-        }
-        try {
-          GLOBAL_SCOPE[name] = value;
-          return true;
-        } catch (error) {
-          void error;
-        }
+      try {
+        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
+      } catch (error) {
+        void error;
         return false;
-      };
+      }
+    }
+    : function fallbackExpose(name, value) {
+      if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+        return false;
+      }
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (error) {
+        void error;
+      }
+      return false;
+    };
 
   function cloneContext(context) {
     if (!context || typeof context !== 'object') {
@@ -870,7 +870,15 @@
         return;
       }
 
-      const glyphConfig = glyph && typeof glyph === 'object' && (glyph.markup || glyph.className)
+      // Cleanup previous Lottie if any
+      if (iconSpan._lottieAnim) {
+        try {
+          iconSpan._lottieAnim.destroy();
+        } catch (e) { /* ignore */ }
+        iconSpan._lottieAnim = null;
+      }
+
+      const glyphConfig = glyph && typeof glyph === 'object' && (glyph.markup || glyph.className || glyph.lottiePath)
         ? glyph
         : { value: glyph };
 
@@ -880,7 +888,33 @@
       }
       iconSpan.className = classNames.join(' ');
 
-      if (glyphConfig.markup) {
+      if (glyphConfig.lottiePath && typeof icons.ensurePinkModeLottieRuntime === 'function') {
+        iconSpan.innerHTML = '';
+        iconSpan.removeAttribute('data-icon-font');
+        icons.ensurePinkModeLottieRuntime()
+          .then((lottie) => {
+            if (!lottie || !iconSpan || !document.body.contains(button)) return; // Safety check
+            try {
+              iconSpan._lottieAnim = lottie.loadAnimation({
+                container: iconSpan,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: glyphConfig.lottiePath
+              });
+            } catch (err) {
+              // Fallback to markup if lottie fails
+              if (glyphConfig.markup) {
+                iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
+              }
+            }
+          })
+          .catch(() => {
+            if (glyphConfig.markup && iconSpan) {
+              iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
+            }
+          });
+      } else if (glyphConfig.markup) {
         iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
         iconSpan.removeAttribute('data-icon-font');
       } else {
@@ -1061,7 +1095,7 @@
 
       function registerControl(element, controlOptions) {
         if (!element) {
-          return () => {};
+          return () => { };
         }
 
         const configuration = controlOptions && typeof controlOptions === 'object' ? controlOptions : {};
@@ -1753,7 +1787,7 @@
       const cloneFn = mountVoltages.getPreferencesClone;
       const applyFn = mountVoltages.applyPreferences;
       const updateInputsFn = mountVoltages.updateInputsFromState;
-      const warnHelper = mountVoltages.warnMissingHelper || (() => {});
+      const warnHelper = mountVoltages.warnMissingHelper || (() => { });
       const supportedTypes = Array.isArray(mountVoltages.supportedTypes)
         ? mountVoltages.supportedTypes
         : [];
