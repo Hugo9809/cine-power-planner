@@ -126,10 +126,38 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
         return ensureSafePromise(fallbackIcons);
       },
       ensurePinkModeLottieRuntime() {
-        return ensureSafePromise(null);
+        const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
+        if (GLOBAL_SCOPE && GLOBAL_SCOPE.lottie) return ensureSafePromise(GLOBAL_SCOPE.lottie);
+        if (GLOBAL_SCOPE && GLOBAL_SCOPE.bodymovin) return ensureSafePromise(GLOBAL_SCOPE.bodymovin);
+
+        if (typeof document === 'undefined') return ensureSafePromise(null);
+
+        if (document.querySelector('script[data-loader="pink-mode-lottie"]')) {
+          return new Promise(resolve => {
+            const s = document.querySelector('script[data-loader="pink-mode-lottie"]');
+            if (s.dataset.loaded === 'true') resolve(GLOBAL_SCOPE.lottie);
+            else s.addEventListener('load', () => resolve(GLOBAL_SCOPE.lottie), { once: true });
+          });
+        }
+
+        return new Promise((resolve) => {
+          const script = document.createElement('script');
+          script.src = 'src/vendor/lottie.min.js';
+          script.async = true;
+          script.setAttribute('data-loader', 'pink-mode-lottie');
+          script.onload = () => {
+            script.dataset.loaded = 'true';
+            resolve(GLOBAL_SCOPE.lottie);
+          };
+          script.onerror = () => {
+            resolve(null);
+          };
+          document.head.appendChild(script);
+        });
       },
       resolvePinkModeLottieRuntime() {
-        return ensureSafePromise(null);
+        const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
+        return (GLOBAL_SCOPE && (GLOBAL_SCOPE.lottie || GLOBAL_SCOPE.bodymovin)) || null;
       },
       startPinkModeAnimatedIcons: noop,
       stopPinkModeAnimatedIcons: noop,
@@ -138,10 +166,10 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
       setPinkModeIconRotationTimer: noop,
       getPinkModeIconIndex: noop,
       setPinkModeIconIndex: noop,
-      PINK_MODE_ICON_INTERVAL_MS: 30000,
+      PINK_MODE_ICON_INTERVAL_MS: 1500,
       PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-animation',
-      PINK_MODE_ICON_ANIMATION_RESET_DELAY: 90,
-      PINK_MODE_ICON_FALLBACK_MARKUP: '',
+      PINK_MODE_ICON_ANIMATION_RESET_DELAY: 400,
+      PINK_MODE_ICON_FALLBACK_MARKUP: HORSE_SVG_MARKUP,
     });
 
     const scope =

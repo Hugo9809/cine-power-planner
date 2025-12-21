@@ -891,23 +891,24 @@
       if ((glyphConfig.lottiePath || glyphConfig.lottieData) && typeof icons.ensurePinkModeLottieRuntime === 'function') {
         if (glyphConfig.markup) {
           const markup = ensureSvgHasAriaHidden(glyphConfig.markup);
-          // Only replace if content is different to avoid flicker/reflow if unnecessary
-          // We check the whole markup now because Horse and Unicorn share identical headers
           if (!iconSpan.innerHTML.includes(markup)) {
             iconSpan.innerHTML = markup;
           }
         }
 
-        // Mark existing SVG as fallback for potential removal
         const fallbackSvg = iconSpan.querySelector('svg');
         if (fallbackSvg) {
           fallbackSvg.classList.add('icon-fallback');
         }
 
+        // Add a small "pop" effect if it's a new icon
+        iconSpan.classList.remove('pink-mode-icon-pop');
+        void iconSpan.offsetWidth; // trigger reflow
+        iconSpan.classList.add('pink-mode-icon-pop');
+
         icons.ensurePinkModeLottieRuntime()
           .then((lottie) => {
             if (!lottie) {
-              // Runtime missing, ensure fallback is there (it should be)
               if (glyphConfig.markup && (!iconSpan.innerHTML || iconSpan.innerHTML === '')) {
                 iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
               }
@@ -917,7 +918,6 @@
             if (!iconSpan || !document.body.contains(button)) return;
 
             try {
-              // 2. Create a dedicated container for Lottie to coexist with fallback during load
               let lottieContainer = iconSpan.querySelector('.lottie-container');
               if (!lottieContainer) {
                 lottieContainer = doc.createElement('div');
@@ -927,11 +927,13 @@
                 lottieContainer.style.display = 'flex';
                 lottieContainer.style.justifyContent = 'center';
                 lottieContainer.style.alignItems = 'center';
-                // If fallback exists, we might want to overlay or append. 
-                // Appending is safer for layout flow usually.
+                lottieContainer.style.position = 'absolute';
+                lottieContainer.style.top = '0';
+                lottieContainer.style.left = '0';
                 iconSpan.appendChild(lottieContainer);
+                iconSpan.style.position = 'relative';
               } else {
-                lottieContainer.innerHTML = ''; // Clear previous
+                lottieContainer.innerHTML = '';
               }
 
               const animConfig = {
@@ -948,29 +950,30 @@
               }
 
               const anim = lottie.loadAnimation(animConfig);
-
               iconSpan._lottieAnim = anim;
 
-              // 3. On success, hide fallback
-              // For animationData (sync), we can hide immediately or wait for DOMLoaded
-              // For path (async), we must wait
               const hideFallback = () => {
                 const oldFallback = iconSpan.querySelector('.icon-fallback');
                 if (oldFallback) {
-                  oldFallback.style.display = 'none';
+                  oldFallback.style.opacity = '0';
+                  setTimeout(() => {
+                    if (oldFallback.style.opacity === '0') {
+                      oldFallback.style.display = 'none';
+                    }
+                  }, 200);
                 }
               };
 
               anim.addEventListener('DOMLoaded', hideFallback);
 
-              // 4. On failure, remove lottie container, show fallback
               const handleFailure = () => {
                 if (lottieContainer && lottieContainer.parentNode) {
                   lottieContainer.parentNode.removeChild(lottieContainer);
                 }
                 const oldFallback = iconSpan.querySelector('.icon-fallback');
                 if (oldFallback) {
-                  oldFallback.style.display = ''; // Restore default
+                  oldFallback.style.display = '';
+                  oldFallback.style.opacity = '1';
                 }
               };
 
@@ -978,15 +981,19 @@
               anim.addEventListener('error', handleFailure);
 
             } catch (err) {
-              // Synchronous error
+              /* ignore */
             }
           })
           .catch(() => {
-            // Runtime load error
+            /* ignore */
           });
       } else if (glyphConfig.markup) {
         iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
         iconSpan.removeAttribute('data-icon-font');
+
+        iconSpan.classList.remove('pink-mode-icon-pop');
+        void iconSpan.offsetWidth;
+        iconSpan.classList.add('pink-mode-icon-pop');
       } else {
         applyIconGlyph(iconSpan, glyphConfig.value);
       }
@@ -1467,8 +1474,8 @@
         .replace(/#cf976a/g, '#9ec5fe');
 
       const FALLBACK_SEQUENCE = [
-        { className: 'icon-svg pink-mode-icon', markup: UNICORN_1_MARKUP, lottiePath: 'src/animations/horn.json' },
-        { className: 'icon-svg pink-mode-icon', markup: UNICORN_2_MARKUP, lottiePath: 'src/animations/unicorn.json' },
+        { className: 'icon-svg pink-mode-icon', markup: UNICORN_1_MARKUP, lottiePath: 'src/animations/unicorn.json' },
+        { className: 'icon-svg pink-mode-icon', markup: UNICORN_2_MARKUP, lottiePath: 'src/animations/horn.json' },
         { className: 'icon-svg pink-mode-icon', markup: UNICORN_3_MARKUP, lottiePath: 'src/animations/rainbow.json' }
       ];
 

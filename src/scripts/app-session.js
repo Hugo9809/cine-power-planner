@@ -6582,9 +6582,14 @@ const appearanceContext = {
       return null;
     },
     get ensurePinkModeLottieRuntime() {
-      if (typeof ensurePinkModeLottieRuntime === 'function') return ensurePinkModeLottieRuntime;
-      if (typeof window !== 'undefined' && typeof window.ensurePinkModeLottieRuntime === 'function') return window.ensurePinkModeLottieRuntime;
-      return null;
+      const scope = typeof window !== 'undefined' ? window : {};
+      const support = scope.cineCorePinkModeSupport || (scope.PINK_MODE_SUPPORT_API) || {};
+
+      return (typeof ensurePinkModeLottieRuntime === 'function' ? ensurePinkModeLottieRuntime : null) ||
+        (typeof scope.ensurePinkModeLottieRuntime === 'function' ? scope.ensurePinkModeLottieRuntime : null) ||
+        (typeof support.ensurePinkModeLottieRuntime === 'function' ? support.ensurePinkModeLottieRuntime : null) ||
+        (typeof support.resolvePinkModeLottieRuntime === 'function' ? support.resolvePinkModeLottieRuntime : null) ||
+        null;
     },
     get pinkModeIcons() {
       if (typeof pinkModeIcons === 'object' && pinkModeIcons) return pinkModeIcons;
