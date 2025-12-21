@@ -55,6 +55,17 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
 
+var hotswapSelect =
+  typeof hotswapSelect !== 'undefined'
+    ? hotswapSelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('batteryHotswapSelect')
+      : null;
+
+if (typeof globalThis !== 'undefined' && hotswapSelect && typeof globalThis.hotswapSelect === 'undefined') {
+  globalThis.hotswapSelect = hotswapSelect;
+}
+
 let actionMap = new Map();
 let featureMap = new Map();
 let deviceMap = new Map();
@@ -6153,8 +6164,10 @@ if (monitoringConfigurationSelect) {
 if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
 }
-if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
-if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+if (typeof updateBatteryOptions === 'function') {
+  if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
+  if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+}
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
 forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
@@ -20242,4 +20255,3 @@ function handleMountVoltageInputChange() {
   const values = collectMountVoltageFormValues();
   applySessionMountVoltagePreferences(values, { persist: true, triggerUpdate: true });
 }
-

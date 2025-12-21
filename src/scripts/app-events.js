@@ -73,6 +73,29 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
 
 const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
 
+var toggleDeviceBtn =
+  typeof toggleDeviceBtn !== 'undefined'
+    ? toggleDeviceBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('toggleDeviceManager')
+      : null;
+
+var deviceManagerSection =
+  typeof deviceManagerSection !== 'undefined'
+    ? deviceManagerSection
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('device-manager')
+      : null;
+
+if (typeof globalThis !== 'undefined') {
+  if (toggleDeviceBtn && typeof globalThis.toggleDeviceBtn === 'undefined') {
+    globalThis.toggleDeviceBtn = toggleDeviceBtn;
+  }
+  if (deviceManagerSection && typeof globalThis.deviceManagerSection === 'undefined') {
+    globalThis.deviceManagerSection = deviceManagerSection;
+  }
+}
+
 const STORAGE_HELPERS_FOR_EVENTS = (function resolveStorageHelpersForEvents() {
   const resolved = {};
 
@@ -5547,29 +5570,3 @@ addSafeEventListener(importFileInput, "change", (event) => {
   event.target.value = ''; // Clear the file input for re-selection of the same file
 });
 
-
-// Ensure UI events are registered once the UI registry is available
-if (typeof registerEventsCineUi === 'function') {
-  const tryRegister = () => {
-    if (resolveCineUi()) {
-      registerEventsCineUi();
-      return true;
-    }
-    return false;
-  };
-
-  if (!tryRegister()) {
-    if (typeof window !== 'undefined' && window.addEventListener) {
-      window.addEventListener('cine-ui-ready', tryRegister, { once: true });
-    } else if (typeof globalThis !== 'undefined' && globalThis.addEventListener) {
-      globalThis.addEventListener('cine-ui-ready', tryRegister, { once: true });
-    }
-  }
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    registerEventsCineUi,
-    // Export others if needed for testing, but mostly we need this one
-  };
-}
