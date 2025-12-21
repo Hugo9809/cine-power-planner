@@ -3880,6 +3880,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/core/mount-voltage.js',
       'src/scripts/modules/core/experience.js',
       'src/scripts/legacy-shims.js',
+      'src/scripts/legacy-globals-shim.js',
       'src/scripts/modules/logging.js',
       'src/scripts/modules/settings-and-appearance.js',
       'src/scripts/modules/features/auto-gear-rules.js',
