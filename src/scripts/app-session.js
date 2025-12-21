@@ -1,3 +1,4 @@
+console.log('app-session.js: Starting execution');
 (function () {
   if (typeof window !== 'undefined') {
     if (typeof window.batteryPlateSelect === "undefined") window.batteryPlateSelect = document.getElementById("batteryPlateSelect");
@@ -60,6 +61,7 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
 const FORCE_RELOAD_OFFLINE_NOTICE_FALLBACK =
   'Force reload requires an internet connection. Try again once you are back online.';
 
+// Reference to the Pink Mode UI toggle. See docs/pink-mode-reference.md for feature details.
 var pinkModeToggle =
   typeof pinkModeToggle !== 'undefined'
     ? pinkModeToggle
@@ -192,6 +194,10 @@ function isNavigatorExplicitlyOffline(navigatorLike) {
   return navigatorLike.onLine === false;
 }
 
+/**
+ * Resolves the message to display when the application needs to force a reload
+ * but is currently offline. Checks DOM attributes and localized strings.
+ */
 function resolveForceReloadOfflineNotice() {
   let notice = '';
 
@@ -7393,6 +7399,13 @@ if (typeof document !== 'undefined') {
       persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
+
+  if (typeof window !== 'undefined') {
+    // Expose helper for programmatic access and testing
+    window.togglePinkMode = () => {
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+    };
+  }
 }
 
 if (settingsPinkMode) {

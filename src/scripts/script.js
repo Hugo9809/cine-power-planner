@@ -133,6 +133,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     (typeof globalThis !== 'undefined' && globalThis)
     || (typeof global !== 'undefined' && global)
     || this;
+  console.log('script.js: Executing wrapper with', parts.length, 'parts');
+  console.log('script.js: app-session.js index:', parts.indexOf('app-session.js'));
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
 
   const ensureModule = relativePath => {

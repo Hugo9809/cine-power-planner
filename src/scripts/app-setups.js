@@ -15805,3 +15805,4 @@ if (typeof globalThis !== 'undefined') {
   globalThis.doesProjectNameExist = doesProjectNameExist;
   globalThis.resolveProjectStorageNameCollision = resolveProjectStorageNameCollision;
 }
+console.log('app-setups.js: Execution complete');

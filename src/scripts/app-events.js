@@ -1,3 +1,4 @@
+console.log('app-events.js: Starting execution');
 /* global getSchemaAttributesForCategory */
 // --- EVENT LISTENERS ---
 /* global CORE_GLOBAL_SCOPE, updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
@@ -579,6 +580,8 @@ const downloadBackupPayloadForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.download
 const isBackupVaultFallbackActiveForEvents = typeof BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive === 'function'
   ? BACKUP_FEATURE_FOR_EVENTS.isBackupVaultFallbackActive
   : null;
+
+console.log('app-events.js: Execution complete');
 
 const buildSettingsBackupPackageForEvents = (function resolveBuildSettingsBackupPackage() {
   if (typeof buildSettingsBackupPackage === 'function') {

@@ -76,6 +76,10 @@
           });
         }
 
+        /**
+         * Represents a single floating Lottie icon in the Pink Mode overlay.
+         * Handles DOM element creation, animation loading, and physics (drift).
+         */
         class FloatingIcon {
           constructor(manager, x, y, iconData) {
             this.manager = manager;
@@ -131,6 +135,10 @@
           }
         }
 
+        /**
+         * Manages the lifecycle of Pink Mode animations, including the "rain" effect
+         * and random icon spawning. Maintains the active state of the feature.
+         */
         class PinkModeManager {
           constructor() {
             this.active = false;
@@ -150,6 +158,10 @@
             this.icons = [];
           }
 
+          /**
+           * Triggers a "rain" effect where multiple icons spawn in sequence.
+           * Used for special events or manual triggers.
+           */
           triggerRain() {
             // TODO: Implement proper rain
             console.log('Rain triggered!');
