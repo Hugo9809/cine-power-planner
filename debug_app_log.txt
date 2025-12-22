@@ -1,0 +1,80 @@
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha (2)
+[STORAGE] saveProject called for: Project Alpha (2)
+[STORAGE] saveProject normalized info: {"projectName":"Project Alpha","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCountry":"USA","productionCompany":"Alpha Films","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"productionCompany":"Alpha Films","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","productionCompanyCountry":"USA","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only","projectName":"Project Alpha"}
+[APP] saveCurrentGearList ENTRY
+[APP] saveProject check type: function key: Project Alpha
+[STORAGE] saveProject called for: Project Alpha
+[STORAGE] saveProject normalized info: {"projectName":"Project Alpha","productionCompanyAddress":"123 Alpha Ave\nStage City, CA, 90001\nUSA","productionCompanyStreet":"123 Alpha Ave","productionCompanyCountry":"USA","productionCompany":"Alpha Films","productionCompanyCity":"Stage City","productionCompanyRegion":"CA","productionCompanyPostalCode":"90001","viewfinderEyeLeatherColor":"Red","monitoringConfiguration":"Onboard Only"}

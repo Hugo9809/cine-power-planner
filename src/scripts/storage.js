@@ -9320,6 +9320,7 @@
   }
 
   function saveSetups(setups) {
+
     const { data: normalizedSetups } = normalizeSetups(setups);
     enforceAutoBackupLimits(normalizedSetups);
     const serializedSetups = serializeAutoBackupEntries(normalizedSetups, {
@@ -10205,6 +10206,7 @@
   }
 
   function sanitizeImportedProjectInfo(info) {
+    console.log('DEBUG: sanitizeImportedProjectInfo input:', JSON.stringify(info));
     if (!isPlainObject(info)) {
       return null;
     }
@@ -12177,6 +12179,7 @@
       expandOptions.filter = (name) => !isAutoBackupStorageKey(name);
     }
     const expandedParsed = expandAutoBackupEntries(parsed, expandOptions);
+    console.log('DEBUG: readAllProjectsFromStorage expandedParsed keys:', expandedParsed ? Object.keys(expandedParsed) : 'null');
     const projects = {};
     let changed = false;
     const usedProjectNames = new Set();
@@ -12316,7 +12319,9 @@
       const normalized = normalizeProject(expandedParsed[key]);
       if (normalized) {
         const originalEntry = expandedParsed[key];
-        const needsUpgrade = !isNormalizedProjectEntry(originalEntry);
+        const isNormalized = isNormalizedProjectEntry(originalEntry);
+        console.log('DEBUG: readAllProjectsFromStorage key:', key, 'isNormalized:', isNormalized, 'entry keys:', isPlainObject(originalEntry) ? Object.keys(originalEntry) : 'not an object');
+        const needsUpgrade = !isNormalized;
         let requiresContentUpdate = false;
         if (!needsUpgrade) {
           try {
@@ -12473,7 +12478,17 @@
       && resolvedKey !== undefined
       && Object.prototype.hasOwnProperty.call(projects, resolvedKey)
     ) {
-      return projects[resolvedKey];
+      const project = projects[resolvedKey];
+      if (project && (!project.gearList || project.gearList === "")) {
+        const setups = loadSetups();
+        const setup = setups[resolvedKey];
+        if (setup) {
+          if (setup.gearList) {
+            project.gearList = setup.gearList;
+          }
+        }
+      }
+      return project;
     }
     return null;
   }
@@ -12663,6 +12678,7 @@
       }
       return;
     }
+    console.log('DEBUG: saveProject normalized:', JSON.stringify(normalized.projectInfo));
     const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
     const skipCompression = Boolean(options && options.skipCompression);
     const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
@@ -12695,6 +12711,7 @@
     if (!storageKey && storageKey !== '') {
       storageKey = '';
     }
+    console.log('DEBUG: saveProject final storageKey:', storageKey);
 
     const existingKey = renamedFromKey !== null && renamedFromKey !== undefined
       ? renamedFromKey

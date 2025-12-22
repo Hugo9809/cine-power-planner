@@ -15735,14 +15735,7 @@ var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 var deviceListContainerRef = null;
 
 function resolveDeviceListContainer() {
-  console.log('resolveDeviceListContainer starting');
-  if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
-    console.log('resolveDeviceListContainer: no document or getElementById');
-    return deviceListContainerRef;
-  }
-  console.log('resolveDeviceListContainer: calling getElementById');
   const container = document.getElementById('deviceListContainer');
-  console.log('resolveDeviceListContainer: container found:', !!container);
   if (container) {
     deviceListContainerRef = container;
     return container;
@@ -16013,20 +16006,17 @@ function collectDeviceManagerCategories() {
     categories.add(normalized);
   };
 
-  const traverseSchema = (node, path = [], depth = 0) => {
-    if (depth > 20) {
-      console.warn('app-core-new-1.js: traverseSchema depth limit reached at', path.join('.'));
-      return;
-    }
+  const traverseSchema = (node, path = []) => {
+    if (path.length > 20) return;
     if (!node || typeof node !== 'object') {
       return;
     }
     if (Array.isArray(node.attributes)) {
-      const nodeDepth = path.length;
+      const depth = path.length;
       const topLevelKey = path[0];
       if (
-        nodeDepth === 1 ||
-        (nodeDepth > 1 && (topLevelKey === 'accessories' || topLevelKey === 'fiz'))
+        depth === 1 ||
+        (depth > 1 && (topLevelKey === 'accessories' || topLevelKey === 'fiz'))
       ) {
         addCategory(path.join('.'));
       }
@@ -16036,20 +16026,17 @@ function collectDeviceManagerCategories() {
         return;
       }
       if (value && typeof value === 'object') {
-        traverseSchema(value, path.concat(childKey), depth + 1);
+        traverseSchema(value, path.concat(childKey));
       }
     });
   };
 
-  if (typeof deviceSchema !== 'undefined' && deviceSchema) {
-    console.log('app-core-new-1.js: traverseSchema starting on deviceSchema');
+  if (deviceSchema) {
     traverseSchema(deviceSchema, []);
-    console.log('app-core-new-1.js: traverseSchema finished');
   }
 
   const addFromData = (data) => {
     if (!data || typeof data !== 'object' || Array.isArray(data)) return;
-    console.log('app-core-new-1.js: addFromData starting');
     Object.entries(data).forEach(([key, value]) => {
       if (key === 'accessories') {
         if (value && typeof value === 'object') {
@@ -16071,31 +16058,23 @@ function collectDeviceManagerCategories() {
         addCategory(key);
       }
     });
-    console.log('app-core-new-1.js: addFromData finished');
   };
 
-  if (typeof devices !== 'undefined' && devices) {
-    addFromData(devices);
-  } else {
-    console.log('app-core-new-1.js: devices not defined for addFromData');
-  }
+  addFromData(devices);
 
   const sorted = Array.from(categories);
   const preferredOrder = getDeviceManagerPreferredOrder();
   const orderMap = new Map(preferredOrder.map((key, index) => [key, index]));
-  console.log('app-core-new-1.js: sorting categories:', sorted.length);
   sorted.sort((a, b) => {
     const idxA = orderMap.has(a) ? orderMap.get(a) : preferredOrder.length;
     const idxB = orderMap.has(b) ? orderMap.get(b) : preferredOrder.length;
     if (idxA !== idxB) return idxA - idxB;
     return a.localeCompare(b);
   });
-  console.log('app-core-new-1.js: categories sorted');
   return sorted;
 }
 
 function createDeviceCategorySection(categoryKey) {
-  console.log('app-core-new-1.js: createDeviceCategorySection:', categoryKey);
   const container = resolveDeviceListContainer();
   if (!container || deviceManagerLists.has(categoryKey)) return deviceManagerLists.get(categoryKey) || null;
   const section = document.createElement('div');
@@ -16214,8 +16193,13 @@ function updateDeviceManagerLocalization(lang = currentLang) {
 function syncDeviceManagerCategories() {
   console.log('app-core-new-1.js: syncDeviceManagerCategories starting');
   const container = resolveDeviceListContainer();
-  if (!container) return;
+  if (!container) {
+    console.log('app-core-new-1.js: syncDeviceManagerCategories: no container');
+    return;
+  }
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: collecting categories');
   const categories = collectDeviceManagerCategories();
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: categories collected', categories.length);
   const desiredSet = new Set(categories);
   const existingKeys = Array.from(deviceManagerLists.keys());
   categories.forEach(categoryKey => {
@@ -16238,8 +16222,11 @@ function syncDeviceManagerCategories() {
       container.appendChild(entry.section);
     }
   });
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: updating localization');
   updateDeviceManagerLocalization(currentLang);
+  console.log('app-core-new-1.js: syncDeviceManagerCategories: finished');
 }
+
 function getCurrentProjectName() {
   const typedName =
     (setupNameInput && typeof setupNameInput.value === 'string'

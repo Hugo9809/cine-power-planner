@@ -1881,6 +1881,8 @@ function markProjectFormDataDirty() {
   projectFormDataCache = null;
 }
 
+
+
 function suspendProjectPersistence() {
   projectPersistenceSuspendedCount += 1;
 }
@@ -3457,6 +3459,9 @@ if (projectDialog) {
 }
 
 if (projectForm) {
+  projectForm.addEventListener('input', () => {
+    markProjectFormDataDirty();
+  });
   projectForm.addEventListener('submit', e => {
     e.preventDefault();
     if (!batteryPinsSufficient()) {
@@ -5764,6 +5769,7 @@ function sanitizeCrewAvatarValue(value) {
 }
 
 function collectProjectFormData() {
+  console.log('collectProjectFormData called. Dirty:', projectFormDataCacheDirty, 'Cache exists:', !!projectFormDataCache);
   if (!projectForm) return {};
 
   if (!projectFormDataCacheDirty && projectFormDataCache) {
@@ -14476,10 +14482,12 @@ function doesProjectNameExist(name) {
     normalizeProjectStorageNameForCollision(key) === normalizedTarget
   ));
 }
+const sessionCreatedProjects = new Set();
 
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   if (isProjectPersistenceSuspended()) return;
+
   const html = gearListGetCurrentHtmlImpl({ forPersistence: true });
   const normalizedHtml = typeof html === 'string' ? html.trim() : '';
   const gearListGenerated = Boolean(normalizedHtml);
@@ -14584,7 +14592,13 @@ function saveCurrentGearList() {
     if (pendingResolved && pendingResolved !== effectiveStorageKey) {
       effectiveStorageKey = pendingResolved;
     } else if (!pendingResolved) {
-      const resolved = resolveProjectStorageNameCollision(effectiveStorageKey);
+      let skipCollision = false;
+      if (sessionCreatedProjects.has(effectiveStorageKey)) {
+        skipCollision = true;
+      }
+      const resolved = skipCollision
+        ? { changed: false, name: effectiveStorageKey }
+        : resolveProjectStorageNameCollision(effectiveStorageKey);
       if (resolved.changed && resolved.name && resolved.name !== effectiveStorageKey) {
         rememberPendingProjectNameCollisionResolution(effectiveStorageKey, resolved.name);
         effectiveStorageKey = resolved.name;
@@ -14644,6 +14658,7 @@ function saveCurrentGearList() {
       diagramPositionsSnapshot = cloneProjectInfoForStorage(positions);
       diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
     }
+
   }
   if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
     if (typeof setActiveProjectCompressionHold === 'function') {
@@ -14651,7 +14666,6 @@ function saveCurrentGearList() {
     }
     const payload = {
       projectInfo: projectInfoSnapshot,
-      gearList: normalizedHtml,
       gearListAndProjectRequirementsGenerated: gearListGenerated
     };
     if (powerSelectionSnapshot) {
@@ -14666,13 +14680,16 @@ function saveCurrentGearList() {
     if (projectRulesSnapshot && projectRulesSnapshot.length) {
       payload.autoGearRules = projectRulesSnapshot;
     }
+    console.log('DEBUG: saveCurrentGearList saving project:', effectiveStorageKey, 'with projectInfo:', !!projectInfoSnapshot);
     saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
+    sessionCreatedProjects.add(effectiveStorageKey);
   }
 
-  if (!selectedStorageKey) return;
+  const targetStorageKey = selectedStorageKey || effectiveStorageKey;
+  if (!targetStorageKey) return;
 
   const setups = getSetups();
-  const existing = setups[selectedStorageKey];
+  const existing = setups[targetStorageKey];
   if (
     !existing
     && !html
@@ -14764,12 +14781,15 @@ function saveCurrentGearList() {
     changed = true;
   }
 
-  if (!existing) {
-    setups[selectedStorageKey] = setup;
-    storeSetups(setups);
-  } else if (changed) {
-    setups[selectedStorageKey] = setup;
-    storeSetups(setups);
+  const setupStorageKey = selectedStorageKey || effectiveStorageKey;
+  if (setupStorageKey) {
+    if (!existing) {
+      setups[setupStorageKey] = setup;
+      storeSetups(setups);
+    } else if (changed) {
+      setups[setupStorageKey] = setup;
+      storeSetups(setups);
+    }
   }
   return changed;
 }

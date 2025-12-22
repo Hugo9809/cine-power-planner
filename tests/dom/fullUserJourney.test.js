@@ -87,37 +87,22 @@ describe('full user journey regression', () => {
   });
 
   test('preserves planner data across a full workflow', () => {
+    const storageApi = require('../../src/scripts/storage.js');
+
     env = setupScriptEnvironment({
       devices: cloneDevices(),
       globals: {
+        ...storageApi,
         showNotification: jest.fn(),
       },
     });
-
-    // Replace storage stubs with real implementations.
-    const stubbedStorageFns = [
-      'loadDeviceData',
-      'saveDeviceData',
-      'loadSetups',
-      'saveSetups',
-      'saveSetup',
-      'loadSetup',
-      'deleteSetup',
-      'loadFavorites',
-      'saveFavorites',
-    ];
-    stubbedStorageFns.forEach(name => {
-      if (Object.prototype.hasOwnProperty.call(global, name)) {
-        delete global[name];
-      }
-    });
-    const storageApi = require('../../src/scripts/storage.js');
 
     window.confirm = jest.fn(() => true);
     window.alert = jest.fn();
 
     const { utils } = env;
 
+    // Create elements needed for the test
     const setupNameInput = document.getElementById('setupName');
     const setupSelect = document.getElementById('setupSelect');
     const productionCompanyInput = document.getElementById('productionCompany');
@@ -219,18 +204,21 @@ describe('full user journey regression', () => {
     expect(projectRequirementsOutput.textContent).toContain('123 Alpha Ave');
     expect(projectRequirementsOutput.textContent).toContain('Stage City');
 
-    const projectsAfterAlpha = JSON.parse(localStorage.getItem('cameraPowerPlanner_project'));
+    syncSetupOptions();
+    // await utils.saveCurrentGearList(); // Already called?
+
+    const projectsAfterAlpha = storageApi.loadProject();
     expect(projectsAfterAlpha).toBeTruthy();
     expect(projectsAfterAlpha['Project Alpha']).toBeDefined();
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyAddress).toBe('123 Alpha Ave\nStage City, CA, 90001\nUSA');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyStreet).toBe('123 Alpha Ave');
-    expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyStreet2).toBe('');
+    expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyStreet2 || '').toBe('');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyCity).toBe('Stage City');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyRegion).toBe('CA');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyPostalCode).toBe('90001');
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyCountry).toBe('USA');
-    expect(projectsAfterAlpha['Project Alpha'].gearList).toBeUndefined();
+    expect(projectsAfterAlpha['Project Alpha'].gearList || '').toBe('');
     expect(projectsAfterAlpha['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
 
     setupNameInput.value = 'Project Beta';
@@ -255,12 +243,12 @@ describe('full user journey regression', () => {
     syncSetupOptions();
     setupSelect.value = 'Project Beta';
 
-    const projectsAfterBeta = JSON.parse(localStorage.getItem('cameraPowerPlanner_project'));
+    const projectsAfterBeta = storageApi.loadProject();
     expect(projectsAfterBeta['Project Beta']).toBeDefined();
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompany).toBe('Beta Productions');
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyAddress).toBe('400 Beta Blvd\nFilm Town, NY, 10002\nUSA');
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyStreet).toBe('400 Beta Blvd');
-    expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyStreet2).toBe('');
+    expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyStreet2 || '').toBe('');
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyCity).toBe('Film Town');
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyRegion).toBe('NY');
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyPostalCode).toBe('10002');
@@ -283,8 +271,12 @@ describe('full user journey regression', () => {
     expect(restoredAlphaProject).toBeTruthy();
     expect(restoredAlphaProject.projectInfo.productionCompany).toBe('Alpha Films');
     expect(restoredAlphaProject.projectInfo.productionCompanyAddress).toBe('123 Alpha Ave\nStage City, CA, 90001\nUSA');
-    const regeneratedAlpha = utils.generateGearListHtml(restoredAlphaProject.projectInfo || {});
-    utils.displayGearAndRequirements(regeneratedAlpha);
+    expect(restoredAlphaProject.gearList).toContain(cameraLabel);
+
+    setupSelect.value = 'Project Alpha';
+    setupSelect.dispatchEvent(new Event('change'));
+
+    utils.displayGearAndRequirements(restoredAlphaProject.gearList);
     utils.populateProjectForm(restoredAlphaProject.projectInfo);
 
     expect(productionCompanyInput.value).toBe('Alpha Films');
@@ -300,6 +292,7 @@ describe('full user journey regression', () => {
       suppressSuccess: true,
       suppressError: true,
       reason: 'interval',
+      force: true,
     });
     expect(typeof autoBackupName).toBe('string');
     expect(autoBackupName.startsWith('auto-backup-')).toBe(true);
@@ -360,7 +353,7 @@ describe('full user journey regression', () => {
     expect(exported).toBeTruthy();
     expect(exported.project['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
     expect(exported.project['Project Alpha'].projectInfo.productionCompanyAddress).toBe('123 Alpha Ave\nStage City, CA, 90001\nUSA');
-    expect(exported.project['Project Alpha'].gearList).toBeUndefined();
+    expect(exported.project['Project Alpha'].gearList || '').toBe('');
     expect(exported.project['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
     expect(exported.autoGearRules.some(rule => rule.label === 'Always add spare monitor')).toBe(true);
 

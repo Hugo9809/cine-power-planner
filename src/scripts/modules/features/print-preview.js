@@ -96,7 +96,9 @@
         };
 
         Object.entries(sectionLabels).forEach(([id, key]) => {
-            const label = sidebar.querySelector(`label[for="${id}"]`);
+            const input = sidebar.querySelector(`#${id}`);
+            const label = input ? input.closest('label') || sidebar.querySelector(`label[for="${id}"]`) : null;
+
             if (label) {
                 // Try finding a direct text node
                 let textNode = Array.from(label.childNodes).find(node => node.nodeType === 3 && node.textContent.trim().length > 0);

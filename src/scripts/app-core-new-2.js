@@ -11341,7 +11341,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (labelledBy) {
           labelledBy
             .split(/\s+/)
-            .map(id => id && document.getElementById(id))
+            .map(id => id && typeof document !== 'undefined' && document && typeof document.getElementById === 'function' ? document.getElementById(id) : null)
             .filter(labelEl => labelEl && labelEl !== element)
             .forEach(labelEl => {
               addUniqueContext(
@@ -11410,7 +11410,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!attrValue) return;
         attrValue
           .split(/\s+/)
-          .map(id => id && ownerDoc.getElementById(id))
+          .map(id => id && typeof ownerDoc.getElementById === 'function' ? ownerDoc.getElementById(id) : null)
           .filter(Boolean)
           .forEach(collector);
       };
@@ -12915,13 +12915,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             tokens,
             primaryTokens,
             value: deviceEntry,
-            optionLabel,
             detail,
           };
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
       };
+      registerDeviceLibraryEntriesForSearch();
       document
         .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
         .forEach(el => {
@@ -12946,29 +12946,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(entryData);
           featureSearchEntries.push(entryData);
         });
-      document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(el => {
-        if (!el || (helpDialog && helpDialog.contains(el))) return;
-        const label = getFeatureSearchLabel(el);
-        if (!label) return;
-        const keywords = getFeatureSearchKeywords(el);
-        const entry = buildFeatureSearchEntry(el, { label, keywords });
-        if (!entry || !entry.key) return;
-        const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
-        if (!display) return;
-        const entryType = getFeatureSearchEntryType(el);
-        const entryData = {
-          type: entryType,
-          key: entry.key,
-          display,
-          tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
-          primaryTokens: Array.isArray(entry.primaryTokens) ? entry.primaryTokens : [],
-          value: entry,
-          optionLabel: entry.displayLabel || entry.baseLabel || display,
-          detail: buildFeatureEntryDetailText(entry)
-        };
-        registerOption(entryData);
-        featureSearchEntries.push(entryData);
-      });
+
+      try {
+        const extraElements = document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR);
+        let processedExtras = 0;
+        extraElements.forEach((el, index) => {
+          if (processedExtras > 100) return;
+          processedExtras++;
+          if (el.tagName === 'BUTTON') return; // Skip buttons to test if they cause hang
+          if (!el || (helpDialog && helpDialog.contains(el))) return;
+          const label = getFeatureSearchLabel(el);
+          if (!label) return;
+          const keywords = getFeatureSearchKeywords(el);
+          const entry = buildFeatureSearchEntry(el, { label, keywords });
+          if (!entry || !entry.key) return;
+          const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+          if (!display) return;
+          const entryType = getFeatureSearchEntryType(el);
+          const entryData = {
+            type: entryType,
+            key: entry.key,
+            display,
+            tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+            primaryTokens: Array.isArray(entry.primaryTokens) ? entry.primaryTokens : [],
+            value: entry,
+            optionLabel: entry.displayLabel || entry.baseLabel || display,
+            detail: buildFeatureEntryDetailText(entry)
+          };
+          registerOption(entryData);
+          featureSearchEntries.push(entryData);
+        });
+      } catch (extraError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('app-core-new-2.js: error querying extra elements', extraError);
+        }
+      }
       if (helpDialog) {
         helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
           const heading = section.querySelector('h3');
@@ -13001,7 +13013,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       }
 
-      document.querySelectorAll('select').forEach(sel => {
+      /* document.querySelectorAll('select').forEach(sel => {
         sel.querySelectorAll('option').forEach(opt => {
           const name = opt.textContent.trim();
           if (!name || opt.value === 'None') return;
@@ -13040,7 +13052,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
-      });
+      }); */
 
       // [COMMAND PALETTE] Register Actions
       const commandActions = [

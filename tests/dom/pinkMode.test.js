@@ -36,6 +36,19 @@ describe('Pink Mode Functionality', () => {
             window.requestAnimationFrame = fakeRaf;
             window.fetch = mockFetch;
         }
+
+        global.BroadcastChannel = class MockBroadcastChannel {
+            constructor(name) {
+                this.name = name;
+                this.onmessage = null;
+                this.onmessageerror = null;
+            }
+            postMessage() { }
+            close() { }
+            addEventListener() { }
+            removeEventListener() { }
+            dispatchEvent() { return true; }
+        };
     });
 
     afterEach(() => {

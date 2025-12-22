@@ -44,21 +44,25 @@ select:focus-visible {
   color: var(--status-error-text-color);
 }
 
-body {
+#overviewDialogContent {
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
-  margin: 25px;
-  color: var(--control-text);
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  padding: 24px;
+  color: var(--text-color);
+  font-size: calc(var(--font-size-base) * var(--font-scale-sm));
   line-height: var(--line-height-base, 1.6);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
-  background-color: #ffffff;
+  background-color: var(--panel-bg);
+}
+
+.dark-mode #overviewDialogContent {
+  background-color: var(--background-color);
 }
 
 @media (max-width: 600px) {
-  body {
-    margin: 10px;
+  #overviewDialogContent {
+    padding: 12px;
   }
 
   h2 {
@@ -74,13 +78,23 @@ h3 {
   color: var(--accent-color);
 }
 
+.dark-mode #overviewDialogContent h1,
+.dark-mode #overviewDialogContent h2,
+.dark-mode #overviewDialogContent h3 {
+  color: var(--inverse-text-color);
+}
+
+.dark-mode #overviewDialogContent h2 {
+  border-bottom-color: var(--inverse-text-color);
+}
+
 h1 {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-display));
+  font-size: calc(var(--font-size-base) * var(--font-scale-display));
   margin-bottom: 0.2em;
 }
 
 h2 {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
+  font-size: calc(var(--font-size-base) * var(--font-scale-xxl));
   margin-top: 1.3em;
   border-bottom: 1px solid var(--accent-color);
   padding-bottom: 5px;
@@ -299,12 +313,13 @@ th {
 }
 
 .device-block {
-  background: #ffffff;
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 6px;
   padding: 6px 10px;
   box-shadow: var(--panel-shadow);
   font-size: calc(var(--font-size-base) * var(--font-scale-xxs));
+  color: var(--text-color);
 }
 
 .device-block.lens-device-block {
@@ -339,6 +354,10 @@ th {
   letter-spacing: 0.04em;
 }
 
+.dark-mode .lens-info-category__title {
+  color: var(--inverse-text-color);
+}
+
 .lens-info-category__title:empty {
   display: none;
 }
@@ -360,7 +379,7 @@ th {
 }
 
 .device-category {
-  background: #ffffff;
+  background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   padding: 10px;
@@ -368,6 +387,7 @@ th {
   flex: 1 1 calc((100% - 20px) / 3);
   box-sizing: border-box;
   box-shadow: var(--panel-shadow);
+  color: var(--text-color);
 }
 
 
@@ -519,71 +539,47 @@ th {
   page-break-inside: avoid;
 }
 
-body.dark-mode {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-body.dark-mode h1,
-body.dark-mode h2,
-body.dark-mode h3 {
-  color: var(--inverse-text-color);
-}
-
-body.dark-mode h2 {
-  border-bottom: 1px solid var(--inverse-text-color);
-}
-
-body.dark-mode th {
-  background-color: var(--control-bg);
-  font-weight: var(--font-weight-bold);
-}
-
-body.dark-mode .print-btn,
-body.dark-mode .back-btn {
-  background: var(--control-bg);
-  color: var(--text-color);
-}
-
-body.dark-mode .device-category {
+/* Dark mode and higher specificity overrides for dialog viewing */
+.dark-mode .device-category {
   background: var(--panel-bg);
   border-color: var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 
-body.dark-mode .device-category h3 {
+.dark-mode .device-category h3 {
   border-bottom: 1px solid var(--inverse-text-color);
   color: var(--inverse-text-color);
 }
 
-body.dark-mode .device-block {
-  background: rgba(255, 255, 255, 0.1);
+.dark-mode .device-block {
+  background: rgba(255, 255, 255, 0.05);
   border-color: var(--control-border);
   box-shadow: var(--panel-shadow);
 }
 
-body.dark-mode .connector-block,
-body.dark-mode .info-box {
+.dark-mode .connector-block,
+.dark-mode .info-box {
   background-color: transparent;
+  color: var(--text-color);
 }
 
-body.dark-mode .gear-table td {
+.dark-mode .gear-table td {
   border-top: 1px solid var(--inverse-text-color);
   border-bottom: 1px solid var(--inverse-text-color);
 }
 
-body.dark-mode .gear-table .category-row td {
+.dark-mode .gear-table .category-row td {
   border-top: 1px solid var(--inverse-text-color);
   border-bottom: 1px solid var(--inverse-text-color);
   color: var(--inverse-text-color);
 }
 
-body.dark-mode.pink-mode .gear-table td {
+.dark-mode.pink-mode .gear-table td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
 }
 
-body.dark-mode.pink-mode .gear-table .category-row td {
+.dark-mode.pink-mode .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   color: var(--accent-color);

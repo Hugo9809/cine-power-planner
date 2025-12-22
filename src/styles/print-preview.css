@@ -186,6 +186,9 @@ input:focus-visible+.slider {
     padding: 8px 0;
     cursor: pointer;
     transition: opacity 0.2s;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-medium);
 }
 
 .checkbox-row:hover {
@@ -256,12 +259,73 @@ input:focus-visible+.slider {
     /* Force light mode vars for the paper content to match print output */
     --accent-color: #001589;
     --text-color: #000000;
-    --panel-border: #ddd;
-    --panel-bg: #fff;
-    --control-bg: #f0f0f0;
-    --control-text: #333;
-    --muted-text-color: #555;
+    --inverse-text-color: #000000;
+    --panel-border: #dddddd;
+    --panel-bg: #ffffff;
+    --control-bg: #f5f5f5;
+    --control-text: #333333;
+    --control-border: #cccccc;
+    --muted-text-color: #555555;
+    --divider-color: #eeeeee;
+    --danger-color: #d32f2f;
+    --success-color: #388e3c;
+    --info-color: #1976d2;
+    --neutral-color: #757575;
+    --status-error-bg: #ffcdd2;
+    --status-warning-bg: #fff9c4;
+    --status-success-bg: #c8e6c9;
+    --status-note-bg: #fdf5e6;
+    --status-border-color: #cccccc;
+    --status-error-text-color: #000000;
+    --status-warning-text-color: #000000;
+    --status-success-text-color: #000000;
+    --status-note-text-color: #000000;
+    --connector-label-neutral-color: #000000;
     --font-family: 'Ubuntu', sans-serif;
+}
+
+/* Ensure paper content ignores global dark mode styles */
+body.dark-mode .paper {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode .paper h1,
+body.dark-mode .paper h2,
+body.dark-mode .paper h3,
+body.dark-mode .paper .device-category h3 {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+body.dark-mode .paper .device-block {
+    background: #ffffff;
+    border-color: var(--panel-border);
+    color: #000000;
+}
+
+body.dark-mode .paper .device-category {
+    background: #ffffff;
+    border-color: var(--panel-border);
+}
+
+body.dark-mode .paper .gear-table td,
+body.dark-mode .paper .gear-table .category-row td {
+    background: #ffffff;
+    border-color: var(--panel-border);
+    color: #000000;
+}
+
+body.dark-mode .paper .gear-table .category-row td {
+    color: var(--accent-color);
+    border-top-color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+body.dark-mode .paper .connector-block,
+body.dark-mode .paper .info-box {
+    background-color: transparent;
+    color: #000000;
 }
 
 /* Scoped styles to match overview.css structure within .paper */

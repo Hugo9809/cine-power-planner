@@ -1771,12 +1771,28 @@
       levels: freezeLevelSummary(removedSummary),
     });
 
-    safeWarn('cineLogging: history trimmed to enforce retention limit', {
-      limit,
-      removed: removedEntries.length,
-      source,
-      levels: cloneLevelSummary(removedSummary),
-    });
+    if (ORIGINAL_CONSOLE_FUNCTIONS && typeof ORIGINAL_CONSOLE_FUNCTIONS.warn === 'function') {
+      try {
+        ORIGINAL_CONSOLE_FUNCTIONS.warn('cineLogging: history trimmed to enforce retention limit', {
+          limit,
+          removed: removedEntries.length,
+          source,
+          levels: cloneLevelSummary(removedSummary),
+        });
+      } catch (warnError) {
+        void warnError;
+      }
+    } else {
+      // Fallback if original console is somehow missing or we are in a weird state
+      // We purposefully avoid safeWarn here to prevent recursion
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          // If console.warn IS the proxy, we can't easily detect it without checking equality to the proxy function
+          // But avoiding safeWarn wrapper helps if safeWarn adds extra logic. 
+          // Ideally we just stop if we can't find the original.
+        }
+      } catch (e) { void e; }
+    }
 
     return removedSummary;
   }
