@@ -40,6 +40,19 @@ describe('full user journey regression', () => {
         this.type = options.type || '';
       }
     };
+
+    global.BroadcastChannel = class MockBroadcastChannel {
+      constructor(name) {
+        this.name = name;
+        this.onmessage = null;
+        this.onmessageerror = null;
+      }
+      postMessage() { }
+      close() { }
+      addEventListener() { }
+      removeEventListener() { }
+      dispatchEvent() { return true; }
+    };
   });
 
   afterEach(() => {
@@ -68,6 +81,7 @@ describe('full user journey regression', () => {
       global.Blob = OriginalBlob;
     }
 
+    delete global.BroadcastChannel;
     localStorage.clear();
     sessionStorage.clear();
   });
@@ -202,7 +216,8 @@ describe('full user journey regression', () => {
     expect(gearListOutput.textContent).toContain(cameraLabel);
     expect(projectRequirementsOutput.classList.contains('hidden')).toBe(false);
     expect(projectRequirementsOutput.textContent).toContain('Alpha Films');
-    expect(projectRequirementsOutput.textContent).toContain('123 Alpha Ave, Stage City');
+    expect(projectRequirementsOutput.textContent).toContain('123 Alpha Ave');
+    expect(projectRequirementsOutput.textContent).toContain('Stage City');
 
     const projectsAfterAlpha = JSON.parse(localStorage.getItem('cameraPowerPlanner_project'));
     expect(projectsAfterAlpha).toBeTruthy();

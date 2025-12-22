@@ -40,9 +40,10 @@ describe('cineHelp module', () => {
       cineUi.help.register('restoreSettings', () => 'Restore every saved configuration.');
     });
 
-    expect(global.cineHelp).toBeDefined();
-    expect(global.cineHelp.list().sort()).toEqual(['restoreSettings', 'saveSetup']);
-    expect(global.cineHelp.resolve('saveSetup')).toBe('Keep your project safe.');
+    const cineUiGlobal = global.cineUi;
+    expect(cineUiGlobal).toBeDefined();
+    expect(cineUiGlobal.help.list().sort()).toEqual(['restoreSettings', 'saveSetup']);
+    expect(cineUiGlobal.help.resolve('saveSetup')).toBe('Keep your project safe.');
 
     jest.isolateModules(() => {
       const moduleApi = require(modulePath);

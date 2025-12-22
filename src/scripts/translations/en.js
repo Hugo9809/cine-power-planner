@@ -298,6 +298,18 @@
         "offlineUse": {
           "title": "Offline Use",
           "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Confirm the offline indicator and keep exports, full backups and the local backup vault current before disconnecting."
+        },
+        "troubleshooting": {
+          "title": "Troubleshooting",
+          "content": "If things aren't working as expected:\n\n- **Reload**: Use the refresh button in the header if the app feels stuck.\n- **Clear Cache**: If updates don't appear, try clearing your browser cache.\n- **Backup**: Regularly download full backups from Settings to keep your data safe."
+        },
+        "shortcuts": {
+          "title": "Keyboard Shortcuts",
+          "content": "Navigate faster with these keys:\n\n- **?**, **H**, **F1**: Open Help\n- **/**: Focus Search\n- **Esc**: Close dialogs or menus\n- **D**: Toggle Dark Mode"
+        },
+        "pinkMode": {
+          "title": "Pink Mode",
+          "content": "Activate **Pink Mode** in Settings or the top bar to add playful accents and animated icons. The unicorn icon cycles every 30 seconds, and floating stickers drift across the screen. Click any floating sticker **3 times** to trigger a celebratory rain effect."
         }
       },
       "documentationTrackerHelpStart": "Start Here & navigation",
@@ -305,6 +317,7 @@
       "documentationTrackerHelpBackup": "Backup & restore drills",
       "documentationTrackerHelpOwnGear": "Own gear & imports",
       "documentationTrackerHelpOffline": "Offline readiness & service worker",
+      "documentationTrackerHelpPinkMode": "Pink mode & animations",
       "documentationTrackerPrintHeading": "Printable guides",
       "documentationTrackerPrintChecklist": "Documentation update checklist",
       "documentationTrackerPrintMaintenance": "Documentation maintenance guide",

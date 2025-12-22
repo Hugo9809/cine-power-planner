@@ -22,6 +22,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart1Runner;
 
   function corePart2Runtime() {
+    console.log('app-core-new-2.js: corePart2Runtime starting');
     const CORE_SHARED_SCOPE_PART2 = CORE_PART2_RUNTIME_SCOPE;
 
     function resolveCoreSharedPart2() {
@@ -42,6 +43,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       typeof CORE_SHARED !== 'undefined' && CORE_SHARED
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
+    console.log('app-core-new-2.js: CORE_SHARED_LOCAL resolved');
 
     const collectAutoGearSelectedValues = (function resolveCollectAutoGearSelectedValues() {
       const candidateScopes = [
@@ -71,6 +73,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       return function fallbackCollectAutoGearSelectedValues() { return []; };
     })();
+    console.log('app-core-new-2.js: collectAutoGearSelectedValues resolved');
 
     function resolveCoreRuntimeHelpersPart2() {
       const candidates = [];
@@ -142,6 +145,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : null;
 
     const CORE_RUNTIME_FALLBACKS = resolveCoreRuntimeHelpersPart2() || {};
+    console.log('app-core-new-2.js: CORE_RUNTIME_FALLBACKS resolved');
 
     const CORE_RUNTIME_UI_BRIDGE = (function resolveCoreRuntimeUiBridgePart2() {
       const candidates = [];
@@ -216,6 +220,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       return {};
     })();
+    console.log('app-core-new-2.js: CORE_RUNTIME_UI_BRIDGE resolved');
 
     var escapeHtml = typeof CORE_RUNTIME_UI_BRIDGE.escapeHtml === 'function'
       ? CORE_RUNTIME_UI_BRIDGE.escapeHtml
@@ -255,6 +260,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               : null,
         })
         : null;
+    console.log('app-core-new-2.js: autoGearHelpers resolved');
 
     const fallbackNormalizeAutoGearWeightOperator =
       typeof CORE_RUNTIME_FALLBACKS.fallbackNormalizeAutoGearWeightOperator === 'function'
@@ -9402,6 +9408,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     function updateStorageSummary() {
+      if (typeof document === 'undefined' || !document) {
+        return;
+      }
       const summaryListEl = document.getElementById('storageSummaryList');
       const storageSummaryEmpty = document.getElementById('storageSummaryEmpty');
       if (!summaryListEl) return;
@@ -19080,11 +19089,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     });
 
+    console.log('app-core-new-2.js: About to flushCoreBootQueue');
     // Ensure deferred boot tasks from the first runtime segment execute before final renders
     flushCoreBootQueue();
+    console.log('app-core-new-2.js: flushCoreBootQueue complete');
 
     // Initial render of device lists
+    console.log('app-core-new-2.js: About to refreshDeviceLists');
     refreshDeviceLists();
+    console.log('app-core-new-2.js: refreshDeviceLists complete');
 
     if (typeof module !== 'undefined' && module.exports) {
       module.exports = {
@@ -19114,6 +19127,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       window.clearRecordingMedia = clearRecordingMedia;
       window.setSliderBowlValue = setSliderBowlValue;
     }
+    console.log('app-core-new-2.js: corePart2Runtime complete');
   }
 
   const corePart2ExecutedViaRunner = typeof CORE_PART1_RUNNER === 'function'

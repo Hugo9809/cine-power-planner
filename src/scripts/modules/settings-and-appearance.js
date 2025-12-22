@@ -1530,9 +1530,16 @@
           applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
         }, PINK_MODE_ICON_INTERVAL_MS);
         if (pinkModeIconRotationTimer && typeof pinkModeIconRotationTimer.unref === 'function') {
-          pinkModeIconRotationTimer.unref();
+          try {
+            pinkModeIconRotationTimer.unref();
+          } catch (unrefError) {
+            void unrefError;
+          }
         }
       } catch (error) {
+        if (pinkModeIconRotationTimer) {
+          clearInterval(pinkModeIconRotationTimer);
+        }
         pinkModeIconRotationTimer = null;
         safeWarn('cineSettingsAppearance: unable to schedule pink mode rotation.', error);
       }
@@ -1599,20 +1606,20 @@
     // Inlined to guarantee functionality regardless of external module loading state.
 
     const PINK_MODE_ANIMATED_ICON_FILES = [
-      '/src/animations/flamingo.json',
-      '/src/animations/unicorn.json',
-      '/src/animations/pink-mode/camera.json',
-      '/src/animations/pink-mode/director-chair.json',
-      '/src/animations/pink-mode/dog.json',
-      '/src/animations/pink-mode/fox-2.json',
-      '/src/animations/pink-mode/fox-3.json',
-      '/src/animations/pink-mode/fox.json',
-      '/src/animations/pink-mode/horse.json',
-      '/src/animations/pink-mode/mountains.json',
-      '/src/animations/pink-mode/movie-camera.json',
-      '/src/animations/pink-mode/pinata.json',
-      '/src/animations/pink-mode/script.json',
-      '/src/animations/pink-mode/video-camera.json'
+      'src/animations/flamingo.json',
+      'src/animations/unicorn.json',
+      'src/animations/pink-mode/camera.json',
+      'src/animations/pink-mode/director-chair.json',
+      'src/animations/pink-mode/dog.json',
+      'src/animations/pink-mode/fox-2.json',
+      'src/animations/pink-mode/fox-3.json',
+      'src/animations/pink-mode/fox.json',
+      'src/animations/pink-mode/horse.json',
+      'src/animations/pink-mode/mountains.json',
+      'src/animations/pink-mode/movie-camera.json',
+      'src/animations/pink-mode/pinata.json',
+      'src/animations/pink-mode/script.json',
+      'src/animations/pink-mode/video-camera.json'
     ];
 
     function ensureLocalPinkModeLottieRuntime() {
@@ -1633,7 +1640,7 @@
 
       return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = '/src/vendor/lottie.min.js';
+        script.src = 'src/vendor/lottie.min.js';
         script.async = true;
         script.setAttribute('data-loader', 'pink-mode-lottie');
         script.onload = () => {
@@ -1705,6 +1712,8 @@
       constructor() {
         this.active = false;
         this.icons = [];
+        this.rainTimeouts = [];
+        this.rainOverrideTimer = null;
       }
 
       activate() {
@@ -1717,14 +1726,27 @@
         document.body.classList.remove('pink-mode-active');
         this.icons.forEach(i => i.destroy());
         this.icons = [];
+        if (this.rainTimeouts) {
+          this.rainTimeouts.forEach(id => clearTimeout(id));
+          this.rainTimeouts = [];
+        }
+        if (this.rainOverrideTimer) {
+          clearTimeout(this.rainOverrideTimer);
+          this.rainOverrideTimer = null;
+        }
       }
 
       triggerRain() {
         console.log('Rain triggered (Local Manager)!');
         for (let i = 0; i < 20; i++) {
-          setTimeout(() => {
+          const tid = setTimeout(() => {
+            if (this.rainTimeouts) {
+              const index = this.rainTimeouts.indexOf(tid);
+              if (index > -1) this.rainTimeouts.splice(index, 1);
+            }
             this.spawnRandomIcon();
           }, i * 200);
+          this.rainTimeouts.push(tid);
         }
       }
 
@@ -1780,7 +1802,13 @@
       // Force temporary activation for rain if not active
       localPinkModeManager.rainOverride = true;
       localPinkModeManager.triggerRain();
-      setTimeout(() => { localPinkModeManager.rainOverride = false; }, 5000);
+      if (localPinkModeManager.rainOverrideTimer) {
+        clearTimeout(localPinkModeManager.rainOverrideTimer);
+      }
+      localPinkModeManager.rainOverrideTimer = setTimeout(() => {
+        localPinkModeManager.rainOverride = false;
+        localPinkModeManager.rainOverrideTimer = null;
+      }, 5000);
 
       if (typeof icons.triggerPinkModeIconRain === 'function') {
         try {

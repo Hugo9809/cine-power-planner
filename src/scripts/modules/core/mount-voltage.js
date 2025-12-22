@@ -831,4 +831,5 @@
   if (typeof module === 'object' && module && module.exports) {
     module.exports = namespace;
   }
+  console.log('mount-voltage.js: Execution complete');
 })();

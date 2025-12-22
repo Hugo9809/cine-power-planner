@@ -4,9 +4,18 @@ describe('Pink Mode Functionality', () => {
     let env;
 
     beforeEach(() => {
+        jest.useFakeTimers();
+
+        const mockFetch = jest.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({})
+        }));
+        global.fetch = mockFetch;
+
         env = setupScriptEnvironment({
             globals: {
                 showNotification: jest.fn(),
+                fetch: mockFetch,
             }
         });
 
@@ -20,20 +29,46 @@ describe('Pink Mode Functionality', () => {
             })
         };
 
-        // Ensure requestAnimationFrame is available (some jsdom versions might miss it or we want to control it)
-        global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
-
-        // Mock global fetch for icon files
-        global.fetch = jest.fn(() => Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({})
-        }));
+        // Ensure requestAnimationFrame uses our fake timers
+        const fakeRaf = (cb) => setTimeout(cb, 16);
+        global.requestAnimationFrame = fakeRaf;
+        if (typeof window !== 'undefined') {
+            window.requestAnimationFrame = fakeRaf;
+            window.fetch = mockFetch;
+        }
     });
 
     afterEach(() => {
+        // Stop any running animations to clear intervals/timeouts
+        if (typeof window !== 'undefined') {
+            if (window.cineCorePinkModeSupport) {
+                window.cineCorePinkModeSupport.stopPinkModeAnimatedIcons?.();
+                window.cineCorePinkModeSupport.stopPinkModeAnimatedIconRotation?.();
+            }
+            if (window.cineSettingsAppearance) {
+                window.cineSettingsAppearance.stopPinkModeIconRotation?.();
+                window.cineSettingsAppearance.stopPinkModeAnimatedIcons?.();
+            }
+        }
+
+        // Advance timers significantly to flush any pending polls (like whenGlobalValueAvailable)
+        if (jest.isMockFunction(setTimeout) || (typeof setTimeout.clock !== 'undefined')) {
+            try {
+                jest.advanceTimersByTime(100000);
+            } catch {
+                // ignore
+            }
+        }
+
         env?.cleanup();
         delete global.lottie;
         delete global.fetch;
+        try {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        } catch {
+            // ignore
+        }
     });
 
     test('Toggling Pink Mode activates class and updates storage', async () => {
@@ -42,6 +77,7 @@ describe('Pink Mode Functionality', () => {
 
         // Initial state
         expect(document.body.classList.contains('pink-mode-active')).toBe(false);
+
         // Click toggle
         if (typeof window.togglePinkMode === 'function') {
             window.togglePinkMode();
@@ -50,7 +86,6 @@ describe('Pink Mode Functionality', () => {
             const isPink = document.body.classList.contains('pink-mode');
             window.cineSettingsAppearance.persistPinkModePreference(!isPink);
         } else {
-            // Fallback to click (flaky in JSDOM)
             toggleBtn.click();
         }
 
@@ -58,46 +93,59 @@ describe('Pink Mode Functionality', () => {
         expect(document.body.classList.contains('pink-mode')).toBe(true);
         expect(localStorage.getItem('pinkMode')).toBe('true');
 
-        // Wait for async Lottie initialization
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // Allow async Lottie load to resolve
+        // mocking fetch/promise resolution needs minimal real tick or just process.nextTick interactions
+        // but since we use fake timers for setTimeout, we should advance them just in case
+        jest.advanceTimersByTime(100);
+
+        // Wait for promises to settle (microtasks)
+        await Promise.resolve();
+        await Promise.resolve();
+
+        // Note: Lottie loading is async promise key, not timer based usually, 
+        // but checking ensures calls were made.
         expect(global.lottie.loadAnimation).toHaveBeenCalled();
+    });
 
-        // Assert that the pink-mode logic is actually "started"
-        // We can't easily check internal state, but we can check if floating icons appear eventually
-        // if we manually trigger rain or wait for the interval.
-
-        // Force trigger rain
-        if (typeof window.triggerPinkModeIconRain === 'function') {
-            window.triggerPinkModeIconRain();
-
-            // Wait for potential async DOM updates
-            await new Promise(r => setTimeout(r, 200));
-
-            // In JSDOM, floating icons should be appended to body
-            // They have class 'pink-mode-floating-icon'
-            const icons = document.querySelectorAll('.pink-mode-floating-icon');
-
-            // If the implementation is merely a stub (noop), we expect 0 icons.
-            // If it works, we expect > 0 icons.
-
-            // We expect it to FAIL currently if the user says it is broken.
-            // So this assertion should verify the broken state or pass if I fixed it.
-            // The user wants me to fix it. So if this fails, I have confirmed the bug.
-            expect(icons.length).toBeGreaterThan(0);
-            // console.log('TEST: Skipping rain icon assertion (known issue, focused on Activation)');
+    test('Pink Mode Rain triggers floating icons', async () => {
+        // Activate properly first
+        if (window.cineCorePinkModeSupport) {
+            window.cineCorePinkModeSupport.startPinkModeAnimatedIcons();
+        } else if (window.togglePinkMode) {
+            window.togglePinkMode();
         } else {
-            throw new Error('triggerPinkModeIconRain is not defined on window');
+            document.body.classList.add('pink-mode-active');
         }
+
+        // Verify trigger function exists
+        expect(typeof window.triggerPinkModeIconRain).toBe('function');
+
+        // Trigger rain
+        window.triggerPinkModeIconRain();
+
+        // Rain spawns icons over time (20 * 200ms = 4000ms)
+        // We advance time in chunks and allow promises to settle
+        for (let i = 0; i < 25; i++) {
+            jest.advanceTimersByTime(200);
+            await Promise.resolve(); // Flush microtasks
+            await Promise.resolve();
+        }
+        await Promise.resolve();
+
+        icons = document.querySelectorAll('.pink-mode-floating-icon');
+        expect(icons.length).toBeGreaterThan(5); // Should have many now
+
+        // Check cleanup
+        if (window.cineCorePinkModeSupport) {
+            window.cineCorePinkModeSupport.stopPinkModeAnimatedIcons();
+        }
+        icons = document.querySelectorAll('.pink-mode-floating-icon');
+        expect(icons.length).toBe(0);
     });
 
     test('Lottie runtime is accessible', async () => {
-        // Check if the runtime loader function exists
         expect(typeof window.ensurePinkModeLottieRuntime).toBe('function');
-
-        // Call it
         const runtime = await window.ensurePinkModeLottieRuntime();
-
-        // It should return the mocked lottie object
         expect(runtime).toBeDefined();
         expect(runtime.loadAnimation).toBeDefined();
     });

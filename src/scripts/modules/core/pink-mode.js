@@ -33,20 +33,20 @@
         const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
         const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-          '/src/animations/flamingo.json',
-          '/src/animations/unicorn.json',
-          '/src/animations/pink-mode/camera.json',
-          '/src/animations/pink-mode/director-chair.json',
-          '/src/animations/pink-mode/dog.json',
-          '/src/animations/pink-mode/fox-2.json',
-          '/src/animations/pink-mode/fox-3.json',
-          '/src/animations/pink-mode/fox.json',
-          '/src/animations/pink-mode/horse.json',
-          '/src/animations/pink-mode/mountains.json',
-          '/src/animations/pink-mode/movie-camera.json',
-          '/src/animations/pink-mode/pinata.json',
-          '/src/animations/pink-mode/script.json',
-          '/src/animations/pink-mode/video-camera.json'
+          'src/animations/flamingo.json',
+          'src/animations/unicorn.json',
+          'src/animations/pink-mode/camera.json',
+          'src/animations/pink-mode/director-chair.json',
+          'src/animations/pink-mode/dog.json',
+          'src/animations/pink-mode/fox-2.json',
+          'src/animations/pink-mode/fox-3.json',
+          'src/animations/pink-mode/fox.json',
+          'src/animations/pink-mode/horse.json',
+          'src/animations/pink-mode/mountains.json',
+          'src/animations/pink-mode/movie-camera.json',
+          'src/animations/pink-mode/pinata.json',
+          'src/animations/pink-mode/script.json',
+          'src/animations/pink-mode/video-camera.json'
         ]);
 
         function ensurePinkModeLottieRuntime() {
@@ -64,7 +64,7 @@
 
           return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = '/src/vendor/lottie.min.js';
+            script.src = 'src/vendor/lottie.min.js';
             script.async = true;
             script.setAttribute('data-loader', 'pink-mode-lottie');
             script.onload = () => {
@@ -144,6 +144,7 @@
             this.active = false;
             this.icons = [];
             this.combo = 0;
+            this.rainTimeouts = [];
           }
 
           activate() {
@@ -156,6 +157,10 @@
             document.body.classList.remove('pink-mode-active');
             this.icons.forEach(i => i.destroy());
             this.icons = [];
+            if (this.rainTimeouts) {
+              this.rainTimeouts.forEach(id => clearTimeout(id));
+              this.rainTimeouts = [];
+            }
           }
 
           /**
@@ -166,14 +171,19 @@
             // TODO: Implement proper rain
             console.log('Rain triggered!');
             for (let i = 0; i < 20; i++) {
-              setTimeout(() => {
+              const tm = setTimeout(() => {
+                if (this.rainTimeouts) {
+                  const idx = this.rainTimeouts.indexOf(tm);
+                  if (idx > -1) this.rainTimeouts.splice(idx, 1);
+                }
                 this.spawnRandomIcon();
               }, i * 200);
+              this.rainTimeouts.push(tm);
             }
           }
 
           spawnRandomIcon() {
-            if (!this.active) return; // Stop spawning if deactivated
+            if (!this.active) return;
 
             const iconFile = PINK_MODE_ANIMATED_ICON_FILES[Math.floor(Math.random() * PINK_MODE_ANIMATED_ICON_FILES.length)];
 
@@ -332,20 +342,20 @@
           const GLOBAL_SCOPE = (typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : global)));
 
           const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-            '/src/animations/flamingo.json',
-            '/src/animations/unicorn.json',
-            '/src/animations/pink-mode/camera.json',
-            '/src/animations/pink-mode/director-chair.json',
-            '/src/animations/pink-mode/dog.json',
-            '/src/animations/pink-mode/fox-2.json',
-            '/src/animations/pink-mode/fox-3.json',
-            '/src/animations/pink-mode/fox.json',
-            '/src/animations/pink-mode/horse.json',
-            '/src/animations/pink-mode/mountains.json',
-            '/src/animations/pink-mode/movie-camera.json',
-            '/src/animations/pink-mode/pinata.json',
-            '/src/animations/pink-mode/script.json',
-            '/src/animations/pink-mode/video-camera.json'
+            'src/animations/flamingo.json',
+            'src/animations/unicorn.json',
+            'src/animations/pink-mode/camera.json',
+            'src/animations/pink-mode/director-chair.json',
+            'src/animations/pink-mode/dog.json',
+            'src/animations/pink-mode/fox-2.json',
+            'src/animations/pink-mode/fox-3.json',
+            'src/animations/pink-mode/fox.json',
+            'src/animations/pink-mode/horse.json',
+            'src/animations/pink-mode/mountains.json',
+            'src/animations/pink-mode/movie-camera.json',
+            'src/animations/pink-mode/pinata.json',
+            'src/animations/pink-mode/script.json',
+            'src/animations/pink-mode/video-camera.json'
           ]);
 
           function createSafeResolvedPromise(value) {
@@ -374,7 +384,7 @@
 
             return new Promise((resolve) => {
               const script = document.createElement('script');
-              script.src = '/src/vendor/lottie.min.js';
+              script.src = 'src/vendor/lottie.min.js';
               script.async = true;
               script.setAttribute('data-loader', 'pink-mode-lottie');
               script.onload = () => {
@@ -447,6 +457,7 @@
               this.active = false;
               this.icons = [];
               this.combo = 0;
+              this.rainTimeouts = [];
             }
 
             activate() {
@@ -459,14 +470,19 @@
               document.body.classList.remove('pink-mode-active');
               this.icons.forEach(i => i.destroy());
               this.icons = [];
+              if (this.rainTimeouts) {
+                this.rainTimeouts.forEach(id => clearTimeout(id));
+                this.rainTimeouts = [];
+              }
             }
 
             triggerRain() {
               console.log('Rain triggered!');
               for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
+                const tm = setTimeout(() => {
                   this.spawnRandomIcon();
                 }, i * 200);
+                this.rainTimeouts.push(tm);
               }
             }
 

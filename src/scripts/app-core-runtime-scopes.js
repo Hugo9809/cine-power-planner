@@ -171,58 +171,58 @@ function inlineResolvePrimaryScopeCandidate() {
   return null;
 }
 
-const CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
+var CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
   CORE_RUNTIME_SCOPE_TOOLS &&
-  typeof CORE_RUNTIME_SCOPE_TOOLS.getPrimaryScopeCandidate === 'function'
+    typeof CORE_RUNTIME_SCOPE_TOOLS.getPrimaryScopeCandidate === 'function'
     ? CORE_RUNTIME_SCOPE_TOOLS.getPrimaryScopeCandidate()
     : inlineResolvePrimaryScopeCandidate();
 
-const collectRuntimeScopeCandidates =
+var collectRuntimeScopeCandidates =
   CORE_RUNTIME_SCOPE_TOOLS && typeof CORE_RUNTIME_SCOPE_TOOLS.getScopeCandidates === 'function'
     ? function collectRuntimeScopeCandidates(additionalCandidates = []) {
-        return CORE_RUNTIME_SCOPE_TOOLS.getScopeCandidates({
-          primaryCandidate: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-          extraCandidates: additionalCandidates,
-        });
-      }
+      return CORE_RUNTIME_SCOPE_TOOLS.getScopeCandidates({
+        primaryCandidate: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+        extraCandidates: additionalCandidates,
+      });
+    }
     : function collectRuntimeScopeCandidates(additionalCandidates = []) {
-        const baselineCandidates = [
-          CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-          inlineResolvePrimaryScopeCandidate(),
-          typeof globalThis !== 'undefined' ? globalThis : null,
-          typeof window !== 'undefined' ? window : null,
-          typeof self !== 'undefined' ? self : null,
-          typeof global !== 'undefined' ? global : null,
-        ];
+      const baselineCandidates = [
+        CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+        inlineResolvePrimaryScopeCandidate(),
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+      ];
 
-        const extras = Array.isArray(additionalCandidates)
-          ? additionalCandidates
-          : [additionalCandidates];
+      const extras = Array.isArray(additionalCandidates)
+        ? additionalCandidates
+        : [additionalCandidates];
 
-        for (let index = 0; index < extras.length; index += 1) {
-          baselineCandidates.push(extras[index]);
+      for (let index = 0; index < extras.length; index += 1) {
+        baselineCandidates.push(extras[index]);
+      }
+
+      const resolved = [];
+      for (let index = 0; index < baselineCandidates.length; index += 1) {
+        const candidate = baselineCandidates[index];
+        if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+          continue;
         }
 
-        const resolved = [];
-        for (let index = 0; index < baselineCandidates.length; index += 1) {
-          const candidate = baselineCandidates[index];
-          if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
-            continue;
-          }
-
-          let duplicate = false;
-          for (let checkIndex = 0; checkIndex < resolved.length; checkIndex += 1) {
-            if (resolved[checkIndex] === candidate) {
-              duplicate = true;
-              break;
-            }
-          }
-
-          if (!duplicate) {
-            resolved.push(candidate);
+        let duplicate = false;
+        for (let checkIndex = 0; checkIndex < resolved.length; checkIndex += 1) {
+          if (resolved[checkIndex] === candidate) {
+            duplicate = true;
+            break;
           }
         }
 
-        return resolved;
-      };
+        if (!duplicate) {
+          resolved.push(candidate);
+        }
+      }
+
+      return resolved;
+    };
 

@@ -976,6 +976,18 @@
         "offlineUse": {
           "title": "Offline-Nutzung",
           "content": "Cine Power Planner funktioniert vollständig **offline** mit lokal gespeicherten Icons, Fonts und Hilfe. Prüfe die Offline-Anzeige und halte Exporte, Voll-Backups und den lokalen Backup-Tresor aktuell."
+        },
+        "troubleshooting": {
+          "title": "Fehlerbehebung",
+          "content": "Wenn etwas nicht wie erwartet funktioniert:\n\n- **Neu laden**: Nutze die Refresh-Taste im Header, wenn die App hakt.\n- **Cache leeren**: Wenn Updates nicht erscheinen, leere deinen Browser-Cache.\n- **Backup**: Lade regelmäßig vollständige Backups in den Einstellungen herunter."
+        },
+        "shortcuts": {
+          "title": "Tastenkürzel",
+          "content": "Navigiere schneller mit diesen Tasten:\n\n- **?**, **H**, **F1**: Hilfe öffnen\n- **/**: Suche fokussieren\n- **Esc**: Dialoge oder Menüs schließen\n- **D**: Dunkelmodus umschalten"
+        },
+        "pinkMode": {
+          "title": "Pinkmodus",
+          "content": "Aktiviere den **Pinkmodus** in den Einstellungen oder der oberen Leiste für verspielte Akzente und animierte Icons. Das Einhorn-Symbol wechselt alle 30 Sekunden, und schwebende Sticker gleiten über den Bildschirm. Klicke einen schwebenden Sticker **3-mal**, um einen feierlichen Regen-Effekt auszulösen."
         }
       },
       "documentationTrackerHelpStart": "Einstieg und Navigation",
@@ -983,6 +995,7 @@
       "documentationTrackerHelpBackup": "Backup- und Restore-Übungen",
       "documentationTrackerHelpOwnGear": "Eigenes Equipment und Importe",
       "documentationTrackerHelpOffline": "Offline-Bereitschaft und Service Worker",
+      "documentationTrackerHelpPinkMode": "Pinkmodus und Animationen",
       "documentationTrackerPrintHeading": "Druckleitfäden",
       "documentationTrackerPrintChecklist": "Checkliste Dokumentationsupdate",
       "documentationTrackerPrintMaintenance": "Leitfaden Dokumentationspflege",

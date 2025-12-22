@@ -94,7 +94,10 @@
             'contacts',
             'ownGear',
             'settings',
-            'offlineUse'
+            'offlineUse',
+            'troubleshooting',
+            'shortcuts',
+            'pinkMode'
         ];
 
         let hasTopics = false;
@@ -117,7 +120,28 @@
             const contentDiv = doc.createElement('div');
             contentDiv.className = 'help-topic-content';
             contentDiv.hidden = true;
-            contentDiv.innerHTML = `<p>${content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+
+            const parseMarkdown = (text) => {
+                if (!text) return '';
+                // Basic inline formatting
+                let html = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>');
+
+                // Split by double newlines to handle paragraphs and lists
+                return html.split(/\n\n+/).map(block => {
+                    if (block.trim().startsWith('- ')) {
+                        const items = block.trim().split(/\n/).map(line => {
+                            return `<li>${line.replace(/^- /, '')}</li>`;
+                        }).join('');
+                        return `<ul>${items}</ul>`;
+                    }
+                    return `<p>${block}</p>`;
+                }).join('');
+            };
+
+            contentDiv.innerHTML = parseMarkdown(content);
 
             button.addEventListener('click', () => {
                 const isExpanded = button.getAttribute('aria-expanded') === 'true';

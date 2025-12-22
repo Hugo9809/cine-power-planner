@@ -131,23 +131,23 @@
 
   const exposeGlobal = typeof MODULE_BASE.exposeGlobal === 'function'
     ? function expose(name, value, options) {
-        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
-      }
+      return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options || {});
+    }
     : function expose(name, value, options) {
-        return fallbackExpose(name, value, GLOBAL_SCOPE, options || {});
-      };
+      return fallbackExpose(name, value, GLOBAL_SCOPE, options || {});
+    };
 
   const registerOrQueueModule = typeof MODULE_BASE.registerOrQueueModule === 'function'
     ? function register(name, api, options, onError) {
-        return MODULE_BASE.registerOrQueueModule(
-          name,
-          api,
-          options,
-          onError,
-          GLOBAL_SCOPE,
-          moduleRegistry,
-        );
-      }
+      return MODULE_BASE.registerOrQueueModule(
+        name,
+        api,
+        options,
+        onError,
+        GLOBAL_SCOPE,
+        moduleRegistry,
+      );
+    }
     : fallbackRegister;
 
   const safeWarn = (function resolveSafeWarn() {

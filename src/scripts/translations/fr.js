@@ -944,6 +944,18 @@
         "offlineUse": {
           "title": "Utilisation hors ligne",
           "content": "Cine Power Planner fonctionne entièrement **hors ligne** avec des icônes, polices et aides locales. Vérifiez l'indicateur hors ligne et gardez exports, sauvegardes complètes et coffre local à jour avant de vous déconnecter."
+        },
+        "troubleshooting": {
+          "title": "Dépannage",
+          "content": "Si quelque chose ne fonctionne pas comme prévu :\n\n- **Recharger** : Utilisez le bouton de rafraîchissement si l'app semble bloquée.\n- **Vider le cache** : Si les mises à jour n'apparaissent pas, videz le cache de votre navigateur.\n- **Sauvegarde** : Téléchargez régulièrement des sauvegardes complètes dans les paramètres."
+        },
+        "shortcuts": {
+          "title": "Raccourcis clavier",
+          "content": "Naviguez plus vite avec ces touches :\n\n- **?**, **H**, **F1** : Ouvrir l'aide\n- **/** : Focaliser la recherche\n- **Esc** : Fermer les boîtes de dialogue ou menus\n- **D** : Basculer le mode sombre"
+        },
+        "pinkMode": {
+          "title": "Mode Rose",
+          "content": "Activez le **Mode Rose** dans les paramètres ou la barre supérieure pour des accents ludiques et des icônes animées. L'icône de la licorne change toutes les 30 secondes et des autocollants flottants glissent sur l'écran. Cliquez sur un autocollant flottant **3 fois** pour déclencher un effet de pluie festif."
         }
       },
       "documentationTrackerHelpStart": "Premiers pas et navigation",
@@ -951,6 +963,7 @@
       "documentationTrackerHelpBackup": "Sauvegarde et exercices de restauration",
       "documentationTrackerHelpOwnGear": "Équipement personnel et importations",
       "documentationTrackerHelpOffline": "Disponibilité hors ligne et service worker",
+      "documentationTrackerHelpPinkMode": "Mode rose et animations",
       "documentationTrackerPrintHeading": "Guides imprimables",
       "documentationTrackerPrintChecklist": "Checklist de mise à jour de la documentation",
       "documentationTrackerPrintMaintenance": "Guide de maintenance de la documentation",

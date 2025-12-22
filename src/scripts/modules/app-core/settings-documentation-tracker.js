@@ -36,6 +36,7 @@
         { id: 'help-backup', labelKey: 'documentationTrackerHelpBackup' },
         { id: 'help-own-gear', labelKey: 'documentationTrackerHelpOwnGear' },
         { id: 'help-offline', labelKey: 'documentationTrackerHelpOffline' },
+        { id: 'help-pink-mode', labelKey: 'documentationTrackerHelpPinkMode' },
       ],
     },
     printGuides: {

@@ -120,14 +120,18 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
 
   const combinedSource = [
     nodePrelude,
-    ...parts.map(part => fs.readFileSync(path.join(__dirname, part), 'utf8'))
+    ...parts.map(part => {
+      const content = fs.readFileSync(path.join(__dirname, part), 'utf8');
+      return `\nconsole.log('script.js: Starting part: ${part}');\n${content}\nconsole.log('script.js: Finished part: ${part}');\n`;
+    })
   ].join('\n');
 
   const wrapperSource =
     '(function (exports, require, module, __filename, __dirname, globalScope) {\n' +
-    'with (globalScope) {\n' +
+    '  with (globalScope) {\n' +
     combinedSource +
-    '\n}\n})';
+    '\n  }\n' +
+    '})';
   const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
   const globalScope =
     (typeof globalThis !== 'undefined' && globalThis)

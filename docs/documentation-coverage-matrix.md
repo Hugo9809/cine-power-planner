@@ -16,6 +16,7 @@ whenever you ship a feature, adjust persistence logic or revise workflows.
 | Docs/documentation-maintenance.md | Documentation | _(fill date)_ | Update cadence, review triggers. | Checklist copy with initials. |
 | Docs/testing-plan.md | QA | _(fill date)_ | Automated/manual test coverage for persistence + offline surfaces. | Test run output archived with release. |
 | Docs/schema-inventory.md | Engineering | _(fill date)_ | JSON shape definitions for persistence payloads. | Exported schema diff, console log of validation pass. |
+| Docs/pink-mode-reference.md | Product | 2025-12-22 | Animations, triggers, stickers and celebratory rain events. | Console capture of rain effect, Lottie asset manifest check. |
 
 ## How to use the matrix
 

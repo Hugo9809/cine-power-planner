@@ -943,7 +943,19 @@
         },
         "offlineUse": {
           "title": "Uso offline",
-          "content": "Cine Power Planner funziona completamente **offline** con icone, font e aiuti locali. Controlla l'indicatore offline e mantieni esportazioni, backup completi e caveau locale aggiornati prima di disconnetterti."
+          "content": "Cine Power Planner fonctionne entièrement **offline** avec des icônes, polices et aides locales. Controlla l'indicatore offline e mantieni esportazioni, backup completi e caveau locale aggiornati prima di disconnetterti."
+        },
+        "troubleshooting": {
+          "title": "Risoluzione dei problemi",
+          "content": "Se qualcosa non funziona come previsto:\n\n- **Ricarica**: Usa il pulsante di aggiornamento se l'app sembra bloccata.\n- **Svuota la cache**: Se non vedi gli aggiornamenti, pulisci la cache del browser.\n- **Backup**: Scarica regolarmente backup completi nelle impostazioni."
+        },
+        "shortcuts": {
+          "title": "Scorciatoie da tastiera",
+          "content": "Naviga più velocemente con questi tasti:\n\n- **?**, **H**, **F1**: Apri l'aiuto\n- **/**: Attiva la ricerca\n- **Esc**: Chiudi finestre o menu\n- **D**: Cambia modalità scura"
+        },
+        "pinkMode": {
+          "title": "Modalità Rosa",
+          "content": "Attiva la **Modalità Rosa** nelle impostazioni o nella barra superiore per un tocco giocoso e icone animate. L'icona dell'unicorno cambia ogni 30 secondi e vedrai adesivi fluttuanti sullo schermo. Clicca su un adesivo **3 volte** per scatenare un effetto pioggia festoso."
         }
       },
       "documentationTrackerHelpStart": "Avvio e navigazione",
@@ -951,6 +963,7 @@
       "documentationTrackerHelpBackup": "Backup e prove di ripristino",
       "documentationTrackerHelpOwnGear": "Gear personale e importazioni",
       "documentationTrackerHelpOffline": "Prontezza offline e service worker",
+      "documentationTrackerHelpPinkMode": "Modalità rosa e animazioni",
       "documentationTrackerPrintHeading": "Guide stampabili",
       "documentationTrackerPrintChecklist": "Checklist aggiornamento documentazione",
       "documentationTrackerPrintMaintenance": "Guida alla manutenzione della documentazione",

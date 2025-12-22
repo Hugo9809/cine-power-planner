@@ -944,6 +944,18 @@
         "offlineUse": {
           "title": "Uso sin conexión",
           "content": "Cine Power Planner funciona totalmente **sin conexión** con iconos, fuentes y ayuda locales. Confirma el indicador offline y mantén exportaciones, copias completas y la bóveda local al día antes de desconectarte."
+        },
+        "troubleshooting": {
+          "title": "Solución de problemas",
+          "content": "Si algo no funciona como debería:\n\n- **Recargar**: Usa el botón de refrescar si la app parece bloqueada.\n- **Borrar caché**: Si no ves las actualizaciones, limpia la caché de tu navegador.\n- **Copia de seguridad**: Descarga copias de seguridad completas regularmente en los ajustes."
+        },
+        "shortcuts": {
+          "title": "Atajos de teclado",
+          "content": "Navega más rápido con estas teclas:\n\n- **?**, **H**, **F1**: Abrir ayuda\n- **/**: Enfocar búsqueda\n- **Esc**: Cerrar diálogos o menús\n- **D**: Cambiar modo oscuro"
+        },
+        "pinkMode": {
+          "title": "Modo Rosa",
+          "content": "Activa el **Modo Rosa** en los ajustes o la barra superior para disfrutar de toques divertidos e iconos animados. El icono de unicornio cambia cada 30 segundos y verás pegatinas flotantes en pantalla. Haz clic **3 veces** en una pegatina flotante para activar un efecto de lluvia festivo."
         }
       },
       "documentationTrackerHelpStart": "Introducción y navegación",
@@ -951,6 +963,7 @@
       "documentationTrackerHelpBackup": "Copias de seguridad y ensayos de restauración",
       "documentationTrackerHelpOwnGear": "Equipo propio e importaciones",
       "documentationTrackerHelpOffline": "Disponibilidad offline y service worker",
+      "documentationTrackerHelpPinkMode": "Modo rosa y animaciones",
       "documentationTrackerPrintHeading": "Guías imprimibles",
       "documentationTrackerPrintChecklist": "Checklist de actualización de documentación",
       "documentationTrackerPrintMaintenance": "Guía de mantenimiento de la documentación",
