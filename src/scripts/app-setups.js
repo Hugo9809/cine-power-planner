@@ -4626,7 +4626,7 @@ function refreshGearItemProviderDisplays(scope) {
   refreshRentalProviderNoteDisplays();
 }
 
-function handleShareSetupClick() {
+async function handleShareSetupClick() {
   const shareContext = getShareUiContext(this);
   const shareDialog = shareContext.dialog;
   const shareForm = shareContext.form;
@@ -4646,11 +4646,12 @@ function handleShareSetupClick() {
     }
     const rulesForShare = getAutoGearRules();
     const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
-    const includeAutoGear = hasAutoGearRules
-      ? confirmAutoGearSelection(
+    let includeAutoGear = false;
+    if (hasAutoGearRules) {
+      includeAutoGear = await confirmAutoGearSelection(
         shareIncludeAutoGearCheckbox ? shareIncludeAutoGearCheckbox.checked : false
-      )
-      : false;
+      );
+    }
     if (shareIncludeAutoGearCheckbox) {
       shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
     }

@@ -2594,6 +2594,7 @@
       },
       {
         key: 'resultsTotalDraw',
+        ensureHeroCard: true,
         highlight: [
           '#heroMainStat',
           '#metricCurrent144',
@@ -2602,13 +2603,10 @@
       },
       {
         key: 'resultsBatteryPacks',
+        ensureHeroCard: true,
         highlight: [
-          '#batteryLifeLabel',
-          '#batteryLife',
-          '#batteryLifeUnit',
-          '#runtimeAverageNote',
-          '#batteryCountLabel',
-          '#batteryCount',
+          '#metricRuntime',
+          '#metricBatteryCount',
         ],
       },
       {
@@ -4369,6 +4367,16 @@
     }
     contactsDialogRef.setAttribute('hidden', '');
     autoOpenedContacts = false;
+  }
+
+  function ensureHeroCardForStep(step) {
+    if (!step || !step.ensureHeroCard) {
+      return;
+    }
+    const heroCard = DOCUMENT.getElementById('heroCard');
+    if (heroCard && heroCard.classList.contains('hidden')) {
+      heroCard.classList.remove('hidden');
+    }
   }
 
   function ensureOwnGearForStep(step) {
@@ -7582,6 +7590,10 @@
     } else {
       autoOpenedProjectDialog = false;
       detachProjectDialogVisibilityMonitor();
+    }
+
+    if (step.ensureHeroCard) {
+      ensureHeroCardForStep(step);
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));

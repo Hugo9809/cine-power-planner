@@ -2734,93 +2734,106 @@
     const confirmation = langTexts.autoGearResetFactoryConfirm
       || texts.en?.autoGearResetFactoryConfirm
       || 'Replace your automatic gear rules with the default additions?';
-    if (typeof confirm === 'function' && !confirm(confirmation)) {
-      return;
-    }
 
-    const exportFailureMessage = langTexts.autoGearResetFactoryExportFailed
-      || fallbackTexts.autoGearResetFactoryExportFailed
-      || 'Automatic gear preset export failed. Reset cancelled.';
+    const performReset = () => {
+      const exportFailureMessage = langTexts.autoGearResetFactoryExportFailed
+        || fallbackTexts.autoGearResetFactoryExportFailed
+        || 'Automatic gear preset export failed. Reset cancelled.';
 
-    let presetExportOutcome = { status: 'skipped', reason: 'empty' };
-    if (typeof exportAutoGearPresets === 'function') {
-      try {
-        const result = exportAutoGearPresets({ reason: 'reset-auto-gear' });
-        presetExportOutcome = result || { status: 'failed', reason: 'unknown' };
-      } catch (exportError) {
-        console.error('Failed to export automatic gear presets before reset', exportError);
-        presetExportOutcome = { status: 'failed', reason: 'exception', error: exportError };
-      }
-    } else {
-      presetExportOutcome = { status: 'failed', reason: 'unavailable' };
-    }
-
-    if (
-      !presetExportOutcome
-      || presetExportOutcome.status === 'failed'
-      || (presetExportOutcome.status === 'skipped' && presetExportOutcome.reason !== 'empty')
-    ) {
-      if (typeof showNotification === 'function') {
-        showNotification('error', exportFailureMessage);
-      }
-      return;
-    }
-
-    const backupName = ensureAutoBackupBeforeDeletion('reset automatic gear rules');
-    if (!backupName) {
-      return;
-    }
-
-    const successMessage = langTexts.autoGearResetFactoryDone
-      || fallbackTexts.autoGearResetFactoryDone
-      || 'Automatic gear rules restored to factory additions.';
-    const emptyMessage = langTexts.autoGearResetFactoryEmpty
-      || fallbackTexts.autoGearResetFactoryEmpty
-      || 'Factory additions unavailable. Automatic gear rules cleared.';
-    const failureMessage = langTexts.autoGearResetFactoryError
-      || fallbackTexts.autoGearResetFactoryError
-      || 'Reset failed. Please try again.';
-
-    try {
-      const factoryRules = computeFactoryAutoGearRules();
-      if (Array.isArray(factoryRules) && factoryRules.length) {
-        setAutoGearRules(factoryRules);
-        markAutoGearDefaultsSeeded();
-        setFactoryAutoGearRulesSnapshot(getAutoGearRules());
-        if (typeof showNotification === 'function') {
-          showNotification('success', successMessage);
-        }
-        return;
-      }
-
-      setAutoGearRules([]);
-      setFactoryAutoGearRulesSnapshot(null);
-      clearAutoGearDefaultsSeeded();
-      const addedDefaults = ensureDefaultMatteboxAutoGearRules();
-      if (addedDefaults) {
-        markAutoGearDefaultsSeeded();
-        setFactoryAutoGearRulesSnapshot(getAutoGearRules());
-        if (typeof showNotification === 'function') {
-          showNotification('success', successMessage);
-        }
-        return;
-      }
-      if (typeof showNotification === 'function') {
-        showNotification('info', emptyMessage);
-      }
-    } catch (error) {
-      console.error('Failed to reset automatic gear rules to factory additions', error);
-      if (typeof showNotification === 'function') {
-        showNotification('error', failureMessage);
-      }
-      if (backupName && typeof notifyAutoSaveFromBackup === 'function') {
+      let presetExportOutcome = { status: 'skipped', reason: 'empty' };
+      if (typeof exportAutoGearPresets === 'function') {
         try {
-          notifyAutoSaveFromBackup(failureMessage, backupName, 'error');
-        } catch (notifyError) {
-          console.warn('Failed to announce automatic backup after reset failure', notifyError);
+          const result = exportAutoGearPresets({ reason: 'reset-auto-gear' });
+          presetExportOutcome = result || { status: 'failed', reason: 'unknown' };
+        } catch (exportError) {
+          console.error('Failed to export automatic gear presets before reset', exportError);
+          presetExportOutcome = { status: 'failed', reason: 'exception', error: exportError };
+        }
+      } else {
+        presetExportOutcome = { status: 'failed', reason: 'unavailable' };
+      }
+
+      if (
+        !presetExportOutcome
+        || presetExportOutcome.status === 'failed'
+        || (presetExportOutcome.status === 'skipped' && presetExportOutcome.reason !== 'empty')
+      ) {
+        if (typeof showNotification === 'function') {
+          showNotification('error', exportFailureMessage);
+        }
+        return;
+      }
+
+      const backupName = ensureAutoBackupBeforeDeletion('reset automatic gear rules');
+      if (!backupName) {
+        return;
+      }
+
+      const successMessage = langTexts.autoGearResetFactoryDone
+        || fallbackTexts.autoGearResetFactoryDone
+        || 'Automatic gear rules restored to factory additions.';
+      const emptyMessage = langTexts.autoGearResetFactoryEmpty
+        || fallbackTexts.autoGearResetFactoryEmpty
+        || 'Factory additions unavailable. Automatic gear rules cleared.';
+      const failureMessage = langTexts.autoGearResetFactoryError
+        || fallbackTexts.autoGearResetFactoryError
+        || 'Reset failed. Please try again.';
+
+      try {
+        const factoryRules = computeFactoryAutoGearRules();
+        if (Array.isArray(factoryRules) && factoryRules.length) {
+          setAutoGearRules(factoryRules);
+          markAutoGearDefaultsSeeded();
+          setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+          if (typeof showNotification === 'function') {
+            showNotification('success', successMessage);
+          }
+          return;
+        }
+
+        setAutoGearRules([]);
+        setFactoryAutoGearRulesSnapshot(null);
+        clearAutoGearDefaultsSeeded();
+        const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+        if (addedDefaults) {
+          markAutoGearDefaultsSeeded();
+          setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+          if (typeof showNotification === 'function') {
+            showNotification('success', successMessage);
+          }
+          return;
+        }
+        if (typeof showNotification === 'function') {
+          showNotification('info', emptyMessage);
+        }
+      } catch (error) {
+        console.error('Failed to reset automatic gear rules to factory additions', error);
+        if (typeof showNotification === 'function') {
+          showNotification('error', failureMessage);
+        }
+        if (backupName && typeof notifyAutoSaveFromBackup === 'function') {
+          try {
+            notifyAutoSaveFromBackup(failureMessage, backupName, 'error');
+          } catch (notifyError) {
+            console.warn('Failed to announce automatic backup after reset failure', notifyError);
+          }
         }
       }
+    };
+
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: langTexts.autoGearResetFactoryTitle || 'Reset to Factory',
+        message: confirmation,
+        confirmLabel: langTexts.autoGearResetFactoryConfirmLabel || 'Reset',
+        cancelLabel: langTexts.cancel || 'Cancel',
+        danger: true,
+        onConfirm: performReset,
+      });
+      return;
     }
+
+    console.warn('Missing window.cineShowConfirmDialog for resetAutoGearRulesToFactoryAdditions');
   }
 
   const autoGearRulesAPI = freezeDeep({

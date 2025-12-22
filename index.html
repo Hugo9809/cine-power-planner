@@ -357,8 +357,8 @@
         </div>
 
         <div class="hero-metrics-grid">
-          <div class="metric">
-            <span class="metric-label">Runtime</span>
+          <div class="metric" id="metricRuntime">
+            <span class="metric-label" id="batteryLifeLabel">Runtime</span>
             <span id="heroRuntime" class="metric-value">--</span>
           </div>
           <div class="metric" id="metricCurrent144">
@@ -369,8 +369,8 @@
             <span class="metric-label">Current (12V)</span>
             <span id="heroCurrent12" class="metric-value">0.00 A</span>
           </div>
-          <div class="metric">
-            <span class="metric-label">Batteries (10h)</span>
+          <div class="metric" id="metricBatteryCount">
+            <span class="metric-label" id="batteryCountLabel">Batteries (10h)</span>
             <span id="heroBatteryCount" class="metric-value">--</span>
           </div>
         </div>
@@ -850,7 +850,7 @@
               style="width: 18px; height: 18px; accent-color: var(--accent-color);">
             Project Requirements
           </label>
-          <label class="checkbox-row" for="printSectionDevices" >
+          <label class="checkbox-row" for="printSectionDevices">
             <input type="checkbox" id="printSectionDevices" checked
               style="width: 18px; height: 18px; accent-color: var(--accent-color);">
             Device List

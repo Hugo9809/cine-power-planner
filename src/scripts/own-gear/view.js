@@ -54,11 +54,11 @@
       || ((template) => template);
     const setButtonLabelWithIconBinding = options.setButtonLabelWithIconBinding
       || scope.setButtonLabelWithIconBinding
-      || (() => {});
+      || (() => { });
     const iconMarkup = options.iconMarkup || scope.iconMarkup || (() => '');
     const iconGlyphs = options.iconGlyphs || scope.ICON_GLYPHS || {};
-    const openDialog = options.openDialog || scope.openDialog || (() => {});
-    const closeDialog = options.closeDialog || scope.closeDialog || (() => {});
+    const openDialog = options.openDialog || scope.openDialog || (() => { });
+    const closeDialog = options.closeDialog || scope.closeDialog || (() => { });
     const formatQuantityText = typeof options.formatQuantityText === 'function'
       ? options.formatQuantityText
       : (value) => value;
@@ -172,8 +172,8 @@
       try {
         const langItems = dataSources.gearItemTranslations && typeof dataSources.gearItemTranslations === 'object'
           ? dataSources.gearItemTranslations[activeLang]
-            || dataSources.gearItemTranslations[defaultLanguage]
-            || null
+          || dataSources.gearItemTranslations[defaultLanguage]
+          || null
           : null;
         if (langItems && typeof langItems === 'object') {
           Object.keys(langItems).forEach((key) => {
@@ -514,26 +514,38 @@
       if (confirmTemplate.includes('%s')) {
         confirmMessage = formatWithPlaceholders(confirmTemplate, item.name);
       }
-      let confirmed = true;
-      if (confirmRef) {
-        try {
-          confirmed = confirmRef(confirmMessage);
-        } catch (error) {
-          void error;
-          confirmed = true;
+      const performDelete = () => {
+        const currentIdx = state.items.findIndex((entry) => entry && entry.id === id);
+        if (currentIdx === -1) return;
+
+        state.items.splice(currentIdx, 1);
+        if (state.editingId === id) {
+          resetOwnGearForm();
         }
-      }
-      if (!confirmed) {
+        persistItems();
+        state.suggestionCache = { lang: null, list: [], lookup: new Set() };
+        renderOwnGearList();
+        refreshOwnGearSuggestions();
+      };
+
+      const showDialog = scope.cineShowConfirmDialog
+        || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+
+      if (typeof showDialog === 'function') {
+        showDialog({
+          title: langTexts.ownGearDeleteTitle || 'Remove Item',
+          message: confirmMessage,
+          confirmLabel: langTexts.ownGearDeleteConfirmLabel || 'Remove',
+          cancelLabel: langTexts.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performDelete,
+        });
         return;
       }
-      state.items.splice(index, 1);
-      if (state.editingId === id) {
-        resetOwnGearForm();
+
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('cine.ownGear.view missing confirm dialog implementation.');
       }
-      persistItems();
-      state.suggestionCache = { lang: null, list: [], lookup: new Set() };
-      renderOwnGearList();
-      refreshOwnGearSuggestions();
     }
 
     function applyOwnGearLocalization(lang) {

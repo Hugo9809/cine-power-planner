@@ -2349,21 +2349,32 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const confirmMessage = confirmTemplate.includes('%s')
         ? formatWithPlaceholders(confirmTemplate, preset.label)
         : confirmTemplate;
-      let confirmed = true;
-      if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-        confirmed = window.confirm(confirmMessage);
-      }
-      if (!confirmed) {
-        autoGearPresetSelect.value = activeAutoGearPresetId || '';
+
+      const performApply = () => {
+        setAutoGearRules(preset.rules);
+        updateAutoGearCatalogOptions();
+        renderAutoGearRulesList();
+        const appliedMessage = texts[currentLang]?.autoGearPresetApplied
+          || texts.en?.autoGearPresetApplied
+          || 'Preset applied.';
+        showNotification('success', appliedMessage);
+      };
+
+      if (typeof window.cineShowConfirmDialog === 'function') {
+        window.cineShowConfirmDialog({
+          title: texts[currentLang]?.autoGearPresetApplyTitle || 'Apply Preset',
+          message: confirmMessage,
+          confirmLabel: texts[currentLang]?.apply || 'Apply',
+          cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+          onConfirm: performApply,
+          onCancel: () => {
+            autoGearPresetSelect.value = activeAutoGearPresetId || '';
+          },
+        });
         return;
       }
-      setAutoGearRules(preset.rules);
-      updateAutoGearCatalogOptions();
-      renderAutoGearRulesList();
-      const appliedMessage = texts[currentLang]?.autoGearPresetApplied
-        || texts.en?.autoGearPresetApplied
-        || 'Preset applied.';
-      showNotification('success', appliedMessage);
+
+      console.warn('Missing window.cineShowConfirmDialog for handleAutoGearPresetSelection');
     }
 
     async function handleAutoGearSavePreset() {
@@ -2397,9 +2408,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           ? formatWithPlaceholders(overwriteTemplate, normalizedName)
           : overwriteTemplate;
         let overwriteConfirmed = true;
-        if (typeof window.confirm === 'function') {
-          overwriteConfirmed = window.confirm(overwriteMessage);
+
+        if (typeof window.cineShowConfirmDialog === 'function') {
+          overwriteConfirmed = await new Promise((resolve) => {
+            window.cineShowConfirmDialog({
+              title: texts[currentLang]?.autoGearPresetOverwriteTitle || 'Overwrite Preset',
+              message: overwriteMessage,
+              confirmLabel: texts[currentLang]?.save || 'Save',
+              cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+              onConfirm: () => resolve(true),
+              onCancel: () => resolve(false),
+            });
+          });
+        } else {
+          console.warn('Missing window.cineShowConfirmDialog for handleAutoGearSavePreset');
+          return;
         }
+
         if (!overwriteConfirmed) {
           return;
         }
@@ -2453,23 +2478,35 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const confirmMessage = label && confirmTemplate.includes('%s')
         ? formatWithPlaceholders(confirmTemplate, label)
         : confirmTemplate;
-      let confirmed = true;
-      if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-        confirmed = window.confirm(confirmMessage);
+
+      const performDelete = () => {
+        if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
+          setAutoGearAutoPresetId('', { persist: true, skipRender: true });
+        }
+        autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
+        autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+        persistAutoGearPresets(autoGearPresets);
+        setActiveAutoGearPresetId('', { persist: true, skipRender: true });
+        renderAutoGearPresetsControls();
+        const deletedMessage = texts[currentLang]?.autoGearPresetDeleted
+          || texts.en?.autoGearPresetDeleted
+          || 'Automatic gear preset deleted.';
+        showNotification('success', deletedMessage);
+      };
+
+      if (typeof window.cineShowConfirmDialog === 'function') {
+        window.cineShowConfirmDialog({
+          title: texts[currentLang]?.autoGearPresetDeleteTitle || 'Delete Preset',
+          message: confirmMessage,
+          confirmLabel: texts[currentLang]?.delete || 'Delete',
+          cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performDelete,
+        });
+        return;
       }
-      if (!confirmed) return;
-      if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
-        setAutoGearAutoPresetId('', { persist: true, skipRender: true });
-      }
-      autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
-      autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
-      persistAutoGearPresets(autoGearPresets);
-      setActiveAutoGearPresetId('', { persist: true, skipRender: true });
-      renderAutoGearPresetsControls();
-      const deletedMessage = texts[currentLang]?.autoGearPresetDeleted
-        || texts.en?.autoGearPresetDeleted
-        || 'Automatic gear preset deleted.';
-      showNotification('success', deletedMessage);
+
+      console.warn('Missing window.cineShowConfirmDialog for handleAutoGearDeletePreset');
     }
 
     function handleAutoGearShowBackupsToggle() {
@@ -2528,74 +2565,91 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const confirmMessage = confirmTemplate
           .replace('{limit}', formatAutoGearBackupCount(normalized))
           .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
-        const confirmed = typeof window !== 'undefined' && typeof window.confirm === 'function'
-          ? window.confirm(confirmMessage)
-          : true;
-        if (!confirmed) {
+
+        const proceedWithRetentionChange = () => {
+          const safetyBase = texts[currentLang]?.autoGearBackupRetentionSafetyNote
+            || texts.en?.autoGearBackupRetentionSafetyNote
+            || 'Retention lowered to {limit}.';
+          const safetyTrimmed = texts[currentLang]?.autoGearBackupRetentionSafetyNoteTrimmed
+            || texts.en?.autoGearBackupRetentionSafetyNoteTrimmed
+            || 'Retention lowered to {limit}. Removed {trimmed} in this change.';
+          const safetyTemplate = trimmedEstimate > 0 ? safetyTrimmed : safetyBase;
+          const safetyNote = safetyTemplate
+            .replace('{limit}', formatAutoGearBackupCount(normalized))
+            .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+
+          const safetyResult = captureAutoGearBackupSnapshot({
+            force: true,
+            notifySuccess: false,
+            note: safetyNote,
+          });
+
+          if (safetyResult.status !== 'created') {
+            const failureMessage = texts[currentLang]?.autoGearBackupRetentionSafetyFailed
+              || texts.en?.autoGearBackupRetentionSafetyFailed
+              || 'Safety snapshot failed. Retention was not changed.';
+            showNotification('error', failureMessage);
+            autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+            updateAutoGearBackupRetentionWarning('');
+            renderAutoGearBackupControls();
+            renderAutoGearBackupRetentionControls();
+            return;
+          }
+
+          const safetySavedMessage = texts[currentLang]?.autoGearBackupRetentionSafetySaved
+            || texts.en?.autoGearBackupRetentionSafetySaved
+            || 'Safety snapshot captured before trimming backups.';
+          showNotification('success', safetySavedMessage);
+
+          const trimResult = enforceAutoGearBackupRetentionLimit(normalized);
+          if (!trimResult.success) {
+            const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
+              || texts.en?.autoGearBackupRetentionUpdateFailed
+              || 'Could not apply the new retention limit.';
+            showNotification('error', failureMessage);
+            autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+            updateAutoGearBackupRetentionWarning('');
+            return;
+          }
+
+          const trimmedCount = trimResult.trimmed.length;
+          const successTemplate = trimmedCount > 0
+            ? texts[currentLang]?.autoGearBackupRetentionUpdated
+            || texts.en?.autoGearBackupRetentionUpdated
+            || 'Retention updated to {limit}. Removed {trimmed}.'
+            : texts[currentLang]?.autoGearBackupRetentionUpdatedNoTrim
+            || texts.en?.autoGearBackupRetentionUpdatedNoTrim
+            || 'Retention updated to {limit}. No backups were removed.';
+          const successMessage = successTemplate
+            .replace('{limit}', formatAutoGearBackupCount(normalized))
+            .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedCount, 1)));
+          showNotification('success', successMessage);
+          updateAutoGearBackupRetentionWarning('');
+        };
+
+        const cancelCallback = () => {
           autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
           updateAutoGearBackupRetentionWarning('');
           renderAutoGearBackupRetentionControls();
+        };
+
+        if (typeof window.cineShowConfirmDialog === 'function') {
+          window.cineShowConfirmDialog({
+            title: texts[currentLang]?.autoGearBackupRetentionTitle || 'Update Retention Limit',
+            message: confirmMessage,
+            confirmLabel: texts[currentLang]?.confirm || 'Confirm',
+            cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+            onConfirm: proceedWithRetentionChange,
+            onCancel: cancelCallback,
+          });
           return;
         }
 
-        const safetyBase = texts[currentLang]?.autoGearBackupRetentionSafetyNote
-          || texts.en?.autoGearBackupRetentionSafetyNote
-          || 'Retention lowered to {limit}.';
-        const safetyTrimmed = texts[currentLang]?.autoGearBackupRetentionSafetyNoteTrimmed
-          || texts.en?.autoGearBackupRetentionSafetyNoteTrimmed
-          || 'Retention lowered to {limit}. Removed {trimmed} in this change.';
-        const safetyTemplate = trimmedEstimate > 0 ? safetyTrimmed : safetyBase;
-        const safetyNote = safetyTemplate
-          .replace('{limit}', formatAutoGearBackupCount(normalized))
-          .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+        console.warn('Missing window.cineShowConfirmDialog for handleAutoGearBackupRetentionChange');
+        cancelCallback();
+        return;
 
-        const safetyResult = captureAutoGearBackupSnapshot({
-          force: true,
-          notifySuccess: false,
-          note: safetyNote,
-        });
-
-        if (safetyResult.status !== 'created') {
-          const failureMessage = texts[currentLang]?.autoGearBackupRetentionSafetyFailed
-            || texts.en?.autoGearBackupRetentionSafetyFailed
-            || 'Safety snapshot failed. Retention was not changed.';
-          showNotification('error', failureMessage);
-          autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
-          updateAutoGearBackupRetentionWarning('');
-          renderAutoGearBackupControls();
-          renderAutoGearBackupRetentionControls();
-          return;
-        }
-
-        const safetySavedMessage = texts[currentLang]?.autoGearBackupRetentionSafetySaved
-          || texts.en?.autoGearBackupRetentionSafetySaved
-          || 'Safety snapshot captured before trimming backups.';
-        showNotification('success', safetySavedMessage);
-
-        const trimResult = enforceAutoGearBackupRetentionLimit(normalized);
-        if (!trimResult.success) {
-          const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
-            || texts.en?.autoGearBackupRetentionUpdateFailed
-            || 'Could not apply the new retention limit.';
-          showNotification('error', failureMessage);
-          autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
-          updateAutoGearBackupRetentionWarning('');
-          return;
-        }
-
-        const trimmedCount = trimResult.trimmed.length;
-        const successTemplate = trimmedCount > 0
-          ? texts[currentLang]?.autoGearBackupRetentionUpdated
-          || texts.en?.autoGearBackupRetentionUpdated
-          || 'Retention updated to {limit}. Removed {trimmed}.'
-          : texts[currentLang]?.autoGearBackupRetentionUpdatedNoTrim
-          || texts.en?.autoGearBackupRetentionUpdatedNoTrim
-          || 'Retention updated to {limit}. No backups were removed.';
-        const successMessage = successTemplate
-          .replace('{limit}', formatAutoGearBackupCount(normalized))
-          .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedCount, 1)));
-        showNotification('success', successMessage);
-        updateAutoGearBackupRetentionWarning('');
+        proceedWithRetentionChange();
         return;
       }
 
@@ -5357,31 +5411,47 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!draftRule) return;
       const langTexts = texts[currentLang] || texts.en || {};
       const warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
-      if (warningMessages.length && typeof window.confirm === 'function') {
+      const performSave = () => {
+        const rules = getAutoGearRules();
+        const index = rules.findIndex(rule => rule.id === draftRule.id);
+        if (index >= 0) {
+          rules[index] = draftRule;
+        } else {
+          rules.push(draftRule);
+        }
+        setAutoGearRules(rules);
+        updateAutoGearCatalogOptions();
+        renderAutoGearRulesList();
+        const successMessage = texts[currentLang]?.autoGearRuleSaved
+          || texts.en?.autoGearRuleSaved
+          || 'Automatic gear rule saved.';
+        showNotification('success', successMessage);
+        closeAutoGearEditor();
+      };
+
+      if (warningMessages.length) {
         const confirmBase = langTexts.autoGearDraftWarningConfirm
           || texts.en?.autoGearDraftWarningConfirm
           || 'Save anyway? Review the impact warnings below before confirming.';
         const details = warningMessages.map(message => `• ${message}`).join('\n');
         const confirmMessage = `${confirmBase}\n\n${details}`;
-        if (!window.confirm(confirmMessage)) {
+
+        if (typeof window.cineShowConfirmDialog === 'function') {
+          window.cineShowConfirmDialog({
+            title: langTexts.autoGearDraftWarningTitle || 'Save with Warnings',
+            message: confirmMessage, // Note: dialog might not render newlines well unless it uses white-space: pre-wrap
+            confirmLabel: langTexts.saveAnyway || 'Save Anyway',
+            cancelLabel: langTexts.cancel || 'Cancel',
+            danger: true,
+            onConfirm: performSave,
+          });
           return;
         }
+
+        // Confirm fallback removed.
       }
-      const rules = getAutoGearRules();
-      const index = rules.findIndex(rule => rule.id === draftRule.id);
-      if (index >= 0) {
-        rules[index] = draftRule;
-      } else {
-        rules.push(draftRule);
-      }
-      setAutoGearRules(rules);
-      updateAutoGearCatalogOptions();
-      renderAutoGearRulesList();
-      const successMessage = texts[currentLang]?.autoGearRuleSaved
-        || texts.en?.autoGearRuleSaved
-        || 'Automatic gear rule saved.';
-      showNotification('success', successMessage);
-      closeAutoGearEditor();
+
+      performSave();
     }
 
     function duplicateAutoGearRule(ruleId, ruleIndex) {
@@ -5515,16 +5585,31 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const confirmation = texts[currentLang]?.autoGearDeleteConfirm
         || texts.en?.autoGearDeleteConfirm
         || 'Delete this rule?';
-      if (!window.confirm(confirmation)) return;
-      const backupName = ensureAutoBackupBeforeDeletion('delete automatic gear rule');
-      if (!backupName) return;
-      rules.splice(index, 1);
-      setAutoGearRules(rules);
-      updateAutoGearCatalogOptions();
-      renderAutoGearRulesList();
-      if (autoGearEditorDraft && autoGearEditorDraft.id === ruleId) {
-        closeAutoGearEditor();
+      const performRuleDelete = () => {
+        const backupName = ensureAutoBackupBeforeDeletion('delete automatic gear rule');
+        if (!backupName) return;
+        rules.splice(index, 1);
+        setAutoGearRules(rules);
+        updateAutoGearCatalogOptions();
+        renderAutoGearRulesList();
+        if (autoGearEditorDraft && autoGearEditorDraft.id === ruleId) {
+          closeAutoGearEditor();
+        }
+      };
+
+      if (typeof window.cineShowConfirmDialog === 'function') {
+        window.cineShowConfirmDialog({
+          title: texts[currentLang]?.autoGearDeleteTitle || 'Delete Rule',
+          message: confirmation,
+          confirmLabel: texts[currentLang]?.delete || 'Delete',
+          cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performRuleDelete,
+        });
+        return;
       }
+
+      console.warn('Missing window.cineShowConfirmDialog for deleteAutoGearRule');
     }
 
     function normalizeAutoGearPayloadMetadata(candidate) {
@@ -6323,37 +6408,49 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const confirmation = texts[currentLang]?.autoGearBackupRestoreConfirm
         || texts.en?.autoGearBackupRestoreConfirm
         || 'Replace your automatic gear rules with this backup?';
-      if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-        if (!window.confirm(confirmation)) return false;
-      }
-      try {
-        setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
-        if (backup.monitorDefaults) {
-          setAutoGearMonitorDefaults(backup.monitorDefaults, { skipRefresh: true });
+      const performRestore = () => {
+        try {
+          setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
+          if (backup.monitorDefaults) {
+            setAutoGearMonitorDefaults(backup.monitorDefaults, { skipRefresh: true });
+          }
+          closeAutoGearEditor();
+          renderAutoGearRulesList();
+          updateAutoGearCatalogOptions();
+          renderAutoGearMonitorDefaultsControls();
+          if (typeof refreshGearListIfVisible === 'function') {
+            refreshGearListIfVisible();
+          }
+          autoGearRulesLastBackupSignature = getAutoGearConfigurationSignature(backup.rules, backup.monitorDefaults);
+          autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
+          autoGearRulesDirtySinceBackup = false;
+          const message = texts[currentLang]?.autoGearBackupRestoreSuccess
+            || texts.en?.autoGearBackupRestoreSuccess
+            || 'Automatic gear backup restored.';
+          showNotification('success', message);
+        } catch (error) {
+          console.warn('Failed to restore automatic gear backup', error);
+          const message = texts[currentLang]?.autoGearBackupRestoreError
+            || texts.en?.autoGearBackupRestoreError
+            || 'Automatic gear backup restore failed.';
+          showNotification('error', message);
         }
-        closeAutoGearEditor();
-        renderAutoGearRulesList();
-        updateAutoGearCatalogOptions();
-        renderAutoGearMonitorDefaultsControls();
-        if (typeof refreshGearListIfVisible === 'function') {
-          refreshGearListIfVisible();
-        }
-        autoGearRulesLastBackupSignature = getAutoGearConfigurationSignature(backup.rules, backup.monitorDefaults);
-        autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
-        autoGearRulesDirtySinceBackup = false;
-        const message = texts[currentLang]?.autoGearBackupRestoreSuccess
-          || texts.en?.autoGearBackupRestoreSuccess
-          || 'Automatic gear backup restored.';
-        showNotification('success', message);
+      };
+
+      if (typeof window.cineShowConfirmDialog === 'function') {
+        window.cineShowConfirmDialog({
+          title: texts[currentLang]?.autoGearBackupRestoreTitle || 'Restore Backup',
+          message: confirmation,
+          confirmLabel: texts[currentLang]?.restore || 'Restore',
+          cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performRestore,
+        });
         return true;
-      } catch (error) {
-        console.warn('Failed to restore automatic gear backup', error);
-        const message = texts[currentLang]?.autoGearBackupRestoreError
-          || texts.en?.autoGearBackupRestoreError
-          || 'Automatic gear backup restore failed.';
-        showNotification('error', message);
-        return false;
       }
+
+      console.warn('Missing window.cineShowConfirmDialog for restoreAutoGearBackup');
+      return false;
     }
 
     function handleAutoGearImportSelection(event) {
@@ -6363,50 +6460,63 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const confirmation = texts[currentLang]?.autoGearImportConfirm
         || texts.en?.autoGearImportConfirm
         || 'Replace your automatic gear rules with the imported file?';
-      if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-        if (!window.confirm(confirmation)) {
+      const performImport = () => {
+        if (typeof FileReader === 'undefined') {
+          const errorMsg = texts[currentLang]?.autoGearImportError
+            || texts.en?.autoGearImportError
+            || 'Import failed. Please choose a valid automatic gear rules file.';
+          showNotification('error', errorMsg);
           if (input) input.value = '';
           return;
         }
-      }
-      if (typeof FileReader === 'undefined') {
-        const errorMsg = texts[currentLang]?.autoGearImportError
-          || texts.en?.autoGearImportError
-          || 'Import failed. Please choose a valid automatic gear rules file.';
-        showNotification('error', errorMsg);
-        if (input) input.value = '';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const text = e?.target?.result;
-          const parsed = JSON.parse(typeof text === 'string' ? text : '');
-          importAutoGearRulesFromData(parsed);
-        } catch (error) {
-          console.warn('Automatic gear rules import failed', error);
-          if (Array.isArray(error?.validationWarnings) && error.validationWarnings.length) {
-            displayAutoGearImportWarnings(error.validationWarnings, error.validationMetadata || null);
+        const reader = new FileReader();
+        reader.onload = e => {
+          try {
+            const text = e?.target?.result;
+            const parsed = JSON.parse(typeof text === 'string' ? text : '');
+            importAutoGearRulesFromData(parsed);
+          } catch (error) {
+            console.warn('Automatic gear rules import failed', error);
+            if (Array.isArray(error?.validationWarnings) && error.validationWarnings.length) {
+              displayAutoGearImportWarnings(error.validationWarnings, error.validationMetadata || null);
+            }
+            const fallbackErrorMsg = texts[currentLang]?.autoGearImportError
+              || texts.en?.autoGearImportError
+              || 'Import failed. Please choose a valid automatic gear rules file.';
+            const errorMsg = typeof error?.userMessage === 'string' && error.userMessage.trim()
+              ? error.userMessage
+              : fallbackErrorMsg;
+            showNotification('error', errorMsg);
+          } finally {
+            if (input) input.value = '';
           }
-          const fallbackErrorMsg = texts[currentLang]?.autoGearImportError
+        };
+        reader.onerror = () => {
+          const errorMsg = texts[currentLang]?.autoGearImportError
             || texts.en?.autoGearImportError
             || 'Import failed. Please choose a valid automatic gear rules file.';
-          const errorMsg = typeof error?.userMessage === 'string' && error.userMessage.trim()
-            ? error.userMessage
-            : fallbackErrorMsg;
           showNotification('error', errorMsg);
-        } finally {
           if (input) input.value = '';
-        }
+        };
+        reader.readAsText(file);
       };
-      reader.onerror = () => {
-        const errorMsg = texts[currentLang]?.autoGearImportError
-          || texts.en?.autoGearImportError
-          || 'Import failed. Please choose a valid automatic gear rules file.';
-        showNotification('error', errorMsg);
-        if (input) input.value = '';
-      };
-      reader.readAsText(file);
+
+      if (typeof window.cineShowConfirmDialog === 'function') {
+        window.cineShowConfirmDialog({
+          title: texts[currentLang]?.autoGearImportTitle || 'Import Rules',
+          message: confirmation,
+          confirmLabel: texts[currentLang]?.import || 'Import',
+          cancelLabel: texts[currentLang]?.cancel || 'Cancel',
+          danger: true,
+          onConfirm: performImport,
+          onCancel: () => {
+            if (input) input.value = '';
+          },
+        });
+        return;
+      }
+
+      console.warn('Missing window.cineShowConfirmDialog for handleAutoGearImportSelection');
     }
 
     let lastActiveBeforeIosHelp = null;

@@ -13003,6 +13003,24 @@ function loadUserProfileState() {
   applyUserProfileToDom();
 }
 
+function setAvatar(dataUrl) {
+  assignUserProfileState({ avatar: typeof dataUrl === 'string' ? dataUrl : '' });
+  persistUserProfileState();
+}
+
+function clearAvatar() {
+  assignUserProfileState({ avatar: '' });
+  persistUserProfileState();
+}
+
+// Explicitly expose to global scope if not already present
+if (typeof window !== 'undefined') {
+  if (typeof window.setAvatar !== 'function') window.setAvatar = setAvatar;
+  if (typeof window.clearAvatar !== 'function') window.clearAvatar = clearAvatar;
+  if (typeof window.assignUserProfileState !== 'function') window.assignUserProfileState = assignUserProfileState;
+  if (typeof window.persistUserProfileState !== 'function') window.persistUserProfileState = persistUserProfileState;
+}
+
 function persistUserProfileState(options = {}) {
   if (!profileController || typeof profileController.schedulePersist !== 'function') {
     return;
@@ -13595,8 +13613,21 @@ function createContactCard(contact) {
   setButtonLabelWithIconBinding(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
   deleteButton.addEventListener('click', () => {
     const confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
-    if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
-    deleteContact(contact.id);
+    const performDelete = () => deleteContact(contact.id);
+
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: getContactsText('deleteContact', 'Delete contact'),
+        message: confirmMessage,
+        confirmLabel: getContactsText('deleteButton', 'Delete') || 'Delete',
+        cancelLabel: getContactsText('cancel', 'Cancel') || 'Cancel',
+        danger: true,
+        onConfirm: performDelete,
+      });
+      return;
+    }
+
+    console.warn('Missing window.cineShowConfirmDialog for delete contact');
   });
   actions.appendChild(deleteButton);
 
@@ -15142,10 +15173,23 @@ function confirmAutoGearSelection(defaultInclude) {
   const confirmMessage =
     getLocalizedText('shareIncludeAutoGearConfirm')
     || 'Include automatic gear rules in the shared file? Select OK to include them or Cancel to skip.';
-  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-    return window.confirm(confirmMessage);
-  }
-  return !!defaultInclude;
+
+  return new Promise((resolve) => {
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: getLocalizedText('shareIncludeAutoGearTitle') || 'Include Auto Gear Rules?',
+        message: confirmMessage,
+        confirmLabel: getLocalizedText('include') || 'Include',
+        cancelLabel: getLocalizedText('skip') || 'Skip',
+        onConfirm: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+      return;
+    }
+
+    console.warn('Missing window.cineShowConfirmDialog for confirmAutoGearSelection');
+    resolve(!!defaultInclude);
+  });
 }
 var shareDialog = document.getElementById("shareDialog");
 var shareForm = document.getElementById("shareForm");
