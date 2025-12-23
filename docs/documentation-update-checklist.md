@@ -30,6 +30,10 @@ instructions.
       live data and confirm autosave history. Capture all required evidence
       (**Compare versions** diff logs, checksum logs and sandbox screenshots) and stage it for the
       verification packet before proceeding.
+- [ ] Reconfirm the [Save, Share, Import, Backup & Restore Reference](save-share-restore-reference.md)
+      matches the latest UI labels for save, export, import, backup and restore flows.
+- [ ] Update help topics for **Save**, **Export**, **Import**, **Backup** and **Restore**
+      if button names, warnings or guardrail copy changed.
 - [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
       payloads changed.
 - [ ] Record interim notes in `review-findings.md`.
@@ -45,6 +49,10 @@ instructions.
       if service worker assets or icons changed.
 - [ ] Restore backups in the rehearsal sandbox to confirm documentation for
       backup/restore remains correct.
+- [ ] Perform a full save/share/import rehearsal offline: capture a manual save,
+      export a project bundle, import it into the sandbox, review the diff, and
+      promote the data only after the pre-promotion backup timestamp appears in
+      **Latest activity**.
 - [ ] Capture a fresh `window.__cineRuntimeIntegrity` report (or run
       `window.cineRuntime.verifyCriticalFlows()` with the `warnOnFailure`
       flag) and file it with the verification packet so runtime safeguards and
