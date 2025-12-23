@@ -21,9 +21,23 @@ drive without phoning home.
 - **Offline by design.** All icons, fonts, Uicons and helper scripts are stored
   in this repo, so offline usage never degrades usability or data protection.
 
+## Local Data Storage & Protection
+
+- **Browser-local storage.** Cine Power Planner stores data in browser storage
+  (local storage and IndexedDB) for the `index.html` origin so projects stay on
+  the same machine you are working on.
+- **Profile resets erase projects.** Clearing site data, deleting browser
+  profiles or using private sessions can remove local projects, so treat browser
+  storage like a single-device vault.
+- **Preferred safety path.** Manual save → export project bundle → full planner
+  backup → verify restore keeps critical data protected and portable.
+- **Backup vault fallback.** When downloads are blocked, the local backup vault
+  queue preserves snapshots until you can export them safely.
+
 ## Table of Contents
 
 - [Data Protection Promise](#data-protection-promise)
+- [Local Data Storage & Protection](#local-data-storage--protection)
 - [Key Features](#key-features)
 - [Installation](#installation)
 - [At a Glance](#at-a-glance)
