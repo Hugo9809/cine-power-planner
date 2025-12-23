@@ -11928,6 +11928,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return prev[bLen];
     };
 
+    const getAdaptiveFuzzyMaxDistance = (entryKey, queryKey) => {
+      const entryLength = typeof entryKey === 'string' ? entryKey.length : 0;
+      const queryLength = typeof queryKey === 'string' ? queryKey.length : 0;
+      const maxLength = Math.max(entryLength, queryLength);
+      if (!maxLength) {
+        return FEATURE_SEARCH_FUZZY_MAX_DISTANCE;
+      }
+      if (maxLength <= 4) {
+        return Math.max(FEATURE_SEARCH_FUZZY_MAX_DISTANCE, 2);
+      }
+      if (maxLength <= 8) {
+        return Math.max(FEATURE_SEARCH_FUZZY_MAX_DISTANCE, 3);
+      }
+      return Math.max(FEATURE_SEARCH_FUZZY_MAX_DISTANCE, 4);
+    };
+
     const isAcceptableFuzzyMatch = (entryKey, queryKey, distance) => {
       if (!Number.isFinite(distance) || distance <= 0) {
         return false;
@@ -11935,15 +11951,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof entryKey !== 'string' || typeof queryKey !== 'string') {
         return false;
       }
-      const maxLength = Math.max(entryKey.length, queryKey.length);
-      if (maxLength === 0) return false;
-      if (maxLength <= 3) {
-        return distance <= 1;
-      }
-      if (maxLength <= 6) {
-        return distance <= 2;
-      }
-      return distance <= 3 && distance / maxLength <= 0.4;
+      return distance <= getAdaptiveFuzzyMaxDistance(entryKey, queryKey);
     };
 
     var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);

@@ -815,6 +815,22 @@
 
     const fuzzyCache = typeof Map === 'function' ? new Map() : null;
 
+    const getAdaptiveFuzzyMaxDistance = (source, target) => {
+      const sourceLength = typeof source === 'string' ? source.length : 0;
+      const targetLength = typeof target === 'string' ? target.length : 0;
+      const maxLength = Math.max(sourceLength, targetLength);
+      if (!maxLength) {
+        return fuzzyMaxDistance;
+      }
+      if (maxLength <= 4) {
+        return Math.max(fuzzyMaxDistance, 2);
+      }
+      if (maxLength <= 8) {
+        return Math.max(fuzzyMaxDistance, 3);
+      }
+      return Math.max(fuzzyMaxDistance, 4);
+    };
+
     const getFuzzyDistance = (source, target) => {
       if (!source || !target) {
         return Number.POSITIVE_INFINITY;
@@ -823,6 +839,7 @@
       const shorter = source.length <= target.length ? source : target;
       const longer = source.length > target.length ? source : target;
       const cacheKey = `${shorter}\u0000${longer}`;
+      const maxDistance = getAdaptiveFuzzyMaxDistance(source, target);
 
       if (fuzzyCache && fuzzyCache.has(cacheKey)) {
         return fuzzyCache.get(cacheKey);
@@ -831,7 +848,7 @@
       const sourceLength = source.length;
       const targetLength = target.length;
 
-      if (Math.abs(sourceLength - targetLength) > fuzzyMaxDistance) {
+      if (Math.abs(sourceLength - targetLength) > maxDistance) {
         if (fuzzyCache) {
           fuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
         }
@@ -862,7 +879,7 @@
           }
         }
 
-        if (bestInRow > fuzzyMaxDistance) {
+        if (bestInRow > maxDistance) {
           if (fuzzyCache) {
             fuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
           }
@@ -889,8 +906,9 @@
         return 0;
       }
 
+      const maxDistance = getAdaptiveFuzzyMaxDistance(token, entryToken);
       const distance = getFuzzyDistance(token, entryToken);
-      if (!Number.isFinite(distance) || distance > fuzzyMaxDistance) {
+      if (!Number.isFinite(distance) || distance > maxDistance) {
         return 0;
       }
       if (distance === 0) {
@@ -1395,10 +1413,11 @@
 
         if (hasKey && entryKey) {
           const fuzzyDistance = getFuzzyDistance(entryKey, key);
+          const maxDistance = getAdaptiveFuzzyMaxDistance(entryKey, key);
           if (
             Number.isFinite(fuzzyDistance) &&
             fuzzyDistance > 0 &&
-            fuzzyDistance <= fuzzyMaxDistance
+            fuzzyDistance <= maxDistance
           ) {
             if (
               !bestFuzzyMatch ||
