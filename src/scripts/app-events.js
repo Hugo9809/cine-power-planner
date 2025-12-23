@@ -2464,9 +2464,22 @@ function addSafeEventListener(target, type, handler, options) {
     return;
   }
 
-  // If the target is a string, it's a selector
+  // Helper to find element by ID or selector
+  const findElement = (str) => {
+    let el = document.getElementById(str);
+    if (!el) {
+      try {
+        el = document.querySelector(str);
+      } catch (e) {
+        // Ignore invalid selectors
+      }
+    }
+    return el;
+  };
+
+  // If the target is a string, it's a selector or ID
   if (typeof target === 'string') {
-    const el = document.querySelector(target);
+    const el = findElement(target);
     if (el) {
       el.addEventListener(type, handler, options);
       return;
@@ -2479,7 +2492,7 @@ function addSafeEventListener(target, type, handler, options) {
   document.addEventListener('DOMContentLoaded', () => {
     let el = null;
     if (typeof target === 'string') {
-      el = document.querySelector(target);
+      el = findElement(target);
     } else if (target && target.id) {
       el = document.getElementById(target.id);
     }

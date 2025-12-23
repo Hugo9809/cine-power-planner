@@ -532,6 +532,12 @@
         request.addEventListener('success', () => {
           const db = request.result;
           resolved = true;
+          db.onversionchange = () => {
+            db.close();
+            if (backupVaultDbPromise) {
+              backupVaultDbPromise = null;
+            }
+          };
           resolve(db);
         });
         request.addEventListener('error', () => {
@@ -790,11 +796,10 @@
         });
         request.addEventListener('blocked', () => {
           console.warn('Backup vault database deletion blocked');
-          // If blocked, we can't force it easily without reloading, but we can try to clear the store
-          // via the fallback path in the error handler, or just resolve false.
-          // For now, let's try to resolve true assuming the "blocked" event might eventually succeed 
-          // or that the user will reload. But actually, 'blocked' usually means another tab has it open.
-          // We'll treat it as a soft failure but try to proceed.
+          // If blocked, we resolve true to avoid hanging the entire factory reset process.
+          // The database might not be deleted if another tab holds it open, but we prevent
+          // the app from getting stuck in an invalid state.
+          resolve(true);
         });
       } catch (deleteError) {
         reject(deleteError);
