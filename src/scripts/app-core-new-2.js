@@ -10520,111 +10520,97 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       help: 1
     };
 
-    const FEATURE_SEARCH_FILTER_ALIASES = new Map([
-      ['feature', 'feature'],
-      ['features', 'feature'],
-      ['setting', 'feature'],
-      ['settings', 'feature'],
-      ['action', 'action'],
-      ['actions', 'action'],
-      ['command', 'action'],
-      ['commands', 'action'],
-      ['device', 'device'],
-      ['devices', 'device'],
-      ['gear', 'device'],
-      ['equipment', 'device'],
-      ['help', 'help'],
-      ['doc', 'help'],
-      ['docs', 'help'],
-      ['guide', 'help'],
-      ['guides', 'help'],
-      ['support', 'help'],
-      ['recent', 'recent'],
-      ['recents', 'recent'],
-      ['recently', 'recent'],
-      ['history', 'recent'],
-      ['histories', 'recent'],
-      ['frequent', 'recent'],
-      ['frequently', 'recent']
-    ]);
+    let cachedFeatureSearchLocaleKey = null;
+    let cachedFeatureSearchFilterAliases = null;
+    let cachedFeatureSearchStopWords = null;
+
+    const resolveFeatureSearchLocaleConfig = () => {
+      const resolvedLang = typeof currentLang === 'string' && currentLang.trim()
+        ? currentLang.trim()
+        : 'en';
+      if (
+        cachedFeatureSearchLocaleKey === resolvedLang &&
+        cachedFeatureSearchFilterAliases &&
+        cachedFeatureSearchStopWords
+      ) {
+        return {
+          filterAliases: cachedFeatureSearchFilterAliases,
+          stopWords: cachedFeatureSearchStopWords
+        };
+      }
+
+      const localeTexts = typeof getLanguageTexts === 'function'
+        ? getLanguageTexts(resolvedLang)
+        : (texts?.[resolvedLang] || texts?.en || {});
+      const fallbackTexts = typeof getLanguageTexts === 'function'
+        ? getLanguageTexts('en')
+        : (texts?.en || {});
+
+      const localeAliasConfig =
+        localeTexts && typeof localeTexts.featureSearchFilterAliases === 'object'
+          ? localeTexts.featureSearchFilterAliases
+          : null;
+      const fallbackAliasConfig =
+        fallbackTexts && typeof fallbackTexts.featureSearchFilterAliases === 'object'
+          ? fallbackTexts.featureSearchFilterAliases
+          : null;
+
+      const aliasConfigKeys = new Set([
+        ...Object.keys(fallbackAliasConfig || {}),
+        ...Object.keys(localeAliasConfig || {})
+      ]);
+      const aliasMap = new Map();
+
+      for (const typeKey of aliasConfigKeys) {
+        const normalizedType = String(typeKey || '').trim().toLowerCase();
+        if (!normalizedType) {
+          continue;
+        }
+        const localeList = localeAliasConfig && Array.isArray(localeAliasConfig[typeKey])
+          ? localeAliasConfig[typeKey]
+          : null;
+        const fallbackList = fallbackAliasConfig && Array.isArray(fallbackAliasConfig[typeKey])
+          ? fallbackAliasConfig[typeKey]
+          : null;
+        const list = localeList && localeList.length ? localeList : (fallbackList || []);
+        for (const alias of list) {
+          if (typeof alias !== 'string') continue;
+          const normalizedAlias = alias.trim().toLowerCase();
+          if (!normalizedAlias) continue;
+          aliasMap.set(normalizedAlias, normalizedType);
+        }
+      }
+
+      const localeStopWords = Array.isArray(localeTexts?.featureSearchStopWords)
+        ? localeTexts.featureSearchStopWords
+        : null;
+      const fallbackStopWords = Array.isArray(fallbackTexts?.featureSearchStopWords)
+        ? fallbackTexts.featureSearchStopWords
+        : [];
+      const resolvedStopWords = (localeStopWords && localeStopWords.length)
+        ? localeStopWords
+        : fallbackStopWords;
+      const stopWordsSet = new Set();
+      for (const word of resolvedStopWords) {
+        if (typeof word !== 'string') continue;
+        const normalizedWord = word.trim().toLowerCase();
+        if (!normalizedWord) continue;
+        stopWordsSet.add(normalizedWord);
+      }
+
+      cachedFeatureSearchLocaleKey = resolvedLang;
+      cachedFeatureSearchFilterAliases = aliasMap;
+      cachedFeatureSearchStopWords = stopWordsSet;
+
+      return {
+        filterAliases: aliasMap,
+        stopWords: stopWordsSet
+      };
+    };
 
     const FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
 
     const FEATURE_SEARCH_SMART_QUOTE_PATTERN = /[“”„«»]/g;
-
-    const FEATURE_SEARCH_STOP_WORDS = new Set([
-      'how',
-      'do',
-      'does',
-      'did',
-      'done',
-      'doing',
-      'can',
-      'cant',
-      'cannot',
-      'should',
-      'could',
-      'would',
-      'please',
-      'need',
-      'needs',
-      'needing',
-      'want',
-      'wants',
-      'wanting',
-      'i',
-      'im',
-      'ive',
-      'ill',
-      'id',
-      'we',
-      'were',
-      'weve',
-      'well',
-      'you',
-      'youre',
-      'youve',
-      'youll',
-      'they',
-      'theyre',
-      'theyve',
-      'them',
-      'us',
-      'me',
-      'my',
-      'mine',
-      'our',
-      'ours',
-      'your',
-      'yours',
-      'their',
-      'theirs',
-      'the',
-      'and',
-      'for',
-      'with',
-      'about',
-      'what',
-      'where',
-      'when',
-      'why',
-      'which',
-      'who',
-      'whom',
-      'whose',
-      'this',
-      'that',
-      'these',
-      'those',
-      'also',
-      'still',
-      'really',
-      'very',
-      'just',
-      'maybe',
-      'perhaps',
-      'again'
-    ]);
 
     const FEATURE_SEARCH_STOP_WORD_MIN_LENGTH = 3;
 
@@ -10646,7 +10632,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return false;
         }
 
-        const isStopWord = FEATURE_SEARCH_STOP_WORDS.has(normalizedToken);
+        const { stopWords } = resolveFeatureSearchLocaleConfig();
+        const isStopWord = stopWords.has(normalizedToken);
 
         if (normalizedToken.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
           return !isStopWord;
@@ -10697,7 +10684,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { filterType: null, queryText: trimmed };
       }
       const alias = match[1].toLowerCase();
-      const filterType = FEATURE_SEARCH_FILTER_ALIASES.get(alias) || null;
+      const { filterAliases } = resolveFeatureSearchLocaleConfig();
+      const filterType = filterAliases.get(alias) || null;
       if (!filterType) {
         return { filterType: null, queryText: trimmed };
       }
