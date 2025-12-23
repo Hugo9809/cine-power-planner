@@ -1100,7 +1100,7 @@
         },
         "offlineUse": {
           "title": "Uso offline",
-          "content": "Cine Power Planner fonctionne entièrement **offline** avec des icônes, polices et aides locales. Controlla l'indicatore offline e mantieni esportazioni, backup completi e caveau locale aggiornati prima di disconnetterti."
+          "content": "Cine Power Planner funziona completamente **offline** con icone, font e aiuti locali. Verifica l'indicatore offline. Esporta almeno un progetto e crea un backup completo prima di disconnetterti. Esegui una prova di ripristino (o almeno conferma il timestamp dell'ultimo salvataggio automatico in Impostazioni → Dati e archiviazione)."
         },
         "troubleshooting": {
           "title": "Risoluzione dei problemi",

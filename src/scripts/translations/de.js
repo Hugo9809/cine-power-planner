@@ -1106,7 +1106,7 @@
         },
         "offlineUse": {
           "title": "Offline-Nutzung",
-          "content": "Cine Power Planner funktioniert vollständig **offline** mit lokal gespeicherten Icons, Fonts und Hilfe. Prüfe die Offline-Anzeige und halte Exporte, Voll-Backups und den lokalen Backup-Tresor aktuell."
+          "content": "Cine Power Planner funktioniert vollständig **offline** mit lokal gespeicherten Icons, Fonts und Hilfe. Prüfe die Offline-Anzeige. Exportiere mindestens ein Projekt und erstelle ein Voll-Backup, bevor du die Verbindung trennst. Führe eine Restore-Probe durch (oder bestätige mindestens den neuesten Autosave-Zeitstempel in Einstellungen → Daten & Speicher)."
         },
         "troubleshooting": {
           "title": "Fehlerbehebung",

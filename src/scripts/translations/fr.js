@@ -1075,7 +1075,7 @@
         },
         "offlineUse": {
           "title": "Utilisation hors ligne",
-          "content": "Cine Power Planner fonctionne entièrement **hors ligne** avec des icônes, polices et aides locales. Vérifiez l'indicateur hors ligne et gardez exports, sauvegardes complètes et coffre local à jour avant de vous déconnecter."
+          "content": "Cine Power Planner fonctionne entièrement **hors ligne** avec des icônes, polices et aides locales. Vérifiez l’indicateur hors ligne. Exportez au moins un projet et créez une sauvegarde complète avant de vous déconnecter. Effectuez un test de restauration (ou au minimum confirmez l’horodatage de la dernière sauvegarde automatique dans Paramètres → Données et stockage)."
         },
         "troubleshooting": {
           "title": "Dépannage",
