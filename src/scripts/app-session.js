@@ -6139,10 +6139,7 @@ const bindPowerSessionEvents = () => {
   });
 
   if (cameraSelectEl) {
-    cameraSelectEl.removeEventListener('change', handleCameraSelectChange); // avoid double bind if possible, though handleCameraSelectChange is not global. 
-    // We define the handler inline anyway in previous code. 
-    // Ideally we should extract it, but for now we keep behavior.
-    // Actually, to prevent double binding of inline functions, checks are needed.
+    // To prevent double binding of inline functions, checks are needed.
     if (!cameraSelectEl.dataset.sessionBound) {
       cameraSelectEl.dataset.sessionBound = 'true';
       cameraSelectEl.addEventListener('change', () => {
@@ -17642,107 +17639,110 @@ const setupHelpSystem = () => {
       });
     }
   }
-});
 
-function safeShowPicker(input) {
-  if (!input || typeof input.showPicker !== 'function') return;
-  try {
-    input.showPicker();
-  } catch (err) {
-    if (err && err.name === 'NotAllowedError') return;
-    console.warn('Unable to show picker', err);
+  function safeShowPicker(input) {
+    if (!input || typeof input.showPicker !== 'function') {
+      return;
+    }
+    try {
+      input.showPicker();
+    } catch (err) {
+      if (err && err.name === 'NotAllowedError') {
+        return;
+      }
+      console.warn('Unable to show picker', err);
+    }
   }
-}
 
-document.addEventListener('keydown', e => {
-  const tag = document.activeElement.tagName;
-  const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
-  const key = typeof e.key === 'string' ? e.key : '';
-  const lowerKey = key.toLowerCase();
-  // Keyboard shortcuts controlling the help dialog and hover-help mode
-  if (hoverHelpActive && e.key === 'Escape') {
-    // Escape exits hover-help mode
-    stopHoverHelp();
-  } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
-    // Escape closes the help dialog
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement.tagName;
+    const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
+    const key = typeof e.key === 'string' ? e.key : '';
+    const lowerKey = key.toLowerCase();
+    // Keyboard shortcuts controlling the help dialog and hover-help mode
+    if (hoverHelpActive && e.key === 'Escape') {
+      // Escape exits hover-help mode
+      stopHoverHelp();
+    } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
+      // Escape closes the help dialog
+      e.preventDefault();
+      closeHelp();
+    } else if (
+      e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
+    ) {
+      e.preventDefault();
+      revertSettingsPinkModeIfNeeded();
+      rememberSettingsPinkModeBaseline();
+      revertSettingsTemperatureUnitIfNeeded();
+      rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
+      invokeSessionRevertAccentColor();
+      closeDialog(settingsDialog);
+      settingsDialog.setAttribute('hidden', '');
+    } else if (
+      e.key === 'F1' ||
+      ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
+    ) {
+      // F1 or Ctrl+/ toggles the dialog even while typing
+      e.preventDefault();
+      toggleHelp();
+    } else if (
+      e.key === '/' &&
+      !isTextField &&
+      (!helpDialog || !isDialogOpen(helpDialog))
+    ) {
+      e.preventDefault();
+      focusFeatureSearchInput();
+    } else if (
+      (e.key === '?' && !isTextField) ||
+      (lowerKey === 'h' && !isTextField)
+    ) {
+      // Plain ? or H opens the dialog when not typing in a field
+      e.preventDefault();
+      toggleHelp();
+    } else if (
+      isDialogOpen(helpDialog) &&
+      ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
+    ) {
+      // When the dialog is open, / or Ctrl+F moves focus to the search box
+      e.preventDefault();
+      if (helpSearch) helpSearch.focus();
+    } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      requestSettingsOpen({
+        reason: 'keyboard-shortcut',
+        key,
+        ctrl: !!e.ctrlKey,
+        meta: !!e.metaKey,
+        shift: !!e.shiftKey,
+      });
+    } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      focusFeatureSearchInput();
+    } else if (lowerKey === 'd' && !isTextField) {
+      setThemePreference(!getThemePreference());
+    } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (saveSetupBtn && !saveSetupBtn.disabled) {
+        saveSetupBtn.click();
+      }
+    } else if (lowerKey === 'p' && !isTextField) {
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+    }
+  });
+
+  dialog.addEventListener('click', e => {
+    // Clicking the semi-transparent backdrop (not the dialog content) closes it
+    if (e.target === dialog) closeHelp();
+  });
+
+  dialog.addEventListener('cancel', e => {
     e.preventDefault();
     closeHelp();
-  } else if (
-    e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
-  ) {
-    e.preventDefault();
-    revertSettingsPinkModeIfNeeded();
-    rememberSettingsPinkModeBaseline();
-    revertSettingsTemperatureUnitIfNeeded();
-    rememberSettingsTemperatureUnitBaseline();
-    revertSettingsFocusScaleIfNeeded();
-    rememberSettingsFocusScaleBaseline();
-    invokeSessionRevertAccentColor();
-    closeDialog(settingsDialog);
-    settingsDialog.setAttribute('hidden', '');
-  } else if (
-    e.key === 'F1' ||
-    ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
-  ) {
-    // F1 or Ctrl+/ toggles the dialog even while typing
-    e.preventDefault();
-    toggleHelp();
-  } else if (
-    e.key === '/' &&
-    !isTextField &&
-    (!helpDialog || !isDialogOpen(helpDialog))
-  ) {
-    e.preventDefault();
-    focusFeatureSearchInput();
-  } else if (
-    (e.key === '?' && !isTextField) ||
-    (lowerKey === 'h' && !isTextField)
-  ) {
-    // Plain ? or H opens the dialog when not typing in a field
-    e.preventDefault();
-    toggleHelp();
-  } else if (
-    isDialogOpen(helpDialog) &&
-    ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
-  ) {
-    // When the dialog is open, / or Ctrl+F moves focus to the search box
-    e.preventDefault();
-    if (helpSearch) helpSearch.focus();
-  } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    requestSettingsOpen({
-      reason: 'keyboard-shortcut',
-      key,
-      ctrl: !!e.ctrlKey,
-      meta: !!e.metaKey,
-      shift: !!e.shiftKey,
-    });
-  } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    focusFeatureSearchInput();
-  } else if (lowerKey === 'd' && !isTextField) {
-    setThemePreference(!getThemePreference());
-  } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
-    e.preventDefault();
-    if (saveSetupBtn && !saveSetupBtn.disabled) {
-      saveSetupBtn.click();
-    }
-  } else if (lowerKey === 'p' && !isTextField) {
-    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-  }
-});
+  });
 
-dialog.addEventListener('click', e => {
-  // Clicking the semi-transparent backdrop (not the dialog content) closes it
-  if (e.target === dialog) closeHelp();
-});
-
-dialog.addEventListener('cancel', e => {
-  e.preventDefault();
-  closeHelp();
-});
-
-return true;
+  return true;
 }
 
 if (!setupHelpSystem()) {
