@@ -15340,7 +15340,180 @@
     }
   }
 
+  let backupVaultRecordCache = [];
+
+  function normalizeBackupVaultMetadata(metadata) {
+    if (!metadata || typeof metadata !== 'object') {
+      return null;
+    }
+    const normalized = {};
+    if (typeof metadata.source === 'string' && metadata.source) {
+      normalized.source = metadata.source;
+    }
+    if (typeof metadata.reason === 'string' && metadata.reason) {
+      normalized.reason = metadata.reason;
+    }
+    if (typeof metadata.permissionState === 'string' && metadata.permissionState) {
+      normalized.permissionState = metadata.permissionState;
+    }
+    return Object.keys(normalized).length ? normalized : null;
+  }
+
+  function normalizeBackupVaultRecord(record) {
+    if (!record || typeof record !== 'object') {
+      return null;
+    }
+    const id = typeof record.id === 'string' ? record.id.trim() : '';
+    if (!id) {
+      return null;
+    }
+    const fileName = typeof record.fileName === 'string' && record.fileName
+      ? record.fileName
+      : 'cine-power-planner-backup.json';
+    const createdAtMs = typeof record.createdAtMs === 'number' && Number.isFinite(record.createdAtMs)
+      ? record.createdAtMs
+      : null;
+    const createdAt = typeof record.createdAt === 'string' && record.createdAt
+      ? record.createdAt
+      : (createdAtMs !== null ? new Date(createdAtMs).toISOString() : null);
+    let normalizedCreatedAtMs = createdAtMs;
+    if (normalizedCreatedAtMs === null && createdAt) {
+      const parsedTime = Date.parse(createdAt);
+      if (Number.isFinite(parsedTime)) {
+        normalizedCreatedAtMs = parsedTime;
+      }
+    }
+    if (normalizedCreatedAtMs === null) {
+      normalizedCreatedAtMs = Date.now();
+    }
+    const metadata = normalizeBackupVaultMetadata(record.metadata);
+    return {
+      id,
+      fileName,
+      payload: record.payload,
+      createdAt: createdAt || new Date(normalizedCreatedAtMs).toISOString(),
+      createdAtMs: normalizedCreatedAtMs,
+      metadata: metadata || {},
+    };
+  }
+
+  function normalizeBackupVaultRecordList(records) {
+    if (!records) {
+      return [];
+    }
+    let parsed = records;
+    if (typeof records === 'string') {
+      const parsedResult = tryParseJSONLike(records);
+      if (parsedResult && parsedResult.success) {
+        parsed = parsedResult.parsed;
+      }
+    }
+    const list = Array.isArray(parsed) ? parsed : [];
+    const normalized = [];
+    list.forEach((entry) => {
+      const normalizedEntry = normalizeBackupVaultRecord(entry);
+      if (normalizedEntry) {
+        normalized.push(normalizedEntry);
+      }
+    });
+    return normalized;
+  }
+
+  function scoreBackupVaultRecord(record) {
+    if (!record) {
+      return 0;
+    }
+    let score = 0;
+    if (record.payload !== null && record.payload !== undefined) {
+      score += 3;
+    }
+    if (typeof record.fileName === 'string' && record.fileName) {
+      score += 1;
+    }
+    if (typeof record.createdAt === 'string' && record.createdAt) {
+      score += 1;
+    }
+    if (typeof record.createdAtMs === 'number' && Number.isFinite(record.createdAtMs)) {
+      score += 1;
+    }
+    if (record.metadata && typeof record.metadata === 'object') {
+      score += 1;
+    }
+    return score;
+  }
+
+  function mergeBackupVaultRecords(existingList, incomingList) {
+    const merged = new Map();
+    const mergeList = (records) => {
+      if (!Array.isArray(records)) {
+        return;
+      }
+      records.forEach((record) => {
+        const normalized = normalizeBackupVaultRecord(record);
+        if (!normalized) {
+          return;
+        }
+        const existing = merged.get(normalized.id);
+        if (!existing || scoreBackupVaultRecord(normalized) >= scoreBackupVaultRecord(existing)) {
+          merged.set(normalized.id, normalized);
+        }
+      });
+    };
+    mergeList(existingList);
+    mergeList(incomingList);
+    return Array.from(merged.values());
+  }
+
+  function readBackupVaultFallbackRecords() {
+    const raw = readLocalStorageValue('cineBackupVaultFallbackRecords');
+    return normalizeBackupVaultRecordList(raw);
+  }
+
+  function resolveBackupVaultApi() {
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.cineFeatureBackup && typeof GLOBAL_SCOPE.cineFeatureBackup === 'object') {
+      return GLOBAL_SCOPE.cineFeatureBackup;
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.getQueuedBackupPayloads === 'function') {
+      return GLOBAL_SCOPE;
+    }
+    return null;
+  }
+
+  function refreshBackupVaultRecordCache() {
+    const api = resolveBackupVaultApi();
+    if (!api) {
+      return;
+    }
+    const loader = typeof api.listBackupVaultRecords === 'function'
+      ? api.listBackupVaultRecords
+      : typeof api.getQueuedBackupPayloads === 'function'
+        ? api.getQueuedBackupPayloads
+        : null;
+    if (!loader) {
+      return;
+    }
+    let response = null;
+    try {
+      response = loader();
+    } catch (error) {
+      console.warn('Unable to load backup vault records for export', error);
+      return;
+    }
+    if (Array.isArray(response)) {
+      backupVaultRecordCache = normalizeBackupVaultRecordList(response);
+      return;
+    }
+    if (response && typeof response.then === 'function') {
+      response.then((records) => {
+        backupVaultRecordCache = normalizeBackupVaultRecordList(records);
+      }).catch((error) => {
+        console.warn('Unable to load backup vault records for export', error);
+      });
+    }
+  }
+
   function exportAllData() {
+    refreshBackupVaultRecordCache();
     const payload = {
       devices: loadDeviceData(),
       setups: loadSetups(),
@@ -15407,6 +15580,15 @@
     const schemaCache = readLocalStorageValue(DEVICE_SCHEMA_CACHE_KEY);
     if (schemaCache !== null && schemaCache !== undefined) {
       payload.schemaCache = schemaCache;
+    }
+
+    const fallbackVaultRecords = readBackupVaultFallbackRecords();
+    const combinedVaultRecords = mergeBackupVaultRecords(
+      backupVaultRecordCache,
+      fallbackVaultRecords,
+    );
+    if (combinedVaultRecords.length) {
+      payload.backupVaultRecords = combinedVaultRecords.map((record) => storageJsonDeepClone(record));
     }
 
     return payload;
@@ -15689,6 +15871,98 @@
     return "";
   }
 
+  function normalizeImportedBackupVaultRecords(value) {
+    const records = normalizeImportedArray(
+      value,
+      ['backupVaultRecords', 'backupVault', 'vault', 'records', 'entries', 'items', 'list', 'values', 'data'],
+      (entry) => entry && typeof entry === 'object',
+    );
+    return normalizeBackupVaultRecordList(records);
+  }
+
+  function importBackupVaultRecords(records) {
+    const normalized = normalizeBackupVaultRecordList(records);
+    if (!normalized.length) {
+      return;
+    }
+
+    const existingFallback = readBackupVaultFallbackRecords();
+    const mergedFallback = mergeBackupVaultRecords(existingFallback, normalized);
+    try {
+      safeSetLocalStorage('cineBackupVaultFallbackRecords', JSON.stringify(mergedFallback));
+    } catch (storageError) {
+      console.warn('Unable to persist imported backup vault fallback records', storageError);
+    }
+
+    const api = resolveBackupVaultApi();
+    if (!api || typeof api.queueBackupPayloadForVault !== 'function') {
+      return;
+    }
+
+    const queueRecord = (record) => {
+      api.queueBackupPayloadForVault(
+        record.fileName,
+        record.payload,
+        {
+          id: record.id,
+          createdAt: record.createdAt,
+          createdAtMs: record.createdAtMs,
+          source: record.metadata && record.metadata.source ? record.metadata.source : undefined,
+          reason: record.metadata && record.metadata.reason ? record.metadata.reason : undefined,
+          permissionState: record.metadata && record.metadata.permissionState
+            ? record.metadata.permissionState
+            : undefined,
+        },
+      );
+    };
+
+    const loader = typeof api.listBackupVaultRecords === 'function'
+      ? api.listBackupVaultRecords
+      : typeof api.getQueuedBackupPayloads === 'function'
+        ? api.getQueuedBackupPayloads
+        : null;
+
+    if (!loader) {
+      normalized.forEach(queueRecord);
+      return;
+    }
+
+    try {
+      const response = loader();
+      if (Array.isArray(response)) {
+        const existingIds = new Set(response.map((entry) => (entry && entry.id ? entry.id : null)));
+        normalized.forEach((record) => {
+          if (!existingIds.has(record.id)) {
+            queueRecord(record);
+          }
+        });
+        return;
+      }
+      if (response && typeof response.then === 'function') {
+        response.then((existing) => {
+          const existingIds = new Set(
+            Array.isArray(existing)
+              ? existing.map((entry) => (entry && entry.id ? entry.id : null))
+              : [],
+          );
+          normalized.forEach((record) => {
+            if (!existingIds.has(record.id)) {
+              queueRecord(record);
+            }
+          });
+        }).catch((error) => {
+          console.warn('Unable to inspect backup vault before import', error);
+          normalized.forEach(queueRecord);
+        });
+        return;
+      }
+      normalized.forEach(queueRecord);
+    } catch (error) {
+      console.warn('Unable to import backup vault records via backup module', error);
+      normalized.forEach(queueRecord);
+    }
+  }
+
   function getSnapshotKeyVariants(key) {
     return getStorageKeyVariants(key);
   }
@@ -15904,6 +16178,7 @@
       'autoGearShowBackups',
       'fullBackupHistory',
       'fullBackups',
+      'backupVaultRecords',
     ];
 
     const resemblesExportPayload = exportStructureKeys.some((key) =>
@@ -16526,6 +16801,13 @@
     } else if (Object.prototype.hasOwnProperty.call(allData, 'fullBackups')) {
       const history = normalizeImportedFullBackupHistory(allData.fullBackups);
       saveFullBackupHistory(history);
+    }
+    if (Object.prototype.hasOwnProperty.call(allData, 'backupVaultRecords')) {
+      const backupRecords = normalizeImportedBackupVaultRecords(allData.backupVaultRecords);
+      importBackupVaultRecords(backupRecords);
+    } else if (Object.prototype.hasOwnProperty.call(allData, 'backupVault')) {
+      const backupRecords = normalizeImportedBackupVaultRecords(allData.backupVault);
+      importBackupVaultRecords(backupRecords);
     }
 
     let importProjectEntry = null;
