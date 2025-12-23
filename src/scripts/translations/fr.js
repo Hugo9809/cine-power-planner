@@ -1015,7 +1015,7 @@
       "settingsButton": "Paramètres",
       "settingsButtonHelp": "Ouvrez Paramètres pour personnaliser la langue, les couleurs, les polices, l’accessibilité et les sauvegardes.",
       "settingsHeading": "Paramètres",
-      "settingsHeadingHelp": "Configurez langue, thèmes, typographie, accessibilité et sauvegardes depuis un seul panneau.",
+      "settingsHeadingHelp": "Configurez la langue, thèmes, typographie, accessibilité et sauvegardes depuis un seul panneau.",
       "settingsSectionsLabel": "Sections des paramètres",
       "settingsTabGeneral": "Général",
       "settingsTabGeneralHelp": "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
