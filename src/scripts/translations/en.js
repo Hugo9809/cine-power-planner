@@ -297,7 +297,7 @@
         },
         "offlineUse": {
           "title": "Offline Use",
-          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Confirm the offline indicator and keep exports, full backups and the local backup vault current before disconnecting."
+          "content": "Cine Power Planner works fully **Offline** with locally stored icons, fonts and help content. Verify the offline indicator. Export at least one project and create a full backup before disconnecting. Run a restore rehearsal (or at minimum confirm the latest autosave timestamp in Settings → Data & Storage)."
         },
         "troubleshooting": {
           "title": "Troubleshooting",

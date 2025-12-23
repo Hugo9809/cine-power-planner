@@ -944,7 +944,7 @@
         },
         "offlineUse": {
           "title": "Uso sin conexión",
-          "content": "Cine Power Planner funciona totalmente **sin conexión** con iconos, fuentes y ayuda locales. Confirma el indicador offline y mantén exportaciones, copias completas y la bóveda local al día antes de desconectarte."
+          "content": "Cine Power Planner funciona totalmente **sin conexión** con iconos, fuentes y ayuda locales. Verifica el indicador offline. Exporta al menos un proyecto y crea una copia de seguridad completa antes de desconectarte. Realiza un ensayo de restauración (o como mínimo confirma la marca de tiempo del último autoguardado en Ajustes → Datos y almacenamiento)."
         },
         "troubleshooting": {
           "title": "Solución de problemas",
