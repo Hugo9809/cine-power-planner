@@ -7404,6 +7404,9 @@ if (themePreferenceGlobalScope) {
   }
 }
 
+const PINK_MODE_STORAGE_KEY = 'cameraPowerPlanner_pinkMode';
+const LEGACY_PINK_MODE_STORAGE_KEY = 'pinkMode';
+
 let sessionFocusScale = typeof focusScalePreference === 'string'
   ? focusScalePreference
   : 'metric';
@@ -7425,7 +7428,11 @@ if (typeof window !== 'undefined') {
 
 let pinkModeEnabled = false;
 try {
-  pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
+  let storedPinkMode = localStorage.getItem(PINK_MODE_STORAGE_KEY);
+  if (storedPinkMode === null || storedPinkMode === undefined || storedPinkMode === '') {
+    storedPinkMode = localStorage.getItem(LEGACY_PINK_MODE_STORAGE_KEY);
+  }
+  pinkModeEnabled = storedPinkMode === 'true';
 } catch (e) {
   console.warn('Could not load pink mode preference', e);
 }
@@ -10289,7 +10296,11 @@ function applyPreferencesFromStorage(safeGetItem) {
     console.warn('Failed to apply restored dark mode preference', error);
   }
   try {
-    applyPinkMode(safeGetItem('pinkMode') === 'true');
+    let storedPinkMode = safeGetItem(PINK_MODE_STORAGE_KEY);
+    if (storedPinkMode === null || storedPinkMode === undefined || storedPinkMode === '') {
+      storedPinkMode = safeGetItem(LEGACY_PINK_MODE_STORAGE_KEY);
+    }
+    applyPinkMode(storedPinkMode === 'true');
   } catch (error) {
     console.warn('Failed to apply restored pink mode preference', error);
   }

@@ -696,6 +696,8 @@
     let settingsInitialTemperatureUnit = 'celsius';
     let settingsInitialFocusScale = 'metric';
     let settingsInitialShowAutoBackups = false;
+    const PINK_MODE_STORAGE_KEY = 'cameraPowerPlanner_pinkMode';
+    const LEGACY_PINK_MODE_STORAGE_KEY = 'pinkMode';
 
     function getRoot() {
       return doc && doc.documentElement ? doc.documentElement : null;
@@ -1915,7 +1917,12 @@
         return;
       }
       try {
-        storage.setItem('pinkMode', pinkModeEnabled);
+        storage.setItem(PINK_MODE_STORAGE_KEY, pinkModeEnabled);
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: Could not save pink mode preference.', error);
+      }
+      try {
+        storage.setItem(LEGACY_PINK_MODE_STORAGE_KEY, pinkModeEnabled);
       } catch (error) {
         safeWarn('cineSettingsAppearance: Could not save pink mode preference.', error);
       }
@@ -2274,4 +2281,3 @@
     module.exports = api;
   }
 })();
-
