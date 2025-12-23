@@ -196,7 +196,7 @@ Before you merge or ship a field build, walk through this condensed checklist to
 
 ### Built for crews
 
-The planner was designed with ACs, data wranglers and DoPs in mind. As you add
+The planner was designed with ACs, data wranglers and DPs in mind. As you add
 or swap bodies, battery plates, wireless links and accessories, the total draw
 and runtime estimates update instantly. Safety warnings flag overloaded packs,
 and gear lists stay tied to project context so nothing slips through when you

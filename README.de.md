@@ -109,7 +109,7 @@ Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimi
 
 ### Entwickelt für Crews
 
-Der Planner entstand für 1st ACs, Data Wrangler und DoPs. Sobald du Bodies, Batterieteller, Funkstrecken und Zubehör ergänzt, aktualisieren sich Gesamtverbrauch und Laufzeiten sofort. Sicherheitswarnungen markieren überlastete Akkus, und Gerätelisten bleiben an die Projektkontexte gebunden, damit beim Handover nichts fehlt.
+Der Planner entstand für 1st ACs, Data Wrangler und DPs. Sobald du Bodies, Batterieteller, Funkstrecken und Zubehör ergänzt, aktualisieren sich Gesamtverbrauch und Laufzeiten sofort. Sicherheitswarnungen markieren überlastete Akkus, und Gerätelisten bleiben an die Projektkontexte gebunden, damit beim Handover nichts fehlt.
 
 ### Gemacht für Reisen
 
