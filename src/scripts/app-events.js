@@ -88,6 +88,21 @@ var deviceManagerSection =
       ? document.getElementById('device-manager')
       : null;
 
+function resolveDeviceManagerSectionForEvents() {
+  const resolved =
+    deviceManagerSection
+    || (typeof document !== 'undefined' && typeof document.getElementById === 'function'
+      ? document.getElementById('device-manager')
+      : null);
+  if (resolved && resolved !== deviceManagerSection) {
+    deviceManagerSection = resolved;
+    if (typeof globalThis !== 'undefined' && typeof globalThis.deviceManagerSection === 'undefined') {
+      globalThis.deviceManagerSection = resolved;
+    }
+  }
+  return resolved;
+}
+
 if (typeof globalThis !== 'undefined') {
   if (toggleDeviceBtn && typeof globalThis.toggleDeviceBtn === 'undefined') {
     globalThis.toggleDeviceBtn = toggleDeviceBtn;
@@ -5180,8 +5195,12 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 addSafeEventListener('device-manager', "click", (event) => {
+  const section = resolveDeviceManagerSectionForEvents();
+  if (!section) {
+    return;
+  }
   const button = event.target.closest('button');
-  if (!button || !deviceManagerSection.contains(button)) {
+  if (!button || !section.contains(button)) {
     return;
   }
 
@@ -5303,6 +5322,9 @@ addSafeEventListener('device-manager', "click", (event) => {
 });
 
 addSafeEventListener('device-manager', 'keydown', (event) => {
+  if (!resolveDeviceManagerSectionForEvents()) {
+    return;
+  }
   if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
     toggleDeviceDetails(event.target);
@@ -6265,4 +6287,3 @@ addSafeEventListener('importFileInput', "change", (event) => {
   reader.readAsText(file);
   event.target.value = ''; // Clear the file input for re-selection of the same file
 });
-
