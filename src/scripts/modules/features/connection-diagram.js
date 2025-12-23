@@ -1449,27 +1449,25 @@
         scale = targetScale;
         apply();
       };
-      const zoomInBtn = resolveZoomInButton();
-      if (zoomInBtn) {
-        zoomInBtn.onclick = () => { zoomWithCenter(1.1); };
-      }
-      const zoomOutBtn = resolveZoomOutButton();
-      if (zoomOutBtn) {
-        zoomOutBtn.onclick = () => { zoomWithCenter(0.9); };
-      }
-      const resetViewBtn = resolveResetButton();
-      if (resetViewBtn) {
-        resetViewBtn.onclick = () => {
-          pan = { ...initialPan };
-          scale = INITIAL_SCALE;
-          apply();
-          manualPositions = {};
-          renderSetupDiagram();
-          if (scheduleProjectAutoSave) scheduleProjectAutoSave();
-          else if (saveCurrentSession) saveCurrentSession();
-          if (checkSetupChanged) checkSetupChanged();
-        };
-      }
+      const attachDiagramButtonListener = (resolver, handler) => {
+        const btn = resolver();
+        if (btn) {
+          btn.onclick = handler;
+        }
+      };
+
+      attachDiagramButtonListener(resolveZoomInButton, () => { zoomWithCenter(1.1); });
+      attachDiagramButtonListener(resolveZoomOutButton, () => { zoomWithCenter(0.9); });
+      attachDiagramButtonListener(resolveResetButton, () => {
+        pan = { ...initialPan };
+        scale = INITIAL_SCALE;
+        apply();
+        manualPositions = {};
+        renderSetupDiagram();
+        if (scheduleProjectAutoSave) scheduleProjectAutoSave();
+        else if (saveCurrentSession) saveCurrentSession();
+        if (checkSetupChanged) checkSetupChanged();
+      });
       const onSvgMouseDown = e => {
         if (e.target.closest('.diagram-node')) return;
         const pos = getPos(e);

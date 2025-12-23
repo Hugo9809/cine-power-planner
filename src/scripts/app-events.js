@@ -75,14 +75,14 @@ const EVENTS_UI_HELPERS = (function resolveUiHelpersForEvents() {
 const DEVICE_STORAGE_KEY_FOR_EVENTS = 'cameraPowerPlanner_devices';
 
 var toggleDeviceBtn =
-  typeof toggleDeviceBtn !== 'undefined'
+  (typeof toggleDeviceBtn !== 'undefined' && toggleDeviceBtn)
     ? toggleDeviceBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('toggleDeviceManager')
       : null;
 
 var deviceManagerSection =
-  typeof deviceManagerSection !== 'undefined'
+  (typeof deviceManagerSection !== 'undefined' && deviceManagerSection)
     ? deviceManagerSection
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('device-manager')
@@ -98,101 +98,575 @@ if (typeof globalThis !== 'undefined') {
 }
 
 var saveSetupBtn =
-  typeof saveSetupBtn !== 'undefined'
+  (typeof saveSetupBtn !== 'undefined' && saveSetupBtn)
     ? saveSetupBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('saveSetupBtn')
       : null;
 
 var setupNameInput =
-  typeof setupNameInput !== 'undefined'
+  (typeof setupNameInput !== 'undefined' && setupNameInput)
     ? setupNameInput
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('setupName')
       : null;
 
 var deleteSetupBtn =
-  typeof deleteSetupBtn !== 'undefined'
+  (typeof deleteSetupBtn !== 'undefined' && deleteSetupBtn)
     ? deleteSetupBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('deleteSetupBtn')
       : null;
 
 var addDeviceBtn =
-  typeof addDeviceBtn !== 'undefined'
+  (typeof addDeviceBtn !== 'undefined' && addDeviceBtn)
     ? addDeviceBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('addDeviceBtn')
       : null;
 
 var cancelEditBtn =
-  typeof cancelEditBtn !== 'undefined'
+  (typeof cancelEditBtn !== 'undefined' && cancelEditBtn)
     ? cancelEditBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('cancelEditBtn')
       : null;
 
 var languageSelect =
-  typeof languageSelect !== 'undefined'
+  (typeof languageSelect !== 'undefined' && languageSelect)
     ? languageSelect
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('languageSelect')
       : null;
 
 var skipLink =
-  typeof skipLink !== 'undefined'
+  (typeof skipLink !== 'undefined' && skipLink)
     ? skipLink
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('skipLink')
       : null;
 
 var importDataBtn =
-  typeof importDataBtn !== 'undefined'
+  (typeof importDataBtn !== 'undefined' && importDataBtn)
     ? importDataBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('importDataBtn')
       : null;
 
 var importFileInput =
-  typeof importFileInput !== 'undefined'
+  (typeof importFileInput !== 'undefined' && importFileInput)
     ? importFileInput
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('importFileInput')
       : null;
 
 var exportBtn =
-  typeof exportBtn !== 'undefined'
+  (typeof exportBtn !== 'undefined' && exportBtn)
     ? exportBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('exportDataBtn')
       : null;
 
 var generateGearListBtn =
-  typeof generateGearListBtn !== 'undefined'
+  (typeof generateGearListBtn !== 'undefined' && generateGearListBtn)
     ? generateGearListBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('generateGearListBtn')
       : null;
 
 var deleteGearListProjectBtn =
-  typeof deleteGearListProjectBtn !== 'undefined'
+  (typeof deleteGearListProjectBtn !== 'undefined' && deleteGearListProjectBtn)
     ? deleteGearListProjectBtn
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('deleteGearListProjectBtn')
       : null;
 
 var gearItemEditExtra =
-  typeof gearItemEditExtra !== 'undefined'
+  (typeof gearItemEditExtra !== 'undefined' && gearItemEditExtra)
     ? gearItemEditExtra
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('gearItemEditExtra')
       : null;
 
 var newSubcategorySelect =
-  typeof newSubcategorySelect !== 'undefined'
+  (typeof newSubcategorySelect !== 'undefined' && newSubcategorySelect)
     ? newSubcategorySelect
     : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
       ? document.getElementById('newSubcategory')
+      : null;
+
+var newCategorySelect =
+  (typeof newCategorySelect !== 'undefined' && newCategorySelect)
+    ? newCategorySelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newCategory')
+      : null;
+
+var subcategoryFieldDiv =
+  (typeof subcategoryFieldDiv !== 'undefined' && subcategoryFieldDiv)
+    ? subcategoryFieldDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('subcategoryField')
+      : null;
+
+var lensFocusScaleSelect =
+  (typeof lensFocusScaleSelect !== 'undefined' && lensFocusScaleSelect)
+    ? lensFocusScaleSelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('lensFocusScaleUnit')
+      : null;
+
+var newNameInput =
+  (typeof newNameInput !== 'undefined' && newNameInput)
+    ? newNameInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newName')
+      : null;
+
+var newWattInput =
+  (typeof newWattInput !== 'undefined' && newWattInput)
+    ? newWattInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newWatt')
+      : null;
+
+var newCapacityInput =
+  (typeof newCapacityInput !== 'undefined' && newCapacityInput)
+    ? newCapacityInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newCapacity')
+      : null;
+
+var newPinAInput =
+  (typeof newPinAInput !== 'undefined' && newPinAInput)
+    ? newPinAInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newPinA')
+      : null;
+
+var newDtapAInput =
+  (typeof newDtapAInput !== 'undefined' && newDtapAInput)
+    ? newDtapAInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newDtapA')
+      : null;
+
+var menuToggle =
+  (typeof menuToggle !== 'undefined' && menuToggle)
+    ? menuToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('menuToggle')
+      : null;
+
+var darkModeToggle =
+  (typeof darkModeToggle !== 'undefined' && darkModeToggle)
+    ? darkModeToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('darkModeToggle')
+      : null;
+
+var pinkModeToggle =
+  (typeof pinkModeToggle !== 'undefined' && pinkModeToggle)
+    ? pinkModeToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('pinkModeToggle')
+      : null;
+
+var settingsButton =
+  (typeof settingsButton !== 'undefined' && settingsButton)
+    ? settingsButton
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('settingsButton')
+      : null;
+
+var helpButton =
+  (typeof helpButton !== 'undefined' && helpButton)
+    ? helpButton
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('helpButton')
+      : null;
+
+var reloadButton =
+  (typeof reloadButton !== 'undefined' && reloadButton)
+    ? reloadButton
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('reloadButton')
+      : null;
+
+var closeMenuButton =
+  (typeof closeMenuButton !== 'undefined' && closeMenuButton)
+    ? closeMenuButton
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('closeMenuButton')
+      : null;
+
+var openContactsBtn =
+  (typeof openContactsBtn !== 'undefined' && openContactsBtn)
+    ? openContactsBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('openContactsBtn')
+      : null;
+
+var shareSetupBtn =
+  (typeof shareSetupBtn !== 'undefined' && shareSetupBtn)
+    ? shareSetupBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('shareSetupBtn')
+      : null;
+
+var applySharedLinkBtn =
+  (typeof applySharedLinkBtn !== 'undefined' && applySharedLinkBtn)
+    ? applySharedLinkBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('applySharedLinkBtn')
+      : null;
+
+var generateOverviewBtn =
+  (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn)
+    ? generateOverviewBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('generateOverviewBtn')
+      : null;
+
+var runtimeFeedbackBtn =
+  (typeof runtimeFeedbackBtn !== 'undefined' && runtimeFeedbackBtn)
+    ? runtimeFeedbackBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('runtimeFeedbackBtn')
+      : null;
+
+var zoomOut =
+  (typeof zoomOut !== 'undefined' && zoomOut)
+    ? zoomOut
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('zoomOut')
+      : null;
+
+var zoomIn =
+  (typeof zoomIn !== 'undefined' && zoomIn)
+    ? zoomIn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('zoomIn')
+      : null;
+
+var resetView =
+  (typeof resetView !== 'undefined' && resetView)
+    ? resetView
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('resetView')
+      : null;
+
+var gridSnapToggle =
+  (typeof gridSnapToggle !== 'undefined' && gridSnapToggle)
+    ? gridSnapToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('gridSnapToggle')
+      : null;
+
+var accentColorReset =
+  (typeof accentColorReset !== 'undefined' && accentColorReset)
+    ? accentColorReset
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('accentColorReset')
+      : null;
+
+var localFontsButton =
+  (typeof localFontsButton !== 'undefined' && localFontsButton)
+    ? localFontsButton
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('localFontsButton')
+      : null;
+
+var documentationTrackerAddRelease =
+  (typeof documentationTrackerAddRelease !== 'undefined' && documentationTrackerAddRelease)
+    ? documentationTrackerAddRelease
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('documentationTrackerAddRelease')
+      : null;
+
+var mountVoltageReset =
+  (typeof mountVoltageReset !== 'undefined' && mountVoltageReset)
+    ? mountVoltageReset
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('mountVoltageReset')
+      : null;
+
+var autoGearSavePreset =
+  (typeof autoGearSavePreset !== 'undefined' && autoGearSavePreset)
+    ? autoGearSavePreset
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearSavePreset')
+      : null;
+
+var autoGearDeletePreset =
+  (typeof autoGearDeletePreset !== 'undefined' && autoGearDeletePreset)
+    ? autoGearDeletePreset
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearDeletePreset')
+      : null;
+
+var autoGearBackupRestore =
+  (typeof autoGearBackupRestore !== 'undefined' && autoGearBackupRestore)
+    ? autoGearBackupRestore
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearBackupRestore')
+      : null;
+
+var autoGearAddRule =
+  (typeof autoGearAddRule !== 'undefined' && autoGearAddRule)
+    ? autoGearAddRule
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearAddRule')
+      : null;
+
+var autoGearResetFactory =
+  (typeof autoGearResetFactory !== 'undefined' && autoGearResetFactory)
+    ? autoGearResetFactory
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearResetFactory')
+      : null;
+
+var autoGearHighlightToggle =
+  (typeof autoGearHighlightToggle !== 'undefined' && autoGearHighlightToggle)
+    ? autoGearHighlightToggle
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('autoGearHighlightToggle')
+      : null;
+
+var closePrintPreviewBtn =
+  (typeof closePrintPreviewBtn !== 'undefined' && closePrintPreviewBtn)
+    ? closePrintPreviewBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('closePrintPreviewBtn')
+      : null;
+
+var printPreviewExportBtn =
+  (typeof printPreviewExportBtn !== 'undefined' && printPreviewExportBtn)
+    ? printPreviewExportBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('printPreviewExportBtn')
+      : null;
+
+var printPreviewPrintBtn =
+  (typeof printPreviewPrintBtn !== 'undefined' && printPreviewPrintBtn)
+    ? printPreviewPrintBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('printPreviewPrintBtn')
+      : null;
+
+if (typeof globalThis !== 'undefined') {
+  const elementsToExpose = {
+    menuToggle, darkModeToggle, pinkModeToggle, settingsButton, helpButton,
+    reloadButton, closeMenuButton, openContactsBtn, shareSetupBtn,
+    applySharedLinkBtn, generateOverviewBtn, runtimeFeedbackBtn,
+    zoomOut, zoomIn, resetView, gridSnapToggle,
+    accentColorReset, localFontsButton, documentationTrackerAddRelease,
+    mountVoltageReset, autoGearSavePreset, autoGearDeletePreset,
+    autoGearBackupRestore, autoGearAddRule, autoGearResetFactory,
+    autoGearHighlightToggle, closePrintPreviewBtn, printPreviewExportBtn,
+    printPreviewPrintBtn
+  };
+  Object.entries(elementsToExpose).forEach(([key, value]) => {
+    if (value && typeof globalThis[key] === 'undefined') {
+      globalThis[key] = value;
+    }
+  });
+}
+
+var cameraWattInput =
+  (typeof cameraWattInput !== 'undefined' && cameraWattInput)
+    ? cameraWattInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('cameraWatt')
+      : null;
+
+var monitorWattInput =
+  (typeof monitorWattInput !== 'undefined' && monitorWattInput)
+    ? monitorWattInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorWatt')
+      : null;
+
+var viewfinderWattInput =
+  (typeof viewfinderWattInput !== 'undefined' && viewfinderWattInput)
+    ? viewfinderWattInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderWatt')
+      : null;
+
+var cameraVoltageInput =
+  (typeof cameraVoltageInput !== 'undefined' && cameraVoltageInput)
+    ? cameraVoltageInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('cameraVoltage')
+      : null;
+
+var cameraPortTypeInput =
+  (typeof cameraPortTypeInput !== 'undefined' && cameraPortTypeInput)
+    ? cameraPortTypeInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('cameraPortType')
+      : null;
+
+var monitorScreenSizeInput =
+  (typeof monitorScreenSizeInput !== 'undefined' && monitorScreenSizeInput)
+    ? monitorScreenSizeInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorScreenSize')
+      : null;
+
+var monitorBrightnessInput =
+  (typeof monitorBrightnessInput !== 'undefined' && monitorBrightnessInput)
+    ? monitorBrightnessInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorBrightness')
+      : null;
+
+var monitorVoltageInput =
+  (typeof monitorVoltageInput !== 'undefined' && monitorVoltageInput)
+    ? monitorVoltageInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorVoltage')
+      : null;
+
+var monitorPortTypeInput =
+  (typeof monitorPortTypeInput !== 'undefined' && monitorPortTypeInput)
+    ? monitorPortTypeInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorPortType')
+      : null;
+
+var monitorLatencyInput =
+  (typeof monitorLatencyInput !== 'undefined' && monitorLatencyInput)
+    ? monitorLatencyInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorLatency')
+      : null;
+
+var monitorAudioOutputInput =
+  (typeof monitorAudioOutputInput !== 'undefined' && monitorAudioOutputInput)
+    ? monitorAudioOutputInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorAudioOutput')
+      : null;
+
+var viewfinderScreenSizeInput =
+  (typeof viewfinderScreenSizeInput !== 'undefined' && viewfinderScreenSizeInput)
+    ? viewfinderScreenSizeInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderScreenSize')
+      : null;
+
+var viewfinderBrightnessInput =
+  (typeof viewfinderBrightnessInput !== 'undefined' && viewfinderBrightnessInput)
+    ? viewfinderBrightnessInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderBrightness')
+      : null;
+
+var viewfinderVoltageInput =
+  (typeof viewfinderVoltageInput !== 'undefined' && viewfinderVoltageInput)
+    ? viewfinderVoltageInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderVoltage')
+      : null;
+
+var viewfinderPortTypeInput =
+  (typeof viewfinderPortTypeInput !== 'undefined' && viewfinderPortTypeInput)
+    ? viewfinderPortTypeInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderPortType')
+      : null;
+
+var viewfinderLatencyInput =
+  (typeof viewfinderLatencyInput !== 'undefined' && viewfinderLatencyInput)
+    ? viewfinderLatencyInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderLatency')
+      : null;
+
+var batteryFieldsDiv =
+  (typeof batteryFieldsDiv !== 'undefined' && batteryFieldsDiv)
+    ? batteryFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('batteryFields')
+      : null;
+
+var cameraFieldsDiv =
+  (typeof cameraFieldsDiv !== 'undefined' && cameraFieldsDiv)
+    ? cameraFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('cameraFields')
+      : null;
+
+var monitorFieldsDiv =
+  (typeof monitorFieldsDiv !== 'undefined' && monitorFieldsDiv)
+    ? monitorFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('monitorFields')
+      : null;
+
+var viewfinderFieldsDiv =
+  (typeof viewfinderFieldsDiv !== 'undefined' && viewfinderFieldsDiv)
+    ? viewfinderFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('viewfinderFields')
+      : null;
+
+var videoFieldsDiv =
+  (typeof videoFieldsDiv !== 'undefined' && videoFieldsDiv)
+    ? videoFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('videoFields')
+      : null;
+
+var motorFieldsDiv =
+  (typeof motorFieldsDiv !== 'undefined' && motorFieldsDiv)
+    ? motorFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('motorFields')
+      : null;
+
+var controllerFieldsDiv =
+  (typeof controllerFieldsDiv !== 'undefined' && controllerFieldsDiv)
+    ? controllerFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('controllerFields')
+      : null;
+
+var distanceFieldsDiv =
+  (typeof distanceFieldsDiv !== 'undefined' && distanceFieldsDiv)
+    ? distanceFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('distanceFields')
+      : null;
+
+var lensFieldsDiv =
+  (typeof lensFieldsDiv !== 'undefined' && lensFieldsDiv)
+    ? lensFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('lensFields')
+      : null;
+
+var wattFieldDiv =
+  (typeof wattFieldDiv !== 'undefined' && wattFieldDiv)
+    ? wattFieldDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('wattField')
+      : null;
+
+var subcategoryFieldDiv =
+  (typeof subcategoryFieldDiv !== 'undefined' && subcategoryFieldDiv)
+    ? subcategoryFieldDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('subcategoryField')
+      : null;
+
+var dynamicFieldsDiv =
+  (typeof dynamicFieldsDiv !== 'undefined' && dynamicFieldsDiv)
+    ? dynamicFieldsDiv
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('dynamicFields')
       : null;
 
 const STORAGE_HELPERS_FOR_EVENTS = (function resolveStorageHelpersForEvents() {
@@ -1985,8 +2459,35 @@ function getSetupSelectElement() {
 }
 
 function addSafeEventListener(target, type, handler, options) {
-  if (!target || typeof target.addEventListener !== 'function') return;
-  target.addEventListener(type, handler, options);
+  if (target && typeof target.addEventListener === 'function') {
+    target.addEventListener(type, handler, options);
+    return;
+  }
+
+  // If the target is a string, it's a selector
+  if (typeof target === 'string') {
+    const el = document.querySelector(target);
+    if (el) {
+      el.addEventListener(type, handler, options);
+      return;
+    }
+  }
+
+  // If the target is null but we might be able to find it later (race condition),
+  // we try to bind it on DOMContentLoaded.
+  // This is a "best effort" fallback for the many implicit globals used in this codebase.
+  document.addEventListener('DOMContentLoaded', () => {
+    let el = null;
+    if (typeof target === 'string') {
+      el = document.querySelector(target);
+    } else if (target && target.id) {
+      el = document.getElementById(target.id);
+    }
+
+    if (el && typeof el.addEventListener === 'function') {
+      el.addEventListener(type, handler, options);
+    }
+  });
 }
 
 let eventsCineUiRegistered = false;
@@ -2030,7 +2531,7 @@ function enqueueCineUiRegistration(callback) {
 enqueueCineUiRegistration(registerEventsCineUiInternal);
 
 // Language selection
-addSafeEventListener(languageSelect, "change", event => {
+addSafeEventListener('languageSelect', "change", event => {
   const updateDropdowns = () => {
     if (typeof populateUserButtonDropdowns === 'function') {
       try {
@@ -2056,7 +2557,7 @@ addSafeEventListener(languageSelect, "change", event => {
   updateDropdowns();
 });
 
-addSafeEventListener(skipLink, "click", () => {
+addSafeEventListener('skipLink', "click", () => {
   const main = document.getElementById("mainContent");
   if (main) main.focus();
 });
@@ -2198,10 +2699,10 @@ function handleSaveSetupClick(optionsOrEvent) {
   }
 }
 
-addSafeEventListener(saveSetupBtn, "click", handleSaveSetupClick);
+addSafeEventListener('saveSetupBtn', "click", handleSaveSetupClick);
 
 if (setupNameInput) {
-  addSafeEventListener(setupNameInput, "input", function () {
+  addSafeEventListener('setupName', "input", function () {
     handleSaveSetupClick({ silent: true });
   });
 }
@@ -2304,7 +2805,7 @@ function handleDeleteSetupClick() {
   }
 }
 
-addSafeEventListener(deleteSetupBtn, "click", handleDeleteSetupClick);
+addSafeEventListener('deleteSetupBtn', "click", handleDeleteSetupClick);
 
 function resetSetupStateToDefaults(options = {}) {
   const suspendable =
@@ -2497,7 +2998,7 @@ function finalizeSetupSelection(nextSetupName) {
 
 const setupSelectTarget = getSetupSelectElement();
 
-addSafeEventListener(setupSelectTarget, "change", (event) => {
+addSafeEventListener('setupSelect', "change", (event) => {
   const setupName = event.target.value;
   const rawTypedName =
     setupNameInput && typeof setupNameInput.value === 'string'
@@ -4078,30 +4579,36 @@ if (typeof setTimeout === 'function') {
 updateQueuedBackupBannerFromVault();
 
 function showDeviceManagerSection() {
-  if (!deviceManagerSection || !toggleDeviceBtn) return;
-  if (!deviceManagerSection.classList.contains('hidden')) return;
-  deviceManagerSection.classList.remove('hidden');
-  setButtonLabelWithIconForEvents(toggleDeviceBtn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
-  toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
-  toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
-  toggleDeviceBtn.setAttribute('aria-expanded', 'true');
+  const section = deviceManagerSection || document.getElementById('device-manager');
+  const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
+  if (!section || !btn) return;
+  if (!section.classList.contains('hidden')) return;
+  section.classList.remove('hidden');
+  setButtonLabelWithIconForEvents(btn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
+  btn.setAttribute('title', texts[currentLang].hideDeviceManager);
+  btn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
+  btn.setAttribute('aria-expanded', 'true');
   refreshDeviceListsSafe();
   updateCalculations();
 }
 
 function hideDeviceManagerSection() {
-  if (!deviceManagerSection || !toggleDeviceBtn) return;
-  if (deviceManagerSection.classList.contains('hidden')) return;
-  deviceManagerSection.classList.add('hidden');
-  setButtonLabelWithIconForEvents(toggleDeviceBtn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
-  toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
-  toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
-  toggleDeviceBtn.setAttribute('aria-expanded', 'false');
+  const section = deviceManagerSection || document.getElementById('device-manager');
+  const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
+  if (!section || !btn) return;
+  if (section.classList.contains('hidden')) return;
+  section.classList.add('hidden');
+  setButtonLabelWithIconForEvents(btn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
+  btn.setAttribute('title', texts[currentLang].toggleDeviceManager);
+  btn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
+  btn.setAttribute('aria-expanded', 'false');
 }
 
 function toggleDeviceManagerSection() {
-  if (!deviceManagerSection || !toggleDeviceBtn) return;
-  if (deviceManagerSection.classList.contains('hidden')) {
+  const section = deviceManagerSection || document.getElementById('device-manager');
+  const btn = toggleDeviceBtn || document.getElementById('toggleDeviceManager');
+  if (!section || !btn) return;
+  if (section.classList.contains('hidden')) {
     showDeviceManagerSection();
   } else {
     hideDeviceManagerSection();
@@ -4109,7 +4616,7 @@ function toggleDeviceManagerSection() {
 }
 
 // Toggle device manager visibility
-addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
+addSafeEventListener('toggleDeviceManager', 'click', toggleDeviceManagerSection);
 
 function getEventsLanguageTexts() {
   const scope =
@@ -4659,7 +5166,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
 }
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
-addSafeEventListener(deviceManagerSection, "click", (event) => {
+addSafeEventListener('device-manager', "click", (event) => {
   const button = event.target.closest('button');
   if (!button || !deviceManagerSection.contains(button)) {
     return;
@@ -4782,7 +5289,7 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
   }
 });
 
-addSafeEventListener(deviceManagerSection, 'keydown', (event) => {
+addSafeEventListener('device-manager', 'keydown', (event) => {
   if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
     toggleDeviceDetails(event.target);
@@ -4790,208 +5297,208 @@ addSafeEventListener(deviceManagerSection, 'keydown', (event) => {
 });
 
 // Category selection in add device form
-const newCategorySelectElement = resolveNewCategorySelect();
-if (newCategorySelectElement) {
-  addSafeEventListener(newCategorySelectElement, "change", () => {
-    const wasEditing = addDeviceBtn?.dataset.mode === "edit";
-    const previousName = newNameInput ? newNameInput.value : "";
-    const val = newCategorySelectElement.value;
-    placeWattField(val);
-    clearDynamicFields();
-    subcategoryFieldDiv.hidden = true;
-    const previousSubcategoryValue = newSubcategorySelect ? newSubcategorySelect.value : '';
+// Category selection in add device form
+addSafeEventListener('newCategory', "change", () => {
+  const wasEditing = addDeviceBtn?.dataset.mode === "edit";
+  const previousName = newNameInput ? newNameInput.value : "";
+  const newCategorySelectElement = document.getElementById('newCategory');
+  const val = newCategorySelectElement ? newCategorySelectElement.value : '';
+  placeWattField(val);
+  clearDynamicFields();
+  if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = true;
+  const previousSubcategoryValue = newSubcategorySelect ? newSubcategorySelect.value : '';
+  if (newSubcategorySelect) {
     newSubcategorySelect.innerHTML = "";
     newSubcategorySelect.disabled = false;
-    if (dtapRow) dtapRow.style.display = "";
-    if (wattFieldDiv) wattFieldDiv.style.display = "";
-    hideFormSection(batteryFieldsDiv);
-    hideFormSection(cameraFieldsDiv);
-    hideFormSection(monitorFieldsDiv);
-    hideFormSection(viewfinderFieldsDiv);
-    hideFormSection(videoFieldsDiv);
-    hideFormSection(motorFieldsDiv);
-    hideFormSection(controllerFieldsDiv);
-    hideFormSection(distanceFieldsDiv);
-    if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      showFormSection(batteryFieldsDiv);
-      if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
-    } else if (val === "cameras") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      showFormSection(cameraFieldsDiv);
-    } else if (val === "lenses") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      showFormSection(lensFieldsDiv);
-      setLensDeviceMountOptions([], resolveDefaultLensMountType());
-      if (lensFocusScaleSelect) {
-        updateLensFocusScaleSelectOptions();
-        lensFocusScaleSelect.value = '';
-      }
-    } else if (val === "monitors" || val === "directorMonitors") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      showFormSection(monitorFieldsDiv);
-    } else if (val === "viewfinders") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      showFormSection(viewfinderFieldsDiv);
-    } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
-      showFormSection(videoFieldsDiv);
-    } else if (val === "fiz.motors") {
-      showFormSection(motorFieldsDiv);
-    } else if (val === "fiz.controllers") {
-      showFormSection(controllerFieldsDiv);
-    } else if (val === "fiz.distance") {
-      showFormSection(distanceFieldsDiv);
-    } else if (val === "accessories.cables") {
-      if (wattFieldDiv) wattFieldDiv.style.display = "none";
-      if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
-      const subcategoryKeys = getCableSubcategoryKeysForUi(
-        previousSubcategoryValue ? [previousSubcategoryValue] : []
-      );
-      for (let index = 0; index < subcategoryKeys.length; index += 1) {
-        const sc = subcategoryKeys[index];
-        const opt = document.createElement('option');
-        opt.value = sc;
-        opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
-        newSubcategorySelect.appendChild(opt);
-      }
-      const effectiveSubcategory =
-        previousSubcategoryValue && subcategoryKeys.includes(previousSubcategoryValue)
-          ? previousSubcategoryValue
-          : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
-      newSubcategorySelect.value = effectiveSubcategory || '';
-      if (effectiveSubcategory) {
-        buildDynamicFields(
-          `accessories.cables.${effectiveSubcategory}`,
-          {},
-          categoryExcludedAttrs[`accessories.cables.${effectiveSubcategory}`] || []
-        );
-      }
-    } else {
-      // Check if the category uses wattage (e.g. for cages it should be hidden)
-      const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
-        ? getSchemaAttributesForCategory(val)
-        : [];
-      const hasWattage = schemaAttrs.includes('powerDrawWatts');
-
-      if (wattFieldDiv) {
-        wattFieldDiv.style.display = hasWattage ? "" : "none";
-      }
-
-      const hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA');
-      if (dtapRow) {
-        dtapRow.style.display = hasDtap ? "" : "none";
-      }
-
-      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
-    }
-    newWattInput.value = "";
-    newCapacityInput.value = "";
-    newPinAInput.value = "";
-    newDtapAInput.value = "";
-    cameraWattInput.value = "";
-    cameraVoltageInput.value = "";
-    cameraPortTypeInput.value = "";
-    monitorScreenSizeInput.value = "";
-    monitorBrightnessInput.value = "";
-    monitorWattInput.value = "";
-    monitorVoltageInput.value = "";
-    monitorPortTypeInput.value = "";
-    monitorWirelessTxInput.checked = false;
-    monitorLatencyInput.value = "";
-    monitorAudioOutputInput.value = "";
-    if (typeof clearMonitorVideoInputs === 'function') {
-      clearMonitorVideoInputs();
-    } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
-      window.clearMonitorVideoInputs();
-    }
-    if (typeof clearMonitorVideoOutputs === 'function') {
-      clearMonitorVideoOutputs();
-    } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoOutputs === 'function') {
-      window.clearMonitorVideoOutputs();
-    }
-    viewfinderScreenSizeInput.value = "";
-    viewfinderBrightnessInput.value = "";
-    viewfinderWattInput.value = "";
-    viewfinderVoltageInput.value = "";
-    viewfinderPortTypeInput.value = "";
-    viewfinderWirelessTxInput.checked = false;
-    viewfinderLatencyInput.value = "";
-    if (typeof clearViewfinderVideoInputs === 'function') {
-      clearViewfinderVideoInputs();
-    }
-    if (typeof clearViewfinderVideoOutputs === 'function') {
-      clearViewfinderVideoOutputs();
-    }
-    clearBatteryPlates();
-    if (typeof clearRecordingMedia === 'function') {
-      clearRecordingMedia();
-    }
-    clearLensMounts();
-    clearLensDeviceMountOptions();
+  }
+  if (dtapRow) dtapRow.style.display = "";
+  if (wattFieldDiv) wattFieldDiv.style.display = "";
+  hideFormSection(batteryFieldsDiv);
+  hideFormSection(cameraFieldsDiv);
+  hideFormSection(monitorFieldsDiv);
+  hideFormSection(viewfinderFieldsDiv);
+  hideFormSection(videoFieldsDiv);
+  hideFormSection(motorFieldsDiv);
+  hideFormSection(controllerFieldsDiv);
+  hideFormSection(distanceFieldsDiv);
+  if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(batteryFieldsDiv);
+    if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
+  } else if (val === "cameras") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(cameraFieldsDiv);
+  } else if (val === "lenses") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(lensFieldsDiv);
+    setLensDeviceMountOptions([], resolveDefaultLensMountType());
     if (lensFocusScaleSelect) {
+      updateLensFocusScaleSelectOptions();
       lensFocusScaleSelect.value = '';
     }
-    callEventsCoreFunction('clearPowerDistribution', [], { defer: true });
-    clearVideoOutputs();
-    clearFizConnectors();
-    clearViewfinders();
-    clearTimecodes();
-    callEventsCoreFunction('clearVideoPowerInputs');
-    clearVideoInputs();
-    clearVideoOutputsIO();
-    videoFrequencyInput.value = "";
-    videoLatencyInput.value = "";
-    motorConnectorInput.value = "";
-    motorInternalInput.checked = false;
-    motorTorqueInput.value = "";
-    motorGearInput.value = "";
-    motorNotesInput.value = "";
-    controllerConnectorInput.value = "";
-    controllerPowerInput.value = "";
-    controllerBatteryInput.value = "";
-    controllerConnectivityInput.value = "";
-    controllerNotesInput.value = "";
-    distanceConnectionInput.value = "";
-    distanceMethodInput.value = "";
-    distanceRangeInput.value = "";
-    distanceAccuracyInput.value = "";
-    distanceOutputInput.value = "";
-    distanceNotesInput.value = "";
-    if (val !== 'accessories.cables') {
-      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  } else if (val === "monitors" || val === "directorMonitors") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(monitorFieldsDiv);
+  } else if (val === "viewfinders") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(viewfinderFieldsDiv);
+  } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
+    showFormSection(videoFieldsDiv);
+  } else if (val === "fiz.motors") {
+    showFormSection(motorFieldsDiv);
+  } else if (val === "fiz.controllers") {
+    showFormSection(controllerFieldsDiv);
+  } else if (val === "fiz.distance") {
+    showFormSection(distanceFieldsDiv);
+  } else if (val === "accessories.cables") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    if (subcategoryFieldDiv) subcategoryFieldDiv.hidden = false;
+    const subcategoryKeys = getCableSubcategoryKeysForUi(
+      previousSubcategoryValue ? [previousSubcategoryValue] : []
+    );
+    for (let index = 0; index < subcategoryKeys.length; index += 1) {
+      const sc = subcategoryKeys[index];
+      const opt = document.createElement('option');
+      opt.value = sc;
+      opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
+      newSubcategorySelect.appendChild(opt);
     }
-    if (newNameInput) {
-      if (wasEditing) {
-        newNameInput.value = previousName;
-      } else {
-        newNameInput.value = "";
-      }
+    const effectiveSubcategory =
+      previousSubcategoryValue && subcategoryKeys.includes(previousSubcategoryValue)
+        ? previousSubcategoryValue
+        : (newSubcategorySelect.options.length > 0 ? newSubcategorySelect.options[0].value : '');
+    newSubcategorySelect.value = effectiveSubcategory || '';
+    if (effectiveSubcategory) {
+      buildDynamicFields(
+        `accessories.cables.${effectiveSubcategory}`,
+        {},
+        categoryExcludedAttrs[`accessories.cables.${effectiveSubcategory}`] || []
+      );
     }
-    const cancelLabel = texts[currentLang].cancelEditBtn;
-    if (wasEditing) {
-      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-      showFormSection(cancelEditBtn);
-    } else {
-      setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
-      addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-      addDeviceBtn.dataset.mode = "add";
-      delete addDeviceBtn.dataset.originalName;
-      delete addDeviceBtn.dataset.originalSubcategory;
-      delete addDeviceBtn.dataset.originalCategory;
-      setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-      hideFormSection(cancelEditBtn);
-    }
-  });
-} else {
-  console.warn('Device manager category select is unavailable; change handler not registered');
-}
+  } else {
+    // Check if the category uses wattage (e.g. for cages it should be hidden)
+    const schemaAttrs = typeof getSchemaAttributesForCategory === 'function'
+      ? getSchemaAttributesForCategory(val)
+      : [];
+    const hasWattage = schemaAttrs.includes('powerDrawWatts');
 
-addSafeEventListener(newSubcategorySelect, 'change', () => {
-  const categorySelect = resolveNewCategorySelect();
+    if (wattFieldDiv) {
+      wattFieldDiv.style.display = hasWattage ? "" : "none";
+    }
+
+    const hasDtap = schemaAttrs.includes('dtapA') || schemaAttrs.includes('pinA');
+    if (dtapRow) {
+      dtapRow.style.display = hasDtap ? "" : "none";
+    }
+
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  }
+  newWattInput.value = "";
+  newCapacityInput.value = "";
+  newPinAInput.value = "";
+  newDtapAInput.value = "";
+  cameraWattInput.value = "";
+  cameraVoltageInput.value = "";
+  cameraPortTypeInput.value = "";
+  monitorScreenSizeInput.value = "";
+  monitorBrightnessInput.value = "";
+  monitorWattInput.value = "";
+  monitorVoltageInput.value = "";
+  monitorPortTypeInput.value = "";
+  monitorWirelessTxInput.checked = false;
+  monitorLatencyInput.value = "";
+  monitorAudioOutputInput.value = "";
+  if (typeof clearMonitorVideoInputs === 'function') {
+    clearMonitorVideoInputs();
+  } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
+    window.clearMonitorVideoInputs();
+  }
+  if (typeof clearMonitorVideoOutputs === 'function') {
+    clearMonitorVideoOutputs();
+  } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoOutputs === 'function') {
+    window.clearMonitorVideoOutputs();
+  }
+  viewfinderScreenSizeInput.value = "";
+  viewfinderBrightnessInput.value = "";
+  viewfinderWattInput.value = "";
+  viewfinderVoltageInput.value = "";
+  viewfinderPortTypeInput.value = "";
+  viewfinderWirelessTxInput.checked = false;
+  viewfinderLatencyInput.value = "";
+  if (typeof clearViewfinderVideoInputs === 'function') {
+    clearViewfinderVideoInputs();
+  }
+  if (typeof clearViewfinderVideoOutputs === 'function') {
+    clearViewfinderVideoOutputs();
+  }
+  clearBatteryPlates();
+  if (typeof clearRecordingMedia === 'function') {
+    clearRecordingMedia();
+  }
+  clearLensMounts();
+  clearLensDeviceMountOptions();
+  if (lensFocusScaleSelect) {
+    lensFocusScaleSelect.value = '';
+  }
+  callEventsCoreFunction('clearPowerDistribution', [], { defer: true });
+  clearVideoOutputs();
+  clearFizConnectors();
+  clearViewfinders();
+  clearTimecodes();
+  callEventsCoreFunction('clearVideoPowerInputs');
+  clearVideoInputs();
+  clearVideoOutputsIO();
+  videoFrequencyInput.value = "";
+  videoLatencyInput.value = "";
+  motorConnectorInput.value = "";
+  motorInternalInput.checked = false;
+  motorTorqueInput.value = "";
+  motorGearInput.value = "";
+  motorNotesInput.value = "";
+  controllerConnectorInput.value = "";
+  controllerPowerInput.value = "";
+  controllerBatteryInput.value = "";
+  controllerConnectivityInput.value = "";
+  controllerNotesInput.value = "";
+  distanceConnectionInput.value = "";
+  distanceMethodInput.value = "";
+  distanceRangeInput.value = "";
+  distanceAccuracyInput.value = "";
+  distanceOutputInput.value = "";
+  distanceNotesInput.value = "";
+  if (val !== 'accessories.cables') {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  }
+  if (newNameInput) {
+    if (wasEditing) {
+      newNameInput.value = previousName;
+    } else {
+      newNameInput.value = "";
+    }
+  }
+  const cancelLabel = texts[currentLang].cancelEditBtn;
+  if (wasEditing) {
+    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+    showFormSection(cancelEditBtn);
+  } else {
+    setButtonLabelWithIconForEvents(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+    addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+    addDeviceBtn.dataset.mode = "add";
+    delete addDeviceBtn.dataset.originalName;
+    delete addDeviceBtn.dataset.originalSubcategory;
+    delete addDeviceBtn.dataset.originalCategory;
+    setButtonLabelWithIconForEvents(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+    hideFormSection(cancelEditBtn);
+  }
+});
+
+
+addSafeEventListener('newSubcategory', 'change', () => {
+  const categorySelect = document.getElementById('newCategory');
   if (categorySelect && categorySelect.value === 'accessories.cables') {
     buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
   }
@@ -5072,7 +5579,7 @@ function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttribu
   }
 }
 
-addSafeEventListener(addDeviceBtn, "click", (event) => {
+addSafeEventListener('addDeviceBtn', "click", (event) => {
   if (event && typeof event.preventDefault === 'function') {
     try {
       event.preventDefault();
@@ -5535,12 +6042,12 @@ addSafeEventListener(addDeviceBtn, "click", (event) => {
 });
 
 // Cancel editing and revert form to add mode
-addSafeEventListener(cancelEditBtn, "click", () => {
+addSafeEventListener('cancelEditBtn', "click", () => {
   resetDeviceForm();
 });
 
 // Export device data
-addSafeEventListener(exportBtn, "click", () => {
+addSafeEventListener('exportDataBtn', "click", () => {
   if (typeof autoBackup === 'function') {
     try {
       autoBackup({
@@ -5569,7 +6076,7 @@ addSafeEventListener(exportBtn, "click", () => {
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 
 if (exportAndRevertBtn) {
-  addSafeEventListener(exportAndRevertBtn, 'click', () => {
+  addSafeEventListener('exportAndRevertBtn', 'click', () => {
     const performExportAndRevert = () => {
       // Reusing the export logic from the existing 'Export Database' button
       if (typeof autoBackup === 'function') {
@@ -5634,11 +6141,11 @@ if (exportAndRevertBtn) {
 }
 
 // Import device data
-addSafeEventListener(importDataBtn, "click", () => {
+addSafeEventListener('importDataBtn', "click", () => {
   importFileInput.click(); // Trigger the file input click
 });
 
-addSafeEventListener(importFileInput, "change", (event) => {
+addSafeEventListener('importFileInput', "change", (event) => {
   const file = event.target.files[0];
   if (!file) {
     return;

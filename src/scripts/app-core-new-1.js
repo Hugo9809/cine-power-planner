@@ -2785,10 +2785,28 @@ const localReadAvatarFile = typeof resolvedReadAvatarFile === 'function'
     ? readAvatarFile
     : (typeof window !== 'undefined' && typeof window.readAvatarFile === 'function'
       ? window.readAvatarFile
-      : () => Promise.reject(new Error('Avatar file reader unavailable'))));
+      : (file, onSuccess, onError) => {
+        if (!file) return;
+        try {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof onSuccess === 'function') onSuccess(reader.result);
+          };
+          reader.onerror = () => {
+            if (typeof onError === 'function') onError('readError');
+          };
+          reader.readAsDataURL(file);
+        } catch (e) {
+          if (typeof onError === 'function') onError('readError');
+        }
+      }));
+
 const localIsSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function'
   ? resolvedIsSafeImageUrl
-  : () => false;
+  : (url) => {
+    if (typeof url !== 'string') return false;
+    return url.startsWith('data:image/');
+  };
 
 const sanitizeContactValueHelper = typeof resolvedSanitizeContactValue === 'function'
   ? resolvedSanitizeContactValue
@@ -4563,7 +4581,18 @@ function setupSideMenu() {
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
   const closeButton = document.getElementById('closeMenuButton');
-  if (!toggle || !menu || !overlay) return;
+
+  if (!toggle || !menu || !overlay) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupSideMenu);
+    }
+    return;
+  }
+
+  // Prevent double binding
+  if (toggle.dataset.menuInitialized) return;
+  toggle.dataset.menuInitialized = 'true';
+  const originalDisplay = overlay.style.display;
 
   toggle.addEventListener('click', () => {
     if (menu.classList.contains('open')) {
@@ -4640,8 +4669,15 @@ function setupResponsiveControls() {
     !controls ||
     !sidebarControls ||
     typeof window.matchMedia !== 'function'
-  )
+  ) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupResponsiveControls);
+    }
     return;
+  }
+
+  if (topBar.dataset.responsiveInitialized) return;
+  topBar.dataset.responsiveInitialized = 'true';
 
   const mql = window.matchMedia('(max-width: 768px)');
 
@@ -15832,8 +15868,19 @@ function decodeSharedSetup(setup) {
   }
   return merged;
 }
-var deviceManagerSection = document.getElementById("device-manager");
-var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
+var deviceManagerSection =
+  (typeof deviceManagerSection !== 'undefined' && deviceManagerSection)
+    ? deviceManagerSection
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('device-manager')
+      : null;
+
+var toggleDeviceBtn =
+  (typeof toggleDeviceBtn !== 'undefined' && toggleDeviceBtn)
+    ? toggleDeviceBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('toggleDeviceManager')
+      : null;
 var deviceListContainerRef = null;
 
 function resolveDeviceListContainer() {

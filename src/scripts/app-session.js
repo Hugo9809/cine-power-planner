@@ -560,10 +560,15 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   }
 
   try {
-    if (typeof scope[name] === 'undefined') {
-      scope[name] = fallbackProvider();
+    const existing = scope[name];
+    if (typeof existing === 'undefined' || existing === null) {
+      const val = fallbackProvider();
+      if (typeof val !== 'undefined' && val !== null) {
+        scope[name] = val;
+      }
+      return val;
     }
-    return scope[name];
+    return existing;
   } catch (placeholderError) {
     void placeholderError;
     return fallbackProvider();
@@ -6108,97 +6113,140 @@ function forEachTrackedSelect(collection, handler) {
 }
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
-  sel.addEventListener('change', updateCalculations);
-});
-if (cameraSelect) {
-  cameraSelect.addEventListener('change', () => {
-    updateBatteryPlateVisibility();
-    updateBatteryOptions();
-    if (typeof updateCageSelectOptions === 'function') {
-      updateCageSelectOptions();
+const bindPowerSessionEvents = () => {
+  // Helper to get element robustly
+  const getEl = (output, id) => output || document.getElementById(id);
+
+  const cameraSelectEl = getEl(cameraSelect, 'cameraSelect');
+  const sensorModeDropdownEl = getEl(sensorModeDropdown, 'sensorModeDropdown');
+  const recordingResolutionDropdownEl = getEl(recordingResolutionDropdown, 'recordingResolutionDropdown');
+  const slowMotionSensorModeDropdownEl = getEl(slowMotionSensorModeDropdown, 'slowMotionSensorModeDropdown');
+  const slowMotionRecordingResolutionDropdownEl = getEl(slowMotionRecordingResolutionDropdown, 'slowMotionRecordingResolutionDropdown');
+  const slowMotionAspectRatioSelectEl = getEl(slowMotionAspectRatioSelect, 'slowMotionAspectRatioSelect');
+  const monitoringConfigurationSelectEl = getEl(monitoringConfigurationSelect, 'monitoringConfigurationSelect');
+  const monitorSelectEl = getEl(monitorSelect, 'monitorSelect');
+  const batteryPlateSelectEl = getEl(batteryPlateSelect, 'batteryPlateSelect');
+  const batterySelectEl = getEl(batterySelect, 'batterySelect');
+
+  // Check if critical elements are missing
+  if (!cameraSelectEl && document.readyState === 'loading') {
+    return false; // Retry later
+  }
+
+  forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
+    sel.removeEventListener('change', updateCalculations);
+    sel.addEventListener('change', updateCalculations);
+  });
+
+  if (cameraSelectEl) {
+    cameraSelectEl.removeEventListener('change', handleCameraSelectChange); // avoid double bind if possible, though handleCameraSelectChange is not global. 
+    // We define the handler inline anyway in previous code. 
+    // Ideally we should extract it, but for now we keep behavior.
+    // Actually, to prevent double binding of inline functions, checks are needed.
+    if (!cameraSelectEl.dataset.sessionBound) {
+      cameraSelectEl.dataset.sessionBound = 'true';
+      cameraSelectEl.addEventListener('change', () => {
+        updateBatteryPlateVisibility();
+        updateBatteryOptions();
+        if (typeof updateCageSelectOptions === 'function') {
+          updateCageSelectOptions();
+        }
+        const desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
+        const desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
+        populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
+        populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+        populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
+        populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
+        if (typeof populateFrameRateDropdown === 'function') {
+          populateFrameRateDropdown(desiredFrameRate);
+        }
+        if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+          populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
+        }
+        if (typeof updateStorageRequirementTypeOptions === 'function') {
+          updateStorageRequirementTypeOptions();
+        }
+        if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          try {
+            document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+          } catch (error) {
+            void error;
+          }
+        }
+      });
     }
-    const desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
-    const desiredSlowMotionFrameRate = currentProjectInfo && currentProjectInfo.slowMotionRecordingFrameRate;
-    populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-    populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
-    populateSlowMotionRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.slowMotionRecordingResolution);
-    populateSlowMotionSensorModeDropdown(currentProjectInfo && currentProjectInfo.slowMotionSensorMode);
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(desiredFrameRate);
-    }
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(desiredSlowMotionFrameRate);
-    }
-    if (typeof updateStorageRequirementTypeOptions === 'function') {
-      updateStorageRequirementTypeOptions();
-    }
-    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
-      try {
-        document.dispatchEvent(new CustomEvent('camera-selection-changed'));
-      } catch (error) {
-        void error;
+  }
+
+  if (sensorModeDropdownEl && !sensorModeDropdownEl.dataset.sessionBound) {
+    sensorModeDropdownEl.dataset.sessionBound = 'true';
+    sensorModeDropdownEl.addEventListener('change', () => {
+      if (typeof populateFrameRateDropdown === 'function') {
+        populateFrameRateDropdown(getCurrentFrameRateInputValue());
       }
-    }
-  });
-}
+    });
+  }
 
-if (sensorModeDropdown) {
-  sensorModeDropdown.addEventListener('change', () => {
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(getCurrentFrameRateInputValue());
-    }
-  });
-}
+  if (recordingResolutionDropdownEl && !recordingResolutionDropdownEl.dataset.sessionBound) {
+    recordingResolutionDropdownEl.dataset.sessionBound = 'true';
+    recordingResolutionDropdownEl.addEventListener('change', () => {
+      if (typeof populateFrameRateDropdown === 'function') {
+        populateFrameRateDropdown(getCurrentFrameRateInputValue());
+      }
+    });
+  }
 
-if (recordingResolutionDropdown) {
-  recordingResolutionDropdown.addEventListener('change', () => {
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(getCurrentFrameRateInputValue());
-    }
-  });
-}
+  if (slowMotionSensorModeDropdownEl && !slowMotionSensorModeDropdownEl.dataset.sessionBound) {
+    slowMotionSensorModeDropdownEl.dataset.sessionBound = 'true';
+    slowMotionSensorModeDropdownEl.addEventListener('change', () => {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
 
-if (slowMotionSensorModeDropdown) {
-  slowMotionSensorModeDropdown.addEventListener('change', () => {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
+  if (slowMotionRecordingResolutionDropdownEl && !slowMotionRecordingResolutionDropdownEl.dataset.sessionBound) {
+    slowMotionRecordingResolutionDropdownEl.dataset.sessionBound = 'true';
+    slowMotionRecordingResolutionDropdownEl.addEventListener('change', () => {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
 
-if (slowMotionRecordingResolutionDropdown) {
-  slowMotionRecordingResolutionDropdown.addEventListener('change', () => {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
+  if (slowMotionAspectRatioSelectEl && !slowMotionAspectRatioSelectEl.dataset.sessionBound) {
+    slowMotionAspectRatioSelectEl.dataset.sessionBound = 'true';
+    slowMotionAspectRatioSelectEl.addEventListener('change', () => {
+      if (typeof populateSlowMotionFrameRateDropdown === 'function') {
+        populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
+      }
+    });
+  }
 
-if (slowMotionAspectRatioSelect) {
-  slowMotionAspectRatioSelect.addEventListener('change', () => {
-    if (typeof populateSlowMotionFrameRateDropdown === 'function') {
-      populateSlowMotionFrameRateDropdown(getFrameRateInputValue(slowMotionRecordingFrameRateInput));
-    }
-  });
-}
-if (monitoringConfigurationSelect) {
-  monitoringConfigurationSelect.addEventListener('change', () => {
-    monitoringConfigurationUserChanged = true;
-    updateViewfinderSettingsVisibility();
-  });
-}
-if (monitorSelect) {
-  monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
-}
-if (typeof updateBatteryOptions === 'function') {
-  if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
-  if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
-}
-if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
+  if (monitoringConfigurationSelectEl && !monitoringConfigurationSelectEl.dataset.sessionBound) {
+    monitoringConfigurationSelectEl.dataset.sessionBound = 'true';
+    monitoringConfigurationSelectEl.addEventListener('change', () => {
+      monitoringConfigurationUserChanged = true;
+      updateViewfinderSettingsVisibility();
+    });
+  }
 
-forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
-forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
+  if (monitorSelectEl && !monitorSelectEl.dataset.sessionBound) {
+    monitorSelectEl.dataset.sessionBound = 'true';
+    monitorSelectEl.addEventListener('change', updateMonitoringConfigurationOptions);
+  }
+
+  if (typeof updateBatteryOptions === 'function') {
+    if (batteryPlateSelectEl) batteryPlateSelectEl.addEventListener('change', updateBatteryOptions);
+    if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
+  }
+  if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
+
+  return true;
+};
+
+if (!bindPowerSessionEvents()) {
+  document.addEventListener('DOMContentLoaded', bindPowerSessionEvents);
+}
 
 forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), (sel) => {
   sel.addEventListener('change', saveCurrentSession);
@@ -14961,62 +15009,92 @@ function copyTextToClipboardBestEffort(text) {
   }
 }
 
-if (downloadDiagramButton) {
-  downloadDiagramButton.addEventListener('click', (e) => {
-    const source = exportDiagramSvg();
-    if (!source) return;
+const bindDownloadDiagramListener = () => {
+  const btn = downloadDiagramButton || document.getElementById('downloadDiagram');
+  if (!btn) return false;
 
-    copyTextToClipboardBestEffort(source);
-    const pad = n => String(n).padStart(2, '0');
-    const now = new Date();
-    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const namePart = (safeGetCurrentProjectName('setup') || 'setup')
-      .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
-    const baseName = `${datePart}_${namePart}_diagram`;
+  // Remove existing to avoid double binding if called twice
+  btn.removeEventListener('click', handleDownloadDiagramClick);
+  btn.addEventListener('click', handleDownloadDiagramClick);
+  return true;
+};
 
-    const saveSvg = () => {
-      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${baseName}.svg`;
-      a.click();
-      URL.revokeObjectURL(url);
+function handleDownloadDiagramClick(e) {
+  const source = exportDiagramSvg();
+  if (!source) return;
+
+  copyTextToClipboardBestEffort(source);
+  const pad = n => String(n).padStart(2, '0');
+  const now = new Date();
+  const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+  const namePart = (safeGetCurrentProjectName('setup') || 'setup')
+    .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+  const baseName = `${datePart}_${namePart}_diagram`;
+
+  const saveSvg = () => {
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${baseName}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  if (e.shiftKey) {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${baseName}.jpg`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/jpeg', 0.95);
     };
-
-    if (e.shiftKey) {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob(blob => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${baseName}.jpg`;
-          a.click();
-          URL.revokeObjectURL(url);
-        }, 'image/jpeg', 0.95);
-      };
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
-    } else {
-      saveSvg();
-    }
-  });
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+  } else {
+    saveSvg();
+  }
 }
 
-if (gridSnapToggleButton) {
-  gridSnapToggleButton.addEventListener('click', () => {
-    const nextState = !readGridSnapState();
-    const finalState = writeGridSnapState(nextState);
-    applyGridSnapUiState(finalState);
-  });
+const bindGridSnapListener = () => {
+  const btn = gridSnapToggleButton || document.getElementById('gridSnapToggle');
+  if (!btn) return false;
+
+  btn.removeEventListener('click', handleGridSnapClick);
+  btn.addEventListener('click', handleGridSnapClick);
+  return true;
+};
+
+function handleGridSnapClick() {
+  const nextState = !readGridSnapState();
+  const finalState = writeGridSnapState(nextState);
+  applyGridSnapUiState(finalState);
 }
 
-if (helpButton && helpDialog) {
+if (!bindDownloadDiagramListener()) {
+  document.addEventListener('DOMContentLoaded', bindDownloadDiagramListener);
+}
+
+if (!bindGridSnapListener()) {
+  document.addEventListener('DOMContentLoaded', bindGridSnapListener);
+}
+
+const setupHelpSystem = () => {
+  const btn = helpButton || document.getElementById('helpButton');
+  const dialog = helpDialog || document.getElementById('helpDialog');
+
+  if (!btn || !dialog) return false;
+  if (btn.dataset.helpInitialized) return true;
+  btn.dataset.helpInitialized = 'true';
+
   // --- Help dialog and hover help -----------------------------------------
   // Provides a modal help dialog with live filtering and a "hover for help"
   // mode that exposes descriptions for interface controls. The following
@@ -17564,116 +17642,111 @@ if (helpButton && helpDialog) {
       });
     }
   }
+});
 
-  // Wire up button clicks and search field interactions
-  helpButton.addEventListener('click', toggleHelp);
-  if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
-  if (helpSearch) helpSearch.addEventListener('input', filterHelp);
-  if (helpSearchClear) helpSearchClear.addEventListener('click', () => {
-    if (helpSearch) {
-      helpSearch.value = '';
-      filterHelp();
-      helpSearch.focus();
-    }
-  });
-
-  function safeShowPicker(input) {
-    if (!input || typeof input.showPicker !== 'function') return;
-    try {
-      input.showPicker();
-    } catch (err) {
-      if (err && err.name === 'NotAllowedError') return;
-      console.warn('Unable to show picker', err);
-    }
+function safeShowPicker(input) {
+  if (!input || typeof input.showPicker !== 'function') return;
+  try {
+    input.showPicker();
+  } catch (err) {
+    if (err && err.name === 'NotAllowedError') return;
+    console.warn('Unable to show picker', err);
   }
+}
 
-  document.addEventListener('keydown', e => {
-    const tag = document.activeElement.tagName;
-    const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
-    const key = typeof e.key === 'string' ? e.key : '';
-    const lowerKey = key.toLowerCase();
-    // Keyboard shortcuts controlling the help dialog and hover-help mode
-    if (hoverHelpActive && e.key === 'Escape') {
-      // Escape exits hover-help mode
-      stopHoverHelp();
-    } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
-      // Escape closes the help dialog
-      e.preventDefault();
-      closeHelp();
-    } else if (
-      e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
-    ) {
-      e.preventDefault();
-      revertSettingsPinkModeIfNeeded();
-      rememberSettingsPinkModeBaseline();
-      revertSettingsTemperatureUnitIfNeeded();
-      rememberSettingsTemperatureUnitBaseline();
-      revertSettingsFocusScaleIfNeeded();
-      rememberSettingsFocusScaleBaseline();
-      invokeSessionRevertAccentColor();
-      closeDialog(settingsDialog);
-      settingsDialog.setAttribute('hidden', '');
-    } else if (
-      e.key === 'F1' ||
-      ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
-    ) {
-      // F1 or Ctrl+/ toggles the dialog even while typing
-      e.preventDefault();
-      toggleHelp();
-    } else if (
-      e.key === '/' &&
-      !isTextField &&
-      (!helpDialog || !isDialogOpen(helpDialog))
-    ) {
-      e.preventDefault();
-      focusFeatureSearchInput();
-    } else if (
-      (e.key === '?' && !isTextField) ||
-      (lowerKey === 'h' && !isTextField)
-    ) {
-      // Plain ? or H opens the dialog when not typing in a field
-      e.preventDefault();
-      toggleHelp();
-    } else if (
-      isDialogOpen(helpDialog) &&
-      ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
-    ) {
-      // When the dialog is open, / or Ctrl+F moves focus to the search box
-      e.preventDefault();
-      if (helpSearch) helpSearch.focus();
-    } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      requestSettingsOpen({
-        reason: 'keyboard-shortcut',
-        key,
-        ctrl: !!e.ctrlKey,
-        meta: !!e.metaKey,
-        shift: !!e.shiftKey,
-      });
-    } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      focusFeatureSearchInput();
-    } else if (lowerKey === 'd' && !isTextField) {
-      setThemePreference(!getThemePreference());
-    } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      if (saveSetupBtn && !saveSetupBtn.disabled) {
-        saveSetupBtn.click();
-      }
-    } else if (lowerKey === 'p' && !isTextField) {
-      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
-    }
-  });
-
-  helpDialog.addEventListener('click', e => {
-    // Clicking the semi-transparent backdrop (not the dialog content) closes it
-    if (e.target === helpDialog) closeHelp();
-  });
-
-  helpDialog.addEventListener('cancel', e => {
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
+  const key = typeof e.key === 'string' ? e.key : '';
+  const lowerKey = key.toLowerCase();
+  // Keyboard shortcuts controlling the help dialog and hover-help mode
+  if (hoverHelpActive && e.key === 'Escape') {
+    // Escape exits hover-help mode
+    stopHoverHelp();
+  } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
+    // Escape closes the help dialog
     e.preventDefault();
     closeHelp();
-  });
+  } else if (
+    e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
+  ) {
+    e.preventDefault();
+    revertSettingsPinkModeIfNeeded();
+    rememberSettingsPinkModeBaseline();
+    revertSettingsTemperatureUnitIfNeeded();
+    rememberSettingsTemperatureUnitBaseline();
+    revertSettingsFocusScaleIfNeeded();
+    rememberSettingsFocusScaleBaseline();
+    invokeSessionRevertAccentColor();
+    closeDialog(settingsDialog);
+    settingsDialog.setAttribute('hidden', '');
+  } else if (
+    e.key === 'F1' ||
+    ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
+  ) {
+    // F1 or Ctrl+/ toggles the dialog even while typing
+    e.preventDefault();
+    toggleHelp();
+  } else if (
+    e.key === '/' &&
+    !isTextField &&
+    (!helpDialog || !isDialogOpen(helpDialog))
+  ) {
+    e.preventDefault();
+    focusFeatureSearchInput();
+  } else if (
+    (e.key === '?' && !isTextField) ||
+    (lowerKey === 'h' && !isTextField)
+  ) {
+    // Plain ? or H opens the dialog when not typing in a field
+    e.preventDefault();
+    toggleHelp();
+  } else if (
+    isDialogOpen(helpDialog) &&
+    ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
+  ) {
+    // When the dialog is open, / or Ctrl+F moves focus to the search box
+    e.preventDefault();
+    if (helpSearch) helpSearch.focus();
+  } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    requestSettingsOpen({
+      reason: 'keyboard-shortcut',
+      key,
+      ctrl: !!e.ctrlKey,
+      meta: !!e.metaKey,
+      shift: !!e.shiftKey,
+    });
+  } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    focusFeatureSearchInput();
+  } else if (lowerKey === 'd' && !isTextField) {
+    setThemePreference(!getThemePreference());
+  } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    if (saveSetupBtn && !saveSetupBtn.disabled) {
+      saveSetupBtn.click();
+    }
+  } else if (lowerKey === 'p' && !isTextField) {
+    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+  }
+});
+
+dialog.addEventListener('click', e => {
+  // Clicking the semi-transparent backdrop (not the dialog content) closes it
+  if (e.target === dialog) closeHelp();
+});
+
+dialog.addEventListener('cancel', e => {
+  e.preventDefault();
+  closeHelp();
+});
+
+return true;
+}
+
+if (!setupHelpSystem()) {
+  document.addEventListener('DOMContentLoaded', setupHelpSystem);
 }
 
 // Initial calculation and language set after DOM is ready

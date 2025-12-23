@@ -739,6 +739,15 @@
         "easyrig": "Weitere Stabilisierung",
         "storageRequirements": "Speicher & Medien"
       },
+      "videoDistributionOptions": {
+        "Director Monitor 7\" handheld": "Regie-Monitor 7\" Handheld",
+        "Gaffer Monitor 7\" handheld": "Oberbeleuchter-Monitor 7\" Handheld",
+        "Director Monitor 15-21\"": "Regie-Monitor 15-21\"",
+        "Combo Monitor 15-21\"": "Combo-Monitor 15-21\"",
+        "DoP Monitor 7\" handheld": "DoP-Monitor 7\" Handheld",
+        "DoP Monitor 15-21\"": "DoP-Monitor 15-21\"",
+        "IOS Video": "iOS Video"
+      },
       "crewRoles": {
         "Producer": "Produzent",
         "Production Manager": "Produktionsleiter",

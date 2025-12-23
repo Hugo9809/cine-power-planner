@@ -585,9 +585,7 @@ th {
   color: var(--accent-color);
 }
 
-#heroBatteryLabel {
-  color: #000000;
-}
+
 
 /* Diagram Detail Dialog */
 .diagram-detail-dialog {

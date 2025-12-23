@@ -272,7 +272,7 @@
           ) {
             cleanupIndicatorIfIdle();
           }
-        }, 2400);
+        }, 800);
       } catch (fallbackHideError) {
         void fallbackHideError;
       }

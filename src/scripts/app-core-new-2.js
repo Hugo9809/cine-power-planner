@@ -13123,7 +13123,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       }
 
-      /* document.querySelectorAll('select').forEach(sel => {
+      document.querySelectorAll('select').forEach(sel => {
         sel.querySelectorAll('option').forEach(opt => {
           const name = opt.textContent.trim();
           if (!name || opt.value === 'None') return;
@@ -13162,7 +13162,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           registerOption(deviceData);
           featureSearchEntries.push(deviceData);
         });
-      }); */
+      });
 
       // [COMMAND PALETTE] Register Actions
       const commandActions = [

@@ -192,7 +192,7 @@
       <div class="form-row">
         <label for="setupSelect" id="savedSetupsLabel">Saved Projects:</label>
         <div class="select-wrapper">
-          <select id="setupSelect" aria-labelledby="savedSetupsLabel">
+          <select id="setupSelect">
             <option value="">-- New Project --</option>
           </select>
         </div>
@@ -252,26 +252,26 @@
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
         <div class="select-wrapper">
-          <select id="cameraSelect" aria-labelledby="cameraLabel"></select>
+          <select id="cameraSelect"></select>
         </div>
       </div>
       <div class="form-row" id="monitorSelectRow">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
         <div class="select-wrapper">
-          <select id="monitorSelect" aria-labelledby="monitorLabel"></select>
+          <select id="monitorSelect"></select>
         </div>
       </div>
       <div class="form-row" id="wirelessVideoRow">
         <label for="videoSelect" id="videoLabel">Wireless Transmitter:</label>
         <div class="select-wrapper">
-          <select id="videoSelect" aria-labelledby="videoLabel"></select>
+          <select id="videoSelect"></select>
         </div>
       </div>
 
       <div class="form-row hidden" id="cageSelectRow">
         <label for="cageSelect" id="cageLabel">Camera Cage:</label>
         <div class="select-wrapper">
-          <select id="cageSelect" aria-labelledby="cageLabel"></select>
+          <select id="cageSelect"></select>
         </div>
       </div>
 
@@ -280,7 +280,7 @@
         <div class="form-row">
           <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
           <div class="select-wrapper">
-            <select id="motor1Select" aria-labelledby="fizMotorsLabel"></select>
+            <select id="motor1Select"></select>
           </div>
         </div>
         <div class="form-row">
@@ -298,7 +298,7 @@
         <div class="form-row">
           <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
           <div class="select-wrapper">
-            <select id="controller1Select" aria-labelledby="fizControllersLabel"></select>
+            <select id="controller1Select"></select>
           </div>
         </div>
         <div class="form-row">
@@ -316,26 +316,26 @@
         <div class="form-row">
           <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
           <div class="select-wrapper">
-            <select id="distanceSelect" aria-labelledby="distanceLabel"></select>
+            <select id="distanceSelect"></select>
           </div>
         </div>
       </fieldset>
 
       <div class="form-row" id="batteryPlateRow">
         <label for="batteryPlateSelect" id="batteryPlateLabel">Battery Plate:</label>
-        <select id="batteryPlateSelect" aria-labelledby="batteryPlateLabel"></select>
+        <select id="batteryPlateSelect"></select>
       </div>
 
       <div class="form-row" id="batterySelectRow">
         <label for="batterySelect" id="batteryLabel">Battery:</label>
         <div class="select-wrapper">
-          <select id="batterySelect" aria-labelledby="batteryLabel"></select>
+          <select id="batterySelect"></select>
         </div>
       </div>
       <div class="form-row" id="batteryHotswapRow">
         <label for="batteryHotswapSelect" id="batteryHotswapLabel">Battery Hotswap:</label>
         <div class="select-wrapper">
-          <select id="batteryHotswapSelect" aria-labelledby="batteryHotswapLabel"></select>
+          <select id="batteryHotswapSelect"></select>
         </div>
       </div>
     </section>
@@ -5909,15 +5909,24 @@
               </select>
             </div>
             <div class="form-row">
-              <label for="videoDistribution" id="videoDistributionLabel">Video distribution:</label>
+              <label for="videoDistribution" id="videoDistributionLabel" data-t="projectForm.videoDistribution">Video
+                distribution:</label>
               <select id="videoDistribution" name="videoDistribution" multiple size="10">
-                <option value="Director Monitor 7&quot; handheld">Director Monitor 7&quot; handheld</option>
-                <option value="Gaffer Monitor 7&quot; handheld">Gaffer Monitor 7&quot; handheld</option>
-                <option value="Director Monitor 15-21&quot;">Director Monitor 15-21&quot;</option>
-                <option value="Combo Monitor 15-21&quot;">Combo Monitor 15-21&quot;</option>
-                <option value="IOS Video">IOS Video</option>
-                <option value="DoP Monitor 7&quot; handheld">DoP Monitor 7&quot; handheld</option>
-                <option value="DoP Monitor 15-21&quot;">DoP Monitor 15-21&quot;</option>
+                <option value="Director Monitor 7&quot; handheld"
+                  data-t="videoDistributionOptions.Director Monitor 7&quot; handheld">Director Monitor 7&quot; handheld
+                </option>
+                <option value="Gaffer Monitor 7&quot; handheld"
+                  data-t="videoDistributionOptions.Gaffer Monitor 7&quot; handheld">Gaffer Monitor 7&quot; handheld
+                </option>
+                <option value="Director Monitor 15-21&quot;"
+                  data-t="videoDistributionOptions.Director Monitor 15-21&quot;">Director Monitor 15-21&quot;</option>
+                <option value="Combo Monitor 15-21&quot;" data-t="videoDistributionOptions.Combo Monitor 15-21&quot;">
+                  Combo Monitor 15-21&quot;</option>
+                <option value="IOS Video" data-t="videoDistributionOptions.IOS Video">IOS Video</option>
+                <option value="DoP Monitor 7&quot; handheld"
+                  data-t="videoDistributionOptions.DoP Monitor 7&quot; handheld">DoP Monitor 7&quot; handheld</option>
+                <option value="DoP Monitor 15-21&quot;" data-t="videoDistributionOptions.DoP Monitor 15-21&quot;">DoP
+                  Monitor 15-21&quot;</option>
               </select>
             </div>
           </div>

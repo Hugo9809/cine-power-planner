@@ -10083,6 +10083,17 @@ body.light-mode #topBar select:focus-visible {
   background-color: transparent;
 }
 
+/* Ensure diagram detail dialog background follows dark mode */
+.dark-mode #diagramDetailDialog .modal-surface {
+  background-color: var(--panel-bg, #1c1c1e);
+  color: var(--text-color, #f0f0f0);
+}
+
+.dark-mode #diagramDetailDialog .diagram-popup__header {
+  background-color: var(--panel-bg, #1c1c1e);
+  border-bottom-color: var(--panel-border, #444);
+}
+
 
 .diagram-detail-dialog__surface {
   padding: clamp(12px, 2vw, 16px);
