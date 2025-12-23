@@ -12244,50 +12244,44 @@
       normalized: cloneLookupMap(normalizedKeyLookup),
     });
 
-    const finalize = () => {
-      // [Added by Agent] Merge with Sharded Projects
-      if (safeStorage && typeof safeStorage.length === 'number') {
-        const count = safeStorage.length;
-        for (let i = 0; i < count; i++) {
-          const key = safeStorage.key(i);
-          if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
-            const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
-            if (rawName) {
-              try {
-                const rawVal = safeStorage.getItem(key);
-                const parsedVal = JSON.parse(decodeStoredValue(rawVal));
-                const normalized = normalizeProject(parsedVal);
-                if (normalized) {
-                  projects[rawName] = normalized;
-                  registerLookupKey(rawName, rawName);
-                  markProjectNameUsed(rawName);
-                }
-              } catch (e) {
-                console.warn('Failed to read project shard', key, e);
-              }
-            }
+    const mergeShardedProjects = () => {
+      if (!safeStorage || typeof safeStorage.length !== 'number') {
+        return false;
+      }
+      let merged = false;
+      const count = safeStorage.length;
+      for (let i = 0; i < count; i++) {
+        const key = safeStorage.key(i);
+        if (!key || !key.startsWith(PROJECT_SHARD_PREFIX)) {
+          continue;
+        }
+        const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+        if (!rawName) {
+          continue;
+        }
+        if (Object.prototype.hasOwnProperty.call(projects, rawName)) {
+          continue;
+        }
+        try {
+          const rawVal = safeStorage.getItem(key);
+          const parsedVal = JSON.parse(decodeStoredValue(rawVal));
+          const normalized = normalizeProject(parsedVal);
+          if (normalized) {
+            projects[rawName] = normalized;
+            registerLookupKey(rawName, rawName);
+            markProjectNameUsed(rawName);
+            merged = true;
           }
+        } catch (e) {
+          console.warn('Failed to read project shard', key, e);
         }
       }
+      return merged;
+    };
 
-      // [Added by Agent] Migration
-      if (storageRaw) {
-        try {
-          Object.keys(projects).forEach(name => {
-            const val = projects[name];
-            saveJSONToStorage(
-              safeStorage,
-              PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name),
-              val,
-              "Error migrating project to shard:",
-              { disableBackup: true }
-            );
-          });
-          deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, "Migrated legacy projects.");
-          changed = true;
-        } catch (e) {
-          console.warn("Migration to sharded storage failed", e);
-        }
+    const finalize = () => {
+      if (mergeShardedProjects()) {
+        changed = true;
       }
 
       const snapshot = {
@@ -12439,7 +12433,6 @@
   }
 
   function persistAllProjects(projects, options = {}) {
-    // [Modified by Agent] Write SHARDS instead of Monoblob
     const { skipCompression = false } = options || {};
     const safeStorage = getSafeLocalStorage();
 
@@ -12453,27 +12446,20 @@
       });
     }
 
-    // We should write valid projects to shards.
     if (!projects || typeof projects !== 'object') return;
 
-    Object.keys(projects).forEach(name => {
-      const project = projects[name];
-      // We can use saveJSONToStorage for each shard
-      const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
-
-      let serialized = project;
-
-      saveJSONToStorage(
-        safeStorage,
-        shardKey,
-        serialized,
-        `Error saving project shard ${name}:`,
-        { disableCompression: skipCompression }
-      );
+    const serializedProjects = serializeAutoBackupEntries(projects, {
+      isAutoBackupKey: isAutoBackupStorageKey,
     });
+    ensureProjectEntriesUncompressed(serializedProjects);
 
-    // Ensure Legacy Blob is gone
-    deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, "Ensuring legacy project blob is removed.");
+    saveJSONToStorage(
+      safeStorage,
+      PROJECT_STORAGE_KEY,
+      serializedProjects,
+      "Error saving project to localStorage:",
+      { disableCompression: skipCompression }
+    );
     invalidateProjectReadCache();
     if (lifecycleChannel) {
       try {
@@ -12783,17 +12769,7 @@
     const finalKey = storageKey || '';
     projects[finalKey] = normalized;
     markProjectActivity(finalKey);
-    // [Modified by Agent] Save Single Shard
-    const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(finalKey);
-    saveJSONToStorage(
-      getSafeLocalStorage(),
-      shardKey,
-      normalized,
-      "Error saving project shard:",
-      { disableCompression: skipCompression }
-    );
-    invalidateProjectReadCache();
-    if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
+    persistAllProjects(projects, { skipCompression });
   }
 
   function deleteProject(name) {
@@ -12803,6 +12779,21 @@
         PROJECT_STORAGE_KEY,
         "Error deleting project from localStorage:",
       );
+      const safeStorage = getSafeLocalStorage();
+      if (safeStorage && typeof safeStorage.length === 'number') {
+        const shardKeys = [];
+        for (let i = 0; i < safeStorage.length; i++) {
+          const key = safeStorage.key(i);
+          if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
+            shardKeys.push(key);
+          }
+        }
+        shardKeys.forEach((key) => deleteFromStorage(
+          safeStorage,
+          key,
+          "Error deleting project shard from localStorage:",
+        ));
+      }
       invalidateProjectReadCache();
       if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
@@ -12832,21 +12823,13 @@
       alertStorageError();
       return;
     }
-    // [Modified by Agent] Delete specific shard
     const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(key);
     deleteFromStorage(getSafeLocalStorage(), shardKey, "Error deleting project shard:");
-
+    delete projects[key];
+    removeProjectActivity(key);
+    persistAllProjects(projects);
     invalidateProjectReadCache();
     if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
-    // Also remove from cache object for in-memory consistency
-    if (Object.keys(projects).length === 0) {
-      deleteFromStorage(
-        getSafeLocalStorage(),
-        PROJECT_STORAGE_KEY,
-        "Error deleting project from localStorage:",
-      );
-      invalidateProjectReadCache();
-    }
   }
 
   function createProjectImporter() {
@@ -15013,6 +14996,22 @@
     } catch (cacheError) {
       console.warn('Failed to clear cache storage', cacheError);
     }
+
+    const resetFactoryResetFlag = (scope) => {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      try {
+        scope.__cameraPowerPlannerFactoryResetting = false;
+      } catch (error) {
+        void error;
+      }
+    };
+
+    resetFactoryResetFlag(GLOBAL_SCOPE);
+    resetFactoryResetFlag(typeof window !== 'undefined' ? window : null);
+    resetFactoryResetFlag(typeof self !== 'undefined' ? self : null);
+    resetFactoryResetFlag(typeof global !== 'undefined' ? global : null);
   }
 
   // --- Export/Import All Planner Data ---
