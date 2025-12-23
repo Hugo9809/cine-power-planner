@@ -45,7 +45,7 @@ drive without phoning home.
 
 1. Clone or download this repository to a trusted local drive:
    ```bash
-   git clone https://github.com/Hugo9809/cine-power-planner.git
+   git clone /path/to/cine-power-planner.git
    cd cine-power-planner
    ```
    (If you received an offline bundle, unpack it to a local folder instead.)
