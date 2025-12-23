@@ -14773,63 +14773,91 @@
 
     const safeStorage = getSafeLocalStorage();
 
-    // Aggressive cleanup: iterate over all keys and remove anything that looks like ours.
-    // This catches legacy backups, migration artifacts, and any keys not explicitly listed below.
-    const prefixes = [
-      'cameraPowerPlanner_',
-      'cinePowerPlanner_',
-      'cineBackupVault',
-      'cineRental',
-      'cine',
-      '__cine',
-      '__storage'
-    ];
+    const clearStorageFully = (storage, storageName) => {
+      if (!storage) {
+        return;
+      }
+      if (typeof storage.clear === 'function') {
+        try {
+          storage.clear();
+          return;
+        } catch (clearError) {
+          console.warn(`Failed to clear ${storageName}, falling back to key removal.`, clearError);
+        }
+      }
 
-    const exactKeys = [
-      'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing',
-      'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language',
-      'iosPwaHelpShown', 'debugMode', 'customLogo'
-    ];
-
-    const clearStorageAggressively = (storage, storageName) => {
-      if (!storage) return;
       try {
         const keysToRemove = [];
-        // Use a safe iteration method depending on what the storage object supports
         const length = storage.length;
         for (let i = 0; i < length; i++) {
           const key = storage.key(i);
           if (key) {
-            if (prefixes.some(p => key.startsWith(p)) ||
-              exactKeys.includes(key) ||
-              key.includes('__backup') ||
-              key.includes('legacyMigrationBackup')
-            ) {
-              keysToRemove.push(key);
-            }
+            keysToRemove.push(key);
           }
         }
 
-        keysToRemove.forEach(key => {
+        keysToRemove.forEach((key) => {
           try {
             storage.removeItem(key);
-          } catch (e) {
-            console.warn(`Failed to remove key ${key} from ${storageName}`, e);
+          } catch (removeError) {
+            console.warn(`Failed to remove key ${key} from ${storageName}`, removeError);
           }
         });
-      } catch (e) {
-        console.warn(`Failed to iterate ${storageName}`, e);
+      } catch (iterateError) {
+        console.warn(`Failed to iterate ${storageName}`, iterateError);
       }
     };
 
-    clearStorageAggressively(safeStorage, 'safeLocalStorage');
+    clearStorageFully(safeStorage, 'safeLocalStorage');
 
     if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
-      clearStorageAggressively(localStorage, 'localStorage');
+      clearStorageFully(localStorage, 'localStorage');
     }
 
     if (typeof sessionStorage !== 'undefined') {
-      clearStorageAggressively(sessionStorage, 'sessionStorage');
+      clearStorageFully(sessionStorage, 'sessionStorage');
+    }
+
+    const sessionCacheKeys = [
+      'settingsActiveTab',
+      typeof GLOBAL_SCOPE !== 'undefined'
+        && GLOBAL_SCOPE
+        && typeof GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY === 'string'
+        ? GLOBAL_SCOPE.INSTALL_BANNER_DISMISSED_KEY
+        : 'cine_install_banner_dismissed',
+    ];
+
+    const ensureStoragePruned = (storage, storageName) => {
+      if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+        return;
+      }
+      const keysToRemove = [];
+      const length = storage.length;
+      for (let i = 0; i < length; i++) {
+        const key = storage.key(i);
+        if (!key) {
+          continue;
+        }
+        if (key.startsWith(PROJECT_SHARD_PREFIX) || sessionCacheKeys.includes(key)) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach((key) => {
+        try {
+          storage.removeItem(key);
+        } catch (removeError) {
+          console.warn(`Failed to remove key ${key} from ${storageName}`, removeError);
+        }
+      });
+    };
+
+    ensureStoragePruned(safeStorage, 'safeLocalStorage');
+    if (typeof localStorage !== 'undefined' && localStorage !== safeStorage) {
+      ensureStoragePruned(localStorage, 'localStorage');
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      ensureStoragePruned(sessionStorage, 'sessionStorage');
     }
 
     // Explicitly clear known keys using the helper to ensure logging and safety
@@ -14854,15 +14882,6 @@
     deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
     deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
-    // [Added by Agent] Clear all sharded projects
-    if (safeStorage && safeStorage.length) {
-      const keys = [];
-      for (let i = 0; i < safeStorage.length; i++) {
-        const k = safeStorage.key(i);
-        if (k && k.startsWith(PROJECT_SHARD_PREFIX)) keys.push(k);
-      }
-      keys.forEach(k => safeStorage.removeItem(k));
-    }
     deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
