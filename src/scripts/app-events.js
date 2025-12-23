@@ -3845,11 +3845,20 @@ function autoBackup(options = {}) {
   try {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
-    const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
     const normalizedName = nameForBackup || '';
-    const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
     const setupsSnapshot = getSetups();
+    let backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
+    if (setupsSnapshot && typeof setupsSnapshot === 'object') {
+      let suffixIndex = 1;
+      while (Object.prototype.hasOwnProperty.call(setupsSnapshot, backupName)) {
+        const suffixLabel = `copy-${suffixIndex}`;
+        const baseWithSuffix = `${baseName}-${suffixLabel}`;
+        backupName = normalizedName ? `${baseWithSuffix}-${normalizedName}` : baseWithSuffix;
+        suffixIndex += 1;
+      }
+    }
     ensureLastAutoBackupSignatureInitialized(setupsSnapshot);
     const plan = determineNextAutoBackupPlan(setupsSnapshot);
     let resolvedPlan = plan;
