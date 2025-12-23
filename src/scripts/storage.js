@@ -14766,6 +14766,16 @@
 
       if (clearVaultFn) {
         await clearVaultFn();
+      } else if (typeof indexedDB !== 'undefined') {
+        const vaultDbNames = ['cinePowerPlannerBackupVault'];
+        for (let index = 0; index < vaultDbNames.length; index += 1) {
+          const dbName = vaultDbNames[index];
+          try {
+            indexedDB.deleteDatabase(dbName);
+          } catch (deleteError) {
+            console.warn(`Failed to delete IndexedDB database "${dbName}" during factory reset`, deleteError);
+          }
+        }
       }
     } catch (vaultError) {
       console.warn('Failed to clear backup vault during factory reset', vaultError);
