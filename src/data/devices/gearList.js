@@ -16993,6 +16993,1328 @@
         "weight_g": 530,
         "mountOptions": [{ "type": "PL / EF", "mount": "native" }]
       },
+    
+      "Genesis G35 14.5mm T3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 16mm T2.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 20mm T1.8": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 135mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 14.5mm T3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 16mm T2.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 20mm T1.8": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Vintage 135mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Vintage '66 coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis G35 Macro 100mm T2.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Macro 1:1",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "AYANA 65 35mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "AYANA 65 50mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "AYANA 65 80mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "AYANA 65 100mm T1.7": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.7,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1500,
+        "notes": "65mm Format. Verify exact focal lengths.",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 25mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 35mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 40mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 50mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 58mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 65mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 85mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 100mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Genesis Opia 125mm T2": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1100,
+        "notes": "",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 16mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 20mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 24mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 32mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 40mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 50mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 85mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 100mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "VINTAGE ULTRA PRIME 135mm T1.9": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1200,
+        "notes": "Rehoused Ultra Prime, Vintage Look",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 18mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 25mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 35mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 50mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 65mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS 85mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 18mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 25mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 35mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 50mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 65mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss HS Vintage 85mm T1.3": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.3,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS 16mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS 24mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS 32mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS 50mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS 85mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 16mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 24mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 32mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 50mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss SS Vintage 85mm T2.1": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.1,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 800,
+        "notes": "Stealth Rehousing, Vintage Coating",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 18mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 25mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 35mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 50mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      },
+      "Gecko-Cam Stealth Zeiss B-Speed 85mm T1.4": {
+        "brand": "Gecko-Cam",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.4,
+        "mount": "PL",
+        "rodStandard": "15mm",
+        "rodLengthCm": 30,
+        "needsLensSupport": false,
+        "lensType": "spherical",
+        "imageCircleMm": 46.3,
+        "weight_g": 1000,
+        "notes": "Stealth Rehousing, Triangle Bokeh",
+        "mountOptions": [
+          {
+            "type": "PL",
+            "mount": "native"
+          }
+        ]
+      }
+    
     }
   };
 

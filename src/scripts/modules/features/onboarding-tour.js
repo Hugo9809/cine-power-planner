@@ -5968,7 +5968,17 @@
     avatarAction.textContent = resolveAvatarActionLabel(false);
 
     const handleAvatarActionClick = () => {
-      // Priority: Try clicking the input directly, as the button might be hidden/unclickable
+      // Priority: Try clicking the proxy input first, as it has the guaranteed event listener for the tour
+      if (hiddenFileInput && typeof hiddenFileInput.click === 'function') {
+        try {
+          hiddenFileInput.click();
+          return;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not trigger avatar proxy input.', error);
+        }
+      }
+
+      // Fallback: Try clicking the input directly, as the button might be hidden/unclickable
       if (avatarInput && typeof avatarInput.click === 'function') {
         try {
           avatarInput.click();

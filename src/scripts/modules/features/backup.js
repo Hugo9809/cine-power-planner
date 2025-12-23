@@ -757,15 +757,10 @@
 
   function clearBackupVault() {
     // We want to completely nuke the database to ensure no metadata or version info remains.
-    const dbDeletionPromise = new Promise((resolve, reject) => {
-      if (!isIndexedDBAvailable()) {
-        resolve(true);
-        return;
-      }
-
-      // Close any open connections first
-      if (backupVaultDbPromise) {
-        backupVaultDbPromise.then((db) => {
+    const dbDeletionPromise = (async () => {
+      try {
+        if (backupVaultDbPromise) {
+          const db = await backupVaultDbPromise;
           if (db && typeof db.close === 'function') {
             try {
               db.close();
@@ -773,38 +768,47 @@
               console.warn('Failed to close backup vault DB before deletion', closeError);
             }
           }
-        }).catch(() => { });
-        backupVaultDbPromise = null;
+        }
+      } catch (cleanupError) {
+        console.warn('Failed to await backup vault DB cleanup', cleanupError);
       }
+      backupVaultDbPromise = null;
 
-      try {
-        const request = indexedDB.deleteDatabase(BACKUP_VAULT_DB_NAME);
-        request.addEventListener('success', () => {
+      return new Promise((resolve, reject) => {
+        if (!isIndexedDBAvailable()) {
           resolve(true);
-        });
-        request.addEventListener('error', () => {
-          console.warn('Failed to delete backup vault database', request.error);
-          // Fallback to clearing the store if deletion fails (e.g. due to open connections)
-          withBackupVaultStore('readwrite', (store) => {
-            if (!store) return false;
-            return new Promise((clearResolve, clearReject) => {
-              const clearRequest = store.clear();
-              clearRequest.onsuccess = () => clearResolve(true);
-              clearRequest.onerror = () => clearReject(clearRequest.error);
-            });
-          }).then(resolve).catch(reject);
-        });
-        request.addEventListener('blocked', () => {
-          console.warn('Backup vault database deletion blocked');
-          // If blocked, we resolve true to avoid hanging the entire factory reset process.
-          // The database might not be deleted if another tab holds it open, but we prevent
-          // the app from getting stuck in an invalid state.
-          resolve(true);
-        });
-      } catch (deleteError) {
-        reject(deleteError);
-      }
-    });
+          return;
+        }
+
+        try {
+          const request = indexedDB.deleteDatabase(BACKUP_VAULT_DB_NAME);
+          request.addEventListener('success', () => {
+            resolve(true);
+          });
+          request.addEventListener('error', () => {
+            console.warn('Failed to delete backup vault database', request.error);
+            // Fallback to clearing the store if deletion fails (e.g. due to open connections)
+            withBackupVaultStore('readwrite', (store) => {
+              if (!store) return false;
+              return new Promise((clearResolve, clearReject) => {
+                const clearRequest = store.clear();
+                clearRequest.onsuccess = () => clearResolve(true);
+                clearRequest.onerror = () => clearReject(clearRequest.error);
+              });
+            }).then(resolve).catch(reject);
+          });
+          request.addEventListener('blocked', () => {
+            console.warn('Backup vault database deletion blocked');
+            // If blocked, we resolve true to avoid hanging the entire factory reset process.
+            // The database might not be deleted if another tab holds it open, but we prevent
+            // the app from getting stuck in an invalid state.
+            resolve(true);
+          });
+        } catch (deleteError) {
+          reject(deleteError);
+        }
+      });
+    })();
 
     return Promise.all([
       dbDeletionPromise,

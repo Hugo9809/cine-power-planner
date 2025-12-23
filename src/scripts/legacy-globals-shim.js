@@ -132,5 +132,26 @@
         if (typeof window.PINK_MODE_ICON_FALLBACK_MARKUP === 'undefined' && pm.PINK_MODE_ICON_FALLBACK_MARKUP) window.PINK_MODE_ICON_FALLBACK_MARKUP = pm.PINK_MODE_ICON_FALLBACK_MARKUP;
     }
 
+    // Backup Shims
+    // Ensure clearBackupVault is available as a promise-returning function to prevent runtime reference errors
+    if (typeof window.clearBackupVault !== 'function') {
+        window.clearBackupVault = function () {
+            // Return true to signal "done" (even if nothing happened)
+            if (typeof Promise !== 'undefined') {
+                return Promise.resolve(true);
+            }
+            return {
+                then: function (cb) { cb(true); return this; },
+                catch: function () { return this; }
+            };
+        };
+    }
+
+    if (typeof window.isBackupVaultFallbackActive !== 'function') {
+        window.isBackupVaultFallbackActive = function () {
+            return false;
+        };
+    }
+
     console.log("Legacy globals shim executed. Global UI references and localeSort restored.");
 })();

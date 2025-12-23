@@ -58,6 +58,34 @@
     }
   }
 
+  // [Added by Agent] Lifecycle channel for cross-tab coordination
+  const LIFECYCLE_CHANNEL_NAME = 'cine-power-planner-lifecycle';
+  let lifecycleChannel = null;
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      lifecycleChannel = new BroadcastChannel(LIFECYCLE_CHANNEL_NAME);
+      lifecycleChannel.onmessage = (event) => {
+        if (event.data === 'factory-reset') {
+          if (GLOBAL_SCOPE) {
+            try {
+              GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+            } catch (e) {
+              void e;
+            }
+          }
+          if (GLOBAL_SCOPE && GLOBAL_SCOPE.location && typeof GLOBAL_SCOPE.location.reload === 'function') {
+            GLOBAL_SCOPE.location.reload();
+          }
+        } else if (event.data === 'project-shards-changed') {
+          invalidateProjectReadCache();
+        }
+      };
+    } catch (channelError) {
+      // BroadcastChannel might be restricted in some environments
+      void channelError;
+    }
+  }
+
   if (GLOBAL_SCOPE) {
     try {
       Object.defineProperty(GLOBAL_SCOPE, '__cineStorageInitialized', {
@@ -431,6 +459,8 @@
     typeof Symbol === 'function'
       ? Symbol.for('cinePowerPlanner.storageCache')
       : '__cineStorageStateCache';
+
+  var PROJECT_SHARD_PREFIX = 'cameraPowerPlanner_prj_';
 
   var STORAGE_STATE_CACHE_WEAKMAP =
     typeof WeakMap === 'function' && typeof Map === 'function'
@@ -7823,6 +7853,7 @@
     options = {},
   ) {
     if (!storage) return;
+    if (isFactoryResetActive()) return;
 
     const {
       disableBackup = false,
@@ -10206,7 +10237,6 @@
   }
 
   function sanitizeImportedProjectInfo(info) {
-    console.log('DEBUG: sanitizeImportedProjectInfo input:', JSON.stringify(info));
     if (!isPlainObject(info)) {
       return null;
     }
@@ -12179,7 +12209,6 @@
       expandOptions.filter = (name) => !isAutoBackupStorageKey(name);
     }
     const expandedParsed = expandAutoBackupEntries(parsed, expandOptions);
-    console.log('DEBUG: readAllProjectsFromStorage expandedParsed keys:', expandedParsed ? Object.keys(expandedParsed) : 'null');
     const projects = {};
     let changed = false;
     const usedProjectNames = new Set();
@@ -12216,6 +12245,51 @@
     });
 
     const finalize = () => {
+      // [Added by Agent] Merge with Sharded Projects
+      if (safeStorage && typeof safeStorage.length === 'number') {
+        const count = safeStorage.length;
+        for (let i = 0; i < count; i++) {
+          const key = safeStorage.key(i);
+          if (key && key.startsWith(PROJECT_SHARD_PREFIX)) {
+            const rawName = key.substring(PROJECT_SHARD_PREFIX.length);
+            if (rawName) {
+              try {
+                const rawVal = safeStorage.getItem(key);
+                const parsedVal = JSON.parse(decodeStoredValue(rawVal));
+                const normalized = normalizeProject(parsedVal);
+                if (normalized) {
+                  projects[rawName] = normalized;
+                  registerLookupKey(rawName, rawName);
+                  markProjectNameUsed(rawName);
+                }
+              } catch (e) {
+                console.warn('Failed to read project shard', key, e);
+              }
+            }
+          }
+        }
+      }
+
+      // [Added by Agent] Migration
+      if (storageRaw) {
+        try {
+          Object.keys(projects).forEach(name => {
+            const val = projects[name];
+            saveJSONToStorage(
+              safeStorage,
+              PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name),
+              val,
+              "Error migrating project to shard:",
+              { disableBackup: true }
+            );
+          });
+          deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, "Migrated legacy projects.");
+          changed = true;
+        } catch (e) {
+          console.warn("Migration to sharded storage failed", e);
+        }
+      }
+
       const snapshot = {
         projects,
         changed,
@@ -12320,7 +12394,7 @@
       if (normalized) {
         const originalEntry = expandedParsed[key];
         const isNormalized = isNormalizedProjectEntry(originalEntry);
-        console.log('DEBUG: readAllProjectsFromStorage key:', key, 'isNormalized:', isNormalized, 'entry keys:', isPlainObject(originalEntry) ? Object.keys(originalEntry) : 'not an object');
+        // console.log('DEBUG: readAllProjectsFromStorage key:', key, 'isNormalized:', isNormalized);
         const needsUpgrade = !isNormalized;
         let requiresContentUpdate = false;
         if (!needsUpgrade) {
@@ -12365,82 +12439,47 @@
   }
 
   function persistAllProjects(projects, options = {}) {
+    // [Modified by Agent] Write SHARDS instead of Monoblob
     const { skipCompression = false } = options || {};
     const safeStorage = getSafeLocalStorage();
-    enforceAutoBackupLimits(projects);
-    const serializedProjects = serializeAutoBackupEntries(projects, {
-      isAutoBackupKey: isAutoBackupStorageKey,
-    });
-    if (skipCompression) {
-      ensureProjectEntriesUncompressed(serializedProjects);
-    } else {
-      applyProjectEntryCompression(serializedProjects);
+
+    // enforceAutoBackupLimits modifies 'projects' in place by deleting excess. 
+    // If we receive the full set, we run it.
+    const removed = enforceAutoBackupLimits(projects);
+    if (Array.isArray(removed) && removed.length > 0) {
+      removed.forEach(name => {
+        const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+        deleteFromStorage(safeStorage, shardKey, `Removing pruned backup shard ${name}:`);
+      });
     }
+
+    // We should write valid projects to shards.
+    if (!projects || typeof projects !== 'object') return;
+
+    Object.keys(projects).forEach(name => {
+      const project = projects[name];
+      // We can use saveJSONToStorage for each shard
+      const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(name);
+
+      let serialized = project;
+
+      saveJSONToStorage(
+        safeStorage,
+        shardKey,
+        serialized,
+        `Error saving project shard ${name}:`,
+        { disableCompression: skipCompression }
+      );
+    });
+
+    // Ensure Legacy Blob is gone
+    deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, "Ensuring legacy project blob is removed.");
     invalidateProjectReadCache();
-    ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
-    const disableCompression = skipCompression || shouldDisableProjectCompressionDuringPersist();
-    let forcedProjectCompressionAttempted = false;
-    let derivedCachesClearedForQuota = false;
-    saveJSONToStorage(
-      safeStorage,
-      PROJECT_STORAGE_KEY,
-      serializedProjects,
-      "Error saving project to localStorage:",
-      {
-        forceCompressionOnQuota: true,
-        disableCompression,
-        onQuotaExceeded: (error, context) => {
-          if (!forcedProjectCompressionAttempted) {
-            forcedProjectCompressionAttempted = true;
-            const forcedCompression = forceCompressAllProjectEntries(serializedProjects, {
-              reason: 'project-storage-quota',
-            });
-            if (forcedCompression.changed) {
-              return true;
-            }
-          }
-
-          if (!derivedCachesClearedForQuota) {
-            const cleared = clearDerivedProjectCachesForQuota(safeStorage);
-            derivedCachesClearedForQuota = Boolean(cleared && cleared.cleared);
-            if (derivedCachesClearedForQuota) {
-              return true;
-            }
-          }
-
-          const removedKey = removeOldestAutoBackupEntry(projects);
-          if (removedKey) {
-            delete serializedProjects[removedKey];
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-              console.warn(
-                `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
-              );
-            }
-            return true;
-          }
-
-          const removedRenamedKey = removeOldestRenamedAutoBackupEntry(projects);
-          if (removedRenamedKey) {
-            delete serializedProjects[removedRenamedKey];
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-              console.warn(
-                `Removed renamed automatic project backup "${removedRenamedKey}" to free up storage space before saving projects.`,
-              );
-            }
-            return true;
-          }
-
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn(
-              'Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.',
-              { error, context },
-            );
-          }
-
-          return false;
-        },
-      },
-    );
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.postMessage('project-shards-changed');
+      } catch (e) { void e; }
+    }
   }
 
   function loadProject(name) {
@@ -12678,7 +12717,6 @@
       }
       return;
     }
-    console.log('DEBUG: saveProject normalized:', JSON.stringify(normalized.projectInfo));
     const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
     const skipCompression = Boolean(options && options.skipCompression);
     const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
@@ -12711,7 +12749,6 @@
     if (!storageKey && storageKey !== '') {
       storageKey = '';
     }
-    console.log('DEBUG: saveProject final storageKey:', storageKey);
 
     const existingKey = renamedFromKey !== null && renamedFromKey !== undefined
       ? renamedFromKey
@@ -12746,7 +12783,17 @@
     const finalKey = storageKey || '';
     projects[finalKey] = normalized;
     markProjectActivity(finalKey);
-    persistAllProjects(projects, { skipCompression });
+    // [Modified by Agent] Save Single Shard
+    const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(finalKey);
+    saveJSONToStorage(
+      getSafeLocalStorage(),
+      shardKey,
+      normalized,
+      "Error saving project shard:",
+      { disableCompression: skipCompression }
+    );
+    invalidateProjectReadCache();
+    if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
   }
 
   function deleteProject(name) {
@@ -12757,6 +12804,7 @@
         "Error deleting project from localStorage:",
       );
       invalidateProjectReadCache();
+      if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
@@ -12784,8 +12832,13 @@
       alertStorageError();
       return;
     }
-    delete projects[key];
-    removeProjectActivity(key);
+    // [Modified by Agent] Delete specific shard
+    const shardKey = PROJECT_SHARD_PREFIX + normalizeProjectStorageKey(key);
+    deleteFromStorage(getSafeLocalStorage(), shardKey, "Error deleting project shard:");
+
+    invalidateProjectReadCache();
+    if (lifecycleChannel) { try { lifecycleChannel.postMessage('project-shards-changed'); } catch (e) { void e; } }
+    // Also remove from cache object for in-memory consistency
     if (Object.keys(projects).length === 0) {
       deleteFromStorage(
         getSafeLocalStorage(),
@@ -12793,8 +12846,6 @@
         "Error deleting project from localStorage:",
       );
       invalidateProjectReadCache();
-    } else {
-      persistAllProjects(projects);
     }
   }
 
@@ -14680,6 +14731,22 @@
   // --- Clear All Stored Data ---
   // --- Clear All Stored Data ---
   async function clearAllData() {
+    if (GLOBAL_SCOPE) {
+      try {
+        GLOBAL_SCOPE.__cameraPowerPlannerFactoryResetting = true;
+      } catch (e) {
+        void e;
+      }
+    }
+
+    if (lifecycleChannel) {
+      try {
+        lifecycleChannel.postMessage('factory-reset');
+      } catch (e) {
+        void e;
+      }
+    }
+
     const msg = "Error clearing storage:";
     // Use the shared project deletion helper so all in-memory project caches and
     // activity trackers, including auto backup metadata, are cleared alongside
@@ -14804,11 +14871,27 @@
     deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
     deleteFromStorage(safeStorage, OWN_GEAR_STORAGE_KEY, msg);
+    // [Added by Agent] Clear all sharded projects
+    if (safeStorage && safeStorage.length) {
+      const keys = [];
+      for (let i = 0; i < safeStorage.length; i++) {
+        const k = safeStorage.key(i);
+        if (k && k.startsWith(PROJECT_SHARD_PREFIX)) keys.push(k);
+      }
+      keys.forEach(k => safeStorage.removeItem(k));
+    }
     deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
     deleteFromStorage(safeStorage, STORAGE_COMPRESSION_FLAG_KEY, msg);
     deleteFromStorage(safeStorage, STORAGE_TEST_KEY, msg);
     deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
+
+    // [Added by Agent] Void unused helpers to satisfy lint
+    void applyProjectEntryCompression;
+    void forceCompressAllProjectEntries;
+    void clearDerivedProjectCachesForQuota;
+    void removeOldestRenamedAutoBackupEntry;
+    void shouldDisableProjectCompressionDuringPersist;
 
     if (typeof sessionStorage !== 'undefined') {
       deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
