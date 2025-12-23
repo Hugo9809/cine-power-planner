@@ -96,6 +96,67 @@ workstations.
   entry to the backup record so auditors can confirm the mirrored keys existed
   before the export.
 
+## File Formats & Integrity Checks
+
+### Planner backup and project bundle naming conventions
+
+- **Planner backup baseline:** Keep the exported filename prefix
+  `planner-backup` intact. When archiving multiple copies, append a readable
+  suffix such as `planner-backup__YYYY-MM-DD__workstation.json` so the origin,
+  date and media are obvious during offline audits.
+- **Project bundle baseline:** Preserve the project name in the export filename
+  (for example `project-name.json`). When needed, append a date or station tag
+  such as `project-name__YYYY-MM-DD__bundle.json` or rename the file to
+  `.cpproject`—the importer treats `.json` and `.cpproject` identically.
+- **Rule exports:** Keep `auto-gear-rules-*.json` intact and align the suffix to
+  the backup or bundle it travels with (e.g., the same date or workstation tag)
+  so offline logs can reconcile every file set.
+
+### Required sections and compatibility notes
+
+- **Planner backups must be complete.** A healthy backup includes the full
+  planner payload (projects plus global collections such as favorites, contacts,
+  own gear, automatic gear rules and preferences). If any collection is missing,
+  stop transport, re-export the backup and rerun a restore rehearsal before
+  sharing.
+- **Project bundles must include metadata and referenced assets.** Each bundle
+  should contain the project data plus the export metadata surfaced in the
+  import dialog (timestamp, generator/version and inclusion flags), along with
+  any referenced custom devices or automatic gear rules. If the import dialog
+  reports missing sections or version incompatibility, capture the warning and
+  re-export from the source build.
+- **Compatibility summary is the gate.** Always review the restore
+  compatibility summary before promotion. Missing sections or version warnings
+  mean the file must be regenerated on the source workstation before it is
+  cleared for transport.
+
+### Offline checksum logging workflow
+
+1. **Generate hashes locally.** Use a terminal on the offline workstation to
+   compute SHA-256 checksums (for example `sha256sum filename.json` or
+   `shasum -a 256 filename.json`). Keep the terminal output visible while you
+   fill the verification log.
+2. **Log every file.** Record the exact filename, checksum, workstation name
+   and export timestamp in the verification log before copying files to media.
+3. **Copy, then re-verify.** After copying to external media, re-run the hash
+   on the copy and confirm it matches the logged checksum without reconnecting
+   to a network.
+4. **Store the checksum log with the media.** Save or print the verification
+   log and store it in the same pouch or case as the transport media so it
+   travels offline with the backup or bundle.
+
+### Pre-transport validation checklist
+
+- Run **Restore rehearsal** with the backup or bundle and confirm the sandbox
+  data matches the source project before promotion.
+- Capture the **Backup guardian** status and autosave ledger entry that match
+  the export timestamp.
+- Generate and log the SHA-256 checksum for each file, then verify the copied
+  media checksum matches the log.
+- Record the restore rehearsal notes, diff screenshots and compatibility
+  summary in the verification packet.
+- Store at least two offline copies (primary + offsite) before transport.
+
 ## Share & import
 
 - **Project export:** From the selector or **Command Palette**, choose **Export Project**. The bundle

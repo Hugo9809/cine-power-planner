@@ -318,6 +318,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **`planner-backup.json` (Vollbackup).** **Einstellungen → Backup & Wiederherstellung → Backup** speichert alle Projekte,
   Auto-Backups, Favoriten, Laufzeitfeedback, Regeln, Kontaktlisten, UI-Präferenzen, Fonts und Branding.
 - **`auto-gear-rules-*.json` (Regel-Exports).** Zeitgestempelte Sicherungen der Automations-Setups inklusive Metadaten zur Offline-Validierung.
+- **Integritätsprüfungen & Benennung.** Siehe Abschnitt [File Formats & Integrity Checks](docs/save-share-restore-reference.md#file-formats--integrity-checks) für Namenskonventionen, Pflichtabschnitte und offline geführte Checksummlogs vor dem Transport.
 
 ## Interface-Rundgang
 

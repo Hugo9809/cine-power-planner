@@ -5,6 +5,7 @@ Welcome to the Cine Power Planner documentation. This directory contains detaile
 ## User Guides
 
 - [Save, Share & Restore Reference](save-share-restore-reference.md): Detailed reference for data safety workflows.
+- [File Formats & Integrity Checks](save-share-restore-reference.md#file-formats--integrity-checks): Naming conventions, required sections, and offline checksum logging.
 - [Power Summary Warning Reference](power-summary-warning-reference.md): Explanation of power warnings and limits.
 - [Backup Rotation Guide](backup-rotation-guide.md): Best practices for maintaining redundant backups.
 - [Translation Guide](translation-guide.md): Instructions for translating the application.
