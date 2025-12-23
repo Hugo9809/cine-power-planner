@@ -26,8 +26,8 @@
     return;
   }
 
-  // Identifier of the master scenario select element. When its label or value
-  // mentions "monitor" we reveal the monitoring specific dropdowns.
+  // Identifier of the master scenario select element. We still observe it so
+  // that scenario changes and translations can trigger a visibility refresh.
   var SCENARIO_SELECT_ID = 'autoGearScenarios';
 
   // Identifiers for the monitoring dropdowns that share the visibility toggle.
@@ -42,6 +42,7 @@
     'monitor',
     'wireless'
   ];
+  var CONDITION_LIST_ID = 'autoGearConditionList';
 
   // The editor container is observed so we can respond to async DOM updates
   // when the auto gear UI is swapped out or injected dynamically.
@@ -269,29 +270,28 @@
     return String(value);
   }
 
-  // Decide if the selected scenario indicates monitoring gear. The check is a
-  // loose containment check to remain resilient to localisation changes.
+  // Decide if the currently active conditions imply monitoring gear. This
+  // relies on the condition sections rendered inside the condition list rather
+  // than on scenario option labels, which keeps translations stable.
   function scenarioTriggersMonitoring() {
-    if (!scenarioSelect) {
+    var conditionList = document.getElementById(CONDITION_LIST_ID);
+    if (!conditionList) {
       return false;
     }
 
-    var needle = 'monitor';
-    var options = scenarioSelect.selectedOptions || scenarioSelect.options;
-    if (!options) {
-      return false;
-    }
-
-    for (var i = 0; i < options.length; i += 1) {
-      var option = options[i];
-      if (!option || !option.selected) {
+    var conditionSections = conditionList.querySelectorAll('[data-condition]');
+    for (var i = 0; i < conditionSections.length; i += 1) {
+      var section = conditionSections[i];
+      if (!section) {
         continue;
       }
 
-      var value = optionText(option.value).toLowerCase();
-      var label = optionText(option.textContent).toLowerCase();
+      var key = section.getAttribute('data-condition');
+      if (MONITORING_CONDITION_KEYS.indexOf(key) === -1) {
+        continue;
+      }
 
-      if ((value && value.indexOf(needle) !== -1) || (label && label.indexOf(needle) !== -1)) {
+      if (!section.hidden && section.getAttribute('aria-hidden') !== 'true') {
         return true;
       }
     }
@@ -344,35 +344,11 @@
     return false;
   }
 
-  // Check if any monitoring-related condition sections are active. This keeps
-  // the rows visible when a user just enabled a monitoring condition or when
-  // offline restores unhide a condition section before the selects receive
-  // values.
-  function hasActiveMonitoringConditions() {
-    for (var i = 0; i < MONITORING_CONDITION_KEYS.length; i += 1) {
-      var key = MONITORING_CONDITION_KEYS[i];
-
-      if (typeof window !== 'undefined' && typeof window.isAutoGearConditionActive === 'function') {
-        if (window.isAutoGearConditionActive(key)) {
-          return true;
-        }
-      }
-
-      var section = document.getElementById('autoGearCondition-' + key);
-      if (section && !section.hidden && section.getAttribute('aria-hidden') !== 'true') {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   // Apply the computed visibility state to every monitoring row. We resolve the
   // row lazily so that dynamically inserted selects are handled automatically.
   function applyVisibility() {
     var shouldShow = scenarioTriggersMonitoring()
-      || hasMonitoringSelections()
-      || hasActiveMonitoringConditions();
+      || hasMonitoringSelections();
 
     for (var i = 0; i < monitoringSelects.length; i += 1) {
       var data = monitoringSelects[i];
