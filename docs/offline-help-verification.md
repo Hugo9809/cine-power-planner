@@ -43,10 +43,10 @@ cache-resident guidance.
    - Capture screenshots of each locale’s help search and a representative topic
      to attach to the verification packet and translation approvals.
 5. **Verify documentation links resolve offline**
-   - From the help overlay, open linked documentation entries (e.g. Operations
-     Checklist, Save/Share/Restore reference). Ensure the markdown renders from
-     local files, the service worker serves cached assets and no external links
-     are required.
+   - From the help overlay, open linked documentation entries (e.g. Data
+     Protection Lifecycle Guide, Operations Checklist, Save/Share/Restore
+     reference). Ensure the markdown renders from local files, the service
+     worker serves cached assets and no external links are required.
    - Confirm the **Documentation update tracker** entry inside **Settings →
      General** reflects the help changes you just reviewed so runtime logs and
      doc updates share the same evidence trail.

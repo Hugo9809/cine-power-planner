@@ -54,6 +54,7 @@ Cine Power Planner è un’applicazione web autonoma pensata per creare, verific
 
 ## Accessi rapidi
 
+- **Inizia dalla guida del ciclo di protezione dei dati.** Usa la [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) come ingresso principale per salvataggio manuale → auto-salvataggio → vault dei backup → export → prova di ripristino → promozione, con passi offline e prove da acquisire.
 - **Esegui la prova completa.** Segui l’esercizio di [Avvio rapido](#avvio-rapido) per verificare salvataggi, condivisione, import, backup e ripristino su ogni postazione, anche offline.
 - **Consulta i workflow.** Tieni a portata il [Drill di salvataggio, condivisione e import](#drill-di-salvataggio-condivisione-e-import) e la [Riferimento dettagliato Salva, Condividi, Importa, Backup & Ripristina](docs/save-share-restore-reference.md) durante training e audit.
 - **Dimostra la prontezza offline.** Abbina l’[Offline Readiness Runbook](docs/offline-readiness.md) alla [Checklist operativa](docs/operations-checklist.md) per mantenere allineati prove documentate, app e risorse incluse.

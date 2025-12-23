@@ -31,6 +31,9 @@ drive without phoning home.
   storage like a single-device vault.
 - **Preferred safety path.** Manual save → export project bundle → full planner
   backup → verify restore keeps critical data protected and portable.
+- **Primary lifecycle guide.** Start with the
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) for
+  the full offline lifecycle, then use the detailed references it links to.
 - **Backup vault fallback.** When downloads are blocked, the local backup vault
   queue preserves snapshots until you can export them safely.
 
@@ -211,6 +214,10 @@ tour:
 
 ## Quick Links
 
+- **Start with the lifecycle guide.** Use the
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) as
+  the primary entry for manual save → autosave → backup vault → export → restore
+  rehearsal → promotion workflows, including offline steps and evidence capture.
 - **Run the full rehearsal.** Follow the [Quick Start](#quick-start) drill to
   verify save, share, import, backup and restore paths on every workstation
   before crews depend on them offline.
@@ -643,6 +650,8 @@ same online or offline.
 Keep this table nearby when rehearsing or teaching the planner. It consolidates
 the core save, share, import, backup and restore paths, what each captures and
 the safety nets that protect user data even when you stay offline.
+Start with the [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md)
+for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |

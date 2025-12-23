@@ -18,6 +18,9 @@ drive without phoning home.
 - **Layered safety nets.** Save, autosave, share, import, backup and restore
   workflows always create safety snapshots so recovery is possible before any
   data is promoted.
+- **Primary lifecycle guide.** Start with the
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) for
+  the full offline sequence and evidence capture expectations.
 - **Offline by design.** All icons, fonts, Uicons and helper scripts are stored
   in this repo, so offline usage never degrades usability or data protection.
 
@@ -142,6 +145,10 @@ tour:
 
 ## Quick Links
 
+- **Start with the lifecycle guide.** Use the
+  [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) as
+  the primary entry for manual save → autosave → backup vault → export → restore
+  rehearsal → promotion workflows, including offline steps and evidence capture.
 - **Run the full rehearsal.** Follow the [Quick Start](#quick-start) drill to verify save, share, import, backup and restore paths on every workstation before crews depend on them offline.
 - **Reference the workflows.** Keep the [Save, Share & Import Drill](#save-share--import-drill) and the detailed [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md) nearby when training teams or auditing data safety.
 - **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md) with the [Operational Checklist](docs/operations-checklist.md) so documented rehearsals stay synchronized with the app and bundled assets.
@@ -457,6 +464,8 @@ same online or offline.
 Keep this table nearby when rehearsing or teaching the planner. It consolidates
 the core save, share, import, backup and restore paths, what each captures and
 the safety nets that protect user data even when you stay offline.
+Start with the [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md)
+for the end-to-end offline sequence, then use this table as a quick refresher.
 
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |

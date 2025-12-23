@@ -30,8 +30,8 @@ offline bundles safe and documentation consistent.
      screenshots for the verification packet when layouts differ.
 3. **Synchronise docs**
    - Mirror updates across `README.<locale>.md`, the help overlay and any docs
-     referencing the affected workflow so every offline reader sees the same
-     copy.
+     referencing the affected workflow (including the Data Protection Lifecycle
+     Guide) so every offline reader sees the same copy.
    - Update screenshots using the same locale and store them with the offline
      evidence set.
 4. **Review**
