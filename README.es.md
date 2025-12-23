@@ -317,6 +317,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **`planner-backup.json` (respaldo completo).** **Configuración → Copia de seguridad y restauración → Copia de seguridad**
   captura proyectos, auto-backups, favoritos, comentarios, reglas, contactos, ajustes, fuentes y branding.
 - **`auto-gear-rules-*.json` (reglas).** Exportaciones opcionales desde **Reglas automáticas** con tipo de archivo, versión y metadatos para validar offline. Guarda estas copias junto a los respaldos completos.
+- **Verificación e integridad.** Sigue la sección [File Formats & Integrity Checks](docs/save-share-restore-reference.md#file-formats--integrity-checks) para convenciones de nombres, secciones requeridas y registro offline de checksums antes de transportar respaldos o paquetes.
 
 ## Recorrido por la interfaz
 

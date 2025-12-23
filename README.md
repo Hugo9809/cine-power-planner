@@ -869,6 +869,10 @@ Use Cine Power Planner end-to-end with the following routine:
   importer can validate payloads offline. Store them alongside full backups so
   custom presets never disappear during cross-team handoffs, and keep an eye on
   import warnings if you restore them on a different build.
+- **Integrity checks & naming guidance.** Follow the offline checklist, naming
+  conventions and checksum workflow in the [File Formats & Integrity Checks
+  section](docs/save-share-restore-reference.md#file-formats--integrity-checks)
+  before transporting backups or bundles.
 
 ## Interface Tour
 

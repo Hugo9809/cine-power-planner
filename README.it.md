@@ -316,6 +316,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **`planner-backup.json` (backup completo).** Da **Impostazioni → Backup e ripristino → Backup** ottieni tutti i progetti,
   auto-backup, preferiti, feedback, regole, contatti, preferenze, font e branding.
 - **`auto-gear-rules-*.json` (regole).** Export opzionali da **Regole automatiche** con metadati per la validazione offline; conservali insieme ai backup completi.
+- **Controlli di integrità.** Segui la sezione [File Formats & Integrity Checks](docs/save-share-restore-reference.md#file-formats--integrity-checks) per convenzioni di nome, sezioni richieste e registro offline dei checksum prima del trasporto.
 
 ## Tour dell’interfaccia
 

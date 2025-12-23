@@ -317,6 +317,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **`planner-backup.json` (backup complet).** Généré via **Paramètres → Backup & Restauration → Backup**, il capture projets,
   auto-backups, favoris, retours, règles, contacts, préférences, polices et éléments de branding.
 - **`auto-gear-rules-*.json` (règles).** Export optionnel depuis **Règles automatiques** avec métadonnées de type, version et horodatage pour validation hors ligne. Stockez-les avec les backups complets.
+- **Contrôles d’intégrité.** Suivez la section [File Formats & Integrity Checks](docs/save-share-restore-reference.md#file-formats--integrity-checks) pour les conventions de nommage, sections requises et le journal des checksums hors ligne avant transport.
 
 ## Visite de l’interface
 
