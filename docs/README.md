@@ -21,6 +21,7 @@ Welcome to the Cine Power Planner documentation. This directory contains detaile
 - [Documentation Verification Packet](documentation-verification-packet.md): Template for logging documentation verification.
 - [Verification Log Template](verification-log-template.md): Template for recording rehearsal notes and export hashes.
 - [Offline Cache Verification Drill](offline-cache-verification-drill.md): Procedure for verifying cached assets.
+- [Offline Help Verification](offline-help-verification.md): Checklist for validating offline help and translation coverage.
 - [Documentation Coverage Matrix](documentation-coverage-matrix.md): Matrix for tracking documentation status.
 
 ## Maintenance & Development
