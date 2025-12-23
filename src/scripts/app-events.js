@@ -97,6 +97,104 @@ if (typeof globalThis !== 'undefined') {
   }
 }
 
+var saveSetupBtn =
+  typeof saveSetupBtn !== 'undefined'
+    ? saveSetupBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('saveSetupBtn')
+      : null;
+
+var setupNameInput =
+  typeof setupNameInput !== 'undefined'
+    ? setupNameInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('setupName')
+      : null;
+
+var deleteSetupBtn =
+  typeof deleteSetupBtn !== 'undefined'
+    ? deleteSetupBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('deleteSetupBtn')
+      : null;
+
+var addDeviceBtn =
+  typeof addDeviceBtn !== 'undefined'
+    ? addDeviceBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('addDeviceBtn')
+      : null;
+
+var cancelEditBtn =
+  typeof cancelEditBtn !== 'undefined'
+    ? cancelEditBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('cancelEditBtn')
+      : null;
+
+var languageSelect =
+  typeof languageSelect !== 'undefined'
+    ? languageSelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('languageSelect')
+      : null;
+
+var skipLink =
+  typeof skipLink !== 'undefined'
+    ? skipLink
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('skipLink')
+      : null;
+
+var importDataBtn =
+  typeof importDataBtn !== 'undefined'
+    ? importDataBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('importDataBtn')
+      : null;
+
+var importFileInput =
+  typeof importFileInput !== 'undefined'
+    ? importFileInput
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('importFileInput')
+      : null;
+
+var exportBtn =
+  typeof exportBtn !== 'undefined'
+    ? exportBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('exportDataBtn')
+      : null;
+
+var generateGearListBtn =
+  typeof generateGearListBtn !== 'undefined'
+    ? generateGearListBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('generateGearListBtn')
+      : null;
+
+var deleteGearListProjectBtn =
+  typeof deleteGearListProjectBtn !== 'undefined'
+    ? deleteGearListProjectBtn
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('deleteGearListProjectBtn')
+      : null;
+
+var gearItemEditExtra =
+  typeof gearItemEditExtra !== 'undefined'
+    ? gearItemEditExtra
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('gearItemEditExtra')
+      : null;
+
+var newSubcategorySelect =
+  typeof newSubcategorySelect !== 'undefined'
+    ? newSubcategorySelect
+    : (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById('newSubcategory')
+      : null;
+
 const STORAGE_HELPERS_FOR_EVENTS = (function resolveStorageHelpersForEvents() {
   const resolved = {};
 
@@ -1969,7 +2067,9 @@ addSafeEventListener(skipLink, "click", () => {
 
 
 // Setup management
-function handleSaveSetupClick() {
+function handleSaveSetupClick(optionsOrEvent) {
+  const isSilent = optionsOrEvent && optionsOrEvent.silent === true;
+
   if (typeof applyPendingProjectNameCollisionResolution === 'function') {
     try {
       applyPendingProjectNameCollisionResolution();
@@ -1979,7 +2079,9 @@ function handleSaveSetupClick() {
   }
   const typedName = setupNameInput.value.trim();
   if (!typedName) {
-    alert(texts[currentLang].alertSetupName);
+    if (!isSilent) {
+      alert(texts[currentLang].alertSetupName);
+    }
     return;
   }
   const currentSetup = { ...getCurrentSetupState() };
@@ -2049,7 +2151,9 @@ function handleSaveSetupClick() {
   }
 
   populateSetupSelect();
-  setupNameInput.value = finalName;
+  if (!isSilent) {
+    setupNameInput.value = finalName;
+  }
   if (setupSelectElement) {
     setupSelectElement.value = finalName; // Select the saved setup (new or renamed)
   }
@@ -2089,12 +2193,18 @@ function handleSaveSetupClick() {
       || langTexts.alertSetupSaved
       || fallbackTexts.alertSetupSaved
     );
-  if (typeof saveAlertTemplate === 'string' && saveAlertTemplate) {
+  if (!isSilent && typeof saveAlertTemplate === 'string' && saveAlertTemplate) {
     alert(saveAlertTemplate.replace("{name}", finalName));
   }
 }
 
 addSafeEventListener(saveSetupBtn, "click", handleSaveSetupClick);
+
+if (setupNameInput) {
+  addSafeEventListener(setupNameInput, "input", function () {
+    handleSaveSetupClick({ silent: true });
+  });
+}
 
 function handleDeleteSetupClick() {
   const setupSelectElement = getSetupSelectElement();

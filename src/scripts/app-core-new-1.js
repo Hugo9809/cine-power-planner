@@ -2781,7 +2781,11 @@ const localOptimiseAvatarDataUrl = typeof resolvedOptimiseAvatarDataUrl === 'fun
   };
 const localReadAvatarFile = typeof resolvedReadAvatarFile === 'function'
   ? resolvedReadAvatarFile
-  : () => Promise.reject(new Error('Avatar file reader unavailable'));
+  : (typeof readAvatarFile === 'function'
+    ? readAvatarFile
+    : (typeof window !== 'undefined' && typeof window.readAvatarFile === 'function'
+      ? window.readAvatarFile
+      : () => Promise.reject(new Error('Avatar file reader unavailable'))));
 const localIsSafeImageUrl = typeof resolvedIsSafeImageUrl === 'function'
   ? resolvedIsSafeImageUrl
   : () => false;

@@ -3317,8 +3317,9 @@ function ensureDeferredScriptsReady(reason, callback) {
 }
 
 // Generate a printable overview of the current selected setup in a new tab
-if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
-  generateOverviewBtn.addEventListener('click', () => {
+const generateOverviewBtnRef = typeof generateOverviewBtn !== 'undefined' ? generateOverviewBtn : document.getElementById('generateOverviewBtn');
+if (generateOverviewBtnRef) {
+  generateOverviewBtnRef.addEventListener('click', () => {
     const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
     if (!setupSelectRef || !setupSelectRef.value) { // Ensure a setup is selected
       alert(texts[currentLang].alertSelectSetupForOverview);
