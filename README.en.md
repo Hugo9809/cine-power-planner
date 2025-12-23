@@ -10,6 +10,30 @@ when you are offline. Every dependency lives in this repository so the same
 experience runs on a stage workstation, a field laptop or an air-gapped archive
 drive without phoning home.
 
+## Data Protection Promise
+
+- **Local-only storage.** Projects, gear lists, runtime feedback, exports and
+  backups live on your machine; the planner does not depend on external
+  services.
+- **Layered safety nets.** Save, autosave, share, import, backup and restore
+  workflows always create safety snapshots so recovery is possible before any
+  data is promoted.
+- **Offline by design.** All icons, fonts, Uicons and helper scripts are stored
+  in this repo, so offline usage never degrades usability or data protection.
+
+## Table of Contents
+
+- [Data Protection Promise](#data-protection-promise)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [At a Glance](#at-a-glance)
+- [Fast Start (2-minute drill)](#fast-start-2-minute-drill)
+- [Safety Layers at a Glance](#safety-layers-at-a-glance)
+- [Quick Links](#quick-links)
+- [Version reference](#version-reference)
+- [Offline Audit Toolkit](#offline-audit-toolkit)
+- [Quick Start](#quick-start)
+
 ## Key Features
 
 - **Equipment power knowledge base.** Reference bundled draw figures for cameras,
@@ -57,6 +81,8 @@ drive without phoning home.
    npx http-server
    # or
    python -m http.server
+   # or
+   npm run serve
    ```
 4. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
    importing, backing up and restoring on every machine before crews rely on the
@@ -79,6 +105,27 @@ drive without phoning home.
 - **Approve updates intentionally.** New service worker versions activate on
   their own, and the in-app **Force reload** button is there when you want to
   clear cached assets and guarantee a clean refresh.
+
+## Fast Start (2-minute drill)
+
+Need to prove the planner is safe to use before a prep call? Run this condensed
+drill, then follow the [Quick Start](#quick-start) walkthrough for the full
+tour:
+
+1. Clone or unpack the repository to a trusted local drive and keep every
+   bundled asset (including locally stored Uicons and fonts) in place.
+2. Open `index.html` directly in a supported browser. If you prefer the PWA
+   flow, serve the folder over `http://localhost` so the service worker can
+   cache assets for offline use.
+3. Press **Start guided tutorial** in **Help → Quick start checklist** to walk
+   through a save, share, import and backup cycle. Confirm the autosave banner
+   and offline indicator appear as expected.
+4. Export a planner backup plus a sample project bundle immediately after the
+   tutorial. Store both on separate offline media so you have a baseline
+   restore point before continuing prep.
+5. Toggle airplane mode (or disconnect) and reload `index.html`. Verify
+   projects and documentation render exactly the same and that **Force reload**
+   remains available for cache resets without touching saved data.
 
 ## Safety Layers at a Glance
 
