@@ -5,7 +5,7 @@ Pink Mode is a thematic "Easter egg" feature that changes the application's appe
 ## Overview
 
 When enabled, Pink Mode:
-1.  **Toggles a generic CSS class**: Adds `.pink-mode` (or `.pink-mode-active`) to the `document.body` to style UI elements with pink/purple themes.
+1.  **Toggles a runtime CSS class**: Adds `.pink-mode-active` to the `document.body` for the animated runtime layer while the broader theme styling is still driven by the existing `.pink-mode` selectors.
 2.  **Animating Icons**: Replaces the standard Unicorn/Horse toggle icon with Lottie-based animated variants (Unicorn, Horn, Rainbow). The icon cycles every 30 seconds with a gentle pop animation.
 3.  **Floating Elements**: Spawns floating interactive "stickers" (e.g., Flamingo, Unicorn, Camera) that drift across the screen.
 4.  **Interactive Triggers**:
@@ -44,7 +44,7 @@ The runtime checks for `window.lottie` or `window.bodymovin`. If missing, it dyn
 
 -   **`src/scripts/app-session.js`**: Initializes the global `pinkModeToggle` reference and may trigger rain effects on specific session events.
 -   **`src/scripts/app-core-new-1.js`**: Often handles the UI event binding for the toggle button.
--   **CSS**: The visual "look" is driven by CSS rules targeting `body.pink-mode` or `.pink-mode-active` in `src/styles/` (main stylesheet).
+-   **CSS**: The visual "look" is driven by CSS rules targeting `body.pink-mode` (theme styling) and `body.pink-mode-active` (runtime animation layer) in `src/styles/` (main stylesheet).
 
 ## Debugging
 
@@ -62,4 +62,3 @@ cineCorePinkModeSupport.triggerPinkModeIconRain();
 
 1.  Add the Lottie JSON file to `src/animations/pink-mode/`.
 2.  Update `PINK_MODE_ANIMATED_ICON_FILES` in `src/scripts/modules/core/pink-mode.js` to include the new path.
-
