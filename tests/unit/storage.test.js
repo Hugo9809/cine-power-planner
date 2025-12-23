@@ -1221,6 +1221,32 @@ describe('project storage', () => {
     jest.useRealTimers();
   });
 
+  test('saveProject generates distinct auto backup names within the same minute', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-06-10T12:34:05Z'));
+
+    saveProject('Same Minute', { gearList: '<ul>Initial</ul>', projectInfo: null });
+    saveProject('Same Minute', { gearList: '<ul>Update 1</ul>', projectInfo: null });
+    saveProject('Same Minute', { gearList: '<ul>Update 2</ul>', projectInfo: null });
+
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
+    const backupKeys = Object.keys(stored)
+      .filter(key => key.startsWith('auto-backup-'))
+      .sort();
+
+    expect(backupKeys).toHaveLength(2);
+    expect(new Set(backupKeys).size).toBe(2);
+    expect(backupKeys).toEqual([
+      'auto-backup-2024-06-10-12-34-05-Same Minute',
+      'auto-backup-2024-06-10-12-34-05-Same Minute-2',
+    ]);
+    backupKeys.forEach((key) => {
+      expect(key).toMatch(/^auto-backup-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-/u);
+    });
+
+    jest.useRealTimers();
+  });
+
   test('saveProject skips creating backups when data has not changed', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-02T08:00:00Z'));
