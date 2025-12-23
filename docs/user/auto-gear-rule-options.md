@@ -14,7 +14,7 @@ machines.
   preset state.
 - `src/scripts/storage.js` mirrors rule payloads into timestamped backup slots
   before the UI loads so every edit has a rollback point.
-- `docs/save-share-restore-reference.md` explains how preset backups integrate
+- `docs/user/save-share-restore-reference.md` explains how preset backups integrate
   with planner bundles—update both when behaviour changes.
 
 ## Rule generation pipeline
@@ -44,7 +44,7 @@ machines.
   backup first, only promoting to active rules when the operator confirms.
 - **Verification timeline.** Each change records the triggering scenarios,
   diff summary and timestamp in the diagnostics timeline consumed by the
-  [Documentation Verification Packet](documentation-verification-packet.md).
+  [Documentation Verification Packet](../dev/documentation-verification-packet.md).
 - **Bundle-ready exports.** Project exports include embedded automatic gear
   payloads, checksum notes and rehearsal metadata so receiving machines can
   prove the presets matched the source workstation.
@@ -54,7 +54,7 @@ machines.
 1. Exercise new rules in the rehearsal project before touching live builds.
 2. Export a planner backup, store it with the generated `auto-gear-rules-backup`
    files and log the archive path.
-3. Update translations, help topics and the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
+3. Update translations, help topics and the [Documentation Coverage Matrix](../dev/documentation-coverage-matrix.md)
    so every locale reflects the new controls.
 4. When importing from another machine, review the diff summary, confirm the
    autosave ledger shows the update and capture console output for the

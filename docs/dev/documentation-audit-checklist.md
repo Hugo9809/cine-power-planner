@@ -9,7 +9,7 @@ save/share/import/backup/restore behaviour.
 - [ ] Clone the repository or unpack the offline bundle on the audit machine.
 - [ ] Load `index.html` once to warm the cache; then disconnect the network.
 - [ ] Export the latest planner backup and verification packet for reference.
-- [ ] Create a fresh copy of `docs/verification-log-template.md` to record
+- [ ] Create a fresh copy of `docs/ops/verification-log-template.md` to record
       evidence.
 
 ## Audit steps
@@ -26,7 +26,7 @@ save/share/import/backup/restore behaviour.
    - [ ] Review `src/scripts/translations/<locale>.js` modules and the loader in
          `src/scripts/translations.js` to confirm every string referenced in
          documentation exists and is current for offline use.
-   - [ ] Update `docs/translation-guide.md` with any locale-specific nuances.
+   - [ ] Update `docs/dev/translation-guide.md` with any locale-specific nuances.
 4. **Asset integrity**
    - [ ] Ensure all referenced icons and fonts exist in the repo and are loaded
          locally (no CDN links).
@@ -34,12 +34,12 @@ save/share/import/backup/restore behaviour.
          options such as `npm run lint:docs`); otherwise run `npm run lint` to
          catch broken anchors before publishing updates.
 5. **Schema validation**
-   - [ ] Compare `docs/schema-inventory.md` against `modules/helpers/schema/`.
-   - [ ] Note any mismatches in `review-findings.md` and link to follow-up tasks.
+   - [ ] Compare `docs/dev/schema-inventory.md` against `modules/helpers/schema/`.
+   - [ ] Note any mismatches in `docs/dev/review-findings.md` and link to follow-up tasks.
 
 ## Completion tasks
 
-- [ ] Update `docs/documentation-status-report-template.md` with audit scope,
+- [ ] Update `docs/dev/documentation-status-report-template.md` with audit scope,
       findings and stored evidence locations.
 - [ ] Attach screenshots, backups and logs to the verification packet archive.
 - [ ] Brief the localisation team on any string changes.

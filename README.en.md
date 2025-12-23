@@ -143,17 +143,17 @@ tour:
 ## Quick Links
 
 - **Run the full rehearsal.** Follow the [Quick Start](#quick-start) drill to verify save, share, import, backup and restore paths on every workstation before crews depend on them offline.
-- **Reference the workflows.** Keep the [Save, Share & Import Drill](#save-share--import-drill) and the detailed [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md) nearby when training teams or auditing data safety.
-- **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md) with the [Operational Checklist](docs/operations-checklist.md) so documented rehearsals stay synchronized with the app and bundled assets.
-- **Re-certify cached bundles.** Follow the [Offline Cache & Safeguard Verification Drill](docs/offline-cache-verification-drill.md) whenever you regenerate service-worker assets, ship new icons or touch persistence code so cached builds keep matching the repository and user data remains fully protected offline.
-- **Verify help center resiliency.** Run the [Offline Help & Translation Verification](docs/offline-help-verification.md) drill whenever you touch help copy, documentation links or translations to confirm the overlay, search results and localized topics still load entirely from cached assets without risking user data.
-- **Audit power connector safety.** Pair the [Power Summary Warning Reference](docs/power-summary-warning-reference.md) with each Power Summary rehearsal to log connector limits, redundant backups and autosave/share alignment before distributing plans offline.
-- **Protect user data deliberately.** Follow the [Data Protection Playbook](docs/data-protection-playbook.md) when you scope changes, rehearse daily guardrails, prepare releases and respond to incidents. It consolidates the save/share/import/backup/restore routines, guard outputs and archival expectations so offline crews always preserve every project.
-- **Recover fast when incidents happen.** Keep the [Emergency Recovery Playbook](docs/emergency-recovery-playbook.md) with your offline bundles so crews can stabilize data, export queued backups, and rehearse restores without reconnecting to the network.
-- **Update documentation deliberately.** Use the [Documentation Update Checklist](docs/documentation-update-checklist.md) and [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every time you ship new behavior so help topics, translations and manuals stay in lockstep with the runtime.
-- **Log verification rehearsals.** Pair each release or workstation audit with the [Documentation Verification Packet](docs/documentation-verification-packet.md) and file copies of the [Verification Log Template](docs/verification-log-template.md) so every save/share/import/backup/restore drill is documented alongside the assets that shipped. Maintaining these records keeps help topics, translation notes and workflow screenshots provably in sync with the builds crews run offline.
-- **File a status snapshot.** Complete the [Documentation Status Report](docs/documentation-status-report-template.md) whenever you update help topics, translations or manuals. It captures which surfaces changed, the offline rehearsal evidence you gathered and where the backups plus verification logs now live so future audits can retrace the release without reconnecting to the network.
-- **Localize with confidence.** Reference the [Translation Guide](docs/translation-guide.md) and language-specific README files whenever you add or update locales so offline readers stay aligned with the latest workflows.
+- **Reference the workflows.** Keep the [Save, Share & Import Drill](#save-share--import-drill) and the detailed [Save, Share, Import, Backup & Restore Reference](docs/user/save-share-restore-reference.md) nearby when training teams or auditing data safety.
+- **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/ops/offline-readiness.md) with the [Operational Checklist](docs/ops/operations-checklist.md) so documented rehearsals stay synchronized with the app and bundled assets.
+- **Re-certify cached bundles.** Follow the [Offline Cache & Safeguard Verification Drill](docs/ops/offline-cache-verification-drill.md) whenever you regenerate service-worker assets, ship new icons or touch persistence code so cached builds keep matching the repository and user data remains fully protected offline.
+- **Verify help center resiliency.** Run the [Offline Help & Translation Verification](docs/ops/offline-help-verification.md) drill whenever you touch help copy, documentation links or translations to confirm the overlay, search results and localized topics still load entirely from cached assets without risking user data.
+- **Audit power connector safety.** Pair the [Power Summary Warning Reference](docs/user/power-summary-warning-reference.md) with each Power Summary rehearsal to log connector limits, redundant backups and autosave/share alignment before distributing plans offline.
+- **Protect user data deliberately.** Follow the [Data Protection Playbook](docs/ops/data-protection-playbook.md) when you scope changes, rehearse daily guardrails, prepare releases and respond to incidents. It consolidates the save/share/import/backup/restore routines, guard outputs and archival expectations so offline crews always preserve every project.
+- **Recover fast when incidents happen.** Keep the [Emergency Recovery Playbook](docs/ops/emergency-recovery-playbook.md) with your offline bundles so crews can stabilize data, export queued backups, and rehearse restores without reconnecting to the network.
+- **Update documentation deliberately.** Use the [Documentation Update Checklist](docs/dev/documentation-update-checklist.md) and [Documentation Coverage Matrix](docs/dev/documentation-coverage-matrix.md) every time you ship new behavior so help topics, translations and manuals stay in lockstep with the runtime.
+- **Log verification rehearsals.** Pair each release or workstation audit with the [Documentation Verification Packet](docs/dev/documentation-verification-packet.md) and file copies of the [Verification Log Template](docs/ops/verification-log-template.md) so every save/share/import/backup/restore drill is documented alongside the assets that shipped. Maintaining these records keeps help topics, translation notes and workflow screenshots provably in sync with the builds crews run offline.
+- **File a status snapshot.** Complete the [Documentation Status Report](docs/dev/documentation-status-report-template.md) whenever you update help topics, translations or manuals. It captures which surfaces changed, the offline rehearsal evidence you gathered and where the backups plus verification logs now live so future audits can retrace the release without reconnecting to the network.
+- **Localize with confidence.** Reference the [Translation Guide](docs/dev/translation-guide.md) and language-specific README files whenever you add or update locales so offline readers stay aligned with the latest workflows.
 
 ## Version reference
 
@@ -163,11 +163,11 @@ tour:
 
 Use these bundled guides any time you need to prove the planner is safe to run without connectivity or document how data traveled between machines:
 
-- **Operations Checklist** – The step-by-step rehearsal in [`docs/operations-checklist.md`](docs/operations-checklist.md) mirrors the in-app safeguards so every save, share, import, backup and restore path is witnessed before crews depend on the tool offline.
-- **Offline Readiness Runbook** – [`docs/offline-readiness.md`](docs/offline-readiness.md) expands the rehearsal for travel days, including cache priming, redundant media prep and recovery drills that keep user data safe even when the set stays air-gapped.
-- **Data Protection Playbook** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) consolidates decision trees for updates, emergency response and incident communication so user data remains the top priority regardless of context.
-- **Verification Log Template** – [`docs/verification-log-template.md`](docs/verification-log-template.md) captures who rehearsed the workflows, when backups were exported and where redundant copies live. Store the filled template with your bundles to prove nothing was lost between machines.
-- **Documentation Coverage Matrix** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) tracks whether help topics, translations, screenshots and printed manuals all reflect the current runtime. Reference it before sign-off to confirm every offline reader sees the same instructions you rehearsed.
+- **Operations Checklist** – The step-by-step rehearsal in [`docs/ops/operations-checklist.md`](docs/ops/operations-checklist.md) mirrors the in-app safeguards so every save, share, import, backup and restore path is witnessed before crews depend on the tool offline.
+- **Offline Readiness Runbook** – [`docs/ops/offline-readiness.md`](docs/ops/offline-readiness.md) expands the rehearsal for travel days, including cache priming, redundant media prep and recovery drills that keep user data safe even when the set stays air-gapped.
+- **Data Protection Playbook** – [`docs/ops/data-protection-playbook.md`](docs/ops/data-protection-playbook.md) consolidates decision trees for updates, emergency response and incident communication so user data remains the top priority regardless of context.
+- **Verification Log Template** – [`docs/ops/verification-log-template.md`](docs/ops/verification-log-template.md) captures who rehearsed the workflows, when backups were exported and where redundant copies live. Store the filled template with your bundles to prove nothing was lost between machines.
+- **Documentation Coverage Matrix** – [`docs/dev/documentation-coverage-matrix.md`](docs/dev/documentation-coverage-matrix.md) tracks whether help topics, translations, screenshots and printed manuals all reflect the current runtime. Reference it before sign-off to confirm every offline reader sees the same instructions you rehearsed.
 
 ## Documentation & training cadence
 
@@ -175,7 +175,7 @@ Keeping help content, checklists and translated readmes synchronized with the ru
 
 1. **Map the change.** Note which save, share, import, backup or restore flows gain new states, prompts or safeguards. Update the relevant walkthroughs in [`docs/`](docs) so rehearsals always mirror the interface users see offline.
 2. **Refresh multilingual guidance.** Propagate wording adjustments to `README.*.md` files and any localized help panels so offline-first teams get the same instructions regardless of language.
-3. **Re-run verification packets.** Execute the [Documentation Verification Packet](docs/documentation-verification-packet.md) against the current build, capturing signed logs that prove every save, share, import, backup and restore path works without network access.
+3. **Re-run verification packets.** Execute the [Documentation Verification Packet](docs/dev/documentation-verification-packet.md) against the current build, capturing signed logs that prove every save, share, import, backup and restore path works without network access.
 4. **Distribute updated bundles.** Regenerate shareable training bundles so crews rehearse with the current assets, icons and checklists that ship inside this repository.
 
 Treat these steps as blocking tasks for every merge so documentation remains as resilient as the planner itself.
@@ -185,9 +185,9 @@ Treat these steps as blocking tasks for every merge so documentation remains as 
 Before you merge or ship a field build, walk through this condensed checklist to protect user data, documentation and translations:
 
 1. **Run the manifest guard.** Execute `npm run check-consistency` to validate device metadata and confirm `service-worker-assets.js` matches the in-memory manifest. If it flags drift, run `npm run generate:sw-assets`, commit the regenerated file and rerun the check before proceeding.
-2. **Rehearse critical workflows.** Run the [Quick Start](#quick-start) drill or [`docs/operations-checklist.md`](docs/operations-checklist.md) to confirm saves, shares, imports, backups and restores still work end-to-end offline.
-3. **Refresh written guidance.** Update help center topics, localized README files and printed manuals. Use the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) to confirm no language or workflow was missed.
-4. **Capture verification artifacts.** Fill in the [Documentation Verification Packet](docs/documentation-verification-packet.md) and [Verification Log Template](docs/verification-log-template.md) with the latest rehearsal notes, export hashes and cache-priming screenshots.
+2. **Rehearse critical workflows.** Run the [Quick Start](#quick-start) drill or [`docs/ops/operations-checklist.md`](docs/ops/operations-checklist.md) to confirm saves, shares, imports, backups and restores still work end-to-end offline.
+3. **Refresh written guidance.** Update help center topics, localized README files and printed manuals. Use the [Documentation Coverage Matrix](docs/dev/documentation-coverage-matrix.md) to confirm no language or workflow was missed.
+4. **Capture verification artifacts.** Fill in the [Documentation Verification Packet](docs/dev/documentation-verification-packet.md) and [Verification Log Template](docs/ops/verification-log-template.md) with the latest rehearsal notes, export hashes and cache-priming screenshots.
 5. **Validate translation toggles.** Switch through every language in the app to ensure updated strings render correctly without fetching external assets.
 6. **Store redundant archives.** Export `planner-backup.json`, current project bundles, automatic gear rule JSON and a ZIP of the repository. Place the set on at least two offline media locations with a short retention note.
 7. **Log service worker state.** Record the reported version, offline indicator behavior and the timestamp of the last manual **Force reload** so crews can audit which revision they are running.
@@ -317,7 +317,7 @@ the top-right language menu or through **Settings**.
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Follow the translation guide in `docs/translation-guide.md` for detailed
+Follow the translation guide in `docs/dev/translation-guide.md` for detailed
 localization steps.
 
 ## What’s New
@@ -427,7 +427,7 @@ same online or offline.
    the most recent step finished and the next workflow to cover before you
    relaunch the tour. When the tutorial spotlights the Power Summary, cross-check
    the colour-coded warnings against the
-   [Power Summary Warning Reference](docs/power-summary-warning-reference.md),
+   [Power Summary Warning Reference](docs/user/power-summary-warning-reference.md),
    record any pin or D-Tap overloads, confirm redundant backups and verify the
    autosave banner timestamp matches the share/export preview before you complete
    the step.
@@ -593,7 +593,7 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Personal gear inventory stays in sync.** Open **Own Gear** in the sidebar to catalog kit names,
     quantities, notes and sourcing. Entries share the same offline snapshot as projects, feed automatic
     gear rule conditions and travel with manual backups, share bundles and quota recovery safeguards so
-    personal hardware never drifts from the planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
+    personal hardware never drifts from the planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/user/save-share-restore-reference.md†L15-L17】
 - **Deletion requires confirmation.** Use the trash icon in the selector to
   remove unused versions. You’ll be asked to confirm before anything leaves the
   browser, ensuring you do not lose a project by accident.
@@ -945,8 +945,8 @@ Use the following repeatable routines to keep projects, backups and offline
 assets in sync on every machine that runs Cine Power Planner. Each checklist is
 designed so crews can confirm that saving, sharing, importing, backup and
 restore paths all function before heading to set and again before wrapping. A
-print-friendly version lives in `docs/operations-checklist.md`, and the travel-
-focused `docs/offline-readiness.md` runbook expands on these steps for crews
+print-friendly version lives in `docs/ops/operations-checklist.md`, and the travel-
+focused `docs/ops/offline-readiness.md` runbook expands on these steps for crews
 preparing hardware that will operate without connectivity for extended periods.
 
 ### Pre-shoot readiness
@@ -1241,7 +1241,7 @@ The runtime registers every critical bundle (`cinePersistence`, `cineOffline`,
 registry. Each module is frozen, documented with metadata and verified during
 startup so save, share, import, backup and restore paths never run without
 their safeguards. Review
-[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md)
+[`docs/dev/architecture/module-registry.md`](docs/dev/architecture/module-registry.md)
 before adding new modules to keep offline guarantees, documentation and
 translations aligned.
 

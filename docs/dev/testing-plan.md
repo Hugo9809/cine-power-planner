@@ -32,6 +32,6 @@ updates. Prioritise persistence, offline behaviour and documentation accuracy.
 ## Evidence
 
 - Store test outputs, screenshots and logs with the verification packet.
-- Record command results and hashes in `docs/verification-log-template.md`.
-- Update `review-findings.md` with any regressions and track remediation in
-  `review-tasks-2025-02-07.md`.
+- Record command results and hashes in `docs/ops/verification-log-template.md`.
+- Update `docs/dev/review-findings.md` with any regressions and track remediation in
+  `docs/dev/review-tasks-2025-02-07.md`.

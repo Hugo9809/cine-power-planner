@@ -34,8 +34,8 @@ _Add rows as required for specialised drills (e.g. legal notices, accessibility)
 | --- | --- | --- | --- | --- |
 |  |  |  |  |  |
 
-_Log follow-up references in [Review Findings](review-findings.md) and
-[Review Tasks](review-tasks-2025-02-07.md)._ 
+_Log follow-up references in [Review Findings](../dev/review-findings.md) and
+[Review Tasks](../dev/review-tasks-2025-02-07.md)._ 
 
 ## Attachments
 

@@ -58,7 +58,7 @@ air-gapped workflows.
 1. **Start of day** – Run manual save, export project bundle, confirm autosave
    ledger is healthy.
 2. **Midday** – Rotate backups to second storage device; record actions in
-   `review-findings.md`.
+   `docs/dev/review-findings.md`.
 3. **End of day** – Run the [Backup Rotation Guide](backup-rotation-guide.md)
    steps, update verification logs and store evidence securely.
 4. **Incident drills** – Weekly, perform a restore rehearsal using the sandbox

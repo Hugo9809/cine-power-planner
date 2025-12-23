@@ -59,11 +59,12 @@ fails when they drift. If it reports differences, regenerate the manifest with
 - Screenshot of service worker diagnostics (`navigator.serviceWorker` state).
 - Auto-backup ledger export showing offline run.
 - Checksums for exported backups/bundles before and after cache reset.
-- Notes recorded in `docs/verification-log-template.md`.
+- Notes recorded in `docs/ops/verification-log-template.md`.
 
 ## Follow-up
 
-- Update `review-findings.md` with observed issues.
+- Update `docs/dev/review-findings.md` with observed issues.
 - If behaviour changed, refresh affected docs (operations checklist, save/share
   reference, offline readiness).
-- Store evidence with the documentation verification packet.
+- Store evidence with the documentation verification packet in
+  `docs/dev/documentation-verification-packet.md`.

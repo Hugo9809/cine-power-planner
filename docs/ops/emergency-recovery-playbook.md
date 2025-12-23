@@ -55,7 +55,7 @@ outcome for offline audits.
 - Capture screenshots of the compatibility summary and any warning banners.
 - Save the autosave ledger entry that records the restore promotion.
 - Store backup files, vault exports, and verification logs together.
-- Update `docs/verification-log-template.md` and attach the evidence to the
+- Update `docs/ops/verification-log-template.md` and attach the evidence to the
   release or incident packet.
 
 ## After recovery

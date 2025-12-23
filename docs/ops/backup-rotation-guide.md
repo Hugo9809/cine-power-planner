@@ -28,7 +28,7 @@ exact timestamp and initials in the packet before resuming the rotation.
   project list.
 - **Wednesday:** Copy the current `backups/` folder to a read-only medium (USB
   drive or optical disc) labelled with date and revision hash. Update the
-  `review-findings.md` log with storage location details.
+  `docs/dev/review-findings.md` log with storage location details.
 - **Friday:** Rotate the off-site copy. From `Settings → Data & Storage → Diagnostics log`, use the `Export log` button to
   capture the autosave ledger, attach it to the verification packet and store a
   duplicate with the off-site bundle.
@@ -58,7 +58,7 @@ exact timestamp and initials in the packet before resuming the rotation.
    Include any "Emergency
    fallback storage active" warnings and the action timestamp in the verification
    packet.
-6. Log every step in `docs/verification-log-template.md`, attach console output
+6. Log every step in `docs/ops/verification-log-template.md`, attach console output
    and store the evidence with the backups.
 
 ## Maintenance checklist
@@ -66,6 +66,6 @@ exact timestamp and initials in the packet before resuming the rotation.
 - Update this guide whenever persistence logic changes (`storage.js`,
   `modules/persistence.js`, service worker cache strategy, etc.).
 - Confirm translation keys exist for every referenced UI label.
-- Ensure the [Documentation Maintenance Guide](documentation-maintenance.md)
-  and [Save, Share & Restore Reference](save-share-restore-reference.md)
+- Ensure the [Documentation Maintenance Guide](../dev/documentation-maintenance.md)
+  and [Save, Share & Restore Reference](../user/save-share-restore-reference.md)
   reference any new safeguards introduced here.

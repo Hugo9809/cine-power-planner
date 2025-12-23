@@ -7,7 +7,7 @@ release backups.
 ## Contents checklist
 
 - [ ] Completed [Documentation Status Report](documentation-status-report-template.md).
-- [ ] Filled [Verification Log Template](verification-log-template.md) with
+- [ ] Filled [Verification Log Template](../ops/verification-log-template.md) with
       timestamps, operators and evidence locations.
 - [ ] Screenshots of key workflows (save, autosave ledger, backup, restore
       sandbox, project export/import) captured from the current build.
@@ -25,7 +25,7 @@ release backups.
 3. Generate a manifest `manifest.json` listing each artifact, checksum and
    storage media location.
 4. Print the manifest and include it with the physical media.
-5. Update `review-findings.md` with storage locations and responsible contacts.
+5. Update `docs/dev/review-findings.md` with storage locations and responsible contacts.
 
 ## Review workflow
 
@@ -39,6 +39,6 @@ release backups.
 
 - Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
   with the packet storage locations.
-- Schedule the next audit via `review-tasks-2025-02-07.md`.
+- Schedule the next audit via `docs/dev/review-tasks-2025-02-07.md`.
 - During incident response, reference the most recent packet to assess user data
   exposure and documentation accuracy.

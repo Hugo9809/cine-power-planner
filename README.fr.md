@@ -55,18 +55,18 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 ## Accès rapides
 
 - **Lancer la répétition complète.** Suivez l’exercice de [Démarrage rapide](#démarrage-rapide) pour valider sauvegarde, partage, import, backup et restauration sur chaque poste, même hors ligne.
-- **Consulter les workflows.** Gardez à portée l’[Exercice sauvegarde/partage/import](#exercice-sauvegardepartageimport) et la [référence détaillée Sauvegarde, partage, import, backup & restauration](docs/save-share-restore-reference.md) pendant les formations ou audits.
-- **Prouver la préparation hors ligne.** Associez le [Runbook de préparation offline](docs/offline-readiness.md) à la [check-list opérationnelle](docs/operations-checklist.md) pour synchroniser répétitions documentées, application et ressources embarquées.
-- **Re-certifier les bundles en cache.** Suivez le [Drill de vérification du cache hors ligne & protections](docs/offline-cache-verification-drill.md) après toute régénération d’assets service worker, ajout d’icônes ou modification de la persistance, afin de garantir la parité avec le dépôt.
-- **Planifier des rotations redondantes.** Appuyez-vous sur le [Guide de rotation des backups](docs/backup-rotation-guide.md) pour cartographier des copies quotidiennes, hebdomadaires et d’archivage, afin que les autosaves, exports manuels et bundles partagés disposent toujours d’une redondance hors machine avant le départ des équipes.
-- **Auditer la sécurité des connecteurs d’alimentation.** Associez la [référence des alertes du Power Summary](docs/power-summary-warning-reference.md) à chaque répétition du Power Summary pour consigner les limites des connecteurs, les sauvegardes redondantes et l’alignement entre l’enregistrement automatique et le partage avant de diffuser des plans hors ligne.
-- **Protéger délibérément les données utilisateur.** Appuyez-vous sur le [Playbook de protection des données](docs/data-protection-playbook.md) pour cadrer les évolutions, répéter les filets quotidiens, préparer les livraisons et répondre aux incidents.
-- **Réagir vite en cas d’incident.** Gardez l’[Emergency Recovery Playbook](docs/emergency-recovery-playbook.md) avec les bundles hors ligne pour stabiliser les données, exporter les sauvegardes en attente et répéter des restaurations sans reconnecter le réseau.
-- **Actualiser la documentation avec méthode.** Parcourez la [Checklist de mise à jour documentaire](docs/documentation-update-checklist.md) et la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour maintenir aides, traductions et manuels en phase.
-- **Journaliser les répétitions de vérification.** Associez chaque release ou audit au [Packet de vérification documentaire](docs/documentation-verification-packet.md) et archivez les copies de la [trame de journal de vérification](docs/verification-log-template.md) pour garder la trace de chaque filet.
-- **Stopper la dérive documentaire.** Suivez le nouveau [Runbook de dérive documentaire](docs/documentation-drift-runbook.md) pour vérifier que les articles d’aide, READMEs localisés et guides imprimés reflètent les mêmes filets de sauvegarde/partage/import/backup/restauration que le runtime avant de distribuer des bundles hors ligne.
-- **Réaliser un instantané d’état.** Renseignez le [Rapport d’état documentaire](docs/documentation-status-report-template.md) à chaque mise à jour d’aide ou de traduction ; il résume les changements, les preuves hors ligne et l’emplacement des backups et journaux.
-- **Localiser sereinement.** Référez-vous au [Guide de traduction](docs/translation-guide.md) et aux READMEs dédiés à chaque langue pour garantir l’alignement des contenus hors ligne lors de toute évolution.
+- **Consulter les workflows.** Gardez à portée l’[Exercice sauvegarde/partage/import](#exercice-sauvegardepartageimport) et la [référence détaillée Sauvegarde, partage, import, backup & restauration](docs/user/save-share-restore-reference.md) pendant les formations ou audits.
+- **Prouver la préparation hors ligne.** Associez le [Runbook de préparation offline](docs/ops/offline-readiness.md) à la [check-list opérationnelle](docs/ops/operations-checklist.md) pour synchroniser répétitions documentées, application et ressources embarquées.
+- **Re-certifier les bundles en cache.** Suivez le [Drill de vérification du cache hors ligne & protections](docs/ops/offline-cache-verification-drill.md) après toute régénération d’assets service worker, ajout d’icônes ou modification de la persistance, afin de garantir la parité avec le dépôt.
+- **Planifier des rotations redondantes.** Appuyez-vous sur le [Guide de rotation des backups](docs/ops/backup-rotation-guide.md) pour cartographier des copies quotidiennes, hebdomadaires et d’archivage, afin que les autosaves, exports manuels et bundles partagés disposent toujours d’une redondance hors machine avant le départ des équipes.
+- **Auditer la sécurité des connecteurs d’alimentation.** Associez la [référence des alertes du Power Summary](docs/user/power-summary-warning-reference.md) à chaque répétition du Power Summary pour consigner les limites des connecteurs, les sauvegardes redondantes et l’alignement entre l’enregistrement automatique et le partage avant de diffuser des plans hors ligne.
+- **Protéger délibérément les données utilisateur.** Appuyez-vous sur le [Playbook de protection des données](docs/ops/data-protection-playbook.md) pour cadrer les évolutions, répéter les filets quotidiens, préparer les livraisons et répondre aux incidents.
+- **Réagir vite en cas d’incident.** Gardez l’[Emergency Recovery Playbook](docs/ops/emergency-recovery-playbook.md) avec les bundles hors ligne pour stabiliser les données, exporter les sauvegardes en attente et répéter des restaurations sans reconnecter le réseau.
+- **Actualiser la documentation avec méthode.** Parcourez la [Checklist de mise à jour documentaire](docs/dev/documentation-update-checklist.md) et la [Matrice de couverture documentaire](docs/dev/documentation-coverage-matrix.md) pour maintenir aides, traductions et manuels en phase.
+- **Journaliser les répétitions de vérification.** Associez chaque release ou audit au [Packet de vérification documentaire](docs/dev/documentation-verification-packet.md) et archivez les copies de la [trame de journal de vérification](docs/ops/verification-log-template.md) pour garder la trace de chaque filet.
+- **Stopper la dérive documentaire.** Suivez le nouveau [Runbook de dérive documentaire](docs/dev/documentation-drift-runbook.md) pour vérifier que les articles d’aide, READMEs localisés et guides imprimés reflètent les mêmes filets de sauvegarde/partage/import/backup/restauration que le runtime avant de distribuer des bundles hors ligne.
+- **Réaliser un instantané d’état.** Renseignez le [Rapport d’état documentaire](docs/dev/documentation-status-report-template.md) à chaque mise à jour d’aide ou de traduction ; il résume les changements, les preuves hors ligne et l’emplacement des backups et journaux.
+- **Localiser sereinement.** Référez-vous au [Guide de traduction](docs/dev/translation-guide.md) et aux READMEs dédiés à chaque langue pour garantir l’alignement des contenus hors ligne lors de toute évolution.
 
 ## Référence de version
 
@@ -76,11 +76,11 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 
 Servez-vous de ces guides inclus dès qu’il faut prouver le fonctionnement hors réseau ou documenter les transferts de données entre machines :
 
-- **Check-list opérationnelle** – Le déroulé de [`docs/operations-checklist.md`](docs/operations-checklist.md) reflète les filets applicatifs afin que chaque flux de sauvegarde, partage, import, backup et restauration soit observé avant utilisation hors ligne.
-- **Runbook de préparation offline** – [`docs/offline-readiness.md`](docs/offline-readiness.md) prolonge la répétition pour les jours de déplacement, avec amorçage du cache, supports redondants et drills de récupération pour garder les données protégées même en environnement isolé.
-- **Playbook de protection des données** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) rassemble les arbres de décision pour les mises à jour, réponses d’urgence et communications, afin que la priorité reste aux données utilisateur.
-- **Trame de journal de vérification** – [`docs/verification-log-template.md`](docs/verification-log-template.md) consigne qui a répété, quand les backups ont été exportés et où se trouvent les copies redondantes. À conserver avec vos bundles.
-- **Matrice de couverture documentaire** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) vérifie que aides, traductions, captures et manuels reflètent le runtime courant. À parcourir avant validation.
+- **Check-list opérationnelle** – Le déroulé de [`docs/ops/operations-checklist.md`](docs/ops/operations-checklist.md) reflète les filets applicatifs afin que chaque flux de sauvegarde, partage, import, backup et restauration soit observé avant utilisation hors ligne.
+- **Runbook de préparation offline** – [`docs/ops/offline-readiness.md`](docs/ops/offline-readiness.md) prolonge la répétition pour les jours de déplacement, avec amorçage du cache, supports redondants et drills de récupération pour garder les données protégées même en environnement isolé.
+- **Playbook de protection des données** – [`docs/ops/data-protection-playbook.md`](docs/ops/data-protection-playbook.md) rassemble les arbres de décision pour les mises à jour, réponses d’urgence et communications, afin que la priorité reste aux données utilisateur.
+- **Trame de journal de vérification** – [`docs/ops/verification-log-template.md`](docs/ops/verification-log-template.md) consigne qui a répété, quand les backups ont été exportés et où se trouvent les copies redondantes. À conserver avec vos bundles.
+- **Matrice de couverture documentaire** – [`docs/dev/documentation-coverage-matrix.md`](docs/dev/documentation-coverage-matrix.md) vérifie que aides, traductions, captures et manuels reflètent le runtime courant. À parcourir avant validation.
 
 ## Rythme documentation & formation
 
@@ -88,7 +88,7 @@ Synchroniser aides, checklists et READMEs traduits avec le comportement runtime 
 
 1. **Cartographier le changement.** Identifiez les flux de sauvegarde, partage, import, backup ou restauration qui gagnent de nouveaux états, invites ou filets. Mettez à jour les walkthroughs concernés dans [`docs/`](docs) pour que les répétitions reflètent l’interface réelle.
 2. **Actualiser la guidance multilingue.** Répercutez les ajustements de formulation dans les fichiers `README.*.md` et les panneaux d’aide localisés afin que les équipes hors ligne reçoivent les mêmes consignes dans chaque langue.
-3. **Relancer les paquets de vérification.** Exécutez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) sur le build courant et archivez des journaux signés attestant chaque flux hors ligne.
+3. **Relancer les paquets de vérification.** Exécutez le [Packet de vérification documentaire](docs/dev/documentation-verification-packet.md) sur le build courant et archivez des journaux signés attestant chaque flux hors ligne.
 4. **Distribuer des bundles à jour.** Régénérez les bundles de formation partageables pour que les équipes répètent avec les assets, icônes et checklists livrés dans ce dépôt.
 
 Considérez ces étapes comme incontournables à chaque merge afin que la documentation reste aussi résiliente que le planner.
@@ -98,9 +98,9 @@ Considérez ces étapes comme incontournables à chaque merge afin que la docume
 Avant de fusionner ou de publier une build terrain, cochez cette liste condensée pour protéger données, documentation et traductions :
 
 1. **Lancer le garde-manifeste.** Exécutez `npm run check-consistency` pour valider les métadonnées des équipements et confirmer que `service-worker-assets.js` reflète le manifeste généré en mémoire. En cas d’écart, lancez `npm run generate:sw-assets`, validez le fichier mis à jour et relancez la vérification avant d’avancer.
-2. **Répéter les workflows critiques.** Suivez le [Démarrage rapide](#démarrage-rapide) ou [`docs/operations-checklist.md`](docs/operations-checklist.md) pour confirmer que sauvegarde, partage, import, backup et restauration restent opérationnels hors ligne de bout en bout.
-3. **Actualiser la documentation écrite.** Mettez à jour centre d’aide, READMEs localisés et manuels imprimés. Utilisez la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour garantir qu’aucune langue ni workflow n’est oublié.
-4. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) et la [trame de journal de vérification](docs/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
+2. **Répéter les workflows critiques.** Suivez le [Démarrage rapide](#démarrage-rapide) ou [`docs/ops/operations-checklist.md`](docs/ops/operations-checklist.md) pour confirmer que sauvegarde, partage, import, backup et restauration restent opérationnels hors ligne de bout en bout.
+3. **Actualiser la documentation écrite.** Mettez à jour centre d’aide, READMEs localisés et manuels imprimés. Utilisez la [Matrice de couverture documentaire](docs/dev/documentation-coverage-matrix.md) pour garantir qu’aucune langue ni workflow n’est oublié.
+4. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/dev/documentation-verification-packet.md) et la [trame de journal de vérification](docs/ops/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
 5. **Valider les bascules de langue.** Parcourez chaque langue dans l’app pour confirmer que les nouveaux libellés s’affichent correctement sans charger de ressources externes.
 6. **Stocker des archives redondantes.** Exportez `planner-backup.json`, les bundles projet actuels, les règles automatiques en JSON et une archive ZIP du dépôt. Placez le tout sur au moins deux supports hors ligne accompagnés d’une note de rétention.
 7. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** manuel pour que les équipes sachent quelle révision est active.
@@ -138,9 +138,9 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 
 Protéger les workflows des équipes et leurs données reste la priorité absolue. En préparant tes plans avec Cine Power Planner, tu profites des mêmes couches de protection que nous répétons avant chaque version :
 
-- **Des protections vérifiées uniquement.** Les flux de sauvegarde/partage/importation/backup/restauration sont livrés avec des répétitions consignées dans le [Documentation Verification Packet](docs/documentation-verification-packet.md), afin que les équipes terrain puissent confirmer chaque garde-fou avant de partir hors ligne.
-- **Aide et traductions synchronisées.** La [Documentation Update Checklist](docs/documentation-update-checklist.md) et le [Translation Guide](docs/translation-guide.md) garantissent que tout nouveau comportement se retrouve dans les sujets d’aide, les README localisés et les guides imprimés avant l’envoi des paquets.
-- **Des sauvegardes partout où il en faut.** Le [Backup Rotation Guide](docs/backup-rotation-guide.md) et la [Operations Checklist](docs/operations-checklist.md) détaillent comment échelonner archives redondantes, preuves de répétition et journaux de vérification pour qu’aucun projet ne reste sans voie de récupération.
+- **Des protections vérifiées uniquement.** Les flux de sauvegarde/partage/importation/backup/restauration sont livrés avec des répétitions consignées dans le [Documentation Verification Packet](docs/dev/documentation-verification-packet.md), afin que les équipes terrain puissent confirmer chaque garde-fou avant de partir hors ligne.
+- **Aide et traductions synchronisées.** La [Documentation Update Checklist](docs/dev/documentation-update-checklist.md) et le [Translation Guide](docs/dev/translation-guide.md) garantissent que tout nouveau comportement se retrouve dans les sujets d’aide, les README localisés et les guides imprimés avant l’envoi des paquets.
+- **Des sauvegardes partout où il en faut.** Le [Backup Rotation Guide](docs/ops/backup-rotation-guide.md) et la [Operations Checklist](docs/ops/operations-checklist.md) détaillent comment échelonner archives redondantes, preuves de répétition et journaux de vérification pour qu’aucun projet ne reste sans voie de récupération.
 - **Des preuves auditables.** Nous capturons les exports console de `window.__cineRuntimeIntegrity`, des journaux de répétition signés et les empreintes des paquets pour que les équipes conformité et plateau puissent auditer la protection des données sans friction.
 
 Toute modification qui touche la sauvegarde, le partage, l’importation, les backups, la restauration ou la documentation reste bloquante tant que ces protections n’ont pas été exécutées et enregistrées. Cette rigueur maintient les données utilisateur en sécurité, même sur des machines isolées.
@@ -200,7 +200,7 @@ La documentation existe en plusieurs langues. L’application détecte automatiq
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Consultez `docs/translation-guide.md` pour le guide de localisation.
+Consultez `docs/dev/translation-guide.md` pour le guide de localisation.
 
 ## Nouveautés
 
@@ -244,7 +244,7 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
    L’application se met ensuite en cache pour un usage hors ligne, active automatiquement les nouvelles versions et laisse **Forcer le rechargement** disponible pour purger les caches à la demande.
 4. Chargez le planner, fermez l’onglet, coupez la connexion (ou activez le mode avion) puis rouvrez `index.html`. L’indicateur hors ligne doit clignoter brièvement pendant le chargement des ressources mises en cache, y compris les Uicons locaux. Si une bannière affiche **« 1 sauvegarde enregistrée dans le coffre local. »** ou **« {count} sauvegardes enregistrées dans le coffre local. »** à côté du bouton **Ouvrir le coffre local**, ouvrez le coffre, téléchargez chaque archive en attente et confirmez que la bannière disparaît avant de rester hors ligne.
 5. Ouvrez **Aide → Liste de démarrage rapide** et lancez le tutoriel guidé. Il couvre création de projets, sélection d’appareils, vérification du Résumé d’alimentation avec son point de contrôle Résumé rapide et la nouvelle répétition du filet de sécurité hors ligne qui met en avant l’indicateur supérieur et l’état du sauvegarde automatique, listes de matériel, contacts, matériel personnel, règles automatiques ainsi que les flux d’export, d’import et de sauvegarde. Le navigateur d’étapes et l’indicateur de progression permettent de revisiter les flux terminés sans recommencer et, si vous interrompez la session, l’option **Reprendre le tutoriel guidé** apparaît automatiquement avec vos compteurs enregistrés pour préserver la progression hors ligne. La ligne de la checklist affiche aussi un statut hors ligne avec les étapes terminées, le prochain flux et un horodatage indiquant quand la dernière étape a été achevée avant de relancer le parcours.
-   Lorsque le tutoriel aborde le Résumé d’alimentation, recoupez les alertes colorées avec la [référence des alertes du Power Summary](docs/power-summary-warning-reference.md), consignez toute surcharge des broches ou des D-Tap, confirmez les sauvegardes redondantes et vérifiez que l’horodatage de l’autosave correspond à l’aperçu de partage/export avant de clôturer l’étape.
+   Lorsque le tutoriel aborde le Résumé d’alimentation, recoupez les alertes colorées avec la [référence des alertes du Power Summary](docs/user/power-summary-warning-reference.md), consignez toute surcharge des broches ou des D-Tap, confirmez les sauvegardes redondantes et vérifiez que l’horodatage de l’autosave correspond à l’aperçu de partage/export avant de clôturer l’étape.
 6. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour déclencher une sauvegarde manuelle et vérifiez l’apparition de l’auto-backup horodaté dans le sélecteur après environ 50 modifications suivies ou au bout de dix minutes.
 7. Exportez **Paramètres → Backup & Restauration → Backup** et importez le fichier `planner-backup.json` dans un profil privé. Cette vérification garantit qu’aucune sauvegarde ne reste isolée et démontre le backup forcé avant restauration.
 8. Entraînez-vous à exporter un bundle (`project-name.json`) puis à l’importer sur une seconde machine ou profil pour valider la chaîne Sauvegarder → Partager → Importer et s’assurer que les ressources locales suivent le projet hors ligne.
@@ -295,7 +295,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Le matériel personnel reste synchronisé.** Ouvrez **Matériel personnel** dans la barre latérale pour consigner nom,
     quantité, notes et provenance de votre matériel. Les entrées partagent le même instantané hors ligne que les projets,
     alimentent les conditions des règles automatiques et voyagent avec les sauvegardes manuelles, les bundles de partage et les
-    garde-fous de quota afin que votre matériel reste toujours aligné avec le planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
+    garde-fous de quota afin que votre matériel reste toujours aligné avec le planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/user/save-share-restore-reference.md†L15-L17】
 - **Suppression avec confirmation.** L’icône corbeille demande toujours une validation avant d’effacer.
 
 ## Partage et imports
@@ -427,7 +427,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 ## Check-lists opérationnelles
 
-Ces routines garantissent que projets, backups et ressources hors ligne restent synchronisés sur chaque machine utilisant Cine Power Planner. Une version imprimable se trouve dans `docs/operations-checklist.md` et le guide de déplacement `docs/offline-readiness.md` détaille les étapes supplémentaires pour les opérations prolongées sans connexion.
+Ces routines garantissent que projets, backups et ressources hors ligne restent synchronisés sur chaque machine utilisant Cine Power Planner. Une version imprimable se trouve dans `docs/ops/operations-checklist.md` et le guide de déplacement `docs/ops/offline-readiness.md` détaille les étapes supplémentaires pour les opérations prolongées sans connexion.
 
 ### Préparation avant tournage
 
@@ -582,7 +582,7 @@ Le runtime enregistre chaque bundle critique (`cinePersistence`, `cineOffline`,
 contrôlé au démarrage afin que la sauvegarde, le partage, l’import, la
 sauvegarde et la restauration ne fonctionnent jamais sans leurs garde-fous.
 Consultez
-[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md)
+[`docs/dev/architecture/module-registry.md`](docs/dev/architecture/module-registry.md)
 avant d’ajouter de nouveaux modules pour garder alignées les garanties hors
 ligne, la documentation et les traductions.
 

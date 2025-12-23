@@ -50,7 +50,7 @@ runtime. Offline crews rely on these instructions to protect user data.
 6. **Archive evidence**
    - Store updated PDFs (if exported), screenshots, **Compare versions** diff
      log exports and backups with the release verification packet.
-   - Note storage locations in `review-findings.md`.
+   - Note storage locations in `docs/dev/review-findings.md`.
 
 ## Post-release checks
 

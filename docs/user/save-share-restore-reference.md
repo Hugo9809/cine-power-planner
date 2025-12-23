@@ -81,7 +81,7 @@ workstations.
 - **Checksum discipline:** Generate SHA-256 hashes for each backup and store them
   with physical copies.
 - **Archive storage:** Keep at least two copies (primary + offsite). Log
-  locations in `review-findings.md` and the verification packet manifest.
+  locations in `docs/dev/review-findings.md` and the verification packet manifest.
 - **Local backup vault:** Automatic hourly exports now queue into the local
   vault when the browser blocks downloads (for example, before the first user
   gesture). Crews will see an actionable banner pointing to the vault and can

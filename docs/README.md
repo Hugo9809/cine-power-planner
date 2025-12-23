@@ -1,43 +1,77 @@
 # Documentation Index
 
-Welcome to the Cine Power Planner documentation. This directory contains detailed guides, checklists, and references to help you use, maintain, and contribute to the project.
+Welcome to the Cine Power Planner documentation. Everything here is offline-first
+and ships with the repository so crews can train, audit, and operate without
+network access.
 
-## User Guides
+## Start here
 
-- [Save, Share & Restore Reference](save-share-restore-reference.md): Detailed reference for data safety workflows.
-- [Power Summary Warning Reference](power-summary-warning-reference.md): Explanation of power warnings and limits.
-- [Backup Rotation Guide](backup-rotation-guide.md): Best practices for maintaining redundant backups.
-- [Translation Guide](translation-guide.md): Instructions for translating the application.
+1. Review the [Save, Share, Import, Backup & Restore Reference](user/save-share-restore-reference.md)
+   for the core data safety workflow.
+2. Rehearse the [Operations Checklist](ops/operations-checklist.md) to confirm
+   saves, autosaves, sharing, import, backup, and restore flows work offline.
+3. Keep the [Emergency Recovery Playbook](ops/emergency-recovery-playbook.md)
+   alongside your offline bundles for rapid stabilization drills.
 
-## Operational Checklists
+## By role
 
-- [Operations Checklist](operations-checklist.md): Step-by-step rehearsal for offline readiness.
-- [Offline Readiness Runbook](offline-readiness.md): Expanded guide for travel days and air-gapped sets.
-- [Data Protection Playbook](data-protection-playbook.md): Decision trees for updates and incident response.
-- [Emergency Recovery Playbook](emergency-recovery-playbook.md): Steps for stabilizing data and recovering from critical failures.
+- **Users & crews**
+  - [Onboarding Tour Reference](user/onboarding-tour-reference.md)
+  - [Save, Share, Import, Backup & Restore Reference](user/save-share-restore-reference.md)
+  - [Power Summary Warning Reference](user/power-summary-warning-reference.md)
+  - [Auto Gear Rule Options](user/auto-gear-rule-options.md)
+  - [Pink Mode Reference](user/pink-mode-reference.md)
 
-## Verification & Auditing
+- **Operations & data safety**
+  - [Operations Checklist](ops/operations-checklist.md)
+  - [Offline Readiness Runbook](ops/offline-readiness.md)
+  - [Backup Rotation Guide](ops/backup-rotation-guide.md)
+  - [Data Protection Playbook](ops/data-protection-playbook.md)
+  - [Emergency Recovery Playbook](ops/emergency-recovery-playbook.md)
+  - [Offline Cache Verification Drill](ops/offline-cache-verification-drill.md)
+  - [Offline Help & Translation Verification](ops/offline-help-verification.md)
+  - [Verification Log Template](ops/verification-log-template.md)
 
-- [Documentation Verification Packet](documentation-verification-packet.md): Template for logging documentation verification.
-- [Verification Log Template](verification-log-template.md): Template for recording rehearsal notes and export hashes.
-- [Offline Cache Verification Drill](offline-cache-verification-drill.md): Procedure for verifying cached assets.
-- [Offline Help Verification](offline-help-verification.md): Checklist for validating offline help and translation coverage.
-- [Documentation Coverage Matrix](documentation-coverage-matrix.md): Matrix for tracking documentation status.
+- **Developers, documentation & translation**
+  - [Architecture](dev/architecture/)
+  - [Schema Inventory](dev/schema-inventory.md)
+  - [Testing Plan](dev/testing-plan.md)
+  - [Documentation Maintenance](dev/documentation-maintenance.md)
+  - [Documentation Update Checklist](dev/documentation-update-checklist.md)
+  - [Documentation Drift Runbook](dev/documentation-drift-runbook.md)
+  - [Documentation Audit Checklist](dev/documentation-audit-checklist.md)
+  - [Documentation Coverage Matrix](dev/documentation-coverage-matrix.md)
+  - [Documentation Verification Packet](dev/documentation-verification-packet.md)
+  - [Documentation Status Report Template](dev/documentation-status-report-template.md)
+  - [Translation Guide](dev/translation-guide.md)
 
-## Maintenance & Development
+## By workflow
 
-- [Documentation Maintenance](documentation-maintenance.md): Guide for keeping documentation in sync with the runtime.
-- [Documentation Update Checklist](documentation-update-checklist.md): Checklist for updating documentation during releases.
-- [Documentation Drift Runbook](documentation-drift-runbook.md): Guide for detecting and fixing documentation drift.
-- [Documentation Audit Checklist](documentation-audit-checklist.md): Checklist for auditing documentation quality.
-- [Schema Inventory](schema-inventory.md): Overview of data schemas used in the application.
-- [Feature Gap Analysis](feature-gap-analysis.md): Analysis of missing features or discrepancies.
-- [Runtime Refactor Plan](runtime-refactor-plan.md): Plan for refactoring the runtime architecture.
-- [Runtime Refactor Status](runtime-refactor-status.md): Status tracker for the runtime refactor.
+- **Save, share, import, backup, restore**
+  - [Save, Share, Import, Backup & Restore Reference](user/save-share-restore-reference.md)
+  - [Operations Checklist](ops/operations-checklist.md)
+  - [Backup Rotation Guide](ops/backup-rotation-guide.md)
 
-## Reports & Reviews
+- **Offline readiness & verification**
+  - [Offline Readiness Runbook](ops/offline-readiness.md)
+  - [Offline Cache Verification Drill](ops/offline-cache-verification-drill.md)
+  - [Offline Help & Translation Verification](ops/offline-help-verification.md)
+  - [Verification Log Template](ops/verification-log-template.md)
 
-- [Documentation Status Report Template](documentation-status-report-template.md): Template for reporting documentation status.
-- [Review Findings](review-findings.md): Findings from code or documentation reviews.
-- [Review Tasks](review-tasks-2025-02-07.md): Task list from a specific review session.
-- [Translation Review](translation-review-2025-03-10.md): Notes from a translation review.
+- **Incident response & recovery**
+  - [Data Protection Playbook](ops/data-protection-playbook.md)
+  - [Emergency Recovery Playbook](ops/emergency-recovery-playbook.md)
+
+- **Documentation & translation upkeep**
+  - [Documentation Maintenance](dev/documentation-maintenance.md)
+  - [Documentation Update Checklist](dev/documentation-update-checklist.md)
+  - [Documentation Coverage Matrix](dev/documentation-coverage-matrix.md)
+  - [Documentation Verification Packet](dev/documentation-verification-packet.md)
+  - [Translation Guide](dev/translation-guide.md)
+
+- **Runtime architecture & audits**
+  - [Architecture](dev/architecture/)
+  - [Schema Inventory](dev/schema-inventory.md)
+  - [Testing Plan](dev/testing-plan.md)
+  - [Feature Gap Analysis](dev/feature-gap-analysis.md)
+  - [Runtime Refactor Status](dev/runtime-refactor-status.md)

@@ -47,6 +47,6 @@ workflow guides whenever you update the planner or release an offline bundle.
 
 ## Follow-up tasks
 
-- [ ] Update `review-tasks-2025-02-07.md` with assigned remediation.
+- [ ] Update `docs/dev/review-tasks-2025-02-07.md` with assigned remediation.
 - [ ] Notify localisation of any pending translations.
 - [ ] Schedule next audit using the [Documentation Audit Checklist](documentation-audit-checklist.md).

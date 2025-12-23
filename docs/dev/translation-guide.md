@@ -60,4 +60,4 @@ offline bundles safe and documentation consistent.
 - Confirm no string introduces external links or network dependencies.
 - Ensure translation keeps keyboard shortcut references accurate (`Ctrl+S`, `⌘S`).
 - Validate service worker and offline instructions remain clear in each language.
-- Record any locale-specific layout adjustments in `review-findings.md`.
+- Record any locale-specific layout adjustments in `docs/dev/review-findings.md`.

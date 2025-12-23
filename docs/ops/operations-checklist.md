@@ -11,7 +11,7 @@ restore workflows protect every bit of user data.
       and the header reload control is disabled before proceeding.
 - [ ] Ensure the rehearsal project is loaded with representative data.
 - [ ] Confirm the latest planner backup and project bundles are stored safely.
-- [ ] Open a fresh copy of `docs/verification-log-template.md` to log evidence.
+- [ ] Open a fresh copy of `docs/ops/verification-log-template.md` to log evidence.
 
 ## Rehearsal steps
 
@@ -48,10 +48,10 @@ restore workflows protect every bit of user data.
    - [ ] Import via sandbox, promote and export diff logs manually from **Settings → Backup & Restore → Compare versions** before comparing to the original.
 10. **Documentation alignment**
    - [ ] Check README + docs instructions against actual UI labels.
-   - [ ] Update `review-findings.md` with discrepancies.
+   - [ ] Update `docs/dev/review-findings.md` with discrepancies.
 
 ## Completion
 
 - [ ] Export updated verification packet (logs, screenshots, backups).
-- [ ] Update [Documentation Status Report](documentation-status-report-template.md).
-- [ ] Store evidence with release archives and note locations in `review-findings.md`.
+- [ ] Update [Documentation Status Report](../dev/documentation-status-report-template.md).
+- [ ] Store evidence with release archives and note locations in `docs/dev/review-findings.md`.

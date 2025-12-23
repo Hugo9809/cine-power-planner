@@ -15,7 +15,7 @@ whenever QA spots mismatched wording, outdated screenshots or missing locales.
 
 1. **Freeze distribution.** Pause bundle sharing until documentation matches the
    runtime again.
-2. **Log the issue.** Record findings in `review-findings.md` and link any
+2. **Log the issue.** Record findings in `docs/dev/review-findings.md` and link any
    supporting evidence (screenshots, console logs, backups).
 3. **Notify stakeholders.** Alert documentation, localisation and QA owners.
 4. **Secure data.** Ensure recent planner backups and verification packets are
@@ -28,7 +28,7 @@ whenever QA spots mismatched wording, outdated screenshots or missing locales.
      the loader in `src/scripts/translations.js` to the docs in question.
    - Cross-check help topics from `src/scripts/modules/help.js` so in-app copy
      mirrors the documentation even when crews stay completely offline.
-   - Update `docs/schema-inventory.md` if persistence shapes changed.
+   - Update `docs/dev/schema-inventory.md` if persistence shapes changed.
 2. **Doc updates**
    - Revise the affected markdown files, README translations and help overlay
      topics.
@@ -51,5 +51,5 @@ whenever QA spots mismatched wording, outdated screenshots or missing locales.
 ## Preventative maintenance
 
 - Schedule monthly spot checks using the [Documentation Audit Checklist](documentation-audit-checklist.md).
-- Track documentation debt in `review-tasks-2025-02-07.md`.
+- Track documentation debt in `docs/dev/review-tasks-2025-02-07.md`.
 - When implementing features, update docs in the same commit to avoid drift.

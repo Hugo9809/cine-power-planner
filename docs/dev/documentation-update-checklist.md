@@ -34,9 +34,9 @@ instructions.
       matches the latest UI labels for save, export, import, backup and restore flows.
 - [ ] Update help topics for **Save**, **Export**, **Import**, **Backup** and **Restore**
       if button names, warnings or guardrail copy changed.
-- [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
+- [ ] Update schema definitions in `docs/dev/schema-inventory.md` if persistence
       payloads changed.
-- [ ] Record interim notes in `review-findings.md`.
+- [ ] Record interim notes in `docs/dev/review-findings.md`.
 
 ## Verification
 
@@ -72,7 +72,7 @@ instructions.
       and [Documentation Status Report](documentation-status-report-template.md).
 - [ ] Export a fresh verification packet and attach all updated evidence.
 - [ ] Store new backups/bundles with checksum logs on two physical media.
-- [ ] Mark follow-up work in `review-tasks-2025-02-07.md`.
+- [ ] Mark follow-up work in `docs/dev/review-tasks-2025-02-07.md`.
 - [ ] Review the documentation tracker entry with localisation so translated
       checklists stay aligned and reference the updated **Settings → General →
       Documentation update tracker** flow.

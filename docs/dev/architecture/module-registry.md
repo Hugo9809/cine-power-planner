@@ -30,7 +30,7 @@ implementations if needed.
 | `architecture.persistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
 | `architecture.localization` | Translation catalogues, locale fallbacks and runtime text helpers. | Loads all strings from local JSON assets. |
 | `architecture.offline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
-| `architecture.results` | Runtime estimator functions and rig diff helpers. | Uses schema constraints defined in `docs/schema-inventory.md`. |
+| `architecture.results` | Runtime estimator functions and rig diff helpers. | Uses schema constraints defined in `docs/dev/schema-inventory.md`. |
 | `architecture.help` | Help centre topics, documentation anchors and translation metadata. | Mirrors the docs folder so offline manuals stay in sync. |
 | `architecture.settings` | Appearance toggles, input defaults and autosave cadence configuration. | Persists values via the persistence token. |
 | `architecture.features.autoGearRules` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |

@@ -43,12 +43,12 @@ offline.
    after touching service worker assets, icons or persistence code.
 3. Execute the [Operations Checklist](operations-checklist.md) start-to-finish,
    logging every save/share/import/backup/restore step.
-4. Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md),
-   [Documentation Maintenance Guide](documentation-maintenance.md) and
-   [Translation Guide](translation-guide.md) to reflect any new UI labels or
+4. Update the [Documentation Coverage Matrix](../dev/documentation-coverage-matrix.md),
+   [Documentation Maintenance Guide](../dev/documentation-maintenance.md) and
+   [Translation Guide](../dev/translation-guide.md) to reflect any new UI labels or
    workflows.
 5. Export the verification packet, planner backup and project bundles. Store two
-   physical copies and log their locations in `review-findings.md`.
+   physical copies and log their locations in `docs/dev/review-findings.md`.
 6. Capture console diagnostics (`window.__cineRuntimeIntegrity`) and attach them
    to the release archive for offline audits.
 
@@ -58,7 +58,7 @@ offline.
    collect autosave logs plus the latest backups.
 2. **Reproduce safely.** Use the restore sandbox or a disposable workstation to
    reproduce the issue without touching user data.
-3. **Document impact.** Update `review-findings.md` and `feature-gap-analysis.md`
+3. **Document impact.** Update `docs/dev/review-findings.md` and `docs/dev/feature-gap-analysis.md`
    with affected workflows, user-visible symptoms and data safety implications.
 4. **Patch with rehearsals.** Implement fixes, run full save/share/import/backup/
    restore rehearsals, update docs and capture new evidence for the verification
@@ -71,6 +71,6 @@ offline.
 
 - Review autosave and backup logs weekly.
 - Keep redundancy media rotation logs current (see `backup-rotation-guide.md`).
-- Audit help topics quarterly using the [Documentation Audit Checklist](documentation-audit-checklist.md).
-- Track outstanding risks in `review-findings.md` and link to mitigation plans in
-  `review-tasks-2025-02-07.md`.
+- Audit help topics quarterly using the [Documentation Audit Checklist](../dev/documentation-audit-checklist.md).
+- Track outstanding risks in `docs/dev/review-findings.md` and link to mitigation plans in
+  `docs/dev/review-tasks-2025-02-07.md`.

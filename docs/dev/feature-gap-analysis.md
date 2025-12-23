@@ -30,7 +30,7 @@ data or offline operation.
 
 ## Action plan
 
-- [ ] Add mitigations to `review-tasks-2025-02-07.md` with priority levels.
+- [ ] Add mitigations to `docs/dev/review-tasks-2025-02-07.md` with priority levels.
 - [ ] Update relevant docs (operations checklist, save/share reference,
       translation guide) once mitigations ship.
 - [ ] Capture rehearsal evidence demonstrating the gap is closed and store it in
