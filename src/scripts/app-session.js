@@ -32,6 +32,16 @@ console.log('app-session.js: Starting execution');
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           updateStorageRequirementTypeOptions,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
+          getSafeLocalStorage, getProjectStorageRevisionKeyName,
+          getCurrentProjectStorageKey, loadProject, populateSetupSelect,
+          displayGearAndRequirements, applyGearListSelectors,
+          ensureGearListActions, bindGearListCageListener,
+          bindGearListEasyrigListener, bindGearListSliderBowlListener,
+          bindGearListEyeLeatherListener, bindGearListProGaffTapeListener,
+          bindGearListDirectorMonitorListener, updateGearListButtonVisibility,
+          useProjectAutoGearRules, clearProjectAutoGearRules,
+          getCurrentSetupState, storeLoadedSetupStateSafe,
+          normalizeDiagramPositionsInput,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
           suspendProjectPersistence, resumeProjectPersistence,
           isProjectPersistenceSuspended,
@@ -324,6 +334,245 @@ function safeGetCurrentProjectName(defaultValue = '') {
   }
 
   return defaultValue;
+}
+
+const PROJECT_STORAGE_REV_KEY_FALLBACK = 'cameraPowerPlanner_project_rev';
+
+let lastKnownProjectStorageRevision = null;
+let projectStorageSyncTimer = null;
+let projectStorageSyncInProgress = false;
+
+function normalizeProjectStorageRevisionValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(0, Math.floor(value));
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const parsed = Number(trimmed);
+    if (Number.isFinite(parsed)) {
+      return Math.max(0, Math.floor(parsed));
+    }
+  }
+  return null;
+}
+
+function resolveProjectStorageRevisionKeyName() {
+  const resolver = resolveSessionRuntimeFunction('getProjectStorageRevisionKeyName');
+  if (typeof resolver === 'function') {
+    try {
+      const resolved = resolver();
+      if (typeof resolved === 'string' && resolved.trim()) {
+        return resolved.trim();
+      }
+    } catch (revisionKeyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve project storage revision key name', revisionKeyError);
+      }
+    }
+  }
+  return PROJECT_STORAGE_REV_KEY_FALLBACK;
+}
+
+function readProjectStorageRevisionValue() {
+  const storage =
+    typeof getSafeLocalStorage === 'function'
+      ? getSafeLocalStorage()
+      : (typeof localStorage !== 'undefined' ? localStorage : null);
+  if (!storage || typeof storage.getItem !== 'function') {
+    return null;
+  }
+  try {
+    const raw = storage.getItem(resolveProjectStorageRevisionKeyName());
+    return normalizeProjectStorageRevisionValue(raw);
+  } catch (storageReadError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to read project storage revision from localStorage', storageReadError);
+    }
+    return null;
+  }
+}
+
+function resolveActiveProjectStorageKey() {
+  if (typeof getCurrentProjectStorageKey === 'function') {
+    try {
+      const storageKey = getCurrentProjectStorageKey({ allowTyped: true });
+      if (typeof storageKey === 'string' && storageKey.trim()) {
+        return storageKey;
+      }
+    } catch (keyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve active project storage key', keyError);
+      }
+    }
+  }
+
+  const typedName = safeGetCurrentProjectName('');
+  if (typedName) {
+    return typedName;
+  }
+
+  if (setupSelect && typeof setupSelect.value === 'string' && setupSelect.value.trim()) {
+    return setupSelect.value.trim();
+  }
+
+  return '';
+}
+
+function reloadActiveProjectFromStorage(options = {}) {
+  if (factoryResetInProgress || restoringSession) {
+    return false;
+  }
+  if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
+    return false;
+  }
+  if (typeof loadProject !== 'function') {
+    return false;
+  }
+
+  const storageKey = resolveActiveProjectStorageKey();
+  if (!storageKey) {
+    return false;
+  }
+
+  let storedProject = null;
+  try {
+    storedProject = loadProject(storageKey);
+  } catch (projectLoadError) {
+    if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to reload project from storage after external update', projectLoadError);
+    }
+    return false;
+  }
+
+  if (!storedProject || typeof storedProject !== 'object') {
+    return false;
+  }
+
+  if (storedProject.powerSelection && typeof applyStoredPowerSelection === 'function') {
+    applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
+  }
+  updateBatteryOptions();
+
+  currentProjectInfo = storedProject.projectInfo || null;
+  if (projectForm) {
+    populateProjectForm(currentProjectInfo || {});
+  }
+
+  if (typeof setManualDiagramPositions === 'function') {
+    const normalizedDiagram = storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function'
+      ? normalizeDiagramPositionsInput(storedProject.diagramPositions)
+      : {};
+    setManualDiagramPositions(normalizedDiagram || {}, { render: false });
+  }
+
+  if (storedProject.autoGearRules && storedProject.autoGearRules.length) {
+    if (typeof useProjectAutoGearRules === 'function') {
+      useProjectAutoGearRules(storedProject.autoGearRules);
+    }
+  } else if (typeof clearProjectAutoGearRules === 'function') {
+    clearProjectAutoGearRules();
+  }
+
+  const regenerateGearList = (info) => callSessionCoreFunction(
+    'generateGearListHtml',
+    [info || {}],
+    { defaultValue: '' },
+  ) || '';
+  const storedHtml = typeof storedProject.gearList === 'string' ? storedProject.gearList : '';
+  const html = storedHtml || regenerateGearList(currentProjectInfo || {});
+
+  if (typeof displayGearAndRequirements === 'function') {
+    displayGearAndRequirements(html);
+  }
+
+  if (gearListOutput) {
+    if (html) {
+      ensureGearListActions();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+      bindGearListEyeLeatherListener();
+      bindGearListProGaffTapeListener();
+      bindGearListDirectorMonitorListener();
+    }
+    if (
+      typeof applyGearListSelectors === 'function'
+      && storedProject.gearSelectors
+      && Object.keys(storedProject.gearSelectors).length
+    ) {
+      applyGearListSelectors(storedProject.gearSelectors);
+    }
+    if (typeof updateGearListButtonVisibility === 'function') {
+      updateGearListButtonVisibility();
+    }
+  }
+
+  if (typeof populateSetupSelect === 'function') {
+    try {
+      populateSetupSelect();
+    } catch (populateError) {
+      if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to refresh setup selector after external project update', populateError);
+      }
+    }
+  }
+
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  if (typeof storeLoadedSetupStateSafe === 'function' && typeof getCurrentSetupState === 'function') {
+    storeLoadedSetupStateSafe(getCurrentSetupState());
+  }
+  if (typeof checkSetupChanged === 'function') {
+    checkSetupChanged();
+  }
+  return true;
+}
+
+function scheduleProjectStorageSync(options = {}) {
+  if (projectStorageSyncInProgress) {
+    return;
+  }
+  if (projectStorageSyncTimer) {
+    clearTimeout(projectStorageSyncTimer);
+  }
+  projectStorageSyncTimer = setTimeout(() => {
+    projectStorageSyncTimer = null;
+    projectStorageSyncInProgress = true;
+    try {
+      reloadActiveProjectFromStorage({ silent: options.silent });
+    } finally {
+      projectStorageSyncInProgress = false;
+    }
+  }, 120);
+}
+
+if (typeof window !== 'undefined' && window && typeof window.addEventListener === 'function') {
+  try {
+    lastKnownProjectStorageRevision = readProjectStorageRevisionValue();
+  } catch (revisionBootstrapError) {
+    lastKnownProjectStorageRevision = null;
+    void revisionBootstrapError;
+  }
+
+  window.addEventListener('storage', (event) => {
+    if (!event || typeof event !== 'object') {
+      return;
+    }
+    const keyName = resolveProjectStorageRevisionKeyName();
+    if (event.key !== keyName) {
+      return;
+    }
+    const nextRevision = normalizeProjectStorageRevisionValue(event.newValue);
+    if (nextRevision !== null && nextRevision === lastKnownProjectStorageRevision) {
+      return;
+    }
+    lastKnownProjectStorageRevision = nextRevision;
+    scheduleProjectStorageSync({ silent: true });
+  });
 }
 
 function resolveSetLanguageFn() {

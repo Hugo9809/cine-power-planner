@@ -437,6 +437,7 @@
   var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
   var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
   var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+  var PROJECT_STORAGE_REV_KEY = 'cameraPowerPlanner_project_rev';
   var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
   var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
   var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
@@ -1544,6 +1545,59 @@
 
   function invalidateProjectReadCache() {
     PROJECT_STORAGE_READ_CACHE = null;
+  }
+
+  function normalizeProjectStorageRevisionValue(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, Math.floor(value));
+    }
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const parsed = Number(trimmed);
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, Math.floor(parsed));
+      }
+    }
+    return null;
+  }
+
+  function getProjectStorageRevisionKeyName() {
+    return PROJECT_STORAGE_REV_KEY;
+  }
+
+  function loadProjectStorageRevision(storageOverride) {
+    const storage = storageOverride || getSafeLocalStorage();
+    if (!storage || typeof storage.getItem !== 'function') {
+      return null;
+    }
+    const parsed = loadJSONFromStorage(
+      storage,
+      PROJECT_STORAGE_REV_KEY,
+      'Error reading project storage revision from localStorage:',
+      null,
+      { validate: (value) => value === null || typeof value === 'number' || typeof value === 'string' },
+    );
+    return normalizeProjectStorageRevisionValue(parsed);
+  }
+
+  function bumpProjectStorageRevision(storageOverride) {
+    const storage = storageOverride || getSafeLocalStorage();
+    if (!storage || typeof storage.setItem !== 'function') {
+      return null;
+    }
+    const current = loadProjectStorageRevision(storage);
+    const next = Number.isFinite(current) ? current + 1 : 1;
+    saveJSONToStorage(
+      storage,
+      PROJECT_STORAGE_REV_KEY,
+      next,
+      'Error saving project storage revision to localStorage:',
+      { disableCompression: true, enableCompressionSweep: false },
+    );
+    return next;
   }
 
   function cacheStorageValue(storage, key, rawValue, normalizedValue, value) {
@@ -12460,6 +12514,7 @@
       "Error saving project to localStorage:",
       { disableCompression: skipCompression }
     );
+    bumpProjectStorageRevision(safeStorage);
     invalidateProjectReadCache();
     if (lifecycleChannel) {
       try {
@@ -12705,17 +12760,45 @@
     }
     const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
     const skipCompression = Boolean(options && options.skipCompression);
-    const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
-    if (changed) {
-      const safeStorage = getSafeLocalStorage();
-      if (safeStorage) {
-        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
-      }
-    }
 
     const requestedKey = typeof name === 'string' ? name : '';
     const preferredKey = normalizeProjectStorageKey(requestedKey);
-    const resolvedKey = resolveProjectKey(projects, lookup, requestedKey, { preferExact: true });
+
+    const initialSnapshot = readAllProjectsFromStorage({ forMutation: true });
+    const initialProjects = isPlainObject(initialSnapshot.projects) ? initialSnapshot.projects : {};
+    if (initialSnapshot.changed) {
+      const safeStorage = getSafeLocalStorage();
+      if (safeStorage) {
+        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, initialSnapshot.originalValue);
+      }
+    }
+
+    const initialResolvedKey = resolveProjectKey(
+      initialProjects,
+      initialSnapshot.lookup,
+      requestedKey,
+      { preferExact: true },
+    );
+    const initialExistingEntry =
+      initialResolvedKey !== null
+      && initialResolvedKey !== undefined
+      && Object.prototype.hasOwnProperty.call(initialProjects, initialResolvedKey)
+        ? initialProjects[initialResolvedKey]
+        : null;
+    const initialExistingSignature = initialExistingEntry
+      ? createStableValueSignature(initialExistingEntry)
+      : null;
+
+    const latestSnapshot = readAllProjectsFromStorage({ forMutation: true });
+    const projects = isPlainObject(latestSnapshot.projects) ? latestSnapshot.projects : {};
+    if (latestSnapshot.changed) {
+      const safeStorage = getSafeLocalStorage();
+      if (safeStorage) {
+        createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, latestSnapshot.originalValue);
+      }
+    }
+
+    const resolvedKey = resolveProjectKey(projects, latestSnapshot.lookup, requestedKey, { preferExact: true });
 
     let storageKey = resolvedKey;
     let renamedFromKey = null;
@@ -12743,9 +12826,10 @@
       existingKey !== null
       && existingKey !== undefined
       && Object.prototype.hasOwnProperty.call(projects, existingKey);
+    const existingEntry = hasExistingEntry ? projects[existingKey] : null;
 
     if (hasExistingEntry && !skipOverwriteBackup) {
-      const existingSignature = createStableValueSignature(projects[existingKey]);
+      const existingSignature = createStableValueSignature(existingEntry);
       const nextSignature = createStableValueSignature(normalized);
       if (existingSignature !== nextSignature) {
         const backupOutcome = maybeCreateProjectOverwriteBackup(projects, existingKey);
@@ -12762,8 +12846,28 @@
       && renamedFromKey !== undefined
       && renamedFromKey !== storageKey
     ) {
-      delete projects[renamedFromKey];
-      removeProjectActivity(renamedFromKey);
+      let shouldDelete = Boolean(initialExistingSignature);
+      if (Object.prototype.hasOwnProperty.call(projects, renamedFromKey)) {
+        if (initialExistingSignature) {
+          const latestSignature = createStableValueSignature(projects[renamedFromKey]);
+          if (latestSignature !== initialExistingSignature) {
+            shouldDelete = false;
+          }
+        } else {
+          shouldDelete = false;
+        }
+      } else {
+        shouldDelete = false;
+      }
+
+      if (shouldDelete) {
+        delete projects[renamedFromKey];
+        removeProjectActivity(renamedFromKey);
+      } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(
+          `Skipped removing "${renamedFromKey}" while saving "${storageKey}" because the original entry changed in another tab.`,
+        );
+      }
     }
 
     const finalKey = storageKey || '';
@@ -12799,6 +12903,7 @@
       if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
         projectActivityTimestamps.clear();
       }
+      bumpProjectStorageRevision(safeStorage);
       return;
     }
 
@@ -16886,6 +16991,8 @@
     renameSetup,
     getMountVoltageStorageKeyName,
     getMountVoltageStorageBackupKeyName,
+    getProjectStorageRevisionKeyName,
+    loadProjectStorageRevision,
     loadProject,
     saveProject,
     deleteProject,
