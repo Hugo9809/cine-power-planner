@@ -79,12 +79,14 @@ drive without phoning home.
    service worker and Progressive Web App install prompt. Any static server
    works while offline, for example:
    ```bash
-   npx http-server
-   # or
    python -m http.server
    # or
    npm run serve
+   # or
+   npx http-server
    ```
+   `npx http-server` may fetch packages from the network unless the dependency
+   is cached locally, so avoid it in fully offline environments.
 4. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
    importing, backing up and restoring on every machine before crews rely on the
    planner in the field.
