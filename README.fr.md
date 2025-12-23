@@ -54,6 +54,7 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 
 ## Accès rapides
 
+- **Commencer par le guide du cycle de protection des données.** Utilisez le [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) comme point d’entrée principal pour sauvegarde manuelle → autosave → coffre-fort de backup → export → répétition de restauration → promotion, avec étapes hors ligne et preuves à capturer.
 - **Lancer la répétition complète.** Suivez l’exercice de [Démarrage rapide](#démarrage-rapide) pour valider sauvegarde, partage, import, backup et restauration sur chaque poste, même hors ligne.
 - **Consulter les workflows.** Gardez à portée l’[Exercice sauvegarde/partage/import](#exercice-sauvegardepartageimport) et la [référence détaillée Sauvegarde, partage, import, backup & restauration](docs/save-share-restore-reference.md) pendant les formations ou audits.
 - **Prouver la préparation hors ligne.** Associez le [Runbook de préparation offline](docs/offline-readiness.md) à la [check-list opérationnelle](docs/operations-checklist.md) pour synchroniser répétitions documentées, application et ressources embarquées.

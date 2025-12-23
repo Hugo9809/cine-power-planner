@@ -4,6 +4,7 @@ Welcome to the Cine Power Planner documentation. This directory contains detaile
 
 ## User Guides
 
+- [Data Protection Lifecycle Guide](user/data-protection-lifecycle.md): Primary entry for manual save → autosave → backup → export → restore rehearsal → promotion.
 - [Save, Share & Restore Reference](save-share-restore-reference.md): Detailed reference for data safety workflows.
 - [Power Summary Warning Reference](power-summary-warning-reference.md): Explanation of power warnings and limits.
 - [Backup Rotation Guide](backup-rotation-guide.md): Best practices for maintaining redundant backups.

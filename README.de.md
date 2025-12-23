@@ -54,6 +54,7 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
 
 ## Schnellzugriffe
 
+- **Mit dem Lifecycle-Leitfaden starten.** Nutze den [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) als primären Einstieg für manuelles Speichern → Auto-Save → Backup-Tresor → Export → Restore-Probe → Promotion, inklusive Offline-Schritten und Nachweisen.
 - **Kompletten Probelauf starten.** Folge der [Schnellstart](#schnellstart)-Übung, um Speichern, Teilen, Importieren, Backup und Wiederherstellung auf jedem Rechner – auch offline – zu verifizieren.
 - **Workflows nachschlagen.** Halte den [Speicher-, Teil- & Import-Drill](#speicher--teil--import-drill) sowie die ausführliche [Referenz zu Speichern, Teilen, Importieren, Backup & Wiederherstellen](docs/save-share-restore-reference.md) für Trainings und Audits bereit.
 - **Offline-Bereitschaft belegen.** Kombiniere das [Offline-Readiness-Runbook](docs/offline-readiness.md) mit der [operativen Checkliste](docs/operations-checklist.md), damit dokumentierte Proben mit App und Assets Schritt halten.

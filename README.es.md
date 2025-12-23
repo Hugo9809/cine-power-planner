@@ -54,6 +54,7 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 
 ## Accesos directos
 
+- **Empieza con la guía del ciclo de protección de datos.** Usa la [Data Protection Lifecycle Guide](docs/user/data-protection-lifecycle.md) como entrada principal para guardado manual → auto-guardado → bóveda de respaldos → exportación → ensayo de restauración → promoción, con pasos offline y evidencias.
 - **Ejecuta el ensayo completo.** Sigue el ejercicio de [Guía rápida](#guía-rápida) para verificar guardado, compartido, importación, copia de seguridad y restauración en cada estación, incluso sin conexión.
 - **Consulta los flujos.** Ten a mano el [Ensayo de guardado, compartido e importación](#ensayo-de-guardado-compartido-e-importación) y la [Referencia detallada de guardar, compartir, importar, copia de seguridad y restaurar](docs/save-share-restore-reference.md) durante formaciones o auditorías.
 - **Demuestra la preparación offline.** Combina el [Runbook de preparación offline](docs/offline-readiness.md) con la [Lista operativa](docs/operations-checklist.md) para que los ensayos documentados se mantengan alineados con la app y los recursos incluidos.
