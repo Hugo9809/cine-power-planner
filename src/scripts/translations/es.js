@@ -948,7 +948,7 @@
         },
         "troubleshooting": {
           "title": "Solución de problemas",
-          "content": "Si algo no funciona como debería:\n\n- **Recargar**: Usa el botón de refrescar si la app parece bloqueada.\n- **Borrar caché**: Si no ves las actualizaciones, limpia la caché de tu navegador.\n- **Copia de seguridad**: Descarga copias de seguridad completas regularmente en los ajustes."
+          "content": "Si algo no funciona como debería:\n\n- **Force reload**: Abre el menú de ayuda/estado de la barra superior y elige **Force reload** para refrescar la app sin tocar tus datos.\n- **Exportar + copia**: Antes de borrar la caché o los datos del sitio, **Exportar proyecto** y ejecutar **Copia y restauración** para guardar tu proyecto y un respaldo local completo.\n- **Caché/datos del sitio**: Solo si los problemas continúan, borra la caché o los datos del sitio. **Advertencia:** borrar los datos del sitio puede eliminar proyectos almacenados localmente."
         },
         "shortcuts": {
           "title": "Atajos de teclado",

@@ -989,7 +989,7 @@
         },
         "troubleshooting": {
           "title": "Fehlerbehebung",
-          "content": "Wenn etwas nicht wie erwartet funktioniert:\n\n- **Neu laden**: Nutze die Refresh-Taste im Header, wenn die App hakt.\n- **Cache leeren**: Wenn Updates nicht erscheinen, leere deinen Browser-Cache.\n- **Backup**: Lade regelmäßig vollständige Backups in den Einstellungen herunter."
+          "content": "Wenn etwas nicht wie erwartet funktioniert:\n\n- **Force reload**: Öffne das Hilfe/Status-Menü in der Toolbar und wähle **Force reload**, um die App zu aktualisieren, ohne deine Daten anzutasten.\n- **Export + Backup**: Bevor du Browser-Cache oder Website-Daten löschst, **Projekt exportieren** und **Backup & Wiederherstellen** ausführen, um Projekt und vollständiges lokales Backup zu sichern.\n- **Browser-Cache/Website-Daten**: Nur wenn Probleme bleiben, Cache oder Website-Daten löschen. **Warnung:** Das Löschen von Website-Daten kann lokal gespeicherte Projekte entfernen."
         },
         "shortcuts": {
           "title": "Tastenkürzel",

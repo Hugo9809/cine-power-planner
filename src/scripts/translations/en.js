@@ -301,7 +301,7 @@
         },
         "troubleshooting": {
           "title": "Troubleshooting",
-          "content": "If things aren't working as expected:\n\n- **Reload**: Use the refresh button in the header if the app feels stuck.\n- **Clear Cache**: If updates don't appear, try clearing your browser cache.\n- **Backup**: Regularly download full backups from Settings to keep your data safe."
+          "content": "If things aren't working as expected:\n\n- **Force reload**: Open the toolbar help/status menu and choose **Force reload** to refresh the app without touching your data.\n- **Export + Backup**: Before clearing browser cache or site data, **Export Project** and run **Backup & Restore** to capture your project and a full local backup.\n- **Browser cache/site data**: Only if issues persist, clear your browser cache or site data. **Warning:** clearing site data can delete locally stored projects."
         },
         "shortcuts": {
           "title": "Keyboard Shortcuts",
