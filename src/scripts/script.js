@@ -35,6 +35,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/features/help-content.js',
     'modules/features/contacts.js',
     'modules/features/own-gear.js',
+    'modules/features/feature-search-normalization.js',
     'modules/features/feature-search.js',
     'modules/features/feature-search-engine.js',
     'modules/features/auto-gear-rules.js',

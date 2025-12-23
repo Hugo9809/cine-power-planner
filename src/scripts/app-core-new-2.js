@@ -6683,11 +6683,110 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     })();
 
     const FEATURE_SEARCH_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchModule';
+    const FEATURE_SEARCH_NORMALIZATION_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchNormalizationModule';
+
+    function resolveFeatureSearchNormalizationApi() {
+      const globalScope = typeof getCoreGlobalObject === 'function'
+        ? getCoreGlobalObject()
+        : (typeof globalThis !== 'undefined'
+          ? globalThis
+          : typeof window !== 'undefined'
+            ? window
+            : typeof self !== 'undefined'
+              ? self
+              : typeof global !== 'undefined'
+                ? global
+                : null);
+
+      if (globalScope && globalScope[FEATURE_SEARCH_NORMALIZATION_MODULE_CACHE_KEY]) {
+        return globalScope[FEATURE_SEARCH_NORMALIZATION_MODULE_CACHE_KEY];
+      }
+
+      if (typeof require === 'function') {
+        try {
+          require('./modules/features/feature-search-normalization.js');
+        } catch (error) {
+          void error;
+        }
+      }
+
+      const moduleBase =
+        (typeof cineModuleBase === 'object' && cineModuleBase)
+        || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+      let resolvedApi = null;
+
+      if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        const registry = moduleBase.getModuleRegistry(globalScope);
+        if (registry && typeof registry.get === 'function') {
+          try {
+            resolvedApi = registry.get('cine.features.featureSearchNormalization');
+          } catch (error) {
+            void error;
+          }
+        }
+      }
+
+      if (!resolvedApi) {
+        const scopeCandidates = [];
+        if (globalScope) {
+          scopeCandidates.push(globalScope);
+        }
+        if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) {
+          scopeCandidates.push(globalThis);
+        }
+        if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) {
+          scopeCandidates.push(window);
+        }
+        if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) {
+          scopeCandidates.push(self);
+        }
+        if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
+          scopeCandidates.push(global);
+        }
+
+        for (let index = 0; index < scopeCandidates.length; index += 1) {
+          const scope = scopeCandidates[index];
+          if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+          }
+
+          try {
+            const exposed = scope.cineFeaturesFeatureSearchNormalization;
+            if (exposed) {
+              resolvedApi = exposed;
+              break;
+            }
+          } catch (error) {
+            void error;
+          }
+        }
+      }
+
+      if (globalScope) {
+        try {
+          globalScope[FEATURE_SEARCH_NORMALIZATION_MODULE_CACHE_KEY] = resolvedApi;
+        } catch (error) {
+          void error;
+        }
+      }
+
+      return resolvedApi;
+    }
+
+    function resolveFeatureSearchNormalizationFunction() {
+      const normalizationApi = resolveFeatureSearchNormalizationApi();
+      if (normalizationApi && typeof normalizationApi.normalizeSearchValue === 'function') {
+        return normalizationApi.normalizeSearchValue;
+      }
+      return value => (typeof value === 'string' ? value.trim().toLowerCase() : '');
+    }
 
     function createFeatureSearchFallback() {
+      const normalizeSearchValue = resolveFeatureSearchNormalizationFunction();
       return {
         normalizeSearchValue(value) {
-          return typeof value === 'string' ? value.trim().toLowerCase() : '';
+          return normalizeSearchValue(value);
         },
         sanitizeHighlightTokens(tokens) {
           if (!Array.isArray(tokens) || !tokens.length) {
@@ -10021,81 +10120,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
 
     const createDefaultSearchNormalizer = () => {
-      /* eslint-disable no-control-regex, no-misleading-character-class */
-      const ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
-      const SPACE_VARIANTS_PATTERN = /[\u0009-\u000D\u00A0\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g;
-      const COMBINING_MARKS_PATTERN = /[\u0300-\u036F]/g;
-      const DASH_VARIANTS_PATTERN = /[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g;
-      const APOSTROPHE_VARIANTS_PATTERN = /[\u2018\u2019\u201A\u201B\u2032\u2035]/g;
-      const QUOTE_VARIANTS_PATTERN = /[\u201C\u201D\u201E\u201F\u2033\u2036]/g;
-      const SLASH_VARIANTS_PATTERN = /[\u2044\u2215]/g;
-      const MULTIPLY_VARIANTS_PATTERN = /[×✕✖✗✘]/g;
-      const DEGREE_VARIANTS_PATTERN = /[°º˚]/g;
-      const ELLIPSIS_PATTERN = /[\u2026]/g;
-      const TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
-      const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
-      /* eslint-enable no-control-regex, no-misleading-character-class */
-      const ligatureEntries = [
-        ['ß', 'ss'],
-        ['æ', 'ae'],
-        ['œ', 'oe'],
-        ['ø', 'o'],
-        ['þ', 'th'],
-        ['ð', 'd'],
-        ['đ', 'd'],
-        ['ħ', 'h'],
-        ['ı', 'i'],
-        ['ĳ', 'ij'],
-        ['ŋ', 'ng'],
-        ['ł', 'l'],
-        ['ſ', 's'],
-      ];
-
-      return value => {
-        if (typeof value !== 'string') {
-          return '';
-        }
-
-        let normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
-
-        if (typeof normalized.normalize === 'function') {
-          try {
-            normalized = normalized.normalize('NFKD');
-          } catch (error) {
-            void error;
-          }
-        }
-
-        normalized = normalized
-          .replace(SPACE_VARIANTS_PATTERN, ' ')
-          .replace(APOSTROPHE_VARIANTS_PATTERN, ' ')
-          .replace(QUOTE_VARIANTS_PATTERN, ' ')
-          .replace(DASH_VARIANTS_PATTERN, ' ')
-          .replace(SLASH_VARIANTS_PATTERN, ' ')
-          .replace(MULTIPLY_VARIANTS_PATTERN, ' x ')
-          .replace(DEGREE_VARIANTS_PATTERN, ' deg ')
-          .replace(/\bdegrees?\b/gi, ' deg ')
-          .replace(/&/g, ' and ')
-          .replace(/\+/g, ' plus ')
-          .replace(/@/g, ' at ')
-          .replace(TRADEMARK_PATTERN, ' ')
-          .replace(ELLIPSIS_PATTERN, ' ')
-          .replace(GENERAL_PUNCTUATION_PATTERN, ' ');
-
-        normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
-
-        for (let index = 0; index < ligatureEntries.length; index += 1) {
-          const [source, replacement] = ligatureEntries[index];
-          normalized = normalized.replace(new RegExp(source, 'g'), replacement);
-        }
-
-        normalized = normalized
-          .replace(/['"`]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-        return normalized;
-      };
+      return resolveFeatureSearchNormalizationFunction();
     };
 
     const fallbackNormalizeSearchValue = createDefaultSearchNormalizer();

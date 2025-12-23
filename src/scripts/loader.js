@@ -4473,6 +4473,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
       'src/scripts/modules/logging.js',
       'src/scripts/modules/settings-and-appearance.js?v=10',
+      'src/scripts/modules/features/feature-search-normalization.js',
       'src/scripts/modules/features/auto-gear-rules.js',
       'src/scripts/modules/features/connection-diagram.js',
       'src/scripts/modules/features/backup.js',
