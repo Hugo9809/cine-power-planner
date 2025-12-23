@@ -10,6 +10,30 @@ when you are offline. Every dependency lives in this repository so the same
 experience runs on a stage workstation, a field laptop or an air-gapped archive
 drive without phoning home.
 
+## Data Protection Promise
+
+- **Local-only storage.** Projects, gear lists, runtime feedback, exports and
+  backups live on your machine; the planner does not depend on external
+  services.
+- **Layered safety nets.** Save, autosave, share, import, backup and restore
+  workflows always create safety snapshots so recovery is possible before any
+  data is promoted.
+- **Offline by design.** All icons, fonts, Uicons and helper scripts are stored
+  in this repo, so offline usage never degrades usability or data protection.
+
+## Table of Contents
+
+- [Data Protection Promise](#data-protection-promise)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [At a Glance](#at-a-glance)
+- [Fast Start (2-minute drill)](#fast-start-2-minute-drill)
+- [Safety Layers at a Glance](#safety-layers-at-a-glance)
+- [Quick Links](#quick-links)
+- [Version reference](#version-reference)
+- [Offline Audit Toolkit](#offline-audit-toolkit)
+- [Quick Start](#quick-start)
+
 ## Key Features
 
 - **Equipment power knowledge base.** Reference bundled draw figures for
@@ -133,6 +157,11 @@ tour:
   whenever you regenerate service-worker assets, ship new icons or touch
   persistence code so cached builds keep matching the repository and user data
   remains fully protected offline.
+- **Verify help center resiliency.** Run the
+  [Offline Help & Translation Verification](docs/offline-help-verification.md)
+  drill whenever you touch help copy, documentation links or translations to
+  confirm the overlay, search results and localized topics still load entirely
+  from cached assets without risking user data.
 - **Plan redundant rotations.** Use the
   [Backup Rotation Guide](docs/backup-rotation-guide.md) to map daily, weekly
   and cold-storage copies so autosave snapshots, manual exports and shareable
