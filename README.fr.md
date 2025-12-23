@@ -19,7 +19,7 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 
 1. Clonez ou téléchargez ce dépôt sur un support local de confiance :
    ```bash
-   git clone https://github.com/Hugo9809/cine-power-planner.git
+   git clone /path/to/cine-power-planner.git
    cd cine-power-planner
    ```
    (Si vous recevez un bundle hors ligne, extrayez-le dans un dossier local.)
