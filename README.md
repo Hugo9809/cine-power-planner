@@ -43,6 +43,7 @@ drive without phoning home.
 - [At a Glance](#at-a-glance)
 - [Fast Start (2-minute drill)](#fast-start-2-minute-drill)
 - [Safety Layers at a Glance](#safety-layers-at-a-glance)
+- [Translations](#translations)
 - [Quick Links](#quick-links)
 - [Version reference](#version-reference)
 - [Offline Audit Toolkit](#offline-audit-toolkit)
@@ -86,6 +87,18 @@ drive without phoning home.
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
+
+## Translations
+
+Keep localized README files synchronized with the primary README whenever
+workflows change, especially anything touching saving, sharing, importing,
+backup, or restore steps.
+
+- [Deutsch](README.de.md)
+- [English](README.en.md)
+- [Español](README.es.md)
+- [Français](README.fr.md)
+- [Italiano](README.it.md)
 
 ## Key Features
 
