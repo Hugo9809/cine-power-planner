@@ -3319,7 +3319,8 @@ function ensureDeferredScriptsReady(reason, callback) {
 // Generate a printable overview of the current selected setup in a new tab
 if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
   generateOverviewBtn.addEventListener('click', () => {
-    if (!setupSelect.value) { // Ensure a setup is selected
+    const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
+    if (!setupSelectRef || !setupSelectRef.value) { // Ensure a setup is selected
       alert(texts[currentLang].alertSelectSetupForOverview);
       return;
     }
@@ -3360,26 +3361,34 @@ function alertPinExceeded() {
 }
 
 // Generate a printable gear list for the current setup
-generateGearListBtn.addEventListener('click', () => {
-  if (!setupSelect.value) {
-    alert(texts[currentLang].alertSelectSetupForOverview);
-    return;
-  }
-  if (!batteryPinsSufficient()) {
-    alertPinExceeded();
-    return;
-  }
-  const seedInfo = getProjectDialogSeedInfo();
-  if (seedInfo && typeof seedInfo === 'object') {
-    populateRecordingResolutionDropdown(seedInfo.recordingResolution);
-    populateSensorModeDropdown(seedInfo.sensorMode);
-    populateCodecDropdown(seedInfo.codec);
-  }
-  openProjectDialogWithInfo(seedInfo);
-});
+const generateGearListBtnRef = typeof generateGearListBtn !== 'undefined' ? generateGearListBtn : document.getElementById('generateGearListBtn');
+if (generateGearListBtnRef) {
+  generateGearListBtnRef.addEventListener('click', () => {
+    const setupSelectRef = typeof setupSelect !== 'undefined' ? setupSelect : document.getElementById('setupSelect');
+    if (!setupSelectRef || !setupSelectRef.value) {
+      alert(texts[currentLang].alertSelectSetupForOverview);
+      return;
+    }
+    if (!batteryPinsSufficient()) {
+      alertPinExceeded();
+      return;
+    }
 
-if (deleteGearListProjectBtn) {
-  deleteGearListProjectBtn.addEventListener('click', () => {
+    // This button opens the project details form (requirements input).
+    // We do not block it based on missing requirements, as this is where they are created.
+    const seedInfo = getProjectDialogSeedInfo();
+    if (seedInfo && typeof seedInfo === 'object') {
+      populateRecordingResolutionDropdown(seedInfo.recordingResolution);
+      populateSensorModeDropdown(seedInfo.sensorMode);
+      populateCodecDropdown(seedInfo.codec);
+    }
+    openProjectDialogWithInfo(seedInfo);
+  });
+}
+
+const deleteGearListProjectBtnRef = typeof deleteGearListProjectBtn !== 'undefined' ? deleteGearListProjectBtn : document.getElementById('deleteGearListProjectBtn');
+if (deleteGearListProjectBtnRef) {
+  deleteGearListProjectBtnRef.addEventListener('click', () => {
     deleteCurrentGearList();
   });
 }
@@ -3438,19 +3447,20 @@ if (localProjectDialogCloseBtn) {
   });
 }
 
-if (projectDialog) {
-  projectDialog.addEventListener('cancel', event => {
+const projectDialogRef = typeof projectDialog !== 'undefined' ? projectDialog : document.getElementById('projectDialog');
+if (projectDialogRef) {
+  projectDialogRef.addEventListener('cancel', event => {
     if (event) event.preventDefault();
     if (projectCancelBtnRef) {
       projectCancelBtnRef.click();
     } else {
       restoreProjectDialogSnapshot();
-      closeDialog(projectDialog);
+      closeDialog(projectDialogRef);
     }
   });
 
-  projectDialog.addEventListener('click', event => {
-    if (event.target === projectDialog) {
+  projectDialogRef.addEventListener('click', event => {
+    if (event.target === projectDialogRef) {
       event.preventDefault();
       event.stopPropagation();
       submitProjectFormViaBackdrop();
@@ -3458,11 +3468,12 @@ if (projectDialog) {
   });
 }
 
-if (projectForm) {
-  projectForm.addEventListener('input', () => {
+const projectFormRef = typeof projectForm !== 'undefined' ? projectForm : document.getElementById('projectForm');
+if (projectFormRef) {
+  projectFormRef.addEventListener('input', () => {
     markProjectFormDataDirty();
   });
-  projectForm.addEventListener('submit', e => {
+  projectFormRef.addEventListener('submit', e => {
     e.preventDefault();
     if (!batteryPinsSufficient()) {
       alertPinExceeded();
@@ -5300,6 +5311,64 @@ function generateConnectorSummary(device) {
   html += section('Recording', recordingHtml);
   html += section('Extras', extraHtml);
   if (lensHtml) html += `<div class="info-label">Lens Mount</div>${lensHtml}`;
+
+  // Automatically handle any remaining attributes not explicitly covered above
+  const handledKeys = new Set([
+    'power', 'powerDrawWatts', 'weight_g', 'capacity', 'pinA', 'dtapA', 'mount_type',
+    'screenSizeInches', 'brightnessNits', 'wirelessTx', 'internalController', 'torqueNm', 'powerSource',
+    'sensorModes', 'resolutions', 'frameRates', 'recordingCodecs', 'recordingMedia',
+    'viewfinder', 'gearTypes', 'connectivity', 'notes', 'lensMount',
+    'video', 'videoInputs', 'videoOutputs', 'fizConnectors', 'timecode',
+    'audioInput', 'audioOutput', 'audioIo'
+  ]);
+
+  let otherHtml = '';
+  const formatKeyLabel = (key) => {
+    // CamelContext to Words
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .replace(/_/g, ' ')
+      .trim();
+  };
+
+  Object.entries(device).forEach(([key, value]) => {
+    if (handledKeys.has(key)) return;
+    if (value === null || value === undefined || value === '') return;
+
+    // Handle verified_source specially or generic
+    if (key === 'verified_source') {
+      const url = String(value);
+      otherHtml += `<span class="info-box neutral-conn"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">Source</a></span>`;
+      return;
+    }
+
+    const label = formatKeyLabel(key);
+
+    if (Array.isArray(value)) {
+      // Render as array box
+      const safeValues = value.map(v => typeof v === 'string' ? v : JSON.stringify(v));
+      if (safeValues.length) {
+        const valuesHtml = `<span class="info-box-values">${safeValues.map(escapeHtml).join(', ')}</span>`;
+        // Use a generic icon or circle - assuming ICON_GLYPHS.fileText exists or fallback
+        const iconHtml = (typeof ICON_GLYPHS !== 'undefined' && ICON_GLYPHS.fileText) ? iconMarkup(ICON_GLYPHS.fileText) : '';
+        otherHtml += `<span class="info-box neutral-conn info-box-list">${iconHtml}${renderInfoLabel(label)}${valuesHtml}</span>`;
+      }
+    } else if (typeof value === 'object') {
+      // Skip complex objects
+    } else {
+      // Primitive
+      let displayValue = String(value);
+      if (typeof value === 'boolean') {
+        displayValue = value ? 'Yes' : 'No';
+      }
+      otherHtml += `<span class="info-box neutral-conn">${renderInfoLabel(label)}${escapeHtml(displayValue)}</span>`;
+    }
+  });
+
+  if (otherHtml) {
+    html += section('Other Attributes', otherHtml);
+  }
 
   return html ? `<div class="connector-summary">${html}</div>` : '';
 }
@@ -9829,6 +9898,8 @@ function buildGearItemEditContext() {
     quantityLabel: resolveElementById('gearItemEditQuantityLabel', 'gearItemEditQuantityLabel'),
     nameInput: resolveElementById('gearItemEditName', 'gearItemEditName'),
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
+    attributesInput: resolveElementById('gearItemEditAttributes', 'gearItemEditAttributes'),
+    attributesLabel: resolveElementById('gearItemEditAttributesLabel', 'gearItemEditAttributesLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
     deviceSection: resolveElementById('gearItemEditDeviceSection', 'gearItemEditDeviceSection'),
@@ -9893,6 +9964,7 @@ function getGearItemEditTexts() {
     dialogTitle: langTexts.gearListEditDialogTitle || fallbackTexts.gearListEditDialogTitle || 'Edit gear item',
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
+    attributesLabel: langTexts.gearListEditAttributesLabel || fallbackTexts.gearListEditAttributesLabel || 'Attributes',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
     extraLabel: langTexts.gearListEditExtraLabel || fallbackTexts.gearListEditExtraLabel || 'Temporary extra gear',
     extraHelp: langTexts.gearListEditExtraHelp || fallbackTexts.gearListEditExtraHelp || '',
@@ -9960,6 +10032,9 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
+  }
+  if (context.attributesLabel) {
+    context.attributesLabel.textContent = textsForDialog.attributesLabel;
   }
   if (context.extraLabel) {
     const labelSpan = context.extraLabel.querySelector('span');
@@ -10966,7 +11041,7 @@ function bindGearItemEditDialog(context) {
     context.dialog.addEventListener('mousedown', handleGearItemEditDialogBackdropPointerDown);
     context.dialog.addEventListener('touchstart', handleGearItemEditDialogBackdropPointerDown);
   }
-  const previewInputs = [context.quantityInput, context.nameInput];
+  const previewInputs = [context.quantityInput, context.nameInput, context.attributesInput];
   previewInputs.forEach(input => {
     if (!input) return;
     input.addEventListener('input', handleGearItemEditFieldInput);
@@ -11082,6 +11157,9 @@ function openGearItemEditor(element, options = {}) {
     } else {
       context.nameInput.removeAttribute('list');
     }
+  }
+  if (context.attributesInput) {
+    context.attributesInput.value = data.attributes || '';
   }
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
@@ -14796,115 +14874,145 @@ function saveCurrentGearList() {
 }
 
 function deleteCurrentGearList() {
-  if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
-  if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
-  const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
-  if (!backupName) return false;
-  const storageKey = getCurrentProjectStorageKey();
-  if (typeof deleteProject === 'function') {
-    deleteProject(storageKey);
-  } else if (typeof saveProject === 'function') {
-    saveProject(storageKey, {
-      projectInfo: null,
-      gearListAndProjectRequirementsGenerated: false
-    }, { skipOverwriteBackup: true });
-  }
-  const setups = getSetups();
-  if (setups && typeof setups === 'object') {
-    const existingSetup = setups[storageKey];
-    if (existingSetup && typeof existingSetup === 'object') {
-      let changed = false;
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'gearList')) {
-        delete existingSetup.gearList;
-        changed = true;
-      }
-      ['projectInfo', 'autoGearRules', 'diagramPositions', 'powerSelection', 'gearSelectors', 'gearListAndProjectRequirementsGenerated']
-        .forEach((prop) => {
-          if (Object.prototype.hasOwnProperty.call(existingSetup, prop)) {
-            delete existingSetup[prop];
-            changed = true;
-          }
-        });
-      if (changed) {
-        storeSetups(setups);
-      }
+  const performDeletion = () => {
+    const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
+    if (!backupName) return false;
+
+    const storageKey = getCurrentProjectStorageKey();
+    if (typeof deleteProject === 'function') {
+      deleteProject(storageKey);
+    } else if (typeof saveProject === 'function') {
+      saveProject(storageKey, {
+        projectInfo: null,
+        gearListAndProjectRequirementsGenerated: false
+      }, { skipOverwriteBackup: true });
     }
-  }
-  if (gearListOutput) {
-    gearListOutput.innerHTML = '';
-    gearListOutput.classList.add('hidden');
-    updateAutoGearHighlightToggleButton();
-  }
-  if (projectRequirementsOutput) {
-    projectRequirementsOutput.innerHTML = '';
-    projectRequirementsOutput.classList.add('hidden');
-  }
-  if (typeof globalThis !== 'undefined') {
-    globalThis.__cineLastGearListHtml = '';
-  }
-  currentProjectInfo = null;
-  if (projectForm) populateProjectForm({});
-  storeSession({
-    setupName: setupNameInput ? setupNameInput.value : '',
-    setupSelect: setupSelect ? setupSelect.value : '',
-    camera: cameraSelect ? cameraSelect.value : '',
-    monitor: monitorSelect ? monitorSelect.value : '',
-    video: videoSelect ? videoSelect.value : '',
-    cage: cageSelect ? cageSelect.value : '',
-    motors: motorSelects.map(sel => sel ? sel.value : ''),
-    controllers: controllerSelects.map(sel => sel ? sel.value : ''),
-    distance: distanceSelect ? distanceSelect.value : '',
-    batteryPlate: normalizeBatteryPlateValue(
-      batteryPlateSelect ? batteryPlateSelect.value : '',
-      batterySelect ? batterySelect.value : ''
-    ),
-    battery: batterySelect ? batterySelect.value : '',
-    batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
-    sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
-    easyrig: getSetupsCoreValue('getEasyrigValue'),
-    projectInfo: null
-  });
-  if (typeof autoSaveCurrentSetup === 'function') {
-    autoSaveCurrentSetup();
-    if (storageKey) {
-      const setupsAfterSave = getSetups();
-      const savedSetup = setupsAfterSave && setupsAfterSave[storageKey];
-      if (savedSetup && typeof savedSetup === 'object') {
-        let resaved = false;
-        if (Object.prototype.hasOwnProperty.call(savedSetup, 'gearList')) {
-          delete savedSetup.gearList;
-          resaved = true;
+
+    const setups = getSetups();
+    if (setups && typeof setups === 'object') {
+      const existingSetup = setups[storageKey];
+      if (existingSetup && typeof existingSetup === 'object') {
+        let changed = false;
+        if (Object.prototype.hasOwnProperty.call(existingSetup, 'gearList')) {
+          delete existingSetup.gearList;
+          changed = true;
         }
-        ['projectInfo', 'gearListAndProjectRequirementsGenerated', 'gearSelectors']
+        ['projectInfo', 'autoGearRules', 'diagramPositions', 'powerSelection', 'gearSelectors', 'gearListAndProjectRequirementsGenerated']
           .forEach((prop) => {
-            if (Object.prototype.hasOwnProperty.call(savedSetup, prop)) {
-              delete savedSetup[prop];
-              resaved = true;
+            if (Object.prototype.hasOwnProperty.call(existingSetup, prop)) {
+              delete existingSetup[prop];
+              changed = true;
             }
           });
-        if (resaved) {
-          storeSetups(setupsAfterSave);
+        if (changed) {
+          storeSetups(setups);
         }
       }
     }
-  }
-  currentProjectInfo = null;
-  updateGearListButtonVisibility();
-  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
-    const eventDetail = { projectName: storageKey, backupName, source: 'deleteCurrentGearList' };
-    try {
-      document.dispatchEvent(new CustomEvent('gearlist:deleted', { detail: eventDetail }));
-    } catch (error) {
-      if (typeof document.createEvent === 'function') {
-        const fallbackEvent = document.createEvent('CustomEvent');
-        fallbackEvent.initCustomEvent('gearlist:deleted', false, false, eventDetail);
-        document.dispatchEvent(fallbackEvent);
-      } else {
-        console.warn('Unable to dispatch gearlist:deleted event', error);
+
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+      updateAutoGearHighlightToggleButton();
+    }
+    if (projectRequirementsOutput) {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__cineLastGearListHtml = '';
+    }
+    currentProjectInfo = null;
+    if (projectForm) populateProjectForm({});
+    storeSession({
+      setupName: setupNameInput ? setupNameInput.value : '',
+      setupSelect: setupSelect ? setupSelect.value : '',
+      camera: cameraSelect ? cameraSelect.value : '',
+      monitor: monitorSelect ? monitorSelect.value : '',
+      video: videoSelect ? videoSelect.value : '',
+      cage: cageSelect ? cageSelect.value : '',
+      motors: motorSelects.map(sel => sel ? sel.value : ''),
+      controllers: controllerSelects.map(sel => sel ? sel.value : ''),
+      distance: distanceSelect ? distanceSelect.value : '',
+      batteryPlate: normalizeBatteryPlateValue(
+        batteryPlateSelect ? batteryPlateSelect.value : '',
+        batterySelect ? batterySelect.value : ''
+      ),
+      battery: batterySelect ? batterySelect.value : '',
+      batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
+      sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+      easyrig: getSetupsCoreValue('getEasyrigValue'),
+      projectInfo: null
+    });
+
+    if (typeof autoSaveCurrentSetup === 'function') {
+      autoSaveCurrentSetup();
+      if (storageKey) {
+        const setupsAfterSave = getSetups();
+        const savedSetup = setupsAfterSave && setupsAfterSave[storageKey];
+        if (savedSetup && typeof savedSetup === 'object') {
+          let resaved = false;
+          if (Object.prototype.hasOwnProperty.call(savedSetup, 'gearList')) {
+            delete savedSetup.gearList;
+            resaved = true;
+          }
+          ['projectInfo', 'gearListAndProjectRequirementsGenerated', 'gearSelectors']
+            .forEach((prop) => {
+              if (Object.prototype.hasOwnProperty.call(savedSetup, prop)) {
+                delete savedSetup[prop];
+                resaved = true;
+              }
+            });
+          if (resaved) {
+            storeSetups(setupsAfterSave);
+          }
+        }
       }
     }
+
+    currentProjectInfo = null;
+    updateGearListButtonVisibility();
+
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+      const eventDetail = { projectName: storageKey, backupName, source: 'deleteCurrentGearList' };
+      try {
+        document.dispatchEvent(new CustomEvent('gearlist:deleted', { detail: eventDetail }));
+      } catch (error) {
+        if (typeof document.createEvent === 'function') {
+          const fallbackEvent = document.createEvent('CustomEvent');
+          fallbackEvent.initCustomEvent('gearlist:deleted', false, false, eventDetail);
+          document.dispatchEvent(fallbackEvent);
+        } else {
+          console.warn('Unable to dispatch gearlist:deleted event', error);
+        }
+      }
+    }
+    return true;
+  };
+
+  if (typeof window.cineShowConfirmDialog === 'function') {
+    window.cineShowConfirmDialog({
+      title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].deleteGearListTitle) || 'Delete Gear List',
+      message: texts[currentLang].confirmDeleteGearList,
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: () => {
+        setTimeout(() => {
+          window.cineShowConfirmDialog({
+            title: (typeof texts !== 'undefined' && texts[currentLang] && texts[currentLang].areYouSure) || 'Are you sure?',
+            message: texts[currentLang].confirmDeleteGearListAgain,
+            confirmLabel: 'Confirm Delete',
+            danger: true,
+            onConfirm: () => performDeletion()
+          });
+        }, 150);
+      }
+    });
+  } else {
+    if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
+    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
+    return performDeletion();
   }
-  return true;
 }
 
 const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';

@@ -831,6 +831,7 @@
       "gearListEditDialogTitle": "Gear-Element bearbeiten",
       "gearListEditQuantityLabel": "Menge",
       "gearListEditNameLabel": "Artikelname",
+      "gearListEditAttributesLabel": "Attribute",
       "gearListEditNoteLabel": "Notiz",
       "gearListEditExtraLabel": "Temporäres Extra",
       "gearListEditExtraHelp": "Markiere diesen Posten als kurzfristige Ergänzung. Lege den Zeitraum fest, damit das Team rechtzeitig planen kann.",

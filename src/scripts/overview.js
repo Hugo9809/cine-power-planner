@@ -705,7 +705,9 @@ function getPrintSectionConfig() {
         {
             id: 'gear',
             selector: '#gearListOutput',
-            defaultVisible: true,
+            defaultVisible: (typeof window.hasProjectInfoData === 'function' && typeof window.getCurrentProjectInfo === 'function')
+                ? window.hasProjectInfoData(window.getCurrentProjectInfo())
+                : true,
             labelKey: 'rentalPrintSectionGearList',
             fallbackLabel: 'Gear List',
         },

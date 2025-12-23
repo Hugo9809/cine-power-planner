@@ -13015,10 +13015,18 @@ function clearAvatar() {
 
 // Explicitly expose to global scope if not already present
 if (typeof window !== 'undefined') {
-  if (typeof window.setAvatar !== 'function') window.setAvatar = setAvatar;
-  if (typeof window.clearAvatar !== 'function') window.clearAvatar = clearAvatar;
-  if (typeof window.assignUserProfileState !== 'function') window.assignUserProfileState = assignUserProfileState;
-  if (typeof window.persistUserProfileState !== 'function') window.persistUserProfileState = persistUserProfileState;
+  if (typeof window.setAvatar !== 'function') {
+    window.setAvatar = setAvatar;
+  }
+  if (typeof window.clearAvatar !== 'function') {
+    window.clearAvatar = clearAvatar;
+  }
+  if (typeof window.assignUserProfileState !== 'function') {
+    window.assignUserProfileState = assignUserProfileState;
+  }
+  if (typeof window.persistUserProfileState !== 'function') {
+    window.persistUserProfileState = persistUserProfileState;
+  }
 }
 
 function persistUserProfileState(options = {}) {
@@ -14409,6 +14417,20 @@ function getAvailableStorageMediaTypes() {
     typeOrder.push(trimmed);
   };
 
+  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+
+  // If a camera is selected, strictly limit to its supported media types
+  if (selectedName && cameraDb[selectedName]) {
+    const cam = cameraDb[selectedName];
+    (cam.recordingMedia || []).forEach(media => {
+      if (media && media.type) {
+        addType(media.type);
+      }
+    });
+    return typeOrder;
+  }
+
+  // Otherwise, gather all known types from cameras and gearList
   const addCameraTypes = cam => {
     if (!cam) return;
     (cam.recordingMedia || []).forEach(media => {
@@ -14418,37 +14440,28 @@ function getAvailableStorageMediaTypes() {
     });
   };
 
-  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
-  if (selectedName && cameraDb[selectedName]) {
-    addCameraTypes(cameraDb[selectedName]);
-  }
+  Object.values(cameraDb).forEach(cam => addCameraTypes(cam));
 
-  Object.entries(cameraDb).forEach(([name, cam]) => {
-    if (name === selectedName) return;
-    addCameraTypes(cam);
-  });
-
-  Object.values(mediaDb).forEach(info => {
-    const interfaceStr = typeof info?.interface === 'string' ? info.interface.trim() : '';
-    if (interfaceStr) {
-      addType(interfaceStr);
-      const canonical = interfaceStr
-        .replace(/\s*\([^)]*\)/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      if (canonical && canonical !== interfaceStr) {
-        addType(canonical);
+  // Helper to traverse nested mediaDb
+  const traverseMedia = (obj) => {
+    Object.values(obj).forEach(info => {
+      if (!info) return;
+      // Heuristic: if it has brand/model/type, it's an item. Else if object, recurse.
+      if (info.brand || info.model || info.type || info.capacityGB || info.capacity) {
+        if (info.type) addType(info.type);
+        const interfaceStr = typeof info.interface === 'string' ? info.interface.trim() : '';
+        if (interfaceStr) {
+          addType(interfaceStr);
+        }
+        if (Array.isArray(info.supportedMedia)) {
+          info.supportedMedia.forEach(mediaType => addType(mediaType));
+        }
+      } else if (typeof info === 'object') {
+        traverseMedia(info);
       }
-    }
-    if (Array.isArray(info?.supportedMedia)) {
-      info.supportedMedia.forEach(mediaType => addType(mediaType));
-    }
-    const variantHint = typeof info?.model === 'string' ? info.model : '';
-    const match = variantHint.match(/(CFexpress Type [AB](?: \(v\d(?:\.\d)?\))?|CFast 2\.0|microSDXC UHS-I|SDXC UHS-II|SDXC UHS-I|XQD|RED MINI-MAG|Codex Compact Drive)/i);
-    if (match) {
-      addType(match[0].replace(/\s+/g, ' ').trim());
-    }
-  });
+    });
+  };
+  traverseMedia(mediaDb);
 
   return typeOrder.sort(localeSort);
 }
@@ -14457,31 +14470,63 @@ function getStorageVariantOptions(type) {
   const variants = [];
   if (!type) return variants;
   const normalizedType = type.toLowerCase();
+
+  // Gather flattened items
+  const items = [];
   const mediaDb = devices?.gearList?.media || {};
+  const traverse = (obj) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      if (!value) return;
+      if (value.brand || value.model || value.type || value.capacityGB || value.capacity) {
+        items.push({ id: key, ...value });
+      } else if (typeof value === 'object') {
+        traverse(value);
+      }
+    });
+  };
+  traverse(mediaDb);
+
   const seen = new Set();
   const addVariant = (value, label) => {
     if (!value || seen.has(value)) return;
+    const lowerLabel = (label || value).toLowerCase();
+    if (
+      lowerLabel.includes('dual slots') ||
+      lowerLabel.includes('slot 1') ||
+      lowerLabel === 'adapter'
+    ) {
+      return;
+    }
     variants.push({ value, label: label || value });
     seen.add(value);
   };
 
-  Object.entries(mediaDb).forEach(([name, info]) => {
-    if (!name) return;
-    const fields = [name, info?.model, info?.interface];
-    const matches = fields.some(field => typeof field === 'string' && field.toLowerCase().includes(normalizedType));
+  items.forEach(info => {
+    // strict match on type property if available, otherwise fallback to loose string matching
+    let matches = false;
+    if (info.type) {
+      matches = info.type.toLowerCase() === normalizedType;
+    }
+    // Fallback or loose match if type property is missing or for wider search coverage
+    if (!matches) {
+      const fields = [info.id, info.model, info.interface];
+      matches = fields.some(field => typeof field === 'string' && field.toLowerCase().includes(normalizedType));
+    }
+
     if (!matches) return;
+
     const parts = [];
-    if (info?.brand) parts.push(info.brand);
-    const model = info?.model || '';
+    if (info.brand) parts.push(info.brand);
+    const model = info.model || '';
     if (model && (!info.brand || model.toLowerCase() !== info.brand.toLowerCase())) {
       parts.push(model);
     }
-    const capacityGb = Number(info?.capacityGb);
-    const capacityTb = Number(info?.capacityTb);
+    const capacityGb = Number(info.capacityGB || info.capacity);
+    const capacityTb = Number(info.capacityTb);
     let capacityLabel = '';
     if (Number.isFinite(capacityGb) && capacityGb > 0) {
-      if (capacityGb >= 1000 && Number.isFinite(capacityTb) && capacityTb > 0) {
-        capacityLabel = formatCapacity(capacityTb, 'TB');
+      if (capacityGb >= 1000) {
+        capacityLabel = formatCapacity(capacityGb / 1000, 'TB');
       } else {
         capacityLabel = formatCapacity(capacityGb, 'GB');
       }
@@ -14489,7 +14534,9 @@ function getStorageVariantOptions(type) {
       capacityLabel = formatCapacity(capacityTb, 'TB');
     }
     if (capacityLabel) parts.push(capacityLabel);
-    addVariant(name, parts.length ? parts.join(' • ') : name);
+
+    // Use the ID (key) as the value for uniqueness and persistence, label for display
+    addVariant(info.id, parts.length ? parts.join(' • ') : info.id);
   });
 
   const noteVariants = new Set();
@@ -14502,6 +14549,8 @@ function getStorageVariantOptions(type) {
     });
   });
   noteVariants.forEach(note => {
+    // Only add note variants if they don't look like duplicates of existing real items?
+    // For now, keep them as "Generic Type Note"
     const value = `${type} ${note}`.trim();
     addVariant(value, note);
   });
@@ -14580,6 +14629,11 @@ function updateStorageRequirementTypeOptions() {
     }
     updateStorageVariantOptions(variantSelect, typeSelect.value, previousVariant);
   });
+}
+if (typeof window !== 'undefined') {
+  window.getAvailableStorageMediaTypes = getAvailableStorageMediaTypes;
+  window.getStorageVariantOptions = getStorageVariantOptions;
+  window.updateStorageRequirementTypeOptions = updateStorageRequirementTypeOptions;
 }
 
 function createStorageRequirementRow(data = {}) {

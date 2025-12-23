@@ -1000,17 +1000,40 @@
       if (!release) {
         return;
       }
-      const { confirmArchive = true } = options || {};
-      if (!release.archived && confirmArchive && typeof scope.confirm === 'function') {
+      const confirmArchive = options.confirmArchive !== false;
+      if (!release.archived && confirmArchive) {
         const template = resolveLocaleString('documentationTrackerArchiveConfirm')
           || 'Archive "{name}"? Completed items stay logged for future audits.';
         const name = release.name
           || resolveLocaleString('documentationTrackerFallbackReleaseName')
           || 'Release';
         const message = template.replace('{name}', name);
-        if (!scope.confirm(message)) {
+        const title = resolveLocaleString('documentationTrackerArchiveRelease') || 'Archive Release';
+
+        const performArchive = () => {
+          release.archived = !release.archived;
+          release.updatedAt = documentationTrackerIsoNow();
+          persistDocumentationTrackerState();
+          renderDocumentationTracker();
+        };
+
+        const showConfirm = scope.cineShowConfirmDialog || (typeof window !== 'undefined' ? window.cineShowConfirmDialog : null);
+
+        if (typeof showConfirm === 'function') {
+          showConfirm({
+            title,
+            message,
+            confirmLabel: 'Archive',
+            danger: true,
+            onConfirm: performArchive
+          });
           return;
         }
+
+        if (typeof scope.confirm === 'function' && scope.confirm(message)) {
+          performArchive();
+        }
+        return;
       }
       release.archived = !release.archived;
       release.updatedAt = documentationTrackerIsoNow();

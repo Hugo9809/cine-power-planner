@@ -799,6 +799,7 @@
       "gearListEditDialogTitle": "Modifier l’élément de matériel",
       "gearListEditQuantityLabel": "Quantité",
       "gearListEditNameLabel": "Nom de l’élément",
+      "gearListEditAttributesLabel": "Attributs",
       "gearListEditNoteLabel": "Note",
       "gearListEditExtraLabel": "Matériel extra temporaire",
       "gearListEditExtraHelp": "Marquez cet élément comme un ajout ponctuel. Indiquez la période pour que toute l’équipe s’organise correctement.",

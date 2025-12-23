@@ -975,12 +975,12 @@
     typeof Symbol === 'function' ? Symbol.for('cineLoggingHandled') : '__cineLoggingHandled__';
   const DEFAULT_CONFIG_VALUES = {
     level: 'warn',
-    historyLevel: 'debug',
+    historyLevel: 'info',
     historyLimit: 1200,
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
-    captureConsole: true,
+    captureConsole: false,
     stackTraces: true,
   };
 

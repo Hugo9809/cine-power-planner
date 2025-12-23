@@ -19818,10 +19818,6 @@ function collectFilterAccessories(filters = []) {
 }
 
 const USER_BUTTON_FUNCTION_ITEMS = [
-  { key: 'user1', value: 'User 1' },
-  { key: 'user2', value: 'User 2' },
-  { key: 'user3', value: 'User 3' },
-  { key: 'user4', value: 'User 4' },
   { key: 'toggleLut', value: 'Toggle LUT' },
   { key: 'falseColor', value: 'False Color' },
   { key: 'peaking', value: 'Peaking' },

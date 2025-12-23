@@ -521,7 +521,21 @@
 
             gearSection.appendChild(clonedGear);
         }
-        paper.appendChild(gearSection);
+
+        // Only append Gear List if project requirements exist
+        let hasRequirements = false;
+        if (typeof window.getCurrentProjectInfo === 'function' && typeof window.hasProjectInfoData === 'function') {
+            const info = window.getCurrentProjectInfo();
+            // We consider requirements "created" if the project info object has any data
+            hasRequirements = window.hasProjectInfoData(info);
+        }
+
+        // Fallback: Check if the project requirements output is just the placeholder text? 
+        // But relying on data model is better.
+
+        if (hasRequirements) {
+            paper.appendChild(gearSection);
+        }
 
         updateSectionVisibility();
     }

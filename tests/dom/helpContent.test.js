@@ -7,7 +7,7 @@ describe('Help Content Feature', () => {
         env = setupScriptEnvironment({
             globals: {
                 cineModuleBase: {
-                    registerOrQueueModule: (name, api) => {
+                    registerOrQueueModule: () => {
                         // Mock registration
                     },
                     exposeGlobal: (name, api, scope) => {
@@ -91,7 +91,6 @@ describe('Help Content Feature', () => {
         window.cineFeaturesHelpContent.populateHelpTopics();
 
         const list = document.getElementById('helpQuickLinksList');
-        const items = Array.from(list.querySelectorAll('li'));
         const linkButtons = Array.from(list.querySelectorAll('.help-topic-link'));
 
         const shortcutsButton = linkButtons.find(btn => btn.textContent === 'Shortcuts');

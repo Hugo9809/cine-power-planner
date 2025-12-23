@@ -799,6 +799,7 @@
       "gearListEditDialogTitle": "Editar elemento del equipo",
       "gearListEditQuantityLabel": "Cantidad",
       "gearListEditNameLabel": "Nombre del elemento",
+      "gearListEditAttributesLabel": "Atributos",
       "gearListEditNoteLabel": "Nota",
       "gearListEditExtraLabel": "Equipo extra temporal",
       "gearListEditExtraHelp": "Marca este elemento como un refuerzo puntual. Define el periodo para que el equipo se organice.",

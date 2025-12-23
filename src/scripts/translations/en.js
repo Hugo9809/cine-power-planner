@@ -1643,6 +1643,7 @@
       "gearListEditDialogTitle": "Edit gear item",
       "gearListEditQuantityLabel": "Quantity",
       "gearListEditNameLabel": "Item name",
+      "gearListEditAttributesLabel": "Attributes",
       "gearListEditNoteLabel": "Note",
       "gearListEditExtraLabel": "Temporary extra gear",
       "gearListEditExtraHelp": "Flag this item as a short-term addition. Set the period so everyone schedules it correctly.",

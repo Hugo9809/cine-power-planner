@@ -831,6 +831,7 @@
       "gearListEditDialogTitle": "Modifica elemento della lista",
       "gearListEditQuantityLabel": "Quantità",
       "gearListEditNameLabel": "Nome elemento",
+      "gearListEditAttributesLabel": "Attributi",
       "gearListEditNoteLabel": "Nota",
       "gearListEditExtraLabel": "Attrezzatura extra temporanea",
       "gearListEditExtraHelp": "Contrassegna questa voce come aggiunta per pochi giorni. Imposta il periodo così la squadra sa quando servirà.",

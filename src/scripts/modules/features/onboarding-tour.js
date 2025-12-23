@@ -2644,13 +2644,13 @@
       },
       {
         key: 'editDeviceDataReview',
-        highlight: '#deviceListContainer',
+        highlight: '#device-manager',
         focus: '#deviceListContainer .detail-toggle',
         ensureDeviceManager: true,
       },
       {
         key: 'editDeviceDataEdit',
-        highlight: '#deviceListContainer',
+        highlight: '#device-manager',
         focus: '#deviceListContainer .edit-btn',
         ensureDeviceManager: true,
         scrollToTop: true,
@@ -2671,6 +2671,7 @@
       {
         key: 'projectRequirementsAccess',
         highlight: '#generateGearListBtn',
+        autoAdvance: true,
       },
       {
         key: 'projectRequirementsBrief',
@@ -2839,6 +2840,7 @@
   let autoOpenedDeviceManager = false;
   let deviceManagerSectionRef = null;
   let deviceManagerToggleRef = null;
+  let sideMenuObserver = null;
   let resumeHintVisible = false;
   let resumeStartIndex = null;
 
@@ -2991,6 +2993,11 @@
     activeRequirementCompleted = initialComplete;
     setNextButtonDisabled(!initialComplete);
 
+    if (initialComplete && step && step.autoAdvance) {
+      goToNextStep();
+      return;
+    }
+
     if (typeof requirement.attach !== 'function') {
       return;
     }
@@ -3003,6 +3010,9 @@
         if (!activeRequirementCompleted) {
           activeRequirementCompleted = true;
           setNextButtonDisabled(false);
+          if (step && step.autoAdvance) {
+            goToNextStep();
+          }
         }
       },
       incomplete() {
@@ -3681,6 +3691,7 @@
     return false;
   }
 
+
   function filterUsableHighlightElements(elements) {
     if (!Array.isArray(elements) || elements.length === 0) {
       return [];
@@ -3698,20 +3709,33 @@
     return filtered;
   }
 
-  function findUsableElement(candidates) {
-    if (!Array.isArray(candidates) || candidates.length === 0) {
-      return null;
+  function ensureHighlightVisible(step) {
+    if (!step) {
+      return;
     }
-    for (let index = 0; index < candidates.length; index += 1) {
-      const candidate = candidates[index];
-      if (!candidate) {
-        continue;
-      }
-      if (isHighlightElementUsable(candidate)) {
-        return candidate;
+    const elements = getHighlightElements(step);
+    if (!elements || !elements.length) {
+      return;
+    }
+    // Prefer the first usable element, otherwise the first element
+    let target = null;
+    for (let index = 0; index < elements.length; index += 1) {
+      if (elements[index] && isHighlightElementUsable(elements[index])) {
+        target = elements[index];
+        break;
       }
     }
-    return candidates[0] || null;
+    if (!target) {
+      target = elements[0];
+    }
+
+    if (target && typeof target.scrollIntoView === 'function') {
+      try {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll to highlight element.', error);
+      }
+    }
   }
 
   function getHighlightElements(step) {
@@ -7596,35 +7620,7 @@
       ensureHeroCardForStep(step);
     }
 
-    const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
-    const focusTarget = findUsableElement(focusCandidates);
-    if (step.scrollToTop && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.scrollTo === 'function') {
-      try {
-        GLOBAL_SCOPE.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not scroll to top.', error);
-      }
-    } else if (
-      focusTarget
-      && isHighlightElementUsable(focusTarget)
-      && typeof focusTarget.scrollIntoView === 'function'
-    ) {
-      try {
-        focusTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
-      }
-    } else {
-      const highlightCandidates = getHighlightElements(step);
-      const highlightTarget = highlightCandidates.length > 0 ? highlightCandidates[0] : null;
-      if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
-        try {
-          highlightTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not scroll highlight target.', error);
-        }
-      }
-    }
+    ensureHighlightVisible(step);
 
     updateCardForStep(step, index);
     applyStepRequirement(step);
@@ -7884,6 +7880,29 @@
       }
     }
     attachVisualViewportListeners();
+
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function' && typeof MutationObserver === 'function') {
+      const sideMenu = DOCUMENT.getElementById('sideMenu');
+      if (sideMenu && !sideMenuObserver) {
+        try {
+          sideMenuObserver = new MutationObserver(() => {
+            schedulePositionUpdate();
+            if (active && currentStep) {
+              setTimeout(() => {
+                ensureHighlightVisible(currentStep);
+              }, 100);
+            }
+          });
+          sideMenuObserver.observe(sideMenu, {
+            attributes: true,
+            attributeFilter: ['class', 'hidden', 'aria-hidden'],
+          });
+        } catch (error) {
+          sideMenuObserver = null;
+          safeWarn('cine.features.onboardingTour could not observe side menu.', error);
+        }
+      }
+    }
   }
 
   function detachGlobalListeners() {
@@ -7896,6 +7915,14 @@
       if (supportsDialogTopLayer) {
         DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
       }
+    }
+    if (sideMenuObserver) {
+      try {
+        sideMenuObserver.disconnect();
+      } catch (error) {
+        void error;
+      }
+      sideMenuObserver = null;
     }
     detachVisualViewportListeners();
   }

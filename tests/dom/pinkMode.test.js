@@ -145,7 +145,7 @@ describe('Pink Mode Functionality', () => {
         }
         await Promise.resolve();
 
-        icons = document.querySelectorAll('.pink-mode-floating-icon');
+        let icons = document.querySelectorAll('.pink-mode-floating-icon');
         expect(icons.length).toBeGreaterThan(5); // Should have many now
 
         // Check cleanup

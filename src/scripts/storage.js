@@ -12843,12 +12843,12 @@
         }
       }
 
-      const filteredCandidates = candidates.filter((name) => name);
+
       const fallback = typeof fallbackName === "string" && fallbackName.trim()
         ? fallbackName.trim()
         : defaultName;
 
-      const baseName = filteredCandidates[0] || fallback;
+      const baseName = candidates.length > 0 ? candidates[0] : fallback;
       const normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
       const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
         ? generateImportedProjectName(baseName, usedNames, normalizedNames)
@@ -16444,7 +16444,7 @@
     };
 
     if (allData.project) {
-      importTrackedCollection(allData.project);
+      importTrackedCollection(allData.project, "");
     }
     if (allData.projects) {
       // Legacy plural key. Accept object map or array of named projects.

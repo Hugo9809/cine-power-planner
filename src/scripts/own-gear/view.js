@@ -65,9 +65,6 @@
     const requestAnimationFrameRef = options.requestAnimationFrame
       || scope.requestAnimationFrame
       || null;
-    const confirmRef = options.confirm
-      || (scope.window && scope.window.confirm && scope.window.confirm.bind(scope.window))
-      || (typeof scope.confirm === 'function' ? scope.confirm.bind(scope) : null);
     const scheduleTimeout = ensureSetTimeout(scope);
 
     const dataSources = {
@@ -540,6 +537,11 @@
           danger: true,
           onConfirm: performDelete,
         });
+        return;
+      }
+
+      if (typeof scope.confirm === 'function' && scope.confirm(confirmMessage)) {
+        performDelete();
         return;
       }
 

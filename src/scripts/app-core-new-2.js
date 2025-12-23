@@ -711,6 +711,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     ensureGlobalFunctionBinding('attachSelectSearch', attachSelectSearch);
     ensureGlobalFunctionBinding('powerInputTypes', powerInputTypes);
     ensureGlobalFunctionBinding('checkSetupChanged', checkSetupChanged);
+    ensureGlobalFunctionBinding('hasProjectInfoData', hasProjectInfoData);
+    ensureGlobalFunctionBinding('getCurrentProjectInfo', getCurrentProjectInfo);
 
     autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
@@ -2649,8 +2651,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cancelCallback();
         return;
 
-        proceedWithRetentionChange();
-        return;
       }
 
       const increaseResult = enforceAutoGearBackupRetentionLimit(normalized);
@@ -17863,6 +17863,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (cameraSelect) {
       cameraSelect.addEventListener('change', () => {
         updateRecordingMediaOptions();
+        if (typeof window.updateStorageRequirementTypeOptions === 'function') {
+          window.updateStorageRequirementTypeOptions();
+        }
         if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
           try {
             document.dispatchEvent(new CustomEvent('camera-selection-changed'));

@@ -2105,10 +2105,8 @@ function handleDeleteSetupClick() {
     alert(texts[currentLang].alertNoSetupSelected);
     return;
   }
-  if (
-    confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName)) &&
-    confirm(texts[currentLang].confirmDeleteSetupAgain)
-  ) {
+
+  const performDeletion = () => {
     const backupName = ensureAutoBackupBeforeDeletion('delete setup');
     if (!backupName) {
       return;
@@ -2166,6 +2164,33 @@ function handleDeleteSetupClick() {
       updateCalculations(); // Recalculate after deleting setup
     }
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
+  };
+
+  if (typeof window.cineShowConfirmDialog === 'function') {
+    window.cineShowConfirmDialog({
+      title: (texts[currentLang] && texts[currentLang].deleteSetupTitle) || 'Delete Project',
+      message: texts[currentLang].confirmDeleteSetup.replace("{name}", setupName),
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: () => {
+        setTimeout(() => {
+          window.cineShowConfirmDialog({
+            title: (texts[currentLang] && texts[currentLang].areYouSure) || 'Are you sure?',
+            message: texts[currentLang].confirmDeleteSetupAgain,
+            confirmLabel: 'Confirm Delete',
+            danger: true,
+            onConfirm: () => performDeletion()
+          });
+        }, 150);
+      }
+    });
+  } else {
+    if (
+      confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName)) &&
+      confirm(texts[currentLang].confirmDeleteSetupAgain)
+    ) {
+      performDeletion();
+    }
   }
 }
 
@@ -4588,7 +4613,8 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
     const name = button.dataset.name;
     const categoryKey = button.dataset.category;
     const subcategory = button.dataset.subcategory;
-    if (confirm(texts[currentLang].confirmDeleteDevice.replace("{name}", name))) {
+
+    const performDeviceDeletion = () => {
       if (categoryKey === "accessories.cables") {
         delete devices.accessories.cables[subcategory][name];
       } else if (categoryKey.includes('.')) {
@@ -4628,6 +4654,20 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       updateDistanceDisplayOptions();
       applyFilters();
       updateCalculations();
+    };
+
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: (texts[currentLang] && texts[currentLang].deleteDeviceTitle) || 'Delete Device',
+        message: texts[currentLang].confirmDeleteDevice.replace("{name}", name),
+        confirmLabel: 'Delete',
+        danger: true,
+        onConfirm: () => performDeviceDeletion()
+      });
+    } else {
+      if (confirm(texts[currentLang].confirmDeleteDevice.replace("{name}", name))) {
+        performDeviceDeletion();
+      }
     }
   }
 });
@@ -4754,7 +4794,11 @@ if (newCategorySelectElement) {
     } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoInputs === 'function') {
       window.clearMonitorVideoInputs();
     }
-    clearMonitorVideoOutputs();
+    if (typeof clearMonitorVideoOutputs === 'function') {
+      clearMonitorVideoOutputs();
+    } else if (typeof window !== 'undefined' && typeof window.clearMonitorVideoOutputs === 'function') {
+      window.clearMonitorVideoOutputs();
+    }
     viewfinderScreenSizeInput.value = "";
     viewfinderBrightnessInput.value = "";
     viewfinderWattInput.value = "";
@@ -4762,8 +4806,12 @@ if (newCategorySelectElement) {
     viewfinderPortTypeInput.value = "";
     viewfinderWirelessTxInput.checked = false;
     viewfinderLatencyInput.value = "";
-    clearViewfinderVideoInputs();
-    clearViewfinderVideoOutputs();
+    if (typeof clearViewfinderVideoInputs === 'function') {
+      clearViewfinderVideoInputs();
+    }
+    if (typeof clearViewfinderVideoOutputs === 'function') {
+      clearViewfinderVideoOutputs();
+    }
     clearBatteryPlates();
     if (typeof clearRecordingMedia === 'function') {
       clearRecordingMedia();
@@ -5412,8 +5460,7 @@ const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 
 if (exportAndRevertBtn) {
   addSafeEventListener(exportAndRevertBtn, 'click', () => {
-    // Step 1: Export the current database
-    if (confirm(texts[currentLang].confirmExportAndRevert)) { // Confirmation for both actions
+    const performExportAndRevert = () => {
       // Reusing the export logic from the existing 'Export Database' button
       if (typeof autoBackup === 'function') {
         try {
@@ -5457,6 +5504,20 @@ if (exportAndRevertBtn) {
       }, 500); // 500ms delay
       if (typeof revertTimer.unref === 'function') {
         revertTimer.unref();
+      }
+    };
+
+    if (typeof window.cineShowConfirmDialog === 'function') {
+      window.cineShowConfirmDialog({
+        title: (texts[currentLang] && texts[currentLang].exportAndRevertTitle) || 'Export and Revert',
+        message: texts[currentLang].confirmExportAndRevert,
+        confirmLabel: 'Export & Revert',
+        danger: true,
+        onConfirm: () => performExportAndRevert()
+      });
+    } else {
+      if (confirm(texts[currentLang].confirmExportAndRevert)) { // Confirmation for both actions
+        performExportAndRevert();
       }
     }
   });

@@ -582,7 +582,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "Codex Compact Drive 1TB",
+          "type": "Codex Compact Drive",
           "notes": "CA08-1024"
         },
         {
@@ -949,7 +949,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "AXS Memory A-Series slot",
+          "type": "AXS Memory",
           "notes": ""
         },
         {
@@ -1146,7 +1146,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "AXS Memory A-Series slot",
+          "type": "AXS Memory",
           "notes": ""
         },
         {
@@ -1420,7 +1420,7 @@
           "notes": ""
         },
         {
-          "type": "SD",
+          "type": "SD Card",
           "notes": "UHS-II/UHS-I"
         }
       ],
@@ -1563,7 +1563,7 @@
           "notes": ""
         },
         {
-          "type": "SD",
+          "type": "SD Card",
           "notes": "UHS-II/UHS-I"
         }
       ],
@@ -1693,7 +1693,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "XQD Card",
+          "type": "XQD",
           "notes": ""
         },
         {
@@ -1819,7 +1819,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "XQD Card",
+          "type": "XQD",
           "notes": ""
         },
         {
@@ -6056,7 +6056,7 @@
           "notes": ""
         },
         {
-          "type": "SD",
+          "type": "SD Card",
           "notes": "UHS-II/UHS-I"
         }
       ],
@@ -6744,7 +6744,7 @@
       "fizConnectors": [],
       "recordingMedia": [
         {
-          "type": "Internal NVMe SSD",
+          "type": "M.2 NVMe SSD",
           "notes": "User replaceable"
         }
       ],
@@ -6815,7 +6815,7 @@
       "fizConnectors": [],
       "recordingMedia": [
         {
-          "type": "Internal SSD",
+          "type": "M.2 NVMe SSD",
           "notes": "4TB NVMe"
         }
       ],
@@ -6914,7 +6914,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "CineMag IV/V",
+          "type": "CineMag IV",
           "notes": "High-speed storage"
         }
       ],
@@ -9308,7 +9308,7 @@
           "notes": ""
         },
         {
-          "type": "SD",
+          "type": "SD Card",
           "notes": "UHS-II/UHS-I"
         }
       ],
@@ -9501,7 +9501,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "SD",
+          "type": "SD Card",
           "notes": "UHS-II/UHS-I"
         }
       ],
@@ -9591,7 +9591,7 @@
       ],
       "recordingMedia": [
         {
-          "type": "SDXC",
+          "type": "SD Card",
           "notes": "UHS-I"
         }
       ],
@@ -11384,7 +11384,7 @@
       "weight_g": 5500,
       "recordingMedia": [
         {
-          "type": "SD Card (x9)",
+          "type": "SD Card",
           "notes": "8x MicroSD for lenses, 1x SD for proxy/stabilization"
         }
       ],
@@ -11413,7 +11413,7 @@
       "weight_g": 1550,
       "recordingMedia": [
         {
-          "type": "SD Card (x7)",
+          "type": "SD Card",
           "notes": "6x MicroSD for lenses, 1x SD for proxy/stabilization"
         }
       ],
@@ -11470,7 +11470,7 @@
       "weight_g": 11160,
       "recordingMedia": [
         {
-          "type": "SSD (x8)",
+          "type": "M.2 NVMe SSD",
           "notes": "8x M.2 NVMe SSD modules"
         }
       ],

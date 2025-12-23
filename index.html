@@ -5371,6 +5371,10 @@
             </div>
           </div>
           <div class="form-row form-row--full">
+            <label id="gearItemEditAttributesLabel" for="gearItemEditAttributes">Attributes</label>
+            <input id="gearItemEditAttributes" name="gearItemEditAttributes" type="text" autocomplete="off" />
+          </div>
+          <div class="form-row form-row--full">
             <label id="gearItemEditNoteLabel" for="gearItemEditNote">Note</label>
             <textarea id="gearItemEditNote" name="gearItemEditNote" rows="3" autocomplete="off"></textarea>
           </div>
@@ -5921,6 +5925,9 @@
         <section class="project-dialog-section" aria-labelledby="userButtonsHeading">
           <h3 id="userButtonsHeading" class="project-section-title">User Buttons</h3>
           <div class="project-section-content">
+            <p style="margin-bottom: 1rem; font-size: 0.9em; color: var(--text-muted);">
+              1st selected button = 1., 2nd selected button = 2 ...
+            </p>
             <div class="form-row">
               <label for="monitorUserButtons" id="monitorUserButtonsLabel">Onboard Monitor User Buttons:</label>
               <select id="monitorUserButtons" name="monitorUserButtons" multiple></select>
