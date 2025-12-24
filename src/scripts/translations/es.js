@@ -885,7 +885,7 @@
         "Jib": "Jib",
         "Undersling mode": "Modo Undersling",
         "Crane": "Grúa",
-        "Remote Head": "Cabeza caliente",
+        "Remote Head": "Cabezal remoto",
         "Extreme cold (snow)": "Frío extremo (Nieve)",
         "Extreme rain": "Lluvia extrema",
         "Extreme heat": "Calor extremo",
