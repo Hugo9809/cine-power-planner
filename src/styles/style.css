@@ -11824,6 +11824,10 @@ body.dark-mode .requirement-box,
   grid-column: 1 / -1;
 }
 
+.requirements-grid .requirement-box[data-field="filter"] {
+  display: none;
+}
+
 /* Overview dialog */
 #overviewDialog {
   width: min(96vw, 210mm);
