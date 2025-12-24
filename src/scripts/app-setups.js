@@ -15870,17 +15870,65 @@ function bindGearListProGaffTapeListener() {
   });
 }
 
+function formatMonitorSizeValue(value) {
+  if (value === null || value === undefined || value === '') return '';
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  const parsed = parseFloat(String(value));
+  return Number.isFinite(parsed) ? String(parsed) : '';
+}
+
+function updateGearListMonitorItem(select, options = {}) {
+  if (!select) return;
+  const gearItem = select.closest('.gear-item');
+  if (!gearItem) return;
+  const label = options.label || gearItem.getAttribute('data-gear-label') || '';
+  if (label) {
+    gearItem.setAttribute('data-gear-label', label);
+  }
+  const attributes = [];
+  if (options.size) {
+    attributes.push(`${options.size}"`);
+  }
+  if (options.name) {
+    attributes.push(addArriKNumber(options.name));
+  }
+  if (options.suffix) {
+    attributes.push(options.suffix);
+  }
+  const attributesText = attributes.filter(Boolean).join(' - ');
+  if (attributesText) {
+    gearItem.setAttribute('data-gear-attributes', attributesText);
+  } else {
+    gearItem.removeAttribute('data-gear-attributes');
+  }
+  if (label) {
+    const dataName = attributesText ? `${label} (${attributesText})` : label;
+    gearItem.setAttribute('data-gear-name', dataName);
+  }
+}
+
 function bindGearListDirectorMonitorListener() {
   if (!gearListOutput) return;
+  const handheldSuffix = 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
+  const largeSuffix = 'incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)';
   ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
     const sel = gearListOutput.querySelector(`#gearList${role}Monitor`);
     if (sel) {
       sel.addEventListener('change', () => {
         const monitorInfo = devices && devices.monitors && devices.monitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}`);
-        if (span && monitorInfo && monitorInfo.screenSizeInches) {
-          span.textContent = `(${monitorInfo.screenSizeInches}")`;
+        const sizeValue = formatMonitorSizeValue(monitorInfo?.screenSizeInches);
+        if (span) {
+          span.textContent = `(${sizeValue}")`;
         }
+        const labelRole = role === 'Dop' ? 'DoP' : role;
+        const label = role === 'Focus' ? 'Focus Monitor' : `${labelRole} Handheld Monitor`;
+        updateGearListMonitorItem(sel, {
+          label,
+          name: sel.value || '',
+          size: sizeValue,
+          suffix: handheldSuffix,
+        });
         sel.dataset.autoGearManual = 'true';
         markProjectFormDataDirty();
         saveCurrentGearList();
@@ -15895,9 +15943,17 @@ function bindGearListDirectorMonitorListener() {
       sel.addEventListener('change', () => {
         const monitorInfo = devices && devices.directorMonitors && devices.directorMonitors[sel.value];
         const span = gearListOutput.querySelector(`#monitorSize${role}15`);
-        if (span && monitorInfo && monitorInfo.screenSizeInches) {
-          span.textContent = `(${monitorInfo.screenSizeInches}")`;
+        const sizeValue = formatMonitorSizeValue(monitorInfo?.screenSizeInches);
+        if (span) {
+          span.textContent = `(${sizeValue}")`;
         }
+        const labelRole = role === 'Dop' ? 'DoP' : role;
+        updateGearListMonitorItem(sel, {
+          label: `${labelRole} Monitor`,
+          name: sel.value || '',
+          size: sizeValue,
+          suffix: largeSuffix,
+        });
         sel.dataset.autoGearManual = 'true';
         markProjectFormDataDirty();
         saveCurrentGearList();
