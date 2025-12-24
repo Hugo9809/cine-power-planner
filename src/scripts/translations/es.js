@@ -997,7 +997,7 @@
       "backToAppBtn": "Volver a la app",
       "printBtn": "Imprimir",
       "exportPdfBtn": "Exportar PDF / Imprimir",
-      "exportRentalPdfBtn": "PDF para el rental",
+      "exportRentalPdfBtn": "PDF para renta",
       "rentalPrintDialogTitle": "Exportar PDF / Imprimir",
       "rentalPrintDialogDescription": "Elige qué mostrar antes de exportar o imprimir.",
       "rentalPrintDialogSectionsLabel": "Secciones a incluir",
@@ -1942,13 +1942,13 @@
                 }
               ],
               "languageLabel": "Idioma",
-              "languageHint": "Elige el idioma de la interfaz para que este tour, la ayuda y los exports se traduzcan al instante en tus guardados offline.",
+              "languageHint": "Elige el idioma de la interfaz para que este tour, la ayuda y las exportaciones se traduzcan al instante en tus guardados offline.",
               "offlineSummary": "Cine Power Planner está diseñado para el set: offline por defecto, instalable en móvil y siempre guardando copias redundantes locales para que el equipo conserve el control de sus datos."
             }
           },
           "userProfile": {
             "title": "Completa el perfil del equipo",
-            "body": "Define nombre visible, rol, teléfono, correo y foto. Cada actualización se sincroniza al instante con Contactos, permanece en los guardados sin conexión y aparece en los exportes."
+            "body": "Define nombre visible, rol, teléfono, correo y foto. Cada actualización se sincroniza al instante con Contactos, permanece en los guardados sin conexión y aparece en las exportaciones."
           },
           "unitsPreferences": {
             "title": "Ajusta tema y unidades",
@@ -2032,7 +2032,7 @@
           },
           "projectRequirementsCrew": {
             "title": "Mapear la cobertura del equipo y contactos",
-            "body": "Completa las filas de Crew, Prep, Rodaje y Devolución con nombres, roles y notas. Vincula contactos guardados, añade detalles de emergencia y duplica filas cuando varios días comparten el mismo plan para que los exportes indiquen quién está en set y cuándo."
+            "body": "Completa las filas de Crew, Prep, Rodaje y Devolución con nombres, roles y notas. Vincula contactos guardados, añade detalles de emergencia y duplica filas cuando varios días comparten el mismo plan para que las exportaciones indiquen quién está en set y cuándo."
           },
           "projectRequirementsLogistics": {
             "title": "Registrar lentes, rigging y monitorización",
@@ -2136,7 +2136,7 @@
       "setupNameHelp": "Introduce un nombre para la configuración actual.",
       "deleteSetupHelp": "Elimina la configuración guardada seleccionada.",
       "saveSetupHelp": "Captura una instantánea completa del proyecto actual—dispositivos, requisitos, notas, registros de autonomía y diseño del diagrama—y guárdala en tu biblioteca local. El punto de estado junto a Nombre del proyecto pulsa mientras termina la escritura, y la cola de copias de seguridad automáticas programa a continuación la instantánea con marca de tiempo para mantener la redundancia actualizada. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para lograr lo mismo; el botón Guardar permanece desactivado hasta que introduzcas un nombre de proyecto. Guardar no sobrescribe otros proyectos hasta que confirmes el nombre, así tus datos anteriores quedan protegidos.",
-      "generateOverviewHelp": "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre la ventana de overview para que revises los detalles de alimentación y conexión antes de imprimir cuando quieras. Las ópticas seleccionadas se muestran con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que los exports cubran chequeos sensibles a especificaciones.",
+      "generateOverviewHelp": "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre la ventana de overview para que revises los detalles de alimentación y conexión antes de imprimir cuando quieras. Las ópticas seleccionadas se muestran con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que las exportaciones cubran chequeos sensibles a especificaciones.",
       "generateGearListHelp": "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
       "shareSetupHelp": "Descarga un paquete JSON de seguridad del proyecto actual—incluye equipo personalizado, favoritos, retroalimentación de autonomía y dispositivos—listo para archivarse o compartirse sin conexión. Guarda el archivo junto a las copias de seguridad redundantes del equipo antes de cerrar el planificador para que cualquier estación pueda restaurarlo sin acceso a la red. La exportación no altera tu proyecto actual, así que no se pierde nada al crear el paquete.",
       "applySharedLinkHelp": "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante. Las importaciones sin nombre se guardan automáticamente con un título “-imported” para que los datos se conserven incluso cuando el paquete no incluía un nombre de proyecto. El proyecto importado queda local y disponible sin conexión en cuanto guardas.",
