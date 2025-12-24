@@ -801,6 +801,8 @@
         "productionCompanyCountry": "Pays",
         "productionCompanyCountryPlaceholder": "France",
         "rentalHouse": "Loueur",
+        "rentalHouseContact": "Contact du loueur",
+        "rentalHouseAddress": "Adresse du loueur",
         "crew": "Équipe",
         "prepDays": "Jours de préparation",
         "shootingDays": "Jours de tournage",

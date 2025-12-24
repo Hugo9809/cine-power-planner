@@ -826,6 +826,8 @@
         "productionCompanyCountry": "Paese",
         "productionCompanyCountryPlaceholder": "Italia",
         "rentalHouse": "Noleggio",
+        "rentalHouseContact": "Contatto noleggio",
+        "rentalHouseAddress": "Indirizzo noleggio",
         "crew": "Troupe",
         "prepDays": "Giorni di preparazione",
         "shootingDays": "Giorni di riprese",

@@ -823,6 +823,8 @@
         "productionCompanyCountry": "Land",
         "productionCompanyCountryPlaceholder": "Deutschland",
         "rentalHouse": "Kameraverleih",
+        "rentalHouseContact": "Kameraverleih Kontakt",
+        "rentalHouseAddress": "Kameraverleih Adresse",
         "crew": "Team",
         "prepDays": "Prep-Tage",
         "shootingDays": "Drehtage",
