@@ -1465,6 +1465,7 @@
       "alertSetupNeedsDevice": "You can save a project even if no devices are selected yet.",
       "alertSetupSaved": "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
       "alertSetupSavedNoDevices": "Project \"{name}\" saved in this browser with no devices yet. Add gear and requirements whenever you're ready—we'll keep everything protected.",
+      "alertSetupRenameSaveFailed": "We couldn’t finish saving the renamed project. Your original project is still available—please try saving again to keep everything in sync.",
       "alertNoSetupSelected": "Please select a saved project to delete.",
       "alertSetupDeleted": "Project \"{name}\" deleted.",
       "confirmDeleteSetup": "Really delete project \"{name}\"?",
