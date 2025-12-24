@@ -14,8 +14,8 @@
         "layoutRentalDescription": "Optimiert das Layout für den Kameraverleih durch Gruppierung nach Kategorien.",
         "sectionsTitle": "Abschnitte",
         "sectionProject": "Produktionsanforderungen",
-        "sectionDevices": "Rig-/Paketgeräte",
-        "sectionDiagram": "Verkabelungsplan",
+        "sectionDevices": "Kamera-Paketgeräte",
+        "sectionDiagram": "Stromdiagramm",
         "sectionGearList": "Kit-Liste",
         "sectionBattery": "Akku-Vergleich",
         "exportPdfButton": "PDF exportieren",
@@ -27,7 +27,7 @@
         "generatedNoProjectRequirements": "Keine Produktionsanforderungen.",
         "generatedDeviceSelectionTitle": "Kamera-Paketgeräte",
         "generatedNoDevicesSelected": "Keine Geräte ausgewählt.",
-        "generatedPowerDiagramTitle": "Verkabelungsplan",
+        "generatedPowerDiagramTitle": "Stromdiagramm",
         "generatedPowerSummaryTitle": "Stromübersicht",
         "generatedGearListTitle": "Kit-Liste",
         "generatedTotalLoad": "Gesamtlast",
@@ -94,8 +94,8 @@
       "batteryComparisonDescription": "Prüfe alle kompatiblen Akkus, um die Laufzeitschätzungen für deine aktuelle Konfiguration zu sehen.",
       "batteryComparisonDescriptionHelp": "Diese Tabelle listet alle kompatiblen Akkus und aktualisiert sich, sobald du dein Setup änderst. Fahre mit der Maus über die Spaltenüberschriften, um die Werte zu verstehen.",
       "batteryComparisonTableHelp": "Jede Zeile zeigt einen kompatiblen Akku. Die Laufzeit basiert auf dem berechneten Verbrauch und der farbige Balken vergleicht die Dauer auf einen Blick.",
-      "setupDiagramHeading": "Verkabelungsplan",
-      "diagramPdfNote": "Das Verbindungsdiagramm ist nicht im PDF-Export enthalten. Öffnen Sie die Druckansicht, um das Layout zu sehen.",
+      "setupDiagramHeading": "Stromdiagramm",
+      "diagramPdfNote": "Das Stromdiagramm ist nicht im PDF-Export enthalten. Öffnen Sie die Druckansicht, um das Layout zu sehen.",
       "projectRequirementsNav": "Produktionsanforderungen",
       "projectRequirementsNavHelp": "Zur Ausgabe Produktionsanforderungen springen, sobald sie erstellt wurde.",
       "gearListNav": "Kit-Liste",
@@ -136,12 +136,12 @@
       "batteryTableRuntimeHelp": "Geschätzte Laufzeit in Stunden sowie welche Ausgänge genug Strom liefern.",
       "batteryTableGraphLabel": "Laufzeitvergleichsbalken",
       "batteryTableGraphHelp": "Die Balkenlänge vergleicht die Laufzeit der Akkus. Grün steht für Pins und D-Tap, Orange bedeutet nur die Hauptpins und Blau kennzeichnet theoretisch unbegrenzte Laufzeiten.",
-      "setupDiagramHeadingHelp": "Zeigt einen Verkabelungsplan der ausgewählten Geräte.",
+      "setupDiagramHeadingHelp": "Zeigt das Stromdiagramm für Strom-, Video- und Steuerungsverbindungen im Rig.",
       "setupDiagramPlaceholder": "Geräte auswählen, um das Projekt zu visualisieren.",
       "diagramLegendPower": "Strom",
       "diagramLegendVideo": "Video",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Diagramm herunterladen",
+      "downloadDiagramBtn": "Stromdiagramm herunterladen",
       "gridSnapToggle": "Am Raster ausrichten",
       "existingDevicesHeading": "Vorhandene Geräte",
       "deviceLibrarySearchLabel": "Gesamte Bibliothek durchsuchen",
@@ -1037,9 +1037,9 @@
       "printOptionsLayoutStandard": "Standard-Layout",
       "printOptionsLayoutRental": "Rental-Layout",
       "rentalPrintSectionProject": "Produktionsanforderungen",
-      "rentalPrintSectionDevices": "Rig-/Paketgeräte",
+      "rentalPrintSectionDevices": "Kamera-Paketgeräte",
       "rentalPrintSectionPower": "Leistungsübersicht",
-      "rentalPrintSectionDiagram": "Kameraschema",
+      "rentalPrintSectionDiagram": "Stromdiagramm",
       "rentalPrintSectionGearList": "Kit-Liste",
       "rentalPrintSectionBattery": "Batterievergleich",
       "exportAndRevertBtn": "Exportieren und auf Standarddatenbank zurücksetzen",
@@ -1086,8 +1086,8 @@
           "content": "Die **Power Summary** zeigt Gesamtverbrauch und Laufzeit basierend auf Akku und Montage-Spannungen. Achte auf **Pin**- und **D‑Tap**-Warnungen und nutze die Kurzfassung, um Ergebnisse offline zu erklären."
         },
         "connectionDiagram": {
-          "title": "Verbindungsdiagramm",
-          "content": "Das **Verbindungsdiagramm** zeigt die Geräteverkabelung. Ziehe Knoten zum Anordnen, zoome und schwenke für Details und lade SVG- oder JPG-Snapshots herunter."
+          "title": "Stromdiagramm",
+          "content": "Das **Stromdiagramm** zeigt die Strom-, Video- und Steuerungsverbindungen im Rig. Ziehe Knoten zum Anordnen, zoome und schwenke für Details und lade SVG- oder JPG-Snapshots herunter."
         },
         "gearList": {
           "title": "Kit-Liste",
@@ -2029,8 +2029,8 @@
             "body": "Nutze die Laufzeit-Rückmeldung, um reale Ergebnisse zu protokollieren. Einträge synchronisieren sich mit dem aktuellen Projekt, stärken zukünftige Schätzungen und bleiben offline für Audits verfügbar."
           },
           "connectionDiagram": {
-            "title": "Verbindungsdiagramm prüfen",
-            "body": "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, doppelklicke auf Geräte, um die Hover-Details zu öffnen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben."
+            "title": "Stromdiagramm prüfen",
+            "body": "Das interaktive Stromdiagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, doppelklicke auf Geräte, um die Hover-Details zu öffnen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben."
           },
           "connectionDiagramDetails": {
             "title": "Geräte-Hover-Details öffnen",
@@ -2182,7 +2182,7 @@
       "runtimeFeedbackBtnHelp": "Sende deine gemessene Laufzeit für dieses Projekt.",
       "zoomOutHelp": "Verkleinert das Projekt-Diagramm.",
       "zoomInHelp": "Vergrößert das Projekt-Diagramm.",
-      "downloadDiagramHelp": "Lädt das Projekt-Diagramm als Bild herunter.",
+      "downloadDiagramHelp": "Lädt das Stromdiagramm als Bild herunter.",
       "gridSnapToggleHelp": "Schaltet das Einrasten der Diagrammknoten am Raster um.",
       "resetViewBtn": "Ansicht zurücksetzen",
       "resetViewHelp": "Setzt Zoom und Verschiebung des Diagramms zurück.",

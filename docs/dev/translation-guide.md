@@ -55,6 +55,20 @@ offline bundles safe and documentation consistent.
 | "Autosave ledger" | Translate to highlight timestamped log of background saves. |
 | "Bundle" | Explain as offline file transfer, never internet sharing. |
 
+## Film terminology glossary
+
+Use these preferred translations for core production terms in headings, help content, and print/export labels.
+Keep brand connector names (D‑Tap, B‑Mount) unchanged and hyphenated.
+
+| English term | German (de) | Spanish (es) | French (fr) | Italian (it) |
+| --- | --- | --- | --- | --- |
+| Rig | Kamera-Rig | rig | rig | rig |
+| Camera package | Kamera-Paket | paquete de cámara | pack caméra | pacchetto camera |
+| Kit list | Kit-Liste | lista de kit | liste de kit | lista kit |
+| Power Diagram | Stromdiagramm | diagrama de potencia | schéma d’alimentation | diagramma di alimentazione |
+| D‑Tap | D‑Tap | D‑Tap | D‑Tap | D‑Tap |
+| B‑Mount | B‑Mount | B‑Mount | B‑Mount | B‑Mount |
+
 ## Quality checks
 
 - Confirm no string introduces external links or network dependencies.

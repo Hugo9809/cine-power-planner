@@ -62,8 +62,8 @@
       "batteryComparisonDescription": "Revisa cada batería compatible para ver las estimaciones de autonomía con tu configuración actual.",
       "batteryComparisonDescriptionHelp": "Esta tabla reúne todas las baterías compatibles y se actualiza al cambiar tu configuración. Pasa el cursor por los encabezados para saber qué representa cada dato.",
       "batteryComparisonTableHelp": "Cada fila muestra una batería compatible. El tiempo estimado incluye el consumo calculado, y la barra de color compara la duración de un vistazo.",
-      "setupDiagramHeading": "Diagrama de conexiones",
-      "diagramPdfNote": "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
+      "setupDiagramHeading": "Diagrama de potencia",
+      "diagramPdfNote": "El diagrama de potencia no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
       "projectRequirementsNav": "Requisitos de producción",
       "projectRequirementsNavHelp": "Ir a la sección Requisitos de producción en cuanto esté disponible.",
       "gearListNav": "Lista de kit",
@@ -104,12 +104,12 @@
       "batteryTableRuntimeHelp": "Autonomía estimada en horas y qué salidas entregan la corriente necesaria.",
       "batteryTableGraphLabel": "Barra de comparación de autonomía",
       "batteryTableGraphHelp": "La longitud de la barra compara la autonomía entre baterías. El verde cubre pines y D-Tap, el naranja significa solo los pines principales y el azul marca estimaciones de autonomía infinita.",
-      "setupDiagramHeadingHelp": "Visualiza cómo se conectan los dispositivos del proyecto.",
+      "setupDiagramHeadingHelp": "Visualiza el diagrama de potencia con las conexiones de energía, vídeo y control del rig.",
       "setupDiagramPlaceholder": "Selecciona dispositivos para ver el diagrama del proyecto.",
       "diagramLegendPower": "Energía",
       "diagramLegendVideo": "Vídeo",
       "diagramLegendFIZ": "FIZ",
-      "downloadDiagramBtn": "Descargar el diagrama",
+      "downloadDiagramBtn": "Descargar el diagrama de potencia",
       "gridSnapToggle": "Ajustar a la cuadrícula",
       "existingDevicesHeading": "Dispositivos existentes",
       "deviceLibrarySearchLabel": "Buscar en toda la biblioteca",
@@ -1008,9 +1008,9 @@
       "printOptionsLayoutStandard": "Diseño estándar",
       "printOptionsLayoutRental": "Diseño para rental",
       "rentalPrintSectionProject": "Requisitos de producción",
-      "rentalPrintSectionDevices": "Dispositivos del rig/paquete",
+      "rentalPrintSectionDevices": "Dispositivos del paquete de cámara",
       "rentalPrintSectionPower": "Resumen de energía",
-      "rentalPrintSectionDiagram": "Esquema de cámara",
+      "rentalPrintSectionDiagram": "Diagrama de potencia",
       "rentalPrintSectionGearList": "Lista de kit",
       "rentalPrintSectionBattery": "Comparativa de baterías",
       "exportAndRevertBtn": "Exportar y Restaurar por Defecto",
@@ -1057,8 +1057,8 @@
           "content": "El **Resumen de potencia** muestra el consumo total y la autonomía según la batería y los voltajes de montura. Vigila las advertencias de **Pin** y **D‑Tap** y utiliza el resumen rápido para explicar los resultados offline."
         },
         "connectionDiagram": {
-          "title": "Diagrama de conexiones",
-          "content": "El **Diagrama de conexiones** muestra cómo se conectan los dispositivos. Arrastra para ordenar, haz zoom y desplázate, y descarga instantáneas SVG o JPG para compartir."
+          "title": "Diagrama de potencia",
+          "content": "El **Diagrama de potencia** muestra las conexiones de energía, vídeo y control. Arrastra para ordenar, haz zoom y desplázate, y descarga instantáneas SVG o JPG para compartir."
         },
         "gearList": {
           "title": "Lista de kit",
@@ -2000,8 +2000,8 @@
             "body": "Usa el botón de feedback de autonomía para registrar resultados reales. Las entradas se sincronizan con el proyecto actual, fortalecen las estimaciones futuras y permanecen disponibles offline para auditorías."
           },
           "connectionDiagram": {
-            "title": "Inspecciona el diagrama de conexiones",
-            "body": "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara, haz doble clic en los dispositivos para abrir los detalles flotantes y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones."
+            "title": "Inspecciona el diagrama de potencia",
+            "body": "El diagrama de potencia interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara, haz doble clic en los dispositivos para abrir los detalles flotantes y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones."
           },
           "connectionDiagramDetails": {
             "title": "Abre los detalles flotantes del dispositivo",
@@ -2153,7 +2153,7 @@
       "runtimeFeedbackBtnHelp": "Envía la duración de funcionamiento medida para esta configuración.",
       "zoomOutHelp": "Aleja el diagrama de la configuración.",
       "zoomInHelp": "Acerca el diagrama de la configuración.",
-      "downloadDiagramHelp": "Descarga el diagrama de la configuración como imagen.",
+      "downloadDiagramHelp": "Descarga el diagrama de potencia como imagen.",
       "gridSnapToggleHelp": "Activa o desactiva el ajuste a la cuadrícula de los nodos del diagrama.",
       "resetViewBtn": "Restablecer vista",
       "resetViewHelp": "Restablece el zoom y la posición del diagrama.",
